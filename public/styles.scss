@@ -695,7 +695,7 @@ body {
 
 .spell-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--size-1);
   margin-bottom: var(--size-2);
 }
@@ -705,6 +705,7 @@ body {
   align-items: center;
   gap: var(--size-1);
   font-size: var(--font-size-1);
+  min-width: 0;
 
   .slot-level {
     min-width: 30px;
