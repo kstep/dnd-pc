@@ -191,6 +191,56 @@ body {
   }
 }
 
+.classes-section {
+  margin-top: var(--size-2);
+
+  > label {
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.classes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+  margin: var(--size-1) 0;
+}
+
+.class-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  .class-name {
+    width: 120px;
+    padding: var(--size-1) var(--size-2);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+  }
+
+  .class-level {
+    width: 55px;
+    text-align: center;
+    padding: var(--size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+  }
+}
+
+.btn-add-class {
+  font-size: var(--font-size-0);
+  padding: var(--size-1) var(--size-2);
+}
+
 /* --------------------- Sheet Grid Layout --------------------- */
 .character-sheet {
   max-width: 1400px;

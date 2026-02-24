@@ -71,8 +71,17 @@ impl Character {
         Self::default()
     }
 
+    pub fn level(&self) -> u32 {
+        self.identity
+            .classes
+            .iter()
+            .map(|c| c.level)
+            .sum::<u32>()
+            .max(1)
+    }
+
     pub fn proficiency_bonus(&self) -> i32 {
-        ((self.identity.level as i32) - 1) / 4 + 2
+        ((self.level() as i32) - 1) / 4 + 2
     }
 
     pub fn ability_modifier(&self, ability: Ability) -> i32 {
@@ -118,12 +127,22 @@ impl Character {
             .map(|sc| self.proficiency_bonus() + self.ability_modifier(sc.casting_ability))
     }
 
+    pub fn class_summary(&self) -> String {
+        self.identity
+            .classes
+            .iter()
+            .filter(|c| !c.class.is_empty())
+            .map(|c| format!("{} {}", c.class, c.level))
+            .collect::<Vec<_>>()
+            .join(" / ")
+    }
+
     pub fn summary(&self) -> CharacterSummary {
         CharacterSummary {
             id: self.id,
             name: self.identity.name.clone(),
-            class: self.identity.class.clone(),
-            level: self.identity.level,
+            class: self.class_summary(),
+            level: self.level(),
         }
     }
 }
@@ -157,8 +176,7 @@ impl Default for Character {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CharacterIdentity {
     pub name: String,
-    pub class: String,
-    pub level: u32,
+    pub classes: Vec<ClassLevel>,
     pub race: String,
     pub background: String,
     pub alignment: Alignment,
@@ -169,12 +187,26 @@ impl Default for CharacterIdentity {
     fn default() -> Self {
         Self {
             name: "New Character".to_string(),
-            class: String::new(),
-            level: 1,
+            classes: vec![ClassLevel::default()],
             race: String::new(),
             background: String::new(),
             alignment: Alignment::TrueNeutral,
             experience_points: 0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ClassLevel {
+    pub class: String,
+    pub level: u32,
+}
+
+impl Default for ClassLevel {
+    fn default() -> Self {
+        Self {
+            class: String::new(),
+            level: 1,
         }
     }
 }
