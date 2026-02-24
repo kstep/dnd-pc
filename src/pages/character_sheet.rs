@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_router::hooks::use_params_map;
+use leptos_router::{components::A, hooks::use_params_map};
 use uuid::Uuid;
 
 use crate::{
@@ -68,7 +68,7 @@ pub fn CharacterSheet() -> impl IntoView {
             view! {
                 <div class="not-found">
                     <h1>"Character not found"</h1>
-                    <a href="/">"Back to character list"</a>
+                    <A href="/">"Back to character list"</A>
                 </div>
             }
             .into_any()

@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_router::components::A;
 use strum::IntoEnumIterator;
 
 use crate::model::{Alignment, Character, ClassLevel};
@@ -165,7 +166,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 </button>
             </div>
 
-            <a href="/" class="back-link">"< Back to Characters"</a>
+            <A href="/" attr:class="back-link">"< Back to Characters"</A>
         </div>
     }
 }
