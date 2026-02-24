@@ -694,8 +694,8 @@ body {
 }
 
 .spell-slots-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: var(--size-1);
   margin-bottom: var(--size-2);
 }
