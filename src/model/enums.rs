@@ -144,6 +144,32 @@ impl ProficiencyLevel {
     }
 }
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    Display
+)]
+pub enum Proficiency {
+    #[strum(serialize = "Light Armor")]
+    LightArmor,
+    #[strum(serialize = "Medium Armor")]
+    MediumArmor,
+    #[strum(serialize = "Heavy Armor")]
+    HeavyArmor,
+    Shields,
+    #[strum(serialize = "Simple Weapons")]
+    SimpleWeapons,
+    #[strum(serialize = "Martial Weapons")]
+    MartialWeapons,
+}
+
 #[allow(dead_code)]
 #[derive(
     Debug,

@@ -62,7 +62,9 @@ pub struct Character {
     pub features: Vec<Feature>,
     pub equipment: Equipment,
     pub spellcasting: Option<SpellcastingData>,
-    pub proficiencies_and_languages: String,
+    pub proficiencies: HashMap<Proficiency, bool>,
+    pub languages: Vec<String>,
+    pub racial_traits: Vec<String>,
     pub notes: String,
 }
 
@@ -165,7 +167,9 @@ impl Default for Character {
             features: Vec::new(),
             equipment: Equipment::default(),
             spellcasting: None,
-            proficiencies_and_languages: String::new(),
+            proficiencies: Proficiency::iter().map(|p| (p, false)).collect(),
+            languages: Vec::new(),
+            racial_traits: Vec::new(),
             notes: String::new(),
         }
     }

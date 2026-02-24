@@ -521,7 +521,7 @@ body {
   }
 }
 
-.notes-textarea, .proficiencies-textarea {
+.notes-textarea {
   width: 100%;
   min-height: 120px;
   padding: var(--size-2);
@@ -533,6 +533,39 @@ body {
   font-size: var(--font-size-1);
   resize: vertical;
   box-sizing: border-box;
+}
+
+/* --------------------- Proficiencies Panel ------------------- */
+.proficiencies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--size-1);
+}
+
+.prof-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  padding: var(--size-1) 0;
+  font-size: var(--font-size-1);
+}
+
+.string-list-entry {
+  display: flex;
+  gap: var(--size-1);
+  margin-bottom: var(--size-1);
+  align-items: center;
+
+  input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: var(--size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+  }
 }
 
 /* --------------------- Features Panel ------------------------ */
