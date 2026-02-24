@@ -4,7 +4,7 @@ use crate::model::Character;
 
 #[component]
 pub fn NotesPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let notes = Memo::new(move |_| char_signal.get().notes.clone());
 

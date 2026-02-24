@@ -5,7 +5,7 @@ use crate::model::{Ability, Character};
 
 #[component]
 pub fn SavingThrowsPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     view! {
         <div class="panel saving-throws-panel">

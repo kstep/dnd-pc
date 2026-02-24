@@ -4,7 +4,7 @@ use crate::model::{Character, Feature};
 
 #[component]
 pub fn FeaturesPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let features = Memo::new(move |_| char_signal.get().features.clone());
 

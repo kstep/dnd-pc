@@ -4,7 +4,7 @@ use crate::model::{Character, ProficiencyLevel, Skill};
 
 #[component]
 pub fn SkillRow(skill: Skill) -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let prof_level = Memo::new(move |_| {
         char_signal

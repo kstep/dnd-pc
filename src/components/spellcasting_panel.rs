@@ -5,7 +5,7 @@ use crate::model::{Ability, Character, Spell, SpellcastingData};
 
 #[component]
 pub fn SpellcastingPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let has_spellcasting = Memo::new(move |_| char_signal.get().spellcasting.is_some());
     let casting_ability = Memo::new(move |_| {

@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 
-use crate::model::Character;
+use crate::{components::dice_input::DiceInput, model::Character};
 
 #[component]
 pub fn CombatPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let ac = Memo::new(move |_| char_signal.get().combat.armor_class);
     let initiative = Memo::new(move |_| char_signal.get().initiative());
@@ -12,9 +12,8 @@ pub fn CombatPanel() -> impl IntoView {
     let hp_max = Memo::new(move |_| char_signal.get().combat.hp_max);
     let hp_current = Memo::new(move |_| char_signal.get().combat.hp_current);
     let hp_temp = Memo::new(move |_| char_signal.get().combat.hp_temp);
-    let hit_dice_total = Memo::new(move |_| char_signal.get().combat.hit_dice_total.clone());
-    let hit_dice_remaining =
-        Memo::new(move |_| char_signal.get().combat.hit_dice_remaining.clone());
+    let hit_dice_total = Memo::new(move |_| char_signal.get().combat.hit_dice_total);
+    let hit_dice_remaining = Memo::new(move |_| char_signal.get().combat.hit_dice_remaining);
     let death_successes = Memo::new(move |_| char_signal.get().combat.death_save_successes);
     let death_failures = Memo::new(move |_| char_signal.get().combat.death_save_failures);
 
@@ -103,24 +102,18 @@ pub fn CombatPanel() -> impl IntoView {
             </div>
 
             <div class="hit-dice-section">
-                <div class="combat-stat">
+                <div class="dice-field">
                     <label>"Hit Dice Total"</label>
-                    <input
-                        type="text"
-                        prop:value=hit_dice_total
-                        on:input=move |e| {
-                            char_signal.update(|c| c.combat.hit_dice_total = event_target_value(&e));
-                        }
+                    <DiceInput
+                        value=hit_dice_total
+                        on_change=move |d| char_signal.update(|c| c.combat.hit_dice_total = d)
                     />
                 </div>
-                <div class="combat-stat">
+                <div class="dice-field">
                     <label>"Hit Dice Remaining"</label>
-                    <input
-                        type="text"
-                        prop:value=hit_dice_remaining
-                        on:input=move |e| {
-                            char_signal.update(|c| c.combat.hit_dice_remaining = event_target_value(&e));
-                        }
+                    <DiceInput
+                        value=hit_dice_remaining
+                        on_change=move |d| char_signal.update(|c| c.combat.hit_dice_remaining = d)
                     />
                 </div>
             </div>

@@ -4,7 +4,7 @@ use crate::model::Character;
 
 #[component]
 pub fn PersonalityPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let traits = Memo::new(move |_| char_signal.get().personality.personality_traits.clone());
     let ideals = Memo::new(move |_| char_signal.get().personality.ideals.clone());

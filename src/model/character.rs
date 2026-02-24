@@ -1,9 +1,37 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Dice {
+    pub count: u16,
+    pub sides: u16,
+    pub modifier: i16,
+}
+
+impl Default for Dice {
+    fn default() -> Self {
+        Dice {
+            count: 1,
+            sides: 10,
+            modifier: 0,
+        }
+    }
+}
+
+impl fmt::Display for Dice {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}d{}", self.count, self.sides)?;
+        match self.modifier.cmp(&0) {
+            std::cmp::Ordering::Greater => write!(f, "+{}", self.modifier),
+            std::cmp::Ordering::Less => write!(f, "{}", self.modifier),
+            std::cmp::Ordering::Equal => Ok(()),
+        }
+    }
+}
 
 // --- Character Index (for list page) ---
 
@@ -205,8 +233,8 @@ pub struct CombatStats {
     pub hp_max: i32,
     pub hp_current: i32,
     pub hp_temp: i32,
-    pub hit_dice_total: String,
-    pub hit_dice_remaining: String,
+    pub hit_dice_total: Dice,
+    pub hit_dice_remaining: Dice,
     pub death_save_successes: u8,
     pub death_save_failures: u8,
     pub initiative_misc_bonus: i32,
@@ -220,8 +248,8 @@ impl Default for CombatStats {
             hp_max: 10,
             hp_current: 10,
             hp_temp: 0,
-            hit_dice_total: "1d10".to_string(),
-            hit_dice_remaining: "1d10".to_string(),
+            hit_dice_total: Dice::default(),
+            hit_dice_remaining: Dice::default(),
             death_save_successes: 0,
             death_save_failures: 0,
             initiative_misc_bonus: 0,

@@ -361,6 +361,53 @@ body {
   }
 }
 
+.dice-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  flex: 1;
+
+  label {
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+}
+
+.dice-input {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  input {
+    text-align: center;
+    padding: var(--size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+  }
+
+  .dice-count {
+    width: 44px;
+  }
+
+  .dice-sides {
+    width: 44px;
+  }
+
+  .dice-modifier {
+    width: 50px;
+  }
+
+  .dice-d, .dice-plus {
+    font-weight: var(--font-weight-7);
+    font-size: var(--font-size-2);
+    color: var(--text-secondary);
+  }
+}
+
 .death-saves {
   h4 {
     margin: var(--size-2) 0 var(--size-1) 0;

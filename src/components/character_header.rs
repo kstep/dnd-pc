@@ -5,7 +5,7 @@ use crate::model::{Alignment, Character};
 
 #[component]
 pub fn CharacterHeader() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let name = Memo::new(move |_| char_signal.get().identity.name.clone());
     let class = Memo::new(move |_| char_signal.get().identity.class.clone());

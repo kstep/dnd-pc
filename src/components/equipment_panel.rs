@@ -4,7 +4,7 @@ use crate::model::{Character, Item, Weapon};
 
 #[component]
 pub fn EquipmentPanel() -> impl IntoView {
-    let char_signal = use_context::<RwSignal<Character>>().expect("Character context");
+    let char_signal = expect_context::<RwSignal<Character>>();
 
     let weapons = Memo::new(move |_| char_signal.get().equipment.weapons.clone());
     let items = Memo::new(move |_| char_signal.get().equipment.items.clone());
