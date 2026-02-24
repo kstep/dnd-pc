@@ -303,6 +303,24 @@ body {
   color: var(--text-secondary);
 }
 
+.skill-group {
+  margin-bottom: var(--size-2);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.skill-group-header {
+  font-size: var(--font-size-0);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--panel-header);
+  margin: var(--size-2) 0 0 0;
+  padding: 0 0 var(--size-1) 0;
+  border-bottom: 1px solid var(--panel-header);
+}
+
 /* --------------------- Combat Panel -------------------------- */
 .combat-top-row, .hp-row, .hit-dice-section {
   display: flex;
@@ -579,8 +597,8 @@ body {
 }
 
 .spell-slots-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
 }
@@ -619,6 +637,7 @@ body {
 
   input[type="text"] {
     flex: 1;
+    min-width: 0;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
