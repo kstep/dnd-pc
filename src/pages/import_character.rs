@@ -19,10 +19,7 @@ pub fn ImportCharacter() -> impl IntoView {
 
                 let navigate = leptos_router::hooks::use_navigate();
                 request_animation_frame(move || {
-                    navigate(
-                        &format!("{}/c/{id}", crate::BASE_URL),
-                        Default::default(),
-                    );
+                    navigate(&format!("{}/c/{id}", crate::BASE_URL), Default::default());
                 });
 
                 view! { <p>"Importing..."</p> }.into_any()

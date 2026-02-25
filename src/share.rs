@@ -7,6 +7,9 @@ use crate::model::Character;
 pub fn encode_character(character: &Character) -> String {
     let mut character = character.clone();
     character.id = uuid::Uuid::nil();
+    character.combat.death_save_successes = 0;
+    character.combat.death_save_failures = 0;
+    character.combat.hp_temp = 0;
     let bytes = rmp_serde::to_vec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {

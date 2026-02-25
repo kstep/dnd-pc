@@ -8,18 +8,48 @@ pub trait Translatable {
     }
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    EnumIter,
-    Display
-)]
+/// Implements Serialize (as u8) and Deserialize (u8 or legacy string name) for
+/// a `#[repr(u8)]` enum.
+macro_rules! enum_serde_u8 {
+    ($name:ident { $($variant:ident),+ $(,)? }) => {
+        impl Serialize for $name {
+            fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+                s.serialize_u8(*self as u8)
+            }
+        }
+
+        impl<'de> Deserialize<'de> for $name {
+            fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+                struct Vis;
+                impl serde::de::Visitor<'_> for Vis {
+                    type Value = $name;
+
+                    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                        f.write_str(concat!("u8 or string for ", stringify!($name)))
+                    }
+
+                    fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<$name, E> {
+                        $(if v == $name::$variant as u64 {
+                            return Ok($name::$variant);
+                        })+
+                        Err(E::invalid_value(serde::de::Unexpected::Unsigned(v), &self))
+                    }
+
+                    fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<$name, E> {
+                        match v {
+                            $(stringify!($variant) => Ok($name::$variant),)+
+                            _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &self)),
+                        }
+                    }
+                }
+                d.deserialize_any(Vis)
+            }
+        }
+    };
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[repr(u8)]
 pub enum Ability {
     Strength,
     Dexterity,
@@ -28,19 +58,17 @@ pub enum Ability {
     Wisdom,
     Charisma,
 }
+enum_serde_u8!(Ability {
+    Strength,
+    Dexterity,
+    Constitution,
+    Intelligence,
+    Wisdom,
+    Charisma
+});
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    EnumIter,
-    Display
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[repr(u8)]
 pub enum Skill {
     Acrobatics,
     #[strum(serialize = "Animal Handling")]
@@ -63,6 +91,26 @@ pub enum Skill {
     Stealth,
     Survival,
 }
+enum_serde_u8!(Skill {
+    Acrobatics,
+    AnimalHandling,
+    Arcana,
+    Athletics,
+    Deception,
+    History,
+    Insight,
+    Intimidation,
+    Investigation,
+    Medicine,
+    Nature,
+    Perception,
+    Performance,
+    Persuasion,
+    Religion,
+    SleightOfHand,
+    Stealth,
+    Survival,
+});
 
 impl Skill {
     pub fn ability(self) -> Ability {
@@ -86,17 +134,8 @@ impl Skill {
     }
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Serialize,
-    Deserialize,
-    Display,
-    EnumIter
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Display, EnumIter)]
+#[repr(u8)]
 pub enum Alignment {
     #[strum(serialize = "Lawful Good")]
     LawfulGood,
@@ -117,13 +156,30 @@ pub enum Alignment {
     #[strum(serialize = "Chaotic Evil")]
     ChaoticEvil,
 }
+enum_serde_u8!(Alignment {
+    LawfulGood,
+    NeutralGood,
+    ChaoticGood,
+    LawfulNeutral,
+    TrueNeutral,
+    ChaoticNeutral,
+    LawfulEvil,
+    NeutralEvil,
+    ChaoticEvil,
+});
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(u8)]
 pub enum ProficiencyLevel {
     None,
     Proficient,
     Expertise,
 }
+enum_serde_u8!(ProficiencyLevel {
+    None,
+    Proficient,
+    Expertise
+});
 
 impl ProficiencyLevel {
     pub fn multiplier(self) -> i32 {
@@ -151,18 +207,8 @@ impl ProficiencyLevel {
     }
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    EnumIter,
-    Display
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[repr(u8)]
 pub enum Proficiency {
     #[strum(serialize = "Light Armor")]
     LightArmor,
@@ -176,19 +222,18 @@ pub enum Proficiency {
     #[strum(serialize = "Martial Weapons")]
     MartialWeapons,
 }
+enum_serde_u8!(Proficiency {
+    LightArmor,
+    MediumArmor,
+    HeavyArmor,
+    Shields,
+    SimpleWeapons,
+    MartialWeapons,
+});
 
 #[allow(dead_code)]
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Serialize,
-    Deserialize,
-    Display,
-    EnumIter
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Display, EnumIter)]
+#[repr(u8)]
 pub enum DamageType {
     Acid,
     Bludgeoning,
@@ -204,6 +249,21 @@ pub enum DamageType {
     Slashing,
     Thunder,
 }
+enum_serde_u8!(DamageType {
+    Acid,
+    Bludgeoning,
+    Cold,
+    Fire,
+    Force,
+    Lightning,
+    Necrotic,
+    Piercing,
+    Poison,
+    Psychic,
+    Radiant,
+    Slashing,
+    Thunder,
+});
 
 impl Translatable for Ability {
     fn tr_key(&self) -> &'static str {
