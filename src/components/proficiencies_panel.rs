@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -7,7 +5,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Character, CharacterStoreFields, Proficiency, RacialTrait, Translatable},
+    model::{Character, CharacterStoreFields, Proficiency, Translatable},
 };
 
 #[component]
@@ -15,7 +13,6 @@ pub fn ProficienciesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     let languages = store.languages();
-    let racial_traits = store.racial_traits();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
@@ -95,82 +92,6 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 }
             >
                 {move_tr!("btn-add-language")}
-            </button>
-
-            // --- Racial Traits ---
-            <h4>{move_tr!("racial-traits")}</h4>
-            {
-                let rt_expanded = RwSignal::new(HashSet::<usize>::new());
-                view! {
-                    <div class="string-list">
-                        {move || {
-                            racial_traits
-                                .read()
-                                .iter()
-                                .enumerate()
-                                .map(|(i, rt)| {
-                                    let name = rt.name.clone();
-                                    let desc = rt.description.clone();
-                                    let is_open = move || rt_expanded.get().contains(&i);
-                                    let toggle = move |_| {
-                                        rt_expanded.update(|set| {
-                                            if !set.remove(&i) {
-                                                set.insert(i);
-                                            }
-                                        });
-                                    };
-                                    view! {
-                                        <div class="feature-entry">
-                                            <input
-                                                type="text"
-                                                class="feature-name"
-                                                placeholder=move_tr!("trait-name")
-                                                prop:value=name
-                                                on:input=move |e| {
-                                                    racial_traits.write()[i].name = event_target_value(&e);
-                                                }
-                                            />
-                                            <button
-                                                class="btn-toggle-desc"
-                                                on:click=toggle
-                                            >
-                                                {move || if is_open() { "\u{2212}" } else { "+" }}
-                                            </button>
-                                            <button
-                                                class="btn-remove"
-                                                on:click=move |_| {
-                                                    if i < racial_traits.read().len() {
-                                                        racial_traits.write().remove(i);
-                                                    }
-                                                }
-                                            >
-                                                "X"
-                                            </button>
-                                            <Show when=is_open>
-                                                <textarea
-                                                    class="feature-desc"
-                                                    placeholder=move_tr!("description")
-                                                    prop:value=desc.clone()
-                                                    on:input=move |e| {
-                                                        racial_traits.write()[i].description = event_target_value(&e);
-                                                    }
-                                                />
-                                            </Show>
-                                        </div>
-                                    }
-                                })
-                                .collect_view()
-                        }}
-                    </div>
-                }
-            }
-            <button
-                class="btn-add"
-                on:click=move |_| {
-                    racial_traits.write().push(RacialTrait::default());
-                }
-            >
-                {move_tr!("btn-add-racial-trait")}
             </button>
         </Panel>
     }

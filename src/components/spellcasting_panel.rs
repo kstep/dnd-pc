@@ -6,7 +6,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::panel::Panel,
+    components::{panel::Panel, toggle_button::ToggleButton},
     model::{
         Ability, Character, CharacterStoreFields, MetamagicData, MetamagicOption, Spell,
         SpellcastingData, Translatable,
@@ -55,6 +55,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
     };
 
     let i18n = expect_context::<leptos_fluent::I18n>();
+    let slots_expanded = RwSignal::new(false);
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
     let mm_expanded = RwSignal::new(HashSet::<usize>::new());
 
@@ -117,16 +118,24 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     </div>
                 </div>
 
-                <h4>{move_tr!("spell-slots")}</h4>
+                <div class="section-header">
+                    <ToggleButton
+                        expanded=Signal::derive(move || slots_expanded.get())
+                        on_toggle=move || slots_expanded.update(|v| *v = !*v)
+                    />
+                    <h4>{move_tr!("spell-slots")}</h4>
+                </div>
                 <div class="spell-slots-grid">
                     {move || {
                         let slots = store.spellcasting().read()
                             .as_ref()
                             .map(|sc| sc.spell_slots.clone())
                             .unwrap_or_default();
+                        let expanded = slots_expanded.get();
                         slots
                             .into_iter()
                             .enumerate()
+                            .filter(|(_, slot)| expanded || slot.total > 0)
                             .map(|(i, slot)| {
                                 view! {
                                     <div class="spell-slot-entry">
@@ -184,16 +193,13 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 let spell_level = spell.level.to_string();
                                 let spell_prepared = spell.prepared;
                                 let spell_desc = spell.description.clone();
-                                let is_open = move || spells_expanded.get().contains(&i);
-                                let toggle = move |_| {
-                                    spells_expanded.update(|set| {
-                                        if !set.remove(&i) {
-                                            set.insert(i);
-                                        }
-                                    });
-                                };
+                                let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
                                 view! {
                                     <div class="spell-entry">
+                                        <ToggleButton
+                                            expanded=is_open
+                                            on_toggle=move || spells_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                        />
                                         <label class="spell-prepared">
                                             <input
                                                 type="checkbox"
@@ -237,12 +243,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             }
                                         />
                                         <button
-                                            class="btn-toggle-desc"
-                                            on:click=toggle
-                                        >
-                                            {move || if is_open() { "\u{2212}" } else { "+" }}
-                                        </button>
-                                        <button
                                             class="btn-remove"
                                             on:click=move |_| {
                                                 if let Some(sc) = store.spellcasting().write().as_mut()
@@ -254,12 +254,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         >
                                             "X"
                                         </button>
-                                        <Show when=is_open>
+                                        <Show when=move || is_open.get()>
                                             <textarea
                                                 class="spell-desc"
                                                 placeholder=move_tr!("description")
                                                 prop:value=spell_desc.clone()
-                                                on:input=move |e| {
+                                                on:change=move |e| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
                                                         && let Some(s) = sc.spells.get_mut(i)
                                                     {
@@ -360,16 +360,13 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                     let opt_name = opt.name.clone();
                                     let opt_cost = opt.cost.clone();
                                     let opt_desc = opt.description.clone();
-                                    let is_open = move || mm_expanded.get().contains(&i);
-                                    let toggle = move |_| {
-                                        mm_expanded.update(|set| {
-                                            if !set.remove(&i) {
-                                                set.insert(i);
-                                            }
-                                        });
-                                    };
+                                    let is_open = Signal::derive(move || mm_expanded.get().contains(&i));
                                     view! {
                                         <div class="metamagic-entry">
+                                            <ToggleButton
+                                                expanded=is_open
+                                                on_toggle=move || mm_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                            />
                                             <input
                                                 type="text"
                                                 class="metamagic-name"
@@ -399,12 +396,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                 }
                                             />
                                             <button
-                                                class="btn-toggle-desc"
-                                                on:click=toggle
-                                            >
-                                                {move || if is_open() { "\u{2212}" } else { "+" }}
-                                            </button>
-                                            <button
                                                 class="btn-remove"
                                                 on:click=move |_| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
@@ -417,12 +408,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             >
                                                 "X"
                                             </button>
-                                            <Show when=is_open>
+                                            <Show when=move || is_open.get()>
                                                 <textarea
                                                     class="metamagic-desc"
                                                     placeholder=move_tr!("description")
                                                     prop:value=opt_desc.clone()
-                                                    on:input=move |e| {
+                                                    on:change=move |e| {
                                                         if let Some(sc) = store.spellcasting().write().as_mut()
                                                             && let Some(mm) = sc.metamagic.as_mut()
                                                             && let Some(o) = mm.options.get_mut(i)

@@ -685,7 +685,7 @@ body {
 
 .feature-entry {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);
@@ -699,13 +699,13 @@ body {
   }
 
   .feature-name {
-    grid-column: 1;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
     background: var(--input-bg);
     color: var(--text-primary);
     font-weight: var(--font-weight-6);
+    min-width: 0;
   }
 
   .feature-desc {
@@ -738,11 +738,19 @@ body {
 }
 
 .item-entry {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: var(--size-1);
-  margin-bottom: var(--size-1);
+  margin-bottom: var(--size-2);
+  padding-bottom: var(--size-2);
+  border-bottom: 1px solid var(--panel-border);
   align-items: center;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 
   input {
     padding: var(--size-1);
@@ -751,17 +759,23 @@ body {
     background: var(--input-bg);
     color: var(--text-primary);
     font-size: var(--font-size-1);
+    min-width: 0;
+  }
 
-    &[type="text"] {
-      flex: 1;
-      min-width: 0;
-    }
+  .item-desc {
+    @extend .collapsible-desc;
   }
 }
 
 .short-input {
   width: 60px !important;
   flex: 0 0 60px !important;
+  padding: var(--size-1);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: var(--font-size-1);
 }
 
 .currency-row {
@@ -895,7 +909,7 @@ body {
 
 .metamagic-entry {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);
@@ -935,7 +949,7 @@ body {
 
 .spell-entry {
   display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
+  grid-template-columns: auto auto 1fr auto auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);
@@ -960,6 +974,16 @@ body {
 
   .spell-desc {
     @extend .collapsible-desc;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  h4 {
+    margin: 0;
   }
 }
 

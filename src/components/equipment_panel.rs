@@ -1,9 +1,11 @@
+use std::collections::HashSet;
+
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::panel::Panel,
+    components::{panel::Panel, toggle_button::ToggleButton},
     model::{
         Character, CharacterStoreFields, CurrencyStoreFields, EquipmentStoreFields, Item, Weapon,
     },
@@ -95,62 +97,74 @@ pub fn EquipmentPanel() -> impl IntoView {
             </button>
 
             <h4>{move_tr!("items")}</h4>
-            <div class="items-list">
-                {move || {
-                    items
-                        .read()
-                        .iter()
-                        .enumerate()
-                        .map(|(i, item)| {
-                            let name = item.name.clone();
-                            let qty = item.quantity.to_string();
-                            let desc = item.description.clone();
-                            view! {
-                                <div class="item-entry">
-                                    <input
-                                        type="text"
-                                        placeholder=move_tr!("item-name")
-                                        prop:value=name
-                                        on:input=move |e| {
-                                            items.write()[i].name = event_target_value(&e);
-                                        }
-                                    />
-                                    <input
-                                        type="number"
-                                        class="short-input"
-                                        placeholder=move_tr!("qty")
-                                        min="0"
-                                        prop:value=qty
-                                        on:input=move |e| {
-                                            if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                items.write()[i].quantity = v;
-                                            }
-                                        }
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder=move_tr!("description")
-                                        prop:value=desc
-                                        on:input=move |e| {
-                                            items.write()[i].description = event_target_value(&e);
-                                        }
-                                    />
-                                    <button
-                                        class="btn-remove"
-                                        on:click=move |_| {
-                                            if i < items.read().len() {
-                                                items.write().remove(i);
-                                            }
-                                        }
-                                    >
-                                        "X"
-                                    </button>
-                                </div>
-                            }
-                        })
-                        .collect_view()
-                }}
-            </div>
+            {
+                let items_expanded = RwSignal::new(HashSet::<usize>::new());
+                view! {
+                    <div class="items-list">
+                        {move || {
+                            items
+                                .read()
+                                .iter()
+                                .enumerate()
+                                .map(|(i, item)| {
+                                    let name = item.name.clone();
+                                    let qty = item.quantity.to_string();
+                                    let desc = item.description.clone();
+                                    let is_open = Signal::derive(move || items_expanded.get().contains(&i));
+                                    view! {
+                                        <div class="item-entry">
+                                            <ToggleButton
+                                                expanded=is_open
+                                                on_toggle=move || items_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder=move_tr!("item-name")
+                                                prop:value=name
+                                                on:input=move |e| {
+                                                    items.write()[i].name = event_target_value(&e);
+                                                }
+                                            />
+                                            <input
+                                                type="number"
+                                                class="short-input"
+                                                placeholder=move_tr!("qty")
+                                                min="0"
+                                                prop:value=qty
+                                                on:input=move |e| {
+                                                    if let Ok(v) = event_target_value(&e).parse::<u32>() {
+                                                        items.write()[i].quantity = v;
+                                                    }
+                                                }
+                                            />
+                                            <button
+                                                class="btn-remove"
+                                                on:click=move |_| {
+                                                    if i < items.read().len() {
+                                                        items.write().remove(i);
+                                                    }
+                                                }
+                                            >
+                                                "X"
+                                            </button>
+                                            <Show when=move || is_open.get()>
+                                                <textarea
+                                                    class="item-desc"
+                                                    placeholder=move_tr!("description")
+                                                    prop:value=desc.clone()
+                                                    on:change=move |e| {
+                                                        items.write()[i].description = event_target_value(&e);
+                                                    }
+                                                />
+                                            </Show>
+                                        </div>
+                                    }
+                                })
+                                .collect_view()
+                        }}
+                    </div>
+                }
+            }
             <button
                 class="btn-add"
                 on:click=move |_| {

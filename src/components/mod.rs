@@ -13,3 +13,4 @@ pub mod saving_throws_panel;
 pub mod skill_row;
 pub mod skills_panel;
 pub mod spellcasting_panel;
+pub mod toggle_button;
