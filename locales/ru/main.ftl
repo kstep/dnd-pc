@@ -19,8 +19,8 @@ classes = Классы
 class = Класс
 btn-add-class = + Добавить класс
 back-to-characters = < Назад к персонажам
-export-json = Экспорт JSON
-import-json = Импорт JSON
+export-json = Экспорт
+import-json = Импорт
 no-class = Нет класса
 level-prefix = Уровень
 

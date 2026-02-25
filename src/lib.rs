@@ -54,5 +54,5 @@ fn I18nProvider(children: Children) -> impl IntoView {
         initial_language_from_local_storage: true,
         initial_language_from_navigator: true,
         sync_html_tag_lang: true,
-    };
+    }
 }

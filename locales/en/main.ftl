@@ -19,8 +19,8 @@ classes = Classes
 class = Class
 btn-add-class = + Add Class
 back-to-characters = < Back to Characters
-export-json = Export JSON
-import-json = Import JSON
+export-json = Export
+import-json = Import
 no-class = No class
 level-prefix = Level
 
