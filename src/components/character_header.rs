@@ -11,6 +11,7 @@ use crate::{
         Feature, Spell, SpellcastingData, Translatable,
     },
     rules::RulesRegistry,
+    share,
 };
 
 fn export_character(character: &Character) {
@@ -273,6 +274,25 @@ pub fn CharacterHeader() -> impl IntoView {
         import_character(store);
     };
 
+    let on_share = move |_| {
+        let encoded = share::encode_character(&store.get());
+        let origin = leptos::prelude::window()
+            .location()
+            .origin()
+            .unwrap_or_default();
+        let url = format!("{origin}{}/share/{encoded}", crate::BASE_URL);
+
+        let clipboard = leptos::prelude::window().navigator().clipboard();
+        let promise = clipboard.write_text(&url);
+        let alert_msg = tr!("share-copied");
+        wasm_bindgen_futures::spawn_local(async move {
+            let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
+            leptos::prelude::window()
+                .alert_with_message(&alert_msg)
+                .ok();
+        });
+    };
+
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
@@ -487,6 +507,7 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
+                <button class="btn-add" on:click=on_share>{move_tr!("share-link")}</button>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
                 <LanguageSwitcher />

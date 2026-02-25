@@ -22,6 +22,9 @@ btn-apply-level = Apply Lvl { $level }
 back-to-characters = < Back to Characters
 export-json = Export
 import-json = Import
+share-link = Share
+share-copied = Link copied to clipboard!
+share-error = Failed to decode shared character
 no-class = No class
 level-prefix = Level
 

@@ -8,6 +8,7 @@ mod components;
 mod model;
 mod pages;
 pub mod rules;
+mod share;
 mod storage;
 
 pub const BASE_URL: &str = match option_env!("BASE_URL") {
@@ -22,7 +23,10 @@ static_loader! {
     };
 }
 
-use pages::{character_list::CharacterList, character_sheet::CharacterSheet, not_found::NotFound};
+use pages::{
+    character_list::CharacterList, character_sheet::CharacterSheet,
+    import_character::ImportCharacter, not_found::NotFound,
+};
 use rules::RulesRegistry;
 
 #[component]
@@ -40,6 +44,7 @@ pub fn App() -> impl IntoView {
                 <Routes fallback=|| view! { <NotFound /> }>
                     <Route path=path!("/") view=CharacterList />
                     <Route path=path!("/character/:id") view=CharacterSheet />
+                    <Route path=path!("/share/:data") view=ImportCharacter />
                 </Routes>
             </Router>
         </I18nProvider>

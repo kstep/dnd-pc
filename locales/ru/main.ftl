@@ -22,6 +22,9 @@ btn-apply-level = Ур. { $level }
 back-to-characters = < Назад к персонажам
 export-json = Экспорт
 import-json = Импорт
+share-link = Поделиться
+share-copied = Ссылка скопирована в буфер обмена!
+share-error = Не удалось декодировать персонажа
 no-class = Нет класса
 level-prefix = Уровень
 

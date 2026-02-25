@@ -22,10 +22,13 @@ fluent-templates = "0.13"
 strum = { version = "0.26", features = ["derive"] }
 uuid = { version = "1", features = ["v4", "js", "serde"] }
 wasm-bindgen-futures = "0.4"
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+base64 = "0.22"
 web-sys = { version = "0.3", features = [
     "ServiceWorkerContainer", "Navigator", "Window",
     "Blob", "Url", "HtmlAnchorElement", "HtmlInputElement",
     "FileReader", "File", "FileList", "BlobPropertyBag",
+    "Location", "Clipboard",
 ] }
 
 [dev-dependencies]
