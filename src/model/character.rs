@@ -274,7 +274,6 @@ impl Default for CombatStats {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Personality {
-    #[serde(default)]
     pub history: String,
     pub personality_traits: String,
     pub ideals: String,
