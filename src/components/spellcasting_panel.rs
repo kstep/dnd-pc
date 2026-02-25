@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use leptos::prelude::*;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -50,6 +52,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
             }
         }
     };
+
+    let spells_expanded = RwSignal::new(HashSet::<usize>::new());
+    let mm_expanded = RwSignal::new(HashSet::<usize>::new());
 
     view! {
         <Panel title="Spellcasting" class="spellcasting-panel">
@@ -176,7 +181,14 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 let spell_level = spell.level.to_string();
                                 let spell_prepared = spell.prepared;
                                 let spell_desc = spell.description.clone();
-                                let show_desc = RwSignal::new(false);
+                                let is_open = move || spells_expanded.get().contains(&i);
+                                let toggle = move |_| {
+                                    spells_expanded.update(|set| {
+                                        if !set.remove(&i) {
+                                            set.insert(i);
+                                        }
+                                    });
+                                };
                                 view! {
                                     <div class="spell-entry">
                                         <label class="spell-prepared">
@@ -223,9 +235,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         />
                                         <button
                                             class="btn-toggle-desc"
-                                            on:click=move |_| show_desc.update(|v| *v = !*v)
+                                            on:click=toggle
                                         >
-                                            {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                            {move || if is_open() { "\u{2212}" } else { "+" }}
                                         </button>
                                         <button
                                             class="btn-remove"
@@ -239,7 +251,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         >
                                             "X"
                                         </button>
-                                        <Show when=move || show_desc.get()>
+                                        <Show when=is_open>
                                             <textarea
                                                 class="spell-desc"
                                                 placeholder="Description"
@@ -345,7 +357,14 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                     let opt_name = opt.name.clone();
                                     let opt_cost = opt.cost.clone();
                                     let opt_desc = opt.description.clone();
-                                    let show_desc = RwSignal::new(false);
+                                    let is_open = move || mm_expanded.get().contains(&i);
+                                    let toggle = move |_| {
+                                        mm_expanded.update(|set| {
+                                            if !set.remove(&i) {
+                                                set.insert(i);
+                                            }
+                                        });
+                                    };
                                     view! {
                                         <div class="metamagic-entry">
                                             <input
@@ -378,9 +397,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             />
                                             <button
                                                 class="btn-toggle-desc"
-                                                on:click=move |_| show_desc.update(|v| *v = !*v)
+                                                on:click=toggle
                                             >
-                                                {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                                {move || if is_open() { "\u{2212}" } else { "+" }}
                                             </button>
                                             <button
                                                 class="btn-remove"
@@ -395,7 +414,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             >
                                                 "X"
                                             </button>
-                                            <Show when=move || show_desc.get()>
+                                            <Show when=is_open>
                                                 <textarea
                                                     class="metamagic-desc"
                                                     placeholder="Description"

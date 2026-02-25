@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use leptos::prelude::*;
 use reactive_stores::Store;
 
@@ -11,6 +13,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     let features = store.features();
+    let expanded = RwSignal::new(HashSet::<usize>::new());
 
     let add_feature = move |_| {
         features.write().push(Feature::default());
@@ -27,7 +30,14 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.name.clone();
                             let desc = feature.description.clone();
-                            let show_desc = RwSignal::new(false);
+                            let is_open = move || expanded.get().contains(&i);
+                            let toggle = move |_| {
+                                expanded.update(|set| {
+                                    if !set.remove(&i) {
+                                        set.insert(i);
+                                    }
+                                });
+                            };
                             view! {
                                 <div class="feature-entry">
                                     <input
@@ -41,9 +51,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     />
                                     <button
                                         class="btn-toggle-desc"
-                                        on:click=move |_| show_desc.update(|v| *v = !*v)
+                                        on:click=toggle
                                     >
-                                        {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                        {move || if is_open() { "\u{2212}" } else { "+" }}
                                     </button>
                                     <button
                                         class="btn-remove"
@@ -55,7 +65,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     >
                                         "X"
                                     </button>
-                                    <Show when=move || show_desc.get()>
+                                    <Show when=is_open>
                                         <textarea
                                             class="feature-desc"
                                             placeholder="Description"
