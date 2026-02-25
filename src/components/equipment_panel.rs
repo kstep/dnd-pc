@@ -23,7 +23,17 @@ pub fn EquipmentPanel() -> impl IntoView {
     view! {
         <Panel title=move_tr!("panel-equipment") class="equipment-panel">
 
-            <h4>{move_tr!("weapons")}</h4>
+            <div class="section-header">
+                <h4>{move_tr!("weapons")}</h4>
+                <button
+                    class="btn-toggle-desc"
+                    on:click=move |_| {
+                        weapons.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                    }
+                >
+                    "\u{21C5}"
+                </button>
+            </div>
             <div class="weapons-list">
                 {move || {
                     weapons
@@ -96,7 +106,17 @@ pub fn EquipmentPanel() -> impl IntoView {
                 {move_tr!("btn-add-weapon")}
             </button>
 
-            <h4>{move_tr!("items")}</h4>
+            <div class="section-header">
+                <h4>{move_tr!("items")}</h4>
+                <button
+                    class="btn-toggle-desc"
+                    on:click=move |_| {
+                        items.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                    }
+                >
+                    "\u{21C5}"
+                </button>
+            </div>
             {
                 let items_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {

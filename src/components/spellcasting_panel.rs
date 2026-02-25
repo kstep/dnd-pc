@@ -204,7 +204,23 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     }}
                 </div>
 
-                <h4>{move_tr!("spells")}</h4>
+                <div class="section-header">
+                    <h4>{move_tr!("spells")}</h4>
+                    <button
+                        class="btn-toggle-desc"
+                        on:click=move |_| {
+                            if let Some(sc) = store.spellcasting().write().as_mut() {
+                                sc.spells.sort_by(|a, b| {
+                                    a.level.cmp(&b.level).then_with(|| {
+                                        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+                                    })
+                                });
+                            }
+                        }
+                    >
+                        "\u{21C5}"
+                    </button>
+                </div>
                 <div class="spells-list">
                     {move || {
                         let spell_list = store.spellcasting().read()
