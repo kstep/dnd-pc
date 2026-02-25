@@ -176,8 +176,18 @@ pub fn EquipmentPanel() -> impl IntoView {
 
             <h4>{move_tr!("currency")}</h4>
             <div class="currency-row">
+                // CP: only > (break 1 SP into 10 CP)
                 <div class="currency-field">
-                    <label>"CP"</label>
+                    <div class="currency-label">
+                        <span class="btn-convert-placeholder" />
+                        <label>"CP"</label>
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.sp().get() >= 1 {
+                                currency.sp().update(|v| *v -= 1);
+                                currency.cp().update(|v| *v += 10);
+                            }
+                        }>">"</button>
+                    </div>
                     <input
                         type="number"
                         min="0"
@@ -189,8 +199,23 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
+                // SP: < (break 1 SP into 10 CP), > (break 1 EP into 5 SP)
                 <div class="currency-field">
-                    <label>"SP"</label>
+                    <div class="currency-label">
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.sp().get() >= 1 {
+                                currency.sp().update(|v| *v -= 1);
+                                currency.cp().update(|v| *v += 10);
+                            }
+                        }>"<"</button>
+                        <label>"SP"</label>
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.ep().get() >= 1 {
+                                currency.ep().update(|v| *v -= 1);
+                                currency.sp().update(|v| *v += 5);
+                            }
+                        }>">"</button>
+                    </div>
                     <input
                         type="number"
                         min="0"
@@ -202,8 +227,23 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
+                // EP: < (break 1 EP into 5 SP), > (break 1 GP into 5 EP)
                 <div class="currency-field">
-                    <label>"EP"</label>
+                    <div class="currency-label">
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.ep().get() >= 1 {
+                                currency.ep().update(|v| *v -= 1);
+                                currency.sp().update(|v| *v += 5);
+                            }
+                        }>"<"</button>
+                        <label>"EP"</label>
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.gp().get() >= 1 {
+                                currency.gp().update(|v| *v -= 1);
+                                currency.ep().update(|v| *v += 5);
+                            }
+                        }>">"</button>
+                    </div>
                     <input
                         type="number"
                         min="0"
@@ -215,8 +255,23 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
+                // GP: < (break 1 GP into 5 EP), > (break 1 PP into 10 GP)
                 <div class="currency-field">
-                    <label>"GP"</label>
+                    <div class="currency-label">
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.gp().get() >= 1 {
+                                currency.gp().update(|v| *v -= 1);
+                                currency.ep().update(|v| *v += 5);
+                            }
+                        }>"<"</button>
+                        <label>"GP"</label>
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.pp().get() >= 1 {
+                                currency.pp().update(|v| *v -= 1);
+                                currency.gp().update(|v| *v += 10);
+                            }
+                        }>">"</button>
+                    </div>
                     <input
                         type="number"
                         min="0"
@@ -228,8 +283,18 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
+                // PP: only < (break 1 PP into 10 GP)
                 <div class="currency-field">
-                    <label>"PP"</label>
+                    <div class="currency-label">
+                        <button class="btn-convert" on:click=move |_| {
+                            if currency.pp().get() >= 1 {
+                                currency.pp().update(|v| *v -= 1);
+                                currency.gp().update(|v| *v += 10);
+                            }
+                        }>"<"</button>
+                        <label>"PP"</label>
+                        <span class="btn-convert-placeholder" />
+                    </div>
                     <input
                         type="number"
                         min="0"

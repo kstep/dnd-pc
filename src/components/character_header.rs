@@ -306,7 +306,7 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
-                <A href=format!("{}/", crate::BASE_URL) attr:class="back-link">{move_tr!("back-to-characters")}</A>
+                <A href="/" attr:class="back-link">{move_tr!("back-to-characters")}</A>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
                 <LanguageSwitcher />

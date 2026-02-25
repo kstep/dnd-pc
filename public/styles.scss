@@ -792,6 +792,12 @@ body {
   flex: 1;
   min-width: 50px;
 
+  .currency-label {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
   label {
     font-size: var(--font-size-0);
     color: var(--text-secondary);
@@ -808,6 +814,36 @@ body {
     color: var(--text-primary);
     font-size: var(--font-size-1);
   }
+}
+
+.btn-convert,
+.btn-convert-placeholder {
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  line-height: 1;
+  padding: 0;
+  border-radius: var(--radius-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-convert {
+  background: none;
+  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--panel-border);
+    color: var(--text-primary);
+  }
+}
+
+.btn-convert-placeholder {
+  border: none;
+  background: none;
 }
 
 /* --------------------- Spellcasting Panel -------------------- */
