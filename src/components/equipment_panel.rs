@@ -182,7 +182,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         <span class="btn-convert-placeholder" />
                         <label>"CP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.sp().get() >= 1 {
+                            if currency.sp().get_untracked() >= 1 {
                                 currency.sp().update(|v| *v -= 1);
                                 currency.cp().update(|v| *v += 10);
                             }
@@ -203,14 +203,14 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.sp().get() >= 1 {
+                            if currency.sp().get_untracked() >= 1 {
                                 currency.sp().update(|v| *v -= 1);
                                 currency.cp().update(|v| *v += 10);
                             }
                         }>"<"</button>
                         <label>"SP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.ep().get() >= 1 {
+                            if currency.ep().get_untracked() >= 1 {
                                 currency.ep().update(|v| *v -= 1);
                                 currency.sp().update(|v| *v += 5);
                             }
@@ -231,14 +231,14 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.ep().get() >= 1 {
+                            if currency.ep().get_untracked() >= 1 {
                                 currency.ep().update(|v| *v -= 1);
                                 currency.sp().update(|v| *v += 5);
                             }
                         }>"<"</button>
                         <label>"EP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.gp().get() >= 1 {
+                            if currency.gp().get_untracked() >= 1 {
                                 currency.gp().update(|v| *v -= 1);
                                 currency.ep().update(|v| *v += 5);
                             }
@@ -259,14 +259,14 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.gp().get() >= 1 {
+                            if currency.gp().get_untracked() >= 1 {
                                 currency.gp().update(|v| *v -= 1);
                                 currency.ep().update(|v| *v += 5);
                             }
                         }>"<"</button>
                         <label>"GP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.pp().get() >= 1 {
+                            if currency.pp().get_untracked() >= 1 {
                                 currency.pp().update(|v| *v -= 1);
                                 currency.gp().update(|v| *v += 10);
                             }
@@ -287,7 +287,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.pp().get() >= 1 {
+                            if currency.pp().get_untracked() >= 1 {
                                 currency.pp().update(|v| *v -= 1);
                                 currency.gp().update(|v| *v += 10);
                             }
