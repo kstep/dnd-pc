@@ -79,6 +79,7 @@ currency = Валюта
 ## Особенности / Личность / Владения
 feature-name = Название особенности
 btn-add-feature = + Добавить особенность
+history = Предыстория
 personality-traits = Черты характера
 ideals = Идеалы
 bonds = Привязанности

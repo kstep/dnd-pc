@@ -16,6 +16,15 @@ pub fn PersonalityPanel() -> impl IntoView {
     view! {
         <Panel title=move_tr!("panel-personality") class="personality-panel">
             <div class="textarea-field">
+                <label>{move_tr!("history")}</label>
+                <textarea
+                    prop:value=move || personality.history().get()
+                    on:input=move |e| {
+                        personality.history().set(event_target_value(&e));
+                    }
+                />
+            </div>
+            <div class="textarea-field">
                 <label>{move_tr!("personality-traits")}</label>
                 <textarea
                     prop:value=move || personality.personality_traits().get()

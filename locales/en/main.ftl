@@ -79,6 +79,7 @@ currency = Currency
 ## Features / Personality / Proficiencies
 feature-name = Feature name
 btn-add-feature = + Add Feature
+history = History
 personality-traits = Personality Traits
 ideals = Ideals
 bonds = Bonds
