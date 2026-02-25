@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use leptos_router::hooks::use_navigate;
 
 use crate::{components::character_card::CharacterCard, model::Character, storage};
@@ -26,9 +27,9 @@ pub fn CharacterList() -> impl IntoView {
 
     view! {
         <div class="character-list-page">
-            <h1>"D&D 5e Characters"</h1>
+            <h1>{move_tr!("page-characters")}</h1>
             <button class="btn-create" on:click=create_character>
-                "+ New Character"
+                {move_tr!("btn-new-character")}
             </button>
             <div class="character-list">
                 <For

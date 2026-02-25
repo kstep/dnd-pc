@@ -7,7 +7,7 @@ fn panel_key(class: &str) -> String {
 
 #[component]
 pub fn Panel(
-    #[prop(into)] title: String,
+    #[prop(into)] title: Signal<String>,
     #[prop(into)] class: String,
     children: Children,
 ) -> impl IntoView {

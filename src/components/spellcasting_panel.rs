@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
@@ -8,7 +9,7 @@ use crate::{
     components::panel::Panel,
     model::{
         Ability, Character, CharacterStoreFields, MetamagicData, MetamagicOption, Spell,
-        SpellcastingData,
+        SpellcastingData, Translatable,
     },
 };
 
@@ -53,24 +54,25 @@ pub fn SpellcastingPanel() -> impl IntoView {
         }
     };
 
+    let i18n = expect_context::<leptos_fluent::I18n>();
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
     let mm_expanded = RwSignal::new(HashSet::<usize>::new());
 
     view! {
-        <Panel title="Spellcasting" class="spellcasting-panel">
+        <Panel title=move_tr!("panel-spellcasting") class="spellcasting-panel">
             <label class="toggle-row">
                 <input
                     type="checkbox"
                     prop:checked=move || has_spellcasting.get()
                     on:change=toggle_spellcasting
                 />
-                " Enable Spellcasting"
+                " " {move_tr!("enable-spellcasting")}
             </label>
 
             <Show when=move || has_spellcasting.get()>
                 <div class="spell-header">
                     <div class="spell-stat">
-                        <label>"Casting Ability"</label>
+                        <label>{move_tr!("casting-ability")}</label>
                         <select
                             on:change=move |e| {
                                 let val = event_target_value(&e);
@@ -83,9 +85,10 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         >
                             {Ability::iter()
                                 .map(|a| {
-                                    let label = a.to_string();
+                                    let tr_key = a.tr_key();
                                     let val = format!("{a:?}");
                                     let selected = move || casting_ability.get() == Some(a);
+                                    let label = Signal::derive(move || i18n.tr(tr_key));
                                     view! {
                                         <option value=val selected=selected>
                                             {label}
@@ -96,13 +99,13 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         </select>
                     </div>
                     <div class="spell-stat">
-                        <label>"Spell Save DC"</label>
+                        <label>{move_tr!("spell-save-dc")}</label>
                         <span class="computed-value">
                             {move || spell_save_dc.get().map(|v| v.to_string()).unwrap_or_default()}
                         </span>
                     </div>
                     <div class="spell-stat">
-                        <label>"Spell Attack"</label>
+                        <label>{move_tr!("spell-attack")}</label>
                         <span class="computed-value">
                             {move || {
                                 spell_attack
@@ -114,7 +117,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     </div>
                 </div>
 
-                <h4>"Spell Slots"</h4>
+                <h4>{move_tr!("spell-slots")}</h4>
                 <div class="spell-slots-grid">
                     {move || {
                         let slots = store.spellcasting().read()
@@ -132,7 +135,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             type="number"
                                             class="short-input"
                                             min="0"
-                                            placeholder="Used"
+                                            placeholder=move_tr!("used")
                                             prop:value=slot.used.to_string()
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>()
@@ -148,7 +151,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             type="number"
                                             class="short-input"
                                             min="0"
-                                            placeholder="Total"
+                                            placeholder=move_tr!("total")
                                             prop:value=slot.total.to_string()
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>()
@@ -166,7 +169,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     }}
                 </div>
 
-                <h4>"Spells"</h4>
+                <h4>{move_tr!("spells")}</h4>
                 <div class="spells-list">
                     {move || {
                         let spell_list = store.spellcasting().read()
@@ -207,7 +210,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         <input
                                             type="text"
                                             class="spell-name"
-                                            placeholder="Spell name"
+                                            placeholder=move_tr!("spell-name")
                                             prop:value=spell_name
                                             on:input=move |e| {
                                                 if let Some(sc) = store.spellcasting().write().as_mut()
@@ -254,7 +257,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         <Show when=is_open>
                                             <textarea
                                                 class="spell-desc"
-                                                placeholder="Description"
+                                                placeholder=move_tr!("description")
                                                 prop:value=spell_desc.clone()
                                                 on:input=move |e| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
@@ -279,7 +282,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         }
                     }
                 >
-                    "+ Add Spell"
+                    {move_tr!("btn-add-spell")}
                 </button>
 
                 <hr class="section-divider" />
@@ -290,18 +293,18 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         prop:checked=move || has_metamagic.get()
                         on:change=toggle_metamagic
                     />
-                    " Enable Metamagic"
+                    " " {move_tr!("enable-metamagic")}
                 </label>
 
                 <Show when=move || has_metamagic.get()>
-                    <h4>"Sorcery Points"</h4>
+                    <h4>{move_tr!("sorcery-points")}</h4>
                     <div class="sorcery-points">
-                        <span class="slot-level">"Used"</span>
+                        <span class="slot-level">{move_tr!("used")}</span>
                         <input
                             type="number"
                             class="short-input"
                             min="0"
-                            placeholder="Used"
+                            placeholder=move_tr!("used")
                             prop:value=move || {
                                 store.spellcasting().read()
                                     .as_ref()
@@ -323,7 +326,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                             type="number"
                             class="short-input"
                             min="0"
-                            placeholder="Max"
+                            placeholder=move_tr!("max")
                             prop:value=move || {
                                 store.spellcasting().read()
                                     .as_ref()
@@ -342,7 +345,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         />
                     </div>
 
-                    <h4>"Metamagic"</h4>
+                    <h4>{move_tr!("metamagic")}</h4>
                     <div class="metamagic-list">
                         {move || {
                             let options = store.spellcasting().read()
@@ -370,7 +373,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             <input
                                                 type="text"
                                                 class="metamagic-name"
-                                                placeholder="Name"
+                                                placeholder=move_tr!("name")
                                                 prop:value=opt_name
                                                 on:input=move |e| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
@@ -384,7 +387,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             <input
                                                 type="text"
                                                 class="metamagic-cost"
-                                                placeholder="Cost"
+                                                placeholder=move_tr!("cost")
                                                 prop:value=opt_cost
                                                 on:input=move |e| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
@@ -417,7 +420,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             <Show when=is_open>
                                                 <textarea
                                                     class="metamagic-desc"
-                                                    placeholder="Description"
+                                                    placeholder=move_tr!("description")
                                                     prop:value=opt_desc.clone()
                                                     on:input=move |e| {
                                                         if let Some(sc) = store.spellcasting().write().as_mut()
@@ -445,7 +448,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                             }
                         }
                     >
-                        "+ Add Metamagic"
+                        {move_tr!("btn-add-metamagic")}
                     </button>
                 </Show>
             </Show>

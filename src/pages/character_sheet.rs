@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use leptos_router::{components::A, hooks::use_params_map};
 use reactive_stores::Store;
 use uuid::Uuid;
@@ -68,8 +69,8 @@ pub fn CharacterSheet() -> impl IntoView {
         } else {
             view! {
                 <div class="not-found">
-                    <h1>"Character not found"</h1>
-                    <A href=format!("{}/", crate::BASE_URL)>"Back to character list"</A>
+                    <h1>{move_tr!("character-not-found")}</h1>
+                    <A href=format!("{}/", crate::BASE_URL)>{move_tr!("back-to-list")}</A>
                 </div>
             }
             .into_any()

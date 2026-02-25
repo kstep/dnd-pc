@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use leptos_router::components::A;
 use uuid::Uuid;
 
@@ -11,18 +12,20 @@ pub fn CharacterCard(
 ) -> impl IntoView {
     let id = summary.id;
     let href = format!("{}/character/{id}", crate::BASE_URL);
-    let display_class = if summary.class.is_empty() {
-        "No class".to_string()
-    } else {
-        summary.class.clone()
-    };
+    let class_empty = summary.class.is_empty();
+    let class_str = summary.class.clone();
 
     view! {
         <div class="character-card">
             <A href=href attr:class="card-link">
                 <h3>{summary.name.clone()}</h3>
                 <p class="card-subtitle">
-                    "Level " {summary.level} " " {display_class}
+                    {move_tr!("level-prefix")} " " {summary.level} " "
+                    {if class_empty {
+                        view! { <span>{move_tr!("no-class")}</span> }.into_any()
+                    } else {
+                        view! { <span>{class_str.clone()}</span> }.into_any()
+                    }}
                 </p>
             </A>
             <button
@@ -33,7 +36,7 @@ pub fn CharacterCard(
                     on_delete(id);
                 }
             >
-                "Delete"
+                {move_tr!("btn-delete")}
             </button>
         </div>
     }

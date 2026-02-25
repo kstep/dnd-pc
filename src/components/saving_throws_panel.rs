@@ -1,18 +1,21 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Ability, Character, CharacterStoreFields},
+    model::{Ability, Character, CharacterStoreFields, Translatable},
 };
 
 #[component]
 pub fn SavingThrowsPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
+    let i18n = expect_context::<leptos_fluent::I18n>();
+
     view! {
-        <Panel title="Saving Throws" class="saving-throws-panel">
+        <Panel title=move_tr!("panel-saving-throws") class="saving-throws-panel">
             {Ability::iter()
                 .map(|ability| {
                     let proficient = Memo::new(move |_| {
@@ -23,6 +26,8 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                         let b = bonus.get();
                         if b >= 0 { format!("+{b}") } else { format!("{b}") }
                     };
+                    let tr_key = ability.tr_key();
+                    let label = Signal::derive(move || i18n.tr(tr_key));
 
                     view! {
                         <div class="save-row">
@@ -38,7 +43,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 {move || if proficient.get() { "\u{25CF}" } else { "\u{25CB}" }}
                             </button>
                             <span class="save-bonus">{bonus_display}</span>
-                            <span class="save-label">{ability.to_string()}</span>
+                            <span class="save-label">{label}</span>
                         </div>
                     }
                 })

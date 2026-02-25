@@ -1,6 +1,13 @@
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 
+pub trait Translatable {
+    fn tr_key(&self) -> &'static str;
+    fn tr_abbr_key(&self) -> &'static str {
+        self.tr_key()
+    }
+}
+
 #[derive(
     Debug,
     Clone,
@@ -196,4 +203,82 @@ pub enum DamageType {
     Radiant,
     Slashing,
     Thunder,
+}
+
+impl Translatable for Ability {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Ability::Strength => "ability-strength",
+            Ability::Dexterity => "ability-dexterity",
+            Ability::Constitution => "ability-constitution",
+            Ability::Intelligence => "ability-intelligence",
+            Ability::Wisdom => "ability-wisdom",
+            Ability::Charisma => "ability-charisma",
+        }
+    }
+
+    fn tr_abbr_key(&self) -> &'static str {
+        match self {
+            Ability::Strength => "ability-str",
+            Ability::Dexterity => "ability-dex",
+            Ability::Constitution => "ability-con",
+            Ability::Intelligence => "ability-int",
+            Ability::Wisdom => "ability-wis",
+            Ability::Charisma => "ability-cha",
+        }
+    }
+}
+
+impl Translatable for Skill {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Skill::Acrobatics => "skill-acrobatics",
+            Skill::AnimalHandling => "skill-animal-handling",
+            Skill::Arcana => "skill-arcana",
+            Skill::Athletics => "skill-athletics",
+            Skill::Deception => "skill-deception",
+            Skill::History => "skill-history",
+            Skill::Insight => "skill-insight",
+            Skill::Intimidation => "skill-intimidation",
+            Skill::Investigation => "skill-investigation",
+            Skill::Medicine => "skill-medicine",
+            Skill::Nature => "skill-nature",
+            Skill::Perception => "skill-perception",
+            Skill::Performance => "skill-performance",
+            Skill::Persuasion => "skill-persuasion",
+            Skill::Religion => "skill-religion",
+            Skill::SleightOfHand => "skill-sleight-of-hand",
+            Skill::Stealth => "skill-stealth",
+            Skill::Survival => "skill-survival",
+        }
+    }
+}
+
+impl Translatable for Alignment {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Alignment::LawfulGood => "alignment-lawful-good",
+            Alignment::NeutralGood => "alignment-neutral-good",
+            Alignment::ChaoticGood => "alignment-chaotic-good",
+            Alignment::LawfulNeutral => "alignment-lawful-neutral",
+            Alignment::TrueNeutral => "alignment-true-neutral",
+            Alignment::ChaoticNeutral => "alignment-chaotic-neutral",
+            Alignment::LawfulEvil => "alignment-lawful-evil",
+            Alignment::NeutralEvil => "alignment-neutral-evil",
+            Alignment::ChaoticEvil => "alignment-chaotic-evil",
+        }
+    }
+}
+
+impl Translatable for Proficiency {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Proficiency::LightArmor => "prof-light-armor",
+            Proficiency::MediumArmor => "prof-medium-armor",
+            Proficiency::HeavyArmor => "prof-heavy-armor",
+            Proficiency::Shields => "prof-shields",
+            Proficiency::SimpleWeapons => "prof-simple-weapons",
+            Proficiency::MartialWeapons => "prof-martial-weapons",
+        }
+    }
 }

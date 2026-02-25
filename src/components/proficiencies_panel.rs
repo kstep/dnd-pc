@@ -1,12 +1,13 @@
 use std::collections::HashSet;
 
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Character, CharacterStoreFields, Proficiency, RacialTrait},
+    model::{Character, CharacterStoreFields, Proficiency, RacialTrait, Translatable},
 };
 
 #[component]
@@ -15,18 +16,21 @@ pub fn ProficienciesPanel() -> impl IntoView {
 
     let languages = store.languages();
     let racial_traits = store.racial_traits();
+    let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
-        <Panel title="Proficiencies & Languages" class="proficiencies-panel">
+        <Panel title=move_tr!("panel-proficiencies") class="proficiencies-panel">
 
             // --- Proficiency toggles ---
-            <h4>"Proficiencies"</h4>
+            <h4>{move_tr!("proficiencies")}</h4>
             <div class="proficiencies-grid">
                 {Proficiency::iter()
                     .map(|prof| {
                         let active = Memo::new(move |_| {
                             store.proficiencies().read().get(&prof).copied().unwrap_or(false)
                         });
+                        let tr_key = prof.tr_key();
+                        let label = Signal::derive(move || i18n.tr(tr_key));
 
                         view! {
                             <div class="prof-row">
@@ -41,7 +45,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                 >
                                     {move || if active.get() { "\u{25CF}" } else { "\u{25CB}" }}
                                 </button>
-                                <span class="prof-label">{prof.to_string()}</span>
+                                <span class="prof-label">{label}</span>
                             </div>
                         }
                     })
@@ -49,7 +53,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
             </div>
 
             // --- Languages ---
-            <h4>"Languages"</h4>
+            <h4>{move_tr!("languages")}</h4>
             <div class="string-list">
                 {move || {
                     languages
@@ -62,7 +66,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                 <div class="string-list-entry">
                                     <input
                                         type="text"
-                                        placeholder="Language"
+                                        placeholder=move_tr!("language")
                                         prop:value=val
                                         on:input=move |e| {
                                             languages.write()[i] = event_target_value(&e);
@@ -90,11 +94,11 @@ pub fn ProficienciesPanel() -> impl IntoView {
                     languages.write().push(String::new());
                 }
             >
-                "+ Add Language"
+                {move_tr!("btn-add-language")}
             </button>
 
             // --- Racial Traits ---
-            <h4>"Racial Traits"</h4>
+            <h4>{move_tr!("racial-traits")}</h4>
             {
                 let rt_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
@@ -120,7 +124,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                             <input
                                                 type="text"
                                                 class="feature-name"
-                                                placeholder="Trait name"
+                                                placeholder=move_tr!("trait-name")
                                                 prop:value=name
                                                 on:input=move |e| {
                                                     racial_traits.write()[i].name = event_target_value(&e);
@@ -145,7 +149,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                             <Show when=is_open>
                                                 <textarea
                                                     class="feature-desc"
-                                                    placeholder="Description"
+                                                    placeholder=move_tr!("description")
                                                     prop:value=desc.clone()
                                                     on:input=move |e| {
                                                         racial_traits.write()[i].description = event_target_value(&e);
@@ -166,7 +170,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                     racial_traits.write().push(RacialTrait::default());
                 }
             >
-                "+ Add Racial Trait"
+                {move_tr!("btn-add-racial-trait")}
             </button>
         </Panel>
     }

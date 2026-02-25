@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use crate::model::{Character, CharacterStoreFields, ProficiencyLevel, Skill};
+use crate::model::{Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable};
 
 #[component]
 pub fn SkillRow(skill: Skill) -> impl IntoView {
@@ -27,14 +27,11 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
         }
     };
 
-    let ability_abbr = match skill.ability() {
-        crate::model::Ability::Strength => "STR",
-        crate::model::Ability::Dexterity => "DEX",
-        crate::model::Ability::Constitution => "CON",
-        crate::model::Ability::Intelligence => "INT",
-        crate::model::Ability::Wisdom => "WIS",
-        crate::model::Ability::Charisma => "CHA",
-    };
+    let skill_tr_key = skill.tr_key();
+    let ability_abbr_key = skill.ability().tr_abbr_key();
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    let skill_label = Signal::derive(move || i18n.tr(skill_tr_key));
+    let ability_abbr = Signal::derive(move || i18n.tr(ability_abbr_key));
 
     view! {
         <div class="skill-row">
@@ -50,7 +47,7 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
                 {move || prof_level.get().symbol()}
             </button>
             <span class="skill-bonus">{bonus_display}</span>
-            <span class="skill-name">{skill.to_string()}</span>
+            <span class="skill-name">{skill_label}</span>
             <span class="skill-ability">"(" {ability_abbr} ")"</span>
         </div>
     }

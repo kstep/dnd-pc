@@ -720,12 +720,14 @@ body {
 /* --------------------- Equipment Panel ----------------------- */
 .weapon-entry {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--size-1);
   margin-bottom: var(--size-1);
   align-items: center;
 
   input {
     flex: 1;
+    min-width: 0;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
@@ -737,6 +739,7 @@ body {
 
 .item-entry {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--size-1);
   margin-bottom: var(--size-1);
   align-items: center;
@@ -751,6 +754,7 @@ body {
 
     &[type="text"] {
       flex: 1;
+      min-width: 0;
     }
   }
 }
@@ -987,6 +991,30 @@ body {
   cursor: pointer;
   font-size: var(--font-size-0);
   min-width: 28px;
+}
+
+/* --------------------- Language Switcher --------------------- */
+.lang-switcher {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+
+  .lang-btn {
+    background: var(--panel-border);
+    color: var(--text-primary);
+    border: 1px solid var(--panel-border);
+    padding: var(--size-1) var(--size-2);
+    border-radius: var(--radius-1);
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+
+    &.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+  }
 }
 
 /* --------------------- Not Found ----------------------------- */

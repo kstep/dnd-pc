@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use crate::model::{Ability, Character, CharacterStoreFields};
+use crate::model::{Ability, Character, CharacterStoreFields, Translatable};
 
 #[component]
 pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
@@ -19,9 +19,13 @@ pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
         }
     };
 
+    let tr_key = ability.tr_key();
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    let label = Signal::derive(move || i18n.tr(tr_key));
+
     view! {
         <div class="ability-block">
-            <span class="ability-label">{ability.to_string()}</span>
+            <span class="ability-label">{label}</span>
             <span class="ability-modifier">{modifier_display}</span>
             <input
                 type="number"

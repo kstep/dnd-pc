@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -9,7 +10,7 @@ use crate::{
 #[component]
 pub fn AbilityScoresPanel() -> impl IntoView {
     view! {
-        <Panel title="Ability Scores" class="ability-scores-panel">
+        <Panel title=move_tr!("panel-ability-scores") class="ability-scores-panel">
             <div class="ability-scores-grid">
                 {Ability::iter()
                     .map(|ability| view! { <AbilityScoreBlock ability=ability /> })

@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -13,9 +14,9 @@ pub fn PersonalityPanel() -> impl IntoView {
     let personality = store.personality();
 
     view! {
-        <Panel title="Personality" class="personality-panel">
+        <Panel title=move_tr!("panel-personality") class="personality-panel">
             <div class="textarea-field">
-                <label>"Personality Traits"</label>
+                <label>{move_tr!("personality-traits")}</label>
                 <textarea
                     prop:value=move || personality.personality_traits().get()
                     on:input=move |e| {
@@ -24,7 +25,7 @@ pub fn PersonalityPanel() -> impl IntoView {
                 />
             </div>
             <div class="textarea-field">
-                <label>"Ideals"</label>
+                <label>{move_tr!("ideals")}</label>
                 <textarea
                     prop:value=move || personality.ideals().get()
                     on:input=move |e| {
@@ -33,7 +34,7 @@ pub fn PersonalityPanel() -> impl IntoView {
                 />
             </div>
             <div class="textarea-field">
-                <label>"Bonds"</label>
+                <label>{move_tr!("bonds")}</label>
                 <textarea
                     prop:value=move || personality.bonds().get()
                     on:input=move |e| {
@@ -42,7 +43,7 @@ pub fn PersonalityPanel() -> impl IntoView {
                 />
             </div>
             <div class="textarea-field">
-                <label>"Flaws"</label>
+                <label>{move_tr!("flaws")}</label>
                 <textarea
                     prop:value=move || personality.flaws().get()
                     on:input=move |e| {

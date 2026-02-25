@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::{move_tr, tr};
 use leptos_router::components::A;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -6,6 +7,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::model::{
     Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
+    Translatable,
 };
 
 fn export_character(character: &Character) {
@@ -148,11 +150,13 @@ pub fn CharacterHeader() -> impl IntoView {
         import_character(store);
     };
 
+    let i18n = expect_context::<leptos_fluent::I18n>();
+
     view! {
         <div class="panel character-header">
             <div class="header-row">
                 <div class="header-field name-field">
-                    <label>"Character Name"</label>
+                    <label>{move_tr!("character-name")}</label>
                     <input
                         type="text"
                         prop:value=move || store.identity().name().get()
@@ -162,7 +166,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     />
                 </div>
                 <div class="header-field">
-                    <label>"Race"</label>
+                    <label>{move_tr!("race")}</label>
                     <input
                         type="text"
                         prop:value=move || store.identity().race().get()
@@ -172,7 +176,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     />
                 </div>
                 <div class="header-field">
-                    <label>"Background"</label>
+                    <label>{move_tr!("background")}</label>
                     <input
                         type="text"
                         prop:value=move || store.identity().background().get()
@@ -182,7 +186,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     />
                 </div>
                 <div class="header-field">
-                    <label>"Alignment"</label>
+                    <label>{move_tr!("alignment")}</label>
                     <select
                         on:change=move |e| {
                             let val = event_target_value(&e);
@@ -193,9 +197,10 @@ pub fn CharacterHeader() -> impl IntoView {
                     >
                         {Alignment::iter()
                             .map(|a| {
-                                let label = a.to_string();
+                                let tr_key = a.tr_key();
                                 let val = format!("{a:?}");
                                 let selected = move || store.identity().alignment().get() == a;
+                                let label = Signal::derive(move || i18n.tr(tr_key));
                                 view! {
                                     <option value=val.clone() selected=selected>
                                         {label}
@@ -206,7 +211,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     </select>
                 </div>
                 <div class="header-field level-field">
-                    <label>"XP"</label>
+                    <label>{move_tr!("xp")}</label>
                     <input
                         type="number"
                         min="0"
@@ -219,17 +224,17 @@ pub fn CharacterHeader() -> impl IntoView {
                     />
                 </div>
                 <div class="header-field level-field">
-                    <label>"Total Level"</label>
+                    <label>{move_tr!("total-level")}</label>
                     <span class="computed-value">{total_level}</span>
                 </div>
                 <div class="header-field level-field">
-                    <label>"Prof. Bonus"</label>
+                    <label>{move_tr!("prof-bonus")}</label>
                     <span class="computed-value">"+" {prof_bonus}</span>
                 </div>
             </div>
 
             <div class="classes-section">
-                <label>"Classes"</label>
+                <label>{move_tr!("classes")}</label>
                 <div class="classes-list">
                     {move || {
                         classes
@@ -245,7 +250,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                         <input
                                             type="text"
                                             class="class-name"
-                                            placeholder="Class"
+                                            placeholder=tr!("class")
                                             prop:value=class_name
                                             on:input=move |e| {
                                                 classes.write()[i].class = event_target_value(&e);
@@ -296,15 +301,41 @@ pub fn CharacterHeader() -> impl IntoView {
                     }}
                 </div>
                 <button class="btn-add btn-add-class" on:click=add_class>
-                    "+ Add Class"
+                    {move_tr!("btn-add-class")}
                 </button>
             </div>
 
             <div class="header-actions">
-                <A href=format!("{}/", crate::BASE_URL) attr:class="back-link">"< Back to Characters"</A>
-                <button class="btn-add" on:click=on_export>"Export JSON"</button>
-                <button class="btn-add" on:click=on_import>"Import JSON"</button>
+                <A href=format!("{}/", crate::BASE_URL) attr:class="back-link">{move_tr!("back-to-characters")}</A>
+                <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
+                <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
+                <LanguageSwitcher />
             </div>
+        </div>
+    }
+}
+
+#[component]
+fn LanguageSwitcher() -> impl IntoView {
+    let i18n = expect_context::<leptos_fluent::I18n>();
+
+    view! {
+        <div class="lang-switcher">
+            {i18n.languages.iter().map(|lang| {
+                let lang = *lang;
+                let is_active = move || i18n.language.get() == lang;
+                view! {
+                    <button
+                        class="lang-btn"
+                        class:active=is_active
+                        on:click=move |_| {
+                            i18n.language.set(lang);
+                        }
+                    >
+                        {lang.id.to_string().to_uppercase()}
+                    </button>
+                }
+            }).collect_view()}
         </div>
     }
 }

@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -20,7 +21,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     };
 
     view! {
-        <Panel title="Features & Traits" class="features-panel">
+        <Panel title=move_tr!("panel-features") class="features-panel">
             <div class="features-list">
                 {move || {
                     features
@@ -43,7 +44,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     <input
                                         type="text"
                                         class="feature-name"
-                                        placeholder="Feature name"
+                                        placeholder=move_tr!("feature-name")
                                         prop:value=name
                                         on:input=move |e| {
                                             features.write()[i].name = event_target_value(&e);
@@ -68,7 +69,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     <Show when=is_open>
                                         <textarea
                                             class="feature-desc"
-                                            placeholder="Description"
+                                            placeholder=move_tr!("description")
                                             prop:value=desc.clone()
                                             on:input=move |e| {
                                                 features.write()[i].description = event_target_value(&e);
@@ -82,7 +83,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                 }}
             </div>
             <button class="btn-add" on:click=add_feature>
-                "+ Add Feature"
+                {move_tr!("btn-add-feature")}
             </button>
         </Panel>
     }

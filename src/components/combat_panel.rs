@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -27,10 +28,10 @@ pub fn CombatPanel() -> impl IntoView {
     };
 
     view! {
-        <Panel title="Combat" class="combat-panel">
+        <Panel title=move_tr!("panel-combat") class="combat-panel">
             <div class="combat-top-row">
                 <div class="combat-stat">
-                    <label>"Armor Class"</label>
+                    <label>{move_tr!("armor-class")}</label>
                     <input
                         type="number"
                         prop:value=move || combat.armor_class().get().to_string()
@@ -42,11 +43,11 @@ pub fn CombatPanel() -> impl IntoView {
                     />
                 </div>
                 <div class="combat-stat">
-                    <label>"Initiative"</label>
+                    <label>{move_tr!("initiative")}</label>
                     <span class="computed-value">{init_display}</span>
                 </div>
                 <div class="combat-stat">
-                    <label>"Speed"</label>
+                    <label>{move_tr!("speed")}</label>
                     <input
                         type="number"
                         prop:value=move || combat.speed().get().to_string()
@@ -62,7 +63,7 @@ pub fn CombatPanel() -> impl IntoView {
             <div class="hp-section">
                 <div class="hp-row">
                     <div class="combat-stat">
-                        <label>"Current HP"</label>
+                        <label>{move_tr!("current-hp")}</label>
                         <input
                             type="number"
                             prop:value=move || combat.hp_current().get().to_string()
@@ -74,7 +75,7 @@ pub fn CombatPanel() -> impl IntoView {
                         />
                     </div>
                     <div class="combat-stat">
-                        <label>"HP Max"</label>
+                        <label>{move_tr!("hp-max")}</label>
                         <input
                             type="number"
                             prop:value=move || combat.hp_max().get().to_string()
@@ -86,7 +87,7 @@ pub fn CombatPanel() -> impl IntoView {
                         />
                     </div>
                     <div class="combat-stat">
-                        <label>"Temp HP"</label>
+                        <label>{move_tr!("temp-hp")}</label>
                         <input
                             type="number"
                             prop:value=move || combat.hp_temp().get().to_string()
@@ -101,7 +102,7 @@ pub fn CombatPanel() -> impl IntoView {
             </div>
 
             <div class="hit-dice-section">
-                <h4>"Hit Dice"</h4>
+                <h4>{move_tr!("hit-dice")}</h4>
                 {move || {
                     classes
                         .read()
@@ -154,7 +155,7 @@ pub fn CombatPanel() -> impl IntoView {
                                             classes.write()[i].hit_dice_used += 1;
                                         }
                                     >
-                                        "🎲"
+                                        "\u{1F3B2}"
                                     </button>
                                 </div>
                             }
@@ -165,9 +166,9 @@ pub fn CombatPanel() -> impl IntoView {
 
             <div class="death-saves-row">
             <div class="death-saves">
-                <h4>"Death Saves"</h4>
+                <h4>{move_tr!("death-saves")}</h4>
                 <div class="death-save-row">
-                    <span>"Successes"</span>
+                    <span>{move_tr!("successes")}</span>
                     <div class="death-save-boxes">
                         {(0u8..3)
                             .map(|i| {
@@ -193,7 +194,7 @@ pub fn CombatPanel() -> impl IntoView {
                     </div>
                 </div>
                 <div class="death-save-row">
-                    <span>"Failures"</span>
+                    <span>{move_tr!("failures")}</span>
                     <div class="death-save-boxes">
                         {(0u8..3)
                             .map(|i| {
@@ -228,7 +229,7 @@ pub fn CombatPanel() -> impl IntoView {
                         combat.death_save_failures().set(0);
                     }
                 >
-                    "Short Rest"
+                    {move_tr!("short-rest")}
                 </button>
                 <button
                     class="btn-rest"
@@ -259,7 +260,7 @@ pub fn CombatPanel() -> impl IntoView {
                         });
                     }
                 >
-                    "Long Rest"
+                    {move_tr!("long-rest")}
                 </button>
             </div>
             </div>

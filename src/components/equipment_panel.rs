@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -18,9 +19,9 @@ pub fn EquipmentPanel() -> impl IntoView {
     let currency = equipment.currency();
 
     view! {
-        <Panel title="Equipment" class="equipment-panel">
+        <Panel title=move_tr!("panel-equipment") class="equipment-panel">
 
-            <h4>"Weapons"</h4>
+            <h4>{move_tr!("weapons")}</h4>
             <div class="weapons-list">
                 {move || {
                     weapons
@@ -36,7 +37,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                 <div class="weapon-entry">
                                     <input
                                         type="text"
-                                        placeholder="Name"
+                                        placeholder=move_tr!("name")
                                         prop:value=name
                                         on:input=move |e| {
                                             weapons.write()[i].name = event_target_value(&e);
@@ -44,7 +45,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     />
                                     <input
                                         type="text"
-                                        placeholder="Atk Bonus"
+                                        placeholder=move_tr!("atk-bonus")
                                         class="short-input"
                                         prop:value=atk
                                         on:input=move |e| {
@@ -53,7 +54,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     />
                                     <input
                                         type="text"
-                                        placeholder="Damage"
+                                        placeholder=move_tr!("damage")
                                         prop:value=dmg
                                         on:input=move |e| {
                                             weapons.write()[i].damage = event_target_value(&e);
@@ -61,7 +62,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     />
                                     <input
                                         type="text"
-                                        placeholder="Type"
+                                        placeholder=move_tr!("type")
                                         class="short-input"
                                         prop:value=dmg_type
                                         on:input=move |e| {
@@ -90,10 +91,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     weapons.write().push(Weapon::default());
                 }
             >
-                "+ Add Weapon"
+                {move_tr!("btn-add-weapon")}
             </button>
 
-            <h4>"Items"</h4>
+            <h4>{move_tr!("items")}</h4>
             <div class="items-list">
                 {move || {
                     items
@@ -108,7 +109,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                 <div class="item-entry">
                                     <input
                                         type="text"
-                                        placeholder="Item name"
+                                        placeholder=move_tr!("item-name")
                                         prop:value=name
                                         on:input=move |e| {
                                             items.write()[i].name = event_target_value(&e);
@@ -117,7 +118,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     <input
                                         type="number"
                                         class="short-input"
-                                        placeholder="Qty"
+                                        placeholder=move_tr!("qty")
                                         min="0"
                                         prop:value=qty
                                         on:input=move |e| {
@@ -128,7 +129,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     />
                                     <input
                                         type="text"
-                                        placeholder="Description"
+                                        placeholder=move_tr!("description")
                                         prop:value=desc
                                         on:input=move |e| {
                                             items.write()[i].description = event_target_value(&e);
@@ -156,10 +157,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     items.write().push(Item { quantity: 1, ..Item::default() });
                 }
             >
-                "+ Add Item"
+                {move_tr!("btn-add-item")}
             </button>
 
-            <h4>"Currency"</h4>
+            <h4>{move_tr!("currency")}</h4>
             <div class="currency-row">
                 <div class="currency-field">
                     <label>"CP"</label>
