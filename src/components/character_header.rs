@@ -8,7 +8,7 @@ use wasm_bindgen::prelude::*;
 use crate::{
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-        Feature, Spell, SpellcastingData, Translatable,
+        Feature, MetamagicData, Spell, SpellcastingData, Translatable,
     },
     rules::RulesRegistry,
     share,
@@ -204,9 +204,8 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
                     }
                 }
             }
-            if let Some(sp) = rules.sorcery_points
-                && let Some(ref mut mm) = sc.metamagic
-            {
+            if let Some(sp) = rules.sorcery_points {
+                let mm = sc.metamagic.get_or_insert_with(MetamagicData::default);
                 mm.sorcery_points_max = sp;
             }
 
