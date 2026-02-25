@@ -43,8 +43,8 @@ pub fn App() -> impl IntoView {
             <Router base=option_env!("BASE_URL").unwrap_or_default()>
                 <Routes fallback=|| view! { <NotFound /> }>
                     <Route path=path!("/") view=CharacterList />
-                    <Route path=path!("/character/:id") view=CharacterSheet />
-                    <Route path=path!("/share/:data") view=ImportCharacter />
+                    <Route path=path!("/c/:id") view=CharacterSheet />
+                    <Route path=path!("/s/:data") view=ImportCharacter />
                 </Routes>
             </Router>
         </I18nProvider>

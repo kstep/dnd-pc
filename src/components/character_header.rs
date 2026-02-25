@@ -293,7 +293,7 @@ pub fn CharacterHeader() -> impl IntoView {
             .location()
             .origin()
             .unwrap_or_default();
-        let url = format!("{origin}{}/share/{encoded}", crate::BASE_URL);
+        let url = format!("{origin}{}/s/{encoded}", crate::BASE_URL);
 
         let clipboard = leptos::prelude::window().navigator().clipboard();
         let promise = clipboard.write_text(&url);
