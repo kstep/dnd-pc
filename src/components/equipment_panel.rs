@@ -65,6 +65,19 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             });
                                         }
                                     />
+                                    <input
+                                        type="text"
+                                        placeholder="Type"
+                                        class="short-input"
+                                        prop:value=weapon.damage_type.clone()
+                                        on:input=move |e| {
+                                            char_signal.update(|c| {
+                                                if let Some(w) = c.equipment.weapons.get_mut(i) {
+                                                    w.damage_type = event_target_value(&e);
+                                                }
+                                            });
+                                        }
+                                    />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
@@ -128,6 +141,18 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     }
                                                 });
                                             }
+                                        }
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description"
+                                        prop:value=item.description.clone()
+                                        on:input=move |e| {
+                                            char_signal.update(|c| {
+                                                if let Some(it) = c.equipment.items.get_mut(i) {
+                                                    it.description = event_target_value(&e);
+                                                }
+                                            });
                                         }
                                     />
                                     <button
