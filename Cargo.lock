@@ -364,6 +364,7 @@ dependencies = [
  "console_error_panic_hook",
  "console_log",
  "gloo-storage",
+ "js-sys",
  "leptos",
  "leptos_meta",
  "leptos_router",
@@ -373,6 +374,7 @@ dependencies = [
  "strum",
  "uuid",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "wasm-bindgen-test",
  "web-sys",
 ]
