@@ -239,6 +239,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             .map(|(i, cl)| {
                                 let class_name = cl.class.clone();
                                 let level_val = cl.level.to_string();
+                                let hit_die_val = cl.hit_die_sides.to_string();
                                 view! {
                                     <div class="class-entry">
                                         <input
@@ -250,6 +251,20 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 classes.write()[i].class = event_target_value(&e);
                                             }
                                         />
+                                        <select
+                                            class="class-hit-die"
+                                            prop:value=hit_die_val
+                                            on:change=move |e| {
+                                                if let Ok(v) = event_target_value(&e).parse::<u16>() {
+                                                    classes.write()[i].hit_die_sides = v;
+                                                }
+                                            }
+                                        >
+                                            <option value="6" selected=move || classes.read()[i].hit_die_sides == 6>"d6"</option>
+                                            <option value="8" selected=move || classes.read()[i].hit_die_sides == 8>"d8"</option>
+                                            <option value="10" selected=move || classes.read()[i].hit_die_sides == 10>"d10"</option>
+                                            <option value="12" selected=move || classes.read()[i].hit_die_sides == 12>"d12"</option>
+                                        </select>
                                         <input
                                             type="number"
                                             class="class-level"

@@ -263,6 +263,16 @@ body {
     font-size: var(--font-size-1);
   }
 
+  .class-hit-die {
+    width: 60px;
+    padding: var(--size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+  }
+
   .class-level {
     width: 55px;
     text-align: center;
@@ -411,10 +421,14 @@ body {
 }
 
 /* --------------------- Combat Panel -------------------------- */
-.combat-top-row, .hp-row, .hit-dice-section {
+.combat-top-row, .hp-row {
   display: flex;
   gap: var(--size-2);
   flex-wrap: wrap;
+  margin-bottom: var(--size-2);
+}
+
+.hit-dice-section {
   margin-bottom: var(--size-2);
 }
 
@@ -450,25 +464,25 @@ body {
   }
 }
 
-.dice-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-1);
-  flex: 1;
-
-  label {
-    font-size: var(--font-size-0);
-    color: var(--text-secondary);
-    text-transform: uppercase;
-  }
-}
-
-.dice-input {
+.hit-dice-entry {
   display: flex;
   align-items: center;
-  gap: var(--size-1);
+  gap: var(--size-2);
+  margin-bottom: var(--size-1);
+  font-size: var(--font-size-1);
 
-  input {
+  .hit-dice-class {
+    min-width: 80px;
+    font-weight: var(--font-weight-6);
+  }
+
+  .hit-dice-die {
+    color: var(--text-secondary);
+    min-width: 28px;
+  }
+
+  .hit-dice-used {
+    width: 50px;
     text-align: center;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
@@ -478,22 +492,13 @@ body {
     font-size: var(--font-size-1);
   }
 
-  .dice-count {
-    width: 44px;
-  }
-
-  .dice-sides {
-    width: 44px;
-  }
-
-  .dice-modifier {
-    width: 50px;
-  }
-
-  .dice-d, .dice-plus {
-    font-weight: var(--font-weight-7);
-    font-size: var(--font-size-2);
+  .hit-dice-sep {
     color: var(--text-secondary);
+  }
+
+  .hit-dice-total {
+    font-weight: var(--font-weight-6);
+    min-width: 20px;
   }
 }
 
@@ -530,6 +535,46 @@ body {
 
   &.filled {
     color: var(--accent);
+  }
+}
+
+.death-saves-row {
+  display: flex;
+  gap: var(--size-3);
+  align-items: flex-start;
+}
+
+.rest-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  margin-top: var(--size-2);
+  margin-left: auto;
+}
+
+.btn-rest {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: var(--size-1) var(--size-3);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-size: var(--font-size-1);
+  white-space: nowrap;
+}
+
+.btn-spend-hd {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: var(--size-1) var(--size-2);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-size: var(--font-size-0);
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 

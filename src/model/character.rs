@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt};
+use std::collections::HashMap;
 
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
@@ -6,32 +6,8 @@ use uuid::Uuid;
 
 use super::enums::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Store)]
-pub struct Dice {
-    pub count: u16,
-    pub sides: u16,
-    pub modifier: i16,
-}
-
-impl Default for Dice {
-    fn default() -> Self {
-        Dice {
-            count: 1,
-            sides: 10,
-            modifier: 0,
-        }
-    }
-}
-
-impl fmt::Display for Dice {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}d{}", self.count, self.sides)?;
-        match self.modifier.cmp(&0) {
-            std::cmp::Ordering::Greater => write!(f, "+{}", self.modifier),
-            std::cmp::Ordering::Less => write!(f, "{}", self.modifier),
-            std::cmp::Ordering::Equal => Ok(()),
-        }
-    }
+fn default_hit_die_sides() -> u16 {
+    8
 }
 
 // --- Character Index (for list page) ---
@@ -205,6 +181,10 @@ impl Default for CharacterIdentity {
 pub struct ClassLevel {
     pub class: String,
     pub level: u32,
+    #[serde(default = "default_hit_die_sides")]
+    pub hit_die_sides: u16,
+    #[serde(default)]
+    pub hit_dice_used: u32,
 }
 
 impl Default for ClassLevel {
@@ -212,6 +192,8 @@ impl Default for ClassLevel {
         Self {
             class: String::new(),
             level: 1,
+            hit_die_sides: 8,
+            hit_dice_used: 0,
         }
     }
 }
@@ -270,8 +252,6 @@ pub struct CombatStats {
     pub hp_max: i32,
     pub hp_current: i32,
     pub hp_temp: i32,
-    pub hit_dice_total: Dice,
-    pub hit_dice_remaining: Dice,
     pub death_save_successes: u8,
     pub death_save_failures: u8,
     pub initiative_misc_bonus: i32,
@@ -285,8 +265,6 @@ impl Default for CombatStats {
             hp_max: 10,
             hp_current: 10,
             hp_temp: 0,
-            hit_dice_total: Dice::default(),
-            hit_dice_remaining: Dice::default(),
             death_save_successes: 0,
             death_save_failures: 0,
             initiative_misc_bonus: 0,
