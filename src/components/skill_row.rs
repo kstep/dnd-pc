@@ -39,8 +39,13 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
                 class="prof-toggle"
                 on:click=move |_| {
                     store.skills().update(|skills| {
-                        let entry = skills.entry(skill).or_insert(ProficiencyLevel::None);
-                        *entry = entry.next();
+                        let current = skills.get(&skill).copied().unwrap_or(ProficiencyLevel::None);
+                        let next = current.next();
+                        if next == ProficiencyLevel::None {
+                            skills.remove(&skill);
+                        } else {
+                            skills.insert(skill, next);
+                        }
                     });
                 }
             >

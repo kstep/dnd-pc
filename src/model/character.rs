@@ -141,16 +141,12 @@ impl Character {
 
 impl Default for Character {
     fn default() -> Self {
-        use strum::IntoEnumIterator;
-
-        let skills = Skill::iter().map(|s| (s, ProficiencyLevel::None)).collect();
-
         Self {
             id: Uuid::new_v4(),
             identity: CharacterIdentity::default(),
             abilities: AbilityScores::default(),
             saving_throws: HashSet::new(),
-            skills,
+            skills: HashMap::new(),
             combat: CombatStats::default(),
             personality: Personality::default(),
             features: Vec::new(),

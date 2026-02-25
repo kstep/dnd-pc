@@ -5,7 +5,9 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use crate::model::Character;
 
 pub fn encode_character(character: &Character) -> String {
-    let bytes = rmp_serde::to_vec(character).expect("failed to serialize character");
+    let mut character = character.clone();
+    character.id = uuid::Uuid::nil();
+    let bytes = rmp_serde::to_vec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {
         let mut encoder = brotli::CompressorWriter::new(&mut compressed, 4096, 11, 22);
