@@ -8,9 +8,10 @@ use strum::IntoEnumIterator;
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
     model::{
-        Ability, Character, CharacterStoreFields, MetamagicData, MetamagicOption, Spell,
-        SpellcastingData, Translatable,
+        Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields, MetamagicData,
+        MetamagicOption, Spell, SpellcastingData, Translatable,
     },
+    rules::RulesRegistry,
 };
 
 #[component]
@@ -54,6 +55,8 @@ pub fn SpellcastingPanel() -> impl IntoView {
         }
     };
 
+    let registry = expect_context::<RulesRegistry>();
+
     let i18n = expect_context::<leptos_fluent::I18n>();
     let slots_expanded = RwSignal::new(false);
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
@@ -71,6 +74,29 @@ pub fn SpellcastingPanel() -> impl IntoView {
             </label>
 
             <Show when=move || has_spellcasting.get()>
+                {move || {
+                    registry.class_cache.track();
+                    let classes = store.identity().classes().read();
+                    let class_names: Vec<String> = classes.iter().map(|c| c.class.clone()).collect();
+                    (0..=9u32).map(|level| {
+                        let datalist_id = format!("spell-suggestions-{level}");
+                        let options: Vec<(String, String)> = class_names.iter().filter_map(|name| {
+                            registry.get_class(name)
+                        }).flat_map(|def| {
+                            def.spells.iter().filter(|s| s.level == level).map(|s| {
+                                (s.name.clone(), s.description.clone())
+                            }).collect::<Vec<_>>()
+                        }).collect();
+                        view! {
+                            <datalist id=datalist_id>
+                                {options.into_iter().map(|(name, desc)| {
+                                    view! { <option value=name>{desc}</option> }
+                                }).collect_view()}
+                            </datalist>
+                        }
+                    }).collect_view()
+                }}
+
                 <div class="spell-header">
                     <div class="spell-stat">
                         <label>{move_tr!("casting-ability")}</label>
@@ -216,13 +242,28 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         <input
                                             type="text"
                                             class="spell-name"
+                                            list=format!("spell-suggestions-{}", spell.level)
                                             placeholder=move_tr!("spell-name")
                                             prop:value=spell_name
                                             on:input=move |e| {
+                                                let name = event_target_value(&e);
                                                 if let Some(sc) = store.spellcasting().write().as_mut()
                                                     && let Some(s) = sc.spells.get_mut(i)
                                                 {
-                                                    s.name = event_target_value(&e);
+                                                    s.name = name.clone();
+                                                }
+                                                // Auto-fill description on match
+                                                let classes = store.identity().classes().read();
+                                                let desc = classes.iter().find_map(|c| {
+                                                    registry.get_class(&c.class).and_then(|def| {
+                                                        def.spells.iter().find(|sp| sp.name == name).map(|sp| sp.description.clone())
+                                                    })
+                                                });
+                                                if let Some(desc) = desc
+                                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && let Some(s) = sc.spells.get_mut(i)
+                                                {
+                                                    s.description = desc;
                                                 }
                                             }
                                         />

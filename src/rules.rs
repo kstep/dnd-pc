@@ -3,8 +3,10 @@ use std::collections::HashMap;
 use leptos::prelude::*;
 use serde::Deserialize;
 
-use crate::model::{Ability, Proficiency};
-use crate::BASE_URL;
+use crate::{
+    BASE_URL,
+    model::{Ability, Proficiency},
+};
 
 // --- JSON types ---
 

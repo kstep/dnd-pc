@@ -7,8 +7,8 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     model::{
-        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        ClassLevel, Feature, Translatable,
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
+        Feature, Spell, SpellcastingData, Translatable,
     },
     rules::RulesRegistry,
 };
@@ -180,6 +180,17 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         store.features().write().extend(features_to_add);
     }
 
+    // Enable spellcasting at level 1 for caster classes
+    if level == 1
+        && let Some(ability) = def.casting_ability
+        && store.spellcasting().read().is_none()
+    {
+        store.spellcasting().set(Some(SpellcastingData {
+            casting_ability: ability,
+            ..Default::default()
+        }));
+    }
+
     // Update spell slots and sorcery points
     {
         let spellcasting = store.spellcasting();
@@ -196,6 +207,40 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
                 && let Some(ref mut mm) = sc.metamagic
             {
                 mm.sorcery_points_max = sp;
+            }
+
+            // Ensure enough cantrip lines
+            if let Some(n) = rules.cantrips_known {
+                let current = sc.spells.iter().filter(|s| s.level == 0).count();
+                for _ in current..(n as usize) {
+                    sc.spells.push(Spell {
+                        level: 0,
+                        ..Default::default()
+                    });
+                }
+            }
+
+            // Ensure enough leveled spell lines
+            if let Some(n) = rules.spells_known {
+                let current = sc.spells.iter().filter(|s| s.level > 0).count();
+                let max_spell_level = rules
+                    .spell_slots
+                    .as_ref()
+                    .and_then(|slots| {
+                        slots
+                            .iter()
+                            .enumerate()
+                            .rev()
+                            .find(|(_, count)| **count > 0)
+                            .map(|(i, _)| (i + 1) as u32)
+                    })
+                    .unwrap_or(1);
+                for _ in current..(n as usize) {
+                    sc.spells.push(Spell {
+                        level: max_spell_level,
+                        ..Default::default()
+                    });
+                }
             }
         }
     }
@@ -348,14 +393,12 @@ pub fn CharacterHeader() -> impl IntoView {
                                     registry.fetch_class(&class_name);
                                 }
 
-                                let unapplied: Vec<u32> = registry
+                                let next_unapplied: Option<u32> = registry
                                     .get_class(&class_name)
-                                    .map(|_| {
+                                    .and_then(|_| {
                                         (1..=current_level)
-                                            .filter(|lvl| !applied.contains(lvl))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
+                                            .find(|lvl| !applied.contains(lvl))
+                                    });
 
                                 view! {
                                     <div class="class-entry">
@@ -414,23 +457,19 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 "X"
                                             </button>
                                         </Show>
-                                        {if !unapplied.is_empty() {
+                                        {if let Some(lvl) = next_unapplied {
+                                            let title = tr!("btn-apply-level", {"level" => lvl.to_string()});
                                             Some(view! {
                                                 <div class="apply-levels">
-                                                    {unapplied.into_iter().map(|lvl| {
-                                                        let title = tr!("btn-apply-level", {"level" => lvl.to_string()});
-                                                        view! {
-                                                            <button
-                                                                class="btn-apply-level"
-                                                                title=title
-                                                                on:click=move |_| {
-                                                                    apply_level(store, registry, i, lvl);
-                                                                }
-                                                            >
-                                                                {format!("⬆{lvl}")}
-                                                            </button>
+                                                    <button
+                                                        class="btn-apply-level"
+                                                        title=title
+                                                        on:click=move |_| {
+                                                            apply_level(store, registry, i, lvl);
                                                         }
-                                                    }).collect_view()}
+                                                    >
+                                                        {format!("⬆{lvl}")}
+                                                    </button>
                                                 </div>
                                             })
                                         } else {
