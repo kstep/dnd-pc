@@ -185,6 +185,8 @@ pub struct ClassLevel {
     pub hit_die_sides: u16,
     #[serde(default)]
     pub hit_dice_used: u32,
+    #[serde(default)]
+    pub applied_levels: Vec<u32>,
 }
 
 impl Default for ClassLevel {
@@ -194,6 +196,7 @@ impl Default for ClassLevel {
             level: 1,
             hit_die_sides: 8,
             hit_dice_used: 0,
+            applied_levels: Vec::new(),
         }
     }
 }

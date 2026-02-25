@@ -1,0 +1,29 @@
+{
+  "classes": [
+    {
+      "name": "Sorcerer",
+      "url": "classes/sorcerer.json",
+      "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
+    },
+    {
+      "name": "Artificer",
+      "url": "classes/artificer.json",
+      "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects."
+    },
+    {
+      "name": "Bard",
+      "url": "classes/bard.json",
+      "description": "An inspiring magician whose power echoes the music of creation."
+    },
+    {
+      "name": "Cleric",
+      "url": "classes/cleric.json",
+      "description": "A priestly champion who wields divine magic in service of a higher power."
+    },
+    {
+      "name": "Fighter",
+      "url": "classes/fighter.json",
+      "description": "A master of martial combat, skilled with a variety of weapons and armor."
+    }
+  ]
+}

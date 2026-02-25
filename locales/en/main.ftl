@@ -18,6 +18,7 @@ prof-bonus = Prof. Bonus
 classes = Classes
 class = Class
 btn-add-class = + Add Class
+btn-apply-level = Apply Lvl { $level }
 back-to-characters = < Back to Characters
 export-json = Export
 import-json = Import

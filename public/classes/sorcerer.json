@@ -1,0 +1,974 @@
+{
+  "name": "Sorcerer",
+  "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
+  "hit_die": 6,
+  "casting_ability": "Charisma",
+  "proficiencies": [
+    "SimpleWeapons"
+  ],
+  "saving_throws": [
+    "Constitution",
+    "Charisma"
+  ],
+  "features": [
+    {
+      "name": "Spellcasting",
+      "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells. You know a number of cantrips and sorcerer spells, and can cast sorcerer spells using spell slots. Charisma is your spellcasting ability for your sorcerer spells."
+    },
+    {
+      "name": "Sorcerous Origin",
+      "description": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline or Wild Magic. Your choice grants you features at 1st level and again at 6th, 14th, and 18th level."
+    },
+    {
+      "name": "Font of Magic",
+      "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points."
+    },
+    {
+      "name": "Metamagic",
+      "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two Metamagic options of your choice. You gain another one at 10th and 17th level. You can use only one Metamagic option on a spell when you cast it, unless otherwise noted."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+    },
+    {
+      "name": "Sorcerous Restoration",
+      "description": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Acid Splash",
+      "level": 0,
+      "description": "Hurl a bubble of acid at one or two creatures within 5 feet of each other, dealing 1d6 acid damage on a failed Dexterity save. Damage increases at higher levels."
+    },
+    {
+      "name": "Blade Ward",
+      "level": 0,
+      "description": "You gain resistance to bludgeoning, piercing, and slashing damage from weapon attacks until the end of your next turn."
+    },
+    {
+      "name": "Chill Touch",
+      "level": 0,
+      "description": "A ghostly skeletal hand deals 1d8 necrotic damage and prevents the target from regaining hit points until your next turn. Undead targets also have disadvantage on attacks against you."
+    },
+    {
+      "name": "Dancing Lights",
+      "level": 0,
+      "description": "Create up to four torch-sized lights within 120 feet that you can move as a bonus action. Requires concentration, lasts 1 minute."
+    },
+    {
+      "name": "Fire Bolt",
+      "level": 0,
+      "description": "Hurl a mote of fire at a creature or object within 120 feet, dealing 1d10 fire damage on a hit. Damage increases at higher levels."
+    },
+    {
+      "name": "Friends",
+      "level": 0,
+      "description": "You gain advantage on Charisma checks against one creature for 1 minute. The creature becomes hostile toward you when the spell ends."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "description": "Touch an object to make it shed bright light in a 20-foot radius and dim light for an additional 20 feet for 1 hour."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "description": "Create a spectral floating hand within 30 feet that can manipulate objects, open doors, or carry up to 10 pounds. Lasts 1 minute."
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "description": "Repair a single break or tear in an object you touch, such as a broken chain link or a torn cloak, as long as the damage is no larger than 1 foot."
+    },
+    {
+      "name": "Message",
+      "level": 0,
+      "description": "Whisper a message to a creature within 120 feet; only the target hears it and can whisper a reply. The message can pass through barriers but is blocked by 3 feet of wood or 1 foot of stone."
+    },
+    {
+      "name": "Minor Illusion",
+      "level": 0,
+      "description": "Create a sound or an image of an object within 30 feet that lasts for 1 minute. A creature can determine it is an illusion with a successful Investigation check."
+    },
+    {
+      "name": "Poison Spray",
+      "level": 0,
+      "description": "Project a puff of noxious gas at a creature within 10 feet, dealing 1d12 poison damage on a failed Constitution save. Damage increases at higher levels."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "description": "Perform minor magical tricks such as creating sensory effects, lighting or snuffing small flames, cleaning or soiling small objects, or creating small illusory images. Lasts up to 1 hour."
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "description": "A frigid beam deals 1d8 cold damage on a hit and reduces the target's speed by 10 feet until your next turn. Damage increases at higher levels."
+    },
+    {
+      "name": "Shocking Grasp",
+      "level": 0,
+      "description": "Your touch deals 1d8 lightning damage with advantage on the attack if the target is wearing metal armor. The target can't take reactions until its next turn."
+    },
+    {
+      "name": "True Strike",
+      "level": 0,
+      "description": "You gain insight into a target's defenses, granting you advantage on your first attack roll against it on your next turn. Requires concentration."
+    },
+    {
+      "name": "Burning Hands",
+      "level": 1,
+      "description": "A 15-foot cone of flames deals 3d6 fire damage on a failed Dexterity save, or half on a success. Ignites flammable unattended objects."
+    },
+    {
+      "name": "Charm Person",
+      "level": 1,
+      "description": "A humanoid you can see must succeed on a Wisdom save or be charmed by you for 1 hour. The charmed creature regards you as a friendly acquaintance."
+    },
+    {
+      "name": "Chromatic Orb",
+      "level": 1,
+      "description": "Hurl a 4-inch sphere of energy at a creature within 90 feet, choosing acid, cold, fire, lightning, poison, or thunder. Deals 3d8 damage of the chosen type on a hit."
+    },
+    {
+      "name": "Color Spray",
+      "level": 1,
+      "description": "A dazzling array of colors blinds creatures in a 15-foot cone. Roll 6d10 to determine the total hit points of creatures affected, starting with the lowest."
+    },
+    {
+      "name": "Comprehend Languages",
+      "level": 1,
+      "description": "For 1 hour, you understand the literal meaning of any spoken language you hear and can read any written language you touch."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "description": "For up to 10 minutes, you sense the presence of magic within 30 feet. You can use your action to see a faint aura around any visible magical creature or object and learn its school of magic."
+    },
+    {
+      "name": "Disguise Self",
+      "level": 1,
+      "description": "You make yourself look different for 1 hour, changing your appearance including clothing, armor, weapons, and other belongings. A creature can see through it with a successful Investigation check."
+    },
+    {
+      "name": "Expeditious Retreat",
+      "level": 1,
+      "description": "You can take the Dash action as a bonus action on each of your turns for up to 10 minutes. Requires concentration."
+    },
+    {
+      "name": "False Life",
+      "level": 1,
+      "description": "You gain 1d4+4 temporary hit points for 1 hour. At higher levels, gain 5 additional temporary hit points per slot level above 1st."
+    },
+    {
+      "name": "Feather Fall",
+      "level": 1,
+      "description": "React when you or up to five creatures within 60 feet fall. The targets' rate of descent slows to 60 feet per round, taking no falling damage."
+    },
+    {
+      "name": "Fog Cloud",
+      "level": 1,
+      "description": "Create a 20-foot-radius sphere of fog centered on a point within 120 feet, heavily obscuring the area. Lasts up to 1 hour with concentration."
+    },
+    {
+      "name": "Jump",
+      "level": 1,
+      "description": "A creature's jump distance is tripled for 1 minute."
+    },
+    {
+      "name": "Mage Armor",
+      "level": 1,
+      "description": "Touch a willing creature not wearing armor to set its base AC to 13 + its Dexterity modifier for 8 hours."
+    },
+    {
+      "name": "Magic Missile",
+      "level": 1,
+      "description": "Create three glowing darts that automatically hit creatures of your choice within 120 feet, each dealing 1d4+1 force damage. One additional dart per slot level above 1st."
+    },
+    {
+      "name": "Ray of Sickness",
+      "level": 1,
+      "description": "A ray of sickening green energy deals 2d8 poison damage on a hit, and the target must succeed on a Constitution save or be poisoned until the end of your next turn."
+    },
+    {
+      "name": "Shield",
+      "level": 1,
+      "description": "As a reaction when hit by an attack or targeted by magic missile, gain +5 to AC until the start of your next turn, including against the triggering attack."
+    },
+    {
+      "name": "Silent Image",
+      "level": 1,
+      "description": "Create the image of an object, creature, or visible phenomenon within a 15-foot cube for up to 10 minutes. You can move the image with your action. No sound, smell, or physical effect."
+    },
+    {
+      "name": "Sleep",
+      "level": 1,
+      "description": "Roll 5d8 to determine the total hit points of creatures within a 20-foot radius that are put to sleep for 1 minute, starting with the lowest current hit points."
+    },
+    {
+      "name": "Thunderwave",
+      "level": 1,
+      "description": "A wave of thunderous force in a 15-foot cube deals 2d8 thunder damage and pushes creatures 10 feet away on a failed Constitution save. Audible out to 300 feet."
+    },
+    {
+      "name": "Witch Bolt",
+      "level": 1,
+      "description": "A beam of crackling blue energy deals 1d12 lightning damage on a hit. On subsequent turns, you can use your action to deal 1d12 automatically. Requires concentration."
+    },
+    {
+      "name": "Alter Self",
+      "level": 2,
+      "description": "For up to 1 hour, alter your physical form to gain aquatic adaptation, change your appearance, or grow natural weapons that deal 1d6+Str bludgeoning, piercing, or slashing damage."
+    },
+    {
+      "name": "Blindness/Deafness",
+      "level": 2,
+      "description": "A creature must succeed on a Constitution save or be blinded or deafened (your choice) for 1 minute. The target can repeat the save at the end of each turn."
+    },
+    {
+      "name": "Blur",
+      "level": 2,
+      "description": "Your body becomes blurred, granting attackers disadvantage on attack rolls against you for up to 1 minute. Doesn't affect creatures with truesight or that don't rely on sight."
+    },
+    {
+      "name": "Cloud of Daggers",
+      "level": 2,
+      "description": "Fill a 5-foot cube with spinning daggers centered on a point within 60 feet. Any creature that enters or starts its turn there takes 4d4 slashing damage. Lasts up to 1 minute."
+    },
+    {
+      "name": "Crown of Madness",
+      "level": 2,
+      "description": "A humanoid must succeed on a Wisdom save or be charmed and forced to make a melee attack against a creature of your choice on each of its turns. Requires concentration."
+    },
+    {
+      "name": "Darkness",
+      "level": 2,
+      "description": "Create a 15-foot-radius sphere of magical darkness from a point or object within 60 feet, lasting up to 10 minutes. Nonmagical light can't illuminate it and it dispels lower-level light spells."
+    },
+    {
+      "name": "Darkvision",
+      "level": 2,
+      "description": "Grant a willing creature you touch darkvision out to 60 feet for 8 hours."
+    },
+    {
+      "name": "Detect Thoughts",
+      "level": 2,
+      "description": "For up to 1 minute, read the surface thoughts of creatures within 30 feet. You can probe deeper with a contested Intelligence check. Also detects thinking creatures you can't see."
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "description": "Grant a creature you touch advantage on ability checks for one chosen ability score for up to 1 hour. Some options provide additional benefits like temporary HP or reduced falling damage."
+    },
+    {
+      "name": "Enlarge/Reduce",
+      "level": 2,
+      "description": "A creature or object doubles or halves in size for up to 1 minute. Enlarged creatures deal +1d4 weapon damage with advantage on Strength checks; reduced creatures deal -1d4 with disadvantage."
+    },
+    {
+      "name": "Gust of Wind",
+      "level": 2,
+      "description": "Create a 60-foot line of strong wind that pushes creatures 15 feet away on a failed Strength save and makes the area difficult terrain. Disperses gas and vapor."
+    },
+    {
+      "name": "Hold Person",
+      "level": 2,
+      "description": "A humanoid must succeed on a Wisdom save or be paralyzed for up to 1 minute. The target can repeat the save at the end of each turn. Attacks within 5 feet are automatic critical hits."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "description": "A creature you touch becomes invisible for up to 1 hour, ending early if the target attacks or casts a spell. At higher levels, target one additional creature per slot level above 2nd."
+    },
+    {
+      "name": "Knock",
+      "level": 2,
+      "description": "A loud knock (audible within 300 feet) opens one locked object such as a door, chest, or shackle. Magical locks are suppressed for 10 minutes; mundane locks are unlocked."
+    },
+    {
+      "name": "Levitate",
+      "level": 2,
+      "description": "A creature or object up to 500 pounds rises vertically up to 20 feet and stays suspended for up to 10 minutes. You can change the altitude by 20 feet per turn."
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "description": "Three illusory duplicates appear in your space for 1 minute. Each time you're targeted by an attack, roll to see if it hits a duplicate instead (AC 10 + your Dex modifier)."
+    },
+    {
+      "name": "Misty Step",
+      "level": 2,
+      "description": "As a bonus action, teleport up to 30 feet to an unoccupied space you can see, surrounded by silvery mist."
+    },
+    {
+      "name": "Phantasmal Force",
+      "level": 2,
+      "description": "Create an illusory object or creature in a 10-foot cube that only one target can perceive. The target rationalizes the illusion and takes 1d6 psychic damage per turn from it."
+    },
+    {
+      "name": "Scorching Ray",
+      "level": 2,
+      "description": "Create three rays of fire, making ranged spell attacks against targets within 120 feet. Each ray deals 2d6 fire damage on a hit. One additional ray per slot level above 2nd."
+    },
+    {
+      "name": "See Invisibility",
+      "level": 2,
+      "description": "For 1 hour, you see invisible creatures and objects as if visible, and you can see into the Ethereal Plane within 60 feet."
+    },
+    {
+      "name": "Shatter",
+      "level": 2,
+      "description": "A loud ringing noise deals 3d8 thunder damage in a 10-foot-radius sphere on a failed Constitution save. Creatures made of inorganic material have disadvantage on the save."
+    },
+    {
+      "name": "Spider Climb",
+      "level": 2,
+      "description": "A willing creature you touch gains the ability to move on vertical surfaces and ceilings, with a climbing speed equal to its walking speed, for up to 1 hour."
+    },
+    {
+      "name": "Suggestion",
+      "level": 2,
+      "description": "Suggest a reasonable-sounding course of activity to a creature that can hear and understand you. On a failed Wisdom save, it pursues the activity for up to 8 hours."
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "description": "Conjure a mass of thick, sticky webbing in a 20-foot cube. The area is difficult terrain and lightly obscured. Creatures that start there or enter must succeed on a Dex save or be restrained."
+    },
+    {
+      "name": "Blink",
+      "level": 3,
+      "description": "At the end of each turn for 1 minute, roll a d20. On 11 or higher, you vanish to the Ethereal Plane until the start of your next turn, avoiding all damage and effects."
+    },
+    {
+      "name": "Clairvoyance",
+      "level": 3,
+      "description": "Create an invisible sensor within 1 mile at a familiar location, letting you see or hear through it for up to 10 minutes. Requires concentration."
+    },
+    {
+      "name": "Counterspell",
+      "level": 3,
+      "description": "As a reaction, attempt to interrupt a creature casting a spell. Spells of 3rd level or lower are automatically countered; higher-level spells require a spellcasting ability check."
+    },
+    {
+      "name": "Daylight",
+      "level": 3,
+      "description": "A 60-foot-radius sphere of bright light emanates from a point or object you choose within 60 feet, with dim light for an additional 60 feet. Lasts 1 hour and dispels darkness spells of 3rd level or lower."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "End one spell of 3rd level or lower on a target creature, object, or magical effect. For higher-level spells, make a spellcasting ability check (DC 10 + spell's level)."
+    },
+    {
+      "name": "Fear",
+      "level": 3,
+      "description": "Each creature in a 30-foot cone must succeed on a Wisdom save or drop what it's holding and become frightened, forced to Dash away from you on each turn."
+    },
+    {
+      "name": "Fireball",
+      "level": 3,
+      "description": "A bright streak explodes in a 20-foot-radius sphere at a point within 150 feet, dealing 8d6 fire damage on a failed Dexterity save (half on success). Ignites flammable objects."
+    },
+    {
+      "name": "Fly",
+      "level": 3,
+      "description": "Grant a willing creature you touch a flying speed of 60 feet for up to 10 minutes. If the spell ends while airborne, the creature falls. Requires concentration."
+    },
+    {
+      "name": "Gaseous Form",
+      "level": 3,
+      "description": "Transform a willing creature you touch into a misty cloud for up to 1 hour. It gains a 10-foot fly speed, resistance to nonmagical damage, advantage on Str/Dex/Con saves, and can pass through tiny openings."
+    },
+    {
+      "name": "Haste",
+      "level": 3,
+      "description": "Double a creature's speed, grant +2 AC, advantage on Dexterity saves, and an additional action each turn for up to 1 minute. When the spell ends, the target is incapacitated until its next turn."
+    },
+    {
+      "name": "Hypnotic Pattern",
+      "level": 3,
+      "description": "A twisting pattern of colors in a 30-foot cube charms and incapacitates creatures that fail a Wisdom save for up to 1 minute. The effect ends if the creature takes damage or is shaken awake."
+    },
+    {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "description": "A 100-foot line of lightning deals 8d6 lightning damage on a failed Dexterity save (half on success). Ignites flammable objects and sets fire to the area."
+    },
+    {
+      "name": "Major Image",
+      "level": 3,
+      "description": "Create an image up to a 20-foot cube with sound, smell, and temperature at a point within 120 feet for up to 10 minutes. You can animate it and modify it with your action."
+    },
+    {
+      "name": "Protection from Energy",
+      "level": 3,
+      "description": "A willing creature you touch gains resistance to one damage type of your choice (acid, cold, fire, lightning, or thunder) for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Sleet Storm",
+      "level": 3,
+      "description": "Freezing rain and sleet create a 40-foot-radius heavily obscured area of difficult terrain. Creatures entering or starting there must make a Dexterity save or fall prone. Concentration checks are at disadvantage."
+    },
+    {
+      "name": "Slow",
+      "level": 3,
+      "description": "Up to six creatures in a 40-foot cube must save or have halved speed, -2 AC, -2 Dex saves, no reactions, and can only use an action or bonus action (not both). Spellcasting requires a d20 roll."
+    },
+    {
+      "name": "Stinking Cloud",
+      "level": 3,
+      "description": "A 20-foot-radius sphere of nauseating gas heavily obscures the area. Creatures that start their turn there must succeed on a Constitution save or waste their action retching."
+    },
+    {
+      "name": "Tongues",
+      "level": 3,
+      "description": "A creature you touch gains the ability to understand any spoken language and be understood by any creature that knows at least one language for 1 hour."
+    },
+    {
+      "name": "Water Breathing",
+      "level": 3,
+      "description": "Grant up to ten willing creatures the ability to breathe underwater for 24 hours. The targets also retain their normal breathing."
+    },
+    {
+      "name": "Water Walk",
+      "level": 3,
+      "description": "Grant up to ten willing creatures the ability to walk on liquid surfaces as if they were solid ground for 1 hour. Submerged targets rise to the surface at 60 feet per round."
+    },
+    {
+      "name": "Banishment",
+      "level": 4,
+      "description": "A creature must succeed on a Charisma save or be banished to a harmless demiplane for up to 1 minute. If native to another plane, it is sent back and doesn't return if the spell lasts the full duration."
+    },
+    {
+      "name": "Blight",
+      "level": 4,
+      "description": "Necrotic energy drains moisture and vitality from a creature within 30 feet, dealing 8d8 necrotic damage on a failed Constitution save (half on success). Plant creatures have disadvantage and take maximum damage."
+    },
+    {
+      "name": "Confusion",
+      "level": 4,
+      "description": "Each creature in a 10-foot-radius sphere must succeed on a Wisdom save or act randomly each turn for up to 1 minute, potentially attacking allies, moving randomly, or doing nothing."
+    },
+    {
+      "name": "Dimension Door",
+      "level": 4,
+      "description": "Teleport yourself and one willing creature of your size or smaller up to 500 feet to a location you can see, visualize, or describe by distance and direction."
+    },
+    {
+      "name": "Dominate Beast",
+      "level": 4,
+      "description": "A beast must succeed on a Wisdom save or be charmed and under your telepathic control for up to 1 minute. You can command its actions while using your reaction to maintain control."
+    },
+    {
+      "name": "Greater Invisibility",
+      "level": 4,
+      "description": "A creature you touch becomes invisible for up to 1 minute. Unlike Invisibility, the effect doesn't end when the target attacks or casts a spell."
+    },
+    {
+      "name": "Ice Storm",
+      "level": 4,
+      "description": "Hail deals 2d8 bludgeoning and 4d6 cold damage in a 20-foot-radius, 40-foot-high cylinder on a failed Dexterity save (half on success). The area becomes difficult terrain for 1 round."
+    },
+    {
+      "name": "Polymorph",
+      "level": 4,
+      "description": "Transform a creature into a beast with CR equal to or less than its level (or CR). The target takes on the beast's statistics and HP. Dropping to 0 HP reverts it to its original form."
+    },
+    {
+      "name": "Stoneskin",
+      "level": 4,
+      "description": "A willing creature you touch gains resistance to nonmagical bludgeoning, piercing, and slashing damage for up to 1 hour. Requires 100 gp worth of diamond dust consumed as a material component."
+    },
+    {
+      "name": "Wall of Fire",
+      "level": 4,
+      "description": "Create a wall of fire up to 60 feet long and 20 feet high (or a 20-foot-diameter ring) for up to 1 minute. One side deals 5d8 fire damage to creatures within 10 feet, and 5d8 to creatures passing through."
+    },
+    {
+      "name": "Animate Objects",
+      "level": 5,
+      "description": "Bring up to ten nonmagical objects to life for 1 minute. They obey your verbal commands, can attack, and have statistics based on their size category. Bonus action to direct them each turn."
+    },
+    {
+      "name": "Cloudkill",
+      "level": 5,
+      "description": "A 20-foot-radius sphere of poisonous yellow-green fog deals 5d8 poison damage on a failed Constitution save (half on success) to creatures starting their turn there. It moves 10 feet away from you each round."
+    },
+    {
+      "name": "Cone of Cold",
+      "level": 5,
+      "description": "A blast of cold air in a 60-foot cone deals 8d8 cold damage on a failed Constitution save (half on success). Creatures killed by the spell become frozen statues."
+    },
+    {
+      "name": "Creation",
+      "level": 5,
+      "description": "Create a nonliving object of vegetable or mineral matter within 30 feet, up to a 5-foot cube. Vegetable matter lasts 24 hours; mineral matter lasts from 1 minute to 12 hours depending on material."
+    },
+    {
+      "name": "Dominate Person",
+      "level": 5,
+      "description": "A humanoid must succeed on a Wisdom save or be charmed and under your telepathic control for up to 1 minute. The target can repeat the save when it takes damage."
+    },
+    {
+      "name": "Hold Monster",
+      "level": 5,
+      "description": "A creature must succeed on a Wisdom save or be paralyzed for up to 1 minute. The target can repeat the save at the end of each turn. Attacks within 5 feet are automatic critical hits."
+    },
+    {
+      "name": "Insect Plague",
+      "level": 5,
+      "description": "A 20-foot-radius sphere of biting insects deals 4d10 piercing damage on a failed Constitution save (half on success) and makes the area difficult terrain and lightly obscured."
+    },
+    {
+      "name": "Seeming",
+      "level": 5,
+      "description": "Change the appearance of any number of willing creatures you can see within 30 feet for 8 hours. Each creature can seem up to 1 foot shorter or taller and can appear different in build."
+    },
+    {
+      "name": "Telekinesis",
+      "level": 5,
+      "description": "Gain the ability to move creatures or objects up to 1,000 pounds by 30 feet per turn using your action for up to 10 minutes. Unwilling creatures can resist with a contested Strength check."
+    },
+    {
+      "name": "Teleportation Circle",
+      "level": 5,
+      "description": "Draw a 10-foot-diameter circle that links to a permanent teleportation circle whose sigil sequence you know. Any creature stepping into the circle is teleported instantly."
+    },
+    {
+      "name": "Wall of Stone",
+      "level": 5,
+      "description": "Create a nonmagical wall of solid stone composed of ten 10-foot-by-10-foot panels, each 6 inches thick, within 120 feet. Lasts up to 10 minutes or becomes permanent if maintained the full duration."
+    },
+    {
+      "name": "Arcane Gate",
+      "level": 6,
+      "description": "Create two linked portals within 500 feet of each other for up to 10 minutes. Any creature or object entering one portal exits the other, and you can change one portal's facing each turn."
+    },
+    {
+      "name": "Chain Lightning",
+      "level": 6,
+      "description": "A bolt of lightning arcs to a target within 150 feet dealing 10d8 lightning damage on a failed Dexterity save (half on success), then jumps to up to three additional targets within 30 feet."
+    },
+    {
+      "name": "Circle of Death",
+      "level": 6,
+      "description": "A sphere of negative energy with a 60-foot radius deals 8d6 necrotic damage to each creature in the area on a failed Constitution save (half on success)."
+    },
+    {
+      "name": "Disintegrate",
+      "level": 6,
+      "description": "A thin green ray deals 10d6+40 force damage to a creature or object. A creature reduced to 0 HP is disintegrated, leaving only fine dust. A Large or smaller nonmagical object is automatically disintegrated."
+    },
+    {
+      "name": "Eyebite",
+      "level": 6,
+      "description": "For up to 1 minute, use your action each turn to target a creature within 60 feet with one of three effects: asleep, panicked, or sickened. Each requires a Wisdom save."
+    },
+    {
+      "name": "Globe of Invulnerability",
+      "level": 6,
+      "description": "A 10-foot-radius immobile shimmering sphere prevents any spell of 5th level or lower from affecting anything inside it for up to 1 minute. Higher-level slots raise the exclusion threshold."
+    },
+    {
+      "name": "Mass Suggestion",
+      "level": 6,
+      "description": "Suggest a course of activity to up to twelve creatures that can hear and understand you. Each must succeed on a Wisdom save or pursue the activity for up to 24 hours."
+    },
+    {
+      "name": "Move Earth",
+      "level": 6,
+      "description": "Reshape terrain in a 40-foot area within 120 feet over 10 minutes per cycle, moving dirt, sand, or clay to create or flatten slopes, raise or lower elevation, and dig trenches. Lasts up to 2 hours."
+    },
+    {
+      "name": "Sunbeam",
+      "level": 6,
+      "description": "A beam of brilliant light in a 60-foot line deals 6d8 radiant damage and blinds creatures on a failed Constitution save. You can create a new beam each turn for up to 1 minute. Undead and oozes have disadvantage."
+    },
+    {
+      "name": "True Seeing",
+      "level": 6,
+      "description": "Grant a willing creature you touch truesight to 120 feet for 1 hour, allowing it to see through illusions, magical darkness, invisible creatures, and into the Ethereal Plane."
+    },
+    {
+      "name": "Delayed Blast Fireball",
+      "level": 7,
+      "description": "A glowing bead of fire can be held for up to 1 minute, growing in power by 1d6 per round. It explodes in a 20-foot radius dealing 12d6+ fire damage on a failed Dexterity save (half on success)."
+    },
+    {
+      "name": "Etherealness",
+      "level": 7,
+      "description": "Step into the Ethereal Plane for up to 8 hours, where you can move and see into the Material Plane (appearing as a ghostly form). You can affect and be affected only by other ethereal creatures."
+    },
+    {
+      "name": "Finger of Death",
+      "level": 7,
+      "description": "Deal 7d8+30 necrotic damage to a creature within 60 feet on a failed Constitution save (half on success). A humanoid killed by this spell rises as a zombie permanently under your control."
+    },
+    {
+      "name": "Fire Storm",
+      "level": 7,
+      "description": "A storm of roaring flame in up to ten 10-foot cubes within 150 feet deals 7d10 fire damage on a failed Dexterity save (half on success). You choose whether the flames ignite or spare plant life."
+    },
+    {
+      "name": "Plane Shift",
+      "level": 7,
+      "description": "Transport yourself and up to eight willing creatures to another plane of existence, or make a melee spell attack to banish an unwilling creature on a failed Charisma save."
+    },
+    {
+      "name": "Prismatic Spray",
+      "level": 7,
+      "description": "Eight multicolored rays of light flash from your hand in a 60-foot cone. Each creature in the area is struck by a random ray with effects ranging from 10d6 damage to petrification or banishment."
+    },
+    {
+      "name": "Reverse Gravity",
+      "level": 7,
+      "description": "Reverse gravity in a 50-foot-radius, 100-foot-high cylinder for up to 1 minute. Creatures and objects fall upward, taking falling damage when they hit the ceiling or when the spell ends."
+    },
+    {
+      "name": "Teleport",
+      "level": 7,
+      "description": "Instantly transport yourself and up to eight willing creatures to a destination on the same plane. Accuracy depends on your familiarity with the destination, with mishaps possible for unfamiliar locations."
+    },
+    {
+      "name": "Dominate Monster",
+      "level": 8,
+      "description": "A creature must succeed on a Wisdom save or be charmed and under your telepathic control for up to 1 hour. The target can repeat the save when it takes damage, with advantage if you or your allies are fighting it."
+    },
+    {
+      "name": "Earthquake",
+      "level": 8,
+      "description": "Create a seismic disturbance in a 100-foot-radius area for up to 1 minute. Creatures must make Dexterity saves or be knocked prone, and structures take 50 bludgeoning damage per round with possible collapse."
+    },
+    {
+      "name": "Incendiary Cloud",
+      "level": 8,
+      "description": "A 20-foot-radius cloud of roiling smoke and embers deals 10d8 fire damage on a failed Dexterity save (half on success). The cloud heavily obscures the area and moves 10 feet per round."
+    },
+    {
+      "name": "Power Word Stun",
+      "level": 8,
+      "description": "Stun a creature you can see within 60 feet that has 150 hit points or fewer. No saving throw. The target can make a Constitution save at the end of each turn to end the effect."
+    },
+    {
+      "name": "Sunburst",
+      "level": 8,
+      "description": "Brilliant sunlight in a 60-foot radius deals 12d6 radiant damage and blinds creatures for 1 minute on a failed Constitution save (half damage and not blinded on success). Undead and oozes have disadvantage."
+    },
+    {
+      "name": "Gate",
+      "level": 9,
+      "description": "Open a portal to another plane of existence within 60 feet. If you name a specific being, the portal opens adjacent to them and can draw them through. Lasts up to 1 minute."
+    },
+    {
+      "name": "Meteor Swarm",
+      "level": 9,
+      "description": "Four blazing orbs strike points within 1 mile, each exploding in a 40-foot-radius sphere dealing 20d6 fire and 20d6 bludgeoning damage on a failed Dexterity save (half on success)."
+    },
+    {
+      "name": "Power Word Kill",
+      "level": 9,
+      "description": "Instantly kill a creature you can see within 60 feet that has 100 hit points or fewer. No saving throw."
+    },
+    {
+      "name": "Time Stop",
+      "level": 9,
+      "description": "Briefly stop time for everyone but yourself, taking 1d4+1 extra turns in a row. The effect ends early if you affect another creature or an object held by one during the stopped time."
+    },
+    {
+      "name": "Wish",
+      "level": 9,
+      "description": "The most powerful spell in existence. Duplicate any spell of 8th level or lower without components, or create any other effect of comparable power. Non-spell uses carry a risk of never casting Wish again."
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Spellcasting",
+        "Sorcerous Origin"
+      ],
+      "spell_slots": [
+        2
+      ],
+      "cantrips_known": 4,
+      "spells_known": 2
+    },
+    {
+      "features": [
+        "Font of Magic"
+      ],
+      "spell_slots": [
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 3,
+      "sorcery_points": 2
+    },
+    {
+      "features": [
+        "Metamagic"
+      ],
+      "spell_slots": [
+        4,
+        2
+      ],
+      "cantrips_known": 4,
+      "spells_known": 4,
+      "sorcery_points": 3
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3
+      ],
+      "cantrips_known": 5,
+      "spells_known": 5,
+      "sorcery_points": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        2
+      ],
+      "cantrips_known": 5,
+      "spells_known": 6,
+      "sorcery_points": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3
+      ],
+      "cantrips_known": 5,
+      "spells_known": 7,
+      "sorcery_points": 6
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 5,
+      "spells_known": 8,
+      "sorcery_points": 7
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 5,
+      "spells_known": 9,
+      "sorcery_points": 8
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 5,
+      "spells_known": 10,
+      "sorcery_points": 9
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 6,
+      "spells_known": 11,
+      "sorcery_points": 10
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 12,
+      "sorcery_points": 11
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 12,
+      "sorcery_points": 12
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 13,
+      "sorcery_points": 13
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 13,
+      "sorcery_points": 14
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 14,
+      "sorcery_points": 15
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 14,
+      "sorcery_points": 16
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "sorcery_points": 17
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "sorcery_points": 18
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "sorcery_points": 19
+    },
+    {
+      "features": [
+        "Sorcerous Restoration"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "sorcery_points": 20
+    }
+  ]
+}

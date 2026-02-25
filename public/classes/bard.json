@@ -1,0 +1,783 @@
+{
+  "name": "Bard",
+  "description": "An inspiring magician whose power echoes the music of creation.",
+  "hit_die": 8,
+  "casting_ability": "Charisma",
+  "proficiencies": ["LightArmor", "SimpleWeapons"],
+  "saving_throws": ["Dexterity", "Charisma"],
+  "features": [
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire."
+    },
+    {
+      "name": "Bardic Inspiration",
+      "description": "You can inspire others through stirring words or music. As a bonus action, give one creature within 60 feet a Bardic Inspiration die (d6). The die increases at higher levels."
+    },
+    {
+      "name": "Jack of All Trades",
+      "description": "You can add half your proficiency bonus, rounded down, to any ability check you make that doesn't already include your proficiency bonus."
+    },
+    {
+      "name": "Song of Rest",
+      "description": "You can use soothing music or oration to help revitalize your wounded allies during a short rest. Each creature regains an extra 1d6 hit points."
+    },
+    {
+      "name": "Bard College",
+      "description": "You delve into the advanced techniques of a bard college of your choice. Your choice grants you features at 3rd level and again at 6th and 14th level."
+    },
+    {
+      "name": "Expertise",
+      "description": "Choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    {
+      "name": "Font of Inspiration",
+      "description": "You regain all of your expended uses of Bardic Inspiration when you finish a short or long rest."
+    },
+    {
+      "name": "Countercharm",
+      "description": "You gain the ability to use musical notes or words of power to disrupt mind-influencing effects. Allies within 30 feet have advantage on saves against being frightened or charmed."
+    },
+    {
+      "name": "Magical Secrets",
+      "description": "You have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any class's spell list."
+    },
+    {
+      "name": "Superior Inspiration",
+      "description": "When you roll initiative and have no uses of Bardic Inspiration left, you regain one use."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Blade Ward",
+      "level": 0,
+      "description": "You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks."
+    },
+    {
+      "name": "Dancing Lights",
+      "level": 0,
+      "description": "You create up to four torch-sized lights within range that last for 1 minute. Each light sheds dim light in a 10-foot radius."
+    },
+    {
+      "name": "Friends",
+      "level": 0,
+      "description": "For the duration, you have advantage on all Charisma checks directed at one creature of your choice that isn't hostile toward you."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "description": "You touch one object and it sheds bright light in a 20-foot radius and dim light for an additional 20 feet for 1 hour."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "description": "A spectral, floating hand appears at a point you choose within range. You can use the hand to manipulate objects, open doors, or carry items up to 10 pounds."
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link or a torn cloak."
+    },
+    {
+      "name": "Message",
+      "level": 0,
+      "description": "You point your finger toward a creature within range and whisper a message. The target hears the message and can reply in a whisper that only you can hear."
+    },
+    {
+      "name": "Minor Illusion",
+      "level": 0,
+      "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion ends if you dismiss it or cast this spell again."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several minor sensory or magical effects."
+    },
+    {
+      "name": "True Strike",
+      "level": 0,
+      "description": "You extend your hand and point a finger at a target in range. You gain advantage on your first attack roll against the target on your next turn."
+    },
+    {
+      "name": "Thunderclap",
+      "level": 0,
+      "description": "You create a burst of thunderous sound that can be heard 100 feet away. Each creature within 5 feet of you must succeed on a Constitution saving throw or take 1d6 thunder damage."
+    },
+    {
+      "name": "Vicious Mockery",
+      "level": 0,
+      "description": "You unleash a string of insults laced with subtle enchantments at a creature you can see within range. The target must succeed on a Wisdom save or take 1d4 psychic damage and have disadvantage on its next attack roll."
+    },
+    {
+      "name": "Animal Friendship",
+      "level": 1,
+      "description": "This spell lets you convince a beast that you mean it no harm. A beast with Intelligence 3 or lower must succeed on a Wisdom save or be charmed by you for 24 hours."
+    },
+    {
+      "name": "Bane",
+      "level": 1,
+      "description": "Up to three creatures of your choice within range must make Charisma saving throws. On a failure, a target must subtract 1d4 from all attack rolls and saving throws."
+    },
+    {
+      "name": "Charm Person",
+      "level": 1,
+      "description": "You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw or be charmed by you for 1 hour."
+    },
+    {
+      "name": "Comprehend Languages",
+      "level": 1,
+      "description": "For the duration, you understand the literal meaning of any spoken language that you hear. You also understand any written language that you see."
+    },
+    {
+      "name": "Cure Wounds",
+      "level": 1,
+      "description": "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "description": "For the duration, you sense the presence of magic within 30 feet of you. You can also see a faint aura around any visible creature or object that bears magic."
+    },
+    {
+      "name": "Disguise Self",
+      "level": 1,
+      "description": "You make yourself, including your clothing, armor, weapons, and belongings, look different until the spell ends or you dismiss it."
+    },
+    {
+      "name": "Dissonant Whispers",
+      "level": 1,
+      "description": "You whisper a discordant melody that only one creature of your choice within range can hear, wracking it with terrible pain. The target takes 3d6 psychic damage and must use its reaction to move away."
+    },
+    {
+      "name": "Faerie Fire",
+      "level": 1,
+      "description": "Objects and creatures in a 20-foot cube within range are outlined in blue, green, or violet light. Affected creatures shed dim light and attack rolls against them have advantage."
+    },
+    {
+      "name": "Feather Fall",
+      "level": 1,
+      "description": "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round and takes no falling damage."
+    },
+    {
+      "name": "Healing Word",
+      "level": 1,
+      "description": "A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier. This spell has no effect on undead or constructs."
+    },
+    {
+      "name": "Heroism",
+      "level": 1,
+      "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to being frightened and gains temporary hit points equal to your spellcasting modifier each turn."
+    },
+    {
+      "name": "Identify",
+      "level": 1,
+      "description": "You choose one object that you must touch throughout the casting of the spell. You learn its properties and how to use them, and whether any spells are affecting it."
+    },
+    {
+      "name": "Illusory Script",
+      "level": 1,
+      "description": "You write on parchment, paper, or another writing material and imbue it with an illusion that lasts for the duration. Only you and designated creatures can read the true message."
+    },
+    {
+      "name": "Longstrider",
+      "level": 1,
+      "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends."
+    },
+    {
+      "name": "Silent Image",
+      "level": 1,
+      "description": "You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 15-foot cube. The image is purely visual with no sound or other sensory effects."
+    },
+    {
+      "name": "Sleep",
+      "level": 1,
+      "description": "This spell sends creatures into a magical slumber. Roll 5d8; the total is how many hit points of creatures this spell can affect, starting with the creature with the lowest current hit points."
+    },
+    {
+      "name": "Speak with Animals",
+      "level": 1,
+      "description": "You gain the ability to comprehend and verbally communicate with beasts for the duration. Beasts' intelligence limits what they can communicate or understand."
+    },
+    {
+      "name": "Tasha's Hideous Laughter",
+      "level": 1,
+      "description": "A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter, falling prone and becoming incapacitated."
+    },
+    {
+      "name": "Thunderwave",
+      "level": 1,
+      "description": "A wave of thunderous force sweeps out from you. Each creature in a 15-foot cube must make a Constitution saving throw or take 2d8 thunder damage and be pushed 10 feet away."
+    },
+    {
+      "name": "Unseen Servant",
+      "level": 1,
+      "description": "This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command. It has AC 10, 1 hit point, and a Strength of 2."
+    },
+    {
+      "name": "Animal Messenger",
+      "level": 2,
+      "description": "You use an animal to deliver a message. Choose a Tiny beast you can see and specify a location and a recipient. The beast travels to that location for the duration of the spell."
+    },
+    {
+      "name": "Blindness/Deafness",
+      "level": 2,
+      "description": "You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is either blinded or deafened for the duration."
+    },
+    {
+      "name": "Calm Emotions",
+      "level": 2,
+      "description": "You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere must make a Charisma saving throw or have effects like charm or fear suppressed."
+    },
+    {
+      "name": "Cloud of Daggers",
+      "level": 2,
+      "description": "You fill the air with spinning daggers in a 5-foot cube centered on a point you choose within range. A creature takes 4d4 slashing damage when it enters the area or starts its turn there."
+    },
+    {
+      "name": "Crown of Madness",
+      "level": 2,
+      "description": "One humanoid of your choice within range must succeed on a Wisdom saving throw or become charmed. A twisted crown of jagged iron appears on its head and it must attack a creature you designate."
+    },
+    {
+      "name": "Detect Thoughts",
+      "level": 2,
+      "description": "For the duration, you can read the thoughts of certain creatures. You can focus your mind on any one creature within 30 feet to learn its surface thoughts."
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "description": "You touch a creature and bestow upon it a magical enhancement. Choose one of six effects, each granting advantage on checks with a specific ability score for the duration."
+    },
+    {
+      "name": "Enthrall",
+      "level": 2,
+      "description": "You weave a distracting string of words, causing creatures of your choice that you can see within range to make a Wisdom saving throw or have disadvantage on Perception checks."
+    },
+    {
+      "name": "Heat Metal",
+      "level": 2,
+      "description": "Choose a manufactured metal object within range. The object glows red-hot, causing any creature in physical contact with it to take 2d8 fire damage and possibly drop the object."
+    },
+    {
+      "name": "Hold Person",
+      "level": 2,
+      "description": "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "description": "A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target's person."
+    },
+    {
+      "name": "Knock",
+      "level": 2,
+      "description": "Choose an object that you can see within range. The object can be a door, a box, a chest, a set of manacles, a padlock, or another object that contains a mundane or magical means of locking. The target is unlocked."
+    },
+    {
+      "name": "Lesser Restoration",
+      "level": 2,
+      "description": "You touch a creature and can end either one disease or one condition afflicting it. The condition can be blinded, deafened, paralyzed, or poisoned."
+    },
+    {
+      "name": "Locate Animals or Plants",
+      "level": 2,
+      "description": "Describe or name a specific kind of beast or plant. You learn the direction and distance to the closest creature or plant of that kind within 5 miles."
+    },
+    {
+      "name": "Locate Object",
+      "level": 2,
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location, as long as it is within 1,000 feet of you."
+    },
+    {
+      "name": "Magic Mouth",
+      "level": 2,
+      "description": "You implant a message within an object in range, a message that is uttered when a trigger condition is met. The message can be up to 25 words long."
+    },
+    {
+      "name": "Phantasmal Force",
+      "level": 2,
+      "description": "You craft an illusion that takes root in the mind of a creature that you can see within range. The target must make an Intelligence save or perceive the phantasmal object as real."
+    },
+    {
+      "name": "See Invisibility",
+      "level": 2,
+      "description": "For the duration, you see invisible creatures and objects as if they were visible, and you can see into the Ethereal Plane."
+    },
+    {
+      "name": "Shatter",
+      "level": 2,
+      "description": "A sudden loud ringing noise erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere must make a Constitution save or take 3d8 thunder damage."
+    },
+    {
+      "name": "Silence",
+      "level": 2,
+      "description": "For the duration, no sound can be created within or pass through a 20-foot-radius sphere centered on a point you choose within range."
+    },
+    {
+      "name": "Suggestion",
+      "level": 2,
+      "description": "You suggest a course of activity to a creature within range that can hear and understand you. The suggestion must be worded to sound reasonable. The creature pursues the course of action for up to 8 hours."
+    },
+    {
+      "name": "Zone of Truth",
+      "level": 2,
+      "description": "You create a magical zone that guards against deception in a 15-foot-radius sphere. Creatures within must succeed on a Charisma save or be unable to deliberately lie."
+    },
+    {
+      "name": "Bestow Curse",
+      "level": 3,
+      "description": "You touch a creature, and that creature must succeed on a Wisdom saving throw or become cursed for the duration. You choose the nature of the curse from several options."
+    },
+    {
+      "name": "Clairvoyance",
+      "level": 3,
+      "description": "You create an invisible sensor within range in a location familiar to you. The sensor allows you to see or hear through it as if you were there."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "Choose one creature, object, or magical effect within range. Any spell of 3rd level or lower on the target ends. For higher level spells, make an ability check."
+    },
+    {
+      "name": "Fear",
+      "level": 3,
+      "description": "You project a phantasmal image of a creature's worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop what it is holding and become frightened."
+    },
+    {
+      "name": "Feign Death",
+      "level": 3,
+      "description": "You touch a willing creature and put it into a cataleptic state that is indistinguishable from death. The target appears dead to all outward inspection and to spells used to determine status."
+    },
+    {
+      "name": "Glyph of Warding",
+      "level": 3,
+      "description": "You inscribe a glyph that harms other creatures on a surface or within an object. The glyph triggers when a creature enters the warded area or opens the object."
+    },
+    {
+      "name": "Hypnotic Pattern",
+      "level": 3,
+      "description": "You create a twisting pattern of colors that weaves through the air in a 30-foot cube. Creatures must make a Wisdom save or become charmed and incapacitated with a speed of 0."
+    },
+    {
+      "name": "Leomund's Tiny Hut",
+      "level": 3,
+      "description": "A 10-foot-radius immobile dome of force springs into existence around and above you. The dome is comfortable and dry inside, and provides shelter for up to nine Medium creatures."
+    },
+    {
+      "name": "Major Image",
+      "level": 3,
+      "description": "You create the image of an object, a creature, or some other visible phenomenon no larger than a 20-foot cube. It seems perfectly real, including sounds, smells, and temperature."
+    },
+    {
+      "name": "Nondetection",
+      "level": 3,
+      "description": "For the duration, you hide a target that you touch from divination magic. The target can be a willing creature, a place, or an object. The target cannot be targeted by divination magic."
+    },
+    {
+      "name": "Plant Growth",
+      "level": 3,
+      "description": "This spell channels vitality into plants within a specific area. All normal plants in a 100-foot radius become thick and overgrown, making the area difficult terrain."
+    },
+    {
+      "name": "Sending",
+      "level": 3,
+      "description": "You send a short message of twenty-five words or less to a creature with which you are familiar. The creature hears the message and can reply in a like manner."
+    },
+    {
+      "name": "Speak with Dead",
+      "level": 3,
+      "description": "You grant the semblance of life to a corpse, allowing it to answer up to five questions. The corpse knows only what it knew in life and cannot learn new information."
+    },
+    {
+      "name": "Speak with Plants",
+      "level": 3,
+      "description": "You imbue plants within 30 feet of you with limited sentience and animation, allowing them to communicate with you and follow your simple commands."
+    },
+    {
+      "name": "Stinking Cloud",
+      "level": 3,
+      "description": "You create a 20-foot-radius sphere of yellow, nauseating gas. Each creature within the cloud at the start of its turn must make a Constitution saving throw or spend its action retching."
+    },
+    {
+      "name": "Tongues",
+      "level": 3,
+      "description": "This spell grants the creature you touch the ability to understand any spoken language it hears. When the target speaks, any creature that knows at least one language can understand it."
+    },
+    {
+      "name": "Compulsion",
+      "level": 4,
+      "description": "Creatures of your choice that you can see within range must make a Wisdom saving throw. On a failure, a target is affected and must move in a direction you choose on each of its turns."
+    },
+    {
+      "name": "Confusion",
+      "level": 4,
+      "description": "This spell assaults and twists creatures' minds, spawning delusions and provoking uncontrolled action. Each creature in a 10-foot-radius sphere must succeed on a Wisdom save or be affected."
+    },
+    {
+      "name": "Dimension Door",
+      "level": 4,
+      "description": "You teleport yourself from your current location to any other spot within range. You can bring along objects and one willing creature of your size or smaller."
+    },
+    {
+      "name": "Freedom of Movement",
+      "level": 4,
+      "description": "You touch a willing creature. For the duration, the target's movement is unaffected by difficult terrain, and spells and other effects can neither reduce its speed nor cause it to be paralyzed or restrained."
+    },
+    {
+      "name": "Greater Invisibility",
+      "level": 4,
+      "description": "You or a creature you touch becomes invisible for the duration. Anything the target is wearing or carrying is invisible. The invisibility does not end if the target attacks or casts a spell."
+    },
+    {
+      "name": "Hallucinatory Terrain",
+      "level": 4,
+      "description": "You make natural terrain in a 150-foot cube in range look, sound, and smell like some other sort of natural terrain for 24 hours."
+    },
+    {
+      "name": "Locate Creature",
+      "level": 4,
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location, as long as that creature is within 1,000 feet of you."
+    },
+    {
+      "name": "Polymorph",
+      "level": 4,
+      "description": "This spell transforms a creature that you can see within range into a new beast form. An unwilling creature must make a Wisdom saving throw to avoid the effect."
+    },
+    {
+      "name": "Animate Objects",
+      "level": 5,
+      "description": "Objects come to life at your command. Choose up to ten nonmagical objects within range. Animated objects are creatures with statistics determined by their size."
+    },
+    {
+      "name": "Awaken",
+      "level": 5,
+      "description": "After spending the casting time tracing magical pathways within a precious gemstone, you touch a Huge or smaller beast or plant. The target gains an Intelligence of 10 and the ability to speak."
+    },
+    {
+      "name": "Dominate Person",
+      "level": 5,
+      "description": "You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration, following your telepathic commands."
+    },
+    {
+      "name": "Dream",
+      "level": 5,
+      "description": "This spell shapes a creature's dreams. You can make the messenger appear in the target's dreams and converse with the target, or turn the dream into a nightmare dealing psychic damage."
+    },
+    {
+      "name": "Geas",
+      "level": 5,
+      "description": "You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from an action. It takes 5d10 psychic damage each day it disobeys."
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "description": "You imbue a creature you touch with positive energy to undo a debilitating effect. You can reduce the target's exhaustion level or end a charm, petrification, curse, or ability score reduction."
+    },
+    {
+      "name": "Hold Monster",
+      "level": 5,
+      "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell works on any creature type."
+    },
+    {
+      "name": "Legend Lore",
+      "level": 5,
+      "description": "Name or describe a person, place, or object. The spell brings to your mind a brief summary of the significant lore about the thing you named."
+    },
+    {
+      "name": "Mass Cure Wounds",
+      "level": 5,
+      "description": "A wave of healing energy washes out from a point of your choice within range. Choose up to six creatures in a 30-foot-radius sphere. Each target regains 3d8 + your spellcasting modifier hit points."
+    },
+    {
+      "name": "Mislead",
+      "level": 5,
+      "description": "You become invisible at the same time that an illusory double of you appears where you are standing. The double lasts for the duration and you can use your action to move it."
+    },
+    {
+      "name": "Modify Memory",
+      "level": 5,
+      "description": "You attempt to reshape another creature's memories. The target must make a Wisdom saving throw or be charmed, and you can modify its memories of an event within the last 24 hours."
+    },
+    {
+      "name": "Planar Binding",
+      "level": 5,
+      "description": "You attempt to bind a celestial, an elemental, a fey, or a fiend to your service. The creature must make a Charisma saving throw or be bound to serve you for the duration."
+    },
+    {
+      "name": "Raise Dead",
+      "level": 5,
+      "description": "You return a dead creature you touch to life, provided that it has been dead no longer than 10 days. The creature returns to life with 1 hit point and takes a penalty to rolls for several days."
+    },
+    {
+      "name": "Scrying",
+      "level": 5,
+      "description": "You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw modified by familiarity."
+    },
+    {
+      "name": "Seeming",
+      "level": 5,
+      "description": "This spell allows you to change the appearance of any number of creatures that you can see within range. Each target takes on a new appearance that you choose."
+    },
+    {
+      "name": "Teleportation Circle",
+      "level": 5,
+      "description": "You draw a circle on the ground linked to a permanent teleportation circle whose sigil sequence you know. A shimmering portal opens and any creature that enters it is teleported there."
+    },
+    {
+      "name": "Eyebite",
+      "level": 6,
+      "description": "For the spell's duration, your eyes become an inky void imbued with dread power. One creature of your choice within 60 feet must succeed on a Wisdom save or be affected by asleep, panicked, or sickened."
+    },
+    {
+      "name": "Find the Path",
+      "level": 6,
+      "description": "This spell allows you to find the shortest, most direct physical route to a specific fixed location that you are familiar with on the same plane of existence."
+    },
+    {
+      "name": "Guards and Wards",
+      "level": 6,
+      "description": "You create a ward that protects up to 2,500 square feet of floor space. The warded area includes magical effects like fog, locked doors, webs, and confusion-inducing corridors."
+    },
+    {
+      "name": "Mass Suggestion",
+      "level": 6,
+      "description": "You suggest a course of activity to up to twelve creatures of your choice that you can see within range. The suggestion must be worded to sound reasonable. Targets pursue the course for up to 24 hours."
+    },
+    {
+      "name": "Otto's Irresistible Dance",
+      "level": 6,
+      "description": "Choose one creature that you can see within range. The target begins a comic dance in place, spending its movement to dance. It has disadvantage on Dexterity saves and attack rolls."
+    },
+    {
+      "name": "Programmed Illusion",
+      "level": 6,
+      "description": "You create an illusion of an object, a creature, or some other visible phenomenon within range that activates when a specific condition occurs. It seems perfectly real."
+    },
+    {
+      "name": "True Seeing",
+      "level": 6,
+      "description": "You touch a willing creature and grant it the ability to see things as they actually are. For the duration, the creature has truesight out to 120 feet."
+    },
+    {
+      "name": "Etherealness",
+      "level": 7,
+      "description": "You step into the border regions of the Ethereal Plane, in the area where it overlaps with your current plane. You remain in the Border Ethereal for the duration."
+    },
+    {
+      "name": "Forcecage",
+      "level": 7,
+      "description": "An immobile, invisible, cube-shaped prison composed of magical force springs into existence around an area you choose within range. It can be a cage or a solid box."
+    },
+    {
+      "name": "Mirage Arcane",
+      "level": 7,
+      "description": "You make terrain in an area up to one mile square look, sound, smell, and even feel like some other sort of terrain. The terrain's general shape remains the same."
+    },
+    {
+      "name": "Mordenkainen's Magnificent Mansion",
+      "level": 7,
+      "description": "You conjure an extradimensional dwelling in range that has a single entrance. The dwelling contains sufficient food and servants for a grand banquet for up to 100 guests."
+    },
+    {
+      "name": "Mordenkainen's Sword",
+      "level": 7,
+      "description": "You create a sword-shaped plane of force that hovers within range. On the turn you cast it and as a bonus action on subsequent turns, you can move the sword and make a melee spell attack."
+    },
+    {
+      "name": "Project Image",
+      "level": 7,
+      "description": "You create an illusory copy of yourself that lasts for the duration. The copy appears at a location within range and looks and sounds like you. You can see and hear through the copy."
+    },
+    {
+      "name": "Regenerate",
+      "level": 7,
+      "description": "You touch a creature and stimulate its natural healing ability. The target regains 4d8 + 15 hit points and then regains 1 hit point at the start of each of its turns for the duration."
+    },
+    {
+      "name": "Resurrection",
+      "level": 7,
+      "description": "You touch a dead creature that has been dead for no more than a century. The creature returns to life with all its hit points, and all poisons and normal diseases are neutralized."
+    },
+    {
+      "name": "Symbol",
+      "level": 7,
+      "description": "You inscribe a harmful glyph either on a surface or within an object that can be closed. When triggered, the glyph erupts with magical energy producing an effect you choose."
+    },
+    {
+      "name": "Teleport",
+      "level": 7,
+      "description": "This spell instantly transports you and up to eight willing creatures to a destination you select. The accuracy of the teleportation depends on your familiarity with the destination."
+    },
+    {
+      "name": "Dominate Monster",
+      "level": 8,
+      "description": "You attempt to beguile a creature that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration, obeying your telepathic commands."
+    },
+    {
+      "name": "Feeblemind",
+      "level": 8,
+      "description": "You blast the mind of a creature that you can see within range. The target takes 4d6 psychic damage and must make an Intelligence saving throw or have its Intelligence and Charisma drop to 1."
+    },
+    {
+      "name": "Glibness",
+      "level": 8,
+      "description": "Until the spell ends, when you make a Charisma check, you can replace the number you roll with a 15. Additionally, no matter what you say, magic that determines if you are telling the truth indicates you are being truthful."
+    },
+    {
+      "name": "Mind Blank",
+      "level": 8,
+      "description": "Until the spell ends, one willing creature you touch is immune to psychic damage, any effect that would sense its emotions or read its thoughts, divination spells, and the charmed condition."
+    },
+    {
+      "name": "Power Word Stun",
+      "level": 8,
+      "description": "You speak a word of power that can overwhelm the mind of one creature you can see within range. If the target has 150 hit points or fewer, it is stunned."
+    },
+    {
+      "name": "Foresight",
+      "level": 9,
+      "description": "You touch a willing creature and bestow a limited ability to see into the immediate future. The target has advantage on attack rolls, ability checks, and saving throws, and other creatures have disadvantage on attacks against it."
+    },
+    {
+      "name": "Power Word Heal",
+      "level": 9,
+      "description": "A wave of healing energy washes over the creature you touch. The target regains all its hit points. If the creature is charmed, frightened, paralyzed, or stunned, the condition ends."
+    },
+    {
+      "name": "Power Word Kill",
+      "level": 9,
+      "description": "You utter a word of power that can compel one creature you can see within range to die instantly. If the creature has 100 hit points or fewer, it dies. Otherwise, the spell has no effect."
+    },
+    {
+      "name": "True Polymorph",
+      "level": 9,
+      "description": "Choose one creature or nonmagical object that you can see within range. You transform the creature into a different creature, the creature into a nonmagical object, or the object into a creature."
+    }
+  ],
+  "levels": [
+    {
+      "features": ["Spellcasting", "Bardic Inspiration"],
+      "spell_slots": [2],
+      "cantrips_known": 2,
+      "spells_known": 4
+    },
+    {
+      "features": ["Jack of All Trades", "Song of Rest"],
+      "spell_slots": [3],
+      "cantrips_known": 2,
+      "spells_known": 5
+    },
+    {
+      "features": ["Bard College", "Expertise"],
+      "spell_slots": [4, 2],
+      "cantrips_known": 2,
+      "spells_known": 6
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3],
+      "cantrips_known": 3,
+      "spells_known": 7
+    },
+    {
+      "features": ["Font of Inspiration"],
+      "spell_slots": [4, 3, 2],
+      "cantrips_known": 3,
+      "spells_known": 8
+    },
+    {
+      "features": ["Countercharm"],
+      "spell_slots": [4, 3, 3],
+      "cantrips_known": 3,
+      "spells_known": 9
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 1],
+      "cantrips_known": 3,
+      "spells_known": 10
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 2],
+      "cantrips_known": 3,
+      "spells_known": 11
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 1],
+      "cantrips_known": 3,
+      "spells_known": 12
+    },
+    {
+      "features": ["Magical Secrets"],
+      "spell_slots": [4, 3, 3, 3, 2],
+      "cantrips_known": 4,
+      "spells_known": 14
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1],
+      "cantrips_known": 4,
+      "spells_known": 15
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 2, 1],
+      "cantrips_known": 4,
+      "spells_known": 15
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 16
+    },
+    {
+      "features": ["Magical Secrets"],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 18
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 19
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 19
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 20
+    },
+    {
+      "features": ["Magical Secrets"],
+      "spell_slots": [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 22
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 22
+    },
+    {
+      "features": ["Superior Inspiration"],
+      "spell_slots": [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      "cantrips_known": 4,
+      "spells_known": 22
+    }
+  ]
+}

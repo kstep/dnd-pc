@@ -5,9 +5,12 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
-use crate::model::{
-    Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-    Translatable,
+use crate::{
+    model::{
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
+        Feature, Translatable,
+    },
+    rules::RulesRegistry,
 };
 
 fn export_character(character: &Character) {
@@ -129,9 +132,70 @@ fn import_character(store: Store<Character>) {
     input.click();
 }
 
+fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
+    let classes = store.identity().classes();
+    let class_name = classes.read()[class_index].class.clone();
+
+    let def = match registry.get_class(&class_name) {
+        Some(d) => d,
+        None => return,
+    };
+
+    let level_idx = (level as usize).saturating_sub(1);
+    let rules = match def.levels.get(level_idx) {
+        Some(r) => r,
+        None => return,
+    };
+
+    // Add features
+    let features_to_add: Vec<Feature> = rules
+        .features
+        .iter()
+        .filter_map(|name| {
+            def.features
+                .iter()
+                .find(|f| &f.name == name)
+                .map(|f| Feature {
+                    name: f.name.clone(),
+                    description: f.description.clone(),
+                })
+        })
+        .collect();
+
+    if !features_to_add.is_empty() {
+        store.features().write().extend(features_to_add);
+    }
+
+    // Update spell slots and sorcery points
+    {
+        let spellcasting = store.spellcasting();
+        let mut guard = spellcasting.write();
+        if let Some(ref mut sc) = *guard {
+            if let Some(ref slots) = rules.spell_slots {
+                for (j, &count) in slots.iter().enumerate() {
+                    if j < sc.spell_slots.len() {
+                        sc.spell_slots[j].total = count;
+                    }
+                }
+            }
+            if let Some(sp) = rules.sorcery_points
+                && let Some(ref mut mm) = sc.metamagic
+            {
+                mm.sorcery_points_max = sp;
+            }
+        }
+    }
+
+    // Auto-set hit die and mark level as applied
+    let mut cl = classes.write();
+    cl[class_index].hit_die_sides = def.hit_die;
+    cl[class_index].applied_levels.push(level);
+}
+
 #[component]
 pub fn CharacterHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
 
     let total_level = Memo::new(move |_| store.get().level());
     let prof_bonus = Memo::new(move |_| store.get().proficiency_bonus());
@@ -154,6 +218,18 @@ pub fn CharacterHeader() -> impl IntoView {
 
     view! {
         <div class="panel character-header">
+            <datalist id="class-suggestions">
+                {move || {
+                    registry.with_class_entries(|entries| {
+                        entries.iter().map(|entry| {
+                            let name = entry.name.clone();
+                            let desc = entry.description.clone();
+                            view! { <option value=name>{desc}</option> }
+                        }).collect_view()
+                    })
+                }}
+            </datalist>
+
             <div class="header-row">
                 <div class="header-field name-field">
                     <label>{move_tr!("character-name")}</label>
@@ -237,6 +313,8 @@ pub fn CharacterHeader() -> impl IntoView {
                 <label>{move_tr!("classes")}</label>
                 <div class="classes-list">
                     {move || {
+                        registry.class_cache.track();
+                        registry.class_index.track();
                         classes
                             .read()
                             .iter()
@@ -245,15 +323,40 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let class_name = cl.class.clone();
                                 let level_val = cl.level.to_string();
                                 let hit_die_val = cl.hit_die_sides.to_string();
+                                let current_level = cl.level;
+                                let applied = cl.applied_levels.clone();
+
+                                // Trigger lazy fetch if definition not yet loaded
+                                if !class_name.is_empty() {
+                                    registry.fetch_class(&class_name);
+                                }
+
+                                let unapplied: Vec<u32> = registry
+                                    .get_class(&class_name)
+                                    .map(|_| {
+                                        (1..=current_level)
+                                            .filter(|lvl| !applied.contains(lvl))
+                                            .collect()
+                                    })
+                                    .unwrap_or_default();
+
                                 view! {
                                     <div class="class-entry">
                                         <input
                                             type="text"
                                             class="class-name"
+                                            list="class-suggestions"
                                             placeholder=tr!("class")
                                             prop:value=class_name
                                             on:input=move |e| {
-                                                classes.write()[i].class = event_target_value(&e);
+                                                let name = event_target_value(&e);
+                                                classes.write()[i].class = name.clone();
+                                                if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
+                                                    registry.fetch_class(&name);
+                                                    if let Some(def) = registry.get_class(&name) {
+                                                        classes.write()[i].hit_die_sides = def.hit_die;
+                                                    }
+                                                }
                                             }
                                         />
                                         <select
@@ -294,6 +397,28 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 "X"
                                             </button>
                                         </Show>
+                                        {if !unapplied.is_empty() {
+                                            Some(view! {
+                                                <div class="apply-levels">
+                                                    {unapplied.into_iter().map(|lvl| {
+                                                        let title = tr!("btn-apply-level", {"level" => lvl.to_string()});
+                                                        view! {
+                                                            <button
+                                                                class="btn-apply-level"
+                                                                title=title
+                                                                on:click=move |_| {
+                                                                    apply_level(store, registry, i, lvl);
+                                                                }
+                                                            >
+                                                                {format!("⬆{lvl}")}
+                                                            </button>
+                                                        }
+                                                    }).collect_view()}
+                                                </div>
+                                            })
+                                        } else {
+                                            None
+                                        }}
                                     </div>
                                 }
                             })

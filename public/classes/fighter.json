@@ -1,0 +1,129 @@
+{
+  "name": "Fighter",
+  "description": "A master of martial combat, skilled with a variety of weapons and armor.",
+  "hit_die": 10,
+  "casting_ability": null,
+  "proficiencies": ["LightArmor", "MediumArmor", "HeavyArmor", "Shields", "SimpleWeapons", "MartialWeapons"],
+  "saving_throws": ["Strength", "Constitution"],
+  "features": [
+    {
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty. Choose one: Archery, Defense, Dueling, Great Weapon Fighting, Protection, or Two-Weapon Fighting."
+    },
+    {
+      "name": "Second Wind",
+      "description": "You have a limited well of stamina. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once used, you must finish a short or long rest to use it again."
+    },
+    {
+      "name": "Action Surge",
+      "description": "You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action. Once used, you must finish a short or long rest to use it again. Starting at 17th level, you can use it twice before a rest."
+    },
+    {
+      "name": "Martial Archetype",
+      "description": "You choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion, Battle Master, or Eldritch Knight."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    {
+      "name": "Extra Attack",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "name": "Indomitable",
+      "description": "You can reroll a saving throw that you fail. If you do so, you must use the new roll. You can use this feature once per long rest, increasing to twice at 13th level and three times at 17th level."
+    },
+    {
+      "name": "Extra Attack (2)",
+      "description": "You can attack three times whenever you take the Attack action on your turn."
+    },
+    {
+      "name": "Extra Attack (3)",
+      "description": "You can attack four times whenever you take the Attack action on your turn."
+    }
+  ],
+  "spells": [],
+  "levels": [
+    {
+      "level": 1,
+      "features": ["Fighting Style", "Second Wind"]
+    },
+    {
+      "level": 2,
+      "features": ["Action Surge"]
+    },
+    {
+      "level": 3,
+      "features": ["Martial Archetype"]
+    },
+    {
+      "level": 4,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 5,
+      "features": ["Extra Attack"]
+    },
+    {
+      "level": 6,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 7,
+      "features": []
+    },
+    {
+      "level": 8,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 9,
+      "features": ["Indomitable"]
+    },
+    {
+      "level": 10,
+      "features": []
+    },
+    {
+      "level": 11,
+      "features": ["Extra Attack (2)"]
+    },
+    {
+      "level": 12,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 13,
+      "features": []
+    },
+    {
+      "level": 14,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 15,
+      "features": []
+    },
+    {
+      "level": 16,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 17,
+      "features": []
+    },
+    {
+      "level": 18,
+      "features": []
+    },
+    {
+      "level": 19,
+      "features": ["Ability Score Improvement"]
+    },
+    {
+      "level": 20,
+      "features": ["Extra Attack (3)"]
+    }
+  ]
+}

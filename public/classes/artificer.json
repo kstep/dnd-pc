@@ -1,0 +1,738 @@
+{
+  "name": "Artificer",
+  "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
+  "hit_die": 8,
+  "casting_ability": "Intelligence",
+  "proficiencies": [
+    "LightArmor",
+    "MediumArmor",
+    "Shields",
+    "SimpleWeapons"
+  ],
+  "saving_throws": [
+    "Constitution",
+    "Intelligence"
+  ],
+  "features": [
+    {
+      "name": "Magical Tinkering",
+      "description": "You learn how to invest a spark of magic into mundane objects."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "You've studied the workings of magic and how to cast spells, channeling the magic through objects."
+    },
+    {
+      "name": "Infuse Item",
+      "description": "You've gained the ability to imbue mundane items with certain magical infusions."
+    },
+    {
+      "name": "The Right Tool for the Job",
+      "description": "You've learned how to produce exactly the tool you need: with thieves' tools or artisan's tools in hand, you can magically create one set of artisan's tools in an unoccupied space within 5 feet of you."
+    },
+    {
+      "name": "Artificer Specialist",
+      "description": "Choose the type of specialist you are."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "Increase one ability score by 2 or two by 1."
+    },
+    {
+      "name": "Tool Expertise",
+      "description": "Your proficiency bonus is doubled for any ability check you make that uses your proficiency with a tool."
+    },
+    {
+      "name": "Flash of Genius",
+      "description": "When you or another creature you can see within 30 feet makes an ability check or a saving throw, you can use your reaction to add your Intelligence modifier to the roll."
+    },
+    {
+      "name": "Magic Item Adept",
+      "description": "You've achieved a profound understanding of how to use and make magic items."
+    },
+    {
+      "name": "Spell-Storing Item",
+      "description": "You can now store a spell in an object."
+    },
+    {
+      "name": "Magic Item Savant",
+      "description": "Your skill with magic items deepens."
+    },
+    {
+      "name": "Magic Item Master",
+      "description": "You can now attune to up to six magic items at once."
+    },
+    {
+      "name": "Soul of Artifice",
+      "description": "You have developed a mystical connection to your magic items. You gain a +1 bonus to all saving throws per magic item you are currently attuned to."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Acid Splash",
+      "level": 0,
+      "description": "Hurl a bubble of acid at one or two creatures within 5 feet of each other, dealing acid damage on a failed Dexterity save."
+    },
+    {
+      "name": "Create Bonfire",
+      "level": 0,
+      "description": "Create a magical bonfire in a 5-foot cube that deals fire damage to creatures that start their turn in or enter the area."
+    },
+    {
+      "name": "Dancing Lights",
+      "level": 0,
+      "description": "Create up to four floating, torch-sized lights that you can move up to 60 feet as a bonus action. Requires concentration."
+    },
+    {
+      "name": "Fire Bolt",
+      "level": 0,
+      "description": "Hurl a mote of fire at a creature or object, dealing fire damage on a hit. Flammable unattended objects are ignited."
+    },
+    {
+      "name": "Frostbite",
+      "level": 0,
+      "description": "Deal cold damage to a creature on a failed Constitution save, and it has disadvantage on its next weapon attack roll."
+    },
+    {
+      "name": "Guidance",
+      "level": 0,
+      "description": "Touch a willing creature to grant it an extra d4 on one ability check of its choice. Requires concentration."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "description": "Touch an object to make it shed bright light in a 20-foot radius and dim light for an additional 20 feet for 1 hour."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "description": "Create a spectral floating hand that can manipulate objects, open doors, or carry up to 10 pounds within 30 feet."
+    },
+    {
+      "name": "Magic Stone",
+      "level": 0,
+      "description": "Enchant up to three pebbles to deal bludgeoning damage using your spellcasting modifier when thrown or hurled with a sling."
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "description": "Repair a single break or tear in an object you touch, such as a broken chain link or a torn cloak."
+    },
+    {
+      "name": "Message",
+      "level": 0,
+      "description": "Whisper a message to a creature within 120 feet, which only the target hears. It can reply in a whisper only you hear."
+    },
+    {
+      "name": "Poison Spray",
+      "level": 0,
+      "description": "Project a puff of noxious gas at a creature within 10 feet, dealing poison damage on a failed Constitution save."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "description": "Perform minor magical tricks such as creating sensory effects, lighting or snuffing small flames, cleaning or soiling objects, and other harmless effects."
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "description": "Fire a frigid beam at a creature, dealing cold damage on a hit and reducing its speed by 10 feet until your next turn."
+    },
+    {
+      "name": "Resistance",
+      "level": 0,
+      "description": "Touch a willing creature to grant it an extra d4 on one saving throw of its choice. Requires concentration."
+    },
+    {
+      "name": "Shocking Grasp",
+      "level": 0,
+      "description": "Deliver a jolt of lightning with your touch, dealing lightning damage with advantage if the target wears metal armor. The target can't take reactions until its next turn."
+    },
+    {
+      "name": "Spare the Dying",
+      "level": 0,
+      "description": "Touch a living creature at 0 hit points to stabilize it. This has no effect on undead or constructs."
+    },
+    {
+      "name": "Thorn Whip",
+      "level": 0,
+      "description": "Create a vine-like whip that deals piercing damage on a hit and pulls a Large or smaller creature up to 10 feet closer to you."
+    },
+    {
+      "name": "Thunderclap",
+      "level": 0,
+      "description": "Create a burst of thunderous sound audible 100 feet away, dealing thunder damage to all creatures within 5 feet on a failed Constitution save."
+    },
+    {
+      "name": "Absorb Elements",
+      "level": 1,
+      "description": "Use your reaction to gain resistance to the triggering acid, cold, fire, lightning, or thunder damage, and deal an extra 1d6 of that type on your next melee attack."
+    },
+    {
+      "name": "Alarm",
+      "level": 1,
+      "description": "Set a ward on a 20-foot cube that alerts you (mentally or audibly) when a creature enters the area for 8 hours. Can be cast as a ritual."
+    },
+    {
+      "name": "Catapult",
+      "level": 1,
+      "description": "Hurl an object weighing up to 5 pounds in a straight line up to 90 feet, dealing bludgeoning damage on a failed Dexterity save."
+    },
+    {
+      "name": "Cure Wounds",
+      "level": 1,
+      "description": "Touch a creature to restore hit points equal to 1d8 plus your spellcasting modifier. Has no effect on undead or constructs."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "description": "Sense the presence of magic within 30 feet for up to 10 minutes. You can use your action to see a faint aura and learn its school. Can be cast as a ritual."
+    },
+    {
+      "name": "Disguise Self",
+      "level": 1,
+      "description": "Make yourself look different for 1 hour, changing your appearance including height, weight, clothing, and equipment. Physical inspection reveals the illusion."
+    },
+    {
+      "name": "Expeditious Retreat",
+      "level": 1,
+      "description": "Take the Dash action as a bonus action on the turn you cast this, and on each subsequent turn for up to 10 minutes. Requires concentration."
+    },
+    {
+      "name": "Faerie Fire",
+      "level": 1,
+      "description": "Outline creatures in a 20-foot cube with light on a failed Dexterity save, granting advantage on attack rolls against them and negating invisibility. Requires concentration."
+    },
+    {
+      "name": "False Life",
+      "level": 1,
+      "description": "Gain 1d4 + 4 temporary hit points for 1 hour. Temporary hit points increase by 5 for each slot level above 1st."
+    },
+    {
+      "name": "Feather Fall",
+      "level": 1,
+      "description": "Use your reaction to slow the falling rate of up to five creatures within 60 feet, preventing fall damage for 1 minute."
+    },
+    {
+      "name": "Grease",
+      "level": 1,
+      "description": "Cover a 10-foot square in slippery grease, forcing creatures to make a Dexterity save or fall prone. The area is difficult terrain."
+    },
+    {
+      "name": "Identify",
+      "level": 1,
+      "description": "Touch an object or creature to learn its magical properties, how to use them, and any spells affecting it. Can be cast as a ritual."
+    },
+    {
+      "name": "Jump",
+      "level": 1,
+      "description": "Touch a creature to triple its jump distance for 1 minute."
+    },
+    {
+      "name": "Longstrider",
+      "level": 1,
+      "description": "Touch a creature to increase its speed by 10 feet for 1 hour. Does not require concentration."
+    },
+    {
+      "name": "Purify Food and Drink",
+      "level": 1,
+      "description": "Render all nonmagical food and drink within a 5-foot-radius sphere free of poison and disease. Can be cast as a ritual."
+    },
+    {
+      "name": "Sanctuary",
+      "level": 1,
+      "description": "Ward a creature so that enemies must make a Wisdom save to target it with attacks or harmful spells for 1 minute. Ends if the warded creature attacks or casts a harmful spell."
+    },
+    {
+      "name": "Snare",
+      "level": 1,
+      "description": "Create a magical trap in a 5-foot radius that hoists a creature 3 feet in the air upside down on a failed Dexterity save until dispelled or the rope is cut."
+    },
+    {
+      "name": "Tasha's Caustic Brew",
+      "level": 1,
+      "description": "Emit a stream of acid in a 30-foot line that deals 2d4 acid damage at the start of each affected creature's turn on a failed Dexterity save. Requires concentration."
+    },
+    {
+      "name": "Aid",
+      "level": 2,
+      "description": "Bolster up to three creatures with toughness, increasing their hit point maximum and current hit points by 5 for 8 hours."
+    },
+    {
+      "name": "Alter Self",
+      "level": 2,
+      "description": "Transform your body for up to 1 hour, gaining aquatic adaptation, a new appearance, or natural weapons that deal 1d6+1 force damage. Requires concentration."
+    },
+    {
+      "name": "Arcane Lock",
+      "level": 2,
+      "description": "Magically lock a closed door, window, gate, or chest, increasing the DC to break or pick it by 10. You can designate creatures that can open it normally."
+    },
+    {
+      "name": "Blur",
+      "level": 2,
+      "description": "Your body becomes blurred, granting attackers disadvantage on attack rolls against you for up to 1 minute. Requires concentration. Ineffective against creatures with blindsight or truesight."
+    },
+    {
+      "name": "Continual Flame",
+      "level": 2,
+      "description": "Create a permanent flame on an object that emits light equivalent to a torch. The flame can be covered but not extinguished, and it produces no heat."
+    },
+    {
+      "name": "Darkvision",
+      "level": 2,
+      "description": "Grant a willing creature you touch darkvision out to 60 feet for 8 hours."
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "description": "Grant a creature advantage on ability checks for one chosen ability score for up to 1 hour, plus a bonus effect depending on the ability chosen. Requires concentration."
+    },
+    {
+      "name": "Enlarge/Reduce",
+      "level": 2,
+      "description": "Cause a creature or object to grow or shrink for up to 1 minute. Enlarged creatures deal an extra 1d4 damage and have advantage on Strength checks; reduced creatures deal 1d4 less damage and have disadvantage. Requires concentration."
+    },
+    {
+      "name": "Heat Metal",
+      "level": 2,
+      "description": "Cause a metal object to glow red-hot, dealing 2d8 fire damage to a creature in contact with it. The creature must make a Constitution save or drop the object. Requires concentration."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "description": "Make a creature you touch invisible for up to 1 hour. The spell ends if the target attacks or casts a spell. Requires concentration."
+    },
+    {
+      "name": "Lesser Restoration",
+      "level": 2,
+      "description": "Touch a creature to end one disease or one condition: blinded, deafened, paralyzed, or poisoned."
+    },
+    {
+      "name": "Levitate",
+      "level": 2,
+      "description": "Cause a creature or object to rise vertically up to 20 feet and remain suspended for up to 10 minutes. An unwilling creature can make a Constitution save to resist. Requires concentration."
+    },
+    {
+      "name": "Magic Mouth",
+      "level": 2,
+      "description": "Implant a message on an object that is spoken when a specified trigger occurs. The message can be up to 25 words and the spell lasts until dispelled. Can be cast as a ritual."
+    },
+    {
+      "name": "Magic Weapon",
+      "level": 2,
+      "description": "Touch a nonmagical weapon to grant it a +1 bonus to attack and damage rolls for up to 1 hour. The bonus increases at higher slot levels. Requires concentration."
+    },
+    {
+      "name": "Protection from Poison",
+      "level": 2,
+      "description": "Touch a creature to neutralize one poison affecting it, grant advantage on saving throws against poison, and give resistance to poison damage for 1 hour."
+    },
+    {
+      "name": "Pyrotechnics",
+      "level": 2,
+      "description": "Target a nonmagical fire to either create a 10-foot-radius blinding fireworks display or a 20-foot-radius heavily obscuring smoke cloud. Extinguishes the fire."
+    },
+    {
+      "name": "Rope Trick",
+      "level": 2,
+      "description": "A rope rises into the air and leads to an extradimensional space that holds up to 8 creatures for 1 hour. The space is invisible and inaccessible from outside."
+    },
+    {
+      "name": "See Invisibility",
+      "level": 2,
+      "description": "See invisible creatures and objects, and see into the Ethereal Plane for 1 hour. Does not require concentration."
+    },
+    {
+      "name": "Skywrite",
+      "level": 2,
+      "description": "Write up to 10 words across the sky using clouds for up to 1 hour. The writing is visible from up to 1 mile away. Requires concentration."
+    },
+    {
+      "name": "Spider Climb",
+      "level": 2,
+      "description": "Grant a willing creature you touch the ability to walk on walls and ceilings and a climbing speed equal to its walking speed for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "description": "Fill a 20-foot cube with thick, sticky webs that restrain creatures who fail a Dexterity save. The webs are difficult terrain and lightly obscure the area. Requires concentration."
+    },
+    {
+      "name": "Blink",
+      "level": 3,
+      "description": "At the end of each of your turns, roll a d20. On 11 or higher, you vanish to the Ethereal Plane until the start of your next turn for up to 1 minute."
+    },
+    {
+      "name": "Catnap",
+      "level": 3,
+      "description": "Put up to three willing creatures into a 10-minute magical slumber that grants the benefits of a short rest. The spell ends early if a target takes damage."
+    },
+    {
+      "name": "Create Food and Water",
+      "level": 3,
+      "description": "Create 45 pounds of food and 30 gallons of water, enough to sustain up to fifteen humanoids or five steeds for 24 hours."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "End one spell of 3rd level or lower on a target. For higher-level spells, make a spellcasting ability check against DC 10 + the spell's level."
+    },
+    {
+      "name": "Elemental Weapon",
+      "level": 3,
+      "description": "Enchant a nonmagical weapon with a +1 bonus to attack rolls and an extra 1d4 elemental damage of a chosen type for up to 1 hour. Bonuses increase at higher slot levels. Requires concentration."
+    },
+    {
+      "name": "Flame Arrows",
+      "level": 3,
+      "description": "Enchant a quiver of ammunition so that up to 12 pieces deal an extra 1d6 fire damage on a hit for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Fly",
+      "level": 3,
+      "description": "Grant a willing creature you touch a flying speed of 60 feet for up to 10 minutes. The creature falls if the spell ends while airborne. Requires concentration."
+    },
+    {
+      "name": "Glyph of Warding",
+      "level": 3,
+      "description": "Inscribe a glyph on a surface or object that triggers a damaging explosion or stores a spell when a creature enters the area or opens the object."
+    },
+    {
+      "name": "Haste",
+      "level": 3,
+      "description": "Double a creature's speed, grant +2 AC, advantage on Dexterity saves, and an extra action each turn for up to 1 minute. When the spell ends, the target can't move or act until its next turn. Requires concentration."
+    },
+    {
+      "name": "Intellect Fortress",
+      "level": 3,
+      "description": "Grant a willing creature you can see resistance to psychic damage and advantage on Intelligence, Wisdom, and Charisma saving throws for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Protection from Energy",
+      "level": 3,
+      "description": "Grant a willing creature you touch resistance to one damage type (acid, cold, fire, lightning, or thunder) for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Revivify",
+      "level": 3,
+      "description": "Touch a creature that has died within the last minute to return it to life with 1 hit point. Requires 300 gp worth of diamonds, which the spell consumes."
+    },
+    {
+      "name": "Tiny Servant",
+      "level": 3,
+      "description": "Animate a Tiny nonmagical object, giving it legs and arms. It obeys your commands, can carry up to 10 pounds, and lasts for 8 hours."
+    },
+    {
+      "name": "Water Breathing",
+      "level": 3,
+      "description": "Grant up to ten willing creatures the ability to breathe underwater for 24 hours. Can be cast as a ritual."
+    },
+    {
+      "name": "Water Walk",
+      "level": 3,
+      "description": "Grant up to ten willing creatures the ability to walk on liquid surfaces as if they were solid ground for 1 hour. Can be cast as a ritual."
+    },
+    {
+      "name": "Arcane Eye",
+      "level": 4,
+      "description": "Create an invisible, magical eye that you can move up to 30 feet per turn and see through within 30 feet of it for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Elemental Bane",
+      "level": 4,
+      "description": "Choose a damage type and up to one creature within 90 feet. On a failed Constitution save, the target loses resistance to that damage type and takes an extra 2d6 damage of that type once per turn. Requires concentration."
+    },
+    {
+      "name": "Fabricate",
+      "level": 4,
+      "description": "Convert raw materials into finished products of the same material instantly. You must be proficient with the relevant artisan's tools if crafting something requiring skill."
+    },
+    {
+      "name": "Freedom of Movement",
+      "level": 4,
+      "description": "Touch a willing creature to make its movement unaffected by difficult terrain, and it can't be paralyzed or restrained by spells or magical effects for 1 hour."
+    },
+    {
+      "name": "Leomund's Secret Chest",
+      "level": 4,
+      "description": "Hide a chest and its contents on the Ethereal Plane, recallable with a tiny replica. The spell lasts until dispelled but has a cumulative 5% daily chance of being lost."
+    },
+    {
+      "name": "Mordenkainen's Faithful Hound",
+      "level": 4,
+      "description": "Conjure a phantom watchdog in an unoccupied space that barks at hostile creatures within 30 feet and can bite for 4d8 force damage for 8 hours."
+    },
+    {
+      "name": "Mordenkainen's Private Sanctum",
+      "level": 4,
+      "description": "Create a magically secured area up to a 100-foot cube where sound, divination, planar travel, and teleportation are blocked for 24 hours."
+    },
+    {
+      "name": "Otiluke's Resilient Sphere",
+      "level": 4,
+      "description": "Enclose a creature or object in a shimmering sphere of force that nothing can pass through for up to 1 minute. An unwilling creature can make a Dexterity save to avoid it. Requires concentration."
+    },
+    {
+      "name": "Stone Shape",
+      "level": 4,
+      "description": "Touch a stone object or section of stone no larger than 5 feet in any dimension and form it into any shape you desire."
+    },
+    {
+      "name": "Stoneskin",
+      "level": 4,
+      "description": "Grant a willing creature you touch resistance to nonmagical bludgeoning, piercing, and slashing damage for up to 1 hour. Requires 100 gp of diamond dust. Requires concentration."
+    },
+    {
+      "name": "Summon Construct",
+      "level": 4,
+      "description": "Summon a construct spirit that takes the form of a clay, metal, or stone construct. It obeys your commands and lasts for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Animate Objects",
+      "level": 5,
+      "description": "Animate up to ten nonmagical objects that attack on your command, each with stats based on size. You can command them as a bonus action. Requires concentration."
+    },
+    {
+      "name": "Bigby's Hand",
+      "level": 5,
+      "description": "Create a Large spectral hand of force that can punch, push, grasp, or block. You direct it as a bonus action for up to 1 minute. Requires concentration."
+    },
+    {
+      "name": "Creation",
+      "level": 5,
+      "description": "Create a nonliving object of vegetable or mineral matter within a 5-foot cube. Vegetable matter lasts 1 day; mineral matter duration varies by material."
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "description": "Touch a creature to end one effect reducing its ability scores or hit point maximum, or remove one charm, petrification, curse, or effect reducing its levels. Consumes 100 gp of diamond dust."
+    },
+    {
+      "name": "Skill Empowerment",
+      "level": 5,
+      "description": "Grant a willing creature you touch expertise (double proficiency bonus) in one skill it is already proficient in for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Transmute Rock",
+      "level": 5,
+      "description": "Transmute a 40-foot cube of nonmagical rock into mud or mud into rock. Creatures in rock-to-mud sink and must make a Dexterity save or be restrained."
+    },
+    {
+      "name": "Wall of Stone",
+      "level": 5,
+      "description": "Create a nonmagical wall of stone panels, each 10 feet by 10 feet by 6 inches thick, on a solid surface for up to 10 minutes. If it fully encloses an area, it becomes permanent. Requires concentration."
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Magical Tinkering",
+        "Spellcasting"
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Infuse Item"
+      ],
+      "spell_slots": [
+        2
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "The Right Tool for the Job",
+        "Artificer Specialist"
+      ],
+      "spell_slots": [
+        3
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        3
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        2
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Tool Expertise"
+      ],
+      "spell_slots": [
+        4,
+        2
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Flash of Genius"
+      ],
+      "spell_slots": [
+        4,
+        3
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        2
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Magic Item Adept"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        2
+      ],
+      "cantrips_known": 3
+    },
+    {
+      "features": [
+        "Spell-Storing Item"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3
+      ],
+      "cantrips_known": 3
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3
+      ],
+      "cantrips_known": 3
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 3
+    },
+    {
+      "features": [
+        "Magic Item Savant"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Magic Item Master"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Soul of Artifice"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    }
+  ]
+}

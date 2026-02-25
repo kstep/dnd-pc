@@ -1,0 +1,687 @@
+{
+  "name": "Cleric",
+  "description": "A priestly champion who wields divine magic in service of a higher power.",
+  "hit_die": 8,
+  "casting_ability": "Wisdom",
+  "proficiencies": ["LightArmor", "MediumArmor", "Shields", "SimpleWeapons"],
+  "saving_throws": ["Wisdom", "Charisma"],
+  "features": [
+    {
+      "name": "Spellcasting",
+      "description": "As a conduit for divine power, you can cast cleric spells. Wisdom is your spellcasting ability. You prepare spells each day from the cleric spell list."
+    },
+    {
+      "name": "Divine Domain",
+      "description": "Choose one domain related to your deity, such as Life, Light, or War. Your choice grants you domain spells and other features."
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "You gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with Turn Undead and one effect determined by your domain."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    {
+      "name": "Destroy Undead",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+    },
+    {
+      "name": "Divine Intervention",
+      "description": "You can call on your deity to intervene on your behalf. Roll a d100; if the number is equal to or less than your cleric level, your deity intervenes."
+    },
+    {
+      "name": "Divine Intervention Improvement",
+      "description": "Your call for divine intervention succeeds automatically, no roll required."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Guidance",
+      "level": 0,
+      "description": "Touch a willing creature to grant it a d4 bonus to one ability check of its choice within 1 minute. The spell ends once the bonus is used."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "description": "Touch an object to make it shed bright light in a 20-foot radius and dim light for an additional 20 feet for 1 hour."
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "description": "Repair a single break or tear in an object you touch, such as a broken chain link or a torn cloak, as long as the damage is no larger than 1 foot."
+    },
+    {
+      "name": "Resistance",
+      "level": 0,
+      "description": "Touch a willing creature to grant it a d4 bonus to one saving throw of its choice within 1 minute. The spell ends once the bonus is used."
+    },
+    {
+      "name": "Sacred Flame",
+      "level": 0,
+      "description": "Flame-like radiance descends on a creature you can see within 60 feet, dealing 1d8 radiant damage on a failed Dexterity save. The target gains no benefit from cover."
+    },
+    {
+      "name": "Spare the Dying",
+      "level": 0,
+      "description": "Touch a living creature that has 0 hit points to stabilize it. This spell has no effect on undead or constructs."
+    },
+    {
+      "name": "Thaumaturgy",
+      "level": 0,
+      "description": "Manifest a minor wonder of divine power, such as booming your voice, causing flames to flicker, or making the ground tremble. Up to three effects can be active at once."
+    },
+    {
+      "name": "Toll the Dead",
+      "level": 0,
+      "description": "Point at a creature within 60 feet; it must succeed on a Wisdom save or take 1d8 necrotic damage, or 1d12 if it is missing any hit points. Damage increases at higher levels."
+    },
+    {
+      "name": "Word of Radiance",
+      "level": 0,
+      "description": "Speak a divine word and burning radiance erupts from you. Each creature of your choice within 5 feet must succeed on a Constitution save or take 1d6 radiant damage."
+    },
+    {
+      "name": "Bane",
+      "level": 1,
+      "description": "Up to three creatures within 30 feet must succeed on a Charisma save or subtract a d4 from every attack roll and saving throw for up to 1 minute."
+    },
+    {
+      "name": "Bless",
+      "level": 1,
+      "description": "Bless up to three creatures within 30 feet; whenever a target makes an attack roll or saving throw, it can add a d4 to the roll for up to 1 minute."
+    },
+    {
+      "name": "Command",
+      "level": 1,
+      "description": "Speak a one-word command to a creature within 60 feet. On a failed Wisdom save, it follows the command on its next turn. Common commands include Approach, Drop, Flee, Grovel, and Halt."
+    },
+    {
+      "name": "Create or Destroy Water",
+      "level": 1,
+      "description": "Create up to 10 gallons of clean water in an open container or as rain in a 30-foot cube, or destroy up to 10 gallons of water in an open container or destroy fog in a 30-foot cube."
+    },
+    {
+      "name": "Cure Wounds",
+      "level": 1,
+      "description": "A creature you touch regains hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs."
+    },
+    {
+      "name": "Detect Evil and Good",
+      "level": 1,
+      "description": "For up to 10 minutes, you sense the presence of aberrations, celestials, elementals, fey, fiends, or undead within 30 feet, as well as consecrated or desecrated places or objects."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "description": "For up to 10 minutes, you sense the presence of magic within 30 feet. You can use your action to see a faint aura around any visible magical creature or object and learn its school of magic."
+    },
+    {
+      "name": "Detect Poison and Disease",
+      "level": 1,
+      "description": "For up to 10 minutes, you sense the presence and location of poisons, poisonous creatures, and diseases within 30 feet. You can identify the kind of poison, creature, or disease."
+    },
+    {
+      "name": "Guiding Bolt",
+      "level": 1,
+      "description": "A flash of light streaks toward a creature within 120 feet, dealing 4d6 radiant damage on a hit. The next attack roll against the target has advantage before the end of your next turn."
+    },
+    {
+      "name": "Healing Word",
+      "level": 1,
+      "description": "As a bonus action, a creature of your choice within 60 feet regains hit points equal to 1d4 + your spellcasting ability modifier."
+    },
+    {
+      "name": "Inflict Wounds",
+      "level": 1,
+      "description": "Make a melee spell attack against a creature you can reach. On a hit, the target takes 3d10 necrotic damage."
+    },
+    {
+      "name": "Protection from Evil and Good",
+      "level": 1,
+      "description": "A willing creature you touch is protected against aberrations, celestials, elementals, fey, fiends, and undead for up to 10 minutes. Those creatures have disadvantage on attacks against the target."
+    },
+    {
+      "name": "Purify Food and Drink",
+      "level": 1,
+      "description": "All nonmagical food and drink within a 5-foot-radius sphere centered on a point of your choice within 10 feet is rendered free of poison and disease."
+    },
+    {
+      "name": "Sanctuary",
+      "level": 1,
+      "description": "Ward a creature within 30 feet for 1 minute. Any creature that targets the warded creature with an attack or harmful spell must first make a Wisdom save or choose a new target."
+    },
+    {
+      "name": "Shield of Faith",
+      "level": 1,
+      "description": "A shimmering field appears around a creature of your choice within 60 feet, granting a +2 bonus to AC for up to 10 minutes."
+    },
+    {
+      "name": "Aid",
+      "level": 2,
+      "description": "Bolster up to three creatures within 30 feet with toughness and resolve. Each target's hit point maximum and current hit points increase by 5 for 8 hours."
+    },
+    {
+      "name": "Augury",
+      "level": 2,
+      "description": "Receive an omen from an otherworldly entity about the results of a specific course of action you plan to take within the next 30 minutes. The omen can be weal, woe, both, or nothing."
+    },
+    {
+      "name": "Blindness/Deafness",
+      "level": 2,
+      "description": "A creature within 30 feet must succeed on a Constitution save or be blinded or deafened (your choice) for 1 minute. The target can repeat the save at the end of each turn."
+    },
+    {
+      "name": "Calm Emotions",
+      "level": 2,
+      "description": "Each humanoid in a 20-foot-radius sphere must make a Charisma save or be calmed: you can suppress charm or fear effects, or make a creature indifferent to hostile creatures for up to 1 minute."
+    },
+    {
+      "name": "Continual Flame",
+      "level": 2,
+      "description": "A flame equivalent to a torch springs forth from an object you touch. The flame emits no heat, doesn't consume oxygen, and can't be extinguished. It lasts until dispelled."
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "description": "Touch a creature and grant it a magical enhancement for up to 1 hour: advantage on checks for one ability score, plus additional benefits depending on the chosen ability."
+    },
+    {
+      "name": "Find Traps",
+      "level": 2,
+      "description": "You sense the presence of any trap within 120 feet that is within line of sight. You learn the general nature of the danger but not the exact location of each trap."
+    },
+    {
+      "name": "Gentle Repose",
+      "level": 2,
+      "description": "Touch a corpse or other remains to protect it from decay and prevent it from becoming undead for 10 days. The spell also extends the time limit for raising the target from the dead."
+    },
+    {
+      "name": "Hold Person",
+      "level": 2,
+      "description": "A humanoid within 60 feet must succeed on a Wisdom save or be paralyzed for up to 1 minute. The target can repeat the save at the end of each turn. Attacks within 5 feet are automatic critical hits."
+    },
+    {
+      "name": "Lesser Restoration",
+      "level": 2,
+      "description": "Touch a creature to end one disease or one condition afflicting it: blinded, deafened, paralyzed, or poisoned."
+    },
+    {
+      "name": "Locate Object",
+      "level": 2,
+      "description": "Sense the direction to a specific object or the nearest object of a particular kind within 1,000 feet for up to 10 minutes, as long as you have seen it before."
+    },
+    {
+      "name": "Prayer of Healing",
+      "level": 2,
+      "description": "Up to six creatures of your choice within 30 feet each regain hit points equal to 2d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs. Casting time is 10 minutes."
+    },
+    {
+      "name": "Protection from Poison",
+      "level": 2,
+      "description": "Touch a creature to neutralize one poison afflicting it, grant advantage on saving throws against being poisoned, and grant resistance to poison damage for 1 hour."
+    },
+    {
+      "name": "Silence",
+      "level": 2,
+      "description": "Create a 20-foot-radius sphere of silence centered on a point within 120 feet for up to 10 minutes. No sound can be created or pass through the area, and creatures inside are immune to thunder damage."
+    },
+    {
+      "name": "Spiritual Weapon",
+      "level": 2,
+      "description": "Create a floating spectral weapon within 60 feet that you can attack with as a bonus action, dealing 1d8 + your spellcasting modifier force damage on a hit. Lasts 1 minute, no concentration."
+    },
+    {
+      "name": "Warding Bond",
+      "level": 2,
+      "description": "Touch a willing creature to grant it +1 to AC and saving throws and resistance to all damage for 1 hour. Each time it takes damage, you take the same amount of damage."
+    },
+    {
+      "name": "Zone of Truth",
+      "level": 2,
+      "description": "Create a 15-foot-radius sphere within 60 feet where creatures that fail a Charisma save can't speak deliberate lies for 10 minutes. You know whether each creature succeeded or failed."
+    },
+    {
+      "name": "Animate Dead",
+      "level": 3,
+      "description": "Create an undead servant from a pile of bones or a corpse within 10 feet, raising it as a skeleton or zombie under your control for 24 hours. Can reassert control as an action."
+    },
+    {
+      "name": "Beacon of Hope",
+      "level": 3,
+      "description": "Choose any number of creatures within 30 feet. For up to 1 minute, each target has advantage on Wisdom saves and death saves, and regains the maximum hit points from any healing."
+    },
+    {
+      "name": "Bestow Curse",
+      "level": 3,
+      "description": "Touch a creature; on a failed Wisdom save, it is cursed for up to 1 minute. Choose an effect: disadvantage on checks/saves with one ability, disadvantage on attacks against you, waste turns, or extra 1d8 necrotic damage."
+    },
+    {
+      "name": "Clairvoyance",
+      "level": 3,
+      "description": "Create an invisible sensor within 1 mile at a familiar location, letting you see or hear through it for up to 10 minutes. Requires concentration."
+    },
+    {
+      "name": "Create Food and Water",
+      "level": 3,
+      "description": "Create 45 pounds of food and 30 gallons of water on the ground or in containers within 30 feet, enough to sustain up to fifteen humanoids or five steeds for 24 hours."
+    },
+    {
+      "name": "Daylight",
+      "level": 3,
+      "description": "A 60-foot-radius sphere of bright light emanates from a point or object you choose within 60 feet, with dim light for an additional 60 feet. Lasts 1 hour and dispels darkness spells of 3rd level or lower."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "End one spell of 3rd level or lower on a target creature, object, or magical effect. For higher-level spells, make a spellcasting ability check (DC 10 + spell's level)."
+    },
+    {
+      "name": "Feign Death",
+      "level": 3,
+      "description": "Touch a willing creature to put it into a cataleptic state indistinguishable from death for 1 hour. The target is blinded, incapacitated, resistant to all damage except psychic, and appears dead."
+    },
+    {
+      "name": "Glyph of Warding",
+      "level": 3,
+      "description": "Inscribe a glyph on a surface or within an object that triggers a harmful effect when conditions you set are met. Choose an explosive runes effect (5d8 damage) or a spell glyph (stores a spell of 3rd level or lower)."
+    },
+    {
+      "name": "Magic Circle",
+      "level": 3,
+      "description": "Create a 10-foot-radius, 20-foot-tall cylinder of magical energy that prevents chosen creature types (celestials, elementals, fey, fiends, or undead) from entering or affecting creatures inside for 1 hour."
+    },
+    {
+      "name": "Mass Healing Word",
+      "level": 3,
+      "description": "As a bonus action, up to six creatures of your choice within 60 feet each regain hit points equal to 1d4 + your spellcasting ability modifier."
+    },
+    {
+      "name": "Meld into Stone",
+      "level": 3,
+      "description": "Step into a stone object or surface large enough to contain your body, merging yourself and your equipment with the stone for up to 8 hours. You remain aware of your surroundings."
+    },
+    {
+      "name": "Protection from Energy",
+      "level": 3,
+      "description": "A willing creature you touch gains resistance to one damage type of your choice (acid, cold, fire, lightning, or thunder) for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Remove Curse",
+      "level": 3,
+      "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, the curse remains, but the spell breaks the owner's attunement to it."
+    },
+    {
+      "name": "Revivify",
+      "level": 3,
+      "description": "Touch a creature that has died within the last minute and return it to life with 1 hit point. This spell can't restore missing body parts and requires 300 gp worth of diamonds consumed."
+    },
+    {
+      "name": "Sending",
+      "level": 3,
+      "description": "Send a short message of twenty-five words or fewer to a creature you are familiar with. The creature hears the message and can reply in kind immediately."
+    },
+    {
+      "name": "Speak with Dead",
+      "level": 3,
+      "description": "Grant a corpse the semblance of life to answer up to five questions within 10 minutes. The corpse knows only what it knew in life and is not compelled to be truthful."
+    },
+    {
+      "name": "Spirit Guardians",
+      "level": 3,
+      "description": "Spirit forms swirl around you in a 15-foot radius for up to 10 minutes. Enemies that enter or start their turn there take 3d8 radiant (or necrotic) damage on a failed Wisdom save (half on success) and have halved speed."
+    },
+    {
+      "name": "Tongues",
+      "level": 3,
+      "description": "A creature you touch gains the ability to understand any spoken language and be understood by any creature that knows at least one language for 1 hour."
+    },
+    {
+      "name": "Water Walk",
+      "level": 3,
+      "description": "Grant up to ten willing creatures the ability to walk on liquid surfaces as if they were solid ground for 1 hour. Submerged targets rise to the surface at 60 feet per round."
+    },
+    {
+      "name": "Banishment",
+      "level": 4,
+      "description": "A creature must succeed on a Charisma save or be banished to a harmless demiplane for up to 1 minute. If native to another plane, it is sent back and doesn't return if the spell lasts the full duration."
+    },
+    {
+      "name": "Control Water",
+      "level": 4,
+      "description": "Control freestanding water in a 100-foot cube within 300 feet for up to 10 minutes. Choose from flood, part water, redirect flow, or whirlpool effects, and switch effects each turn."
+    },
+    {
+      "name": "Death Ward",
+      "level": 4,
+      "description": "Touch a creature to grant it a ward against death for 8 hours. The first time it would drop to 0 hit points, it drops to 1 instead. The spell then ends."
+    },
+    {
+      "name": "Divination",
+      "level": 4,
+      "description": "Contact your deity or a divine proxy and ask a single question about a goal, event, or activity to occur within 7 days. The DM offers a truthful reply as a short phrase, cryptic rhyme, or omen."
+    },
+    {
+      "name": "Freedom of Movement",
+      "level": 4,
+      "description": "Touch a willing creature to grant it unhindered movement for 1 hour. Its movement is unaffected by difficult terrain, and spells and effects can't reduce its speed, paralyze, or restrain it."
+    },
+    {
+      "name": "Guardian of Faith",
+      "level": 4,
+      "description": "A Large spectral guardian appears in an unoccupied space within 30 feet for 8 hours. Any hostile creature that moves within 10 feet of it must succeed on a Dexterity save or take 20 radiant damage."
+    },
+    {
+      "name": "Locate Creature",
+      "level": 4,
+      "description": "Sense the direction to a specific creature or the nearest creature of a particular kind within 1,000 feet for up to 10 minutes, as long as you have seen it before."
+    },
+    {
+      "name": "Stone Shape",
+      "level": 4,
+      "description": "Touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape that suits your purpose."
+    },
+    {
+      "name": "Commune",
+      "level": 5,
+      "description": "Contact your deity or a divine proxy and ask up to three yes-or-no questions over 1 minute. You receive a correct answer for each, though the divine may respond with a short phrase if a yes or no is unclear."
+    },
+    {
+      "name": "Contagion",
+      "level": 5,
+      "description": "Make a melee spell attack to afflict a creature with a natural disease of your choice. The target must fail three Constitution saves before succeeding three or the disease takes full effect for 7 days."
+    },
+    {
+      "name": "Dispel Evil and Good",
+      "level": 5,
+      "description": "Shimmering energy surrounds you for up to 1 minute, giving celestials, elementals, fey, fiends, and undead disadvantage on attacks against you. You can end the spell early to break an enchantment or banish a creature."
+    },
+    {
+      "name": "Flame Strike",
+      "level": 5,
+      "description": "A vertical column of divine fire roars down in a 10-foot-radius, 40-foot-high cylinder at a point within 60 feet, dealing 4d6 fire and 4d6 radiant damage on a failed Dexterity save (half on success)."
+    },
+    {
+      "name": "Geas",
+      "level": 5,
+      "description": "Command a creature within 60 feet to carry out or avoid a service or course of action for 30 days. On a failed Wisdom save, the creature takes 5d10 psychic damage each time it acts against the command."
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "description": "Imbue a creature you touch with positive energy to undo one debilitating effect: reduce exhaustion by one level, or end a charm, petrification, curse, ability score reduction, or hit point maximum reduction."
+    },
+    {
+      "name": "Hallow",
+      "level": 5,
+      "description": "Infuse a 60-foot-radius area with holy or unholy power for a 24-hour casting time. Celestials, elementals, fey, fiends, and undead can't enter the area, and you choose an extra effect from a list."
+    },
+    {
+      "name": "Insect Plague",
+      "level": 5,
+      "description": "A 20-foot-radius sphere of biting insects deals 4d10 piercing damage on a failed Constitution save (half on success) and makes the area difficult terrain and lightly obscured."
+    },
+    {
+      "name": "Legend Lore",
+      "level": 5,
+      "description": "Learn significant lore about a person, place, or object. The more you already know, the more precise and detailed the information you receive."
+    },
+    {
+      "name": "Mass Cure Wounds",
+      "level": 5,
+      "description": "Choose up to six creatures in a 30-foot-radius sphere within 60 feet. Each target regains hit points equal to 3d8 + your spellcasting ability modifier. No effect on undead or constructs."
+    },
+    {
+      "name": "Planar Binding",
+      "level": 5,
+      "description": "Bind a celestial, elemental, fey, or fiend within range to serve you for 24 hours. The creature must be within a magic circle for the 1-hour casting time and fail a Charisma save."
+    },
+    {
+      "name": "Raise Dead",
+      "level": 5,
+      "description": "Return a dead creature that has been dead no more than 10 days to life with 1 hit point. The spell neutralizes poisons and cures nonmagical diseases but doesn't restore missing body parts. Requires 500 gp diamond consumed."
+    },
+    {
+      "name": "Scrying",
+      "level": 5,
+      "description": "See and hear a particular creature on the same plane of existence through an invisible sensor for up to 10 minutes. The target makes a Wisdom save modified by your familiarity and its connection to you."
+    },
+    {
+      "name": "Blade Barrier",
+      "level": 6,
+      "description": "Create a vertical wall of whirling blades up to 100 feet long, 20 feet high, and 5 feet thick for up to 10 minutes. A creature in or passing through the wall takes 6d10 slashing damage on a failed Dexterity save."
+    },
+    {
+      "name": "Create Undead",
+      "level": 6,
+      "description": "Create three ghouls from three humanoid corpses under your control for 24 hours. Higher-level slots allow creating ghasts, wights, or mummies. Castable only at night."
+    },
+    {
+      "name": "Find the Path",
+      "level": 6,
+      "description": "For up to 24 hours, you know the shortest and most direct physical route to a specific fixed location you are familiar with on the same plane. You always know the distance and direction to the destination."
+    },
+    {
+      "name": "Forbiddance",
+      "level": 6,
+      "description": "Create a ward against magical travel in a 40,000-square-foot area for 24 hours. Creatures can't teleport into the area or use portals. You can designate a damage type (radiant or necrotic) dealt to specified creatures entering the area."
+    },
+    {
+      "name": "Harm",
+      "level": 6,
+      "description": "Unleash a virulent disease on a creature within 60 feet, dealing 14d6 necrotic damage on a failed Constitution save (half on success). The target's hit point maximum is reduced by the damage taken."
+    },
+    {
+      "name": "Heal",
+      "level": 6,
+      "description": "A creature you touch regains 70 hit points. The spell also ends blindness, deafness, and any diseases affecting the target."
+    },
+    {
+      "name": "Heroes' Feast",
+      "level": 6,
+      "description": "Conjure a magnificent feast for up to twelve creatures over 1 hour. Participants are cured of disease and poison, become immune to poison and frightened, and gain 2d10 temporary hit points and advantage on Wisdom saves for 24 hours."
+    },
+    {
+      "name": "Planar Ally",
+      "level": 6,
+      "description": "Beseech an otherworldly entity to send a celestial, elemental, or fiend to aid you. The creature is friendly to you and your companions and follows your requests, though payment may be required for its service."
+    },
+    {
+      "name": "True Seeing",
+      "level": 6,
+      "description": "Grant a willing creature you touch truesight to 120 feet for 1 hour, allowing it to see through illusions, magical darkness, invisible creatures, and into the Ethereal Plane."
+    },
+    {
+      "name": "Word of Recall",
+      "level": 6,
+      "description": "You and up to five willing creatures within 5 feet are instantly teleported to a previously designated sanctuary. Each creature appears in the nearest unoccupied space to the spot you designated."
+    },
+    {
+      "name": "Conjure Celestial",
+      "level": 7,
+      "description": "Summon a celestial of challenge rating 4 or lower, which appears in an unoccupied space within 90 feet. The celestial is friendly to you and obeys your verbal commands for up to 1 hour."
+    },
+    {
+      "name": "Divine Word",
+      "level": 7,
+      "description": "Utter a divine word that inflicts effects on creatures within 30 feet based on their current hit points: deafened, blinded and deafened, stunned, or killed. Celestials, elementals, fey, and fiends are banished on a failed save."
+    },
+    {
+      "name": "Etherealness",
+      "level": 7,
+      "description": "Step into the Ethereal Plane for up to 8 hours, where you can move and see into the Material Plane (appearing as a ghostly form). You can affect and be affected only by other ethereal creatures."
+    },
+    {
+      "name": "Fire Storm",
+      "level": 7,
+      "description": "A storm of roaring flame in up to ten 10-foot cubes within 150 feet deals 7d10 fire damage on a failed Dexterity save (half on success). You choose whether the flames ignite or spare plant life."
+    },
+    {
+      "name": "Plane Shift",
+      "level": 7,
+      "description": "Transport yourself and up to eight willing creatures to another plane of existence, or make a melee spell attack to banish an unwilling creature on a failed Charisma save."
+    },
+    {
+      "name": "Regenerate",
+      "level": 7,
+      "description": "Touch a creature to stimulate its natural healing. The target regains 4d8+15 hit points immediately, then 1 hit point per minute for 1 hour. Severed body members are restored after 2 minutes."
+    },
+    {
+      "name": "Resurrection",
+      "level": 7,
+      "description": "Touch a creature that has been dead no more than a century, returning it to life with all hit points. This spell neutralizes poisons, cures diseases, and restores missing body parts. Requires a 1,000 gp diamond consumed."
+    },
+    {
+      "name": "Symbol",
+      "level": 7,
+      "description": "Inscribe a harmful glyph on a surface or within an object. When triggered, it activates one of several effects in a 60-foot-radius sphere: death, discord, fear, hopelessness, insanity, pain, sleep, or stunning."
+    },
+    {
+      "name": "Temple of the Gods",
+      "level": 7,
+      "description": "Create a temple dedicated to your deity in a 120-foot area for 24 hours. The interior is comfortable, and you can control who enters. The temple blocks celestials, elementals, fey, fiends, and undead."
+    },
+    {
+      "name": "Antimagic Field",
+      "level": 8,
+      "description": "A 10-foot-radius invisible sphere of antimagic surrounds you for up to 1 hour. Within the sphere, spells can't be cast, magic items become mundane, and magical effects are suppressed."
+    },
+    {
+      "name": "Control Weather",
+      "level": 8,
+      "description": "Take control of the weather within 5 miles of you for up to 8 hours. You can change precipitation, temperature, and wind conditions, with each change taking 1d4 x 10 minutes to take effect."
+    },
+    {
+      "name": "Earthquake",
+      "level": 8,
+      "description": "Create a seismic disturbance in a 100-foot-radius area for up to 1 minute. Creatures must make Dexterity saves or be knocked prone, and structures take 50 bludgeoning damage per round with possible collapse."
+    },
+    {
+      "name": "Holy Aura",
+      "level": 8,
+      "description": "Divine light emanates from you in a 30-foot radius for up to 1 minute. Creatures of your choice gain advantage on all saving throws, and attacking creatures have disadvantage. Fiends and undead that hit are blinded."
+    },
+    {
+      "name": "Astral Projection",
+      "level": 9,
+      "description": "Project yourself and up to eight willing creatures into the Astral Plane. Your astral form has all your statistics and possessions. If the form is reduced to 0 HP, you return to your body unharmed."
+    },
+    {
+      "name": "Gate",
+      "level": 9,
+      "description": "Open a portal to another plane of existence within 60 feet. If you name a specific being, the portal opens adjacent to them and can draw them through. Lasts up to 1 minute."
+    },
+    {
+      "name": "Mass Heal",
+      "level": 9,
+      "description": "A flood of healing energy flows from you to up to 700 hit points of healing divided among creatures within 60 feet. The spell also cures all diseases and ends blindness and deafness."
+    },
+    {
+      "name": "True Resurrection",
+      "level": 9,
+      "description": "Restore to life a creature that has been dead for no longer than 200 years and didn't die of old age. The creature is restored with all its hit points and any missing body parts. Requires 25,000 gp of diamonds consumed."
+    }
+  ],
+  "levels": [
+    {
+      "features": ["Spellcasting", "Divine Domain"],
+      "spell_slots": [2],
+      "cantrips_known": 3
+    },
+    {
+      "features": ["Channel Divinity"],
+      "spell_slots": [3],
+      "cantrips_known": 3
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 2],
+      "cantrips_known": 3
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3],
+      "cantrips_known": 4
+    },
+    {
+      "features": ["Destroy Undead"],
+      "spell_slots": [4, 3, 2],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 1],
+      "cantrips_known": 4
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 2],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 1],
+      "cantrips_known": 4
+    },
+    {
+      "features": ["Divine Intervention"],
+      "spell_slots": [4, 3, 3, 3, 2],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 2, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": ["Ability Score Improvement"],
+      "spell_slots": [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      "cantrips_known": 5
+    },
+    {
+      "features": ["Divine Intervention Improvement"],
+      "spell_slots": [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      "cantrips_known": 5
+    }
+  ]
+}

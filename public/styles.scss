@@ -1053,6 +1053,28 @@ body {
   min-width: 28px;
 }
 
+.apply-levels {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.btn-apply-level {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0 3px;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.btn-apply-level:hover {
+  background: var(--accent);
+  color: white;
+}
+
 /* --------------------- Language Switcher --------------------- */
 .lang-switcher {
   display: flex;

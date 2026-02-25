@@ -7,6 +7,7 @@ use leptos_router::{components::*, path};
 mod components;
 mod model;
 mod pages;
+pub mod rules;
 mod storage;
 
 pub const BASE_URL: &str = match option_env!("BASE_URL") {
@@ -22,10 +23,12 @@ static_loader! {
 }
 
 use pages::{character_list::CharacterList, character_sheet::CharacterSheet, not_found::NotFound};
+use rules::RulesRegistry;
 
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+    provide_context(RulesRegistry::new());
 
     view! {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme="light" />
