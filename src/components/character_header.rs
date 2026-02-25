@@ -274,6 +274,8 @@ pub fn CharacterHeader() -> impl IntoView {
         import_character(store);
     };
 
+    let share_copied = RwSignal::new(false);
+
     let on_share = move |_| {
         let encoded = share::encode_character(&store.get());
         let origin = leptos::prelude::window()
@@ -284,13 +286,14 @@ pub fn CharacterHeader() -> impl IntoView {
 
         let clipboard = leptos::prelude::window().navigator().clipboard();
         let promise = clipboard.write_text(&url);
-        let alert_msg = tr!("share-copied");
         wasm_bindgen_futures::spawn_local(async move {
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
-            leptos::prelude::window()
-                .alert_with_message(&alert_msg)
-                .ok();
+            share_copied.set(true);
         });
+    };
+
+    let on_share_blur = move |_| {
+        share_copied.set(false);
     };
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -507,7 +510,9 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
-                <button class="btn-add" on:click=on_share>{move_tr!("share-link")}</button>
+                <button class="btn-add" on:click=on_share on:blur=on_share_blur>
+                    {move || if share_copied.get() { tr!("share-copied") } else { tr!("share-link") }}
+                </button>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
                 <LanguageSwitcher />
