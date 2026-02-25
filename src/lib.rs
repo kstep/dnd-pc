@@ -7,6 +7,11 @@ mod model;
 mod pages;
 mod storage;
 
+pub const BASE_URL: &str = match option_env!("BASE_URL") {
+    Some(url) => url,
+    None => "",
+};
+
 use pages::{character_list::CharacterList, character_sheet::CharacterSheet, not_found::NotFound};
 
 #[component]

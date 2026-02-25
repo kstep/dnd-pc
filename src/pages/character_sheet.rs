@@ -68,7 +68,7 @@ pub fn CharacterSheet() -> impl IntoView {
             view! {
                 <div class="not-found">
                     <h1>"Character not found"</h1>
-                    <A href="/">"Back to character list"</A>
+                    <A href=format!("{}/", crate::BASE_URL)>"Back to character list"</A>
                 </div>
             }
             .into_any()

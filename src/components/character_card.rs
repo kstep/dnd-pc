@@ -10,7 +10,7 @@ pub fn CharacterCard(
     on_delete: impl Fn(Uuid) + Copy + 'static,
 ) -> impl IntoView {
     let id = summary.id;
-    let href = format!("/character/{id}");
+    let href = format!("{}/character/{id}", crate::BASE_URL);
     let display_class = if summary.class.is_empty() {
         "No class".to_string()
     } else {
