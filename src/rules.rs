@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use leptos::prelude::*;
 use serde::Deserialize;
 
+use crate::model::Ability;
 use crate::BASE_URL;
 
 // --- JSON types ---
@@ -18,6 +19,8 @@ pub struct ClassIndexEntry {
     pub url: String,
     #[serde(default)]
     pub description: String,
+    #[serde(default)]
+    pub prerequisites: Vec<Ability>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

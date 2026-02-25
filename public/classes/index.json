@@ -3,27 +3,32 @@
     {
       "name": "Sorcerer",
       "url": "classes/sorcerer.json",
-      "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
+      "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
+      "prerequisites": ["Charisma"]
     },
     {
       "name": "Artificer",
       "url": "classes/artificer.json",
-      "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects."
+      "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
+      "prerequisites": ["Intelligence"]
     },
     {
       "name": "Bard",
       "url": "classes/bard.json",
-      "description": "An inspiring magician whose power echoes the music of creation."
+      "description": "An inspiring magician whose power echoes the music of creation.",
+      "prerequisites": ["Charisma"]
     },
     {
       "name": "Cleric",
       "url": "classes/cleric.json",
-      "description": "A priestly champion who wields divine magic in service of a higher power."
+      "description": "A priestly champion who wields divine magic in service of a higher power.",
+      "prerequisites": ["Wisdom"]
     },
     {
       "name": "Fighter",
       "url": "classes/fighter.json",
-      "description": "A master of martial combat, skilled with a variety of weapons and armor."
+      "description": "A master of martial combat, skilled with a variety of weapons and armor.",
+      "prerequisites": ["Strength"]
     }
   ]
 }

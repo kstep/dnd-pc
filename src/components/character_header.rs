@@ -220,8 +220,11 @@ pub fn CharacterHeader() -> impl IntoView {
         <div class="panel character-header">
             <datalist id="class-suggestions">
                 {move || {
+                    let abilities = store.abilities().get();
                     registry.with_class_entries(|entries| {
-                        entries.iter().map(|entry| {
+                        entries.iter().filter(|entry| {
+                            entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
+                        }).map(|entry| {
                             let name = entry.name.clone();
                             let desc = entry.description.clone();
                             view! { <option value=name>{desc}</option> }
