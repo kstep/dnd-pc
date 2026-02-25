@@ -176,15 +176,15 @@ pub fn EquipmentPanel() -> impl IntoView {
 
             <h4>{move_tr!("currency")}</h4>
             <div class="currency-row">
-                // CP: only > (break 1 SP into 10 CP)
+                // CP: only > (combine 10 CP into 1 SP)
                 <div class="currency-field">
                     <div class="currency-label">
                         <span class="btn-convert-placeholder" />
                         <label>"CP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.sp().get_untracked() >= 1 {
-                                currency.sp().update(|v| *v -= 1);
-                                currency.cp().update(|v| *v += 10);
+                            if currency.cp().get_untracked() >= 10 {
+                                currency.cp().update(|v| *v -= 10);
+                                currency.sp().update(|v| *v += 1);
                             }
                         }>">"</button>
                     </div>
@@ -199,7 +199,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
-                // SP: < (break 1 SP into 10 CP), > (break 1 EP into 5 SP)
+                // SP: < (break 1 SP into 10 CP), > (combine 5 SP into 1 EP)
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
@@ -210,9 +210,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }>"<"</button>
                         <label>"SP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.ep().get_untracked() >= 1 {
-                                currency.ep().update(|v| *v -= 1);
-                                currency.sp().update(|v| *v += 5);
+                            if currency.sp().get_untracked() >= 5 {
+                                currency.sp().update(|v| *v -= 5);
+                                currency.ep().update(|v| *v += 1);
                             }
                         }>">"</button>
                     </div>
@@ -227,7 +227,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
-                // EP: < (break 1 EP into 5 SP), > (break 1 GP into 5 EP)
+                // EP: < (break 1 EP into 5 SP), > (combine 5 EP into 1 GP)
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
@@ -238,9 +238,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }>"<"</button>
                         <label>"EP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.gp().get_untracked() >= 1 {
-                                currency.gp().update(|v| *v -= 1);
-                                currency.ep().update(|v| *v += 5);
+                            if currency.ep().get_untracked() >= 5 {
+                                currency.ep().update(|v| *v -= 5);
+                                currency.gp().update(|v| *v += 1);
                             }
                         }>">"</button>
                     </div>
@@ -255,7 +255,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }
                     />
                 </div>
-                // GP: < (break 1 GP into 5 EP), > (break 1 PP into 10 GP)
+                // GP: < (break 1 GP into 5 EP), > (combine 10 GP into 1 PP)
                 <div class="currency-field">
                     <div class="currency-label">
                         <button class="btn-convert" on:click=move |_| {
@@ -266,9 +266,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                         }>"<"</button>
                         <label>"GP"</label>
                         <button class="btn-convert" on:click=move |_| {
-                            if currency.pp().get_untracked() >= 1 {
-                                currency.pp().update(|v| *v -= 1);
-                                currency.gp().update(|v| *v += 10);
+                            if currency.gp().get_untracked() >= 10 {
+                                currency.gp().update(|v| *v -= 10);
+                                currency.pp().update(|v| *v += 1);
                             }
                         }>">"</button>
                     </div>
