@@ -1,7 +1,10 @@
 use leptos::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::model::{Ability, Character, Spell, SpellcastingData};
+use crate::{
+    components::panel::Panel,
+    model::{Ability, Character, Spell, SpellcastingData},
+};
 
 #[component]
 pub fn SpellcastingPanel() -> impl IntoView {
@@ -45,8 +48,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
     };
 
     view! {
-        <div class="panel spellcasting-panel">
-            <h3>"Spellcasting"</h3>
+        <Panel title="Spellcasting" class="spellcasting-panel">
             <label class="toggle-row">
                 <input
                     type="checkbox"
@@ -251,6 +253,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     "+ Add Spell"
                 </button>
             </Show>
-        </div>
+        </Panel>
     }
 }

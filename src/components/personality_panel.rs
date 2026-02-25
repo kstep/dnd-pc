@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::model::Character;
+use crate::{components::panel::Panel, model::Character};
 
 #[component]
 pub fn PersonalityPanel() -> impl IntoView {
@@ -12,8 +12,7 @@ pub fn PersonalityPanel() -> impl IntoView {
     let flaws = Memo::new(move |_| char_signal.get().personality.flaws.clone());
 
     view! {
-        <div class="panel personality-panel">
-            <h3>"Personality"</h3>
+        <Panel title="Personality" class="personality-panel">
             <div class="textarea-field">
                 <label>"Personality Traits"</label>
                 <textarea
@@ -50,6 +49,6 @@ pub fn PersonalityPanel() -> impl IntoView {
                     }
                 />
             </div>
-        </div>
+        </Panel>
     }
 }

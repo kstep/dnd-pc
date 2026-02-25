@@ -1,15 +1,17 @@
 use leptos::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::model::{Ability, Character};
+use crate::{
+    components::panel::Panel,
+    model::{Ability, Character},
+};
 
 #[component]
 pub fn SavingThrowsPanel() -> impl IntoView {
     let char_signal = expect_context::<RwSignal<Character>>();
 
     view! {
-        <div class="panel saving-throws-panel">
-            <h3>"Saving Throws"</h3>
+        <Panel title="Saving Throws" class="saving-throws-panel">
             {Ability::iter()
                 .map(|ability| {
                     let proficient = Memo::new(move |_| {
@@ -40,6 +42,6 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                     }
                 })
                 .collect_view()}
-        </div>
+        </Panel>
     }
 }

@@ -1,7 +1,10 @@
 use leptos::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::model::{Character, Proficiency};
+use crate::{
+    components::panel::Panel,
+    model::{Character, Proficiency},
+};
 
 #[component]
 pub fn ProficienciesPanel() -> impl IntoView {
@@ -11,8 +14,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
     let racial_traits = Memo::new(move |_| char_signal.get().racial_traits.clone());
 
     view! {
-        <div class="panel proficiencies-panel">
-            <h3>"Proficiencies & Languages"</h3>
+        <Panel title="Proficiencies & Languages" class="proficiencies-panel">
 
             // --- Proficiency toggles ---
             <h4>"Proficiencies"</h4>
@@ -142,6 +144,6 @@ pub fn ProficienciesPanel() -> impl IntoView {
             >
                 "+ Add Racial Trait"
             </button>
-        </div>
+        </Panel>
     }
 }

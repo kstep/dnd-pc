@@ -1,6 +1,9 @@
 use leptos::prelude::*;
 
-use crate::model::{Character, Feature};
+use crate::{
+    components::panel::Panel,
+    model::{Character, Feature},
+};
 
 #[component]
 pub fn FeaturesPanel() -> impl IntoView {
@@ -15,8 +18,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     };
 
     view! {
-        <div class="panel features-panel">
-            <h3>"Features & Traits"</h3>
+        <Panel title="Features & Traits" class="features-panel">
             <div class="features-list">
                 {move || {
                     features
@@ -72,6 +74,6 @@ pub fn FeaturesPanel() -> impl IntoView {
             <button class="btn-add" on:click=add_feature>
                 "+ Add Feature"
             </button>
-        </div>
+        </Panel>
     }
 }

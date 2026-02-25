@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::skill_row::SkillRow,
+    components::{panel::Panel, skill_row::SkillRow},
     model::{Ability, Skill},
 };
 
@@ -17,8 +17,7 @@ pub fn SkillsPanel() -> impl IntoView {
         .collect();
 
     view! {
-        <div class="panel skills-panel">
-            <h3>"Skills"</h3>
+        <Panel title="Skills" class="skills-panel">
             {groups
                 .into_iter()
                 .map(|(ability, skills)| {
@@ -33,6 +32,6 @@ pub fn SkillsPanel() -> impl IntoView {
                     }
                 })
                 .collect_view()}
-        </div>
+        </Panel>
     }
 }

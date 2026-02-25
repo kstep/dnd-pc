@@ -1,6 +1,9 @@
 use leptos::prelude::*;
 
-use crate::model::{Character, Item, Weapon};
+use crate::{
+    components::panel::Panel,
+    model::{Character, Item, Weapon},
+};
 
 #[component]
 pub fn EquipmentPanel() -> impl IntoView {
@@ -15,8 +18,7 @@ pub fn EquipmentPanel() -> impl IntoView {
     let pp = Memo::new(move |_| char_signal.get().equipment.currency.pp);
 
     view! {
-        <div class="panel equipment-panel">
-            <h3>"Equipment"</h3>
+        <Panel title="Equipment" class="equipment-panel">
 
             <h4>"Weapons"</h4>
             <div class="weapons-list">
@@ -250,6 +252,6 @@ pub fn EquipmentPanel() -> impl IntoView {
                     />
                 </div>
             </div>
-        </div>
+        </Panel>
     }
 }

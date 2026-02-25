@@ -1,6 +1,9 @@
 use leptos::prelude::*;
 
-use crate::{components::dice_input::DiceInput, model::Character};
+use crate::{
+    components::{dice_input::DiceInput, panel::Panel},
+    model::Character,
+};
 
 #[component]
 pub fn CombatPanel() -> impl IntoView {
@@ -27,8 +30,7 @@ pub fn CombatPanel() -> impl IntoView {
     };
 
     view! {
-        <div class="panel combat-panel">
-            <h3>"Combat"</h3>
+        <Panel title="Combat" class="combat-panel">
             <div class="combat-top-row">
                 <div class="combat-stat">
                     <label>"Armor Class"</label>
@@ -175,6 +177,6 @@ pub fn CombatPanel() -> impl IntoView {
                     </div>
                 </div>
             </div>
-        </div>
+        </Panel>
     }
 }

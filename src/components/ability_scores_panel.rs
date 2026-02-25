@@ -1,18 +1,20 @@
 use leptos::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::{components::ability_score_block::AbilityScoreBlock, model::Ability};
+use crate::{
+    components::{ability_score_block::AbilityScoreBlock, panel::Panel},
+    model::Ability,
+};
 
 #[component]
 pub fn AbilityScoresPanel() -> impl IntoView {
     view! {
-        <div class="panel ability-scores-panel">
-            <h3>"Ability Scores"</h3>
+        <Panel title="Ability Scores" class="ability-scores-panel">
             <div class="ability-scores-grid">
                 {Ability::iter()
                     .map(|ability| view! { <AbilityScoreBlock ability=ability /> })
                     .collect_view()}
             </div>
-        </div>
+        </Panel>
     }
 }

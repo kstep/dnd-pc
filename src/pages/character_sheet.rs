@@ -51,14 +51,14 @@ pub fn CharacterSheet() -> impl IntoView {
                         </div>
                         <div class="sheet-column sheet-column-center">
                             <CombatPanel />
-                            <FeaturesPanel />
                             <EquipmentPanel />
+                            <NotesPanel />
+                            <PersonalityPanel />
                         </div>
                         <div class="sheet-column sheet-column-right">
-                            <PersonalityPanel />
                             <SpellcastingPanel />
+                            <FeaturesPanel />
                             <ProficienciesPanel />
-                            <NotesPanel />
                         </div>
                     </div>
                 </div>

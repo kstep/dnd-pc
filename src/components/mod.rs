@@ -7,6 +7,7 @@ pub mod dice_input;
 pub mod equipment_panel;
 pub mod features_panel;
 pub mod notes_panel;
+pub mod panel;
 pub mod personality_panel;
 pub mod proficiencies_panel;
 pub mod saving_throws_panel;
