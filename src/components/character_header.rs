@@ -7,8 +7,9 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     model::{
-        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-        Feature, MetamagicData, Spell, SpellcastingData, Translatable,
+        Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
+        ClassLevel, CombatStatsStoreFields, Feature, MetamagicData, Spell, SpellcastingData,
+        Translatable,
     },
     rules::RulesRegistry,
     share,
@@ -244,6 +245,17 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
             }
         }
     }
+
+    // Apply hit dice to max HP
+    let con_mod = store.get().ability_modifier(Ability::Constitution);
+    let hp_gain = if level == 1 {
+        def.hit_die as i32 + con_mod
+    } else {
+        (def.hit_die as i32) / 2 + 1 + con_mod
+    };
+    let combat = store.combat();
+    combat.hp_max().update(|hp| *hp += hp_gain);
+    combat.hp_current().update(|hp| *hp += hp_gain);
 
     // Auto-set hit die and mark level as applied
     let mut cl = classes.write();
