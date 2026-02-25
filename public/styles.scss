@@ -3,6 +3,10 @@
 @import "https://unpkg.com/open-props/normalize.min.css";
 @import "https://unpkg.com/open-props/buttons.min.css";
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* --------------------- Variables ----------------------------- */
 :root {
   --panel-bg: var(--gray-1);
@@ -44,6 +48,8 @@ body {
   border-radius: var(--radius-2);
   padding: var(--size-3);
   margin-bottom: var(--size-3);
+  min-width: 0;
+  overflow: hidden;
 
   summary {
     margin: 0 0 var(--size-3) 0;
@@ -602,13 +608,50 @@ body {
 }
 
 /* --------------------- Features Panel ------------------------ */
+.btn-toggle-desc {
+  background: none;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-7);
+  line-height: 1;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapsible-desc {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  padding: var(--size-1);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-1);
+  resize: vertical;
+}
+
 .feature-entry {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);
   border-bottom: 1px solid var(--panel-border);
+  align-items: center;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 
   .feature-name {
     grid-column: 1;
@@ -621,21 +664,10 @@ body {
   }
 
   .feature-desc {
-    grid-column: 1;
-    min-height: 40px;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    font-size: var(--font-size-1);
-    resize: vertical;
+    @extend .collapsible-desc;
   }
 
   .btn-remove {
-    grid-column: 2;
-    grid-row: 1 / 3;
     align-self: center;
   }
 }
@@ -814,14 +846,21 @@ body {
 
 .metamagic-entry {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);
   border-bottom: 1px solid var(--panel-border);
+  align-items: center;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 
   .metamagic-name {
-    grid-column: 1;
+    min-width: 0;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
@@ -831,8 +870,7 @@ body {
   }
 
   .metamagic-cost {
-    grid-column: 2;
-    width: 70px;
+    width: 50px;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
@@ -841,45 +879,38 @@ body {
     text-align: center;
   }
 
-  .btn-remove {
-    grid-column: 3;
-    grid-row: 1 / 3;
-    align-self: center;
-  }
-
   .metamagic-desc {
-    grid-column: 1 / 3;
-    min-height: 40px;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    font-size: var(--font-size-1);
-    resize: vertical;
+    @extend .collapsible-desc;
   }
 }
 
 .spell-entry {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
   gap: var(--size-1);
-  margin-bottom: var(--size-1);
+  margin-bottom: var(--size-2);
+  padding-bottom: var(--size-2);
+  border-bottom: 1px solid var(--panel-border);
   align-items: center;
 
-  .spell-prepared {
-    flex: 0 0 auto;
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
   }
 
-  input[type="text"] {
-    flex: 1;
-    min-width: 0;
+  .spell-name {
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
     background: var(--input-bg);
     color: var(--text-primary);
     font-size: var(--font-size-1);
+    min-width: 0;
+  }
+
+  .spell-desc {
+    @extend .collapsible-desc;
   }
 }
 

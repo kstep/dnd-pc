@@ -102,6 +102,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                         .map(|(i, rt)| {
                             let name = rt.name.clone();
                             let desc = rt.description.clone();
+                            let show_desc = RwSignal::new(false);
                             view! {
                                 <div class="feature-entry">
                                     <input
@@ -113,14 +114,12 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                             racial_traits.write()[i].name = event_target_value(&e);
                                         }
                                     />
-                                    <textarea
-                                        class="feature-desc"
-                                        placeholder="Description"
-                                        prop:value=desc
-                                        on:input=move |e| {
-                                            racial_traits.write()[i].description = event_target_value(&e);
-                                        }
-                                    />
+                                    <button
+                                        class="btn-toggle-desc"
+                                        on:click=move |_| show_desc.update(|v| *v = !*v)
+                                    >
+                                        {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                    </button>
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
@@ -131,6 +130,16 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                     >
                                         "X"
                                     </button>
+                                    <Show when=move || show_desc.get()>
+                                        <textarea
+                                            class="feature-desc"
+                                            placeholder="Description"
+                                            prop:value=desc.clone()
+                                            on:input=move |e| {
+                                                racial_traits.write()[i].description = event_target_value(&e);
+                                            }
+                                        />
+                                    </Show>
                                 </div>
                             }
                         })

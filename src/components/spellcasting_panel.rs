@@ -175,6 +175,8 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 let spell_name = spell.name.clone();
                                 let spell_level = spell.level.to_string();
                                 let spell_prepared = spell.prepared;
+                                let spell_desc = spell.description.clone();
+                                let show_desc = RwSignal::new(false);
                                 view! {
                                     <div class="spell-entry">
                                         <label class="spell-prepared">
@@ -192,6 +194,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         </label>
                                         <input
                                             type="text"
+                                            class="spell-name"
                                             placeholder="Spell name"
                                             prop:value=spell_name
                                             on:input=move |e| {
@@ -219,6 +222,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             }
                                         />
                                         <button
+                                            class="btn-toggle-desc"
+                                            on:click=move |_| show_desc.update(|v| *v = !*v)
+                                        >
+                                            {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                        </button>
+                                        <button
                                             class="btn-remove"
                                             on:click=move |_| {
                                                 if let Some(sc) = store.spellcasting().write().as_mut()
@@ -230,6 +239,20 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         >
                                             "X"
                                         </button>
+                                        <Show when=move || show_desc.get()>
+                                            <textarea
+                                                class="spell-desc"
+                                                placeholder="Description"
+                                                prop:value=spell_desc.clone()
+                                                on:input=move |e| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(s) = sc.spells.get_mut(i)
+                                                    {
+                                                        s.description = event_target_value(&e);
+                                                    }
+                                                }
+                                            />
+                                        </Show>
                                     </div>
                                 }
                             })
@@ -322,6 +345,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                     let opt_name = opt.name.clone();
                                     let opt_cost = opt.cost.clone();
                                     let opt_desc = opt.description.clone();
+                                    let show_desc = RwSignal::new(false);
                                     view! {
                                         <div class="metamagic-entry">
                                             <input
@@ -353,6 +377,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                 }
                                             />
                                             <button
+                                                class="btn-toggle-desc"
+                                                on:click=move |_| show_desc.update(|v| *v = !*v)
+                                            >
+                                                {move || if show_desc.get() { "\u{2212}" } else { "+" }}
+                                            </button>
+                                            <button
                                                 class="btn-remove"
                                                 on:click=move |_| {
                                                     if let Some(sc) = store.spellcasting().write().as_mut()
@@ -365,19 +395,21 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             >
                                                 "X"
                                             </button>
-                                            <textarea
-                                                class="metamagic-desc"
-                                                placeholder="Description"
-                                                prop:value=opt_desc
-                                                on:input=move |e| {
-                                                    if let Some(sc) = store.spellcasting().write().as_mut()
-                                                        && let Some(mm) = sc.metamagic.as_mut()
-                                                        && let Some(o) = mm.options.get_mut(i)
-                                                    {
-                                                        o.description = event_target_value(&e);
+                                            <Show when=move || show_desc.get()>
+                                                <textarea
+                                                    class="metamagic-desc"
+                                                    placeholder="Description"
+                                                    prop:value=opt_desc.clone()
+                                                    on:input=move |e| {
+                                                        if let Some(sc) = store.spellcasting().write().as_mut()
+                                                            && let Some(mm) = sc.metamagic.as_mut()
+                                                            && let Some(o) = mm.options.get_mut(i)
+                                                        {
+                                                            o.description = event_target_value(&e);
+                                                        }
                                                     }
-                                                }
-                                            />
+                                                />
+                                            </Show>
                                         </div>
                                     }
                                 })
