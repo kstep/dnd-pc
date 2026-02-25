@@ -113,6 +113,11 @@
       "description": "Your touch deals 1d8 lightning damage with advantage on the attack if the target is wearing metal armor. The target can't take reactions until its next turn."
     },
     {
+      "name": "Sorcerous Burst",
+      "level": 0,
+      "description": "You hurl a sizzling orb of magic at a creature within 120 feet, choosing acid, cold, fire, lightning, poison, or thunder damage. Roll 1d8; if the number is equal to or less than the number of d8s you rolled, you can roll an additional d8. Damage increases at higher levels."
+    },
+    {
       "name": "True Strike",
       "level": 0,
       "description": "You gain insight into a target's defenses, granting you advantage on your first attack roll against it on your next turn. Requires concentration."

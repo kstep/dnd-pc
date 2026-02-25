@@ -247,23 +247,20 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             prop:value=spell_name
                                             on:input=move |e| {
                                                 let name = event_target_value(&e);
-                                                if let Some(sc) = store.spellcasting().write().as_mut()
-                                                    && let Some(s) = sc.spells.get_mut(i)
-                                                {
-                                                    s.name = name.clone();
-                                                }
-                                                // Auto-fill description on match
                                                 let classes = store.identity().classes().read();
                                                 let desc = classes.iter().find_map(|c| {
                                                     registry.get_class(&c.class).and_then(|def| {
                                                         def.spells.iter().find(|sp| sp.name == name).map(|sp| sp.description.clone())
                                                     })
                                                 });
-                                                if let Some(desc) = desc
-                                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                                drop(classes);
+                                                if let Some(sc) = store.spellcasting().write().as_mut()
                                                     && let Some(s) = sc.spells.get_mut(i)
                                                 {
-                                                    s.description = desc;
+                                                    s.name = name;
+                                                    if let Some(desc) = desc {
+                                                        s.description = desc;
+                                                    }
                                                 }
                                             }
                                         />
