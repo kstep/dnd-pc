@@ -153,12 +153,12 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
     if level == 1 {
         store.saving_throws().update(|st| {
             for &ability in &def.saving_throws {
-                st.insert(ability, true);
+                st.insert(ability);
             }
         });
         store.proficiencies().update(|profs| {
             for &prof in &def.proficiencies {
-                profs.insert(prof, true);
+                profs.insert(prof);
             }
         });
     }

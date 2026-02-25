@@ -19,7 +19,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
             {Ability::iter()
                 .map(|ability| {
                     let proficient = Memo::new(move |_| {
-                        store.saving_throws().read().get(&ability).copied().unwrap_or(false)
+                        store.saving_throws().read().contains(&ability)
                     });
                     let bonus = Memo::new(move |_| store.get().saving_throw_bonus(ability));
                     let bonus_display = move || {
@@ -35,8 +35,9 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class="prof-toggle"
                                 on:click=move |_| {
                                     store.saving_throws().update(|st| {
-                                        let entry = st.entry(ability).or_insert(false);
-                                        *entry = !*entry;
+                                        if !st.remove(&ability) {
+                                            st.insert(ability);
+                                        }
                                     });
                                 }
                             >

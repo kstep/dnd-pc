@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
@@ -32,14 +32,14 @@ pub struct Character {
     pub id: Uuid,
     pub identity: CharacterIdentity,
     pub abilities: AbilityScores,
-    pub saving_throws: HashMap<Ability, bool>,
+    pub saving_throws: HashSet<Ability>,
     pub skills: HashMap<Skill, ProficiencyLevel>,
     pub combat: CombatStats,
     pub personality: Personality,
     pub features: Vec<Feature>,
     pub equipment: Equipment,
     pub spellcasting: Option<SpellcastingData>,
-    pub proficiencies: HashMap<Proficiency, bool>,
+    pub proficiencies: HashSet<Proficiency>,
     pub languages: Vec<String>,
     pub racial_traits: Vec<RacialTrait>,
     pub notes: String,
@@ -70,7 +70,7 @@ impl Character {
 
     pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
         let modifier = self.ability_modifier(ability);
-        let proficient = self.saving_throws.get(&ability).copied().unwrap_or(false);
+        let proficient = self.saving_throws.contains(&ability);
         modifier
             + if proficient {
                 self.proficiency_bonus()
@@ -130,21 +130,20 @@ impl Default for Character {
     fn default() -> Self {
         use strum::IntoEnumIterator;
 
-        let saving_throws = Ability::iter().map(|a| (a, false)).collect();
         let skills = Skill::iter().map(|s| (s, ProficiencyLevel::None)).collect();
 
         Self {
             id: Uuid::new_v4(),
             identity: CharacterIdentity::default(),
             abilities: AbilityScores::default(),
-            saving_throws,
+            saving_throws: HashSet::new(),
             skills,
             combat: CombatStats::default(),
             personality: Personality::default(),
             features: Vec::new(),
             equipment: Equipment::default(),
             spellcasting: None,
-            proficiencies: Proficiency::iter().map(|p| (p, false)).collect(),
+            proficiencies: HashSet::new(),
             languages: Vec::new(),
             racial_traits: Vec::new(),
             notes: String::new(),
@@ -357,7 +356,7 @@ pub struct MetamagicData {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct MetamagicOption {
     pub name: String,
-    pub cost: String,
+    pub cost: u32,
     pub description: String,
 }
 

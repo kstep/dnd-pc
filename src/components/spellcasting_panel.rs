@@ -412,7 +412,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 .enumerate()
                                 .map(|(i, opt)| {
                                     let opt_name = opt.name.clone();
-                                    let opt_cost = opt.cost.clone();
+                                    let opt_cost = opt.cost;
                                     let opt_desc = opt.description.clone();
                                     let is_open = Signal::derive(move || mm_expanded.get().contains(&i));
                                     view! {
@@ -436,7 +436,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                 }
                                             />
                                             <input
-                                                type="text"
+                                                type="number"
                                                 class="metamagic-cost"
                                                 placeholder=move_tr!("cost")
                                                 prop:value=opt_cost
@@ -445,7 +445,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         && let Some(mm) = sc.metamagic.as_mut()
                                                         && let Some(o) = mm.options.get_mut(i)
                                                     {
-                                                        o.cost = event_target_value(&e);
+                                                        o.cost = event_target_value(&e).parse().unwrap_or(0);
                                                     }
                                                 }
                                             />

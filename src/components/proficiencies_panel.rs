@@ -24,7 +24,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 {Proficiency::iter()
                     .map(|prof| {
                         let active = Memo::new(move |_| {
-                            store.proficiencies().read().get(&prof).copied().unwrap_or(false)
+                            store.proficiencies().read().contains(&prof)
                         });
                         let tr_key = prof.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
@@ -35,8 +35,9 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                     class="prof-toggle"
                                     on:click=move |_| {
                                         store.proficiencies().update(|profs| {
-                                            let entry = profs.entry(prof).or_insert(false);
-                                            *entry = !*entry;
+                                            if !profs.remove(&prof) {
+                                                profs.insert(prof);
+                                            }
                                         });
                                     }
                                 >
