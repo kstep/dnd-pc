@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use leptos::prelude::*;
 use serde::Deserialize;
 
-use crate::model::Ability;
+use crate::model::{Ability, Proficiency};
 use crate::BASE_URL;
 
 // --- JSON types ---
@@ -29,11 +29,11 @@ pub struct ClassDefinition {
     pub description: String,
     pub hit_die: u16,
     #[serde(default)]
-    pub casting_ability: Option<String>,
+    pub casting_ability: Option<Ability>,
     #[serde(default)]
-    pub proficiencies: Vec<String>,
+    pub proficiencies: Vec<Proficiency>,
     #[serde(default)]
-    pub saving_throws: Vec<String>,
+    pub saving_throws: Vec<Ability>,
     #[serde(default)]
     pub features: Vec<ClassFeature>,
     #[serde(default)]

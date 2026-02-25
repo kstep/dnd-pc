@@ -7,8 +7,8 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     model::{
-        Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        ClassLevel, Feature, Proficiency, Translatable,
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
+        ClassLevel, Feature, Translatable,
     },
     rules::RulesRegistry,
 };
@@ -150,17 +150,13 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
     // Apply saving throws and proficiencies at level 1
     if level == 1 {
         store.saving_throws().update(|st| {
-            for name in &def.saving_throws {
-                if let Ok(ability) = serde_json::from_str::<Ability>(&format!("\"{name}\"")) {
-                    st.insert(ability, true);
-                }
+            for &ability in &def.saving_throws {
+                st.insert(ability, true);
             }
         });
         store.proficiencies().update(|profs| {
-            for name in &def.proficiencies {
-                if let Ok(prof) = serde_json::from_str::<Proficiency>(&format!("\"{name}\"")) {
-                    profs.insert(prof, true);
-                }
+            for &prof in &def.proficiencies {
+                profs.insert(prof, true);
             }
         });
     }
