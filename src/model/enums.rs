@@ -138,8 +138,8 @@ impl ProficiencyLevel {
     pub fn symbol(self) -> &'static str {
         match self {
             ProficiencyLevel::None => "\u{25CB}",       // empty circle
-            ProficiencyLevel::Proficient => "\u{25C9}", // fisheye (half)
-            ProficiencyLevel::Expertise => "\u{25CF}",  // filled circle
+            ProficiencyLevel::Proficient => "\u{25CF}", // filled circle
+            ProficiencyLevel::Expertise => "\u{25C9}",  // fisheye (double)
         }
     }
 }
