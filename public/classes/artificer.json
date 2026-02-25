@@ -219,6 +219,16 @@
       "description": "Cover a 10-foot square in slippery grease, forcing creatures to make a Dexterity save or fall prone. The area is difficult terrain."
     },
     {
+      "name": "Healing Word",
+      "level": 1,
+      "description": "A creature of your choice within 60 feet regains hit points equal to 1d4 plus your spellcasting modifier. Has no effect on undead or constructs."
+    },
+    {
+      "name": "Heroism",
+      "level": 1,
+      "description": "A willing creature you touch gains temporary hit points equal to your spellcasting modifier at the start of each of its turns and is immune to being frightened for up to 1 minute. Requires concentration."
+    },
+    {
       "name": "Identify",
       "level": 1,
       "description": "Touch an object or creature to learn its magical properties, how to use them, and any spells affecting it. Can be cast as a ritual."
@@ -234,14 +244,29 @@
       "description": "Touch a creature to increase its speed by 10 feet for 1 hour. Does not require concentration."
     },
     {
+      "name": "Magic Missile",
+      "level": 1,
+      "description": "Create three glowing darts of magical force that each deal 1d4+1 force damage to targets of your choice within 120 feet. The darts hit automatically."
+    },
+    {
       "name": "Purify Food and Drink",
       "level": 1,
       "description": "Render all nonmagical food and drink within a 5-foot-radius sphere free of poison and disease. Can be cast as a ritual."
     },
     {
+      "name": "Ray of Sickness",
+      "level": 1,
+      "description": "A ray of sickening greenish energy deals 2d8 poison damage on a hit. The target must also make a Constitution save or be poisoned until the end of your next turn."
+    },
+    {
       "name": "Sanctuary",
       "level": 1,
       "description": "Ward a creature so that enemies must make a Wisdom save to target it with attacks or harmful spells for 1 minute. Ends if the warded creature attacks or casts a harmful spell."
+    },
+    {
+      "name": "Shield",
+      "level": 1,
+      "description": "Use your reaction when hit by an attack or targeted by magic missile to gain +5 AC until the start of your next turn, including against the triggering attack, and take no damage from magic missile."
     },
     {
       "name": "Snare",
@@ -252,6 +277,11 @@
       "name": "Tasha's Caustic Brew",
       "level": 1,
       "description": "Emit a stream of acid in a 30-foot line that deals 2d4 acid damage at the start of each affected creature's turn on a failed Dexterity save. Requires concentration."
+    },
+    {
+      "name": "Thunderwave",
+      "level": 1,
+      "description": "A wave of thunderous force sweeps out from you in a 15-foot cube, dealing 2d8 thunder damage on a failed Constitution save and pushing creatures 10 feet away. Audible 300 feet away."
     },
     {
       "name": "Aid",
@@ -274,6 +304,11 @@
       "description": "Your body becomes blurred, granting attackers disadvantage on attack rolls against you for up to 1 minute. Requires concentration. Ineffective against creatures with blindsight or truesight."
     },
     {
+      "name": "Branding Smite",
+      "level": 2,
+      "description": "The next time you hit a creature with a weapon attack, it deals an extra 2d6 radiant damage and the target becomes visible if invisible, shedding dim light in a 5-foot radius. Requires concentration."
+    },
+    {
       "name": "Continual Flame",
       "level": 2,
       "description": "Create a permanent flame on an object that emits light equivalent to a torch. The flame can be covered but not extinguished, and it produces no heat."
@@ -292,6 +327,11 @@
       "name": "Enlarge/Reduce",
       "level": 2,
       "description": "Cause a creature or object to grow or shrink for up to 1 minute. Enlarged creatures deal an extra 1d4 damage and have advantage on Strength checks; reduced creatures deal 1d4 less damage and have disadvantage. Requires concentration."
+    },
+    {
+      "name": "Flaming Sphere",
+      "level": 2,
+      "description": "Conjure a 5-foot-diameter sphere of fire that deals 2d6 fire damage to creatures ending their turn within 5 feet on a failed Dexterity save. You can move it 30 feet as a bonus action. Requires concentration."
     },
     {
       "name": "Heat Metal",
@@ -314,6 +354,11 @@
       "description": "Cause a creature or object to rise vertically up to 20 feet and remain suspended for up to 10 minutes. An unwilling creature can make a Constitution save to resist. Requires concentration."
     },
     {
+      "name": "Melf's Acid Arrow",
+      "level": 2,
+      "description": "A shimmering green arrow deals 4d4 acid damage on a hit plus 2d4 acid damage at the end of the target's next turn. On a miss, deals half initial damage and no ongoing damage."
+    },
+    {
       "name": "Magic Mouth",
       "level": 2,
       "description": "Implant a message on an object that is spoken when a specified trigger occurs. The message can be up to 25 words and the spell lasts until dispelled. Can be cast as a ritual."
@@ -322,6 +367,11 @@
       "name": "Magic Weapon",
       "level": 2,
       "description": "Touch a nonmagical weapon to grant it a +1 bonus to attack and damage rolls for up to 1 hour. The bonus increases at higher slot levels. Requires concentration."
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "description": "Create three illusory duplicates of yourself. When attacked, roll to see if the attack targets a duplicate instead. Duplicates have AC 10 + your Dexterity modifier and vanish when hit. Lasts 1 minute."
     },
     {
       "name": "Protection from Poison",
@@ -339,9 +389,19 @@
       "description": "A rope rises into the air and leads to an extradimensional space that holds up to 8 creatures for 1 hour. The space is invisible and inaccessible from outside."
     },
     {
+      "name": "Scorching Ray",
+      "level": 2,
+      "description": "Create three rays of fire and hurl them at targets within 120 feet. Each ray deals 2d6 fire damage on a hit. You can direct them at one or multiple targets."
+    },
+    {
       "name": "See Invisibility",
       "level": 2,
       "description": "See invisible creatures and objects, and see into the Ethereal Plane for 1 hour. Does not require concentration."
+    },
+    {
+      "name": "Shatter",
+      "level": 2,
+      "description": "A loud ringing noise erupts in a 10-foot-radius sphere within 60 feet, dealing 3d8 thunder damage on a failed Constitution save, or half on a success. Creatures made of inorganic material have disadvantage on the save."
     },
     {
       "name": "Skywrite",
@@ -359,6 +419,16 @@
       "description": "Fill a 20-foot cube with thick, sticky webs that restrain creatures who fail a Dexterity save. The webs are difficult terrain and lightly obscure the area. Requires concentration."
     },
     {
+      "name": "Warding Bond",
+      "level": 2,
+      "description": "Touch a willing creature and create a bond. The target gains +1 AC, +1 to saving throws, and resistance to all damage, but you take the same amount of damage it takes. Lasts 1 hour. Requires a pair of platinum rings worth 50 gp."
+    },
+    {
+      "name": "Aura of Vitality",
+      "level": 3,
+      "description": "Healing energy radiates from you in a 30-foot aura. As a bonus action each turn, you can cause one creature in the aura to regain 2d6 hit points. Requires concentration, lasts 1 minute."
+    },
+    {
       "name": "Blink",
       "level": 3,
       "description": "At the end of each of your turns, roll a d20. On 11 or higher, you vanish to the Ethereal Plane until the start of your next turn for up to 1 minute."
@@ -367,6 +437,11 @@
       "name": "Catnap",
       "level": 3,
       "description": "Put up to three willing creatures into a 10-minute magical slumber that grants the benefits of a short rest. The spell ends early if a target takes damage."
+    },
+    {
+      "name": "Conjure Barrage",
+      "level": 3,
+      "description": "Throw a nonmagical weapon or fire a piece of nonmagical ammunition to create a cone of duplicates in a 60-foot cone, dealing 3d8 damage on a failed Dexterity save, or half on a success."
     },
     {
       "name": "Create Food and Water",
@@ -384,6 +459,11 @@
       "description": "Enchant a nonmagical weapon with a +1 bonus to attack rolls and an extra 1d4 elemental damage of a chosen type for up to 1 hour. Bonuses increase at higher slot levels. Requires concentration."
     },
     {
+      "name": "Fireball",
+      "level": 3,
+      "description": "A bright streak detonates in a 20-foot-radius sphere at a point within 150 feet, dealing 8d6 fire damage on a failed Dexterity save, or half on a success. Ignites flammable objects."
+    },
+    {
       "name": "Flame Arrows",
       "level": 3,
       "description": "Enchant a quiver of ammunition so that up to 12 pieces deal an extra 1d6 fire damage on a hit for up to 1 hour. Requires concentration."
@@ -392,6 +472,11 @@
       "name": "Fly",
       "level": 3,
       "description": "Grant a willing creature you touch a flying speed of 60 feet for up to 10 minutes. The creature falls if the spell ends while airborne. Requires concentration."
+    },
+    {
+      "name": "Gaseous Form",
+      "level": 3,
+      "description": "Transform a willing creature you touch into a misty cloud with a fly speed of 10 feet. The target has resistance to nonmagical damage, advantage on Strength, Dexterity, and Constitution saves, and can pass through small openings. Requires concentration, lasts 1 hour."
     },
     {
       "name": "Glyph of Warding",
@@ -404,9 +489,24 @@
       "description": "Double a creature's speed, grant +2 AC, advantage on Dexterity saves, and an extra action each turn for up to 1 minute. When the spell ends, the target can't move or act until its next turn. Requires concentration."
     },
     {
+      "name": "Hypnotic Pattern",
+      "level": 3,
+      "description": "Create a twisting pattern of colors in a 30-foot cube within 120 feet. Creatures that see it must make a Wisdom save or become charmed, incapacitated, and have speed 0 for up to 1 minute. Requires concentration."
+    },
+    {
       "name": "Intellect Fortress",
       "level": 3,
       "description": "Grant a willing creature you can see resistance to psychic damage and advantage on Intelligence, Wisdom, and Charisma saving throws for up to 1 hour. Requires concentration."
+    },
+    {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "description": "A bolt of lightning forms a 100-foot line that is 5 feet wide, dealing 8d6 lightning damage on a failed Dexterity save, or half on a success. Ignites flammable objects."
+    },
+    {
+      "name": "Mass Healing Word",
+      "level": 3,
+      "description": "Up to six creatures of your choice within 60 feet each regain hit points equal to 1d4 plus your spellcasting modifier. Has no effect on undead or constructs."
     },
     {
       "name": "Protection from Energy",
@@ -434,6 +534,16 @@
       "description": "Grant up to ten willing creatures the ability to walk on liquid surfaces as if they were solid ground for 1 hour. Can be cast as a ritual."
     },
     {
+      "name": "Wind Wall",
+      "level": 3,
+      "description": "Create a wall of strong wind up to 50 feet long, 15 feet high, and 1 foot thick within 120 feet. It deflects arrows and smaller projectiles, disperses gas, and Small or smaller flying creatures must make a Strength save or be pushed away. Requires concentration, lasts 1 minute."
+    },
+    {
+      "name": "Aura of Purity",
+      "level": 4,
+      "description": "Purifying energy radiates from you in a 30-foot aura. Creatures in the aura can't become diseased, have resistance to poison damage, and have advantage on saves against being blinded, charmed, deafened, frightened, paralyzed, poisoned, or stunned. Requires concentration, lasts 10 minutes."
+    },
+    {
       "name": "Arcane Eye",
       "level": 4,
       "description": "Create an invisible, magical eye that you can move up to 30 feet per turn and see through within 30 feet of it for up to 1 hour. Requires concentration."
@@ -449,9 +559,24 @@
       "description": "Convert raw materials into finished products of the same material instantly. You must be proficient with the relevant artisan's tools if crafting something requiring skill."
     },
     {
+      "name": "Fire Shield",
+      "level": 4,
+      "description": "Thin flames wreathe your body for 10 minutes, shedding light and granting resistance to cold or fire damage (your choice). Creatures that hit you with melee attacks take 2d8 damage of the other type."
+    },
+    {
       "name": "Freedom of Movement",
       "level": 4,
       "description": "Touch a willing creature to make its movement unaffected by difficult terrain, and it can't be paralyzed or restrained by spells or magical effects for 1 hour."
+    },
+    {
+      "name": "Greater Invisibility",
+      "level": 4,
+      "description": "A creature you touch becomes invisible for up to 1 minute. Unlike regular invisibility, the effect doesn't end when the target attacks or casts a spell. Requires concentration."
+    },
+    {
+      "name": "Ice Storm",
+      "level": 4,
+      "description": "A hail of rock-hard ice pounds a 20-foot-radius, 40-foot-high cylinder within 300 feet, dealing 2d8 bludgeoning and 4d6 cold damage on a failed Dexterity save, or half on a success. The area becomes difficult terrain until the end of your next turn."
     },
     {
       "name": "Leomund's Secret Chest",
@@ -489,14 +614,34 @@
       "description": "Summon a construct spirit that takes the form of a clay, metal, or stone construct. It obeys your commands and lasts for up to 1 hour. Requires concentration."
     },
     {
+      "name": "Wall of Fire",
+      "level": 4,
+      "description": "Create a wall of fire up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter. One side deals 5d8 fire damage to creatures within 10 feet on a failed Dexterity save. Requires concentration, lasts 1 minute."
+    },
+    {
       "name": "Animate Objects",
       "level": 5,
       "description": "Animate up to ten nonmagical objects that attack on your command, each with stats based on size. You can command them as a bonus action. Requires concentration."
     },
     {
+      "name": "Banishing Smite",
+      "level": 5,
+      "description": "The next time you hit a creature with a weapon attack, it deals an extra 5d10 force damage. If this reduces the target to 50 HP or fewer, it is banished to a demiplane until the spell ends. Requires concentration, lasts 1 minute."
+    },
+    {
       "name": "Bigby's Hand",
       "level": 5,
       "description": "Create a Large spectral hand of force that can punch, push, grasp, or block. You direct it as a bonus action for up to 1 minute. Requires concentration."
+    },
+    {
+      "name": "Cloudkill",
+      "level": 5,
+      "description": "Create a 20-foot-radius sphere of poisonous yellowish-green fog centered on a point within 120 feet. Creatures in the fog take 5d8 poison damage on a failed Constitution save, or half on a success. The fog moves 10 feet away from you each turn. Requires concentration, lasts 10 minutes."
+    },
+    {
+      "name": "Cone of Cold",
+      "level": 5,
+      "description": "A blast of cold air erupts in a 60-foot cone, dealing 8d8 cold damage on a failed Constitution save, or half on a success. Creatures killed by this spell become frozen solid."
     },
     {
       "name": "Creation",
@@ -509,6 +654,21 @@
       "description": "Touch a creature to end one effect reducing its ability scores or hit point maximum, or remove one charm, petrification, curse, or effect reducing its levels. Consumes 100 gp of diamond dust."
     },
     {
+      "name": "Mass Cure Wounds",
+      "level": 5,
+      "description": "A wave of healing energy washes over up to six creatures of your choice within a 30-foot-radius sphere centered on a point within 60 feet. Each target regains 3d8 plus your spellcasting modifier hit points. Has no effect on undead or constructs."
+    },
+    {
+      "name": "Passwall",
+      "level": 5,
+      "description": "Create a passage through wood, plaster, or stone walls up to 5 feet wide, 8 feet tall, and 20 feet deep for 1 hour. The passage disappears when the spell ends, trapping creatures or objects still inside."
+    },
+    {
+      "name": "Raise Dead",
+      "level": 5,
+      "description": "Return a dead creature that has been dead no longer than 10 days to life with 1 hit point. The spell neutralizes poisons and cures nonmagical diseases but doesn't remove magical diseases, curses, or restore missing body parts. Consumes 500 gp of diamonds."
+    },
+    {
       "name": "Skill Empowerment",
       "level": 5,
       "description": "Grant a willing creature you touch expertise (double proficiency bonus) in one skill it is already proficient in for up to 1 hour. Requires concentration."
@@ -517,6 +677,11 @@
       "name": "Transmute Rock",
       "level": 5,
       "description": "Transmute a 40-foot cube of nonmagical rock into mud or mud into rock. Creatures in rock-to-mud sink and must make a Dexterity save or be restrained."
+    },
+    {
+      "name": "Wall of Force",
+      "level": 5,
+      "description": "Create an invisible wall of force up to ten 10-foot-by-10-foot panels within 120 feet. The wall is immune to all damage and can't be dispelled by dispel magic. Nothing can physically pass through it. Requires concentration, lasts 10 minutes."
     },
     {
       "name": "Wall of Stone",
