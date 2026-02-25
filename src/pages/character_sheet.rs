@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_params_map};
+use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
@@ -29,16 +30,16 @@ pub fn CharacterSheet() -> impl IntoView {
     // If the character exists, render the sheet; otherwise show not-found
     move || {
         if let Some(char_data) = character() {
-            let char_signal = RwSignal::new(char_data);
+            let store = Store::new(char_data);
 
             // Auto-save effect
             Effect::new(move || {
-                let c = char_signal.get();
+                let c = store.get();
                 storage::save_character(&c);
             });
 
-            // Provide context so child components can access the signal
-            provide_context(char_signal);
+            // Provide context so child components can access the store
+            provide_context(store);
 
             view! {
                 <div class="character-sheet">

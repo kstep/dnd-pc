@@ -1,11 +1,12 @@
 use std::{collections::HashMap, fmt};
 
+use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Store)]
 pub struct Dice {
     pub count: u16,
     pub sides: u16,
@@ -50,7 +51,7 @@ pub struct CharacterSummary {
 
 // --- Main Character ---
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Store)]
 pub struct Character {
     pub id: Uuid,
     pub identity: CharacterIdentity,
@@ -64,7 +65,7 @@ pub struct Character {
     pub spellcasting: Option<SpellcastingData>,
     pub proficiencies: HashMap<Proficiency, bool>,
     pub languages: Vec<String>,
-    pub racial_traits: Vec<String>,
+    pub racial_traits: Vec<RacialTrait>,
     pub notes: String,
 }
 
@@ -177,7 +178,7 @@ impl Default for Character {
 
 // --- Sub-structs ---
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CharacterIdentity {
     pub name: String,
     pub classes: Vec<ClassLevel>,
@@ -200,7 +201,7 @@ impl Default for CharacterIdentity {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct ClassLevel {
     pub class: String,
     pub level: u32,
@@ -215,7 +216,7 @@ impl Default for ClassLevel {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct AbilityScores {
     pub strength: u32,
     pub dexterity: u32,
@@ -262,7 +263,7 @@ impl Default for AbilityScores {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
     pub armor_class: i32,
     pub speed: u32,
@@ -293,7 +294,7 @@ impl Default for CombatStats {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Personality {
     pub personality_traits: String,
     pub ideals: String,
@@ -301,20 +302,20 @@ pub struct Personality {
     pub flaws: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Feature {
     pub name: String,
     pub description: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
     pub weapons: Vec<Weapon>,
     pub items: Vec<Item>,
     pub currency: Currency,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Weapon {
     pub name: String,
     pub attack_bonus: String,
@@ -322,14 +323,14 @@ pub struct Weapon {
     pub damage_type: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Item {
     pub name: String,
     pub quantity: u32,
     pub description: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Currency {
     pub cp: u32,
     pub sp: u32,
@@ -338,7 +339,7 @@ pub struct Currency {
     pub pp: u32,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,
     pub spell_slots: Vec<SpellSlotLevel>,
@@ -361,17 +362,23 @@ impl Default for SpellcastingData {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellSlotLevel {
     pub level: u32,
     pub total: u32,
     pub used: u32,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Spell {
     pub name: String,
     pub level: u32,
     pub prepared: bool,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct RacialTrait {
+    pub name: String,
     pub description: String,
 }

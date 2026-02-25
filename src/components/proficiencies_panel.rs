@@ -1,17 +1,18 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Character, Proficiency},
+    model::{Character, CharacterStoreFields, Proficiency, RacialTrait},
 };
 
 #[component]
 pub fn ProficienciesPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let languages = Memo::new(move |_| char_signal.get().languages.clone());
-    let racial_traits = Memo::new(move |_| char_signal.get().racial_traits.clone());
+    let languages = store.languages();
+    let racial_traits = store.racial_traits();
 
     view! {
         <Panel title="Proficiencies & Languages" class="proficiencies-panel">
@@ -22,7 +23,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 {Proficiency::iter()
                     .map(|prof| {
                         let active = Memo::new(move |_| {
-                            char_signal.get().proficiencies.get(&prof).copied().unwrap_or(false)
+                            store.proficiencies().read().get(&prof).copied().unwrap_or(false)
                         });
 
                         view! {
@@ -30,8 +31,8 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                 <button
                                     class="prof-toggle"
                                     on:click=move |_| {
-                                        char_signal.update(|c| {
-                                            let entry = c.proficiencies.entry(prof).or_insert(false);
+                                        store.proficiencies().update(|profs| {
+                                            let entry = profs.entry(prof).or_insert(false);
                                             *entry = !*entry;
                                         });
                                     }
@@ -50,32 +51,27 @@ pub fn ProficienciesPanel() -> impl IntoView {
             <div class="string-list">
                 {move || {
                     languages
-                        .get()
-                        .into_iter()
+                        .read()
+                        .iter()
                         .enumerate()
                         .map(|(i, lang)| {
+                            let val = lang.clone();
                             view! {
                                 <div class="string-list-entry">
                                     <input
                                         type="text"
                                         placeholder="Language"
-                                        prop:value=lang
+                                        prop:value=val
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(l) = c.languages.get_mut(i) {
-                                                    *l = event_target_value(&e);
-                                                }
-                                            });
+                                            languages.write()[i] = event_target_value(&e);
                                         }
                                     />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if i < c.languages.len() {
-                                                    c.languages.remove(i);
-                                                }
-                                            });
+                                            if i < languages.read().len() {
+                                                languages.write().remove(i);
+                                            }
                                         }
                                     >
                                         "X"
@@ -89,7 +85,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    char_signal.update(|c| c.languages.push(String::new()));
+                    languages.write().push(String::new());
                 }
             >
                 "+ Add Language"
@@ -100,32 +96,37 @@ pub fn ProficienciesPanel() -> impl IntoView {
             <div class="string-list">
                 {move || {
                     racial_traits
-                        .get()
-                        .into_iter()
+                        .read()
+                        .iter()
                         .enumerate()
-                        .map(|(i, trait_name)| {
+                        .map(|(i, rt)| {
+                            let name = rt.name.clone();
+                            let desc = rt.description.clone();
                             view! {
-                                <div class="string-list-entry">
+                                <div class="feature-entry">
                                     <input
                                         type="text"
-                                        placeholder="Racial trait"
-                                        prop:value=trait_name
+                                        class="feature-name"
+                                        placeholder="Trait name"
+                                        prop:value=name
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(t) = c.racial_traits.get_mut(i) {
-                                                    *t = event_target_value(&e);
-                                                }
-                                            });
+                                            racial_traits.write()[i].name = event_target_value(&e);
+                                        }
+                                    />
+                                    <textarea
+                                        class="feature-desc"
+                                        placeholder="Description"
+                                        prop:value=desc
+                                        on:input=move |e| {
+                                            racial_traits.write()[i].description = event_target_value(&e);
                                         }
                                     />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if i < c.racial_traits.len() {
-                                                    c.racial_traits.remove(i);
-                                                }
-                                            });
+                                            if i < racial_traits.read().len() {
+                                                racial_traits.write().remove(i);
+                                            }
                                         }
                                     >
                                         "X"
@@ -139,7 +140,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    char_signal.update(|c| c.racial_traits.push(String::new()));
+                    racial_traits.write().push(RacialTrait::default());
                 }
             >
                 "+ Add Racial Trait"

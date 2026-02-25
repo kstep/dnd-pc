@@ -1,50 +1,33 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Ability, Character, Spell, SpellcastingData},
+    model::{Ability, Character, CharacterStoreFields, Spell, SpellcastingData},
 };
 
 #[component]
 pub fn SpellcastingPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let has_spellcasting = Memo::new(move |_| char_signal.get().spellcasting.is_some());
+    let has_spellcasting = Memo::new(move |_| store.spellcasting().read().is_some());
     let casting_ability = Memo::new(move |_| {
-        char_signal
-            .get()
-            .spellcasting
+        store
+            .spellcasting()
+            .read()
             .as_ref()
             .map(|sc| sc.casting_ability)
     });
-    let spell_save_dc = Memo::new(move |_| char_signal.get().spell_save_dc());
-    let spell_attack = Memo::new(move |_| char_signal.get().spell_attack_bonus());
-    let spell_slots = Memo::new(move |_| {
-        char_signal
-            .get()
-            .spellcasting
-            .as_ref()
-            .map(|sc| sc.spell_slots.clone())
-            .unwrap_or_default()
-    });
-    let spells = Memo::new(move |_| {
-        char_signal
-            .get()
-            .spellcasting
-            .as_ref()
-            .map(|sc| sc.spells.clone())
-            .unwrap_or_default()
-    });
+    let spell_save_dc = Memo::new(move |_| store.get().spell_save_dc());
+    let spell_attack = Memo::new(move |_| store.get().spell_attack_bonus());
 
     let toggle_spellcasting = move |_| {
-        char_signal.update(|c| {
-            if c.spellcasting.is_some() {
-                c.spellcasting = None;
-            } else {
-                c.spellcasting = Some(SpellcastingData::default());
-            }
-        });
+        if store.spellcasting().read().is_some() {
+            store.spellcasting().set(None);
+        } else {
+            store.spellcasting().set(Some(SpellcastingData::default()));
+        }
     };
 
     view! {
@@ -65,12 +48,10 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         <select
                             on:change=move |e| {
                                 let val = event_target_value(&e);
-                                if let Ok(a) = serde_json::from_str::<Ability>(&format!("\"{val}\"")) {
-                                    char_signal.update(|c| {
-                                        if let Some(sc) = c.spellcasting.as_mut() {
-                                            sc.casting_ability = a;
-                                        }
-                                    });
+                                if let Ok(a) = serde_json::from_str::<Ability>(&format!("\"{val}\""))
+                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                {
+                                    sc.casting_ability = a;
                                 }
                             }
                         >
@@ -110,8 +91,11 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 <h4>"Spell Slots"</h4>
                 <div class="spell-slots-grid">
                     {move || {
-                        spell_slots
-                            .get()
+                        let slots = store.spellcasting().read()
+                            .as_ref()
+                            .map(|sc| sc.spell_slots.clone())
+                            .unwrap_or_default();
+                        slots
                             .into_iter()
                             .enumerate()
                             .map(|(i, slot)| {
@@ -125,14 +109,11 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             placeholder="Used"
                                             prop:value=slot.used.to_string()
                                             on:input=move |e| {
-                                                if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                    char_signal.update(|c| {
-                                                        if let Some(sc) = c.spellcasting.as_mut()
-                                                            && let Some(s) = sc.spell_slots.get_mut(i)
-                                                        {
-                                                            s.used = v;
-                                                        }
-                                                    });
+                                                if let Ok(v) = event_target_value(&e).parse::<u32>()
+                                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && let Some(s) = sc.spell_slots.get_mut(i)
+                                                {
+                                                    s.used = v;
                                                 }
                                             }
                                         />
@@ -144,14 +125,11 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             placeholder="Total"
                                             prop:value=slot.total.to_string()
                                             on:input=move |e| {
-                                                if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                    char_signal.update(|c| {
-                                                        if let Some(sc) = c.spellcasting.as_mut()
-                                                            && let Some(s) = sc.spell_slots.get_mut(i)
-                                                        {
-                                                            s.total = v;
-                                                        }
-                                                    });
+                                                if let Ok(v) = event_target_value(&e).parse::<u32>()
+                                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && let Some(s) = sc.spell_slots.get_mut(i)
+                                                {
+                                                    s.total = v;
                                                 }
                                             }
                                         />
@@ -165,40 +143,42 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 <h4>"Spells"</h4>
                 <div class="spells-list">
                     {move || {
-                        spells
-                            .get()
+                        let spell_list = store.spellcasting().read()
+                            .as_ref()
+                            .map(|sc| sc.spells.clone())
+                            .unwrap_or_default();
+                        spell_list
                             .into_iter()
                             .enumerate()
                             .map(|(i, spell)| {
+                                let spell_name = spell.name.clone();
+                                let spell_level = spell.level.to_string();
+                                let spell_prepared = spell.prepared;
                                 view! {
                                     <div class="spell-entry">
                                         <label class="spell-prepared">
                                             <input
                                                 type="checkbox"
-                                                prop:checked=spell.prepared
+                                                prop:checked=spell_prepared
                                                 on:change=move |_| {
-                                                    char_signal.update(|c| {
-                                                        if let Some(sc) = c.spellcasting.as_mut()
-                                                            && let Some(s) = sc.spells.get_mut(i)
-                                                        {
-                                                            s.prepared = !s.prepared;
-                                                        }
-                                                    });
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(s) = sc.spells.get_mut(i)
+                                                    {
+                                                        s.prepared = !s.prepared;
+                                                    }
                                                 }
                                             />
                                         </label>
                                         <input
                                             type="text"
                                             placeholder="Spell name"
-                                            prop:value=spell.name.clone()
+                                            prop:value=spell_name
                                             on:input=move |e| {
-                                                char_signal.update(|c| {
-                                                    if let Some(sc) = c.spellcasting.as_mut()
-                                                        && let Some(s) = sc.spells.get_mut(i)
-                                                    {
-                                                        s.name = event_target_value(&e);
-                                                    }
-                                                });
+                                                if let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && let Some(s) = sc.spells.get_mut(i)
+                                                {
+                                                    s.name = event_target_value(&e);
+                                                }
                                             }
                                         />
                                         <input
@@ -207,29 +187,24 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             min="0"
                                             max="9"
                                             placeholder="Lv"
-                                            prop:value=spell.level.to_string()
+                                            prop:value=spell_level
                                             on:input=move |e| {
-                                                if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                    char_signal.update(|c| {
-                                                        if let Some(sc) = c.spellcasting.as_mut()
-                                                            && let Some(s) = sc.spells.get_mut(i)
-                                                        {
-                                                            s.level = v;
-                                                        }
-                                                    });
+                                                if let Ok(v) = event_target_value(&e).parse::<u32>()
+                                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && let Some(s) = sc.spells.get_mut(i)
+                                                {
+                                                    s.level = v;
                                                 }
                                             }
                                         />
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| {
-                                                char_signal.update(|c| {
-                                                    if let Some(sc) = c.spellcasting.as_mut()
-                                                        && i < sc.spells.len()
-                                                    {
-                                                        sc.spells.remove(i);
-                                                    }
-                                                });
+                                                if let Some(sc) = store.spellcasting().write().as_mut()
+                                                    && i < sc.spells.len()
+                                                {
+                                                    sc.spells.remove(i);
+                                                }
                                             }
                                         >
                                             "X"
@@ -243,11 +218,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 <button
                     class="btn-add"
                     on:click=move |_| {
-                        char_signal.update(|c| {
-                            if let Some(sc) = c.spellcasting.as_mut() {
-                                sc.spells.push(Spell::default());
-                            }
-                        });
+                        if let Some(sc) = store.spellcasting().write().as_mut() {
+                            sc.spells.push(Spell::default());
+                        }
                     }
                 >
                     "+ Add Spell"

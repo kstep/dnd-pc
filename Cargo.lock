@@ -369,6 +369,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "log",
+ "reactive_stores",
  "serde",
  "serde_json",
  "strum",

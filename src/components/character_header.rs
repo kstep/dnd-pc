@@ -1,9 +1,12 @@
 use leptos::prelude::*;
 use leptos_router::components::A;
+use reactive_stores::Store;
 use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
-use crate::model::{Alignment, Character, ClassLevel};
+use crate::model::{
+    Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
+};
 
 fn export_character(character: &Character) {
     let json = match serde_json::to_string_pretty(character) {
@@ -52,7 +55,7 @@ fn export_character(character: &Character) {
     let _ = web_sys::Url::revoke_object_url(&url);
 }
 
-fn import_character(char_signal: RwSignal<Character>) {
+fn import_character(store: Store<Character>) {
     let document = leptos::prelude::document();
     let input: web_sys::HtmlInputElement =
         document.create_element("input").unwrap().unchecked_into();
@@ -97,9 +100,9 @@ fn import_character(char_signal: RwSignal<Character>) {
             };
             match serde_json::from_str::<Character>(&text) {
                 Ok(mut imported) => {
-                    let current_id = char_signal.get_untracked().id;
+                    let current_id = store.get().id;
                     imported.id = current_id;
-                    char_signal.set(imported);
+                    store.set(imported);
                 }
                 Err(e) => {
                     log::error!("Failed to parse character JSON: {e}");
@@ -126,27 +129,23 @@ fn import_character(char_signal: RwSignal<Character>) {
 
 #[component]
 pub fn CharacterHeader() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let name = Memo::new(move |_| char_signal.get().identity.name.clone());
-    let classes = Memo::new(move |_| char_signal.get().identity.classes.clone());
-    let total_level = Memo::new(move |_| char_signal.get().level());
-    let race = Memo::new(move |_| char_signal.get().identity.race.clone());
-    let background = Memo::new(move |_| char_signal.get().identity.background.clone());
-    let alignment = Memo::new(move |_| char_signal.get().identity.alignment);
-    let xp = Memo::new(move |_| char_signal.get().identity.experience_points);
-    let prof_bonus = Memo::new(move |_| char_signal.get().proficiency_bonus());
+    let total_level = Memo::new(move |_| store.get().level());
+    let prof_bonus = Memo::new(move |_| store.get().proficiency_bonus());
+
+    let classes = store.identity().classes();
 
     let add_class = move |_| {
-        char_signal.update(|c| c.identity.classes.push(ClassLevel::default()));
+        classes.write().push(ClassLevel::default());
     };
 
     let on_export = move |_| {
-        export_character(&char_signal.get());
+        export_character(&store.get());
     };
 
     let on_import = move |_| {
-        import_character(char_signal);
+        import_character(store);
     };
 
     view! {
@@ -156,9 +155,9 @@ pub fn CharacterHeader() -> impl IntoView {
                     <label>"Character Name"</label>
                     <input
                         type="text"
-                        prop:value=name
+                        prop:value=move || store.identity().name().get()
                         on:input=move |e| {
-                            char_signal.update(|c| c.identity.name = event_target_value(&e));
+                            store.identity().name().set(event_target_value(&e));
                         }
                     />
                 </div>
@@ -166,9 +165,9 @@ pub fn CharacterHeader() -> impl IntoView {
                     <label>"Race"</label>
                     <input
                         type="text"
-                        prop:value=race
+                        prop:value=move || store.identity().race().get()
                         on:input=move |e| {
-                            char_signal.update(|c| c.identity.race = event_target_value(&e));
+                            store.identity().race().set(event_target_value(&e));
                         }
                     />
                 </div>
@@ -176,9 +175,9 @@ pub fn CharacterHeader() -> impl IntoView {
                     <label>"Background"</label>
                     <input
                         type="text"
-                        prop:value=background
+                        prop:value=move || store.identity().background().get()
                         on:input=move |e| {
-                            char_signal.update(|c| c.identity.background = event_target_value(&e));
+                            store.identity().background().set(event_target_value(&e));
                         }
                     />
                 </div>
@@ -188,7 +187,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         on:change=move |e| {
                             let val = event_target_value(&e);
                             if let Ok(a) = serde_json::from_str::<Alignment>(&format!("\"{val}\"")) {
-                                char_signal.update(|c| c.identity.alignment = a);
+                                store.identity().alignment().set(a);
                             }
                         }
                     >
@@ -196,7 +195,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             .map(|a| {
                                 let label = a.to_string();
                                 let val = format!("{a:?}");
-                                let selected = move || alignment.get() == a;
+                                let selected = move || store.identity().alignment().get() == a;
                                 view! {
                                     <option value=val.clone() selected=selected>
                                         {label}
@@ -211,10 +210,10 @@ pub fn CharacterHeader() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || xp.get().to_string()
+                        prop:value=move || store.identity().experience_points().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.identity.experience_points = v);
+                                store.identity().experience_points().set(v);
                             }
                         }
                     />
@@ -234,23 +233,21 @@ pub fn CharacterHeader() -> impl IntoView {
                 <div class="classes-list">
                     {move || {
                         classes
-                            .get()
-                            .into_iter()
+                            .read()
+                            .iter()
                             .enumerate()
                             .map(|(i, cl)| {
+                                let class_name = cl.class.clone();
+                                let level_val = cl.level.to_string();
                                 view! {
                                     <div class="class-entry">
                                         <input
                                             type="text"
                                             class="class-name"
                                             placeholder="Class"
-                                            prop:value=cl.class.clone()
+                                            prop:value=class_name
                                             on:input=move |e| {
-                                                char_signal.update(|c| {
-                                                    if let Some(entry) = c.identity.classes.get_mut(i) {
-                                                        entry.class = event_target_value(&e);
-                                                    }
-                                                });
+                                                classes.write()[i].class = event_target_value(&e);
                                             }
                                         />
                                         <input
@@ -258,26 +255,20 @@ pub fn CharacterHeader() -> impl IntoView {
                                             class="class-level"
                                             min="1"
                                             max="20"
-                                            prop:value=cl.level.to_string()
+                                            prop:value=level_val
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                    char_signal.update(|c| {
-                                                        if let Some(entry) = c.identity.classes.get_mut(i) {
-                                                            entry.level = v.clamp(1, 20);
-                                                        }
-                                                    });
+                                                    classes.write()[i].level = v.clamp(1, 20);
                                                 }
                                             }
                                         />
-                                        <Show when={move || classes.get().len() > 1}>
+                                        <Show when={move || classes.read().len() > 1}>
                                             <button
                                                 class="btn-remove"
                                                 on:click=move |_| {
-                                                    char_signal.update(|c| {
-                                                        if c.identity.classes.len() > 1 {
-                                                            c.identity.classes.remove(i);
-                                                        }
-                                                    });
+                                                    if classes.read().len() > 1 {
+                                                        classes.write().remove(i);
+                                                    }
                                                 }
                                             >
                                                 "X"

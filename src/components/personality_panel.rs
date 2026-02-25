@@ -1,51 +1,52 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
-use crate::{components::panel::Panel, model::Character};
+use crate::{
+    components::panel::Panel,
+    model::{Character, CharacterStoreFields, PersonalityStoreFields},
+};
 
 #[component]
 pub fn PersonalityPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let traits = Memo::new(move |_| char_signal.get().personality.personality_traits.clone());
-    let ideals = Memo::new(move |_| char_signal.get().personality.ideals.clone());
-    let bonds = Memo::new(move |_| char_signal.get().personality.bonds.clone());
-    let flaws = Memo::new(move |_| char_signal.get().personality.flaws.clone());
+    let personality = store.personality();
 
     view! {
         <Panel title="Personality" class="personality-panel">
             <div class="textarea-field">
                 <label>"Personality Traits"</label>
                 <textarea
-                    prop:value=traits
+                    prop:value=move || personality.personality_traits().get()
                     on:input=move |e| {
-                        char_signal.update(|c| c.personality.personality_traits = event_target_value(&e));
+                        personality.personality_traits().set(event_target_value(&e));
                     }
                 />
             </div>
             <div class="textarea-field">
                 <label>"Ideals"</label>
                 <textarea
-                    prop:value=ideals
+                    prop:value=move || personality.ideals().get()
                     on:input=move |e| {
-                        char_signal.update(|c| c.personality.ideals = event_target_value(&e));
+                        personality.ideals().set(event_target_value(&e));
                     }
                 />
             </div>
             <div class="textarea-field">
                 <label>"Bonds"</label>
                 <textarea
-                    prop:value=bonds
+                    prop:value=move || personality.bonds().get()
                     on:input=move |e| {
-                        char_signal.update(|c| c.personality.bonds = event_target_value(&e));
+                        personality.bonds().set(event_target_value(&e));
                     }
                 />
             </div>
             <div class="textarea-field">
                 <label>"Flaws"</label>
                 <textarea
-                    prop:value=flaws
+                    prop:value=move || personality.flaws().get()
                     on:input=move |e| {
-                        char_signal.update(|c| c.personality.flaws = event_target_value(&e));
+                        personality.flaws().set(event_target_value(&e));
                     }
                 />
             </div>

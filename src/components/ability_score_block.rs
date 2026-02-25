@@ -1,13 +1,14 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
-use crate::model::{Ability, Character};
+use crate::model::{Ability, Character, CharacterStoreFields};
 
 #[component]
 pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let score = Memo::new(move |_| char_signal.get().abilities.get(ability));
-    let modifier = Memo::new(move |_| char_signal.get().ability_modifier(ability));
+    let score = Memo::new(move |_| store.get().abilities.get(ability));
+    let modifier = Memo::new(move |_| store.get().ability_modifier(ability));
 
     let modifier_display = move || {
         let m = modifier.get();
@@ -30,7 +31,7 @@ pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
                 prop:value=move || score.get().to_string()
                 on:input=move |e| {
                     if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                        char_signal.update(|c| c.abilities.set(ability, v.clamp(1, 30)));
+                        store.abilities().write().set(ability, v.clamp(1, 30));
                     }
                 }
             />

@@ -1,24 +1,19 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
 use crate::{
     components::{dice_input::DiceInput, panel::Panel},
-    model::Character,
+    model::{Character, CharacterStoreFields, CombatStatsStoreFields},
 };
 
 #[component]
 pub fn CombatPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let ac = Memo::new(move |_| char_signal.get().combat.armor_class);
-    let initiative = Memo::new(move |_| char_signal.get().initiative());
-    let speed = Memo::new(move |_| char_signal.get().combat.speed);
-    let hp_max = Memo::new(move |_| char_signal.get().combat.hp_max);
-    let hp_current = Memo::new(move |_| char_signal.get().combat.hp_current);
-    let hp_temp = Memo::new(move |_| char_signal.get().combat.hp_temp);
-    let hit_dice_total = Memo::new(move |_| char_signal.get().combat.hit_dice_total);
-    let hit_dice_remaining = Memo::new(move |_| char_signal.get().combat.hit_dice_remaining);
-    let death_successes = Memo::new(move |_| char_signal.get().combat.death_save_successes);
-    let death_failures = Memo::new(move |_| char_signal.get().combat.death_save_failures);
+    let combat = store.combat();
+    let initiative = Memo::new(move |_| store.get().initiative());
+    let hit_dice_total = Memo::new(move |_| combat.hit_dice_total().get());
+    let hit_dice_remaining = Memo::new(move |_| combat.hit_dice_remaining().get());
 
     let init_display = move || {
         let i = initiative.get();
@@ -36,10 +31,10 @@ pub fn CombatPanel() -> impl IntoView {
                     <label>"Armor Class"</label>
                     <input
                         type="number"
-                        prop:value=move || ac.get().to_string()
+                        prop:value=move || combat.armor_class().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<i32>() {
-                                char_signal.update(|c| c.combat.armor_class = v);
+                                combat.armor_class().set(v);
                             }
                         }
                     />
@@ -52,10 +47,10 @@ pub fn CombatPanel() -> impl IntoView {
                     <label>"Speed"</label>
                     <input
                         type="number"
-                        prop:value=move || speed.get().to_string()
+                        prop:value=move || combat.speed().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.combat.speed = v);
+                                combat.speed().set(v);
                             }
                         }
                     />
@@ -68,10 +63,10 @@ pub fn CombatPanel() -> impl IntoView {
                         <label>"HP Max"</label>
                         <input
                             type="number"
-                            prop:value=move || hp_max.get().to_string()
+                            prop:value=move || combat.hp_max().get().to_string()
                             on:input=move |e| {
                                 if let Ok(v) = event_target_value(&e).parse::<i32>() {
-                                    char_signal.update(|c| c.combat.hp_max = v);
+                                    combat.hp_max().set(v);
                                 }
                             }
                         />
@@ -80,10 +75,10 @@ pub fn CombatPanel() -> impl IntoView {
                         <label>"Current HP"</label>
                         <input
                             type="number"
-                            prop:value=move || hp_current.get().to_string()
+                            prop:value=move || combat.hp_current().get().to_string()
                             on:input=move |e| {
                                 if let Ok(v) = event_target_value(&e).parse::<i32>() {
-                                    char_signal.update(|c| c.combat.hp_current = v);
+                                    combat.hp_current().set(v);
                                 }
                             }
                         />
@@ -92,10 +87,10 @@ pub fn CombatPanel() -> impl IntoView {
                         <label>"Temp HP"</label>
                         <input
                             type="number"
-                            prop:value=move || hp_temp.get().to_string()
+                            prop:value=move || combat.hp_temp().get().to_string()
                             on:input=move |e| {
                                 if let Ok(v) = event_target_value(&e).parse::<i32>() {
-                                    char_signal.update(|c| c.combat.hp_temp = v);
+                                    combat.hp_temp().set(v);
                                 }
                             }
                         />
@@ -108,14 +103,14 @@ pub fn CombatPanel() -> impl IntoView {
                     <label>"Hit Dice Total"</label>
                     <DiceInput
                         value=hit_dice_total
-                        on_change=move |d| char_signal.update(|c| c.combat.hit_dice_total = d)
+                        on_change=move |d| combat.hit_dice_total().set(d)
                     />
                 </div>
                 <div class="dice-field">
                     <label>"Hit Dice Remaining"</label>
                     <DiceInput
                         value=hit_dice_remaining
-                        on_change=move |d| char_signal.update(|c| c.combat.hit_dice_remaining = d)
+                        on_change=move |d| combat.hit_dice_remaining().set(d)
                     />
                 </div>
             </div>
@@ -127,19 +122,18 @@ pub fn CombatPanel() -> impl IntoView {
                     <div class="death-save-boxes">
                         {(0u8..3)
                             .map(|i| {
-                                let checked = move || death_successes.get() > i;
+                                let checked = move || combat.death_save_successes().get() > i;
                                 view! {
                                     <button
                                         class="death-save-box"
                                         class:filled=checked
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if c.combat.death_save_successes > i {
-                                                    c.combat.death_save_successes = i;
-                                                } else {
-                                                    c.combat.death_save_successes = i + 1;
-                                                }
-                                            });
+                                            let current = combat.death_save_successes().get();
+                                            if current > i {
+                                                combat.death_save_successes().set(i);
+                                            } else {
+                                                combat.death_save_successes().set(i + 1);
+                                            }
                                         }
                                     >
                                         {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
@@ -154,19 +148,18 @@ pub fn CombatPanel() -> impl IntoView {
                     <div class="death-save-boxes">
                         {(0u8..3)
                             .map(|i| {
-                                let checked = move || death_failures.get() > i;
+                                let checked = move || combat.death_save_failures().get() > i;
                                 view! {
                                     <button
                                         class="death-save-box"
                                         class:filled=checked
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if c.combat.death_save_failures > i {
-                                                    c.combat.death_save_failures = i;
-                                                } else {
-                                                    c.combat.death_save_failures = i + 1;
-                                                }
-                                            });
+                                            let current = combat.death_save_failures().get();
+                                            if current > i {
+                                                combat.death_save_failures().set(i);
+                                            } else {
+                                                combat.death_save_failures().set(i + 1);
+                                            }
                                         }
                                     >
                                         {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}

@@ -1,20 +1,22 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
-use crate::{components::panel::Panel, model::Character};
+use crate::{
+    components::panel::Panel,
+    model::{Character, CharacterStoreFields},
+};
 
 #[component]
 pub fn NotesPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
-
-    let notes = Memo::new(move |_| char_signal.get().notes.clone());
+    let store = expect_context::<Store<Character>>();
 
     view! {
         <Panel title="Notes" class="notes-panel">
             <textarea
                 class="notes-textarea"
-                prop:value=notes
+                prop:value=move || store.notes().get()
                 on:input=move |e| {
-                    char_signal.update(|c| c.notes = event_target_value(&e));
+                    store.notes().set(event_target_value(&e));
                 }
             />
         </Panel>

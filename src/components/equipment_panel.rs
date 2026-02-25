@@ -1,21 +1,21 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
 use crate::{
     components::panel::Panel,
-    model::{Character, Item, Weapon},
+    model::{
+        Character, CharacterStoreFields, CurrencyStoreFields, EquipmentStoreFields, Item, Weapon,
+    },
 };
 
 #[component]
 pub fn EquipmentPanel() -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
-    let weapons = Memo::new(move |_| char_signal.get().equipment.weapons.clone());
-    let items = Memo::new(move |_| char_signal.get().equipment.items.clone());
-    let cp = Memo::new(move |_| char_signal.get().equipment.currency.cp);
-    let sp = Memo::new(move |_| char_signal.get().equipment.currency.sp);
-    let ep = Memo::new(move |_| char_signal.get().equipment.currency.ep);
-    let gp = Memo::new(move |_| char_signal.get().equipment.currency.gp);
-    let pp = Memo::new(move |_| char_signal.get().equipment.currency.pp);
+    let equipment = store.equipment();
+    let weapons = equipment.weapons();
+    let items = equipment.items();
+    let currency = equipment.currency();
 
     view! {
         <Panel title="Equipment" class="equipment-panel">
@@ -24,70 +24,56 @@ pub fn EquipmentPanel() -> impl IntoView {
             <div class="weapons-list">
                 {move || {
                     weapons
-                        .get()
-                        .into_iter()
+                        .read()
+                        .iter()
                         .enumerate()
                         .map(|(i, weapon)| {
+                            let name = weapon.name.clone();
+                            let atk = weapon.attack_bonus.clone();
+                            let dmg = weapon.damage.clone();
+                            let dmg_type = weapon.damage_type.clone();
                             view! {
                                 <div class="weapon-entry">
                                     <input
                                         type="text"
                                         placeholder="Name"
-                                        prop:value=weapon.name.clone()
+                                        prop:value=name
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(w) = c.equipment.weapons.get_mut(i) {
-                                                    w.name = event_target_value(&e);
-                                                }
-                                            });
+                                            weapons.write()[i].name = event_target_value(&e);
                                         }
                                     />
                                     <input
                                         type="text"
                                         placeholder="Atk Bonus"
                                         class="short-input"
-                                        prop:value=weapon.attack_bonus.clone()
+                                        prop:value=atk
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(w) = c.equipment.weapons.get_mut(i) {
-                                                    w.attack_bonus = event_target_value(&e);
-                                                }
-                                            });
+                                            weapons.write()[i].attack_bonus = event_target_value(&e);
                                         }
                                     />
                                     <input
                                         type="text"
                                         placeholder="Damage"
-                                        prop:value=weapon.damage.clone()
+                                        prop:value=dmg
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(w) = c.equipment.weapons.get_mut(i) {
-                                                    w.damage = event_target_value(&e);
-                                                }
-                                            });
+                                            weapons.write()[i].damage = event_target_value(&e);
                                         }
                                     />
                                     <input
                                         type="text"
                                         placeholder="Type"
                                         class="short-input"
-                                        prop:value=weapon.damage_type.clone()
+                                        prop:value=dmg_type
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(w) = c.equipment.weapons.get_mut(i) {
-                                                    w.damage_type = event_target_value(&e);
-                                                }
-                                            });
+                                            weapons.write()[i].damage_type = event_target_value(&e);
                                         }
                                     />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if i < c.equipment.weapons.len() {
-                                                    c.equipment.weapons.remove(i);
-                                                }
-                                            });
+                                            if i < weapons.read().len() {
+                                                weapons.write().remove(i);
+                                            }
                                         }
                                     >
                                         "X"
@@ -101,7 +87,7 @@ pub fn EquipmentPanel() -> impl IntoView {
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    char_signal.update(|c| c.equipment.weapons.push(Weapon::default()));
+                    weapons.write().push(Weapon::default());
                 }
             >
                 "+ Add Weapon"
@@ -111,22 +97,21 @@ pub fn EquipmentPanel() -> impl IntoView {
             <div class="items-list">
                 {move || {
                     items
-                        .get()
-                        .into_iter()
+                        .read()
+                        .iter()
                         .enumerate()
                         .map(|(i, item)| {
+                            let name = item.name.clone();
+                            let qty = item.quantity.to_string();
+                            let desc = item.description.clone();
                             view! {
                                 <div class="item-entry">
                                     <input
                                         type="text"
                                         placeholder="Item name"
-                                        prop:value=item.name.clone()
+                                        prop:value=name
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(it) = c.equipment.items.get_mut(i) {
-                                                    it.name = event_target_value(&e);
-                                                }
-                                            });
+                                            items.write()[i].name = event_target_value(&e);
                                         }
                                     />
                                     <input
@@ -134,37 +119,27 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         class="short-input"
                                         placeholder="Qty"
                                         min="0"
-                                        prop:value=item.quantity.to_string()
+                                        prop:value=qty
                                         on:input=move |e| {
                                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                char_signal.update(|c| {
-                                                    if let Some(it) = c.equipment.items.get_mut(i) {
-                                                        it.quantity = v;
-                                                    }
-                                                });
+                                                items.write()[i].quantity = v;
                                             }
                                         }
                                     />
                                     <input
                                         type="text"
                                         placeholder="Description"
-                                        prop:value=item.description.clone()
+                                        prop:value=desc
                                         on:input=move |e| {
-                                            char_signal.update(|c| {
-                                                if let Some(it) = c.equipment.items.get_mut(i) {
-                                                    it.description = event_target_value(&e);
-                                                }
-                                            });
+                                            items.write()[i].description = event_target_value(&e);
                                         }
                                     />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
-                                            char_signal.update(|c| {
-                                                if i < c.equipment.items.len() {
-                                                    c.equipment.items.remove(i);
-                                                }
-                                            });
+                                            if i < items.read().len() {
+                                                items.write().remove(i);
+                                            }
                                         }
                                     >
                                         "X"
@@ -178,7 +153,7 @@ pub fn EquipmentPanel() -> impl IntoView {
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    char_signal.update(|c| c.equipment.items.push(Item { quantity: 1, ..Item::default() }));
+                    items.write().push(Item { quantity: 1, ..Item::default() });
                 }
             >
                 "+ Add Item"
@@ -191,10 +166,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || cp.get().to_string()
+                        prop:value=move || currency.cp().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.equipment.currency.cp = v);
+                                currency.cp().set(v);
                             }
                         }
                     />
@@ -204,10 +179,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || sp.get().to_string()
+                        prop:value=move || currency.sp().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.equipment.currency.sp = v);
+                                currency.sp().set(v);
                             }
                         }
                     />
@@ -217,10 +192,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || ep.get().to_string()
+                        prop:value=move || currency.ep().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.equipment.currency.ep = v);
+                                currency.ep().set(v);
                             }
                         }
                     />
@@ -230,10 +205,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || gp.get().to_string()
+                        prop:value=move || currency.gp().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.equipment.currency.gp = v);
+                                currency.gp().set(v);
                             }
                         }
                     />
@@ -243,10 +218,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <input
                         type="number"
                         min="0"
-                        prop:value=move || pp.get().to_string()
+                        prop:value=move || currency.pp().get().to_string()
                         on:input=move |e| {
                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                char_signal.update(|c| c.equipment.currency.pp = v);
+                                currency.pp().set(v);
                             }
                         }
                     />

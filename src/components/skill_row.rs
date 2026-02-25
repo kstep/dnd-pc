@@ -1,21 +1,22 @@
 use leptos::prelude::*;
+use reactive_stores::Store;
 
-use crate::model::{Character, ProficiencyLevel, Skill};
+use crate::model::{Character, CharacterStoreFields, ProficiencyLevel, Skill};
 
 #[component]
 pub fn SkillRow(skill: Skill) -> impl IntoView {
-    let char_signal = expect_context::<RwSignal<Character>>();
+    let store = expect_context::<Store<Character>>();
 
     let prof_level = Memo::new(move |_| {
-        char_signal
-            .get()
-            .skills
+        store
+            .skills()
+            .read()
             .get(&skill)
             .copied()
             .unwrap_or(ProficiencyLevel::None)
     });
 
-    let bonus = Memo::new(move |_| char_signal.get().skill_bonus(skill));
+    let bonus = Memo::new(move |_| store.get().skill_bonus(skill));
 
     let bonus_display = move || {
         let b = bonus.get();
@@ -40,8 +41,8 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
             <button
                 class="prof-toggle"
                 on:click=move |_| {
-                    char_signal.update(|c| {
-                        let entry = c.skills.entry(skill).or_insert(ProficiencyLevel::None);
+                    store.skills().update(|skills| {
+                        let entry = skills.entry(skill).or_insert(ProficiencyLevel::None);
                         *entry = entry.next();
                     });
                 }
