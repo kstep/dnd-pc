@@ -4,7 +4,10 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::panel::Panel,
-    model::{Ability, Character, CharacterStoreFields, Spell, SpellcastingData},
+    model::{
+        Ability, Character, CharacterStoreFields, MetamagicData, MetamagicOption, Spell,
+        SpellcastingData,
+    },
 };
 
 #[component]
@@ -27,6 +30,24 @@ pub fn SpellcastingPanel() -> impl IntoView {
             store.spellcasting().set(None);
         } else {
             store.spellcasting().set(Some(SpellcastingData::default()));
+        }
+    };
+
+    let has_metamagic = Memo::new(move |_| {
+        store
+            .spellcasting()
+            .read()
+            .as_ref()
+            .is_some_and(|sc| sc.metamagic.is_some())
+    });
+
+    let toggle_metamagic = move |_| {
+        if let Some(sc) = store.spellcasting().write().as_mut() {
+            if sc.metamagic.is_some() {
+                sc.metamagic = None;
+            } else {
+                sc.metamagic = Some(MetamagicData::default());
+            }
         }
     };
 
@@ -225,6 +246,157 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 >
                     "+ Add Spell"
                 </button>
+
+                <hr class="section-divider" />
+
+                <label class="toggle-row">
+                    <input
+                        type="checkbox"
+                        prop:checked=move || has_metamagic.get()
+                        on:change=toggle_metamagic
+                    />
+                    " Enable Metamagic"
+                </label>
+
+                <Show when=move || has_metamagic.get()>
+                    <h4>"Sorcery Points"</h4>
+                    <div class="sorcery-points">
+                        <span class="slot-level">"Used"</span>
+                        <input
+                            type="number"
+                            class="short-input"
+                            min="0"
+                            placeholder="Used"
+                            prop:value=move || {
+                                store.spellcasting().read()
+                                    .as_ref()
+                                    .and_then(|sc| sc.metamagic.as_ref())
+                                    .map(|mm| mm.sorcery_points_used.to_string())
+                                    .unwrap_or_default()
+                            }
+                            on:input=move |e| {
+                                if let Ok(v) = event_target_value(&e).parse::<u32>()
+                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                    && let Some(mm) = sc.metamagic.as_mut()
+                                {
+                                    mm.sorcery_points_used = v;
+                                }
+                            }
+                        />
+                        <span>"/"</span>
+                        <input
+                            type="number"
+                            class="short-input"
+                            min="0"
+                            placeholder="Max"
+                            prop:value=move || {
+                                store.spellcasting().read()
+                                    .as_ref()
+                                    .and_then(|sc| sc.metamagic.as_ref())
+                                    .map(|mm| mm.sorcery_points_max.to_string())
+                                    .unwrap_or_default()
+                            }
+                            on:input=move |e| {
+                                if let Ok(v) = event_target_value(&e).parse::<u32>()
+                                    && let Some(sc) = store.spellcasting().write().as_mut()
+                                    && let Some(mm) = sc.metamagic.as_mut()
+                                {
+                                    mm.sorcery_points_max = v;
+                                }
+                            }
+                        />
+                    </div>
+
+                    <h4>"Metamagic"</h4>
+                    <div class="metamagic-list">
+                        {move || {
+                            let options = store.spellcasting().read()
+                                .as_ref()
+                                .and_then(|sc| sc.metamagic.as_ref())
+                                .map(|mm| mm.options.clone())
+                                .unwrap_or_default();
+                            options
+                                .into_iter()
+                                .enumerate()
+                                .map(|(i, opt)| {
+                                    let opt_name = opt.name.clone();
+                                    let opt_cost = opt.cost.clone();
+                                    let opt_desc = opt.description.clone();
+                                    view! {
+                                        <div class="metamagic-entry">
+                                            <input
+                                                type="text"
+                                                class="metamagic-name"
+                                                placeholder="Name"
+                                                prop:value=opt_name
+                                                on:input=move |e| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(mm) = sc.metamagic.as_mut()
+                                                        && let Some(o) = mm.options.get_mut(i)
+                                                    {
+                                                        o.name = event_target_value(&e);
+                                                    }
+                                                }
+                                            />
+                                            <input
+                                                type="text"
+                                                class="metamagic-cost"
+                                                placeholder="Cost"
+                                                prop:value=opt_cost
+                                                on:input=move |e| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(mm) = sc.metamagic.as_mut()
+                                                        && let Some(o) = mm.options.get_mut(i)
+                                                    {
+                                                        o.cost = event_target_value(&e);
+                                                    }
+                                                }
+                                            />
+                                            <button
+                                                class="btn-remove"
+                                                on:click=move |_| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(mm) = sc.metamagic.as_mut()
+                                                        && i < mm.options.len()
+                                                    {
+                                                        mm.options.remove(i);
+                                                    }
+                                                }
+                                            >
+                                                "X"
+                                            </button>
+                                            <textarea
+                                                class="metamagic-desc"
+                                                placeholder="Description"
+                                                prop:value=opt_desc
+                                                on:input=move |e| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && let Some(mm) = sc.metamagic.as_mut()
+                                                        && let Some(o) = mm.options.get_mut(i)
+                                                    {
+                                                        o.description = event_target_value(&e);
+                                                    }
+                                                }
+                                            />
+                                        </div>
+                                    }
+                                })
+                                .collect_view()
+                        }}
+                    </div>
+                    <button
+                        class="btn-add"
+                        on:click=move |_| {
+                            if let Some(sc) = store.spellcasting().write().as_mut()
+                                && let Some(mm) = sc.metamagic.as_mut()
+                            {
+                                mm.options.push(MetamagicOption::default());
+                            }
+                        }
+                    >
+                        "+ Add Metamagic"
+                    </button>
+                </Show>
             </Show>
         </Panel>
     }

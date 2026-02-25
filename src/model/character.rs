@@ -344,6 +344,8 @@ pub struct SpellcastingData {
     pub casting_ability: Ability,
     pub spell_slots: Vec<SpellSlotLevel>,
     pub spells: Vec<Spell>,
+    #[serde(default)]
+    pub metamagic: Option<MetamagicData>,
 }
 
 impl Default for SpellcastingData {
@@ -358,8 +360,23 @@ impl Default for SpellcastingData {
                 })
                 .collect(),
             spells: Vec::new(),
+            metamagic: None,
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct MetamagicData {
+    pub sorcery_points_max: u32,
+    pub sorcery_points_used: u32,
+    pub options: Vec<MetamagicOption>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct MetamagicOption {
+    pub name: String,
+    pub cost: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
