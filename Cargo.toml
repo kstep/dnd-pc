@@ -14,6 +14,7 @@ js-sys = "0.3"
 wasm-bindgen = "0.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+rmp-serde = "1"
 gloo-storage = "0.3"
 gloo-net = "0.6"
 reactive_stores = "0.3"
@@ -22,7 +23,7 @@ fluent-templates = "0.13"
 strum = { version = "0.26", features = ["derive"] }
 uuid = { version = "1", features = ["v4", "js", "serde"] }
 wasm-bindgen-futures = "0.4"
-flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+brotli = { version = "7", default-features = false, features = ["std"] }
 base64 = "0.22"
 web-sys = { version = "0.3", features = [
     "ServiceWorkerContainer", "Navigator", "Window",
