@@ -6,10 +6,6 @@ use uuid::Uuid;
 
 use super::enums::*;
 
-fn is_default<T: Default + PartialEq>(v: &T) -> bool {
-    *v == T::default()
-}
-
 // --- Character Index (for list page) ---
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -30,31 +26,31 @@ pub struct CharacterSummary {
 #[derive(Debug, Clone, Serialize, Deserialize, Store)]
 pub struct Character {
     pub id: Uuid,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub identity: CharacterIdentity,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub abilities: AbilityScores,
-    #[serde(default, skip_serializing_if = "HashSet::is_empty")]
+    #[serde(default)]
     pub saving_throws: HashSet<Ability>,
-    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    #[serde(default)]
     pub skills: HashMap<Skill, ProficiencyLevel>,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub combat: CombatStats,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub personality: Personality,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub features: Vec<Feature>,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub equipment: Equipment,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub spellcasting: Option<SpellcastingData>,
-    #[serde(default, skip_serializing_if = "HashSet::is_empty")]
+    #[serde(default)]
     pub proficiencies: HashSet<Proficiency>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub languages: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub racial_traits: Vec<RacialTrait>,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub notes: String,
 }
 
@@ -164,16 +160,16 @@ impl Default for Character {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CharacterIdentity {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub classes: Vec<ClassLevel>,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub race: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub background: String,
     pub alignment: Alignment,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub experience_points: u32,
 }
 
@@ -192,15 +188,15 @@ impl Default for CharacterIdentity {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct ClassLevel {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub class: String,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub level: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub hit_die_sides: u16,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub hit_dice_used: u32,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub applied_levels: Vec<u32>,
 }
 
@@ -216,19 +212,19 @@ impl Default for ClassLevel {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
 pub struct AbilityScores {
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub strength: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub dexterity: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub constitution: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub intelligence: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub wisdom: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub charisma: u32,
 }
 
@@ -269,23 +265,23 @@ impl Default for AbilityScores {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub armor_class: i32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub speed: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub hp_max: i32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub hp_current: i32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub hp_temp: i32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub death_save_successes: u8,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub death_save_failures: u8,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub initiative_misc_bonus: i32,
 }
 
@@ -306,80 +302,80 @@ impl Default for CombatStats {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Personality {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub history: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub personality_traits: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub ideals: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub bonds: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub flaws: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Feature {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub description: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub weapons: Vec<Weapon>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub items: Vec<Item>,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub currency: Currency,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Weapon {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub attack_bonus: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub damage: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub damage_type: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Item {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub quantity: u32,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub description: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Currency {
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub cp: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub sp: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub ep: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub gp: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub pp: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub spell_slots: Vec<SpellSlotLevel>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub spells: Vec<Spell>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub metamagic: Option<MetamagicData>,
 }
 
@@ -387,7 +383,7 @@ impl SpellcastingData {
     pub fn spell_slot(&self, level: u32) -> SpellSlotLevel {
         self.spell_slots
             .get((level - 1) as usize)
-            .cloned()
+            .copied()
             .unwrap_or_default()
     }
 
@@ -409,48 +405,48 @@ impl Default for SpellcastingData {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct MetamagicData {
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub sorcery_points_max: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub sorcery_points_used: u32,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub options: Vec<MetamagicOption>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct MetamagicOption {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub cost: u32,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub description: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct SpellSlotLevel {
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub total: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub used: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Spell {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub level: u32,
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub prepared: bool,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub description: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct RacialTrait {
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub name: String,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
     pub description: String,
 }

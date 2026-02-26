@@ -10,7 +10,7 @@ pub fn encode_character(character: &Character) -> String {
     character.combat.death_save_successes = 0;
     character.combat.death_save_failures = 0;
     character.combat.hp_temp = 0;
-    let bytes = rmp_serde::to_vec(&character).expect("failed to serialize character");
+    let bytes = postcard::to_allocvec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {
         let mut encoder = brotli::CompressorWriter::new(&mut compressed, 4096, 11, 22);
@@ -24,5 +24,5 @@ pub fn decode_character(data: &str) -> Option<Character> {
     let mut decoder = brotli::Decompressor::new(&compressed[..], 4096);
     let mut bytes = Vec::new();
     decoder.read_to_end(&mut bytes).ok()?;
-    rmp_serde::from_slice(&bytes).ok()
+    postcard::from_bytes(&bytes).ok()
 }
