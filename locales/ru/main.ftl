@@ -17,6 +17,7 @@ total-level = Общий уровень
 prof-bonus = Бонус мастерства
 classes = Классы
 class = Класс
+subclass = Подкласс
 btn-add-class = + Добавить класс
 btn-apply-level = Ур. { $level }
 back-to-characters = < Назад к персонажам

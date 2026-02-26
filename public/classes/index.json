@@ -1,34 +1,108 @@
 {
   "classes": [
     {
-      "name": "Sorcerer",
-      "url": "classes/sorcerer.json",
-      "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
-      "prerequisites": ["Charisma"]
-    },
-    {
       "name": "Artificer",
       "url": "classes/artificer.json",
       "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
-      "prerequisites": ["Intelligence"]
+      "prerequisites": [
+        "Intelligence"
+      ]
+    },
+    {
+      "name": "Barbarian",
+      "url": "classes/barbarian.json",
+      "description": "A fierce warrior who can enter a battle rage.",
+      "prerequisites": [
+        "Strength"
+      ]
     },
     {
       "name": "Bard",
       "url": "classes/bard.json",
       "description": "An inspiring magician whose power echoes the music of creation.",
-      "prerequisites": ["Charisma"]
+      "prerequisites": [
+        "Charisma"
+      ]
     },
     {
       "name": "Cleric",
       "url": "classes/cleric.json",
       "description": "A priestly champion who wields divine magic in service of a higher power.",
-      "prerequisites": ["Wisdom"]
+      "prerequisites": [
+        "Wisdom"
+      ]
+    },
+    {
+      "name": "Druid",
+      "url": "classes/druid.json",
+      "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
+      "prerequisites": [
+        "Wisdom"
+      ]
     },
     {
       "name": "Fighter",
       "url": "classes/fighter.json",
       "description": "A master of martial combat, skilled with a variety of weapons and armor.",
-      "prerequisites": ["Strength"]
+      "prerequisites": [
+        "Strength"
+      ]
+    },
+    {
+      "name": "Monk",
+      "url": "classes/monk.json",
+      "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
+      "prerequisites": [
+        "Dexterity"
+      ]
+    },
+    {
+      "name": "Paladin",
+      "url": "classes/paladin.json",
+      "description": "A holy warrior bound to a sacred oath.",
+      "prerequisites": [
+        "Charisma"
+      ]
+    },
+    {
+      "name": "Ranger",
+      "url": "classes/ranger.json",
+      "description": "A warrior who combats threats on the edges of civilization.",
+      "prerequisites": [
+        "Wisdom"
+      ]
+    },
+    {
+      "name": "Rogue",
+      "url": "classes/rogue.json",
+      "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
+      "prerequisites": [
+        "Dexterity"
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "url": "classes/sorcerer.json",
+      "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
+      "prerequisites": [
+        "Charisma"
+      ]
+    },
+    {
+      "name": "Warlock",
+      "url": "classes/warlock.json",
+      "description": "A wielder of magic derived from a bargain with an extraplanar entity.",
+      "prerequisites": [
+        "Charisma"
+      ]
+    },
+    {
+      "name": "Wizard",
+      "url": "classes/wizard.json",
+      "description": "A scholarly magic-user capable of manipulating the structures of reality.",
+      "prerequisites": [
+        "Intelligence"
+      ]
     }
   ]
 }

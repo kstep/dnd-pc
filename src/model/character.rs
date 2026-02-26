@@ -120,7 +120,10 @@ impl Character {
             .classes
             .iter()
             .filter(|c| !c.class.is_empty())
-            .map(|c| format!("{} {}", c.class, c.level))
+            .map(|c| match &c.subclass {
+                Some(sc) if !sc.is_empty() => format!("{} ({sc}) {}", c.class, c.level),
+                _ => format!("{} {}", c.class, c.level),
+            })
             .collect::<Vec<_>>()
             .join(" / ")
     }
@@ -191,6 +194,8 @@ pub struct ClassLevel {
     #[serde(default)]
     pub class: String,
     #[serde(default)]
+    pub subclass: Option<String>,
+    #[serde(default)]
     pub level: u32,
     #[serde(default)]
     pub hit_die_sides: u16,
@@ -204,6 +209,7 @@ impl Default for ClassLevel {
     fn default() -> Self {
         Self {
             class: String::new(),
+            subclass: None,
             level: 1,
             hit_die_sides: 8,
             hit_dice_used: 0,

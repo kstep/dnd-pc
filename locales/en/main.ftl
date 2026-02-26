@@ -17,6 +17,7 @@ total-level = Total Level
 prof-bonus = Prof. Bonus
 classes = Classes
 class = Class
+subclass = Subclass
 btn-add-class = + Add Class
 btn-apply-level = Apply Lvl { $level }
 back-to-characters = < Back to Characters

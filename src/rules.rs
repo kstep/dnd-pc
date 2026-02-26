@@ -42,6 +42,27 @@ pub struct ClassDefinition {
     pub spells: Vec<ClassSpell>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
+    #[serde(default)]
+    pub subclasses: Vec<SubclassDefinition>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SubclassDefinition {
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub features: Vec<ClassFeature>,
+    #[serde(default)]
+    pub spells: Vec<ClassSpell>,
+    #[serde(default)]
+    pub levels: Vec<SubclassLevelRules>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SubclassLevelRules {
+    pub level: u32,
+    #[serde(default)]
+    pub features: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

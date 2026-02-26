@@ -163,7 +163,7 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         });
     }
 
-    // Add features
+    // Add class features
     let features_to_add: Vec<Feature> = rules
         .features
         .iter()
@@ -180,6 +180,31 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
 
     if !features_to_add.is_empty() {
         store.features().write().extend(features_to_add);
+    }
+
+    // Add subclass features
+    if let Some(ref subclass_name) = classes.read()[class_index].subclass
+        && let Some(subclass_def) = def.subclasses.iter().find(|sc| &sc.name == subclass_name)
+        && let Some(sc_rules) = subclass_def.levels.iter().find(|lr| lr.level == level)
+    {
+        let sc_features: Vec<Feature> = sc_rules
+            .features
+            .iter()
+            .filter_map(|name| {
+                subclass_def
+                    .features
+                    .iter()
+                    .find(|f| &f.name == name)
+                    .map(|f| Feature {
+                        name: f.name.clone(),
+                        description: f.description.clone(),
+                    })
+            })
+            .collect();
+
+        if !sc_features.is_empty() {
+            store.features().write().extend(sc_features);
+        }
     }
 
     // Enable spellcasting at level 1 for caster classes
@@ -423,6 +448,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             .enumerate()
                             .map(|(i, cl)| {
                                 let class_name = cl.class.clone();
+                                let subclass_name = cl.subclass.clone().unwrap_or_default();
                                 let level_val = cl.level.to_string();
                                 let hit_die_val = cl.hit_die_sides.to_string();
                                 let current_level = cl.level;
@@ -433,12 +459,26 @@ pub fn CharacterHeader() -> impl IntoView {
                                     registry.fetch_class(&class_name);
                                 }
 
-                                let next_unapplied: Option<u32> = registry
-                                    .get_class(&class_name)
+                                let class_def = registry.get_class(&class_name);
+
+                                let next_unapplied: Option<u32> = class_def.as_ref()
                                     .and_then(|_| {
                                         (1..=current_level)
                                             .find(|lvl| !applied.contains(lvl))
                                     });
+
+                                let subclass_datalist_id = format!("subclass-suggestions-{i}");
+                                let subclass_options = class_def
+                                    .as_ref()
+                                    .map(|def| {
+                                        def.subclasses
+                                            .iter()
+                                            .map(|sc| sc.name.clone())
+                                            .collect::<Vec<_>>()
+                                    })
+                                    .unwrap_or_default();
+                                let has_subclasses = !subclass_options.is_empty();
+                                let datalist_id = subclass_datalist_id.clone();
 
                                 view! {
                                     <div class="class-entry">
@@ -459,6 +499,29 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 }
                                             }
                                         />
+                                        {if has_subclasses {
+                                            let dl_id = datalist_id.clone();
+                                            Some(view! {
+                                                <datalist id=datalist_id>
+                                                    {subclass_options.into_iter().map(|name| {
+                                                        view! { <option value=name /> }
+                                                    }).collect_view()}
+                                                </datalist>
+                                                <input
+                                                    type="text"
+                                                    class="class-subclass"
+                                                    list=dl_id
+                                                    placeholder=tr!("subclass")
+                                                    prop:value=subclass_name
+                                                    on:input=move |e| {
+                                                        let val = event_target_value(&e);
+                                                        classes.write()[i].subclass = if val.is_empty() { None } else { Some(val) };
+                                                    }
+                                                />
+                                            })
+                                        } else {
+                                            None
+                                        }}
                                         <select
                                             class="class-hit-die"
                                             prop:value=hit_die_val

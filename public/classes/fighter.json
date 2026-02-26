@@ -3,127 +3,265 @@
   "description": "A master of martial combat, skilled with a variety of weapons and armor.",
   "hit_die": 10,
   "casting_ability": null,
-  "proficiencies": ["LightArmor", "MediumArmor", "HeavyArmor", "Shields", "SimpleWeapons", "MartialWeapons"],
-  "saving_throws": ["Strength", "Constitution"],
+  "proficiencies": [
+    "LightArmor",
+    "MediumArmor",
+    "HeavyArmor",
+    "Shields",
+    "SimpleWeapons",
+    "MartialWeapons"
+  ],
+  "saving_throws": [
+    "Strength",
+    "Constitution"
+  ],
   "features": [
     {
       "name": "Fighting Style",
-      "description": "You adopt a particular style of fighting as your specialty. Choose one: Archery, Defense, Dueling, Great Weapon Fighting, Protection, or Two-Weapon Fighting."
+      "description": "You adopt a particular style of fighting as your specialty. Choose a fighting style from the list of optional features. You can't take the same Fighting Style option more than once, even if you get to choose again."
     },
     {
       "name": "Second Wind",
-      "description": "You have a limited well of stamina. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once used, you must finish a short or long rest to use it again."
+      "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
     },
     {
       "name": "Action Surge",
-      "description": "You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action. Once used, you must finish a short or long rest to use it again. Starting at 17th level, you can use it twice before a rest."
+      "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action. Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
     },
     {
       "name": "Martial Archetype",
-      "description": "You choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion, Battle Master, or Eldritch Knight."
+      "description": "At 3rd level, you choose an archetype from the list available that you strive to emulate in your combat styles and techniques. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level."
     },
     {
       "name": "Ability Score Improvement",
-      "description": "Increase one ability score by 2, or two ability scores by 1."
+      "description": "When you reach 4th level you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. If your DM allows the use of feats, you may instead take a feat."
     },
     {
       "name": "Extra Attack",
-      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn."
+      "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+    },
+    {
+      "name": "Martial Archetype feature",
+      "description": "At 7th level, you gain a feature granted by your Martial Archetype."
     },
     {
       "name": "Indomitable",
-      "description": "You can reroll a saving throw that you fail. If you do so, you must use the new roll. You can use this feature once per long rest, increasing to twice at 13th level and three times at 17th level."
+      "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
     },
     {
       "name": "Extra Attack (2)",
-      "description": "You can attack three times whenever you take the Attack action on your turn."
+      "description": "At 11th level, you can attack three times whenever you take the Attack action on your turn."
+    },
+    {
+      "name": "Indomitable (two uses)",
+      "description": "At 13th level, you can use Indomitable twice between long rests."
+    },
+    {
+      "name": "Action Surge (two uses)",
+      "description": "At 17th level, you can use Action Surge twice before a rest, but only once on the same turn."
+    },
+    {
+      "name": "Indomitable (three uses)",
+      "description": "At 17th level, you can use Indomitable three times between long rests."
     },
     {
       "name": "Extra Attack (3)",
-      "description": "You can attack four times whenever you take the Attack action on your turn."
+      "description": "At 20th level, you can attack four times whenever you take the Attack action on your turn."
     }
   ],
   "spells": [],
   "levels": [
     {
-      "level": 1,
-      "features": ["Fighting Style", "Second Wind"]
+      "features": [
+        "Fighting Style",
+        "Second Wind"
+      ]
     },
     {
-      "level": 2,
-      "features": ["Action Surge"]
+      "features": [
+        "Action Surge"
+      ]
     },
     {
-      "level": 3,
-      "features": ["Martial Archetype"]
+      "features": [
+        "Martial Archetype"
+      ]
     },
     {
-      "level": 4,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 5,
-      "features": ["Extra Attack"]
+      "features": [
+        "Extra Attack"
+      ]
     },
     {
-      "level": 6,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 7,
-      "features": []
+      "features": [
+        "Martial Archetype feature"
+      ]
     },
     {
-      "level": 8,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 9,
-      "features": ["Indomitable"]
+      "features": [
+        "Indomitable"
+      ]
     },
     {
-      "level": 10,
-      "features": []
+      "features": [
+        "Martial Archetype feature"
+      ]
     },
     {
-      "level": 11,
-      "features": ["Extra Attack (2)"]
+      "features": [
+        "Extra Attack (2)"
+      ]
     },
     {
-      "level": 12,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 13,
-      "features": []
+      "features": [
+        "Indomitable (two uses)"
+      ]
     },
     {
-      "level": 14,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 15,
-      "features": []
+      "features": [
+        "Martial Archetype feature"
+      ]
     },
     {
-      "level": 16,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 17,
-      "features": []
+      "features": [
+        "Action Surge (two uses)",
+        "Indomitable (three uses)"
+      ]
     },
     {
-      "level": 18,
-      "features": []
+      "features": [
+        "Martial Archetype feature"
+      ]
     },
     {
-      "level": 19,
-      "features": ["Ability Score Improvement"]
+      "features": [
+        "Ability Score Improvement"
+      ]
     },
     {
-      "level": 20,
-      "features": ["Extra Attack (3)"]
+      "features": [
+        "Extra Attack (3)"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Champion",
+      "description": "A Champion focuses on the development of raw physical power honed to deadly perfection.",
+      "features": [
+        {
+          "name": "Improved Critical",
+          "description": "Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20."
+        },
+        {
+          "name": "Remarkable Athlete",
+          "description": "Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier."
+        },
+        {
+          "name": "Additional Fighting Style",
+          "description": "At 10th level, you can choose a second option from the Fighting Style class feature."
+        },
+        {
+          "name": "Superior Critical",
+          "description": "Starting at 15th level, your weapon attacks score a critical hit on a roll of 18-20."
+        }
+      ],
+      "levels": [
+        { "level": 3, "features": ["Improved Critical"] },
+        { "level": 7, "features": ["Remarkable Athlete"] },
+        { "level": 10, "features": ["Additional Fighting Style"] },
+        { "level": 15, "features": ["Superior Critical"] }
+      ]
+    },
+    {
+      "name": "Battle Master",
+      "description": "Those who emulate the archetypal Battle Master employ martial techniques passed down through generations.",
+      "features": [
+        {
+          "name": "Combat Superiority",
+          "description": "When you choose this archetype at 3rd level, you learn three maneuvers of your choice. You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest."
+        },
+        {
+          "name": "Student of War",
+          "description": "At 3rd level, you gain proficiency with one type of artisan's tools of your choice."
+        },
+        {
+          "name": "Know Your Enemy",
+          "description": "Starting at 7th level, if you spend at least 1 minute observing or interacting with another creature outside combat, you can learn certain information about its capabilities compared to your own."
+        },
+        {
+          "name": "Improved Combat Superiority",
+          "description": "At 10th level, your superiority dice turn into d10s. At 18th level, they turn into d12s."
+        },
+        {
+          "name": "Relentless",
+          "description": "Starting at 15th level, when you roll initiative and have no superiority dice remaining, you regain one superiority die."
+        }
+      ],
+      "levels": [
+        { "level": 3, "features": ["Combat Superiority", "Student of War"] },
+        { "level": 7, "features": ["Know Your Enemy"] },
+        { "level": 10, "features": ["Improved Combat Superiority"] },
+        { "level": 15, "features": ["Relentless"] }
+      ]
+    },
+    {
+      "name": "Eldritch Knight",
+      "description": "The archetypal Eldritch Knight combines the martial mastery common to all fighters with a careful study of magic.",
+      "features": [
+        {
+          "name": "Spellcasting (Eldritch Knight)",
+          "description": "When you reach 3rd level, you augment your martial prowess with the ability to cast spells. You learn two cantrips and three 1st-level spells from the wizard spell list. Intelligence is your spellcasting ability for your wizard spells."
+        },
+        {
+          "name": "War Magic",
+          "description": "Beginning at 7th level, when you use your action to cast a cantrip, you can make one weapon attack as a bonus action."
+        },
+        {
+          "name": "Eldritch Strike",
+          "description": "At 10th level, when you hit a creature with a weapon attack, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn."
+        },
+        {
+          "name": "Arcane Charge",
+          "description": "At 15th level, when you use Action Surge, you can teleport up to 30 feet to an unoccupied space you can see. You can teleport before or after the additional action."
+        }
+      ],
+      "levels": [
+        { "level": 3, "features": ["Spellcasting (Eldritch Knight)"] },
+        { "level": 7, "features": ["War Magic"] },
+        { "level": 10, "features": ["Eldritch Strike"] },
+        { "level": 15, "features": ["Arcane Charge"] }
+      ]
     }
   ]
 }

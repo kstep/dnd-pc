@@ -1,0 +1,209 @@
+{
+  "name": "Monk",
+  "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
+  "hit_die": 8,
+  "casting_ability": null,
+  "proficiencies": [
+    "SimpleWeapons"
+  ],
+  "saving_throws": [
+    "Strength",
+    "Dexterity"
+  ],
+  "features": [
+    {
+      "name": "Unarmored Defense",
+      "description": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+    },
+    {
+      "name": "Martial Arts",
+      "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two-handed or heavy property. You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield."
+    },
+    {
+      "name": "Ki",
+      "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of the Monk table. You can spend these points to fuel various ki features."
+    },
+    {
+      "name": "Unarmored Movement",
+      "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table. At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+    },
+    {
+      "name": "Deflect Missiles",
+      "description": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level. If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free."
+    },
+    {
+      "name": "Monastic Tradition",
+      "description": "When you reach 3rd level, you commit yourself to a monastic tradition, chosen from the list of available traditions. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "When you reach 4th level you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. If your DM allows the use of feats, you may instead take a feat."
+    },
+    {
+      "name": "Slow Fall",
+      "description": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level."
+    },
+    {
+      "name": "Extra Attack",
+      "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "name": "Stunning Strike",
+      "description": "Starting at 5th level, you can interfere with the flow of ki in an opponent's body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn."
+    },
+    {
+      "name": "Ki-Empowered Strikes",
+      "description": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
+    },
+    {
+      "name": "Monastic Tradition feature",
+      "description": "At 6th level, you gain one feature granted by your Monastic Tradition."
+    },
+    {
+      "name": "Evasion",
+      "description": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon's lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."
+    },
+    {
+      "name": "Stillness of Mind",
+      "description": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."
+    },
+    {
+      "name": "Unarmored Movement improvement",
+      "description": "At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+    },
+    {
+      "name": "Purity of Body",
+      "description": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison."
+    },
+    {
+      "name": "Tongue of the Sun and Moon",
+      "description": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say."
+    },
+    {
+      "name": "Diamond Soul",
+      "description": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws. Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result."
+    },
+    {
+      "name": "Timeless Body",
+      "description": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water."
+    },
+    {
+      "name": "Empty Body",
+      "description": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage. Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can't take any other creatures with you."
+    },
+    {
+      "name": "Perfect Soul",
+      "description": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points."
+    }
+  ],
+  "spells": [],
+  "levels": [
+    {
+      "features": [
+        "Unarmored Defense",
+        "Martial Arts"
+      ]
+    },
+    {
+      "features": [
+        "Ki",
+        "Unarmored Movement"
+      ]
+    },
+    {
+      "features": [
+        "Deflect Missiles",
+        "Monastic Tradition"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement",
+        "Slow Fall"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack",
+        "Stunning Strike"
+      ]
+    },
+    {
+      "features": [
+        "Ki-Empowered Strikes",
+        "Monastic Tradition feature"
+      ]
+    },
+    {
+      "features": [
+        "Evasion",
+        "Stillness of Mind"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Unarmored Movement improvement"
+      ]
+    },
+    {
+      "features": [
+        "Purity of Body"
+      ]
+    },
+    {
+      "features": [
+        "Monastic Tradition feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Tongue of the Sun and Moon"
+      ]
+    },
+    {
+      "features": [
+        "Diamond Soul"
+      ]
+    },
+    {
+      "features": [
+        "Timeless Body"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Monastic Tradition feature"
+      ]
+    },
+    {
+      "features": [
+        "Empty Body"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Perfect Soul"
+      ]
+    }
+  ]
+}

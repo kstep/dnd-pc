@@ -1,0 +1,887 @@
+{
+  "name": "Warlock",
+  "description": "A wielder of magic derived from a bargain with an extraplanar entity.",
+  "hit_die": 8,
+  "casting_ability": "Charisma",
+  "proficiencies": [
+    "LightArmor",
+    "SimpleWeapons"
+  ],
+  "saving_throws": [
+    "Wisdom",
+    "Charisma"
+  ],
+  "features": [
+    {
+      "name": "Pact Magic",
+      "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the warlock spell list. Cantrips: You know two cantrips of your choice from the warlock spell list."
+    },
+    {
+      "name": "Otherworldly Patron",
+      "description": "At 1st level, you have struck a bargain with an otherworldly being chosen from the list of available patrons. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+    },
+    {
+      "name": "Eldritch Invocations",
+      "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice."
+    },
+    {
+      "name": "Pact Boon",
+      "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "When you reach 4th level you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. If your DM allows the use of feats, you may instead take a feat."
+    },
+    {
+      "name": "Otherworldly Patron feature",
+      "description": "At 6th level, you gain a feature granted by your Otherworldly Patron."
+    },
+    {
+      "name": "Mystic Arcanum (6th level)",
+      "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."
+    },
+    {
+      "name": "Mystic Arcanum (7th level)",
+      "description": "At 13th level, your patron bestows upon you a magical secret called an arcanum. Choose one 7th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."
+    },
+    {
+      "name": "Mystic Arcanum (8th level)",
+      "description": "At 15th level, your patron bestows upon you a magical secret called an arcanum. Choose one 8th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."
+    },
+    {
+      "name": "Mystic Arcanum (9th level)",
+      "description": "At 17th level, your patron bestows upon you a magical secret called an arcanum. Choose one 9th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."
+    },
+    {
+      "name": "Eldritch Master",
+      "description": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Blade Ward",
+      "level": 0,
+      "description": "You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks."
+    },
+    {
+      "name": "Booming Blade",
+      "level": 0,
+      "description": "As part of the action used to cast this spell, you must make a melee attack with a weapon against one creature within the spell's range, otherwise the spell fails. On a hit, the target suffers the attack's normal effects, and it becomes sheathed in booming energy until the start of your next turn. If the target willingly moves before then, it immediately takes 1d8 thunder damage, and the spell ends. This spell's damage increases when you reach higher levels."
+    },
+    {
+      "name": "Chill Touch",
+      "level": 0,
+      "description": "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack against the creature to assail it with the chill of the grave. On a hit, the target takes 1d8 necrotic damage, and it can't regain hit points until the start of your next turn. Until then, the hand clings to the target. If you hit an undead target, it also has disadvantage on attack rolls against you until the end of your next turn."
+    },
+    {
+      "name": "Create Bonfire",
+      "level": 0,
+      "description": "You create a bonfire on ground that you can see within range. Until the spell ends, the bonfire fills a 5-foot cube. Any creature in the bonfire's space when you cast the spell must succeed on a Dexterity saving throw or take 1d8 fire damage. A creature must also make the saving throw when it enters the bonfire's space for the first time on a turn or ends its turn there. The spell's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8)."
+    },
+    {
+      "name": "Eldritch Blast",
+      "level": 0,
+      "description": "A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 force damage. The spell creates more than one beam when you reach higher levels: two beams at 5th level, three beams at 11th level, and four beams at 17th level. you can direct the beams at the same target or at different ones. Make a separate attack roll for each beam."
+    },
+    {
+      "name": "Friends",
+      "level": 0,
+      "description": "For the duration, you have advantage on all Charisma checks directed at one creature of your choice that isn't hostile toward you. When the spell ends, the creature realizes that you used magic to influence its mood and becomes hostile toward you. A creature prone to violence might attack you. Another creature might seek retribution in other ways (at the DM's discretion), depending on the nature of your interaction with it."
+    },
+    {
+      "name": "Frostbite",
+      "level": 0,
+      "description": "You cause numbing frost to form on one creature that you can see within range. The target must make a Constitution saving throw. On a failed save, the target takes 1d6 cold damage, and it has disadvantage on the next weapon attack roll it makes before the end of its next turn. The spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6)."
+    },
+    {
+      "name": "Green-Flame Blade",
+      "level": 0,
+      "description": "As part of the action used to cast this spell, you must make a melee attack with a weapon against one creature within the spell's range, otherwise the spell fails. On a hit, the target suffers the attack's normal effects, and green fire leaps from the target to a different creature of your choice that you can see within 5 feet of it. The second creature takes fire damage equal to your spellcasting ability modifier. This spell's damage increases when you reach higher levels."
+    },
+    {
+      "name": "Infestation",
+      "level": 0,
+      "description": "You cause a cloud of mites, fleas, and other parasites to appear momentarily on one creature you can see within range. The target must succeed on a Constitution saving throw, or it takes 1d6 poison damage and moves 5 feet in a random direction if it can move and its speed is at least 5 feet. Roll a d4 for the direction: 1, north; 2, south; 3, east; or 4, west."
+    },
+    {
+      "name": "Lightning Lure",
+      "level": 0,
+      "description": "You create a lash of lightning energy that strikes at one creature of your choice that you can see within range. The target must succeed on a Strength saving throw or be pulled up to 10 feet in a straight line toward you and then take 1d8 lightning damage if it is within 5 feet of you. The spell's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8)."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. You can use your action to control the hand. You can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial."
+    },
+    {
+      "name": "Magic Stone",
+      "level": 0,
+      "description": "You touch one to three pebbles and imbue them with magic. You or someone else can make a ranged spell attack with one of the pebbles by throwing it or hurling it with a sling. If thrown, a pebble has a range of 60 feet. If someone else attacks with the pebble, that attacker adds your spellcasting ability modifier, not the attacker's, to the attack roll. On a hit, the target takes bludgeoning damage equal to 1d6 + your spellcasting ability modifier."
+    },
+    {
+      "name": "Minor Illusion",
+      "level": 0,
+      "description": "You create a sound or an image of an object within range that lasts for the duration. The illusion also ends if you dismiss it as an action or cast this spell again. If you create a sound, its volume can range from a whisper to a scream. It can be your voice, someone else's voice, a lion's roar, a beating of drums, or any other sound you choose. The sound continues unabated throughout the duration, or you can make discrete sounds at different times before the spell ends."
+    },
+    {
+      "name": "Poison Spray",
+      "level": 0,
+      "description": "You extend your hand toward a creature you can see within range and project a puff of noxious gas from your palm. The creature must succeed on a Constitution saving throw or take 1d12 poison damage. This spell's damage increases by 1d12 when you reach 5th level (2d12), 11th level (3d12), and 17th level (4d12)."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of the following magical effects within range. - You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. - You instantaneously light or snuff out a candle, a torch, or a small campfire. - You instantaneously clean or soil an object no larger than 1 cubic foot."
+    },
+    {
+      "name": "Sword Burst",
+      "level": 0,
+      "description": "You create a momentary circle of spectral blades that sweep around you. Each creature within range, other than you, must succeed on a Dexterity saving throw or take 1d6 force damage. The spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6)."
+    },
+    {
+      "name": "Thunderclap",
+      "level": 0,
+      "description": "You create a burst of thunderous sound that can be heard up to 100 feet away. Each creature within range, other than you, must make a Constitution saving throw or take 1d6 thunder damage. The spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6)."
+    },
+    {
+      "name": "Toll the Dead",
+      "level": 0,
+      "description": "You point at one creature you can see within range, and the sound of a dolorous bell fills the air around it for a moment. The target must succeed on a Wisdom saving throw or take 1d8 necrotic damage. If the target is missing any of its hit points, it instead takes 1d12 necrotic damage. The spell's damage increases by one die when you reach 5th level (2d8 or 2d12), 11th level (3d8 or 3d12), and 17th level (4d8 or 4d12)."
+    },
+    {
+      "name": "True Strike",
+      "level": 0,
+      "description": "You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target's defenses. On your next turn, you gain advantage on your first attack roll against the target, provided that this spell hasn't ended."
+    },
+    {
+      "name": "Armor of Agathys",
+      "level": 1,
+      "description": "A protective magical force surrounds you, manifesting as a spectral frost that covers you and your gear. You gain 5 temporary hit points for the duration. If a creature hits you with a melee attack while you have these hit points, the creature takes 5 cold damage. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, both the temporary hit points and the cold damage increase by 5 for each slot level above 1st."
+    },
+    {
+      "name": "Arms of Hadar",
+      "level": 1,
+      "description": "You invoke the power of Hadar, the Dark Hunger. Tendrils of dark energy erupt from you and batter all creatures within 10 feet of you. Each creature in that area must make a Strength saving throw. On a failed save, a target takes 2d6 necrotic damage and can't take reactions until its next turn. On a successful save, the creature takes half damage, but suffers no other effect."
+    },
+    {
+      "name": "Cause Fear",
+      "level": 1,
+      "description": "You awaken the sense of mortality in one creature you can see within range. A construct or an undead is immune to this effect. The target must succeed on a Wisdom saving throw or become frightened of you until the spell ends."
+    },
+    {
+      "name": "Charm Person",
+      "level": 1,
+      "description": "You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw, and does so with advantage if you or your companions are fighting it. If it fails the saving throw, it is charmed by you until the spell ends or until you or your companions do anything harmful to it. The charmed creature regards you as a friendly acquaintance. When the spell ends, the creature knows it was charmed by you."
+    },
+    {
+      "name": "Comprehend Languages",
+      "level": 1,
+      "description": "For the duration, you understand the literal meaning of any spoken language that you hear. You also understand any written language that you see, but you must be touching the surface of which the words are written. It takes about 1 minute to read one page of text. This spell doesn't decode secret messages in a text or glyph, such as an arcane sigil, that isn't part of a written language."
+    },
+    {
+      "name": "Expeditious Retreat",
+      "level": 1,
+      "description": "This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action."
+    },
+    {
+      "name": "Hellish Rebuke",
+      "level": 1,
+      "description": "You point your finger, and the creature that damaged you is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes 2d10 fire damage on a failed save, or half as much damage on a successful one. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d10 for each slot level above 1st."
+    },
+    {
+      "name": "Hex",
+      "level": 1,
+      "description": "You place a curse on a creature that you can see within range. Until the spell ends, you deal an extra 1d6 necrotic damage to the target whenever you hit it with an attack. Also, choose one ability when you cast the spell. The target has disadvantage on ability checks made with the chosen ability. If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to curse a new creature. A remove curse cast on the target ends this spell early."
+    },
+    {
+      "name": "Illusory Script",
+      "level": 1,
+      "description": "You write on parchment, paper, or some other suitable writing material and imbue it with a potent illusion that lasts for the duration. To you and any creatures you designate when you cast the spell, the writing appears normal, written in your hand, and conveys whatever meaning you intended when you wrote the text. To all others, the writing appears as if it were written in an unknown or magical script that is unintelligible."
+    },
+    {
+      "name": "Protection from Evil and Good",
+      "level": 1,
+      "description": "Until the spell ends, one willing creature you touch is protected against certain types of creatures: aberrations, celestials, elementals, fey, fiends, and undead. The protection grants several benefits. Creatures of those types have disadvantage on attack rolls against the target. The target also can't be charmed, frightened, or possessed by them."
+    },
+    {
+      "name": "Unseen Servant",
+      "level": 1,
+      "description": "This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command until the spell ends. The servant springs into existence in an unoccupied space on the ground within range. It has AC 10, 1 hit point, and a Strength of 2, and it can't attack. If it drops to 0 hit points, the spell ends. Once on each of your turns as a bonus action, you can mentally command the servant to move up to 15 feet and interact with an object."
+    },
+    {
+      "name": "Witch Bolt",
+      "level": 1,
+      "description": "A beam of crackling, blue energy lances out toward a creature within range, forming a sustained arc of lightning between you and the target. Make a ranged spell attack against that creature. On a hit, the target takes 1d12 lightning damage, and on each of your turns for the duration, you can use your action to deal 1d12 lightning damage to the target automatically. The spell ends if you use your action to do anything else."
+    },
+    {
+      "name": "Cloud of Daggers",
+      "level": 2,
+      "description": "You fill the air with spinning daggers in a cube 5 feet on each side, centered on a point you choose within range. A creature takes 4d4 slashing damage when it enters the spell's area for the first time on a turn or starts its turn there. At Higher Levels: when you cast this spell using a spell slot of 3rd level or higher, the damage increases by 2d4 for each slot level above 2nd."
+    },
+    {
+      "name": "Crown of Madness",
+      "level": 2,
+      "description": "One humanoid of your choice that you can see within range must succeed on a Wisdom saving throw or become charmed by you for the duration. While the target is charmed in this way, a twisted crown of jagged iron appears on its head, and a madness glows in its eyes. The charmed target must use its action before moving on each of its turns to make a melee attack against a creature other than itself that you mentally choose."
+    },
+    {
+      "name": "Darkness",
+      "level": 2,
+      "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can't see through this darkness, and nonmagical light can't illuminate it. If the point you choose is on an object you are holding or one that isn't being worn or carried, the darkness emanates from the object and moves with it."
+    },
+    {
+      "name": "Earthbind",
+      "level": 2,
+      "description": "Choose one creature you can see within range. Yellow strips of magical energy loop around the creature. The target must succeed on a Strength saving throw, or its flying speed (if any) is reduced to 0 feet for the spell's duration. An airborne creature affected by this spell safely descends at 60 feet per round until it reaches the ground or the spell ends."
+    },
+    {
+      "name": "Enthrall",
+      "level": 2,
+      "description": "You weave a distracting string of words, causing creatures of your choice that you can see within range and that can hear you to make a Wisdom saving throw. Any creature that can't be charmed succeeds on this saving throw automatically, and if you or your companions are fighting a creature, it has advantage on the save."
+    },
+    {
+      "name": "Hold Person",
+      "level": 2,
+      "description": "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw. On a success, the spell ends on the target. At Higher Levels: When you cast this spell using a spell slot of 3rd level or higher, you can target on additional humanoid for each slot level above 2nd. The humanoids must be within 30 feet of each other when you target them."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "description": "A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target's person. The spell ends for a target that attacks or casts a spell. At Higher Levels: When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd."
+    },
+    {
+      "name": "Mind Spike",
+      "level": 2,
+      "description": "You reach into the mind of one creature you can see within range. The target must make a Wisdom saving throw, taking 3d8 psychic damage on a failed save, or half as much damage on a successful one. On a failed save, you also always know the target's location until the spell ends, but only while the two of you are on the same plane of existence. While you have this knowledge, the target can't become hidden from you, and if it's invisible it gains no benefit from that condition against you."
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real. You can use your action to dismiss the illusory duplicates. Each time a creature targets you with an attack during the spell's duration, roll a d20 to determine whether the attack instead targets one of your duplicates."
+    },
+    {
+      "name": "Misty Step",
+      "level": 2,
+      "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see."
+    },
+    {
+      "name": "Ray of Enfeeblement",
+      "level": 2,
+      "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack against the target. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. At the end of each of the target's turns, it can make a Constitution saving throw against the spell. On a success, the spell ends."
+    },
+    {
+      "name": "Shadow Blade",
+      "level": 2,
+      "description": "You weave together threads of shadow to create a sword of solidified gloom in your hand. This magic sword lasts until the spell ends. It counts as a simple melee weapon with which you are proficient. It deals 2d8 psychic damage on a hit and has the finesse, light, and thrown properties (range 20/60). In addition, when you use the sword to attack a target that is in dim light or darkness, you make the attack roll with advantage."
+    },
+    {
+      "name": "Shatter",
+      "level": 2,
+      "description": "A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one. A creature made of inorganic material such as stone, crystal, or metal has disadvantage on this saving throw."
+    },
+    {
+      "name": "Spider Climb",
+      "level": 2,
+      "description": "Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free. The target also gains a climbing speed equal to its walking speed."
+    },
+    {
+      "name": "Suggestion",
+      "level": 2,
+      "description": "You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you. Creatures that can't be charmed are immune to this effect. The suggestion must be worded in such a manner as to make the course of action sound reasonable. Asking the creature to stab itself, throw itself onto a spear, immolate itself, or do some other obviously harmful act ends the spell. The target must make a Wisdom saving throw."
+    },
+    {
+      "name": "Counterspell",
+      "level": 3,
+      "description": "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect. If it is casting a spell of 4th level or higher, make an ability check using your spellcasting ability. The DC equals 10 + the spell's level. On a success, the creature's spell fails and has no effect."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "Choose any creature, object, or magical effect within range. Any spell of 3rd level or lower on the target ends. For each spell of 4th level or higher on the target, make an ability check using your spellcasting ability. The DC equals 10 + the spell's level. On a successful check, the spell ends."
+    },
+    {
+      "name": "Enemies Abound",
+      "level": 3,
+      "description": "You reach into the mind of one creature you can see and force it to make an Intelligence saving throw. A creature automatically succeeds if it is immune to being frightened. On a failed save, the target loses the ability to distinguish friend from foe, regarding all creatures it can see as enemies until the spell ends. Each time the target takes damage, it can repeat the saving throw, ending the effect on itself on a success."
+    },
+    {
+      "name": "Fear",
+      "level": 3,
+      "description": "You project a phantasmal image of a creature's worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and become frightened for the duration. While frightened by this spell, a creature must take the Dash action and move away from you by the safest available route on each of its turns, unless there is nowhere to move."
+    },
+    {
+      "name": "Fly",
+      "level": 3,
+      "description": "You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall. At Higher Levels: When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd."
+    },
+    {
+      "name": "Gaseous Form",
+      "level": 3,
+      "description": "You transform a willing creature you touch, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends if the creature drops to 0 hit points. An incorporeal creature isn't affected. While in this form, the target's only method of movement is a flying speed of 10 feet. The target can enter and occupy the space of another creature. The target has resistance to nonmagical damage, and it has advantage on Strength, Dexterity, and Constitution saving throws."
+    },
+    {
+      "name": "Hunger of Hadar",
+      "level": 3,
+      "description": "You open a gateway to the dark between the stars, a region infested with unknown horrors. A 20-foot-radius sphere of blackness and bitter cold appears, centered on a point within range and lasting for the duration. This void is filled with a cacophony of soft whispers and slurping noises that can be heard up to 30 feet away. No light, magical or otherwise, can illuminate the area, and creatures fully within the area are blinded."
+    },
+    {
+      "name": "Hypnotic Pattern",
+      "level": 3,
+      "description": "You create a twisting pattern of colors that weaves through the air inside a 30-foot cube within range. The pattern appears for a moment and vanishes. Each creature in the area who sees the pattern must make a Wisdom saving throw. On a failed save, the creature becomes charmed for the duration. While charmed by this spell, the creature is incapacitated and has a speed of 0."
+    },
+    {
+      "name": "Magic Circle",
+      "level": 3,
+      "description": "You create a 10-foot-radius, 20-foot-tall cylinder of magical energy centered on a point on the ground that you can see within range. Glowing runes appear wherever the cylinder intersects with the floor or other surface. Choose one or more of the following types of creatures: celestials, elementals, fey, fiends, or undead. The circle affects a creature of the chosen type in the following ways. - The creature can't willingly enter the cylinder by nonmagical means."
+    },
+    {
+      "name": "Major Image",
+      "level": 3,
+      "description": "You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 20-foot cube. The image appears at a spot that you can see within range and lasts for the duration. It seems completely real, including sounds, smells, and temperature appropriate to the thing depicted."
+    },
+    {
+      "name": "Remove Curse",
+      "level": 3,
+      "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's attunement to the object so it can be removed or discarded."
+    },
+    {
+      "name": "Summon Lesser Demons",
+      "level": 3,
+      "description": "You utter foul words, summoning demons from the chaos of the Abyss. Roll on the following table to determine what appears. The DM chooses the demons, such as manes or dretches, and you choose the unoccupied spaces you can see within range where they appear. A summoned demon disappears when it drops to 0 hit points or when the spell ends. The demons are hostile to all creatures, including you. Roll initiative for the summoned demons as a group, which has its own turns."
+    },
+    {
+      "name": "Thunder Step",
+      "level": 3,
+      "description": "You teleport yourself to an unoccupied space you can see within range. Immediately after you disappear, a thunderous boom sounds, and each creature within 10 feet of the space you left must make a Constitution saving throw, taking 3d10 thunder damage on a failed save, or half as much damage on a successful one. The thunder can be heard from up to 300 feet away. You can bring along objects as long as their weight doesn't exceed what you can carry."
+    },
+    {
+      "name": "Tongues",
+      "level": 3,
+      "description": "This spell grants the creature you touch the ability to understand any spoken language it hears. Moreover, when the target speaks, any creature that knows at least one language and can hear the target understands what it says."
+    },
+    {
+      "name": "Vampiric Touch",
+      "level": 3,
+      "description": "The touch of your shadow-wreathed hand can siphon force from others to heal your wounds. Make a melee spell attack against a creature within your reach. On a hit, the target takes 3d6 necrotic damage, and you regain hit points equal to half the amount of necrotic damage dealt. Until the spell ends, you can make the attack again on each of your turns as an action."
+    },
+    {
+      "name": "Banishment",
+      "level": 4,
+      "description": "You attempt to send one creature that you can see within range to another place of existence. The target must succeed on a Charisma saving throw or be banished. If the target is native to the plane of existence you're on, you banish the target to a harmless demiplane. While there, the target is incapacitated. The target remains there until the spell ends, at which point the target reappears in the space it left or in the nearest unoccupied space if that space is occupied."
+    },
+    {
+      "name": "Blight",
+      "level": 4,
+      "description": "Necromantic energy washes over a creature of your choice that you can see within range, draining moisture and vitality from it. The target must make a Constitution saving throw. The target takes 8d8 necrotic damage on a failed save, or half as much damage on a successful one. This spell has no effect on undead or constructs. If you target a plant creature or a magical plant, it makes the saving throw with disadvantage, and the spell deals maximum damage to it."
+    },
+    {
+      "name": "Charm Monster",
+      "level": 4,
+      "description": "You attempt to charm a creature you can see within range. It must make a Wisdom saving throw, and it does so with advantage if you or your companions are fighting it. If it fails the saving throw, it is charmed by you until the spell ends or until you or your companions do anything harmful to it. The charmed creature is friendly to you. When the spell ends, the creature knows it was charmed by you."
+    },
+    {
+      "name": "Dimension Door",
+      "level": 4,
+      "description": "You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as 200 feet straight downward or upward to the northwest at a 45-degree angle, 300 feet. You can bring along objects as long as their weight doesn't exceed what you can carry."
+    },
+    {
+      "name": "Elemental Bane",
+      "level": 4,
+      "description": "Choose one creature you can see within range, and choose one of the following damage types: acid, cold, fire, lightning, or thunder. The target must succeed on a Constitution saving throw or be affected by the spell for its duration. The first time each turn the affected target takes damage of the chosen type, the target takes an extra 2d6 damage of that type. Moreover, the target loses any resistance to that damage type until the spell ends."
+    },
+    {
+      "name": "Hallucinatory Terrain",
+      "level": 4,
+      "description": "You make natural terrain in a 150-foot cube in range look, sound, and smell like some other sort of natural terrain. Thus, open fields or a road can be made to resemble a swamp, hill, crevasse, or some other difficult or impassable terrain. A pond can be made to seem like a grassy meadow, a precipice like a gentle slope, or a rock-strewn gully like a wide and smooth road. Manufactured structures, equipment, and creatures within the area aren't changed in appearance."
+    },
+    {
+      "name": "Shadow of Moil",
+      "level": 4,
+      "description": "Flame-like shadows wreathe your body until the spell ends, causing you to become heavily obscured to others. The shadows turn dim light within 10 feet of you into darkness, and bright light in the same area to dim light. Until the spell ends, you have resistance to radiant damage. In addition, whenever a creature within 10 feet of you hits you with an attack, the shadows lash out at that creature, dealing it 2d8 necrotic damage."
+    },
+    {
+      "name": "Sickening Radiance",
+      "level": 4,
+      "description": "Dim, greenish light spreads within a 30-foot-radius sphere centered on a point you choose within range. The light spreads around corners, and it lasts until the spell ends. When a creature moves into the spell's area for the first time on a turn or starts its turn there, that creature must succeed on a Constitution saving throw or take 4d10 radiant damage, and it suffers one level of exhaustion and emits a dim, greenish light in a 5-foot radius."
+    },
+    {
+      "name": "Summon Greater Demon",
+      "level": 4,
+      "description": "You utter foul words, summoning one demon from the chaos of the Abyss. You choose the demon's type, which must be one of challenge rating 5 or lower, such as a shadow demon or a barlgura. The demon appears in an unoccupied space you can see within range, and the demon disappears when it drops to 0 hit points or when the spell ends. Roll initiative for the demon, which has its own turns."
+    },
+    {
+      "name": "Contact Other Plane",
+      "level": 5,
+      "description": "You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity from another plane. Contacting this extraplanar intelligence can strain or even break your mind. When you cast this spell, make a DC 15 Intelligence saving throw. On a failure, you take 6d6 psychic damage and are insane until you finish a long rest. While insane, you can't take actions, can't understand what other creatures say, can't read, and speak only in gibberish."
+    },
+    {
+      "name": "Danse Macabre",
+      "level": 5,
+      "description": "Threads of dark power leap from your fingers to pierce up to five Small or Medium corpses you can see within range. Each corpse immediately stands up and becomes undead. You decide whether it is a zombie or a skeleton (the statistics for zombies and skeletons are in the Monster Manual), and it gains a bonus to its attack and damage rolls equal to your spellcasting ability modifier."
+    },
+    {
+      "name": "Dream",
+      "level": 5,
+      "description": "This spell shapes a creature's dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you. Creatures that don't sleep, such as elves, can't be contacted by this spell. You, or a willing creature you touch, enters a trance state, acting as a messenger. While in the trance, the messenger is aware of his or her surroundings, but can't take actions or move."
+    },
+    {
+      "name": "Enervation",
+      "level": 5,
+      "description": "A tendril of inky darkness reaches out from you, touching a creature you can see within range to drain life from it. The target must make a Dexterity saving throw. On a successful save, the target takes 2d8 necrotic damage, and the spell ends. On a failed save, the target takes 4d8 necrotic damage, and until the spell ends, you can use your action on each of your turns to automatically deal 4d8 necrotic damage to the target."
+    },
+    {
+      "name": "Far Step",
+      "level": 5,
+      "description": "You teleport up to 60 feet to an unoccupied space you can see. On each of your turns before the spell ends, you can use a bonus action to teleport in this way again."
+    },
+    {
+      "name": "Hold Monster",
+      "level": 5,
+      "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell has no effect on undead. At the end of each of its turns, the target can make another Wisdom saving throw. On a success, the spell ends on the target. At Higher Levels: When you cast this spell using a spell slot of 6th level or higher, you can target on additional creature for each slot level above 5th."
+    },
+    {
+      "name": "Infernal Calling",
+      "level": 5,
+      "description": "Uttering a dark incantation, you summon a devil from the Nine Hells. You choose the devil's type, which must be one of challenge rating 6 or lower, such as a barbed devil or a bearded devil. The devil appears in an unoccupied space that you can see within range. The devil disappears when it drops to 0 hit points or when the spell ends. The devil is unfriendly toward you and your companions. Roll initiative for the devil, which has its own turns."
+    },
+    {
+      "name": "Negative Energy Flood",
+      "level": 5,
+      "description": "You send ribbons of negative energy at one creature you can see within range. Unless the target is undead, it must make a Constitution saving throw, taking 5d12 necrotic damage on a failed save, or half as much damage on a successful one. A target killed by this damage rises up as a zombie at the start of your next turn. The zombie pursues whatever creature it can see that is closest to it. Statistics for the zombie are in the Monster Manual."
+    },
+    {
+      "name": "Scrying",
+      "level": 5,
+      "description": "You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw, which is modified by how well you know the target and the sort of physical connection you have to it. If a target knows you're casting this spell, it can fail the saving throw voluntarily if it wants to be observed. On a successful save, the target isn't affected, and you can't use this spell against it again for 24 hours."
+    },
+    {
+      "name": "Synaptic Static",
+      "level": 5,
+      "description": "You choose a point within range and cause psychic energy to explode there. Each creature in a 20-foot-radius sphere centered on that point must make an Intelligence saving throw. A creature with an Intelligence score of 2 or lower can't be affected by this spell. A target takes 8d6 psychic damage on a failed save, or half as much damage on a successful one. After a failed save, a target has muddled thoughts for 1 minute."
+    },
+    {
+      "name": "Wall of Light",
+      "level": 5,
+      "description": "A shimmering wall of bright light appears at a point you choose within range. The wall appears in any orientation you choose: horizontally, vertically, or diagonally. It can be free floating, or it can rest on a solid surface. The wall can be up to 60 feet long, 10 feet high, and 5 feet thick. The wall blocks line of sight, but creatures and objects can pass through it. It emits bright light out to 120 feet and dim light for an additional 120 feet."
+    },
+    {
+      "name": "Arcane Gate",
+      "level": 6,
+      "description": "You create linked teleportation portals that remain open for the duration. Choose two points on the ground that you can see, one point within 10 feet of you and one point within 500 feet of you. A circular portal, 10 feet in diameter, opens over each point. If the portal would open in the space occupied by a creature, the spell fails, and the casting is lost."
+    },
+    {
+      "name": "Circle of Death",
+      "level": 6,
+      "description": "A sphere of negative energy ripples out in a 60-foot-radius sphere from a point within range. Each creature in that area must make a Constitution saving throw. A target takes 8d6 necrotic damage on a failed save, or half as much damage on a successful one. At Higher Levels: When you cast this spell using a spell slot of 7th level or higher, the damage increases by 2d6 for each slot level above 6th."
+    },
+    {
+      "name": "Conjure Fey",
+      "level": 6,
+      "description": "You summon a fey creature of challenge rating 6 or lower, or a fey spirit that takes the form of a beast of challenge rating 6 or lower. It appears in an unoccupied space that you can see within range. The fey creature disappears when it drops to 0 hit points or when the spell ends. The fey creature is friendly to you and your companions for the duration. Roll initiative for the creature, which has its own turns."
+    },
+    {
+      "name": "Create Undead",
+      "level": 6,
+      "description": "You can cast this spell only at night. Choose up to three corpses of Medium or Small humanoids within range. Each corpse becomes a ghoul under your control. (The DM has game statistics for these creatures.) As a bonus action on each of your turns, you can mentally command any creature you animated with this spell if the creature is within 120 feet of you (if you control multiple creatures, you can command any or all of them at the same time, issuing the same command to each one)."
+    },
+    {
+      "name": "Eyebite",
+      "level": 6,
+      "description": "For the spell's duration, your eyes become an inky void imbued with dread power. One creature of your choice within 60 feet of you that you can see must succeed on a Wisdom saving throw or be affected by one of the following effects of your choice for the duration. On each of your turns until the spell ends, you can use your action to target another creature but can't target a creature again if it has succeeded on a saving throw against this casting of Eyebite."
+    },
+    {
+      "name": "Flesh to Stone",
+      "level": 6,
+      "description": "You attempt to turn one creature that you can see within range into stone. If the targets body is made of flesh, the creature must make a Constitution saving throw. On a failed save, it is restrained as its flesh begins to harden. On a successful save, the creature isn't affected. A creature restrained by this spell must make another Constitution saving throw at the end of each of its turns. If it successfully saves against this spell three times, the spell ends."
+    },
+    {
+      "name": "Investiture of Flame",
+      "level": 6,
+      "description": "Flames race across your body, shedding bright light in a 30-foot radius and dim light for an additional 30 feet for the spell's duration. The flames don't harm you. Until the spell ends, you gain the following benefits. - You are immune to fire damage and have resistance to cold damage. - Any creature that moves within 5 feet of you for the first time on a turn or ends its turn there takes 1d10 fire damage."
+    },
+    {
+      "name": "Investiture of Ice",
+      "level": 6,
+      "description": "Until the spell ends, ice rimes your body, and you gain the following benefits. - You are immune to cold damage and have resistance to fire damage. - You can move across difficult terrain created by ice or snow without spending extra movement. - The ground in a 10-foot radius around you is icy and is difficult terrain for creatures other than you. The radius moves with you."
+    },
+    {
+      "name": "Investiture of Stone",
+      "level": 6,
+      "description": "Until the spell ends, bits of rock spread across your body, and you gain the following benefits. - You have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks. - You can use your action to create a small earthquake on the ground in a 15-foot radius centered on you. Other creatures on that ground must succeed on a Dexterity saving throw or be knocked prone. - You can move across difficult terrain made of earth or stone without spending extra movement."
+    },
+    {
+      "name": "Investiture of Wind",
+      "level": 6,
+      "description": "Until the spell ends, wind whirls around you, and you gain the following benefits. - Ranged weapon attacks made against you have disadvantage on the attack roll. - You gain a flying speed of 60 feet. If you are still flying when the spell ends, you fall, unless you can somehow prevent it. - You can use your action to create a 15-foot cube of swirling wind centered on a point you can see within 60 feet of you. Each creature in that area must make a Constitution saving throw."
+    },
+    {
+      "name": "Mass Suggestion",
+      "level": 6,
+      "description": "You suggest a course of activity (limited to a sentence or two) and magically influence up to twelve creatures of your choice that you can see within range and that can hear and understand you. Creatures that can't be charmed are immune to this effect. The suggestion must be worded in such a manner as to make the course of action sound reasonable."
+    },
+    {
+      "name": "Mental Prison",
+      "level": 6,
+      "description": "You attempt to bind a creature within an illusory cell that only it perceives. One creature you can see within range must make an Intelligence saving throw. The target succeeds automatically if it is immune to being charmed. On a successful save, the target takes 5d10 psychic damage, and the spell ends. On a failed save, the target takes 5d10 psychic damage, and you make the area immediately around the target's space appear dangerous to it in some way."
+    },
+    {
+      "name": "Scatter",
+      "level": 6,
+      "description": "The air quivers around up to five creatures of your choice that you can see within range. An unwilling creature must succeed on a Wisdom saving throw to resist this spell. You teleport each affected target to an unoccupied space that you can see within 120 feet of you. That space must be on the ground or on a floor."
+    },
+    {
+      "name": "Soul Cage",
+      "level": 6,
+      "description": "This spell snatches the soul of a humanoid as it dies and traps it inside the tiny cage you use for the material component. A stolen soul remains inside the cage until the spell ends or until you destroy the cage, which ends the spell. While you have a soul inside the cage, you can exploit it in any of the ways described below. You can use a trapped soul up to six times. Once you exploit a soul for the sixth time, it is released, and the spell ends."
+    },
+    {
+      "name": "True Seeing",
+      "level": 6,
+      "description": "This spell gives the willing creature you touch the ability to see things as they actually are. For the duration, the creature has truesight, notices secret doors hidden by magic, and can see into the Ethereal Plane, all out to a range of 120 feet."
+    },
+    {
+      "name": "Crown of Stars",
+      "level": 7,
+      "description": "Seven star-like motes of light appear and orbit your head until the spell ends. You can use a bonus action to send one of the motes streaking toward one creature or object within 120 feet of you. When you do so, make a ranged spell attack. On a hit, the target takes 4d12 radiant damage. Whether you hit or miss, the mote is expended. The spell ends early if you expend the last mote."
+    },
+    {
+      "name": "Etherealness",
+      "level": 7,
+      "description": "You step into the border regions of the Ethereal Plane, in the area where it overlaps with your current plane. You remain in the Border Ethereal for the duration or until you use your action to dismiss the spell. During this time, you can move in any direction. If you move up or down, every foot of movement costs an extra foot. You can see and hear the plane you originated from, but everything there looks gray, and you can't see anything more than 60 feet away."
+    },
+    {
+      "name": "Finger of Death",
+      "level": 7,
+      "description": "You send negative energy coursing through a creature that you can see within range, causing it searing pain. The target must make a Constitution saving throw. It takes 7d8+30 necrotic damage on a failed save, or half as much damage on a successful one. A humanoid killed by this spell rises at the start of your next turn as a zombie that is permanently under your command, following your verbal orders to the best of its ability."
+    },
+    {
+      "name": "Forcecage",
+      "level": 7,
+      "description": "An immobile, invisible, cube-shaped prison composed of magical force springs into existence around an area you choose within range. The prison can be a cage or a solid box as you choose. A prison in the shape of a cage can be up to 20 feet on a side and is made from 1/2-inch diameter bars spaced 1/2 inch apart."
+    },
+    {
+      "name": "Plane Shift",
+      "level": 7,
+      "description": "You and up to eight willing creatures who link hands in a circle are transported to a different plane of existence. You can specify a target destination in general terms, such as the City of Brass on the Elemental Plane of Fire or the palace of Dispater on the second level of the Nine Hells, and you appear in or near that destination."
+    },
+    {
+      "name": "Power Word Pain",
+      "level": 7,
+      "description": "You speak a word of power that causes waves of intense pain to assail one creature you can see within range. If the target has 100 hit points or fewer, it is subject to crippling pain. Otherwise, the spell has no effect on it. A target is also unaffected if it is immune to being charmed. While the target is affected by crippling pain, any speed it has can be no higher than 10 feet."
+    },
+    {
+      "name": "Demiplane",
+      "level": 8,
+      "description": "You create a shadowy door on a flat solid surface that you can see within range. The door is large enough to allow Medium creatures to pass through unhindered. When opened, the door leads to a demiplane that appears to be an empty room 30 feet in each dimension, made of wood or stone. When the spell ends, the door disappears, and any creatures or objects inside the demiplane remain trapped there, as the door also disappears from the other side."
+    },
+    {
+      "name": "Dominate Monster",
+      "level": 8,
+      "description": "You attempt to beguile a creature that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw. While the creature is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence."
+    },
+    {
+      "name": "Feeblemind",
+      "level": 8,
+      "description": "You blast the mind of a creature that you can see within range, attempting to shatter its intellect and personality. The target takes 4d6 psychic damage and must make an Intelligence saving throw. On a failed save, the creature's Intelligence and Charisma scores become 1. The creature can't cast spells, activate magic items, understand language, or communicate in any intelligible way. The creature can, however, identify its friends, follow them, and even protect them."
+    },
+    {
+      "name": "Glibness",
+      "level": 8,
+      "description": "Until the spell ends, when you make a Charisma check, you can replace the number you roll with a 15. Additionally, no matter what you say, magic that would determine if you are telling the truth indicates that you are being truthful."
+    },
+    {
+      "name": "Maddening Darkness",
+      "level": 8,
+      "description": "Magical darkness spreads from a point you choose within range to fill a 60-foot-radius sphere until the spell ends. The darkness spreads around corners. A creature with darkvision can't see through this darkness. Non-magical light, as well as light created by spells of 8th level or lower, can't illuminate the area. Shrieks, gibbering, and mad laughter can be heard within the sphere."
+    },
+    {
+      "name": "Power Word Stun",
+      "level": 8,
+      "description": "You speak a word of power that can overwhelm the mind of one creature you can see within range, leaving it dumbfounded. If the target has 150 hit points or fewer, it is stunned. Otherwise, the spell has no effect. The stunned target must make a Constitution saving throw at the end of each of its turns. On a successful save, this stunning effect ends."
+    },
+    {
+      "name": "Astral Projection",
+      "level": 9,
+      "description": "You and up to eight willing creatures within range project your astral bodies into the Astral Plane (the spell fails and the casting is wasted if you are already on that plane). The material body you leave behind is unconscious and in a state of suspended animation, it doesn't need food or air and doesn't age. Your astral body resembles your mortal form in almost every way, replicating your game statistics and possessions."
+    },
+    {
+      "name": "Foresight",
+      "level": 9,
+      "description": "You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target can't be surprised and has advantage on attack rolls, ability checks, and saving throws. Additionally, other creatures have disadvantage on attack rolls against the target for the duration. This spell immediately ends if you cast it again before its duration ends."
+    },
+    {
+      "name": "Imprisonment",
+      "level": 9,
+      "description": "You create a magical restraint to hold a creature that you can see within range. The target must succeed on a Wisdom saving throw or be bound by the spell, if it succeeds, it is immune to this spell if you cast it again. While affected by this spell, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Divination spells can't locate or perceive the target. When you cast the spell, you choose one of the following forms of imprisonment."
+    },
+    {
+      "name": "Power Word Kill",
+      "level": 9,
+      "description": "You utter a word of power that can compel one creature you can see within range to die instantly. If the creature you chose has 100 hit points or fewer, it dies. Otherwise, the spell has no effect."
+    },
+    {
+      "name": "Psychic Scream",
+      "level": 9,
+      "description": "You unleash the power of your mind to blast the intellect of up to ten creatures of your choice that you can see within range. Creatures that have an Intelligence score of 2 or lower are unaffected. Each target must make an Intelligence saving throw. On a failed save, a target takes 14d6 psychic damage and is stunned. On a successful save, a target takes half as much damage and isn't stunned. If a target is killed by this damage, its head explodes, assuming it has one."
+    },
+    {
+      "name": "True Polymorph",
+      "level": 9,
+      "description": "Choose one creature with at least 1 hit point or nonmagical object that you can see within range. You transform the creature into a different creature, the creature into an object, or the object into a creature (the object must be neither worn nor carried by another creature). The transformation lasts for the duration, or until the target drops to 0 hit points or dies. If you concentrate on this spell for the full duration, the transformation becomes permanent."
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Pact Magic",
+        "Otherworldly Patron"
+      ],
+      "spell_slots": [
+        1
+      ],
+      "cantrips_known": 2,
+      "spells_known": 2
+    },
+    {
+      "features": [
+        "Eldritch Invocations"
+      ],
+      "spell_slots": [
+        2
+      ],
+      "cantrips_known": 2,
+      "spells_known": 3
+    },
+    {
+      "features": [
+        "Pact Boon"
+      ],
+      "spell_slots": [
+        0,
+        2
+      ],
+      "cantrips_known": 2,
+      "spells_known": 4
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 5
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 6
+    },
+    {
+      "features": [
+        "Otherworldly Patron feature"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 7
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 8
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 9
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 3,
+      "spells_known": 10
+    },
+    {
+      "features": [
+        "Otherworldly Patron feature"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      "cantrips_known": 4,
+      "spells_known": 10
+    },
+    {
+      "features": [
+        "Mystic Arcanum (6th level)"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 11
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 11
+    },
+    {
+      "features": [
+        "Mystic Arcanum (7th level)"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 12
+    },
+    {
+      "features": [
+        "Otherworldly Patron feature"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 12
+    },
+    {
+      "features": [
+        "Mystic Arcanum (8th level)"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 13
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "cantrips_known": 4,
+      "spells_known": 13
+    },
+    {
+      "features": [
+        "Mystic Arcanum (9th level)"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        4
+      ],
+      "cantrips_known": 4,
+      "spells_known": 14
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        4
+      ],
+      "cantrips_known": 4,
+      "spells_known": 14
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        4
+      ],
+      "cantrips_known": 4,
+      "spells_known": 15
+    },
+    {
+      "features": [
+        "Eldritch Master"
+      ],
+      "spell_slots": [
+        0,
+        0,
+        0,
+        0,
+        4
+      ],
+      "cantrips_known": 4,
+      "spells_known": 15
+    }
+  ]
+}
