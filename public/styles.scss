@@ -298,6 +298,7 @@ input, select {
 
 .class-entry {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--size-1);
 
@@ -345,6 +346,12 @@ input, select {
 @media (max-width: 600px) {
   .sheet-grid {
     grid-template-columns: 1fr;
+  }
+
+  .class-entry {
+    .class-name, .class-subclass {
+      min-width: 80px;
+    }
   }
 }
 
