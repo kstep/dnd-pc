@@ -4,15 +4,15 @@
   "hit_die": 12,
   "casting_ability": null,
   "proficiencies": [
-    "LightArmor",
-    "MediumArmor",
-    "Shields",
-    "SimpleWeapons",
-    "MartialWeapons"
+    0,
+    1,
+    3,
+    4,
+    5
   ],
   "saving_throws": [
-    "Strength",
-    "Constitution"
+    0,
+    2
   ],
   "features": [
     {
@@ -293,7 +293,7 @@
         },
         {
           "name": "Totem Spirit",
-          "description": "At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. You must make or acquire a physical totem object—an amulet or similar adornment—that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your option, you also gain minor physical attributes that are reminiscent of your totem spirit."
+          "description": "At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. You must make or acquire a physical totem object\u2014an amulet or similar adornment\u2014that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your option, you also gain minor physical attributes that are reminiscent of your totem spirit."
         },
         {
           "name": "Aspect of the Beast",
@@ -365,7 +365,7 @@
           "description": "When you choose this path at 3rd level, you gain the ability to use spiked armor as a weapon. While you are wearing spiked armor and are raging, you can use a bonus action to make one melee weapon attack with your armor spikes at a target within 5 feet of you. If the attack hits, the spikes deal 1d4 piercing damage. You use your Strength modifier for the attack and damage rolls."
         },
         {
-          "name": "Restriction—Dwarves Only",
+          "name": "Restriction\u2014Dwarves Only",
           "description": "Only dwarves can follow the Path of the Battlerager. The battlerager fills a particular niche in dwarven society and culture. Your DM can lift this restriction to better suit the campaign. The restriction exists for the Forgotten Realms. It might not apply to your DM's setting or your DM's version of the Realms."
         },
         {
@@ -387,7 +387,7 @@
           "features": [
             "Path of the Battlerager",
             "Battlerager Armor",
-            "Restriction—Dwarves Only"
+            "Restriction\u2014Dwarves Only"
           ]
         },
         {

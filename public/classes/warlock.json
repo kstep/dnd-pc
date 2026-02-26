@@ -2,14 +2,14 @@
   "name": "Warlock",
   "description": "A wielder of magic derived from a bargain with an extraplanar entity.",
   "hit_die": 8,
-  "casting_ability": "Charisma",
+  "casting_ability": 5,
   "proficiencies": [
-    "LightArmor",
-    "SimpleWeapons"
+    0,
+    4
   ],
   "saving_throws": [
-    "Wisdom",
-    "Charisma"
+    4,
+    5
   ],
   "features": [
     {
@@ -22,7 +22,7 @@
     },
     {
       "name": "Pact Magic",
-      "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows—its identity unclear—but its boon to you is concrete: the ability to cast spells. See chapter 7 for the rules on spellcasting."
+      "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows\u2014its identity unclear\u2014but its boon to you is concrete: the ability to cast spells. See chapter 7 for the rules on spellcasting."
     },
     {
       "name": "Magical Cunning",
@@ -246,7 +246,7 @@
     {
       "name": "Flock of Familiars",
       "level": 2,
-      "description": "You temporarily summon three familiars—spirits that take animal forms of your choice. Each familiar uses the same rules and options for a familiar conjured by the find familiar spell. All the familiars conjured by this spell must be the same type of creature (celestials, fey, or fiends; your choice). If you already have a familiar conjured by the find familiar spell or similar means, then one fewer familiars are conjured by this spell."
+      "description": "You temporarily summon three familiars\u2014spirits that take animal forms of your choice. Each familiar uses the same rules and options for a familiar conjured by the find familiar spell. All the familiars conjured by this spell must be the same type of creature (celestials, fey, or fiends; your choice). If you already have a familiar conjured by the find familiar spell or similar means, then one fewer familiars are conjured by this spell."
     },
     {
       "name": "Hold Person",
@@ -286,7 +286,7 @@
     {
       "name": "Suggestion",
       "level": 2,
-      "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
+      "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
     },
     {
       "name": "Warp Sense",
@@ -1002,11 +1002,11 @@
     },
     {
       "name": "The Undying",
-      "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights.",
+      "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize\u2014like all power\u2014comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights.",
       "features": [
         {
           "name": "The Undying",
-          "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death."
+          "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize\u2014like all power\u2014comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death."
         },
         {
           "name": "Among the Dead",
@@ -1125,11 +1125,11 @@
     },
     {
       "name": "The Hexblade",
-      "description": "You have made your pact with a mysterious entity from the Shadowfell—a force that manifests in sentient magic weapons carved from the stuff of shadow. The mighty sword Blackrazor is the most notable of these weapons, which have been spread across the multiverse over the ages.",
+      "description": "You have made your pact with a mysterious entity from the Shadowfell\u2014a force that manifests in sentient magic weapons carved from the stuff of shadow. The mighty sword Blackrazor is the most notable of these weapons, which have been spread across the multiverse over the ages.",
       "features": [
         {
           "name": "The Hexblade",
-          "description": "You have made your pact with a mysterious entity from the Shadowfell—a force that manifests in sentient magic weapons carved from the stuff of shadow. The mighty sword Blackrazor is the most notable of these weapons, which have been spread across the multiverse over the ages. The shadowy force behind these weapons can offer power to warlocks who form pacts with it."
+          "description": "You have made your pact with a mysterious entity from the Shadowfell\u2014a force that manifests in sentient magic weapons carved from the stuff of shadow. The mighty sword Blackrazor is the most notable of these weapons, which have been spread across the multiverse over the ages. The shadowy force behind these weapons can offer power to warlocks who form pacts with it."
         },
         {
           "name": "Hex Warrior",
@@ -1695,7 +1695,7 @@
         {
           "name": "Suggestion",
           "level": 2,
-          "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
+          "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
         },
         {
           "name": "Fireball",
@@ -1731,11 +1731,11 @@
     },
     {
       "name": "Great Old One Patron",
-      "description": "Unearth Forbidden Lore of Ineffable Beings When you choose this subclass, you might bind yourself to an unspeakable being from the Far Realm or an elder god—a being such as Tharizdun, the Chained God; Zargon, the Returner; Hadar, the Dark Hunger; or Great Cthulhu.",
+      "description": "Unearth Forbidden Lore of Ineffable Beings When you choose this subclass, you might bind yourself to an unspeakable being from the Far Realm or an elder god\u2014a being such as Tharizdun, the Chained God; Zargon, the Returner; Hadar, the Dark Hunger; or Great Cthulhu.",
       "features": [
         {
           "name": "Great Old One Patron",
-          "description": "Unearth Forbidden Lore of Ineffable Beings When you choose this subclass, you might bind yourself to an unspeakable being from the Far Realm or an elder god—a being such as Tharizdun, the Chained God; Zargon, the Returner; Hadar, the Dark Hunger; or Great Cthulhu. Or you might invoke several entities without yoking yourself to one."
+          "description": "Unearth Forbidden Lore of Ineffable Beings When you choose this subclass, you might bind yourself to an unspeakable being from the Far Realm or an elder god\u2014a being such as Tharizdun, the Chained God; Zargon, the Returner; Hadar, the Dark Hunger; or Great Cthulhu. Or you might invoke several entities without yoking yourself to one."
         },
         {
           "name": "Awakened Mind",

@@ -2,18 +2,18 @@
   "name": "Paladin",
   "description": "A holy warrior bound to a sacred oath.",
   "hit_die": 10,
-  "casting_ability": "Charisma",
+  "casting_ability": 5,
   "proficiencies": [
-    "LightArmor",
-    "MediumArmor",
-    "HeavyArmor",
-    "Shields",
-    "SimpleWeapons",
-    "MartialWeapons"
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
   ],
   "saving_throws": [
-    "Wisdom",
-    "Charisma"
+    4,
+    5
   ],
   "features": [
     {
@@ -202,7 +202,7 @@
     {
       "name": "Locate Object",
       "level": 2,
-      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close\u2014within 30 feet\u2014at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
     },
     {
       "name": "Magic Weapon",
@@ -247,7 +247,7 @@
     {
       "name": "Create Food and Water",
       "level": 3,
-      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
+      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range\u2014both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
     },
     {
       "name": "Crusader's Mantle",
@@ -307,7 +307,7 @@
     {
       "name": "Locate Creature",
       "level": 4,
-      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close\u2014within 30 feet\u2014at least once."
     },
     {
       "name": "Staggering Smite",
@@ -347,7 +347,7 @@
     {
       "name": "Raise Dead",
       "level": 5,
-      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival—its head, for instance—the spell automatically fails."
+      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival\u2014its head, for instance\u2014the spell automatically fails."
     },
     {
       "name": "Summon Celestial",
@@ -566,7 +566,7 @@
       "features": [
         {
           "name": "Oath of Devotion",
-          "description": "Uphold the Ideals of Justice and Order The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor. They hold themselves to the highest standards of conduct, and some—for better or worse—hold the rest of the world to the same standards."
+          "description": "Uphold the Ideals of Justice and Order The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor. They hold themselves to the highest standards of conduct, and some\u2014for better or worse\u2014hold the rest of the world to the same standards."
         },
         {
           "name": "Oath of Devotion Spells",
@@ -786,7 +786,7 @@
       "features": [
         {
           "name": "Oath of Vengeance",
-          "description": "Punish Evildoers at Any Cost The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside—at times like these, paladins arise and swear an Oath of Vengeance to set right what has..."
+          "description": "Punish Evildoers at Any Cost The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside\u2014at times like these, paladins arise and swear an Oath of Vengeance to set right what has..."
         },
         {
           "name": "Oath of Vengeance Spells",
@@ -1207,7 +1207,7 @@
         },
         {
           "name": "Living Legend",
-          "description": "You can empower yourself with the legends—whether true or exaggerated—of your great deeds. As a Bonus Action, you gain the benefits below for 10 minutes. Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required)."
+          "description": "You can empower yourself with the legends\u2014whether true or exaggerated\u2014of your great deeds. As a Bonus Action, you gain the benefits below for 10 minutes. Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required)."
         }
       ],
       "levels": [
@@ -1399,7 +1399,7 @@
         },
         {
           "name": "Oath of the Noble Genies",
-          "description": "Brandish the Elemental Splendor of Genies Paladins sworn to the Oath of the Noble Genies revere the forces of the Elemental Planes. Through taking this oath, Paladins draw power from the four different types of genies—dao, masters of earth; djinn, masters of air; efreet, masters of fire; and marids, masters of water."
+          "description": "Brandish the Elemental Splendor of Genies Paladins sworn to the Oath of the Noble Genies revere the forces of the Elemental Planes. Through taking this oath, Paladins draw power from the four different types of genies\u2014dao, masters of earth; djinn, masters of air; efreet, masters of fire; and marids, masters of water."
         },
         {
           "name": "Aura of Elemental Shielding",

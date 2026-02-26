@@ -4,12 +4,12 @@
   "hit_die": 8,
   "casting_ability": null,
   "proficiencies": [
-    "LightArmor",
-    "SimpleWeapons"
+    0,
+    4
   ],
   "saving_throws": [
-    "Dexterity",
-    "Intelligence"
+    1,
+    3
   ],
   "features": [
     {

@@ -2,16 +2,16 @@
   "name": "Cleric",
   "description": "A priestly champion who wields divine magic in service of a higher power.",
   "hit_die": 8,
-  "casting_ability": "Wisdom",
+  "casting_ability": 4,
   "proficiencies": [
-    "LightArmor",
-    "MediumArmor",
-    "Shields",
-    "SimpleWeapons"
+    0,
+    1,
+    3,
+    4
   ],
   "saving_throws": [
-    "Wisdom",
-    "Charisma"
+    4,
+    5
   ],
   "features": [
     {
@@ -276,7 +276,7 @@
     {
       "name": "Locate Object",
       "level": 2,
-      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close\u2014within 30 feet\u2014at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
     },
     {
       "name": "Prayer of Healing",
@@ -336,7 +336,7 @@
     {
       "name": "Create Food and Water",
       "level": 3,
-      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
+      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range\u2014both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
     },
     {
       "name": "Daylight",
@@ -436,7 +436,7 @@
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
+      "description": "This spell grants the ability to move across any liquid surface\u2014such as water, acid, mud, snow, quicksand, or lava\u2014as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Aura of Life",
@@ -486,7 +486,7 @@
     {
       "name": "Locate Creature",
       "level": 4,
-      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close\u2014within 30 feet\u2014at least once."
     },
     {
       "name": "Stone Shape",
@@ -556,7 +556,7 @@
     {
       "name": "Raise Dead",
       "level": 5,
-      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival—its head, for instance—the spell automatically fails."
+      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival\u2014its head, for instance\u2014the spell automatically fails."
     },
     {
       "name": "Scrying",
@@ -681,7 +681,7 @@
     {
       "name": "Control Weather",
       "level": 8,
-      "description": "You take control of the weather within 5 miles of you for the duration. You must be outdoors to cast this spell, and it ends early if you go indoors. When you cast the spell, you change the current weather conditions, which are determined by the DM. You can change precipitation, temperature, and wind. It takes 1d4 × 10 minutes for the new conditions to take effect. Once they do so, you can change the conditions again. When the spell ends, the weather gradually returns to normal."
+      "description": "You take control of the weather within 5 miles of you for the duration. You must be outdoors to cast this spell, and it ends early if you go indoors. When you cast the spell, you change the current weather conditions, which are determined by the DM. You can change precipitation, temperature, and wind. It takes 1d4 \u00d7 10 minutes for the new conditions to take effect. Once they do so, you can change the conditions again. When the spell ends, the weather gradually returns to normal."
     },
     {
       "name": "Earthquake",
@@ -999,11 +999,11 @@
   "subclasses": [
     {
       "name": "Knowledge Domain",
-      "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention.",
+      "description": "The gods of knowledge\u2014including Oghma, Boccob, Gilean, Aureon, and Thoth\u2014value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention.",
       "features": [
         {
           "name": "Knowledge Domain",
-          "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention. Some deities hoard knowledge and keep its secrets to themselves."
+          "description": "The gods of knowledge\u2014including Oghma, Boccob, Gilean, Aureon, and Thoth\u2014value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention. Some deities hoard knowledge and keep its secrets to themselves."
         },
         {
           "name": "Blessings of Knowledge",
@@ -1191,7 +1191,7 @@
         },
         {
           "name": "Radiance of the Dawn",
-          "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to emit a flash of light in a 30-foot Emanation [Area of Effect] originating from yourself. Any magical Darkness—such as that created by the Darkness spell—in that area is dispelled."
+          "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to emit a flash of light in a 30-foot Emanation [Area of Effect] originating from yourself. Any magical Darkness\u2014such as that created by the Darkness spell\u2014in that area is dispelled."
         },
         {
           "name": "Warding Flare",
@@ -1364,11 +1364,11 @@
     },
     {
       "name": "Tempest Domain",
-      "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage.",
+      "description": "Gods whose portfolios include the Tempest domain\u2014including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor\u2014govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage.",
       "features": [
         {
           "name": "Tempest Domain",
-          "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
+          "description": "Gods whose portfolios include the Tempest domain\u2014including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor\u2014govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
         },
         {
           "name": "Bonus Proficiencies",
@@ -1503,7 +1503,7 @@
         {
           "name": "Disguise Self",
           "level": 1,
-          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+          "description": "You make yourself\u2014including your clothing, armor, weapons, and other belongings on your person\u2014look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
         },
         {
           "name": "Invisibility",
@@ -1988,11 +1988,11 @@
     },
     {
       "name": "Strength Domain (PSA)",
-      "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training.",
+      "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife\u2014but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training.",
       "features": [
         {
           "name": "Strength Domain (PSA)",
-          "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training. Rhonas demonstrates his teachings by his example, rather than by giving his students any kind of academic instruction."
+          "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife\u2014but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training. Rhonas demonstrates his teachings by his example, rather than by giving his students any kind of academic instruction."
         },
         {
           "name": "Acolyte of Strength",

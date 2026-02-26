@@ -4,11 +4,11 @@
   "hit_die": 8,
   "casting_ability": null,
   "proficiencies": [
-    "SimpleWeapons"
+    4
   ],
   "saving_throws": [
-    "Strength",
-    "Dexterity"
+    0,
+    1
   ],
   "features": [
     {

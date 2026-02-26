@@ -2,16 +2,16 @@
   "name": "Artificer",
   "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
   "hit_die": 8,
-  "casting_ability": "Intelligence",
+  "casting_ability": 3,
   "proficiencies": [
-    "LightArmor",
-    "MediumArmor",
-    "Shields",
-    "SimpleWeapons"
+    0,
+    1,
+    3,
+    4
   ],
   "saving_throws": [
-    "Constitution",
-    "Intelligence"
+    2,
+    3
   ],
   "features": [
     {
@@ -200,7 +200,7 @@
     {
       "name": "Disguise Self",
       "level": 1,
-      "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
+      "description": "You make yourself\u2014including your clothing, armor, weapons, and other belongings on your person\u2014look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
     },
     {
       "name": "Expeditious Retreat",
@@ -345,7 +345,7 @@
     {
       "name": "Magic Mouth",
       "level": 2,
-      "description": "You implant a message within an object in range—a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
+      "description": "You implant a message within an object in range\u2014a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
     },
     {
       "name": "Magic Weapon",
@@ -390,7 +390,7 @@
     {
       "name": "Create Food and Water",
       "level": 3,
-      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
+      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range\u2014both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
     },
     {
       "name": "Dispel Magic",
@@ -445,7 +445,7 @@
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
+      "description": "This spell grants the ability to move across any liquid surface\u2014such as water, acid, mud, snow, quicksand, or lava\u2014as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Arcane Eye",
@@ -480,7 +480,7 @@
     {
       "name": "Otiluke's Resilient Sphere",
       "level": 4,
-      "description": "A shimmering sphere encloses a Large or smaller creature or object within range. An unwilling creature must succeed on a Dexterity saving throw or be enclosed for the duration. Nothing—not physical objects, energy, or other spell effects—can pass through the barrier, in or out, though a creature in the sphere can breathe there."
+      "description": "A shimmering sphere encloses a Large or smaller creature or object within range. An unwilling creature must succeed on a Dexterity saving throw or be enclosed for the duration. Nothing\u2014not physical objects, energy, or other spell effects\u2014can pass through the barrier, in or out, though a creature in the sphere can breathe there."
     },
     {
       "name": "Stone Shape",

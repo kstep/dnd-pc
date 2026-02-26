@@ -344,21 +344,6 @@ pub fn CharacterHeader() -> impl IntoView {
 
     view! {
         <div class="panel character-header">
-            <datalist id="class-suggestions">
-                {move || {
-                    let abilities = store.abilities().get();
-                    registry.with_class_entries(|entries| {
-                        entries.iter().filter(|entry| {
-                            entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
-                        }).map(|entry| {
-                            let name = entry.name.clone();
-                            let desc = entry.description.clone();
-                            view! { <option value=name>{desc}</option> }
-                        }).collect_view()
-                    })
-                }}
-            </datalist>
-
             <div class="header-row">
                 <div class="header-field name-field">
                     <label>{move_tr!("character-name")}</label>
@@ -443,7 +428,15 @@ pub fn CharacterHeader() -> impl IntoView {
                 <div class="classes-list">
                     {move || {
                         registry.class_cache.track();
-                        registry.class_index.track();
+                        let abilities = store.abilities().get();
+                        let class_options: Vec<(String, String)> = registry.with_class_entries(|entries| {
+                            entries.iter().filter(|entry| {
+                                entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
+                            }).map(|entry| {
+                                (entry.name.clone(), entry.description.clone())
+                            }).collect()
+                        });
+
                         classes
                             .read()
                             .iter()
@@ -455,6 +448,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let hit_die_val = cl.hit_die_sides.to_string();
                                 let current_level = cl.level;
                                 let applied = cl.applied_levels.clone();
+                                let class_options = class_options.clone();
 
                                 // Trigger lazy fetch if definition not yet loaded
                                 if !class_name.is_empty() {
@@ -483,14 +477,12 @@ pub fn CharacterHeader() -> impl IntoView {
 
                                 view! {
                                     <div class="class-entry">
-                                        <input
-                                            type="text"
-                                            class="class-name"
-                                            list="class-suggestions"
+                                        <DatalistInput
+                                            value=class_name
                                             placeholder=tr!("class")
-                                            prop:value=class_name
-                                            on:input=move |e| {
-                                                let name = event_target_value(&e);
+                                            class="class-name"
+                                            options=class_options
+                                            on_input=move |name: String| {
                                                 classes.write()[i].class = name.clone();
                                                 if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
                                                     registry.fetch_class(&name);

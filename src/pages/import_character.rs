@@ -398,7 +398,13 @@ fn compute_diff(
 
 // --- Restore stripped descriptions ---
 
-fn restore_description_by_name<T>(imported: &mut [T], local: &[T], name_fn: fn(&T) -> &str, desc_fn: fn(&mut T) -> &mut String, get_desc: fn(&T) -> &str) {
+fn restore_description_by_name<T>(
+    imported: &mut [T],
+    local: &[T],
+    name_fn: fn(&T) -> &str,
+    desc_fn: fn(&mut T) -> &mut String,
+    get_desc: fn(&T) -> &str,
+) {
     for item in imported.iter_mut() {
         if get_desc(item).is_empty()
             && let Some(local_item) = local.iter().find(|l| name_fn(l) == name_fn(item))
@@ -415,13 +421,37 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
     imported.combat.hp_temp = local.combat.hp_temp;
 
     // Restore descriptions stripped for sharing
-    restore_description_by_name(&mut imported.features, &local.features, |f| &f.name, |f| &mut f.description, |f| &f.description);
-    restore_description_by_name(&mut imported.racial_traits, &local.racial_traits, |t| &t.name, |t| &mut t.description, |t| &t.description);
+    restore_description_by_name(
+        &mut imported.features,
+        &local.features,
+        |f| &f.name,
+        |f| &mut f.description,
+        |f| &f.description,
+    );
+    restore_description_by_name(
+        &mut imported.racial_traits,
+        &local.racial_traits,
+        |t| &t.name,
+        |t| &mut t.description,
+        |t| &t.description,
+    );
 
     if let (Some(imp_sc), Some(loc_sc)) = (&mut imported.spellcasting, &local.spellcasting) {
-        restore_description_by_name(&mut imp_sc.spells, &loc_sc.spells, |s| &s.name, |s| &mut s.description, |s| &s.description);
+        restore_description_by_name(
+            &mut imp_sc.spells,
+            &loc_sc.spells,
+            |s| &s.name,
+            |s| &mut s.description,
+            |s| &s.description,
+        );
         if let (Some(imp_mm), Some(loc_mm)) = (&mut imp_sc.metamagic, &loc_sc.metamagic) {
-            restore_description_by_name(&mut imp_mm.options, &loc_mm.options, |o| &o.name, |o| &mut o.description, |o| &o.description);
+            restore_description_by_name(
+                &mut imp_mm.options,
+                &loc_mm.options,
+                |o| &o.name,
+                |o| &mut o.description,
+                |o| &o.description,
+            );
         }
     }
 }
@@ -462,8 +492,7 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
     let name = existing.get_value().identity.name.clone();
     let message = move_tr!("import-conflict-message", { "name" => name.clone() });
 
-    let diff_rows =
-        untrack(|| compute_diff(&existing.get_value(), &incoming.get_value(), i18n));
+    let diff_rows = untrack(|| compute_diff(&existing.get_value(), &incoming.get_value(), i18n));
     let sections = group_diff_rows(diff_rows);
     let has_diffs = !sections.is_empty();
 
@@ -535,7 +564,10 @@ struct ImportParams {
 
 #[component]
 pub fn ImportCharacter() -> impl IntoView {
-    let data = use_params::<ImportParams>().get_untracked().ok().map(|p| p.data);
+    let data = use_params::<ImportParams>()
+        .get_untracked()
+        .ok()
+        .map(|p| p.data);
 
     match data {
         Some(data) => match share::decode_character(&data) {
