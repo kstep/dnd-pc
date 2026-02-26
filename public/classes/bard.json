@@ -174,7 +174,7 @@
     {
       "name": "Disguise Self",
       "level": 1,
-      "description": "You make yourself\u2014including your clothing, armor, weapons, and other belongings on your person\u2014look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
+      "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
     },
     {
       "name": "Dissonant Whispers",
@@ -319,7 +319,7 @@
     {
       "name": "Gift of Gab",
       "level": 2,
-      "description": "Jim Darkmagic is said to have invented this spell, originally calling it I said what?! Have you ever been talking to the local monarch and accidentally mentioned how their son looks like your favorite hog from when you were growing up on the family farm? We've all been there! But rather than being beheaded for an honest slip of the tongue, you can pretend it never happened\u2014by ensuring that no one knows it happened."
+      "description": "Jim Darkmagic is said to have invented this spell, originally calling it I said what?! Have you ever been talking to the local monarch and accidentally mentioned how their son looks like your favorite hog from when you were growing up on the family farm? We've all been there! But rather than being beheaded for an honest slip of the tongue, you can pretend it never happened—by ensuring that no one knows it happened."
     },
     {
       "name": "Heat Metal",
@@ -359,12 +359,12 @@
     {
       "name": "Locate Object",
       "level": 2,
-      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close\u2014within 30 feet\u2014at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
     },
     {
       "name": "Magic Mouth",
       "level": 2,
-      "description": "You implant a message within an object in range\u2014a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
+      "description": "You implant a message within an object in range—a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
     },
     {
       "name": "Mirror Image",
@@ -394,7 +394,7 @@
     {
       "name": "Suggestion",
       "level": 2,
-      "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
+      "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
     },
     {
       "name": "Zone of Truth",
@@ -564,7 +564,7 @@
     {
       "name": "Locate Creature",
       "level": 4,
-      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close\u2014within 30 feet\u2014at least once."
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
     },
     {
       "name": "Phantasmal Killer",
@@ -644,7 +644,7 @@
     {
       "name": "Raise Dead",
       "level": 5,
-      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival\u2014its head, for instance\u2014the spell automatically fails."
+      "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival—its head, for instance—the spell automatically fails."
     },
     {
       "name": "Rary's Telepathic Bond",
@@ -704,7 +704,7 @@
     {
       "name": "Mass Suggestion",
       "level": 6,
-      "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to twelve or fewer creatures you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to any of the targets or their allies. For example, you could say, \"Walk to the village down that road, and help the villagers there harvest crops until sunset.\" Or you could say, \"Now is not the time for violence."
+      "description": "You suggest a course of activity—described in no more than 25 words—to twelve or fewer creatures you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to any of the targets or their allies. For example, you could say, \"Walk to the village down that road, and help the villagers there harvest crops until sunset.\" Or you could say, \"Now is not the time for violence."
     },
     {
       "name": "Otto's Irresistible Dance",
@@ -804,7 +804,7 @@
     {
       "name": "Mind Blank",
       "level": 8,
-      "description": "Until the spell ends, one willing creature you touch has Immunity to Psychic damage and the Charmed condition. The target is also unaffected by anything that would sense its emotions or alignment, read its thoughts, or magically detect its location, and no spell\u2014not even Wish\u2014can gather information about the target, observe it remotely, or control its mind."
+      "description": "Until the spell ends, one willing creature you touch has Immunity to Psychic damage and the Charmed condition. The target is also unaffected by anything that would sense its emotions or alignment, read its thoughts, or magically detect its location, and no spell—not even Wish—can gather information about the target, observe it remotely, or control its mind."
     },
     {
       "name": "Power Word Stun",
@@ -829,7 +829,7 @@
     {
       "name": "Prismatic Wall",
       "level": 9,
-      "description": "A shimmering, multicolored plane of light forms a vertical opaque wall\u2014up to 90 feet long, 30 feet high, and 1 inch thick\u2014centered on a point within range. Alternatively, you shape the wall into a globe up to 30 feet in diameter centered on a point within range. The wall lasts for the duration. If you position the wall in a space occupied by a creature, the spell ends instantly without effect. The wall sheds Bright Light within 100 feet and Dim Light for an additional 100 feet."
+      "description": "A shimmering, multicolored plane of light forms a vertical opaque wall—up to 90 feet long, 30 feet high, and 1 inch thick—centered on a point within range. Alternatively, you shape the wall into a globe up to 30 feet in diameter centered on a point within range. The wall lasts for the duration. If you position the wall in a space occupied by a creature, the spell ends instantly without effect. The wall sheds Bright Light within 100 feet and Dim Light for an additional 100 feet."
     },
     {
       "name": "True Polymorph",
@@ -846,7 +846,8 @@
       "spell_slots": [
         2
       ],
-      "cantrips_known": 2
+      "cantrips_known": 2,
+      "spells_known": 4
     },
     {
       "features": [
@@ -856,7 +857,8 @@
       "spell_slots": [
         3
       ],
-      "cantrips_known": 2
+      "cantrips_known": 2,
+      "spells_known": 5
     },
     {
       "features": [
@@ -866,7 +868,8 @@
         4,
         2
       ],
-      "cantrips_known": 2
+      "cantrips_known": 2,
+      "spells_known": 6
     },
     {
       "features": [
@@ -876,7 +879,8 @@
         4,
         3
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 7
     },
     {
       "features": [
@@ -887,7 +891,8 @@
         3,
         2
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 8
     },
     {
       "features": [
@@ -898,7 +903,8 @@
         3,
         3
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 9
     },
     {
       "features": [
@@ -910,7 +916,8 @@
         3,
         1
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 10
     },
     {
       "features": [
@@ -922,7 +929,8 @@
         3,
         2
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 11
     },
     {
       "features": [
@@ -935,7 +943,8 @@
         3,
         1
       ],
-      "cantrips_known": 3
+      "cantrips_known": 3,
+      "spells_known": 12
     },
     {
       "features": [
@@ -948,7 +957,8 @@
         3,
         2
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 14
     },
     {
       "features": [],
@@ -960,7 +970,8 @@
         2,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 15
     },
     {
       "features": [
@@ -974,7 +985,8 @@
         2,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 15
     },
     {
       "features": [],
@@ -987,7 +999,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 16
     },
     {
       "features": [
@@ -1002,7 +1015,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 18
     },
     {
       "features": [],
@@ -1016,7 +1030,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 19
     },
     {
       "features": [
@@ -1032,7 +1047,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 19
     },
     {
       "features": [],
@@ -1047,7 +1063,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 20
     },
     {
       "features": [
@@ -1064,7 +1081,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 22
     },
     {
       "features": [
@@ -1081,7 +1099,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 22
     },
     {
       "features": [
@@ -1098,7 +1117,8 @@
         1,
         1
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 22
     }
   ],
   "subclasses": [
@@ -1482,11 +1502,11 @@
     },
     {
       "name": "College of Spirits",
-      "description": "Bards of the College of Spirits seek tales with inherent power\u2014be they legends, histories, or fictions\u2014and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more.",
+      "description": "Bards of the College of Spirits seek tales with inherent power—be they legends, histories, or fictions—and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more.",
       "features": [
         {
           "name": "College of Spirits",
-          "description": "Bards of the College of Spirits seek tales with inherent power\u2014be they legends, histories, or fictions\u2014and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more. Such spirits are capricious, though, and what a bard summons isn't always entirely under their control."
+          "description": "Bards of the College of Spirits seek tales with inherent power—be they legends, histories, or fictions—and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more. Such spirits are capricious, though, and what a bard summons isn't always entirely under their control."
         },
         {
           "name": "Guiding Whispers",

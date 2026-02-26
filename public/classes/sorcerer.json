@@ -214,7 +214,7 @@
     {
       "name": "Disguise Self",
       "level": 1,
-      "description": "You make yourself\u2014including your clothing, armor, weapons, and other belongings on your person\u2014look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
+      "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
     },
     {
       "name": "Distort Value",
@@ -464,7 +464,7 @@
     {
       "name": "Suggestion",
       "level": 2,
-      "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
+      "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
     },
     {
       "name": "Vortex Warp",
@@ -599,7 +599,7 @@
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface\u2014such as water, acid, mud, snow, quicksand, or lava\u2014as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
+      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Backlash",
@@ -794,7 +794,7 @@
     {
       "name": "Mass Suggestion",
       "level": 6,
-      "description": "You suggest a course of activity\u2014described in no more than 25 words\u2014to twelve or fewer creatures you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to any of the targets or their allies. For example, you could say, \"Walk to the village down that road, and help the villagers there harvest crops until sunset.\" Or you could say, \"Now is not the time for violence."
+      "description": "You suggest a course of activity—described in no more than 25 words—to twelve or fewer creatures you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to any of the targets or their allies. For example, you could say, \"Walk to the village down that road, and help the villagers there harvest crops until sunset.\" Or you could say, \"Now is not the time for violence."
     },
     {
       "name": "Move Earth",
@@ -931,7 +931,8 @@
       "spell_slots": [
         2
       ],
-      "cantrips_known": 4
+      "cantrips_known": 4,
+      "spells_known": 2
     },
     {
       "features": [
@@ -943,7 +944,8 @@
         3
       ],
       "cantrips_known": 4,
-      "sorcery_points": 2
+      "sorcery_points": 2,
+      "spells_known": 3
     },
     {
       "features": [
@@ -954,7 +956,8 @@
         2
       ],
       "cantrips_known": 4,
-      "sorcery_points": 3
+      "sorcery_points": 3,
+      "spells_known": 4
     },
     {
       "features": [
@@ -965,7 +968,8 @@
         3
       ],
       "cantrips_known": 5,
-      "sorcery_points": 4
+      "sorcery_points": 4,
+      "spells_known": 5
     },
     {
       "features": [
@@ -977,7 +981,8 @@
         2
       ],
       "cantrips_known": 5,
-      "sorcery_points": 5
+      "sorcery_points": 5,
+      "spells_known": 6
     },
     {
       "features": [
@@ -989,7 +994,8 @@
         3
       ],
       "cantrips_known": 5,
-      "sorcery_points": 6
+      "sorcery_points": 6,
+      "spells_known": 7
     },
     {
       "features": [
@@ -1002,7 +1008,8 @@
         1
       ],
       "cantrips_known": 5,
-      "sorcery_points": 7
+      "sorcery_points": 7,
+      "spells_known": 8
     },
     {
       "features": [
@@ -1015,7 +1022,8 @@
         2
       ],
       "cantrips_known": 5,
-      "sorcery_points": 8
+      "sorcery_points": 8,
+      "spells_known": 9
     },
     {
       "features": [],
@@ -1027,7 +1035,8 @@
         1
       ],
       "cantrips_known": 5,
-      "sorcery_points": 9
+      "sorcery_points": 9,
+      "spells_known": 10
     },
     {
       "features": [
@@ -1041,7 +1050,8 @@
         2
       ],
       "cantrips_known": 6,
-      "sorcery_points": 10
+      "sorcery_points": 10,
+      "spells_known": 11
     },
     {
       "features": [],
@@ -1054,7 +1064,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 11
+      "sorcery_points": 11,
+      "spells_known": 12
     },
     {
       "features": [
@@ -1069,7 +1080,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 12
+      "sorcery_points": 12,
+      "spells_known": 12
     },
     {
       "features": [],
@@ -1083,7 +1095,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 13
+      "sorcery_points": 13,
+      "spells_known": 13
     },
     {
       "features": [
@@ -1099,7 +1112,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 14
+      "sorcery_points": 14,
+      "spells_known": 13
     },
     {
       "features": [],
@@ -1114,7 +1128,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 15
+      "sorcery_points": 15,
+      "spells_known": 14
     },
     {
       "features": [
@@ -1131,7 +1146,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 16
+      "sorcery_points": 16,
+      "spells_known": 14
     },
     {
       "features": [
@@ -1149,7 +1165,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 17
+      "sorcery_points": 17,
+      "spells_known": 15
     },
     {
       "features": [
@@ -1167,7 +1184,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 18
+      "sorcery_points": 18,
+      "spells_known": 15
     },
     {
       "features": [
@@ -1185,7 +1203,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 19
+      "sorcery_points": 19,
+      "spells_known": 15
     },
     {
       "features": [
@@ -1203,7 +1222,8 @@
         1
       ],
       "cantrips_known": 6,
-      "sorcery_points": 20
+      "sorcery_points": 20,
+      "spells_known": 15
     }
   ],
   "subclasses": [
@@ -1726,11 +1746,11 @@
     },
     {
       "name": "Lunar Sorcery",
-      "description": "On many worlds, the moon is a revered celestial body with magical properties. On Krynn, the gods of magic are associated with the world's three moons. On the world of Toril, the god Sel\u00fbne uses the light of the moon to battle darkness.",
+      "description": "On many worlds, the moon is a revered celestial body with magical properties. On Krynn, the gods of magic are associated with the world's three moons. On the world of Toril, the god Selûne uses the light of the moon to battle darkness.",
       "features": [
         {
           "name": "Lunar Sorcery",
-          "description": "On many worlds, the moon is a revered celestial body with magical properties. On Krynn, the gods of magic are associated with the world's three moons. On the world of Toril, the god Sel\u00fbne uses the light of the moon to battle darkness. On Eberron, scholars of the Draconic Prophecy decipher ancient secrets from the waxing and waning of that world's twelve moons."
+          "description": "On many worlds, the moon is a revered celestial body with magical properties. On Krynn, the gods of magic are associated with the world's three moons. On the world of Toril, the god Selûne uses the light of the moon to battle darkness. On Eberron, scholars of the Draconic Prophecy decipher ancient secrets from the waxing and waning of that world's twelve moons."
         },
         {
           "name": "Lunar Embodiment",
@@ -1915,11 +1935,11 @@
     },
     {
       "name": "Clockwork Sorcery",
-      "description": "Channel Cosmic Forces of Order The cosmic force of order has suffused you with magic. That power arises from Mechanus or a realm like it\u2014a plane of existence shaped entirely by clockwork efficiency.",
+      "description": "Channel Cosmic Forces of Order The cosmic force of order has suffused you with magic. That power arises from Mechanus or a realm like it—a plane of existence shaped entirely by clockwork efficiency.",
       "features": [
         {
           "name": "Clockwork Sorcery",
-          "description": "Channel Cosmic Forces of Order The cosmic force of order has suffused you with magic. That power arises from Mechanus or a realm like it\u2014a plane of existence shaped entirely by clockwork efficiency. You or someone from your lineage might have become entangled in the machinations of modrons, the orderly beings who inhabit Mechanus. Perhaps your ancestor even took part in the Great Modron March."
+          "description": "Channel Cosmic Forces of Order The cosmic force of order has suffused you with magic. That power arises from Mechanus or a realm like it—a plane of existence shaped entirely by clockwork efficiency. You or someone from your lineage might have become entangled in the machinations of modrons, the orderly beings who inhabit Mechanus. Perhaps your ancestor even took part in the Great Modron March."
         },
         {
           "name": "Clockwork Spells",

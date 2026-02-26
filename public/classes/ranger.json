@@ -222,7 +222,7 @@
     {
       "name": "Locate Object",
       "level": 2,
-      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close\u2014within 30 feet\u2014at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
     },
     {
       "name": "Magic Weapon",
@@ -327,7 +327,7 @@
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface\u2014such as water, acid, mud, snow, quicksand, or lava\u2014as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
+      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Wind Wall",
@@ -357,7 +357,7 @@
     {
       "name": "Locate Creature",
       "level": 4,
-      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close\u2014within 30 feet\u2014at least once."
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
     },
     {
       "name": "Stoneskin",
@@ -423,7 +423,8 @@
       ],
       "spell_slots": [
         2
-      ]
+      ],
+      "spells_known": 2
     },
     {
       "features": [
@@ -431,7 +432,8 @@
       ],
       "spell_slots": [
         3
-      ]
+      ],
+      "spells_known": 3
     },
     {
       "features": [
@@ -439,7 +441,8 @@
       ],
       "spell_slots": [
         3
-      ]
+      ],
+      "spells_known": 3
     },
     {
       "features": [
@@ -448,7 +451,8 @@
       "spell_slots": [
         4,
         2
-      ]
+      ],
+      "spells_known": 4
     },
     {
       "features": [
@@ -457,7 +461,8 @@
       "spell_slots": [
         4,
         2
-      ]
+      ],
+      "spells_known": 4
     },
     {
       "features": [
@@ -466,7 +471,8 @@
       "spell_slots": [
         4,
         3
-      ]
+      ],
+      "spells_known": 5
     },
     {
       "features": [
@@ -475,7 +481,8 @@
       "spell_slots": [
         4,
         3
-      ]
+      ],
+      "spells_known": 5
     },
     {
       "features": [
@@ -485,7 +492,8 @@
         4,
         3,
         2
-      ]
+      ],
+      "spells_known": 6
     },
     {
       "features": [
@@ -495,7 +503,8 @@
         4,
         3,
         2
-      ]
+      ],
+      "spells_known": 6
     },
     {
       "features": [
@@ -505,7 +514,8 @@
         4,
         3,
         3
-      ]
+      ],
+      "spells_known": 7
     },
     {
       "features": [
@@ -515,7 +525,8 @@
         4,
         3,
         3
-      ]
+      ],
+      "spells_known": 7
     },
     {
       "features": [
@@ -526,7 +537,8 @@
         3,
         3,
         1
-      ]
+      ],
+      "spells_known": 8
     },
     {
       "features": [
@@ -537,7 +549,8 @@
         3,
         3,
         1
-      ]
+      ],
+      "spells_known": 8
     },
     {
       "features": [
@@ -548,7 +561,8 @@
         3,
         3,
         2
-      ]
+      ],
+      "spells_known": 9
     },
     {
       "features": [
@@ -559,7 +573,8 @@
         3,
         3,
         2
-      ]
+      ],
+      "spells_known": 9
     },
     {
       "features": [
@@ -571,7 +586,8 @@
         3,
         3,
         1
-      ]
+      ],
+      "spells_known": 10
     },
     {
       "features": [
@@ -583,7 +599,8 @@
         3,
         3,
         1
-      ]
+      ],
+      "spells_known": 10
     },
     {
       "features": [
@@ -595,7 +612,8 @@
         3,
         3,
         2
-      ]
+      ],
+      "spells_known": 11
     },
     {
       "features": [
@@ -607,7 +625,8 @@
         3,
         3,
         2
-      ]
+      ],
+      "spells_known": 11
     }
   ],
   "subclasses": [
@@ -788,7 +807,7 @@
         {
           "name": "Disguise Self",
           "level": 1,
-          "description": "You make yourself\u2014including your clothing, armor, weapons, and other belongings on your person\u2014look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
         },
         {
           "name": "Rope Trick",
