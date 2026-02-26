@@ -41,6 +41,16 @@ body {
   padding: var(--size-3);
 }
 
+input, select, textarea {
+  padding: var(--size-1) var(--size-2);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: var(--font-size-1);
+  font-family: var(--font-sans);
+}
+
 /* --------------------- Panel Pattern ------------------------- */
 .panel {
   background: var(--panel-bg);
