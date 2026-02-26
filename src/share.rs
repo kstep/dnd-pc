@@ -7,7 +7,6 @@ use crate::model::Character;
 fn strip_for_sharing(character: &Character) -> Character {
     let mut character = character.clone();
 
-    character.id = uuid::Uuid::nil();
     character.combat.death_save_successes = 0;
     character.combat.death_save_failures = 0;
     character.combat.hp_temp = 0;
@@ -35,7 +34,7 @@ fn strip_for_sharing(character: &Character) -> Character {
 }
 
 pub fn encode_character(character: &Character) -> String {
-    let mut character = strip_for_sharing(character);
+    let character = strip_for_sharing(character);
     let bytes = postcard::to_allocvec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {

@@ -1,8 +1,6 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_router::{components::A, hooks::use_params_map};
-use uuid::Uuid;
-
 use crate::{share, storage};
 
 #[component]
@@ -12,8 +10,7 @@ pub fn ImportCharacter() -> impl IntoView {
 
     match data {
         Some(data) => match share::decode_character(&data) {
-            Some(mut character) => {
-                character.id = Uuid::new_v4();
+            Some(character) => {
                 storage::save_character(&character);
                 let id = character.id;
 
