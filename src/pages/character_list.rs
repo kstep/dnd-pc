@@ -24,10 +24,12 @@ pub fn CharacterList() -> impl IntoView {
 
     view! {
         <div class="character-list-page">
-            <h1>{move_tr!("page-characters")}</h1>
-            <button class="btn-create" on:click=create_character>
-                {move_tr!("btn-new-character")}
-            </button>
+            <div class="character-list-header">
+                <h1>{move_tr!("page-characters")}</h1>
+                <button class="btn-create" on:click=create_character>
+                    {move_tr!("btn-new-character")}
+                </button>
+            </div>
             <div class="character-list">
                 <For
                     each=move || characters.get()
