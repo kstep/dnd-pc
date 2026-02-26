@@ -18,55 +18,67 @@
   "features": [
     {
       "name": "Fighting Style",
-      "description": "You adopt a particular style of fighting as your specialty. Choose a fighting style from the list of optional features. You can't take the same Fighting Style option more than once, even if you get to choose again."
+      "description": "You have honed your martial prowess and gain a Fighting Style feat of your choice. Defense is recommended. Whenever you gain a Fighter level, you can replace the feat you chose with a different Fighting Style feat."
     },
     {
       "name": "Second Wind",
-      "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
+      "description": "You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level. You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest."
+    },
+    {
+      "name": "Weapon Mastery",
+      "description": "Your training with weapons allows you to use the weapon mastery properties of three kinds of Simple or Martial weapons of your choice. Whenever you finish a Long Rest, you can practice weapon drills and change one of those weapon choices."
     },
     {
       "name": "Action Surge",
-      "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action. Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+      "description": "You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action, except the Magic action. Once you use this feature, you can't do so again until you finish a Short Rest or Long Rest. Starting at level 17, you can use it twice before a rest but only once on a turn."
     },
     {
-      "name": "Martial Archetype",
-      "description": "At 3rd level, you choose an archetype from the list available that you strive to emulate in your combat styles and techniques. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level."
+      "name": "Tactical Mind",
+      "description": "You have a mind for tactics on and off the battlefield. When you fail an ability check, you can expend a use of your Second Wind to push yourself toward success. Rather than regaining Hit Points, you roll 1d10 and add the number rolled to the ability check, potentially turning it into a success. If the check still fails, this use of Second Wind isn't expended."
+    },
+    {
+      "name": "Fighter Subclass",
+      "description": "You gain a Fighter subclass of your choice. A subclass is a specialization that grants you features at certain Fighter levels. For the rest of your career, you gain each of your subclass's features that are of your Fighter level or lower."
     },
     {
       "name": "Ability Score Improvement",
-      "description": "When you reach 4th level you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. If your DM allows the use of feats, you may instead take a feat."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Fighter levels 6, 8, 12, 14, and 16."
     },
     {
       "name": "Extra Attack",
-      "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+      "description": "You can attack twice instead of once whenever you take the Attack action on your turn."
     },
     {
-      "name": "Martial Archetype feature",
-      "description": "At 7th level, you gain a feature granted by your Martial Archetype."
+      "name": "Tactical Shift",
+      "description": "Whenever you activate your Second Wind with a Bonus Action, you can move up to half your Speed without provoking Opportunity Attack."
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "You gain a feature from your Fighter Subclass."
     },
     {
       "name": "Indomitable",
-      "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+      "description": "If you fail a saving throw, you can reroll it with a bonus equal to your Fighter level. You must use the new roll, and you can't use this feature again until you finish a Long Rest. You can use this feature twice before a Long Rest starting at level 13 and three times before a Long Rest starting at level 17."
     },
     {
-      "name": "Extra Attack (2)",
-      "description": "At 11th level, you can attack three times whenever you take the Attack action on your turn."
+      "name": "Tactical Master",
+      "description": "When you attack with a weapon whose mastery property you can use, you can replace that property with the Push, Sap, or Slow property for that attack."
     },
     {
-      "name": "Indomitable (two uses)",
-      "description": "At 13th level, you can use Indomitable twice between long rests."
+      "name": "Two Extra Attacks",
+      "description": "You can attack three times instead of once whenever you take the Attack action on your turn."
     },
     {
-      "name": "Action Surge (two uses)",
-      "description": "At 17th level, you can use Action Surge twice before a rest, but only once on the same turn."
+      "name": "Studied Attacks",
+      "description": "You study your opponents and learn from each attack you make. If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next turn."
     },
     {
-      "name": "Indomitable (three uses)",
-      "description": "At 17th level, you can use Indomitable three times between long rests."
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Combat Prowess is recommended."
     },
     {
-      "name": "Extra Attack (3)",
-      "description": "At 20th level, you can attack four times whenever you take the Attack action on your turn."
+      "name": "Three Extra Attacks",
+      "description": "You can attack four times instead of once whenever you take the Attack action on your turn."
     }
   ],
   "spells": [],
@@ -74,27 +86,19 @@
     {
       "features": [
         "Fighting Style",
-        "Second Wind"
+        "Second Wind",
+        "Weapon Mastery"
       ]
     },
     {
       "features": [
-        "Action Surge"
+        "Action Surge",
+        "Tactical Mind"
       ]
     },
     {
       "features": [
-        "Martial Archetype"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Extra Attack"
+        "Fighter Subclass"
       ]
     },
     {
@@ -104,7 +108,8 @@
     },
     {
       "features": [
-        "Martial Archetype feature"
+        "Extra Attack",
+        "Tactical Shift"
       ]
     },
     {
@@ -114,153 +119,871 @@
     },
     {
       "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Indomitable",
+        "Tactical Master"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Two Extra Attacks"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Indomitable",
+        "Studied Attacks"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Action Surge",
         "Indomitable"
       ]
     },
     {
       "features": [
-        "Martial Archetype feature"
+        "Subclass Feature"
       ]
     },
     {
       "features": [
-        "Extra Attack (2)"
+        "Epic Boon"
       ]
     },
     {
       "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Indomitable (two uses)"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Martial Archetype feature"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Action Surge (two uses)",
-        "Indomitable (three uses)"
-      ]
-    },
-    {
-      "features": [
-        "Martial Archetype feature"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Extra Attack (3)"
+        "Three Extra Attacks"
       ]
     }
   ],
   "subclasses": [
     {
-      "name": "Champion",
-      "description": "A Champion focuses on the development of raw physical power honed to deadly perfection.",
-      "features": [
-        {
-          "name": "Improved Critical",
-          "description": "Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20."
-        },
-        {
-          "name": "Remarkable Athlete",
-          "description": "Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier."
-        },
-        {
-          "name": "Additional Fighting Style",
-          "description": "At 10th level, you can choose a second option from the Fighting Style class feature."
-        },
-        {
-          "name": "Superior Critical",
-          "description": "Starting at 15th level, your weapon attacks score a critical hit on a roll of 18-20."
-        }
-      ],
-      "levels": [
-        { "level": 3, "features": ["Improved Critical"] },
-        { "level": 7, "features": ["Remarkable Athlete"] },
-        { "level": 10, "features": ["Additional Fighting Style"] },
-        { "level": 15, "features": ["Superior Critical"] }
-      ]
-    },
-    {
       "name": "Battle Master",
-      "description": "Those who emulate the archetypal Battle Master employ martial techniques passed down through generations.",
+      "description": "Master Sophisticated Battle Maneuvers Battle Masters are students of the art of battle, learning martial techniques passed down through generations. The most accomplished Battle Masters are well-rounded figures who combine their carefully honed combat skills with academic study in the fields of h...",
       "features": [
+        {
+          "name": "Battle Master",
+          "description": "Master Sophisticated Battle Maneuvers Battle Masters are students of the art of battle, learning martial techniques passed down through generations. The most accomplished Battle Masters are well-rounded figures who combine their carefully honed combat skills with academic study in the fields of history, theory, and the arts."
+        },
         {
           "name": "Combat Superiority",
-          "description": "When you choose this archetype at 3rd level, you learn three maneuvers of your choice. You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest."
+          "description": "Your experience on the battlefield has refined your fighting techniques. You learn maneuvers that are fueled by special dice called Superiority Dice. Maneuvers: You learn three maneuvers of your choice from the \"Maneuvers Options\" section later in this subclass's description. Many maneuvers enhance an attack in some way. You can use only one maneuver per attack."
+        },
+        {
+          "name": "Maneuver Options",
+          "description": "The maneuvers are presented here in alphabetical order."
         },
         {
           "name": "Student of War",
-          "description": "At 3rd level, you gain proficiency with one type of artisan's tools of your choice."
+          "description": "You gain proficiency with one type of Artisan's Tools of your choice, and you gain proficiency in one skill of your choice from the skills available to Fighters at level 1."
         },
         {
           "name": "Know Your Enemy",
-          "description": "Starting at 7th level, if you spend at least 1 minute observing or interacting with another creature outside combat, you can learn certain information about its capabilities compared to your own."
+          "description": "As a Bonus Action, you can discern certain strengths and weaknesses of a creature you can see within 30 feet of yourself; you know whether that creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are. Once you use this feature, you can't do so again until you finish a Long Rest."
         },
         {
           "name": "Improved Combat Superiority",
-          "description": "At 10th level, your superiority dice turn into d10s. At 18th level, they turn into d12s."
+          "description": "Your Superiority Die becomes a d10."
         },
         {
           "name": "Relentless",
-          "description": "Starting at 15th level, when you roll initiative and have no superiority dice remaining, you regain one superiority die."
+          "description": "Once per turn, when you use a maneuver, you can roll 1d8 and use the number rolled instead of expending a Superiority Die."
+        },
+        {
+          "name": "Ultimate Combat Superiority",
+          "description": "Your Superiority Die becomes a d12."
         }
       ],
       "levels": [
-        { "level": 3, "features": ["Combat Superiority", "Student of War"] },
-        { "level": 7, "features": ["Know Your Enemy"] },
-        { "level": 10, "features": ["Improved Combat Superiority"] },
-        { "level": 15, "features": ["Relentless"] }
+        {
+          "level": 3,
+          "features": [
+            "Battle Master",
+            "Combat Superiority",
+            "Maneuver Options",
+            "Student of War"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Know Your Enemy"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Improved Combat Superiority"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Relentless"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Ultimate Combat Superiority"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Champion",
+      "description": "Pursue Physical Excellence in Combat A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory.",
+      "features": [
+        {
+          "name": "Champion",
+          "description": "Pursue Physical Excellence in Combat A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory. Whether in athletic contests or bloody battle, Champions strive for the crown of the victor."
+        },
+        {
+          "name": "Improved Critical",
+          "description": "Your attack rolls with weapons and Unarmed Strikes can score a Critical Hit on a roll of 19 or 20 on the d20."
+        },
+        {
+          "name": "Remarkable Athlete",
+          "description": "Thanks to your athleticism, you have Advantage on Initiative rolls and Strength (Athletics) checks. In addition, immediately after you score a Critical Hit, you can move up to half your Speed without provoking Opportunity Attack."
+        },
+        {
+          "name": "Additional Fighting Style",
+          "description": "You gain another Fighting Style feat of your choice."
+        },
+        {
+          "name": "Heroic Warrior",
+          "description": "The thrill of battle drives you toward victory. During combat, you can give yourself Heroic Inspiration whenever you start your turn without it."
+        },
+        {
+          "name": "Superior Critical",
+          "description": "Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18–20 on the d20."
+        },
+        {
+          "name": "Survivor",
+          "description": "You attain the pinnacle of resilience in battle, giving you these benefits. Defy Death: You have Advantage on Death Saving Throw. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it. Heroic Rally: At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Points."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Champion",
+            "Improved Critical",
+            "Remarkable Athlete"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Additional Fighting Style"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Heroic Warrior"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Superior Critical"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Survivor"
+          ]
+        }
       ]
     },
     {
       "name": "Eldritch Knight",
-      "description": "The archetypal Eldritch Knight combines the martial mastery common to all fighters with a careful study of magic.",
+      "description": "Support Combat Skills with Arcane Magic Eldritch Knights combine the martial mastery common to all Fighters with a careful study of magic. Their spells both complement and extend their combat skills, providing additional protection to shore up their armor and also allowing them to engage many foe...",
       "features": [
         {
-          "name": "Spellcasting (Eldritch Knight)",
-          "description": "When you reach 3rd level, you augment your martial prowess with the ability to cast spells. You learn two cantrips and three 1st-level spells from the wizard spell list. Intelligence is your spellcasting ability for your wizard spells."
+          "name": "Eldritch Knight",
+          "description": "Support Combat Skills with Arcane Magic Eldritch Knights combine the martial mastery common to all Fighters with a careful study of magic. Their spells both complement and extend their combat skills, providing additional protection to shore up their armor and also allowing them to engage many foes at once with explosive magic."
+        },
+        {
+          "name": "Spellcasting",
+          "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Eldritch Knight. Cantrips: You know two cantrips of your choice from the Wizard spell list (see that class's section for its list). Ray of Frost and Shocking Grasp are recommended."
+        },
+        {
+          "name": "War Bond",
+          "description": "You learn a ritual that creates a magical bond between yourself and one weapon. You perform the ritual over the course of 1 hour, which can be done during a Short Rest. The weapon must be within your reach throughout the ritual, at the conclusion of which you touch the weapon and forge the bond."
         },
         {
           "name": "War Magic",
-          "description": "Beginning at 7th level, when you use your action to cast a cantrip, you can make one weapon attack as a bonus action."
+          "description": "When you take the Attack action on your turn, you can replace one of the attacks with a casting of one of your Wizard cantrips that has a casting time of an action."
         },
         {
           "name": "Eldritch Strike",
-          "description": "At 10th level, when you hit a creature with a weapon attack, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn."
+          "description": "You learn how to make your weapon strikes undercut a creature's ability to withstand your spells. When you hit a creature with an attack using a weapon, that creature has Disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn."
         },
         {
           "name": "Arcane Charge",
-          "description": "At 15th level, when you use Action Surge, you can teleport up to 30 feet to an unoccupied space you can see. You can teleport before or after the additional action."
+          "description": "When you use your Action Surge, you can teleport up to 30 feet to an unoccupied space you can see. You can teleport before or after the additional action."
+        },
+        {
+          "name": "Improved War Magic",
+          "description": "When you take the Attack action on your turn, you can replace two of the attacks with a casting of one of your level 1 or level 2 Wizard spells that has a casting time of an action."
         }
       ],
       "levels": [
-        { "level": 3, "features": ["Spellcasting (Eldritch Knight)"] },
-        { "level": 7, "features": ["War Magic"] },
-        { "level": 10, "features": ["Eldritch Strike"] },
-        { "level": 15, "features": ["Arcane Charge"] }
+        {
+          "level": 3,
+          "features": [
+            "Eldritch Knight",
+            "Spellcasting",
+            "War Bond"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "War Magic"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Eldritch Strike"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Arcane Charge"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Improved War Magic"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Purple Dragon Knight (Banneret)",
+      "description": "Purple Dragon Knights are warriors who hail from the kingdom of Cormyr. Pledged to protect the crown, they take the fight against evil beyond the kingdom's borders.",
+      "features": [
+        {
+          "name": "Purple Dragon Knight (Banneret)",
+          "description": "Purple Dragon Knights are warriors who hail from the kingdom of Cormyr. Pledged to protect the crown, they take the fight against evil beyond the kingdom's borders. They are tasked with wandering the land as knights errant, relying on their judgment, bravery, and fidelity to guide them in defeating evildoers. A Purple Dragon Knight inspires greatness in others by committing brave deeds in battle."
+        },
+        {
+          "name": "Rallying Cry",
+          "description": "When you choose this archetype at 3rd level, you learn how to inspire your allies to fight on past their injuries. When you use your Second Wind feature, you can choose up to three creatures within 60 feet of you that are allied with you. Each one regains hit points equal to your fighter level, provided that the creature can see or hear you."
+        },
+        {
+          "name": "Restriction: Knighthood",
+          "description": "Purple Dragon Knights are tied to a specific order of Cormyrean knighthood. Banneret serves as the generic name for this archetype if you use it in other campaign settings or to model warlords other than the Purple Dragon Knights."
+        },
+        {
+          "name": "Royal Envoy",
+          "description": "A Purple Dragon Knight serves as an envoy of the Cormyrean crown. Knights of high standing are expected to conduct themselves with grace. At 7th level, you gain proficiency in the Persuasion skill. If you are already proficient in it, you gain proficiency in one of the following skills of your choice: Animal Handling, Insight, Intimidation, or Performance."
+        },
+        {
+          "name": "Inspiring Surge",
+          "description": "Starting at 10th level, when you use your Action Surge feature, you can choose one creature within 60 feet of you that is allied with you. That creature can make one melee or ranged weapon attack with its reaction, provided that it can see or hear you. Starting at 18th level, you can choose two allies within 60 feet of you, rather than one."
+        },
+        {
+          "name": "Bulwark",
+          "description": "Beginning at 15th level, you can extend the benefit of your Indomitable feature to an ally. When you decide to use Indomitable to reroll an Intelligence, a Wisdom, or a Charisma saving throw and you aren't incapacitated, you can choose one ally within 60 feet of you that also failed its saving throw against the same effect."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Purple Dragon Knight (Banneret)",
+            "Rallying Cry",
+            "Restriction: Knighthood"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Royal Envoy"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Inspiring Surge"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Bulwark"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Inspiring Surge"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arcane Archer",
+      "description": "An Arcane Archer studies a unique elven method of archery that weaves magic into attacks to produce supernatural effects. Arcane Archers are some of the most elite warriors among the elves.",
+      "features": [
+        {
+          "name": "Arcane Archer",
+          "description": "An Arcane Archer studies a unique elven method of archery that weaves magic into attacks to produce supernatural effects. Arcane Archers are some of the most elite warriors among the elves. They stand watch over the fringes of elven domains, keeping a keen eye out for trespassers and using magic-infused arrows to defeat monsters and invaders before they can reach elven settlements."
+        },
+        {
+          "name": "Arcane Archer Lore",
+          "description": "At 3rd level, you learn magical theory or some of the secrets of nature—typical for practitioners of this elven martial tradition. You choose to gain proficiency in either the Arcana or the Nature skill, and you choose to learn either the prestidigitation or the druidcraft cantrip."
+        },
+        {
+          "name": "Arcane Shot",
+          "description": "At 3rd level, you learn to unleash special magical effects with some of your shots. When you gain this feature, you learn two Arcane Shot options of your choice (see \"Arcane Shot Options\" below). Once per turn when you fire an arrow from a shortbow or longbow as part of the Attack action, you can apply one of your Arcane Shot options to that arrow."
+        },
+        {
+          "name": "Arcane Shot Options",
+          "description": "The Arcane Shot feature lets you choose options for it at certain levels. The options are presented here in alphabetical order. They are all magical effects, and each one is associated with one of the schools of magic. If an option requires a saving throw, your Arcane Shot save DC is calculated as follows:"
+        },
+        {
+          "name": "Additional Arcane Shot Option",
+          "description": "You gain an additional Arcane Shot option of your choice when you reach 7th level."
+        },
+        {
+          "name": "Curving Shot",
+          "description": "At 7th level, you learn how to direct an errant arrow toward a new target. When you make an attack roll with a magic arrow and miss, you can use a bonus action to reroll the attack roll against a different target within 60 feet of the original target."
+        },
+        {
+          "name": "Magic Arrow",
+          "description": "At 7th level, you gain the ability to infuse arrows with magic. Whenever you fire a nonmagical arrow from a shortbow or longbow, you can make it magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. The magic fades from the arrow immediately after it hits or misses its target."
+        },
+        {
+          "name": "Ever-Ready Shot",
+          "description": "Starting at 15th level, your magical archery is available whenever battle starts. If you roll initiative and have no uses of Arcane Shot remaining, you regain one use of it."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Arcane Archer",
+            "Arcane Archer Lore",
+            "Arcane Shot",
+            "Arcane Shot Options"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Additional Arcane Shot Option",
+            "Curving Shot",
+            "Magic Arrow"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Additional Arcane Shot Option"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Additional Arcane Shot Option",
+            "Ever-Ready Shot"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Additional Arcane Shot Option"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cavalier",
+      "description": "The archetypal Cavalier excels at mounted combat. Usually born among the nobility and raised at court, a Cavalier is equally at home leading a cavalry charge or exchanging repartee at a state dinner.",
+      "features": [
+        {
+          "name": "Cavalier",
+          "description": "The archetypal Cavalier excels at mounted combat. Usually born among the nobility and raised at court, a Cavalier is equally at home leading a cavalry charge or exchanging repartee at a state dinner. Cavaliers also learn how to guard those in their charge from harm, often serving as the protectors of their superiors and of the weak."
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": "When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: Animal Handling, History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."
+        },
+        {
+          "name": "Born to the Saddle",
+          "description": "Starting at 3rd level, your mastery as a rider becomes apparent. You have advantage on saving throws made to avoid falling off your mount. If you fall off your mount and descend no more than 10 feet, you can land on your feet if you're not incapacitated. Finally, mounting or dismounting a creature costs you only 5 feet of movement, rather than half your speed."
+        },
+        {
+          "name": "Unwavering Mark",
+          "description": "Starting at 3rd level, you can menace your foes, foiling their attacks and punishing them for harming others. When you hit a creature with a melee weapon attack, you can mark the creature until the end of your next turn. This effect ends early if you are incapacitated or you die, or if someone else marks the creature."
+        },
+        {
+          "name": "Warding Maneuver",
+          "description": "At 7th level, you learn to fend off strikes directed at you, your mount, or other creatures nearby. If you or a creature you can see within 5 feet of you is hit by an attack, you can roll 1d8 as a reaction if you're wielding a melee weapon or a shield. Roll the die, and add the number rolled to the target's AC against that attack."
+        },
+        {
+          "name": "Hold the Line",
+          "description": "At 10th level, you become a master of locking down your enemies. Creatures provoke an opportunity attack from you when they move 5 feet or more while within your reach, and if you hit a creature with an opportunity attack, the target's speed is reduced to 0 until the end of the current turn."
+        },
+        {
+          "name": "Ferocious Charger",
+          "description": "Starting at 15th level, you can run down your foes, whether you're mounted or not. If you move at least 10 feet in a straight line right before attacking a creature and you hit it with the attack, that target must succeed on a Strength saving throw (8 + your proficiency bonus + your Strength modifier) or be knocked prone. You can use this feature only once on each of your turns."
+        },
+        {
+          "name": "Vigilant Defender",
+          "description": "Starting at 18th level, you respond to danger with extraordinary vigilance. In combat, you get a special reaction that you can take once on every creature's turn, except your turn. You can use this special reaction only to make an opportunity attack, and you can't use it on the same turn that you take your normal reaction."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Cavalier",
+            "Bonus Proficiency",
+            "Born to the Saddle",
+            "Unwavering Mark"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Warding Maneuver"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Hold the Line"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Ferocious Charger"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Vigilant Defender"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Samurai",
+      "description": "The Samurai is a fighter who draws on an implacable fighting spirit to overcome enemies. A Samurai's resolve is nearly unbreakable, and the enemies in a Samurai's path have two choices: yield or die fighting.",
+      "features": [
+        {
+          "name": "Samurai",
+          "description": "The Samurai is a fighter who draws on an implacable fighting spirit to overcome enemies. A Samurai's resolve is nearly unbreakable, and the enemies in a Samurai's path have two choices: yield or die fighting."
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": "When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."
+        },
+        {
+          "name": "Fighting Spirit",
+          "description": "Starting at 3rd level, your intensity in battle can shield you and help you strike true. As a bonus action on your turn, you can give yourself advantage on weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points."
+        },
+        {
+          "name": "Elegant Courtier",
+          "description": "Starting at 7th level, your discipline and attention to detail allow you to excel in social situations. Whenever you make a Charisma (Persuasion) check, you gain a bonus to the check equal to your Wisdom modifier. Your self-control also causes you to gain proficiency in Wisdom saving throws."
+        },
+        {
+          "name": "Tireless Spirit",
+          "description": "Starting at 10th level, when you roll initiative and have no uses of Fighting Spirit remaining, you regain one use."
+        },
+        {
+          "name": "Rapid Strike",
+          "description": "Starting at 15th level, you learn to trade accuracy for swift strikes. If you take the Attack action on your turn and have advantage on an attack roll against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action. You can do so no more than once per turn."
+        },
+        {
+          "name": "Strength before Death",
+          "description": "Starting at 18th level, your fighting spirit can delay the grasp of death. If you take damage that reduces you to 0 hit points and doesn't kill you outright, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn, interrupting the current turn."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Samurai",
+            "Bonus Proficiency",
+            "Fighting Spirit"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Elegant Courtier"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Tireless Spirit"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Rapid Strike"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Strength before Death"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Echo Knight",
+      "description": "A mysterious and feared frontline warrior of the Kryn Dynasty, the Echo Knight has mastered the art of using dunamis to summon the fading shades of unrealized timelines to aid them in battle.",
+      "features": [
+        {
+          "name": "Echo Knight",
+          "description": "A mysterious and feared frontline warrior of the Kryn Dynasty, the Echo Knight has mastered the art of using dunamis to summon the fading shades of unrealized timelines to aid them in battle. Surrounded by echoes of their own might, they charge into the fray as a cycling swarm of shadows and strikes."
+        },
+        {
+          "name": "Manifest Echo",
+          "description": "3rd-level Echo Knight feature You can use a bonus action to magically manifest an echo of yourself in an unoccupied space you can see within 15 feet of you. This echo is a magical, translucent, gray image of you that lasts until it is destroyed, until you dismiss it as a bonus action, until you manifest another echo, or until you're incapacitated."
+        },
+        {
+          "name": "Unleash Incarnation",
+          "description": "3rd-level Echo Knight feature You can heighten your echo's fury. Whenever you take the Attack action, you can make one additional melee attack from the echo's position. You can use this feature a number of times equal to your Constitution modifier (a minimum of once). You regain all expended uses when you finish a long rest."
+        },
+        {
+          "name": "Echo Avatar",
+          "description": "7th-level Echo Knight feature You can temporarily transfer your consciousness to your echo. As an action, you can see through your echo's eyes and hear through its ears. During this time, you are deafened and blinded. You can sustain this effect for up to 10 minutes, and you can end it at any time (requires no action)."
+        },
+        {
+          "name": "Shadow Martyr",
+          "description": "10th-level Echo Knight feature You can make your echo throw itself in front of an attack directed at another creature that you can see. Before the attack roll is made, you can use your reaction to teleport the echo to an unoccupied space within 5 feet of the targeted creature. The attack roll that triggered the reaction is instead made against your echo."
+        },
+        {
+          "name": "Reclaim Potential",
+          "description": "15th-level Echo Knight feature You've learned to absorb the fleeting magic of your echo. When an echo of yours is destroyed by taking damage, you can gain a number of temporary hit points equal to 2d6 + your Constitution modifier, provided you don't already have temporary hit points. You can use this feature a number of times equal to your Constitution modifier (a minimum of once)."
+        },
+        {
+          "name": "Legion of One",
+          "description": "18th-level Echo Knight feature You can use a bonus action to create two echoes with your Manifest Echo feature, and these echoes can coexist. If you try to create a third echo, the previous two echoes are destroyed. Anything you can do from one echo's position can be done from the other's instead."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Echo Knight",
+            "Manifest Echo",
+            "Unleash Incarnation"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Echo Avatar"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Shadow Martyr"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Reclaim Potential"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Legion of One"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Psi Warrior",
+      "description": "Augment Physical Might with Psionic Power Psi Warriors awaken the power of their minds to augment their physical might. They harness this psionic power to infuse their weapon strikes, lash out with telekinetic energy, and create barriers of mental force.",
+      "features": [
+        {
+          "name": "Psi Warrior",
+          "description": "Augment Physical Might with Psionic Power Psi Warriors awaken the power of their minds to augment their physical might. They harness this psionic power to infuse their weapon strikes, lash out with telekinetic energy, and create barriers of mental force."
+        },
+        {
+          "name": "Psionic Power",
+          "description": "You harbor a wellspring of psionic energy within yourself. It is represented by your Psionic Energy Dice, which fuel powers you have from this subclass. The Psi Warrior Energy Dice table shows the die size and number of these dice you have when you reach certain Fighter levels. Any features in this subclass that use a Psionic Energy Die use only the dice from this subclass."
+        },
+        {
+          "name": "Protective Field",
+          "description": "When you or another creature you can see within 30 feet of you takes damage, you can take a Reaction to expend one Psionic Energy Die, roll the die, and reduce the damage taken by the number rolled plus your Intelligence modifier (minimum reduction of 1), as you create a momentary shield of telekinetic force."
+        },
+        {
+          "name": "Psionic Strike",
+          "description": "You can propel your weapons with psionic force. Once on each of your turns, immediately after you hit a target within 30 feet of yourself with an attack and deal damage to it with a weapon, you can expend one Psionic Energy Die, rolling it and dealing Force damage to the target equal to the number rolled plus your Intelligence modifier."
+        },
+        {
+          "name": "Telekinetic Movement",
+          "description": "You can move an object or a creature with your mind. As a Magic action, choose one target you can see within 30 feet of yourself; the target must be a loose object that is Large or smaller or one willing creature other than you. You transport the target up to 30 feet to an unoccupied space you can see. Alternatively, if the target is a Tiny object, you can transport it to or from your hand."
+        },
+        {
+          "name": "Psi-Powered Leap",
+          "description": "As a Bonus Action, you gain a Fly Speed equal to twice your Speed until the end of the current turn. Once you take this Bonus Action, you can't do so again until you finish a Short Rest or Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it."
+        },
+        {
+          "name": "Telekinetic Adept",
+          "description": "You have mastered new ways to use your telekinetic abilities, detailed below."
+        },
+        {
+          "name": "Telekinetic Thrust",
+          "description": "When you deal damage to a target with your Psionic Strike, you can force the target to make a Strength saving throw (8 plus your Intelligence modifier and Proficiency). On a failed save, you can give the target the Prone condition or transport it up to 10 feet horizontally."
+        },
+        {
+          "name": "Guarded Mind",
+          "description": "You have Resistance to Psychic damage. Moreover, if you start your turn with the Charmed or Frightened condition, you can expend a Psionic Energy Die (no action required) and end every effect on yourself giving you those conditions."
+        },
+        {
+          "name": "Bulwark of Force",
+          "description": "You can shield yourself and others with telekinetic force. As a Bonus Action, you can choose creatures, including yourself, within 30 feet of yourself, up to a number of creatures equal to your Intelligence modifier (minimum of one creature). Each of the chosen creatures has Cover for 1 minute or until you have the Incapacitated condition."
+        },
+        {
+          "name": "Telekinetic Master",
+          "description": "You always have the Telekinesis spell prepared. With this feature, you can cast it without a spell slot or components, and your spellcasting ability for it is Intelligence. On each of your turns while you maintain Concentration on it, including the turn when you cast it, you can make one attack with a weapon as a Bonus Action."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Psi Warrior",
+            "Psionic Power",
+            "Protective Field",
+            "Psionic Strike",
+            "Telekinetic Movement"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Psi-Powered Leap",
+            "Telekinetic Adept",
+            "Telekinetic Thrust"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Guarded Mind"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Bulwark of Force"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Telekinetic Master"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rune Knight",
+      "description": "Rune Knights enhance their martial prowess using the supernatural power of runes, an ancient practice that originated with giants. Rune cutters can be found among any family of giants, and you likely learned your methods first or second hand from such a mystical artisan.",
+      "features": [
+        {
+          "name": "Rune Knight",
+          "description": "Rune Knights enhance their martial prowess using the supernatural power of runes, an ancient practice that originated with giants. Rune cutters can be found among any family of giants, and you likely learned your methods first or second hand from such a mystical artisan."
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": "3rd-level Rune Knight feature You gain proficiency with smith's tools, and you learn to speak, read, and write Giant."
+        },
+        {
+          "name": "Giant's Might",
+          "description": "3rd-level Rune Knight feature You have learned how to imbue yourself with the might of giants. As a bonus action, you magically gain the following benefits, which last for 1 minute: If you are smaller than Large, you become Large, along with anything you are wearing. If you lack the room to become Large, your size doesn't change. You have advantage on Strength checks and Strength saving throws."
+        },
+        {
+          "name": "Rune Carver",
+          "description": "3rd-level Rune Knight feature You can use magic runes to enhance your gear. You learn two runes of your choice, from among the runes described below, and each time you gain a level in this class, you can replace one rune you know with a different one from this feature. When you reach certain levels in this class, you learn additional runes, as shown in the Runes Known table."
+        },
+        {
+          "name": "Additional Rune Known",
+          "description": "7th-level Rune Knight feature You learn an additional Rune."
+        },
+        {
+          "name": "Runic Shield",
+          "description": "7th-level Rune Knight feature You learn to invoke your rune magic to protect your allies. When another creature you can see within 60 feet of you is hit by an attack roll, you can use your reaction to force the attacker to reroll the d20 and use the new roll. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+        },
+        {
+          "name": "Great Stature",
+          "description": "10th-level Rune Knight feature The magic of your runes permanently alters you. When you gain this feature, roll 3d4. You grow a number of inches in height equal to the roll. Moreover, the extra damage you deal with your Giant's Might feature increases to 1d8."
+        },
+        {
+          "name": "Master of Runes",
+          "description": "15th-level Rune Knight feature You can invoke each rune you know from your Rune Carver feature twice, rather than once, and you regain all expended uses when you finish a short or long rest."
+        },
+        {
+          "name": "Runic Juggernaut",
+          "description": "18th-level Rune Knight feature You learn how to amplify your rune-powered transformation. As a result, the extra damage you deal with the Giant's Might feature increases to 1d10. Moreover, when you use that feature, your size can increase to Huge, and while you are that size, your reach increases by 5 feet."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Rune Knight",
+            "Bonus Proficiencies",
+            "Giant's Might",
+            "Rune Carver"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Additional Rune Known",
+            "Runic Shield"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Additional Rune Known",
+            "Great Stature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Additional Rune Known",
+            "Master of Runes"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Runic Juggernaut"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Banneret",
+      "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn.",
+      "features": [
+        {
+          "name": "Banneret",
+          "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn. They wander the realms as knights errant, taking the fight against evil beyond their kingdom's borders."
+        },
+        {
+          "name": "Group Recovery",
+          "description": "When you use your Second Wind to regain Hit Points, you can choose a number of allies within a 30-foot Emanation [Area of Effect] originating from yourself, up to a number of allies equal to your Charisma modifier (minimum of one). Each of those allies regains Hit Points equal to 1d4 plus your Fighter level."
+        },
+        {
+          "name": "Knightly Envoy",
+          "description": "You know how to conduct yourself with grace as a noble ambassador. You gain the following benefits. Comprehension: You can cast the Comprehend Languages spell but only as a Ritual. Charisma is your spellcasting ability for it. Polyglot: You learn one language from the language tables in the Player's Handbook or chapter 2 of this book."
+        },
+        {
+          "name": "Team Tactics",
+          "description": "When you use Group Recovery, each chosen ally has Advantage on D20 Test until the start of your next turn."
+        },
+        {
+          "name": "Rallying Surge",
+          "description": "When you use your Action Surge, you can choose allies within a 30-foot Emanation [Area of Effect] originating from yourself, up to a number of allies equal to your Charisma modifier (minimum of one). Each of those allies can immediately take a Reaction to use one of the following options. Attack: The ally makes one attack with a weapon or an Unarmed Strike."
+        },
+        {
+          "name": "Shared Resilience",
+          "description": "When an ally you can see within 60 feet of yourself fails a saving throw, you can take a Reaction to expend a use of your Indomitable feature. The ally can immediately reroll the saving throw with a bonus equal to your Fighter level; the ally must use the new roll."
+        },
+        {
+          "name": "Inspiring Commander",
+          "description": "You gain the following benefits. Bolstered Rally: The area of effect for both Group Recovery and Rallying Surge is now a 60-foot Emanation [Area of Effect]. Unshakable Bravery: You have Immunity to the Charmed and Frightened conditions."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Banneret",
+            "Group Recovery",
+            "Knightly Envoy"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Team Tactics"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Rallying Surge"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Shared Resilience"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Inspiring Commander"
+          ]
+        }
       ]
     }
   ]

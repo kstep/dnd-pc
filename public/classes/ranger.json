@@ -17,376 +17,421 @@
   "features": [
     {
       "name": "Favored Enemy",
-      "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies."
-    },
-    {
-      "name": "Natural Explorer",
-      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark."
-    },
-    {
-      "name": "Fighting Style",
-      "description": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options: Archery, Defense, Dueling, Mariner, or Two-Weapon Fighting. You can't take a Fighting Style option more than once, even if you later get to choose again."
+      "description": "You always have the Hunter's Mark spell prepared. You can cast it twice without expending a spell slot, and you regain all expended uses of this ability when you finish a Long Rest. The number of times you can cast the spell without a spell slot increases when you reach certain Ranger levels, as shown in the Favored Enemy column of the Ranger Features table."
     },
     {
       "name": "Spellcasting",
-      "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does. See chapter 10 for the general rules of spellcasting and chapter 11 for the ranger spell list. Spell Slots: The Ranger table shows how many spell slots you have to cast your spells of 1st level and higher."
+      "description": "You have learned to channel the magical essence of nature to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class's description. Spell Slots: The Ranger Features table shows how many spell slots you have to cast your level 1+ spells."
     },
     {
-      "name": "Ranger Archetype",
-      "description": "At 3rd level, you choose an archetype that you strive to emulate from the list of available archetypes. Your choice grants features at 3rd level, and again at 7th, 11th, and 15th level."
+      "name": "Weapon Mastery",
+      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbow and Shortsword. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Longsword."
     },
     {
-      "name": "Primeval Awareness",
-      "description": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you."
+      "name": "Deft Explorer",
+      "description": "Thanks to your travels, you gain the following benefits. Expertise: Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that skill. Languages: You know two languages of your choice from the language tables in chapter 2."
+    },
+    {
+      "name": "Fighting Style",
+      "description": "You gain a Fighting Style feat of your choice. Instead of choosing one of those feats, you can choose the option below."
+    },
+    {
+      "name": "Ranger Subclass",
+      "description": "You gain a Ranger subclass of your choice. A subclass is a specialization that grants you features at certain Ranger levels. For the rest of your career, you gain each of your subclass's features that are of your Ranger level or lower."
     },
     {
       "name": "Ability Score Improvement",
-      "description": "When you reach 4th level you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. If your DM allows the use of feats, you may instead take a feat."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Ranger levels 8, 12, and 16."
     },
     {
       "name": "Extra Attack",
-      "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+      "description": "You can attack twice instead of once whenever you take the Attack action on your turn."
     },
     {
-      "name": "Favored Enemy and Natural Explorer improvements",
-      "description": "At 6th level, you gain an additional favored terrain. At 6th level, you choose one additional favored enemy, as well as an associated language. Your choice should reflect the types of monsters you have encountered on your adventures."
+      "name": "Roving",
+      "description": "Your Speed increases by 10 feet while you aren't wearing Heavy armor. You also have a Climb Speed and a Swim Speed equal to your Speed."
     },
     {
-      "name": "Ranger Archetype feature",
-      "description": "At 7th level, you gain a feature granted to you by your Ranger Archetype."
+      "name": "Subclass Feature",
+      "description": "You gain a feature from your Ranger Subclass."
     },
     {
-      "name": "Land's Stride",
-      "description": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard."
+      "name": "Expertise",
+      "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills."
     },
     {
-      "name": "Hide in Plain Sight",
-      "description": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage. Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are."
+      "name": "Tireless",
+      "description": "Primal forces now help fuel you on your journeys, granting you the following benefits. Temporary Hit Points: As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
     },
     {
-      "name": "Natural Explorer improvement",
-      "description": "You gain an additional favored terrain."
+      "name": "Relentless Hunter",
+      "description": "Taking damage can't break your Concentration on Hunter's Mark."
     },
     {
-      "name": "Vanish",
-      "description": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail."
+      "name": "Nature's Veil",
+      "description": "You invoke spirits of nature to magically hide yourself. As a Bonus Action, you can give yourself the Invisible condition until the end of your next turn. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
     },
     {
-      "name": "Favored Enemy improvement",
-      "description": "At 14th level, you choose one additional favored enemy, as well as an associated language. Your choice should reflect the types of monsters you have encountered on your adventures."
+      "name": "Precise Hunter",
+      "description": "You have Advantage on attack rolls against the creature currently marked by your Hunter's Mark."
     },
     {
       "name": "Feral Senses",
-      "description": "At 18th level, you gain preternatural senses that help you fight creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it. You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn't hidden from you and you aren't blinded or deafened."
+      "description": "Your connection to the forces of nature grants you Blindsight with a range of 30 feet."
+    },
+    {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended."
     },
     {
       "name": "Foe Slayer",
-      "description": "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied."
+      "description": "The damage die of your Hunter's Mark is a d10 rather than a d6."
     }
   ],
   "spells": [
     {
-      "name": "Absorb Elements",
-      "level": 1,
-      "description": "The spell captures some of the incoming energy, lessening its effect on you and storing it for your next melee attack. You have resistance to the triggering damage type until the start of your next turn. Also, the first time you hit with a melee attack on your next turn, the target takes an extra 1d6 damage of the triggering type, and the spell ends."
-    },
-    {
       "name": "Alarm",
       "level": 1,
-      "description": "You set an alarm against unwanted intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot cube. Until the spell ends, an alarm alerts you whenever a tiny or larger creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is mental or audible. A mental alarm alerts you with a ping in your mind if you are within 1 mile of the warded area."
+      "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is audible or mental: Audible Alarm: The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area."
     },
     {
       "name": "Animal Friendship",
       "level": 1,
-      "description": "This spell lets you convince a beast that you mean it no harm. Choose a beast that you can see within range. It must see and hear you. If the beast's Intelligence is 4 or higher, the spell fails. Otherwise, the beast must succeed on a Wisdom saving throw or be charmed by you for the spell's duration. If you or one of your companions harms the target, the spell ends."
-    },
-    {
-      "name": "Beast Bond",
-      "level": 1,
-      "description": "You establish a telepathic link with one beast you touch that is friendly to you or charmed by you. The spell fails if the beast's Intelligence is 4 or higher. Until the spell ends, the link is active while you and the beast are within line of sight of each other. Through the link, the beast can understand your telepathic messages to it, and it can telepathically communicate simple emotions and concepts back to you."
+      "description": "Target a Beast that you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. If you or one of your allies deals damage to the target, the spells ends. Using a Higher-Level Spell Slot: You can target one additional Beast for each spell slot level above 1."
     },
     {
       "name": "Cure Wounds",
       "level": 1,
-      "description": "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st."
+      "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
     },
     {
       "name": "Detect Magic",
       "level": 1,
-      "description": "For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic, and you learn its school of magic, if any. The spell can penetrate most barriers, but is blocked by 1 foot of stone, 1 inch of common metal, a thin sheet of lead, or 3 feet of wood or dirt."
+      "description": "For the duration, you sense the presence of magical effects within 30 feet of yourself. If you sense such effects, you can take the Magic action to see a faint aura around any visible creature or object in the area that bears the magic, and if an effect was created by a spell, you learn the spell's school of magic. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
     },
     {
       "name": "Detect Poison and Disease",
       "level": 1,
-      "description": "For the duration, you can sense the presence and location of poisons, poisonous creatures, and diseases within 30 feet of you. You also identify the kind of poison, poisonous creature, or disease in each case. The spell can penetrate most barriers, but is blocked by 1 foot of stone, 1 inch of common metal, a thin sheet of lead, or 3 feet of wood or dirt."
+      "description": "For the duration, you sense the location of poisons, poisonous or venomous creatures, and magical contagions within 30 feet of yourself. You sense the kind of poison, creature, or contagion in each case. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
     },
     {
       "name": "Ensnaring Strike",
       "level": 1,
-      "description": "The next time you hit a creature with a weapon attack before this spell ends, a writhing mass of thorny vines appears at the point of impact, and the target must succeed on a Strength saving throw or be restrained by the magical vines until the spell ends. A Large or larger creature has advantage on this saving throw. If the target succeeds on the save, the vines shrivel away. While restrained by this spell, the target takes 1d6 piercing damage at the start of each of its turns."
+      "description": "As you hit the target, grasping vines appear on it, and it makes a Strength saving throw. A Large or larger creature has Advantage on this save. On a failed save, the target has the Restrained condition until the spell ends. On a successful save, the vines shrivel away, and the spell ends. While Restrained, the target takes 1d6 Piercing damage at the start of each of its turns."
+    },
+    {
+      "name": "Entangle",
+      "level": 1,
+      "description": "Grasping plants sprout from the ground in a 20-foot square within range. For the duration, these plants turn the ground in the area into Difficult Terrain. They disappear when the spell ends. Each creature (other than you) in the area when you cast the spell must succeed on a Strength saving throw or have the Restrained condition until the spell ends. A Restrained creature can take an action to make a Strength (Athletics) check against your spell save DC."
     },
     {
       "name": "Fog Cloud",
       "level": 1,
-      "description": "You create a 20-foot-radius sphere of fog centered on a point within range. The sphere spreads around corners, and its area is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, the radius of the fog increases by 20 feet for each slot level above 1st."
+      "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it. Using a Higher-Level Spell Slot: The fog's radius increases by 20 feet for each spell slot level above 1."
     },
     {
       "name": "Goodberry",
       "level": 1,
-      "description": "Up to ten berries appear in your hand and are infused with magic for the duration. A creature can use its action to eat one berry. Eating a berry restores 1 hit point, and the berry provides enough nourishment to sustain a creature for one day. The berries lose their potency if they have not been consumed within 24 hours of the casting of this spell."
+      "description": "Ten berries appear in your hand and are infused with magic for the duration. A creature can take a Bonus Action to eat one berry. Eating a berry restores 1 Hit Points, and the berry provides enough nourishment to sustain a creature for one day. Uneaten berries disappear when the spell ends."
     },
     {
       "name": "Hail of Thorns",
       "level": 1,
-      "description": "The next time you hit a creature with a ranged weapon attack before the spell ends, this spell creates a rain of thorns that sprouts from your ranged weapon or ammunition. In addition to the normal effect of the attack, the target of the attack and each creature within 5 feet of it must make a Dexterity saving throw. A creature takes 1d10 piercing damage on a failed save, or half as much damage on a successful one."
+      "description": "As you hit the creature, this spell creates a rain of thorns that sprouts from your Ranged weapon or ammunition. The target of the attack and each creature within 5 feet of it make a Dexterity saving throw, taking 1d10 Piercing damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: The damage increases by 1d10 for each spell slot level above 1."
     },
     {
       "name": "Hunter's Mark",
       "level": 1,
-      "description": "You choose a creature you can see within range and mystically mark it as your quarry. Until the spell ends, you deal an extra 1d6 damage to the target whenever you hit it with a weapon attack, and you have advantage on any Wisdom (Perception) or Wisdom (Survival) check you make to find it. If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to mark a new creature."
+      "description": "You magically mark one creature you can see within range as your quarry. Until the spell ends, you deal an extra 1d6 Force damage to the target whenever you hit it with an attack roll. You also have Advantage on any Wisdom (Perception or Survival) check you make to find it. If the target drops to 0 Hit Points before this spell ends, you can take a Bonus Action to move the mark to a new creature you can see within range."
     },
     {
       "name": "Jump",
       "level": 1,
-      "description": "You touch a creature. The creature's jump distance is tripled until the spell ends."
+      "description": "You touch a willing creature. Once on each of its turns until the spell ends, that creature can jump up to 30 feet by spending 10 feet of movement. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
     },
     {
       "name": "Longstrider",
       "level": 1,
-      "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st."
-    },
-    {
-      "name": "Snare",
-      "level": 1,
-      "description": "As you cast this spell, you use the rope to create a circle with a 5-foot radius on the ground or the floor. When you finish casting, the rope disappears and the circle becomes a magical trap. The trap is nearly invisible, requiring a successful Intelligence (Investigation) check against your spell save DC to be discerned. The trap triggers when a Small, Medium, or Large creature moves onto the ground or the floor in the spell's radius."
+      "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
     },
     {
       "name": "Speak with Animals",
       "level": 1,
-      "description": "You gain the ability to comprehend and verbally communicate with beasts for the duration. The knowledge and awareness of many beasts is limited by their intelligence, but at minimum, beasts can give you information about nearby locations and monsters, including whatever they can perceive or have perceived within the past day. You might be able to persuade a beast to perform a small favor for you, at the DM's discretion."
+      "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nearby locations and monsters, including whatever it has perceived within the past day."
     },
     {
-      "name": "Zephyr Strike",
-      "level": 1,
-      "description": "You move like the wind. Until the spell ends, your movement doesn't provoke opportunity attacks. Once before the spell ends, you can give yourself advantage on one weapon attack roll on your turn. That attack deals an extra 1d8 force damage on a hit. Whether you hit or miss, your walking speed increases by 30 feet until the end of that turn."
+      "name": "Aid",
+      "level": 2,
+      "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration. Using a Higher-Level Spell Slot: Each target's Hit Points increase by 5 for each spell slot level above 2."
+    },
+    {
+      "name": "Air Bubble",
+      "level": 2,
+      "description": "You create a spectral globe around the head of a willing creature you can see within range. The globe is filled with fresh air that lasts until the spell ends. If the creature has more than one head, the globe of air appears around only one of its heads (which is all the creature needs to avoid suffocation, assuming that all its heads share the same respiratory system)."
     },
     {
       "name": "Animal Messenger",
       "level": 2,
-      "description": "By means of this spell, you use an animal to deliver a message. Choose a Tiny beast you can see within range, such as a squirrel, a blue ray, or a bird. You specify a location, which you must have visited, and a recipient who matches a general description, such as a man or woman dressed in the uniform of the town guard or a red-haired dwarf wearing a pointed hat. You also speak a message of up to twenty-five words."
+      "description": "A Tiny Beast of your choice that you can see within range must succeed on a Charisma saving throw, or it attempts to deliver a message for you (if the target's Challenge Rating isn't 0, it automatically succeeds). You specify a location you have visited and a recipient who matches a general description, such as \"a person dressed in the uniform of the town guard\" or \"a red-haired dwarf wearing a pointed hat.\" You also communicate a message of up to twenty-five words."
     },
     {
       "name": "Barkskin",
       "level": 2,
-      "description": "You touch a willing creature. Until the spell ends, the target's skin has a rough, bark-like appearance, and the target's AC can't be less than 16, regardless of what kind of armor it is wearing."
+      "description": "You touch a willing creature. Until the spell ends, the target's skin assumes a bark-like appearance, and the target has an Armor Class of 17 if its AC is lower than that."
     },
     {
       "name": "Beast Sense",
       "level": 2,
-      "description": "You touch a willing beast. For the duration of the spell, you can use your action to see through the beast's eyes and hear what it hears, and continue to do so until you use your action to return to your normal senses."
+      "description": "You touch a willing Beast. For the duration, you can perceive through the Beast's senses as well as your own. When perceiving through the Beast's senses, you benefit from any special senses it has."
     },
     {
       "name": "Cordon of Arrows",
       "level": 2,
-      "description": "You plant four pieces of nonmagical ammunition—arrows or crossbow bolts—in the ground within range and lay magic upon them to protect an area. Until the spell ends, whenever a creature other than you comes within 30 feet of the ammunition for the first time on a turn or ends its turn there, one piece of ammunition flies up to strike it. The creature must succeed on a Dexterity saving throw or take 1d6 piercing damage. The piece of ammunition is then destroyed."
+      "description": "You touch up to four nonmagical Arrows or Bolts and plant them in the ground in your space. Until the spell ends, the ammunition can't be physically uprooted, and whenever a creature other than you enters a space within 30 feet of the ammunition for the first time on a turn or ends its turn there, one piece of ammunition flies up to strike it. The creature must succeed on a Dexterity saving throw or take 2d4 Piercing damage. The piece of ammunition is then destroyed."
     },
     {
       "name": "Darkvision",
       "level": 2,
-      "description": "You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has darkvision out to a range of 60 feet."
+      "description": "For the duration, a willing creature you touch has Darkvision with a range of 150 feet."
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
     },
     {
       "name": "Find Traps",
       "level": 2,
-      "description": "You sense the presence of any trap within range that is within line of sight. A trap, for the purpose of this spell, includes anything that would inflict a sudden or unexpected effect you consider harmful or undesirable, which was specifically intended as such by its creator. Thus, the spell would sense an area affected by the alarm spell, a glyph of warding, or a mechanical pit trap, but it would not reveal a natural weakness in the floor, an unstable ceiling, or a hidden sinkhole."
+      "description": "You sense any trap within range that is within line of sight. A trap, for the purpose of this spell, includes any object or mechanism that was created to cause damage or other danger. Thus, the spell would sense the Alarm or Glyph of Warding spell or a mechanical pit trap, but it wouldn't reveal a natural weakness in the floor, an unstable ceiling, or a hidden sinkhole. This spell reveals that a trap is present but not its location."
     },
     {
-      "name": "Healing Spirit",
+      "name": "Gust of Wind",
       "level": 2,
-      "description": "You call forth a nature spirit to soothe the wounded. The intangible spirit appears in a space that is a 5-foot cube you can see within range. The spirit looks like a transparent beast or fey (your choice). Until the spell ends, whenever you or a creature you can see moves into the spirit's space for the first time on a turn or starts its turn there, you can cause the spirit to restore 1d6 hit points to that creature (no action required). The spirit can't heal constructs or undead."
+      "description": "A Line [Area of Effect] of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature in the Line [Area of Effect] must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the Line [Area of Effect]. A creature that ends its turn in the Line [Area of Effect] must make the same save."
     },
     {
       "name": "Lesser Restoration",
       "level": 2,
-      "description": "You touch a creature and can end either one disease or one condition afflicting it. The condition can be blinded, deafened, paralyzed, or poisoned."
+      "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
     },
     {
       "name": "Locate Animals or Plants",
       "level": 2,
-      "description": "Describe or name a specific kind of beast or plant. Concentrating on the voice of nature in your surroundings, you learn the direction and distance to the closest creature or plant of that kind within 5 miles, if any are present."
+      "description": "Describe or name a specific kind of Beast, Plant creature, or nonmagical plant. You learn the direction and distance to the closest creature or plant of that kind within 5 miles, if any are present."
     },
     {
       "name": "Locate Object",
       "level": 2,
-      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location, as long as that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you, as long as you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+      "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
     },
     {
-      "name": "Pass Without Trace",
+      "name": "Magic Weapon",
       "level": 2,
-      "description": "A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can't be tracked except by magical means. A creature that receives this bonus leaves behind no tracks or other traces of its passage."
+      "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again. Using a Higher-Level Spell Slot: The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
+    },
+    {
+      "name": "Pass without Trace",
+      "level": 2,
+      "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
     },
     {
       "name": "Protection from Poison",
       "level": 2,
-      "description": "You touch a creature. If it is poisoned, you neutralize the poison. If more than one poison afflicts the target, you neutralize one poison that you know is present, or you neutralize one at random. For the duration, the target has advantage on saving throws against being poisoned, and it has resistance to poison damage."
+      "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
     },
     {
       "name": "Silence",
       "level": 2,
-      "description": "For the duration, no sound can be created within or pass through a 20-foot-radius sphere centered on a point you choose within range. Any creature or object entirely inside the sphere is immune to thunder damage, and creatures are deafened while entirely inside it. Casting a spell that includes a verbal component is impossible there."
+      "description": "For the duration, no sound can be created within or pass through a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. Any creature or object entirely inside the Sphere [Area of Effect] has Immunity to Thunder damage, and creatures have the Deafened condition while entirely inside it. Casting a spell that includes a Verbal component is impossible there."
     },
     {
       "name": "Spike Growth",
       "level": 2,
-      "description": "The ground in a 20-foot radius centered on a point within range twists and sprouts hard spikes and thorns. The area becomes difficult terrain for the duration. When a creature moves into or within the area, it takes 2d4 piercing damage for every 5 feet it travels. The transformation of the ground is camouflaged to look natural."
+      "description": "The ground in a 20-foot-radius Sphere [Area of Effect] centered on a point within range sprouts hard spikes and thorns. The area becomes Difficult Terrain for the duration. When a creature moves into or within the area, it takes 2d4 Piercing damage for every 5 feet it travels. The transformation of the ground is camouflaged to look natural."
+    },
+    {
+      "name": "Summon Beast",
+      "level": 2,
+      "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water. The creature resembles an animal of your choice that is native to the chosen environment, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
     },
     {
       "name": "Conjure Animals",
       "level": 3,
-      "description": "You summon fey spirits that take the form of beasts and appear in unoccupied spaces that you can see within range. Choose one of the following options for what appears. - One beast of challenge rating 2 or lower - Two beasts of challenge rating 1 or lower - Four beasts of challenge rating 1/2 or lower - Eight beasts of challenge rating 1/4 or lower Each beast is also considered fey, and it disappears when it drops to 0 hit points or when the spell ends."
+      "description": "You conjure nature spirits that appear as a Large pack of spectral, intangible animals in an unoccupied space you can see within range. The pack lasts for the duration, and you choose the spirits' animal form, such as wolves, serpents, or birds. You have Advantage on Strength saving throws while you're within 5 feet of the pack, and when you move on your turn, you can also move the pack up to 30 feet to an unoccupied space you can see."
     },
     {
       "name": "Conjure Barrage",
       "level": 3,
-      "description": "You throw a nonmagical weapon or fire a piece of nonmagical ammunition into the air to create a cone of identical weapons that shoot forward and then disappear. Each creature in a 60-foot cone must succeed on a Dexterity saving throw. A creature takes 3d8 damage on a failed save, or half as much damage on a successful one. The damage type is the same as that of the weapon or ammunition used as a component."
+      "description": "You brandish the weapon used to cast the spell and conjure similar spectral weapons (or ammunition appropriate to the weapon) that launch forward and then disappear. Each creature of your choice that you can see in a 60-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 5d8 Force damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: The damage increases by 5d8 for each spell slot level above 3."
     },
     {
       "name": "Daylight",
       "level": 3,
-      "description": "A 60-foot-radius sphere of light spreads out from a point you choose within range. The sphere is bright light and sheds dim light for an additional 60 feet. If you chose a point on an object you are holding or one that isn't being worn or carried, the light shines from the object with and moves with it. Completely covering the affected object with an opaque object, such as a bowl or a helm, blocks the light."
+      "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet. Alternatively, you cast the spell on an object that isn't being worn or carried, causing the sunlight to fill a 60-foot Emanation [Area of Effect] originating from that object. Covering that object with something opaque, such as a bowl or helm, blocks the sunlight."
     },
     {
-      "name": "Flame Arrows",
+      "name": "Dispel Magic",
       "level": 3,
-      "description": "You touch a quiver containing arrows or bolts. When a target is hit by a ranged weapon attack using a piece of ammunition drawn from the quiver, the target takes an extra 1d6 fire damage. The spell's magic ends on the piece of ammunition when it hits or misses, and the spell ends when twelve pieces of ammunition have been drawn from the quiver."
+      "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
+    },
+    {
+      "name": "Elemental Weapon",
+      "level": 3,
+      "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
     },
     {
       "name": "Lightning Arrow",
       "level": 3,
-      "description": "The next time you make a ranged weapon attack during the spell's duration, the weapon's ammunition, or the weapon itself if it's a thrown weapon, transforms into a bolt of lightning. Make the attack roll as normal. The target takes 4d8 lightning damage on a hit, or half as much damage on a miss, instead of the weapon's normal damage. Whether you hit or miss, each creature within 10 feet of the target must make a Dexterity saving throw."
+      "description": "As your attack hits or misses the target, the weapon or ammunition you're using transforms into a lightning bolt. Instead of taking any damage or other effects from the attack, the target takes 4d8 Lightning damage on a hit or half as much damage on a miss. Each creature within 10 feet of the target then makes a Dexterity saving throw, taking 2d8 Lightning damage on a failed save or half as much damage on a successful one. The weapon or ammunition then returns to its normal form."
+    },
+    {
+      "name": "Meld into Stone",
+      "level": 3,
+      "description": "You step into a stone object or surface large enough to fully contain your body, merging yourself and your equipment with the stone for the duration. You must touch the stone to do so. Nothing of your presence remains visible or otherwise detectable by nonmagical senses. While merged with the stone, you can't see what occurs outside it, and any Wisdom (Perception) checks you make to hear sounds outside it are made with Disadvantage."
     },
     {
       "name": "Nondetection",
       "level": 3,
-      "description": "For the duration, you hide a target that you touch from divination magic. The target can be a willing creature or a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any divination magic or perceived through magical scrying sensors."
+      "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors."
     },
     {
       "name": "Plant Growth",
       "level": 3,
-      "description": "This spell channels vitality into plants within a specific area. There are two possible uses for the spell, granting either immediate or long-term benefits. If you cast this spell using 1 action, choose a point within range. All normal plants in a 100-foot radius centered on that point become thick and overgrown. A creature moving through the area must spend 4 feet of movement for every 1 foot it moves. You can exclude one or more areas of any size within the spell's area from being affected."
+      "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range. All normal plants in a 100-foot-radius Sphere [Area of Effect] centered on that point become thick and overgrown. A creature moving through that area must spend 4 feet of movement for every 1 foot it moves. You can exclude one or more areas of any size within the spell's area from being affected."
     },
     {
       "name": "Protection from Energy",
       "level": 3,
-      "description": "For the duration, the willing creature you touch has resistance to one damage type of your choice: acid, cold, fire, lightning, or thunder."
+      "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+    },
+    {
+      "name": "Revivify",
+      "level": 3,
+      "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
     },
     {
       "name": "Speak with Plants",
       "level": 3,
-      "description": "You imbue plants within 30 feet of you with limited sentience and animation, giving them the ability to communicate with you and follow your simple commands. You can question plants about events in the spell's area within the past day, gaining information about creatures that have passed, weather, and other circumstances. You can also turn difficult terrain caused by plant growth (such as thickets and undergrowth) into ordinary terrain that lasts for the duration."
+      "description": "You imbue plants in an immobile 30-foot Emanation [Area of Effect] with limited sentience and animation, giving them the ability to communicate with you and follow your simple commands. You can question plants about events in the spell's area within the past day, gaining information about creatures that have passed, weather, and other circumstances. You can also turn Difficult Terrain caused by plant growth (such as thickets and undergrowth) into ordinary terrain that lasts for the duration."
+    },
+    {
+      "name": "Summon Fey",
+      "level": 3,
+      "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy. The creature resembles a Fey creature of your choice marked by the chosen mood, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
     },
     {
       "name": "Water Breathing",
       "level": 3,
-      "description": "This spell grants up to ten willing creatures you can see within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
+      "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
     },
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures you can see within range gain this ability for the duration. If your target a creature submerged in a liquid, the spell carries the target to the surface of the liquid at a rate of 60 feet per round."
+      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Wind Wall",
       "level": 3,
-      "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration. When the wall appears, each creature within its area must make a Strength saving throw. A creature takes 3d8 bludgeoning damage on a failed save, or half as much damage on a successful one."
+      "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration. When the wall appears, each creature in its area makes a Strength saving throw, taking 4d8 Bludgeoning damage on a failed save or half as much damage on a successful one."
     },
     {
       "name": "Conjure Woodland Beings",
       "level": 4,
-      "description": "You summon fey creatures that appear in unoccupied spaces that you can see within range. Choose one of the following options for what appears. - One fey creature of challenge rating 2 or lower - Two fey creatures of challenge rating 1 or lower - Four fey creatures of challenge rating 1/2 or lower - Eight fey creatures of challenge rating 1/4 or lower A summoned creature disappears when it drops to 0 hit points or when the spell ends."
+      "description": "You conjure nature spirits that flit around you in a 10-foot Emanation [Area of Effect] for the duration. Whenever the Emanation [Area of Effect] enters the space of a creature you can see and whenever a creature you can see enters the Emanation [Area of Effect] or ends its turn there, you can force that creature to make a Wisdom saving throw. The creature takes 5d8 Force damage on a failed save or half as much damage on a successful one. A creature makes this save only once per turn."
+    },
+    {
+      "name": "Dominate Beast",
+      "level": 4,
+      "description": "One Beast you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success. You have a telepathic link with the Charmed target while the two of you are on the same plane of existence."
     },
     {
       "name": "Freedom of Movement",
       "level": 4,
-      "description": "You touch a willing creature. For the duration, the target's movement is unaffected by difficult terrain, and spells and other magical effects can neither reduce the target's speed nor cause the target to be paralyzed or restrained. The target can also spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature that has it grappled. Finally, being underwater imposes no penalties on the target's movement or attacks."
+      "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions. The target also has a Swim Speed equal to its Speed. In addition, the target can spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature imposing the Grappled condition on it."
     },
     {
       "name": "Grasping Vine",
       "level": 4,
-      "description": "You conjure a vine that sprouts from the ground in an unoccupied space of your choice that you can see within range. When you cast this spell, you can direct the vine to lash out at a creature within 30 feet of it that you can see. That creature must succeed on a Dexterity saving throw or be pulled 20 feet directly toward the vine. Until the spell ends, you can direct the vine to lash out at the same creature or another one as a bonus action on each of your turns."
-    },
-    {
-      "name": "Guardian of Nature",
-      "level": 4,
-      "description": "A nature spirit answers your call and transforms you into a powerful guardian. The transformation lasts until the spell ends. You choose one of the following forms to assume: Primal Beast or Great Tree. Primal Beast: Bestial fur covers your body, your facial feature becomes feral, and you gain the following benefits. - Your walking speed increases by 10 feet. - You gain darkvision with a range of 120 feet. - You make Strength-based attack rolls with advantage."
+      "description": "You conjure a vine that sprouts from a surface in an unoccupied space that you can see within range. The vine lasts for the duration. Make a melee spell attack against a creature within 30 feet of the vine. On a hit, the target takes 4d8 Bludgeoning damage and is pulled up to 30 feet toward the vine; if the target is Huge or smaller, it has the Grappled condition (escape DC equal to your spell save DC)."
     },
     {
       "name": "Locate Creature",
       "level": 4,
-      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location, as long as that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you, or the nearest creature of a specific kind (such as a human or a unicorn), so long as you have seen such a creature up close—within 30 feet—at least once."
+      "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
     },
     {
       "name": "Stoneskin",
       "level": 4,
-      "description": "This spell turns the flesh of a willing creature you touch as hard as stone. Until the spell ends, the target has resistance to nonmagical bludgeoning, piercing, and slashing damage."
+      "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
+    },
+    {
+      "name": "Summon Elemental",
+      "level": 4,
+      "description": "You call forth an Elemental spirit. It manifests in an unoccupied space that you can see within range and uses the Elemental Spirit stat block. When you cast the spell, choose an element: Air, Earth, Fire, or Water. The creature resembles a bipedal form wreathed in the chosen element, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
+    },
+    {
+      "name": "Alustriel's Mooncloak",
+      "level": 5,
+      "description": "For the duration, moonlight fills a 20-foot Emanation [Area of Effect] originating from you with Dim Light. While in that area, you and your allies have Cover and Resistance to Cold, Lightning, and Radiant damage. While the spell lasts, you can use one of the following options, ending the spell immediately: Liberation: When you fail a saving throw to avoid or end the Frightened, Grappled, or Restrained condition, you can take a Reaction to succeed on the save instead."
     },
     {
       "name": "Commune with Nature",
       "level": 5,
-      "description": "You briefly become one with nature and gain knowledge of the surrounding territory. In the outdoors, the spell gives you knowledge of the land within 3 miles of you. In caves and other natural underground settings, the radius is limited to 300 feet. The spell doesn't function where nature has been replaced by construction, such as in dungeons and towns."
+      "description": "You commune with nature spirits and gain knowledge of the surrounding area. In the outdoors, the spell gives you knowledge of the area within 3 miles of you. In caves and other natural underground settings, the radius is limited to 300 feet. The spell doesn't function where nature has been replaced by construction, such as in castles and settlements."
     },
     {
       "name": "Conjure Volley",
       "level": 5,
-      "description": "You fire a piece of nonmagical ammunition from a ranged weapon or throw a nonmagical weapon into the air and choose a point within range. Hundreds of duplicates of the ammunition or weapon fall in a volley from above and then disappear. Each creature in a 40-foot-radius. 20-foot-high cylinder centered on that point must make a Dexterity saving throw. A creature takes 8d8 damage on a failed save, or half as much damage on a successful one."
+      "description": "You brandish the weapon used to cast the spell and choose a point within range. Hundreds of similar spectral weapons (or ammunition appropriate to the weapon) fall in a volley and then disappear. Each creature of your choice that you can see in a 40-foot-radius, 20-foot-high Cylinder [Area of Effect] centered on that point makes a Dexterity saving throw. A creature takes 8d8 Force damage on a failed save or half as much damage on a successful one."
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
     },
     {
       "name": "Steel Wind Strike",
       "level": 5,
-      "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 force damage. You can then teleport to an unoccupied space you can see within 5 feet of one of the targets you hit or missed."
+      "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 Force damage. You then teleport to an unoccupied space you can see within 5 feet of one of the targets."
     },
     {
       "name": "Swift Quiver",
       "level": 5,
-      "description": "You transmute your quiver so it produces an endless supply of nonmagical ammunition, which seems to leap into your hand when you reach for it. On each of your turns until the spell ends, you can use a bonus action to make two attacks with a weapon that uses ammunition from the quiver. Each time you make such a ranged attack, your quiver magically replaces the piece of ammunition you used with a similar piece of nonmagical ammunition."
+      "description": "When you cast the spell and as a Bonus Action until it ends, you can make two attacks with a weapon that fires Arrows or Bolts, such as a Longbow or a Light Crossbow. The spell magically creates the ammunition needed for each attack. Each Arrow or Bolt created by the spell deals damage like a nonmagical piece of ammunition of its kind and disintegrates immediately after it hits or misses."
     },
     {
       "name": "Tree Stride",
       "level": 5,
       "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree. You instantly know the location of all other trees of the same kind within 500 feet and, as part of the move used to enter the tree, can either pass into one of those trees or step out of the tree you're in."
-    },
-    {
-      "name": "Wrath of Nature",
-      "level": 5,
-      "description": "You call out to the spirits of nature to rouse them against your enemies. Choose a point you can see within range. The spirits cause trees, rocks, and grasses in a 60-foot cube centered on that point to become animated until the spell ends. Grasses and Undergrowth: Any area of ground in the cube that is covered by grass or undergrowth is difficult terrain for your enemies."
     }
   ],
   "levels": [
     {
       "features": [
         "Favored Enemy",
-        "Natural Explorer"
+        "Spellcasting",
+        "Weapon Mastery"
+      ],
+      "spell_slots": [
+        2
       ]
     },
     {
       "features": [
-        "Fighting Style",
-        "Spellcasting"
+        "Deft Explorer",
+        "Fighting Style"
       ],
       "spell_slots": [
         2
-      ],
-      "spells_known": 2
+      ]
     },
     {
       "features": [
-        "Ranger Archetype",
-        "Primeval Awareness"
+        "Ranger Subclass"
       ],
       "spell_slots": [
         3
-      ],
-      "spells_known": 3
+      ]
     },
     {
       "features": [
@@ -394,8 +439,7 @@
       ],
       "spell_slots": [
         3
-      ],
-      "spells_known": 3
+      ]
     },
     {
       "features": [
@@ -404,71 +448,64 @@
       "spell_slots": [
         4,
         2
-      ],
-      "spells_known": 4
+      ]
     },
     {
       "features": [
-        "Favored Enemy and Natural Explorer improvements"
+        "Roving"
       ],
       "spell_slots": [
         4,
         2
-      ],
-      "spells_known": 4
+      ]
     },
     {
       "features": [
-        "Ranger Archetype feature"
+        "Subclass Feature"
       ],
       "spell_slots": [
         4,
         3
-      ],
-      "spells_known": 5
+      ]
     },
     {
       "features": [
-        "Ability Score Improvement",
-        "Land's Stride"
+        "Ability Score Improvement"
       ],
       "spell_slots": [
         4,
         3
-      ],
-      "spells_known": 5
-    },
-    {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        2
-      ],
-      "spells_known": 6
+      ]
     },
     {
       "features": [
-        "Hide in Plain Sight",
-        "Natural Explorer improvement"
+        "Expertise"
       ],
       "spell_slots": [
         4,
         3,
         2
-      ],
-      "spells_known": 6
+      ]
     },
     {
       "features": [
-        "Ranger Archetype feature"
+        "Tireless"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        2
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
       ],
       "spell_slots": [
         4,
         3,
         3
-      ],
-      "spells_known": 7
+      ]
     },
     {
       "features": [
@@ -478,43 +515,40 @@
         4,
         3,
         3
-      ],
-      "spells_known": 7
-    },
-    {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        1
-      ],
-      "spells_known": 8
+      ]
     },
     {
       "features": [
-        "Vanish",
-        "Favored Enemy improvement"
+        "Relentless Hunter"
       ],
       "spell_slots": [
         4,
         3,
         3,
         1
-      ],
-      "spells_known": 8
+      ]
     },
     {
       "features": [
-        "Ranger Archetype feature"
+        "Nature's Veil"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        1
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
       ],
       "spell_slots": [
         4,
         3,
         3,
         2
-      ],
-      "spells_known": 9
+      ]
     },
     {
       "features": [
@@ -525,19 +559,19 @@
         3,
         3,
         2
-      ],
-      "spells_known": 9
+      ]
     },
     {
-      "features": [],
+      "features": [
+        "Precise Hunter"
+      ],
       "spell_slots": [
         4,
         3,
         3,
         3,
         1
-      ],
-      "spells_known": 10
+      ]
     },
     {
       "features": [
@@ -549,12 +583,11 @@
         3,
         3,
         1
-      ],
-      "spells_known": 10
+      ]
     },
     {
       "features": [
-        "Ability Score Improvement"
+        "Epic Boon"
       ],
       "spell_slots": [
         4,
@@ -562,8 +595,7 @@
         3,
         3,
         2
-      ],
-      "spells_known": 11
+      ]
     },
     {
       "features": [
@@ -575,8 +607,632 @@
         3,
         3,
         2
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Beast Master",
+      "description": "Bond with a Primal Beast A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world.",
+      "features": [
+        {
+          "name": "Beast Master",
+          "description": "Bond with a Primal Beast A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world."
+        },
+        {
+          "name": "Primal Companion",
+          "description": "You magically summon a primal beast, which draws strength from your bond with nature. Choose its stat block: Beast of the Land, Beast of the Sea, or Beast of the Sky. You also determine the kind of animal it is, choosing a kind appropriate for the stat block. Whatever beast you choose, it bears primal markings indicating its supernatural origin."
+        },
+        {
+          "name": "Exceptional Training",
+          "description": "When you take a Bonus Action to command your Primal Companion beast to take an action, you can also command it to take the Dash, Disengage, Dodge, or Help action using its Bonus Action. In addition, whenever it hits with an attack roll and deals damage, it can deal your choice of Force damage or its normal damage type."
+        },
+        {
+          "name": "Bestial Fury",
+          "description": "When you command your Primal Companion beast to take the Beast's Strike action, the beast can use it twice. In addition, the first time each turn it hits a creature under the effect of your Hunter's Mark spell, the beast deals extra Force damage equal to the bonus damage of that spell."
+        },
+        {
+          "name": "Share Spells",
+          "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion beast with the spell if the beast is within 30 feet of you."
+        }
       ],
-      "spells_known": 11
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Beast Master",
+            "Primal Companion"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Exceptional Training"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Bestial Fury"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Share Spells"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hunter",
+      "description": "Protect Nature and People from Destruction You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them.",
+      "features": [
+        {
+          "name": "Hunter",
+          "description": "Protect Nature and People from Destruction You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them."
+        },
+        {
+          "name": "Hunter's Lore",
+          "description": "You can call on the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter's Mark, you know whether that creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are."
+        },
+        {
+          "name": "Hunter's Prey",
+          "description": "You gain one of the following feature options of your choice. Whenever you finish a Short Rest or Long Rest, you can replace the chosen option with the other one. Colossus Slayer: Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it's missing any of its Hit Points."
+        },
+        {
+          "name": "Defensive Tactics",
+          "description": "You gain one of the following feature options of your choice. Whenever you finish a Short Rest or Long Rest, you can replace the chosen option with the other one. Escape the Horde: Opportunity Attack have Disadvantage against you. Multiattack Defense: When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
+        },
+        {
+          "name": "Superior Hunter's Prey",
+          "description": "Once per turn when you deal damage to a creature marked by your Hunter's Mark, you can also deal that spell's extra damage to a different creature that you can see within 30 feet of the first creature."
+        },
+        {
+          "name": "Superior Hunter's Defense",
+          "description": "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Hunter",
+            "Hunter's Lore",
+            "Hunter's Prey"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Defensive Tactics"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Superior Hunter's Prey"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Superior Hunter's Defense"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gloom Stalker",
+      "description": "You have mastered the art of creating fearsome ambushes, granting you the following benefits. Ambusher's Leap: At the start of your first turn of each combat, your Speed increases by 10 feet until the end of that turn.",
+      "features": [
+        {
+          "name": "Dread Ambusher",
+          "description": "You have mastered the art of creating fearsome ambushes, granting you the following benefits. Ambusher's Leap: At the start of your first turn of each combat, your Speed increases by 10 feet until the end of that turn. Dreadful Strike: When you attack a creature and hit it with a weapon, you can deal an extra 2d6 Psychic damage."
+        },
+        {
+          "name": "Gloom Stalker",
+          "description": "Draw on Shadow Magic to Fight Your Foes Gloom Stalkers are at home in the darkest places, wielding magic drawn from the Shadowfell to combat enemies that lurk in darkness."
+        },
+        {
+          "name": "Gloom Stalker Spells",
+          "description": "When you reach a Ranger level specified in the Gloom Stalker Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Umbral Sight",
+          "description": "You gain Darkvision with a range of 60 feet. If you already have Darkvision when you gain this feature, its range increases by 60 feet. You are also adept at evading creatures that rely on Darkvision. While entirely in Darkness, you have the Invisible condition to any creature that relies on Darkvision to see you in that Darkness."
+        },
+        {
+          "name": "Iron Mind",
+          "description": "You have honed your ability to resist mind-altering powers. You gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice)."
+        },
+        {
+          "name": "Stalker's Flurry",
+          "description": "The Psychic damage of your Dreadful Strike becomes 2d8. In addition, when you use the Dreadful Strike effect of your Dread Ambusher feature, you can cause one of the following additional effects. Sudden Strike: You can make another attack with the same weapon against a different creature that is within 5 feet of the original target and that is within the weapon's range."
+        },
+        {
+          "name": "Shadowy Dodge",
+          "description": "When a creature makes an attack roll against you, you can take a Reaction to impose Disadvantage on that roll. Whether the attack hits or misses, you can then teleport up to 30 feet to an unoccupied space you can see."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Dread Ambusher",
+            "Gloom Stalker",
+            "Gloom Stalker Spells",
+            "Umbral Sight"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Iron Mind"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Stalker's Flurry"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Shadowy Dodge"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Disguise Self",
+          "level": 1,
+          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+        },
+        {
+          "name": "Rope Trick",
+          "level": 2,
+          "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends."
+        },
+        {
+          "name": "Fear",
+          "level": 3,
+          "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
+        },
+        {
+          "name": "Greater Invisibility",
+          "level": 4,
+          "description": "A creature you touch has the Invisible condition until the spell ends."
+        },
+        {
+          "name": "Seeming",
+          "level": 5,
+          "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+        }
+      ]
+    },
+    {
+      "name": "Horizon Walker",
+      "description": "Horizon Walkers guard the world against threats that originate from other planes or that seek to ravage the mortal realm with otherworldly magic. They seek out planar portals and keep watch over them, venturing to the Inner Planes and the Outer Planes as needed to pursue their foes.",
+      "features": [
+        {
+          "name": "Horizon Walker",
+          "description": "Horizon Walkers guard the world against threats that originate from other planes or that seek to ravage the mortal realm with otherworldly magic. They seek out planar portals and keep watch over them, venturing to the Inner Planes and the Outer Planes as needed to pursue their foes."
+        },
+        {
+          "name": "Detect Portal",
+          "description": "At 3rd level, you gain the ability to magically sense the presence of a planar portal. As an action, you detect the distance and direction to the closest planar portal within 1 mile of you. Once you use this feature, you can't use it again until you finish a short or long rest. See the \"Planar Travel\" section in chapter 2 of the Dungeon Master's Guide for examples of planar portals."
+        },
+        {
+          "name": "Horizon Walker Magic",
+          "description": "Starting at 3rd level, you learn an additional spell when you reach certain levels in this class, as shown in the Horizon Walker Spells table. The spell counts as a ranger spell for you, but it doesn't count against the number of ranger spells you know."
+        },
+        {
+          "name": "Planar Warrior",
+          "description": "At 3rd level, you learn to draw on the energy of the multiverse to augment your attacks. As a bonus action, choose one creature you can see within 30 feet of you. The next time you hit that creature on this turn with a weapon attack, all damage dealt by the attack becomes force damage, and the creature takes an extra 1d8 force damage from the attack."
+        },
+        {
+          "name": "Ethereal Step",
+          "description": "At 7th level, you learn to step through the Ethereal Plane. As a bonus action, you can cast the etherealness spell with this feature, without expending a spell slot, but the spell ends at the end of the current turn. Once you use this feature, you can't use it again until you finish a short or long rest."
+        },
+        {
+          "name": "Distant Strike",
+          "description": "At 11th level, you gain the ability to pass between the planes in the blink of an eye. When you take the Attack action, you can teleport up to 10 feet before each attack to an unoccupied space you can see. If you attack at least two different creatures with the action, you can make one additional attack with it against a third creature."
+        },
+        {
+          "name": "Spectral Defense",
+          "description": "At 15th level, your ability to move between planes enables you to slip through the planar boundaries to lessen the harm done to you during battle. When you take damage from an attack, you can use your reaction to give yourself resistance to all of that attack's damage on this turn."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Horizon Walker",
+            "Detect Portal",
+            "Horizon Walker Magic",
+            "Planar Warrior"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Ethereal Step"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Distant Strike"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Spectral Defense"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Monster Slayer",
+      "description": "You have dedicated yourself to hunting down creatures of the night and wielders of grim magic. A Monster Slayer seeks out vampires, dragons, evil fey, fiends, and other magical threats.",
+      "features": [
+        {
+          "name": "Monster Slayer",
+          "description": "You have dedicated yourself to hunting down creatures of the night and wielders of grim magic. A Monster Slayer seeks out vampires, dragons, evil fey, fiends, and other magical threats. Trained in supernatural techniques to overcome such monsters, slayers are experts at unearthing and defeating mighty, mystical foes."
+        },
+        {
+          "name": "Hunter's Sense",
+          "description": "At 3rd level, you gain the ability to peer at a creature and magically discern how best to hurt it. As an action, choose one creature you can see within 60 feet of you. You immediately learn whether the creature has any damage immunities, resistances, or vulnerabilities and what they are."
+        },
+        {
+          "name": "Monster Slayer Magic",
+          "description": "Starting at 3rd level, you learn an additional spell when you reach certain levels in this class, as shown in the Monster Slayer Spells table. The spell counts as a ranger spell for you, but it doesn't count against the number of ranger spells you know."
+        },
+        {
+          "name": "Slayer's Prey",
+          "description": "Starting at 3rd level, you can focus your ire on one foe, increasing the harm you inflict on it. As a bonus action, you designate one creature you can see within 60 feet of you as the target of this feature. The first time each turn that you hit that target with a weapon attack, it takes an extra 1d6 damage from the weapon. This benefit lasts until you finish a short or long rest."
+        },
+        {
+          "name": "Supernatural Defense",
+          "description": "At 7th level, you gain extra resilience against your prey's assaults on your mind and body. Whenever the target of your Slayer's Prey forces you to make a saving throw and whenever you make an ability check to escape that target's grapple, add 1d6 to your roll."
+        },
+        {
+          "name": "Magic-User's Nemesis",
+          "description": "At 11th level, you gain the ability to thwart someone else's magic. When you see a creature casting a spell or teleporting within 60 feet of you, you can use your reaction to try to magically foil it. The creature must succeed on a Wisdom saving throw against your spell save DC, or its spell or teleport fails and is wasted."
+        },
+        {
+          "name": "Slayer's Counter",
+          "description": "At 15th level, you gain the ability to counterattack when your prey tries to sabotage you. If the target of your Slayer's Prey forces you to make a saving throw, you can use your reaction to make one weapon attack against the quarry. You make this attack immediately before making the saving throw. If your attack hits, your save automatically succeeds, in addition to the attack's normal effects."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Monster Slayer",
+            "Hunter's Sense",
+            "Monster Slayer Magic",
+            "Slayer's Prey"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Supernatural Defense"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Magic-User's Nemesis"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Slayer's Counter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fey Wanderer",
+      "description": "Wield Fey Mirth and Fury A fey mystique surrounds you, thanks to the boon of an archfey or a location in the Feywild that transformed you. However you gained fey magic, you are now a Fey Wanderer.",
+      "features": [
+        {
+          "name": "Fey Wanderer",
+          "description": "Wield Fey Mirth and Fury A fey mystique surrounds you, thanks to the boon of an archfey or a location in the Feywild that transformed you. However you gained fey magic, you are now a Fey Wanderer. Your joyful laughter brightens the hearts of the downtrodden, and your martial prowess strikes terror in your foes, for great is the mirth of the fey and dreadful is their fury."
+        },
+        {
+          "name": "Dreadful Strikes",
+          "description": "You can augment your weapon strikes with mind-scarring magic drawn from the murky hollows of the Feywild. When you hit a creature with a weapon, you can deal an extra 1d4 Psychic damage to the target, which can take this extra damage only once per turn. The extra damage increases to 1d6 when you reach Ranger level 11."
+        },
+        {
+          "name": "Fey Wanderer Spells",
+          "description": "When you reach a Ranger level specified in the Fey Wanderer Spells table, you thereafter always have the listed spells prepared. You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly."
+        },
+        {
+          "name": "Otherworldly Glamour",
+          "description": "Whenever you make a Charisma check, you gain a bonus to the check equal to your Wisdom modifier (minimum of +1). You also gain proficiency in one of these skills of your choice: Deception, Performance, or Persuasion."
+        },
+        {
+          "name": "Beguiling Twist",
+          "description": "The magic of the Feywild guards your mind. You have Advantage on saving throws to avoid or end the Charmed or Frightened condition. In addition, whenever you or a creature you can see within 120 feet of you succeeds on a saving throw to avoid or end the Charmed or Frightened condition, you can take a Reaction to force a different creature you can see within 120 feet of yourself to make a Wisdom..."
+        },
+        {
+          "name": "Fey Reinforcements",
+          "description": "You can cast Summon Fey without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest. Whenever you start casting the spell, you can modify it so that it doesn't require Concentration. If you do so, the spell's duration becomes 1 minute for that casting."
+        },
+        {
+          "name": "Misty Wanderer",
+          "description": "You can cast Misty Step without expending a spell slot. You can do so a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest. In addition, whenever you cast Misty Step, you can bring along one willing creature you can see within 5 feet of yourself."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Fey Wanderer",
+            "Dreadful Strikes",
+            "Fey Wanderer Spells",
+            "Otherworldly Glamour"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Beguiling Twist"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Fey Reinforcements"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Misty Wanderer"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Charm Person",
+          "level": 1,
+          "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+        },
+        {
+          "name": "Misty Step",
+          "level": 2,
+          "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+        },
+        {
+          "name": "Summon Fey",
+          "level": 3,
+          "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+        },
+        {
+          "name": "Dimension Door",
+          "level": 4,
+          "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
+        },
+        {
+          "name": "Mislead",
+          "level": 5,
+          "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell."
+        }
+      ]
+    },
+    {
+      "name": "Swarmkeeper",
+      "description": "Feeling a deep connection to the environment around them, some rangers reach out through their magical connection to the world and bond with a swarm of nature spirits. The swarm becomes a potent force in battle, as well as helpful company for the ranger.",
+      "features": [
+        {
+          "name": "Swarmkeeper",
+          "description": "Feeling a deep connection to the environment around them, some rangers reach out through their magical connection to the world and bond with a swarm of nature spirits. The swarm becomes a potent force in battle, as well as helpful company for the ranger. Some Swarmkeepers are outcasts or hermits, keeping to themselves and their attendant swarms rather than dealing with the discomfort of others."
+        },
+        {
+          "name": "Gathered Swarm",
+          "description": "3rd-level Swarmkeeper feature A swarm of intangible nature spirits has bonded itself to you and can assist you in battle. While you're alive, the swarm remains in your space, crawling on you or flying and skittering around you within your space. You determine its appearance, or you generate its appearance by rolling on the Swarm Appearance table."
+        },
+        {
+          "name": "Swarmkeeper Magic",
+          "description": "3rd-level Swarmkeeper feature You learn the mage hand cantrip if you don't already know it. When you cast it, the hand takes the form of your swarming nature spirits. You also learn an additional spell of 1st level or higher when you reach certain levels in this class, as shown in the Swarmkeeper Spells table."
+        },
+        {
+          "name": "Writhing Tide",
+          "description": "7th-level Swarmkeeper feature You can condense part of your swarm into a focused mass that lifts you up. As a bonus action, you gain a flying speed of 10 feet and can hover. This effect lasts for 1 minute or until you are incapacitated. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+        },
+        {
+          "name": "Mighty Swarm",
+          "description": "11th-level Swarmkeeper feature Your Gathered Swarm grows mightier in the following ways: The damage of Gathered Swarm increases to 1d8. If a creature fails its saving throw against being moved by Gathered Swarm, you can also cause the swarm to knock the creature prone. When you are moved by Gathered Swarm, it gives you Cover until the start of your next turn."
+        },
+        {
+          "name": "Swarming Dispersal",
+          "description": "15th-level Swarmkeeper feature You can discorporate into your swarm, avoiding danger. When you take damage, you can use your reaction to give yourself resistance to that damage. You vanish into your swarm and then teleport to an unoccupied space that you can see within 30 feet of you, where you reappear with the swarm."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Swarmkeeper",
+            "Gathered Swarm",
+            "Swarmkeeper Magic"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Writhing Tide"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Mighty Swarm"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Swarming Dispersal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Drakewarden",
+      "description": "Your connection to the natural world takes the form of a draconic spirit, which can manifest in physical form as a drake. As your powers grow, your drake grows as well, blossoming from a small four-legged companion to a majestic winged creature large and strong enough for you to ride.",
+      "features": [
+        {
+          "name": "Drakewarden",
+          "description": "Your connection to the natural world takes the form of a draconic spirit, which can manifest in physical form as a drake. As your powers grow, your drake grows as well, blossoming from a small four-legged companion to a majestic winged creature large and strong enough for you to ride. Along the way, you gain an increasing share of the awe-inspiring power of dragons."
+        },
+        {
+          "name": "Draconic Gift",
+          "description": "3rd-level Drakewarden feature The bond you share with your drake creates a connection to dragonkind, granting you understanding and empowering your presence. You gain the following benefits: Thaumaturgy:  Tongue of Dragons:"
+        },
+        {
+          "name": "Drake Companion",
+          "description": "3rd-level Drakewarden feature As an action, you can magically summon the drake that is bound to you. It appears in an unoccupied space of your choice within 30 feet of you. The drake is friendly to you and your companions, and it obeys your commands. See its game statistics in the accompanying Drake Companion stat block, which uses your proficiency bonus (PB) in several places."
+        },
+        {
+          "name": "Bond of Fang and Scale",
+          "description": "7th-level Drakewarden feature The bond you share with your drake intensifies, protecting you and stoking the drake's fury. When you summon your drake, it grows wings on its back and gains a flying speed equal to its walking speed. In addition, while your drake is summoned, you and the drake gain the following benefits: Drake Mount: The drake grows to Medium size."
+        },
+        {
+          "name": "Drake's Breath",
+          "description": "11th-level Drakewarden feature As an action, you can exhale a 30-foot cone of damaging breath or cause your drake to exhale it. Choose acid, cold, fire, lightning, or poison damage (your choice doesn't have to match your drake's Draconic Essence)."
+        },
+        {
+          "name": "Perfected Bond",
+          "description": "15th-level Drakewarden feature Your bond to your drake reaches the pinnacle of its power. While your drake is summoned, you and the drake gain the following benefits: Empowered Bite: The drake's Bite attack deals an extra 1d6 damage of the type chosen for its Draconic Essence (for a total of 2d6 extra damage). Large Drake: The drake grows to Large size."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Drakewarden",
+            "Draconic Gift",
+            "Drake Companion"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Bond of Fang and Scale"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Drake's Breath"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Perfected Bond"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Winter Walker",
+      "description": "You gain the following benefits. Biting Cold: Damage from your weapon attacks, Ranger spells, and Ranger features ignores Resistance to Cold damage. Frost Resistance: You have Resistance to Cold damage.",
+      "features": [
+        {
+          "name": "Frigid Explorer",
+          "description": "You gain the following benefits. Biting Cold: Damage from your weapon attacks, Ranger spells, and Ranger features ignores Resistance to Cold damage. Frost Resistance: You have Resistance to Cold damage. Polar Strikes: When you hit a creature with an attack roll using a weapon, you can deal an extra 1d4 Cold damage to the target, which can take this extra damage only once per turn."
+        },
+        {
+          "name": "Hunter's Rime",
+          "description": "Ice rimes you and your prey, protecting you and slowing them. When you cast Hunter's Mark, you gain Temporary Hit Points equal to 1d10 plus your Ranger level. Additionally, while a creature is marked by your Hunter's Mark, it can't take the Disengage action."
+        },
+        {
+          "name": "Winter Walker",
+          "description": "Withstand the Horrors of Frigid Wastelands Winter Walkers hone their craft in the bleak and frozen wilds of places like Icewind Dale. These ruthless, rimed Rangers hunt monsters that haunt arctic wastelands, eventually becoming frigid terrors themselves."
+        },
+        {
+          "name": "Winter Walker Spells",
+          "description": "When you reach a Ranger level specified in the Winter Walker Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Fortifying Soul",
+          "description": "Your experience surviving harrowing environments allows you to bolster your allies in addition to yourself. As a Magic action, choose a number of creatures you can see equal to your Wisdom modifier (minimum of one). Each chosen creature regains Hit Points equal to 1d10 plus your Ranger level and has Advantage on saving throws to avoid or end the Frightened condition for 1 hour."
+        },
+        {
+          "name": "Chilling Retribution",
+          "description": "When a creature hits you with an attack roll, you can take a Reaction to force the creature to make a Wisdom saving throw against your spell save DC. On a failed save, the target has the Stunned condition until the end of your next turn. While the target is Stunned, its Speed is reduced to 0 feet."
+        },
+        {
+          "name": "Frozen Haunt",
+          "description": "When you cast Hunter's Mark, you can adopt a ghostly, snowy form. This form lasts until the spell ends, and while you are in this form, you gain the following benefits. Once you use this feature, you can't use it again until you finish a Long Rest unless you expend a level 4+ spell slot (no action required). Frozen Soul: You have Immunity to Cold damage."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Frigid Explorer",
+            "Hunter's Rime",
+            "Winter Walker",
+            "Winter Walker Spells"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Fortifying Soul"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Chilling Retribution"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Frozen Haunt"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Ice Knife",
+          "level": 1,
+          "description": "You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Piercing damage. Hit or miss, the shard then explodes."
+        },
+        {
+          "name": "Hold Person",
+          "level": 2,
+          "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+        },
+        {
+          "name": "Remove Curse",
+          "level": 3,
+          "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
+        },
+        {
+          "name": "Ice Storm",
+          "level": 4,
+          "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+        },
+        {
+          "name": "Cone of Cold",
+          "level": 5,
+          "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+        }
+      ]
     }
   ]
 }

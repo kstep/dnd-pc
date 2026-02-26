@@ -6,6 +6,7 @@
   "proficiencies": [
     "LightArmor",
     "MediumArmor",
+    "Shields",
     "SimpleWeapons"
   ],
   "saving_throws": [
@@ -14,359 +15,591 @@
   ],
   "features": [
     {
-      "name": "Artificer Specialist",
-      "description": "At 1st level, you choose the type of Artificer Specialist you are from the list of available specialisations. Your choice grants you features at 1st level and again at 3rd, 9th, 14th, and 17th level."
-    },
-    {
-      "name": "Magic Item Analysis",
-      "description": "Starting at 1st level, your understanding of magic items allows you to analyze and understand their secrets. You know the artificer spells detect magic and identify, and you can cast them as rituals. You don't need to provide a material component when casting identify with this class feature."
-    },
-    {
-      "name": "Tool Expertise",
-      "description": "Starting at 2nd level, your proficiency bonus is doubled for any ability check you make that uses any of the tool proficiencies you gain from this class."
-    },
-    {
-      "name": "Wondrous Invention",
-      "description": "At 2nd level, you gain the use of a magic item that you have crafted. Choose the item from the list of 2nd-level items below. Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item."
-    },
-    {
-      "name": "Masterwork Feature",
-      "description": "At 3rd level, you gain a feature from your Artificer Specialist."
-    },
-    {
       "name": "Spellcasting",
-      "description": "As part of your study of magic, you gain the ability to cast spells at 3rd level. The spells you learn are limited in scope, primarily concerned with modifying creatures and objects or creating items. Spell Slots: The Artificer table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher."
+      "description": "You have learned how to channel magical energy through objects. See the Player's Handbook for the rules on spellcasting. The information below details how you use those rules with Artificer spells, which appear in the Artificer spell list later in the class's description. Tools Required: You produce your Artificer spells through tools."
     },
     {
-      "name": "Infuse Magic",
-      "description": "Starting at 4th level, you gain the ability to channel your artificer spells into objects for later use. When you cast an artificer spell with a casting time of 1 action, you can increase its casting time to 1 minute. If you do so and hold a nonmagical item throughout the casting, you expend a spell slot, but none of the spell's effects occur."
+      "name": "Tinker's Magic",
+      "description": "You know the Mending cantrip. As a Magic action while holding Tinker's Tools, you can create one item in an unoccupied space within 5 feet of yourself, choosing the item from the following list: Ball Bearings Basket Bedroll Bell Blanket Block and Tackle Glass Bottle Bucket Caltrops Candle Crowbar Flask Grappling Hook Hunting Trap Jug Lamp Manacles Net Oil Paper Parchment Pole Pouch Rope Sack Sh..."
+    },
+    {
+      "name": "Replicate Magic Item",
+      "description": "You have learned arcane plans that you use to make magic items. Plans Known: When you gain this feature, choose four plans to learn from the Magic Item Plans (Artificer Level 2+) table (see the Dungeon Master's Guide for the items' descriptions). Bag of Holding, Cap of Water Breathing, Sending Stones, and +1 Wand of the War Mage are recommended."
+    },
+    {
+      "name": "Artificer Subclass",
+      "description": "You gain an Artificer subclass of your choice. The Alchemist, Armorer, Artillerist, and Battle Smith, and Cartographer subclasses are detailed after this class's description. A subclass is a specialization that grants you features at certain Artificer levels. For the rest of your career, you gain each of your subclass's features that are of your Artificer level or lower."
     },
     {
       "name": "Ability Score Improvement",
-      "description": "When you reach 4th, 8th, 12th, 16th, and 18th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Artificer levels 8, 12, and 16."
     },
     {
-      "name": "Superior Attunement",
-      "description": "At 5th level, your superior understanding of magic items allows you to master their use. You can now attune to up to four, rather than three, magic items at a time. At 15th level, this limit increases to five magic items."
+      "name": "Subclass feature",
+      "description": "You gain a feature from your Artificer Subclass."
     },
     {
-      "name": "Mechanical Servant",
-      "description": "At 6th level, your research and mastery of your craft allow you to produce a mechanical servant. The servant is a construct that obeys your commands without hesitation and functions in combat to protect you. Though magic fuels its creation, the servant is not magical itself."
+      "name": "Magic Item Tinker",
+      "description": "Your Replicate Magic Item feature gains the following options. Charge Magic Item: As a Bonus Action, you can touch a magic item within 5 feet of yourself that you created with Replicate Magic Item and that uses charges. You expend a level 1+ spell slot and recharge the item. The number of charges the item regains is equal to the level of spell slot expended."
+    },
+    {
+      "name": "Flash of Genius",
+      "description": "When you or a creature you can see within 30 feet of you fails an ability check or a saving throw, you can take a Reaction to add a bonus to the roll, potentially causing it to succeed. The bonus equals your Intelligence modifier (minimum of +1). You can take this Reaction a number of times equal to your Intelligence modifier (minimum of once)."
+    },
+    {
+      "name": "Magic Item Adept",
+      "description": "You can now attune to up to four magic items at once."
+    },
+    {
+      "name": "Spell-Storing Item",
+      "description": "Whenever you finish a Long Rest, you can touch one Simple or Martial weapon or one item that you can use as a Spellcasting Focus, and you store a spell in it, choosing a level 1, 2, or 3 Artificer spell that has a casting time of an action and doesn't require a Material component that is consumed by the spell (you needn't have the spell prepared)."
+    },
+    {
+      "name": "Advanced Artifice",
+      "description": "You gain the following benefits. Magic Item Savant: You can now attune to up to five magic items at once. Refreshed Genius: When you finish a Short Rest, you regain one expended use of your Flash of Genius feature."
+    },
+    {
+      "name": "Magic Item Master",
+      "description": "You can now attune to up to six magic items at once."
+    },
+    {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Energy Resistance is recommended."
     },
     {
       "name": "Soul of Artifice",
-      "description": "At 20th level, your understanding of magic items is unmatched, allowing you to mingle your soul with items linked to you. You can attune to up to six magic items at once. In addition, you gain a +1 bonus to all saving throws per magic item you are currently attuned to."
+      "description": "You have developed a mystical connection to your magic items, which you can draw on for aid. You gain the following benefits. Cheat Death: If you're reduced to 0 Hit Points but not killed outright, you can disintegrate any number of Uncommon or Rare magic items created by your Replicate Magic Item feature."
     }
   ],
   "spells": [
     {
+      "name": "Acid Splash",
+      "level": 0,
+      "description": "You create an acidic bubble at a point within range, where it explodes in a 5-foot-radius Sphere [Area of Effect]. Each creature in that Sphere [Area of Effect] must succeed on a Dexterity saving throw or take 1d6 Acid damage. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+    },
+    {
+      "name": "Booming Blade",
+      "level": 0,
+      "description": "You brandish the weapon used in the spell's casting and make a melee attack with it against one creature within 5 feet of you. On a hit, the target suffers the weapon attack's normal effects and then becomes sheathed in booming energy until the start of your next turn. If the target willingly moves 5 feet or more before then, the target takes 1d8 thunder damage, and the spell ends. This spell's damage increases when you reach certain levels."
+    },
+    {
+      "name": "Dancing Lights",
+      "level": 0,
+      "description": "You create up to four torch-size lights within range, making them appear as torches, lanterns, or glowing orbs that hover for the duration. Alternatively, you combine the four lights into one glowing Medium form that is vaguely humanlike. Whichever form you choose, each light sheds Dim Light in a 10-foot radius. As a Bonus Action, you can move the lights up to 60 feet to a space within range."
+    },
+    {
+      "name": "Elementalism",
+      "level": 0,
+      "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]. Doors and shutters being held open by someone or something aren't affected."
+    },
+    {
+      "name": "Fire Bolt",
+      "level": 0,
+      "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell starts burning if it isn't being worn or carried. Cantrip Upgrade: The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
+    },
+    {
+      "name": "Green-Flame Blade",
+      "level": 0,
+      "description": "You brandish the weapon used in the spell's casting and make a melee attack with it against one creature within 5 feet of you. On a hit, the target suffers the weapon attack's normal effects, and you can cause green fire to leap from the target to a different creature of your choice that you can see within 5 feet of it. The second creature takes fire damage equal to your spellcasting ability modifier. This spell's damage increases when you reach certain levels."
+    },
+    {
+      "name": "Guidance",
+      "level": 0,
+      "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "description": "You touch one Large or smaller object that isn't being worn or carried by someone else. Until the spell ends, the object sheds Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. The light can be colored as you like. Covering the object with something opaque blocks the light. The spell ends if you cast it again."
+    },
+    {
+      "name": "Lightning Lure",
+      "level": 0,
+      "description": "You create a lash of lightning energy that strikes at one creature of your choice that you can see within 15 feet of you. The target must succeed on a Strength saving throw or be pulled up to 10 feet in a straight line toward you and then take 1d8 lightning damage if it is within 5 feet of you. This spell's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8)."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. When you cast the spell, you can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial. As a Magic action on your later turns, you can control the hand thus again."
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin. As long as the break or tear is no larger than 1 foot in any dimension, you mend it, leaving no trace of the former damage. This spell can physically repair a magic item, but it can't restore magic to such an object."
+    },
+    {
+      "name": "Message",
+      "level": 0,
+      "description": "You point toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear. You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence; 1 foot of stone, metal, or wood; or a thin sheet of lead blocks the spell."
+    },
+    {
+      "name": "Poison Spray",
+      "level": 0,
+      "description": "You spray toxic mist at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d12 Poison damage. Cantrip Upgrade: The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12)."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "description": "You create a magical effect within range. Choose the effect from the options below. If you cast this spell multiple times, you can have up to three of its non-instantaneous effects active at a time. Sensory Effect: You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. Fire Play: You instantaneously light or snuff out a candle, a torch, or a small campfire."
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+    },
+    {
+      "name": "Resistance",
+      "level": 0,
+      "description": "You touch a willing creature and choose a damage type: Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder. When the creature takes damage of the chosen type before the spell ends, the creature reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn."
+    },
+    {
+      "name": "Shocking Grasp",
+      "level": 0,
+      "description": "Lightning springs from you to a creature that you try to touch. Make a melee spell attack against the target. On a hit, the target takes 1d8 Lightning damage, and it can't make Opportunity Attack until the start of its next turn. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+    },
+    {
+      "name": "Spare the Dying",
+      "level": 0,
+      "description": "Choose a creature within range that has 0 Hit Points and isn't dead. The creature becomes Stable. Cantrip Upgrade: The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)."
+    },
+    {
+      "name": "Sword Burst",
+      "level": 0,
+      "description": "You create a momentary circle of spectral blades that sweep around you. All other creatures within 5 feet of you must succeed on a Dexterity saving throw or take 1d6 force damage. This spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6)."
+    },
+    {
+      "name": "Thorn Whip",
+      "level": 0,
+      "description": "You create a vine-like whip covered in thorns that lashes out at your command toward a creature in range. Make a melee spell attack against the target. On a hit, the target takes 1d6 Piercing damage, and if it is Large or smaller, you can pull it up to 10 feet closer to you. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+    },
+    {
+      "name": "Thunderclap",
+      "level": 0,
+      "description": "Each creature in a 5-foot Emanation [Area of Effect] originating from you must succeed on a Constitution saving throw or take 1d6 Thunder damage. The spell's thunderous sound can be heard up to 100 feet away. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+    },
+    {
+      "name": "True Strike",
+      "level": 0,
+      "description": "Guided by a flash of magical insight, you make one attack with the weapon used in the spell's casting. The attack uses your spellcasting ability for the attack and damage rolls instead of using Strength or Dexterity. If the attack deals damage, it can be Radiant damage or the weapon's normal damage type (your choice). Cantrip Upgrade: Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6)."
+    },
+    {
       "name": "Alarm",
       "level": 1,
-      "description": "You set an alarm against unwanted intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot cube. Until the spell ends, an alarm alerts you whenever a tiny or larger creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is mental or audible. A mental alarm alerts you with a ping in your mind if you are within 1 mile of the warded area."
+      "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is audible or mental: Audible Alarm: The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area."
     },
     {
       "name": "Cure Wounds",
       "level": 1,
-      "description": "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st."
+      "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "description": "For the duration, you sense the presence of magical effects within 30 feet of yourself. If you sense such effects, you can take the Magic action to see a faint aura around any visible creature or object in the area that bears the magic, and if an effect was created by a spell, you learn the spell's school of magic. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
     },
     {
       "name": "Disguise Self",
       "level": 1,
-      "description": "You make yourself, including your clothing, armor, weapons, and other belongings on your person, look different until the spell ends or until you use your action to dismiss it. You can seem 1 foot shorter or taller and can appear thin, fat, or in between. You can't change your body type, so you must adopt a form that has the same basic arrangement of limbs. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
+      "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
     },
     {
       "name": "Expeditious Retreat",
       "level": 1,
-      "description": "This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action."
+      "description": "You take the Dash action, and until the spell ends, you can take that action again as a Bonus Action."
+    },
+    {
+      "name": "Faerie Fire",
+      "level": 1,
+      "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed Dim Light in a 10-foot radius and can't benefit from the Invisible condition. Attack rolls against an affected creature or object have Advantage if the attacker can see it."
     },
     {
       "name": "False Life",
       "level": 1,
-      "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4+4 temporary hit points for the duration. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, you gain 5 additional temporary hit points for each slot level above 1st."
+      "description": "You gain 2d4 + 4 Temporary Hit Points. Using a Higher-Level Spell Slot: You gain 5 additional Temporary Hit Points for each spell slot level above 1."
+    },
+    {
+      "name": "Feather Fall",
+      "level": 1,
+      "description": "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If a creature lands before the spell ends, the creature takes no damage from the fall, and the spell ends for that creature."
+    },
+    {
+      "name": "Grease",
+      "level": 1,
+      "description": "Nonflammable grease covers the ground in a 10-foot square centered on a point within range and turns it into Difficult Terrain for the duration. When the grease appears, each creature standing in its area must succeed on a Dexterity saving throw or have the Prone condition. A creature that enters the area or ends its turn there must also succeed on that save or fall Prone."
+    },
+    {
+      "name": "Identify",
+      "level": 1,
+      "description": "You touch an object throughout the spell's casting. If the object is a magic item or some other magical object, you learn its properties and how to use them, whether it requires Attunement, and how many charges it has, if any. You learn whether any ongoing spells are affecting the item and what they are. If the item was created by a spell, you learn that spell's name. If you instead touch a creature throughout the casting, you learn which ongoing spells, if any, are currently affecting it."
     },
     {
       "name": "Jump",
       "level": 1,
-      "description": "You touch a creature. The creature's jump distance is tripled until the spell ends."
+      "description": "You touch a willing creature. Once on each of its turns until the spell ends, that creature can jump up to 30 feet by spending 10 feet of movement. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
     },
     {
       "name": "Longstrider",
       "level": 1,
-      "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. At Higher Levels: When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st."
+      "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
+    },
+    {
+      "name": "Purify Food and Drink",
+      "level": 1,
+      "description": "You remove poison and rot from nonmagical food and drink in a 5-foot-radius Sphere [Area of Effect] centered on a point within range."
     },
     {
       "name": "Sanctuary",
       "level": 1,
-      "description": "You ward a creature within range against attack. Until the spell ends, any creature who targets the warded creature with an attack or a harmful spell must first make a Wisdom saving throw. On a failed save, the creature must choose a new target or lose the attack or spell. This spell doesn't protect the warded creature from area effects, such as the explosion of a fireball. If the warded creature makes an attack or casts a spell that affects an enemy creature, this spell ends."
+      "description": "You ward a creature within range. Until the spell ends, any creature who targets the warded creature with an attack roll or a damaging spell must succeed on a Wisdom saving throw or either choose a new target or lose the attack or spell. This spell doesn't protect the warded creature from areas of effect. The spell ends if the warded creature makes an attack roll, casts a spell, or deals damage."
     },
     {
-      "name": "Shield of Faith",
+      "name": "Tasha's Caustic Brew",
       "level": 1,
-      "description": "A shimmering field appears and surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+      "description": "A stream of acid emanates from you in a line 30 feet long and 5 feet wide in a direction you choose. Each creature in the line must succeed on a Dexterity saving throw or be covered in acid for the spell's duration or until a creature uses its action to scrape or wash the acid off itself or another creature. A creature covered in the acid takes 2d4 acid damage at start of each of its turns."
     },
     {
       "name": "Aid",
       "level": 2,
-      "description": "Your spell bolsters your allies with toughness and resolve. Choose up to three creatures within range. Each target's hit point maximum and current hit points increase by 5 for the duration. At Higher Levels: When you cast this spell using a spell slot of 3rd level or higher, a target's hit points increase by an additional 5 for each slot level above 2nd."
+      "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration. Using a Higher-Level Spell Slot: Each target's Hit Points increase by 5 for each spell slot level above 2."
+    },
+    {
+      "name": "Air Bubble",
+      "level": 2,
+      "description": "You create a spectral globe around the head of a willing creature you can see within range. The globe is filled with fresh air that lasts until the spell ends. If the creature has more than one head, the globe of air appears around only one of its heads (which is all the creature needs to avoid suffocation, assuming that all its heads share the same respiratory system)."
     },
     {
       "name": "Alter Self",
       "level": 2,
-      "description": "You assume a different form. When you cast the spell, choose one of the following options, the effects of which last for the duration of the spell. While the spell lasts, you can end one option as an action to gain the benefits of a different one. Aquatic Adaptation: You adapt your body to an aquatic environment, sprouting gills, and growing webbing between your fingers. You can breathe underwater and gain a swimming speed equal to your walking speed."
+      "description": "You alter your physical form. Choose one of the following options. Its effects last for the duration, during which you can take a Magic action to replace the option you chose with a different one. Aquatic Adaptation: You sprout gills and grow webs between your fingers. You can breathe underwater and gain a Swim Speed equal to your Speed. Change Appearance: You alter your appearance."
     },
     {
       "name": "Arcane Lock",
       "level": 2,
-      "description": "You touch a closed door, window, gate, chest, or other entryway, and it becomes locked for the duration. You and the creatures you designate when you cast this spell can open the object normally. You can also set a password that, when spoken within 5 feet of the object, suppresses this spell for 1 minute. Otherwise, it is impassable until it is broken or the spell is dispelled or suppressed. Casting knock on the object suppresses arcane lock for 10 minutes."
+      "description": "You touch a closed door, window, gate, container, or hatch and magically lock it for the duration. This lock can't be unlocked by any nonmagical means. You and any creatures you designate when you cast the spell can open and close the object despite the lock. You can also set a password that, when spoken within 5 feet of the object, unlocks it for 1 minute."
+    },
+    {
+      "name": "Arcane Vigor",
+      "level": 2,
+      "description": "You tap into your life force to heal yourself. Roll one or two of your unexpended Hit Point Dice, and regain a number of Hit Points equal to the roll's total plus your spellcasting ability modifier. Those dice are then expended. Using a Higher-Level Spell Slot: The number of unexpended Hit Dice you can roll increases by one for each spell slot level above 2."
     },
     {
       "name": "Blur",
       "level": 2,
-      "description": "Your body becomes blurred, shifting and wavering to all who can see you. For the duration, any creature has disadvantage on attack rolls against you. An attacker is immune to this effect if it doesn't rely on sight, as with blindsight, or can see through illusions, as with truesight."
+      "description": "Your body becomes blurred. For the duration, any creature has Disadvantage on attack rolls against you. An attacker is immune to this effect if it perceives you with Blindsight or Truesight."
     },
     {
       "name": "Continual Flame",
       "level": 2,
-      "description": "A flame, equivalent in brightness to a torch, springs forth from an object that you touch. The effect looks like a regular flame, but it creates no heat and doesn't use oxygen. A continual flame can be covered or hidden but not smothered or quenched."
+      "description": "A flame springs from an object that you touch. The effect casts Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. It looks like a regular flame, but it creates no heat and consumes no fuel. The flame can be covered or hidden but not smothered or quenched."
     },
     {
       "name": "Darkvision",
       "level": 2,
-      "description": "You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has darkvision out to a range of 60 feet."
+      "description": "For the duration, a willing creature you touch has Darkvision with a range of 150 feet."
+    },
+    {
+      "name": "Dragon's Breath",
+      "level": 2,
+      "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone [Area of Effect]. Each creature in that area makes a Dexterity saving throw, taking 3d6 damage of the chosen type on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: The damage increases by 3d6 for each spell slot level above 2."
     },
     {
       "name": "Enhance Ability",
       "level": 2,
-      "description": "You touch a creature and bestow upon it a magical enhancement. Choose one of the following effects; the target gains the effect until the spell ends. Bear's Endurance: The target has advantage on Constitution checks. It also gains 2d6 temporary hit points, which are lost when the spell ends. Bull's Strength: The target has advantage on Strength checks, and his or her carrying capacity doubles. Cat's Grace: The target has advantage on Dexterity checks."
+      "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
     },
     {
       "name": "Enlarge/Reduce",
       "level": 2,
-      "description": "You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either a creature or an object that is neither worn nor carried. If the target is unwilling, it can make a Constitution saving throw. On a success, the spell has no effect. If the target is a creature, everything it is wearing and carrying changes size with it. Any item dropped by an affected creature returns to normal size at once. Enlarge."
+      "description": "For the duration, the spell enlarges or reduces a creature or an object you can see within range (see the chosen effect below). A targeted object must be neither worn nor carried. If the target is an unwilling creature, it can make a Constitution saving throw. On a successful save, the spell has no effect. Everything that a targeted creature is wearing and carrying changes size with it. Any item it drops returns to normal size at once."
+    },
+    {
+      "name": "Heat Metal",
+      "level": 2,
+      "description": "Choose a manufactured metal object, such as a metal weapon or a suit of Heavy or Medium metal armor, that you can see within range. You cause the object to glow red-hot. Any creature in physical contact with the object takes 2d8 Fire damage when you cast the spell. Until the spell ends, you can take a Bonus Action on each of your later turns to deal this damage again if the object is within range."
+    },
+    {
+      "name": "Homunculus Servant",
+      "level": 2,
+      "description": "You summon a special homunculus in an unoccupied space within range. This creature uses the Homunculus Servant stat block. If you already have a homunculus from this spell, the homunculus is replaced by the new one. You determine the homunculus's appearance, such as a mechanical-looking bird, winged vial, or miniature animate cauldron. Combat: The homunculus is an ally to you and your allies. In combat, it shares your Initiative count, but it takes its turn immediately after yours."
     },
     {
       "name": "Invisibility",
       "level": 2,
-      "description": "A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target's person. The spell ends for a target that attacks or casts a spell. At Higher Levels: When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd."
+      "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
+    },
+    {
+      "name": "Kinetic Jaunt",
+      "level": 2,
+      "description": "You magically empower your movement with dance-like steps, giving yourself the following benefits for the duration. Your walking speed increases by 10 feet. You don't provoke opportunity attacks. You can move through the space of another creature, and it doesn't count as difficult terrain. If you end your turn in another creature's space, you are shunted to the last unoccupied space you occupied, and you take 1d8 force damage."
     },
     {
       "name": "Lesser Restoration",
       "level": 2,
-      "description": "You touch a creature and can end either one disease or one condition afflicting it. The condition can be blinded, deafened, paralyzed, or poisoned."
+      "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+    },
+    {
+      "name": "Levitate",
+      "level": 2,
+      "description": "One creature or loose object of your choice that you can see within range rises vertically up to 20 feet and remains suspended there for the duration. The spell can levitate an object that weighs up to 500 pounds. An unwilling creature that succeeds on a Constitution saving throw is unaffected. The target can move only by pushing or pulling against a fixed object or surface within reach (such as a wall or a ceiling), which allows it to move as if it were climbing."
+    },
+    {
+      "name": "Magic Mouth",
+      "level": 2,
+      "description": "You implant a message within an object in range—a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
     },
     {
       "name": "Magic Weapon",
       "level": 2,
-      "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. At Higher Levels: When you cast this spell using a spell slot of 4th level or higher, the bonus increases to +2. When you use a spell slot of 6th level or higher, the bonus increases to +3."
+      "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again. Using a Higher-Level Spell Slot: The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
     },
     {
       "name": "Protection from Poison",
       "level": 2,
-      "description": "You touch a creature. If it is poisoned, you neutralize the poison. If more than one poison afflicts the target, you neutralize one poison that you know is present, or you neutralize one at random. For the duration, the target has advantage on saving throws against being poisoned, and it has resistance to poison damage."
+      "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
     },
     {
       "name": "Rope Trick",
       "level": 2,
-      "description": "You touch a length of rope that is up to 60 feet long. One end of the rope then rises into the air until the whole rope hangs perpendicular to the ground. At the upper end of the rope, an invisible entrance opens to an extradimensional space that lasts until the spell ends. The extradimensional space can be reached by climbing to the top of the rope. The space can hold as many as eight Medium or smaller creatures."
+      "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends. That space can be reached by climbing the rope, which can be pulled into or dropped out of it. The space can hold up to eight Medium or smaller creatures."
+    },
+    {
+      "name": "See Invisibility",
+      "level": 2,
+      "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
     },
     {
       "name": "Spider Climb",
       "level": 2,
-      "description": "Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free. The target also gains a climbing speed equal to its walking speed."
+      "description": "Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and along ceilings, while leaving its hands free. The target also gains a Climb Speed equal to its Speed. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
+    },
+    {
+      "name": "Vortex Warp",
+      "level": 2,
+      "description": "You magically twist space around another creature you can see within range. The target must succeed on a Constitution saving throw (the target can choose to fail), or the target is teleported to an unoccupied space of your choice that you can see within range. The chosen space must be on a surface or in a liquid that can support the target without the target having to squeeze."
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "description": "You conjure a mass of sticky webbing at a point within range. The webs fill a 20-foot Cube [Area of Effect] there for the duration. The webs are Difficult Terrain, and the area within them is Lightly Obscured. If the webs aren't anchored between two solid masses (such as walls or trees) or layered across a floor, wall, or ceiling, the web collapses on itself, and the spell ends at the start of your next turn. Webs layered over a flat surface have a depth of 5 feet."
     },
     {
       "name": "Blink",
       "level": 3,
-      "description": "Roll a d20 at the end of each of your turns for the duration of the spell. On a roll of 11 or higher, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell fails and the casting is wasted if you were already on that plane). At the start of you next turn, and when the spell ends if you are on the Ethereal Plane, you return to an unoccupied space of your choice that you can see within 10 feet of the space you vanished from."
+      "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane). While on the Ethereal Plane, you can perceive the plane you left, which is cast in shades of gray, but you can't see anything there more than 60 feet away."
+    },
+    {
+      "name": "Create Food and Water",
+      "level": 3,
+      "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
+    },
+    {
+      "name": "Elemental Weapon",
+      "level": 3,
+      "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
     },
     {
       "name": "Fly",
       "level": 3,
-      "description": "You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall. At Higher Levels: When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd."
-    },
-    {
-      "name": "Gaseous Form",
-      "level": 3,
-      "description": "You transform a willing creature you touch, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends if the creature drops to 0 hit points. An incorporeal creature isn't affected. While in this form, the target's only method of movement is a flying speed of 10 feet. The target can enter and occupy the space of another creature. The target has resistance to nonmagical damage, and it has advantage on Strength, Dexterity, and Constitution saving throws."
+      "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 3."
     },
     {
       "name": "Glyph of Warding",
       "level": 3,
-      "description": "When you cast this spell, you inscribe a glyph that affects other creatures, either upon a surface (such as a table or a section of floor or wall) or within an object that can be closed (such as a book, a scroll, or a treasure chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter. If the surface or object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered."
+      "description": "You inscribe a glyph that later unleashes a magical effect. You inscribe it either on a surface (such as a table or a section of floor) or within an object that can be closed (such as a book or chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter. If the surface or object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered."
     },
     {
       "name": "Haste",
       "level": 3,
-      "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action. When the spell ends, the target can't move or take actions until after its next turn, as a wave of lethargy sweeps over it."
+      "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns. That action can be used to take only the Attack (one attack only), Dash, Disengage, Hide, or Utilize action. When the spell ends, the target is Incapacitated and has a Speed of 0 until the end of its next turn, as a wave of lethargy washes over it."
+    },
+    {
+      "name": "Intellect Fortress",
+      "level": 3,
+      "description": "For the duration, you or one willing creature you can see within range has resistance to psychic damage, as well as advantage on Intelligence, Wisdom, and Charisma saving throws. At Higher Levels: When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd. The creatures must be within 30 feet of each other when you target them."
+    },
+    {
+      "name": "Linked Glyphs",
+      "level": 3,
+      "description": "When you cast this spell, you inscribe a detection glyph that later activates a magical effect at the site of a separate, linked glyph. You inscribe the detection glyph either on a surface (such as a table or a section of floor or wall) or within an object that can be closed (such as a book, a scroll, or a treasure chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter."
     },
     {
       "name": "Protection from Energy",
       "level": 3,
-      "description": "For the duration, the willing creature you touch has resistance to one damage type of your choice: acid, cold, fire, lightning, or thunder."
+      "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
     },
     {
       "name": "Revivify",
       "level": 3,
-      "description": "You touch a creature that has died within the last minute. That creature returns to life with 1 hit point. This spell can't return to life a creature that has died of old age, nor can it restore any missing body parts."
+      "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
     },
     {
       "name": "Water Breathing",
       "level": 3,
-      "description": "This spell grants up to ten willing creatures you can see within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
+      "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
     },
     {
       "name": "Water Walk",
       "level": 3,
-      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures you can see within range gain this ability for the duration. If your target a creature submerged in a liquid, the spell carries the target to the surface of the liquid at a rate of 60 feet per round."
+      "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
     },
     {
       "name": "Arcane Eye",
       "level": 4,
-      "description": "You create an invisible, magical eye within range that hovers in the air for the duration. You mentally receive visual information from the eye, which has normal vision and darkvision out to 30 feet. The eye can look in every direction. As an action, you can move the eye up to 30 feet in any direction. There is no limit to how far away from you the eye can move, but it can't enter another plane of existence."
-    },
-    {
-      "name": "Death Ward",
-      "level": 4,
-      "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 hit points as a result of taking damage, the target instead drops to 1 hit point, and the spell ends. If the spell is still in effect when the target is subjected to an effect that would kill it instantaneously without dealing damage, that effect is instead negated against the target, and the spells ends."
+      "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction. A solid barrier blocks the eye's movement, but the eye can pass through an opening as small as 1 inch in diameter."
     },
     {
       "name": "Fabricate",
       "level": 4,
-      "description": "You convert raw materials into products of the same material. For example, you can fabricate a wooden bridge from a clump of trees, a rope from a patch of hemp, and clothes from flax or wool. Choose raw materials that you can see within range. You can fabricate a Large or smaller object (contained within a 10-foot cube, or eight connected 5-foot cubes), given a sufficient quantity of raw material."
+      "description": "You convert raw materials into products of the same material. For example, you can fabricate a wooden bridge from a clump of trees, a rope from a patch of hemp, or clothes from flax or wool. Choose raw materials that you can see within range. You can fabricate a Large or smaller object (contained within a 10-foot Cube [Area of Effect] or eight connected 5-foot Cubes) given a sufficient quantity of material."
     },
     {
       "name": "Freedom of Movement",
       "level": 4,
-      "description": "You touch a willing creature. For the duration, the target's movement is unaffected by difficult terrain, and spells and other magical effects can neither reduce the target's speed nor cause the target to be paralyzed or restrained. The target can also spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature that has it grappled. Finally, being underwater imposes no penalties on the target's movement or attacks."
+      "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions. The target also has a Swim Speed equal to its Speed. In addition, the target can spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature imposing the Grappled condition on it."
     },
     {
       "name": "Leomund's Secret Chest",
       "level": 4,
-      "description": "You hide a chest, and all its contents, on the Ethereal Plane. You must touch the chest and the miniature replica that serves as a material component for the spell. The chest can contain up to 12 cubic feet of nonliving material (3 feet by 2 feet by 2 feet). While the chest remains on the Ethereal Plane, you can use an action and touch the replica to recall the chest. It appears in an unoccupied space on the ground within 5 feet of you."
+      "description": "You hide a chest and all its contents on the Ethereal Plane. You must touch the chest and the miniature replica that serve as Material components for the spell. The chest can contain up to 12 cubic feet of nonliving material (3 feet by 2 feet by 2 feet). While the chest remains on the Ethereal Plane, you can take a Magic action and touch the replica to recall the chest. It appears in an unoccupied space on the ground within 5 feet of you."
     },
     {
       "name": "Mordenkainen's Faithful Hound",
       "level": 4,
-      "description": "You conjure a phantom watchdog in an unoccupied space that you can see within range, where it remains for the duration, until you dismiss it as an action, or until you move more than 100 feet away from it. The hound is invisible to all creatures except you and can't be harmed. When a Small or larger creature comes within 30 feet of it without first speaking the password that you specify when you cast this spell, the hound starts barking loudly."
+      "description": "You conjure a phantom watchdog in an unoccupied space that you can see within range. The hound remains for the duration or until the two of you are more than 300 feet apart from each other. No one but you can see the hound, and it is intangible and invulnerable. When a Small or larger creature comes within 30 feet of it without first speaking the password that you specify when you cast this spell, the hound starts barking loudly. The hound has Truesight with a range of 30 feet."
     },
     {
       "name": "Mordenkainen's Private Sanctum",
       "level": 4,
-      "description": "You make an area within range magically secure. The area is a cube that can be as small as 5 feet to as large as 100 feet on each side. The spell lasts for the duration or until you use an action to dismiss it. When you cast the spell, you decide what sort of security the spell provides, choosing any or all of the following properties. - Sound can't pass through the barrier at the edge of the warded area."
+      "description": "You make an area within range magically secure. The area is a Cube [Area of Effect] that can be as small as 5 feet to as large as 100 feet on each side. The spell lasts for the duration. When you cast the spell, you decide what sort of security the spell provides, choosing any of the following properties: Sound can't pass through the barrier at the edge of the warded area. The barrier of the warded area appears dark and foggy, preventing vision (including Darkvision) through it."
     },
     {
       "name": "Otiluke's Resilient Sphere",
       "level": 4,
-      "description": "A sphere of shimmering force encloses a creature or object of Large size or smaller within range. An unwilling creature must make a Dexterity saving throw. On a failed save, the creature is enclosed for the duration. Nothing, not physical objects, energy, or other spell effects, can pass through the barrier, in or out, though a creature in the sphere can breathe there."
+      "description": "A shimmering sphere encloses a Large or smaller creature or object within range. An unwilling creature must succeed on a Dexterity saving throw or be enclosed for the duration. Nothing—not physical objects, energy, or other spell effects—can pass through the barrier, in or out, though a creature in the sphere can breathe there."
     },
     {
       "name": "Stone Shape",
       "level": 4,
-      "description": "You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape that suits your purpose. So, for example, you could shape a large rock into a weapon, idol, or coffer, or make a small passage through a wall, as long as the wall is less than 5 feet thick. You could also shape a stone door or its frame to seal the door shut."
+      "description": "You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape you like. For example, you could shape a large rock into a weapon, statue, or coffer, or you could make a small passage through a wall that is 5 feet thick. You could also shape a stone door or its frame to seal the door shut. The object you create can have up to two hinges and a latch, but finer mechanical detail isn't possible."
     },
     {
       "name": "Stoneskin",
       "level": 4,
-      "description": "This spell turns the flesh of a willing creature you touch as hard as stone. Until the spell ends, the target has resistance to nonmagical bludgeoning, piercing, and slashing damage."
+      "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
+    },
+    {
+      "name": "Summon Construct",
+      "level": 4,
+      "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone. The creature resembles an animate statue (you determine the appearance) made of the chosen material, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
+    },
+    {
+      "name": "Animate Objects",
+      "level": 5,
+      "description": "Objects animate at your command. Choose a number of nonmagical objects within range that aren't being worn or carried, aren't fixed to a surface, and aren't Gargantuan. The maximum number of objects is equal to your spellcasting ability modifier; for this number, a Medium or smaller target counts as one object, a Large target counts as two, and a Huge target counts as three."
+    },
+    {
+      "name": "Bigby's Hand",
+      "level": 5,
+      "description": "You create a Large hand of shimmering magical energy in an unoccupied space that you can see within range. The hand lasts for the duration, and it moves at your command, mimicking the movements of your own hand. The hand is an object that has AC 20 and Hit Points equal to your Hit Points maximum. If it drops to 0 Hit Points, the spell ends. The hand doesn't occupy its space."
+    },
+    {
+      "name": "Circle of Power",
+      "level": 5,
+      "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Advantage on saving throws against spells and other magical effects. When an affected creature makes a saving throw against a spell or magical effect that allows a save to take only half damage, it takes no damage if it succeeds on the save."
+    },
+    {
+      "name": "Create Spelljamming Helm",
+      "level": 5,
+      "description": "Holding the rod used in the casting of the spell, you touch a Large or smaller chair that is unoccupied. The rod disappears, and the chair is transformed into a spelljamming helm."
+    },
+    {
+      "name": "Creation",
+      "level": 5,
+      "description": "You pull wisps of shadow material from the Shadowfell to create an object within range. It is either an object of vegetable matter (soft goods, rope, wood, and the like) or mineral matter (stone, crystal, metal, and the like). The object must be no larger than a 5-foot Cube [Area of Effect], and the object must be of a form and material that you have seen. The spell's duration depends on the object's material, as shown in the Materials table."
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+    },
+    {
+      "name": "Wall of Stone",
+      "level": 5,
+      "description": "A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with another panel. Alternatively, you can create 10-foot-by-20-foot panels that are only 3 inches thick. If the wall cuts through a creature's space when it appears, the creature is pushed to one side of the wall (you choose which side)."
     }
   ],
   "levels": [
     {
       "features": [
-        "Artificer Specialist",
-        "Magic Item Analysis"
-      ]
-    },
-    {
-      "features": [
-        "Tool Expertise",
-        "Wondrous Invention"
-      ]
-    },
-    {
-      "features": [
-        "Masterwork Feature",
-        "Spellcasting"
+        "Spellcasting",
+        "Tinker's Magic"
       ],
       "spell_slots": [
         2
       ],
-      "spells_known": 3
+      "cantrips_known": 2
     },
     {
       "features": [
-        "Infuse Magic",
-        "Ability Score Improvement"
+        "Replicate Magic Item"
       ],
       "spell_slots": [
-        3
-      ],
-      "spells_known": 4
-    },
-    {
-      "features": [
-        "Superior Attunement",
-        "Wondrous Invention"
-      ],
-      "spell_slots": [
-        3
-      ],
-      "spells_known": 4
-    },
-    {
-      "features": [
-        "Mechanical Servant"
-      ],
-      "spell_slots": [
-        3
-      ],
-      "spells_known": 4
-    },
-    {
-      "features": [],
-      "spell_slots": [
-        4,
         2
       ],
-      "spells_known": 5
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Artificer Subclass"
+      ],
+      "spell_slots": [
+        3
+      ],
+      "cantrips_known": 2
     },
     {
       "features": [
         "Ability Score Improvement"
       ],
       "spell_slots": [
-        4,
-        2
+        3
       ],
-      "spells_known": 6
+      "cantrips_known": 2
     },
     {
       "features": [
-        "Masterwork Feature"
+        "Subclass feature"
       ],
       "spell_slots": [
         4,
         2
       ],
-      "spells_known": 6
+      "cantrips_known": 2
     },
     {
       "features": [
-        "Wondrous Invention"
+        "Magic Item Tinker"
+      ],
+      "spell_slots": [
+        4,
+        2
+      ],
+      "cantrips_known": 2
+    },
+    {
+      "features": [
+        "Flash of Genius"
       ],
       "spell_slots": [
         4,
         3
       ],
-      "spells_known": 7
-    },
-    {
-      "features": [],
-      "spell_slots": [
-        4,
-        3
-      ],
-      "spells_known": 8
+      "cantrips_known": 2
     },
     {
       "features": [
@@ -376,39 +609,40 @@
         4,
         3
       ],
-      "spells_known": 8
-    },
-    {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        2
-      ],
-      "spells_known": 9
+      "cantrips_known": 2
     },
     {
       "features": [
-        "Masterwork Feature"
+        "Subclass feature"
       ],
       "spell_slots": [
         4,
         3,
         2
       ],
-      "spells_known": 10
+      "cantrips_known": 2
     },
     {
       "features": [
-        "Superior Attunement",
-        "Wondrous Invention"
+        "Magic Item Adept"
       ],
       "spell_slots": [
         4,
         3,
         2
       ],
-      "spells_known": 10
+      "cantrips_known": 3
+    },
+    {
+      "features": [
+        "Spell-Storing Item"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3
+      ],
+      "cantrips_known": 3
     },
     {
       "features": [
@@ -419,29 +653,7 @@
         3,
         3
       ],
-      "spells_known": 11
-    },
-    {
-      "features": [
-        "Masterwork Feature"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3
-      ],
-      "spells_known": 11
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3
-      ],
-      "spells_known": 11
+      "cantrips_known": 3
     },
     {
       "features": [],
@@ -451,7 +663,80 @@
         3,
         1
       ],
-      "spells_known": 12
+      "cantrips_known": 3
+    },
+    {
+      "features": [
+        "Advanced Artifice"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Subclass feature"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Magic Item Master"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      "cantrips_known": 4
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ],
+      "spell_slots": [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      "cantrips_known": 4
     },
     {
       "features": [
@@ -461,9 +746,622 @@
         4,
         3,
         3,
-        1
+        3,
+        2
       ],
-      "spells_known": 13
+      "cantrips_known": 4
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Alchemist",
+      "description": "Craft Magic Elixirs and Potions An Alchemist is an expert at combining reagents to produce magical effects. Alchemists use their creations to give life and to leech it away.",
+      "features": [
+        {
+          "name": "Alchemist",
+          "description": "Craft Magic Elixirs and Potions An Alchemist is an expert at combining reagents to produce magical effects. Alchemists use their creations to give life and to leech it away."
+        },
+        {
+          "name": "Alchemist Spells",
+          "description": "When you reach an Artificer level specified in the Alchemist Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Experimental Elixir",
+          "description": "Whenever you finish a Long Rest while holding Alchemist's Supplies, you can use that tool to magically produce two elixirs. For each elixir, roll on the Experimental Elixir table for the elixir's effect, which is triggered when someone drinks the elixir. The elixir appears in a vial, and the vial vanishes when the elixir is drunk or poured out."
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": "You gain the following benefits. Tool Proficiency: You gain proficiency with Alchemist's Supplies and the Herbalism Kit. If you already have one of these proficiencies, you gain proficiency with one other type of Artisan's Tools of your choice (or with two other types if you have both)."
+        },
+        {
+          "name": "Alchemical Savant",
+          "description": "Whenever you cast a spell using your Alchemist's Supplies as the Spellcasting Focus, you gain a bonus to one roll of the spell. That roll must restore Hit Points or be a damage roll that deals Acid, Fire, or Poison damage. The bonus equals your Intelligence modifier (minimum bonus of +1)."
+        },
+        {
+          "name": "Restorative Reagents",
+          "description": "You can cast Lesser Restoration without expending a spell slot and without preparing the spell, provided you use Alchemist's Supplies as the Spellcasting Focus. You can do so a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+        },
+        {
+          "name": "Chemical Mastery",
+          "description": "You gain the following benefits. Alchemical Eruption: When you cast an Artificer spell that deals Acid, Fire, or Poison damage to a target, you can also deal 2d8 Force damage to that target. You can use this benefit only once on each of your turns. Chemical Resistance: You gain Resistance to Acid damage and Poison damage. You also gain Immunity to the Poisoned condition."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Alchemist",
+            "Alchemist Spells",
+            "Experimental Elixir",
+            "Tools of the Trade"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Alchemical Savant"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Restorative Reagents"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Chemical Mastery"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Healing Word",
+          "level": 1,
+          "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
+        },
+        {
+          "name": "Ray of Sickness",
+          "level": 1,
+          "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn."
+        },
+        {
+          "name": "Flaming Sphere",
+          "level": 2,
+          "description": "You create a 5-foot-diameter sphere of fire in an unoccupied space on the ground within range. It lasts for the duration. Any creature that ends its turn within 5 feet of the sphere makes a Dexterity saving throw, taking 2d6 Fire damage on a failed save or half as much damage on a successful one."
+        },
+        {
+          "name": "Melf's Acid Arrow",
+          "level": 2,
+          "description": "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 Acid damage and 2d4 Acid damage at the end of its next turn."
+        },
+        {
+          "name": "Gaseous Form",
+          "level": 3,
+          "description": "A willing creature you touch shape-shifts, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends on the target if it drops to 0 Hit Points or if it takes a Magic action to end the spell on itself."
+        },
+        {
+          "name": "Mass Healing Word",
+          "level": 3,
+          "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier."
+        },
+        {
+          "name": "Death Ward",
+          "level": 4,
+          "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends."
+        },
+        {
+          "name": "Vitriolic Sphere",
+          "level": 4,
+          "description": "You point at a location within range, and a glowing, 1-foot-diameter ball of acid streaks there and explodes in a 20-foot-radius Sphere [Area of Effect]. Each creature in that area makes a Dexterity saving throw."
+        },
+        {
+          "name": "Cloudkill",
+          "level": 5,
+          "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow-green fog centered on a point within range. The fog lasts for the duration or until strong wind (such as the one created by Gust of Wind) disperses it, ending the spell. Its area is Heavily Obscured."
+        },
+        {
+          "name": "Raise Dead",
+          "level": 5,
+          "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death."
+        }
+      ]
+    },
+    {
+      "name": "Armorer",
+      "description": "As a Magic action while you have Smith's Tools in hand, you can turn a suit of armor you are wearing into Arcane Armor. The armor continues to be Arcane Armor until you don another suit of armor or you die. You gain the following benefits while wearing your Arcane Armor.",
+      "features": [
+        {
+          "name": "Arcane Armor",
+          "description": "As a Magic action while you have Smith's Tools in hand, you can turn a suit of armor you are wearing into Arcane Armor. The armor continues to be Arcane Armor until you don another suit of armor or you die. You gain the following benefits while wearing your Arcane Armor. No Strength Requirement: If the armor normally has a Strength requirement, the Arcane Armor lacks this requirement for you."
+        },
+        {
+          "name": "Armor Model",
+          "description": "You can customize your Arcane Armor. When you do so, choose one of the following armor models: Dreadnaught, Guardian, or Infiltrator. The model you choose gives you special benefits while you wear it. Each model includes a special weapon. When you attack with that weapon, you can add your Intelligence modifier, instead of your Strength or Dexterity modifier, to the attack and damage rolls."
+        },
+        {
+          "name": "Armorer",
+          "description": "Craft Magic Armor to Enhance Your Abilities An Armorer modifies armor to function almost like a second skin. The armor is enhanced to hone the Armorer's magic, unleash potent attacks, and generate a formidable defense."
+        },
+        {
+          "name": "Armorer Spells",
+          "description": "When you reach an Artificer level specified in the Armorer Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Dreadnaught",
+          "description": "You design your armor to become a towering juggernaut in battle. It has the following features: Force Demolisher: An arcane wrecking ball or sledgehammer projects from your armor. The demolisher counts as a Simple Melee weapon with the R property, and it deals 1d10 Force damage on a hit."
+        },
+        {
+          "name": "Guardian",
+          "description": "You design your armor to be in the front line of conflict. It has the following features:"
+        },
+        {
+          "name": "Infiltrator",
+          "description": "You customize your armor for subtler undertakings. It has the following features: Lightning Launcher: A gemlike node appears on your armor, from which you can shoot bolts of lightning. The launcher counts as a Simple Ranged weapon with a normal range of 90 feet and a long range of 300 feet, and it deals 1d6 Lightning damage on a hit."
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": "You gain the following benefits. Armor Training: You gain training with Heavy armor. Tool Proficiency: You gain proficiency with Smith's Tools. If you already have this tool proficiency, you gain proficiency with one other type of Artisan's Tools of your choice. Armor Crafting: When you craft nonmagical or magic armor, the amount of time required to craft it is halved."
+        },
+        {
+          "name": "Extra Attack",
+          "description": "You can attack twice instead of once whenever you take the Attack action on your turn."
+        },
+        {
+          "name": "Improved Armorer",
+          "description": "You gain the following benefits. Armor Replication: You learn an additional plan for your Replicate Magic Item feature, and it must be in the Armor category. If you replace that plan, you must replace it with another Armor plan. In addition, you can create an additional item with that feature, and the item must also be in the Armor category."
+        },
+        {
+          "name": "Perfected Armor",
+          "description": "Your Arcane Armor gains additional benefits based on its model, as detailed below. Dreadnaught: The damage die of your Force Demolisher increases to 2d6 Force damage. In addition, when you use your Giant Stature, your reach increases by 10 feet, your size can increase to Large or Huge (your choice), and you have Advantage on Strength checks and Strength saving throws for the duration."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Arcane Armor",
+            "Armor Model",
+            "Armorer",
+            "Armorer Spells",
+            "Dreadnaught",
+            "Guardian",
+            "Infiltrator",
+            "Tools of the Trade"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Improved Armorer"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Perfected Armor"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Magic Missile",
+          "level": 1,
+          "description": "You create three glowing darts of magical force. Each dart strikes a creature of your choice that you can see within range. A dart deals 1d4 + 1 Force damage to its target. The darts all strike simultaneously, and you can direct them to hit one creature or several."
+        },
+        {
+          "name": "Thunderwave",
+          "level": 1,
+          "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
+        },
+        {
+          "name": "Mirror Image",
+          "level": 2,
+          "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
+        },
+        {
+          "name": "Shatter",
+          "level": 2,
+          "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
+        },
+        {
+          "name": "Hypnotic Pattern",
+          "level": 3,
+          "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
+        },
+        {
+          "name": "Lightning Bolt",
+          "level": 3,
+          "description": "A stroke of lightning forming a 100-foot-long, 5-foot-wide Line [Area of Effect] blasts out from you in a direction you choose. Each creature in the Line [Area of Effect] makes a Dexterity saving throw, taking 8d6 Lightning damage on a failed save or half as much damage on a successful one."
+        },
+        {
+          "name": "Fire Shield",
+          "level": 4,
+          "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+        },
+        {
+          "name": "Greater Invisibility",
+          "level": 4,
+          "description": "A creature you touch has the Invisible condition until the spell ends."
+        },
+        {
+          "name": "Passwall",
+          "level": 5,
+          "description": "A passage appears at a point that you can see on a wooden, plaster, or stone surface (such as a wall, ceiling, or floor) within range and lasts for the duration. You choose the opening's dimensions: up to 5 feet wide, 8 feet tall, and 20 feet deep."
+        },
+        {
+          "name": "Wall of Force",
+          "level": 5,
+          "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
+        }
+      ]
+    },
+    {
+      "name": "Artillerist",
+      "description": "Wield Destructive Power from Afar An Artillerist specializes in using magic to hurl energy, projectiles, and explosions on a battlefield.",
+      "features": [
+        {
+          "name": "Artillerist",
+          "description": "Wield Destructive Power from Afar An Artillerist specializes in using magic to hurl energy, projectiles, and explosions on a battlefield."
+        },
+        {
+          "name": "Artillerist Spells",
+          "description": "When you reach an Artificer level specified in the Artillerist Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Eldritch Cannon",
+          "description": "Using Smith's Tools or Woodcarver's Tools, you can take a Magic action to create a Small or Tiny Eldritch Cannon in an unoccupied space on a horizontal surface within 5 feet of yourself. You determine its appearance, including whether you carry it or not (and your choice of legs or wheels, for the latter). It disappears if it is reduced to 0 Hit Points or after 1 hour."
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": "You gain the following benefits. Ranged Weaponry: You gain proficiency with Martial Ranged weapons. Tool Proficiency: You gain proficiency with Woodcarver's Tools. If you already have this proficiency, you gain proficiency with one other type of Artisan's Tools of your choice. Wand Crafting: When you craft a magic Wand, the amount of time required to craft it is halved."
+        },
+        {
+          "name": "Arcane Firearm",
+          "description": "When you finish a Long Rest, you can use Woodcarver's Tools to carve special sigils into a Rod, Staff, Wand, or Martial Ranged weapon and thereby turn it into your Arcane Firearm. The sigils disappear from the object if you later carve them on a different item. The sigils otherwise last indefinitely. You can use your Arcane Firearm as a Spellcasting Focus for your Artificer spells."
+        },
+        {
+          "name": "Explosive Cannon",
+          "description": "Every Eldritch Cannon you create is now more destructive. You gain the following benefits. Detonate: When your cannon takes damage, you can take a Reaction to command the cannon to detonate if you are within 60 feet of it."
+        },
+        {
+          "name": "Fortified Position",
+          "description": "You're a master at forming well-defended emplacements using your Eldritch Cannon. You gain the following benefits. Shimmering Field Projection: You and your allies have Cover while within 10 feet of your Eldritch Cannon."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Artillerist",
+            "Artillerist Spells",
+            "Eldritch Cannon",
+            "Tools of the Trade"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Arcane Firearm"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Explosive Cannon"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Fortified Position"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Shield",
+          "level": 1,
+          "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
+        },
+        {
+          "name": "Thunderwave",
+          "level": 1,
+          "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
+        },
+        {
+          "name": "Scorching Ray",
+          "level": 2,
+          "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+        },
+        {
+          "name": "Shatter",
+          "level": 2,
+          "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
+        },
+        {
+          "name": "Fireball",
+          "level": 3,
+          "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
+        },
+        {
+          "name": "Wind Wall",
+          "level": 3,
+          "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration."
+        },
+        {
+          "name": "Ice Storm",
+          "level": 4,
+          "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+        },
+        {
+          "name": "Wall of Fire",
+          "level": 4,
+          "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+        },
+        {
+          "name": "Cone of Cold",
+          "level": 5,
+          "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+        },
+        {
+          "name": "Wall of Force",
+          "level": 5,
+          "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
+        }
+      ]
+    },
+    {
+      "name": "Battle Smith",
+      "description": "Your combat training and your experiments with magic have paid off in two ways. Arcane Empowerment: When you attack with a magic weapon, you can use your Intelligence modifier, instead of your Strength or Dexterity modifier, for the attack and damage rolls.",
+      "features": [
+        {
+          "name": "Battle Ready",
+          "description": "Your combat training and your experiments with magic have paid off in two ways. Arcane Empowerment: When you attack with a magic weapon, you can use your Intelligence modifier, instead of your Strength or Dexterity modifier, for the attack and damage rolls. Weapon Knowledge: You gain proficiency with Martial weapons."
+        },
+        {
+          "name": "Battle Smith",
+          "description": "Command a Construct Guardian A Battle Smith is a combination of protector and medic, an expert at defending others and repairing both materiel and personnel. To aid in their work, Battle Smiths are accompanied by a Steel Defender, a protective companion of their own creation."
+        },
+        {
+          "name": "Battle Smith Spells",
+          "description": "When you reach an Artificer level specified in the Battle Smith Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Steel Defender",
+          "description": "Your tinkering has borne you a companion, a Steel Defender. You determine the defender's appearance and whether it has two legs or four; your choices don't affect the defender's game statistics. The Steel Defender is Friendly [Attitude] to you and your allies and obeys you. It vanishes if you die. The Defender in Combat: In combat, the defender acts during your turn."
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": "You gain the following benefits. Tool Proficiency: You gain proficiency with Smith's Tools. If you already have this proficiency, you gain proficiency with one other type of Artisan's Tools of your choice. Weapon Crafting: When you craft a nonmagical or magic weapon, the amount of time required to craft it is halved."
+        },
+        {
+          "name": "Extra Attack",
+          "description": "You can attack twice instead of once whenever you take the Attack action on your turn. You can forgo one of your attacks when you take the Attack action to command your Steel Defender to take the Force-Empowered Rend action."
+        },
+        {
+          "name": "Arcane Jolt",
+          "description": "When either you hit a target with an attack roll using a magic weapon or your Steel Defender hits a target, you can channel magical energy through the strike to create one of the following effects: Destructive Energy: The target takes an extra 2d6 Force damage. Restorative Energy: Choose one creature or object you can see within 30 feet of the target."
+        },
+        {
+          "name": "Improved Defender",
+          "description": "Your Arcane Jolt and Steel Defender have become more powerful, granting these benefits. Improved Jolt: The extra damage and healing of your Arcane Jolt both increase to 4d6. Improved Deflection: Whenever your Steel Defender uses its Deflect Attack, the attacker takes Force damage equal to 1d4 plus your Intelligence modifier."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Battle Ready",
+            "Battle Smith",
+            "Battle Smith Spells",
+            "Steel Defender",
+            "Tools of the Trade"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Arcane Jolt"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Improved Defender"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Heroism",
+          "level": 1,
+          "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
+        },
+        {
+          "name": "Shield",
+          "level": 1,
+          "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
+        },
+        {
+          "name": "Shining Smite",
+          "level": 2,
+          "description": "The target hit by the strike takes an extra 2d6 Radiant damage from the attack. Until the spell ends, the target sheds Bright Light in a 5-foot radius, attack rolls against it have Advantage, and it can't benefit from the Invisible condition."
+        },
+        {
+          "name": "Warding Bond",
+          "level": 2,
+          "description": "You touch another creature that is willing and create a mystic connection between you and the target until the spell ends. While the target is within 60 feet of you, it gains a +1 bonus to AC and saving throws, and it has Resistance to all damage."
+        },
+        {
+          "name": "Aura of Vitality",
+          "level": 3,
+          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
+        },
+        {
+          "name": "Conjure Barrage",
+          "level": 3,
+          "description": "You brandish the weapon used to cast the spell and conjure similar spectral weapons (or ammunition appropriate to the weapon) that launch forward and then disappear."
+        },
+        {
+          "name": "Aura of Purity",
+          "level": 4,
+          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunn..."
+        },
+        {
+          "name": "Fire Shield",
+          "level": 4,
+          "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+        },
+        {
+          "name": "Banishing Smite",
+          "level": 5,
+          "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
+        },
+        {
+          "name": "Mass Cure Wounds",
+          "level": 5,
+          "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+        }
+      ]
+    },
+    {
+      "name": "Cartographer",
+      "description": "Whenever you finish a Long Rest while holding Cartographer's Tools, you can use that tool to create a set of magical maps by touching at least two creatures (one of whom can be yourself), up to a maximum number of creatures equal to 1 plus your Intelligence modifier (minimum of two creatures).",
+      "features": [
+        {
+          "name": "Adventurer's Atlas",
+          "description": "Whenever you finish a Long Rest while holding Cartographer's Tools, you can use that tool to create a set of magical maps by touching at least two creatures (one of whom can be yourself), up to a maximum number of creatures equal to 1 plus your Intelligence modifier (minimum of two creatures)."
+        },
+        {
+          "name": "Cartographer",
+          "description": "Chart Advantageous Courses through Turmoil Cartographers are the premier navigators and reconnaissance agents. Using their creations, Cartographers can highlight threats, safeguard allies, and carve portals to distant locations."
+        },
+        {
+          "name": "Cartographer Spells",
+          "description": "When you reach an Artificer level specified in the Cartographer Spells table, you thereafter always have the listed spells prepared."
+        },
+        {
+          "name": "Mapping Magic",
+          "description": "You gain the following benefits. Illuminated Cartography: You can cast Faerie Fire without expending a spell slot, outlining the affected creatures as if in ink. You can do so a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": "You gain the following benefits. Tool Proficiency: You gain proficiency with Calligrapher's Supplies and Cartographer's Tools. If you already have one of these proficiencies, you gain proficiency with one other type of Artisan's Tools of your choice (or with two other types if you have both)."
+        },
+        {
+          "name": "Guided Precision",
+          "description": "Once per turn, whenever you cast a spell from your Cartographer Spells list or hit a creature affected by your Faerie Fire with an attack roll, you can add your Intelligence modifier to one damage roll of the spell or attack. In addition, taking damage can't cause you to lose Concentration on Faerie Fire."
+        },
+        {
+          "name": "Ingenious Movement",
+          "description": "When you use your Flash of Genius, you or a willing creature of your choice that you can see within 30 feet of yourself can teleport up to 30 feet to an unoccupied space you can see as part of that same Reaction."
+        },
+        {
+          "name": "Superior Atlas",
+          "description": "Your Adventurer's Atlas improves, gaining the following benefits. Safe Haven: When a map holder would be reduced to 0 Hit Points but not killed outright, that creature can destroy its map. The creature's Hit Points instead change to a number equal to twice your Artificer level, and the creature is teleported to an unoccupied space within 5 feet of you or another map holder of its choice."
+        }
+      ],
+      "levels": [
+        {
+          "level": 3,
+          "features": [
+            "Adventurer's Atlas",
+            "Cartographer",
+            "Cartographer Spells",
+            "Mapping Magic",
+            "Tools of the Trade"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Guided Precision"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Ingenious Movement"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Superior Atlas"
+          ]
+        }
+      ],
+      "spells": [
+        {
+          "name": "Faerie Fire",
+          "level": 1,
+          "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
+        },
+        {
+          "name": "Guiding Bolt",
+          "level": 1,
+          "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+        },
+        {
+          "name": "Healing Word",
+          "level": 1,
+          "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
+        },
+        {
+          "name": "Locate Object",
+          "level": 2,
+          "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement."
+        },
+        {
+          "name": "Mind Spike",
+          "level": 2,
+          "description": "You drive a spike of psionic energy into the mind of one creature you can see within range. The target makes a Wisdom saving throw, taking 3d8 Psychic damage on a failed save or half as much damage on a successful one."
+        },
+        {
+          "name": "Call Lightning",
+          "level": 3,
+          "description": "A storm cloud appears at a point within range that you can see above yourself. It takes the shape of a Cylinder [Area of Effect] that is 10 feet tall with a 60-foot radius. When you cast the spell, choose a point you can see under the cloud. A lightning bolt shoots from the cloud to that point."
+        },
+        {
+          "name": "Clairvoyance",
+          "level": 3,
+          "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees)."
+        },
+        {
+          "name": "Banishment",
+          "level": 4,
+          "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition."
+        },
+        {
+          "name": "Locate Creature",
+          "level": 4,
+          "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement."
+        },
+        {
+          "name": "Scrying",
+          "level": 5,
+          "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
+        },
+        {
+          "name": "Teleportation Circle",
+          "level": 5,
+          "description": "As you cast the spell, you draw a 5-foot-radius circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know and that is on the same plane of existence as you."
+        }
+      ]
     }
   ]
 }
