@@ -6,6 +6,7 @@ use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    components::datalist_input::DatalistInput,
     model::{
         Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
         ClassLevel, CombatStatsStoreFields, Feature, MetamagicData, Spell, SpellcastingData,
@@ -467,18 +468,16 @@ pub fn CharacterHeader() -> impl IntoView {
                                             .find(|lvl| !applied.contains(lvl))
                                     });
 
-                                let subclass_datalist_id = format!("subclass-suggestions-{i}");
-                                let subclass_options = class_def
+                                let subclass_options: Vec<(String, String)> = class_def
                                     .as_ref()
                                     .map(|def| {
                                         def.subclasses
                                             .iter()
-                                            .map(|sc| sc.name.clone())
-                                            .collect::<Vec<_>>()
+                                            .map(|sc| (sc.name.clone(), String::new()))
+                                            .collect()
                                     })
                                     .unwrap_or_default();
                                 let has_subclasses = !subclass_options.is_empty();
-                                let datalist_id = subclass_datalist_id.clone();
 
                                 view! {
                                     <div class="class-entry">
@@ -500,21 +499,13 @@ pub fn CharacterHeader() -> impl IntoView {
                                             }
                                         />
                                         {if has_subclasses {
-                                            let dl_id = datalist_id.clone();
                                             Some(view! {
-                                                <datalist id=datalist_id>
-                                                    {subclass_options.into_iter().map(|name| {
-                                                        view! { <option value=name /> }
-                                                    }).collect_view()}
-                                                </datalist>
-                                                <input
-                                                    type="text"
-                                                    class="class-subclass"
-                                                    list=dl_id
+                                                <DatalistInput
+                                                    value=subclass_name
                                                     placeholder=tr!("subclass")
-                                                    prop:value=subclass_name
-                                                    on:input=move |e| {
-                                                        let val = event_target_value(&e);
+                                                    class="class-subclass"
+                                                    options=subclass_options
+                                                    on_input=move |val: String| {
                                                         classes.write()[i].subclass = if val.is_empty() { None } else { Some(val) };
                                                     }
                                                 />

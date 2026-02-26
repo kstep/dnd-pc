@@ -3,6 +3,7 @@ pub mod ability_scores_panel;
 pub mod character_card;
 pub mod character_header;
 pub mod combat_panel;
+pub mod datalist_input;
 pub mod equipment_panel;
 pub mod features_panel;
 pub mod notes_panel;
