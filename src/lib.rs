@@ -23,6 +23,8 @@ static_loader! {
     };
 }
 
+use wasm_bindgen::JsCast;
+
 use components::language_switcher::LanguageSwitcher;
 use pages::{
     character_list::CharacterList, character_sheet::CharacterSheet,
@@ -35,8 +37,26 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
     provide_context(RulesRegistry::new());
 
+    let mql = leptos::prelude::window()
+        .match_media("(prefers-color-scheme: dark)")
+        .ok()
+        .flatten();
+    let (dark, set_dark) = signal(mql.as_ref().map(|m| m.matches()).unwrap_or(false));
+    if let Some(mql) = mql {
+        let closure = wasm_bindgen::closure::Closure::<dyn Fn()>::new({
+            let mql = mql.clone();
+            move || set_dark.set(mql.matches())
+        });
+        let _ = mql.add_event_listener_with_callback(
+            "change",
+            closure.as_ref().unchecked_ref(),
+        );
+        // Leak the closure to keep the event listener alive for the entire app lifetime.
+        closure.forget();
+    }
+
     view! {
-        <Html attr:lang="en" attr:dir="ltr" attr:data-theme="light" />
+        <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || if dark.get() { "dark" } else { "light" } />
         <Meta charset="UTF-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <Link rel="manifest" href=format!("{BASE_URL}/manifest.json") />
