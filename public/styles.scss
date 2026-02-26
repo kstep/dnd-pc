@@ -262,7 +262,7 @@ body {
     font-size: var(--font-size-1);
   }
 
-  .class-name, .class-subclass { width: 120px; }
+  .class-name, .class-subclass { min-width: 120px; flex: 1; }
   .class-hit-die { width: 60px; }
   .class-level { width: 55px; text-align: center; }
 }
