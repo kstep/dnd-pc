@@ -107,7 +107,7 @@ fn import_character(store: Store<Character>) {
             };
             match serde_json::from_str::<Character>(&text) {
                 Ok(mut imported) => {
-                    let current_id = store.get().id;
+                    let current_id = store.get_untracked().id;
                     imported.id = current_id;
                     store.set(imported);
                 }

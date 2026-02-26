@@ -4,19 +4,55 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 
 use crate::model::Character;
 
-pub fn encode_character(character: &Character) -> String {
+fn strip_for_sharing(character: &Character) -> Character {
     let mut character = character.clone();
+
     character.id = uuid::Uuid::nil();
     character.combat.death_save_successes = 0;
     character.combat.death_save_failures = 0;
     character.combat.hp_temp = 0;
+
+    for f in &mut character.features {
+        f.description.clear();
+    }
+
+    for t in &mut character.racial_traits {
+        t.description.clear();
+    }
+
+    if let Some(sc) = &mut character.spellcasting {
+        for s in &mut sc.spells {
+            s.description.clear();
+        }
+        if let Some(mm) = &mut sc.metamagic {
+            for o in &mut mm.options {
+                o.description.clear();
+            }
+        }
+    }
+
+    character
+}
+
+pub fn encode_character(character: &Character) -> String {
+    let mut character = strip_for_sharing(character);
     let bytes = postcard::to_allocvec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {
         let mut encoder = brotli::CompressorWriter::new(&mut compressed, 4096, 11, 22);
         encoder.write_all(&bytes).expect("failed to compress");
     }
-    URL_SAFE_NO_PAD.encode(&compressed)
+    let encoded = URL_SAFE_NO_PAD.encode(&compressed);
+
+    log::info!(
+        "share character: bytes={}, compressed={}, encoded={}, value={}",
+        bytes.len(),
+        compressed.len(),
+        encoded.len(),
+        encoded
+    );
+
+    encoded
 }
 
 pub fn decode_character(data: &str) -> Option<Character> {

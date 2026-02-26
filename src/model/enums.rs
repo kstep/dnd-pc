@@ -36,6 +36,9 @@ macro_rules! enum_serde_u8 {
                     }
 
                     fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<$name, E> {
+                        if let Ok(n) = v.parse::<u64>() {
+                            return self.visit_u64(n);
+                        }
                         match v {
                             $(stringify!($variant) => Ok($name::$variant),)+
                             _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &self)),
