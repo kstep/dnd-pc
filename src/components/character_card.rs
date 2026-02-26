@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_router::components::A;
 use uuid::Uuid;
 
-use crate::model::CharacterSummary;
+use crate::{BASE_URL, model::CharacterSummary};
 
 #[component]
 pub fn CharacterCard(
@@ -11,7 +11,7 @@ pub fn CharacterCard(
     on_delete: impl Fn(Uuid) + Copy + 'static,
 ) -> impl IntoView {
     let id = summary.id;
-    let href = format!("{}/c/{id}", crate::BASE_URL);
+    let href = format!("{BASE_URL}/c/{id}");
     let class_empty = summary.class.is_empty();
     let class_str = summary.class.clone();
 

@@ -6,6 +6,7 @@ use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    BASE_URL,
     components::datalist_input::DatalistInput,
     model::{
         Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
@@ -19,8 +20,8 @@ use crate::{
 fn export_character(character: &Character) {
     let json = match serde_json::to_string_pretty(character) {
         Ok(j) => j,
-        Err(e) => {
-            log::error!("Failed to serialize character: {e}");
+        Err(error) => {
+            log::error!("Failed to serialize character: {error}");
             return;
         }
     };
@@ -33,16 +34,16 @@ fn export_character(character: &Character) {
 
     let blob = match web_sys::Blob::new_with_str_sequence_and_options(&array, &opts) {
         Ok(b) => b,
-        Err(e) => {
-            log::error!("Failed to create blob: {e:?}");
+        Err(error) => {
+            log::error!("Failed to create blob: {error:?}");
             return;
         }
     };
 
     let url = match web_sys::Url::create_object_url_with_blob(&blob) {
         Ok(u) => u,
-        Err(e) => {
-            log::error!("Failed to create object URL: {e:?}");
+        Err(error) => {
+            log::error!("Failed to create object URL: {error:?}");
             return;
         }
     };
@@ -84,8 +85,8 @@ fn import_character(store: Store<Character>) {
 
         let reader = match web_sys::FileReader::new() {
             Ok(r) => r,
-            Err(e) => {
-                log::error!("Failed to create FileReader: {e:?}");
+            Err(error) => {
+                log::error!("Failed to create FileReader: {error:?}");
                 return;
             }
         };
@@ -94,8 +95,8 @@ fn import_character(store: Store<Character>) {
         let onload = Closure::<dyn Fn()>::new(move || {
             let result = match reader_clone.result() {
                 Ok(r) => r,
-                Err(e) => {
-                    log::error!("Failed to read file: {e:?}");
+                Err(error) => {
+                    log::error!("Failed to read file: {error:?}");
                     return;
                 }
             };
@@ -112,10 +113,10 @@ fn import_character(store: Store<Character>) {
                     imported.id = current_id;
                     store.set(imported);
                 }
-                Err(e) => {
-                    log::error!("Failed to parse character JSON: {e}");
+                Err(error) => {
+                    log::error!("Failed to parse character JSON: {error}");
                     leptos::prelude::window()
-                        .alert_with_message(&format!("Invalid character file: {e}"))
+                        .alert_with_message(&format!("Invalid character file: {error}"))
                         .ok();
                 }
             }
@@ -124,8 +125,8 @@ fn import_character(store: Store<Character>) {
         reader.set_onload(Some(onload.as_ref().unchecked_ref()));
         onload.forget();
 
-        if let Err(e) = reader.read_as_text(&file) {
-            log::error!("Failed to start reading file: {e:?}");
+        if let Err(error) = reader.read_as_text(&file) {
+            log::error!("Failed to start reading file: {error:?}");
         }
     });
 
@@ -325,7 +326,7 @@ pub fn CharacterHeader() -> impl IntoView {
             .location()
             .origin()
             .unwrap_or_default();
-        let url = format!("{origin}{}/s/{encoded}", crate::BASE_URL);
+        let url = format!("{origin}{BASE_URL}/s/{encoded}");
 
         let clipboard = leptos::prelude::window().navigator().clipboard();
         let promise = clipboard.write_text(&url);
@@ -588,7 +589,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
                 <LanguageSwitcher />
             </div>
-            <A href=format!("{}/", crate::BASE_URL) attr:class="back-link">{move_tr!("back-to-characters")}</A>
+            <A href=format!("{BASE_URL}/") attr:class="back-link">{move_tr!("back-to-characters")}</A>
         </div>
     }
 }

@@ -22,7 +22,9 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
 }
 
 pub fn save_character(character: &Character) {
-    LocalStorage::set(character_key(&character.id), character).expect("failed to save character");
+    let mut character = character.clone();
+    character.touch();
+    LocalStorage::set(character_key(&character.id), &character).expect("failed to save character");
 
     let mut index = load_index();
     let summary = character.summary();

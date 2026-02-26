@@ -5,6 +5,7 @@ use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
+    BASE_URL,
     components::{
         ability_scores_panel::AbilityScoresPanel, character_header::CharacterHeader,
         combat_panel::CombatPanel, equipment_panel::EquipmentPanel, features_panel::FeaturesPanel,
@@ -70,7 +71,7 @@ pub fn CharacterSheet() -> impl IntoView {
             view! {
                 <div class="not-found">
                     <h1>{move_tr!("character-not-found")}</h1>
-                    <A href=format!("{}/", crate::BASE_URL)>{move_tr!("back-to-list")}</A>
+                    <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
                 </div>
             }
             .into_any()

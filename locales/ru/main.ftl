@@ -26,6 +26,10 @@ import-json = Импорт
 share-link = Поделиться
 share-copied = Скопировано
 share-error = Не удалось декодировать персонажа
+import-conflict-title = Персонаж уже существует
+import-conflict-message = У вас уже есть более новая версия «{$name}». Импорт перезапишет её.
+import-anyway = Импортировать
+import-cancel = Отмена
 no-class = Нет класса
 level-prefix = Уровень
 

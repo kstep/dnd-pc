@@ -52,11 +52,21 @@ pub struct Character {
     pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
     pub notes: String,
+    #[serde(default)]
+    pub updated_at: u64,
+}
+
+fn now_epoch_secs() -> u64 {
+    (js_sys::Date::now() / 1000.0) as u64
 }
 
 impl Character {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn touch(&mut self) {
+        self.updated_at = now_epoch_secs();
     }
 
     pub fn level(&self) -> u32 {
@@ -155,6 +165,7 @@ impl Default for Character {
             languages: Vec::new(),
             racial_traits: Vec::new(),
             notes: String::new(),
+            updated_at: now_epoch_secs(),
         }
     }
 }

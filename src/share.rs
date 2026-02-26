@@ -11,21 +11,21 @@ fn strip_for_sharing(character: &Character) -> Character {
     character.combat.death_save_failures = 0;
     character.combat.hp_temp = 0;
 
-    for f in &mut character.features {
-        f.description.clear();
+    for feature in &mut character.features {
+        feature.description.clear();
     }
 
-    for t in &mut character.racial_traits {
-        t.description.clear();
+    for racial_trait in &mut character.racial_traits {
+        racial_trait.description.clear();
     }
 
     if let Some(sc) = &mut character.spellcasting {
-        for s in &mut sc.spells {
-            s.description.clear();
+        for spell in &mut sc.spells {
+            spell.description.clear();
         }
         if let Some(mm) = &mut sc.metamagic {
-            for o in &mut mm.options {
-                o.description.clear();
+            for option in &mut mm.options {
+                option.description.clear();
             }
         }
     }
@@ -44,11 +44,10 @@ pub fn encode_character(character: &Character) -> String {
     let encoded = URL_SAFE_NO_PAD.encode(&compressed);
 
     log::info!(
-        "share character: bytes={}, compressed={}, encoded={}, value={}",
+        "share character: bytes={}, compressed={}, encoded={}, value={encoded}",
         bytes.len(),
         compressed.len(),
-        encoded.len(),
-        encoded
+        encoded.len()
     );
 
     encoded

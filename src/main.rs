@@ -1,4 +1,4 @@
-use dnd_pc::App;
+use dnd_pc::{App, BASE_URL};
 use leptos::prelude::*;
 
 fn main() {
@@ -7,7 +7,7 @@ fn main() {
 
     // Register service worker
     if let Some(window) = web_sys::window() {
-        let sw_path = format!("{}/sw.js", dnd_pc::BASE_URL);
+        let sw_path = format!("{BASE_URL}/sw.js");
         let _ = window.navigator().service_worker().register(&sw_path);
         log::info!("Service worker registration initiated");
     }

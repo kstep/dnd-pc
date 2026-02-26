@@ -104,11 +104,13 @@ async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String
     let resp = gloo_net::http::Request::get(url)
         .send()
         .await
-        .map_err(|e| format!("fetch error: {e}"))?;
+        .map_err(|error| format!("fetch error: {error}"))?;
     if !resp.ok() {
         return Err(format!("HTTP {}", resp.status()));
     }
-    resp.json().await.map_err(|e| format!("parse error: {e}"))
+    resp.json()
+        .await
+        .map_err(|error| format!("parse error: {error}"))
 }
 
 impl Default for RulesRegistry {
@@ -170,8 +172,8 @@ impl RulesRegistry {
                         m.insert(name, def);
                     });
                 }
-                Err(e) => {
-                    log::error!("Failed to fetch class definition: {e}");
+                Err(error) => {
+                    log::error!("Failed to fetch class definition: {error}");
                 }
             }
         });

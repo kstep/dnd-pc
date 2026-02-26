@@ -26,6 +26,10 @@ import-json = Import
 share-link = Share
 share-copied = Copied
 share-error = Failed to decode shared character
+import-conflict-title = Character already exists
+import-conflict-message = You already have a newer version of "{$name}". Importing will overwrite it.
+import-anyway = Import Anyway
+import-cancel = Cancel
 no-class = No class
 level-prefix = Level
 
