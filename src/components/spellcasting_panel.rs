@@ -75,7 +75,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
 
             <Show when=move || has_spellcasting.get()>
                 {move || {
-                    registry.class_cache.track();
                     let classes = store.identity().classes().read();
                     (0..=9u32).map(|level| {
                         let datalist_id = format!("spell-suggestions-{level}");

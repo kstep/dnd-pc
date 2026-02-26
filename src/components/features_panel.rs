@@ -27,7 +27,6 @@ pub fn FeaturesPanel() -> impl IntoView {
     view! {
         <Panel title=move_tr!("panel-features") class="features-panel">
             {move || {
-                registry.class_cache.track();
                 let classes = store.identity().classes().read();
                 let options: Vec<(String, String)> = classes.iter().filter_map(|c| {
                     let def = registry.get_class(&c.class)?;

@@ -11,8 +11,8 @@ use crate::{
 // --- JSON types ---
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ClassIndex {
-    pub classes: Vec<ClassIndexEntry>,
+struct Index {
+    classes: Vec<ClassIndexEntry>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -120,8 +120,8 @@ pub struct ClassLevelRules {
 
 #[derive(Clone, Copy)]
 pub struct RulesRegistry {
-    pub class_index: LocalResource<Result<ClassIndex, String>>,
-    pub class_cache: RwSignal<HashMap<String, ClassDefinition>>,
+    class_index: LocalResource<Result<Index, String>>,
+    class_cache: RwSignal<HashMap<String, ClassDefinition>>,
 }
 
 async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
@@ -148,7 +148,7 @@ impl RulesRegistry {
         let index_url = format!("{BASE_URL}/classes/index.json");
         let class_index = LocalResource::new(move || {
             let url = index_url.clone();
-            async move { fetch_json::<ClassIndex>(&url).await }
+            async move { fetch_json::<Index>(&url).await }
         });
 
         Self {

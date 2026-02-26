@@ -427,7 +427,6 @@ pub fn CharacterHeader() -> impl IntoView {
                 <label>{move_tr!("classes")}</label>
                 <div class="classes-list">
                     {move || {
-                        registry.class_cache.track();
                         let abilities = store.abilities().get();
                         let class_options: Vec<(String, String)> = registry.with_class_entries(|entries| {
                             entries.iter().filter(|entry| {
