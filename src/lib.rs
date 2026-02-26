@@ -32,11 +32,10 @@ use pages::{
 };
 use rules::RulesRegistry;
 
-#[component]
-pub fn App() -> impl IntoView {
-    provide_meta_context();
-    provide_context(RulesRegistry::new());
-
+/// Returns a reactive signal that tracks whether the OS is in dark mode.
+/// Seeds from `window.matchMedia("(prefers-color-scheme: dark)")` and
+/// updates in real time via a `change` event listener.
+fn use_dark_theme() -> RwSignal<bool> {
     let mql = leptos::prelude::window()
         .match_media("(prefers-color-scheme: dark)")
         .ok()
@@ -54,6 +53,15 @@ pub fn App() -> impl IntoView {
         // Leak the closure to keep the event listener alive for the entire app lifetime.
         closure.forget();
     }
+    dark
+}
+
+#[component]
+pub fn App() -> impl IntoView {
+    provide_meta_context();
+    provide_context(RulesRegistry::new());
+
+    let dark = use_dark_theme();
 
     view! {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || if dark.get() { "dark" } else { "light" } />
