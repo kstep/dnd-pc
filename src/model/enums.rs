@@ -45,7 +45,7 @@ macro_rules! enum_serde_u8 {
                         }
                     }
                 }
-                d.deserialize_any(Vis)
+                d.deserialize_u8(Vis)
             }
         }
     };

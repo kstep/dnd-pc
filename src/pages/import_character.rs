@@ -2,7 +2,8 @@ use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use leptos_router::{
     components::A,
-    hooks::{use_navigate, use_params_map},
+    hooks::{use_navigate, use_params},
+    params::Params,
 };
 use strum::IntoEnumIterator;
 
@@ -476,10 +477,14 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
     }
 }
 
+#[derive(Params, Clone, Debug, PartialEq)]
+struct ImportParams {
+    data: String,
+}
+
 #[component]
 pub fn ImportCharacter() -> impl IntoView {
-    let params = use_params_map();
-    let data = params.read().get("data");
+    let data = use_params::<ImportParams>().get().ok().map(|p| p.data);
 
     match data {
         Some(data) => match share::decode_character(&data) {

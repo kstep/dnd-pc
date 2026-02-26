@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::{components::A, hooks::use_params_map};
+use leptos_router::{components::A, hooks::use_params, params::Params};
 use reactive_stores::Store;
 use uuid::Uuid;
 
@@ -16,16 +16,16 @@ use crate::{
     storage,
 };
 
+#[derive(Params, Clone, Debug, PartialEq)]
+struct CharacterSheetParams {
+    id: Uuid,
+}
+
 #[component]
 pub fn CharacterSheet() -> impl IntoView {
-    let params = use_params_map();
+    let params = use_params::<CharacterSheetParams>();
 
-    let id = move || {
-        params
-            .read()
-            .get("id")
-            .and_then(|id| Uuid::parse_str(&id).ok())
-    };
+    let id = move || params.get().ok().map(|p| p.id);
 
     let character = move || id().and_then(|id| storage::load_character(&id));
 
