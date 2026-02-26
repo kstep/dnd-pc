@@ -46,6 +46,16 @@ pub struct ClassDefinition {
     pub subclasses: Vec<SubclassDefinition>,
 }
 
+impl ClassDefinition {
+    pub fn spells(&self, subclass: Option<&str>) -> impl Iterator<Item = &ClassSpell> {
+        let sc_spells = subclass
+            .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
+            .map(|sc| sc.spells.as_slice())
+            .unwrap_or_default();
+        self.spells.iter().chain(sc_spells.iter())
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubclassDefinition {
     pub name: String,

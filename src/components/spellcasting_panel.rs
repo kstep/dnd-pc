@@ -77,16 +77,15 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 {move || {
                     registry.class_cache.track();
                     let classes = store.identity().classes().read();
-                    let class_names: Vec<String> = classes.iter().map(|c| c.class.clone()).collect();
                     (0..=9u32).map(|level| {
                         let datalist_id = format!("spell-suggestions-{level}");
-                        let options: Vec<(String, String)> = class_names.iter().filter_map(|name| {
-                            registry.get_class(name)
-                        }).flat_map(|def| {
-                            def.spells.iter().filter(|s| s.level == level).map(|s| {
-                                (s.name.clone(), s.description.clone())
-                            }).collect::<Vec<_>>()
-                        }).collect();
+                        let options: Vec<(String, String)> = classes.iter().filter_map(|c| {
+                            let def = registry.get_class(&c.class)?;
+                            Some(def.spells(c.subclass.as_deref())
+                                .filter(|s| s.level == level)
+                                .map(|s| (s.name.clone(), s.description.clone()))
+                                .collect::<Vec<_>>())
+                        }).flatten().collect();
                         view! {
                             <datalist id=datalist_id>
                                 {options.into_iter().map(|(name, desc)| {
@@ -267,7 +266,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                 let classes = store.identity().classes().read();
                                                 let desc = classes.iter().find_map(|c| {
                                                     registry.get_class(&c.class).and_then(|def| {
-                                                        def.spells.iter().find(|sp| sp.name == name).map(|sp| sp.description.clone())
+                                                        def.spells(c.subclass.as_deref()).find(|sp| sp.name == name).map(|sp| sp.description.clone())
                                                     })
                                                 });
                                                 drop(classes);
