@@ -41,11 +41,11 @@ pub fn App() -> impl IntoView {
         .match_media("(prefers-color-scheme: dark)")
         .ok()
         .flatten();
-    let (dark, set_dark) = signal(mql.as_ref().map(|m| m.matches()).unwrap_or(false));
+    let dark = RwSignal::new(mql.as_ref().map(|m| m.matches()).unwrap_or(false));
     if let Some(mql) = mql {
         let closure = wasm_bindgen::closure::Closure::<dyn Fn()>::new({
             let mql = mql.clone();
-            move || set_dark.set(mql.matches())
+            move || dark.set(mql.matches())
         });
         let _ = mql.add_event_listener_with_callback(
             "change",
