@@ -199,10 +199,16 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         let mut guard = spellcasting.write();
         if let Some(ref mut sc) = *guard {
             if let Some(ref slots) = rules.spell_slots {
+                sc.spell_slots.resize_with(slots.len(), Default::default);
                 for (j, &count) in slots.iter().enumerate() {
-                    if j < sc.spell_slots.len() {
-                        sc.spell_slots[j].total = count;
-                    }
+                    sc.spell_slots[j].total = count;
+                }
+                while sc
+                    .spell_slots
+                    .last()
+                    .is_some_and(|s| s.total == 0 && s.used == 0)
+                {
+                    sc.spell_slots.pop();
                 }
             }
             if let Some(sp) = rules.sorcery_points {

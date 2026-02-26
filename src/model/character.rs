@@ -294,8 +294,8 @@ impl Default for CombatStats {
         Self {
             armor_class: 10,
             speed: 30,
-            hp_max: 10,
-            hp_current: 10,
+            hp_max: 0,
+            hp_current: 0,
             hp_temp: 0,
             death_save_successes: 0,
             death_save_failures: 0,
@@ -383,17 +383,24 @@ pub struct SpellcastingData {
     pub metamagic: Option<MetamagicData>,
 }
 
+impl SpellcastingData {
+    pub fn spell_slot(&self, level: u32) -> SpellSlotLevel {
+        self.spell_slots
+            .get((level - 1) as usize)
+            .cloned()
+            .unwrap_or_default()
+    }
+
+    pub fn all_spell_slots(&self) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
+        (1..=9u32).map(|level| (level, self.spell_slot(level)))
+    }
+}
+
 impl Default for SpellcastingData {
     fn default() -> Self {
         Self {
             casting_ability: Ability::Intelligence,
-            spell_slots: (1..=9)
-                .map(|level| SpellSlotLevel {
-                    level,
-                    total: 0,
-                    used: 0,
-                })
-                .collect(),
+            spell_slots: Vec::new(),
             spells: Vec::new(),
             metamagic: None,
         }
@@ -422,8 +429,6 @@ pub struct MetamagicOption {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct SpellSlotLevel {
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub level: u32,
     #[serde(default, skip_serializing_if = "is_default")]
     pub total: u32,
     #[serde(default, skip_serializing_if = "is_default")]

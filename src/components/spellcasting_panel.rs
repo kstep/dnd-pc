@@ -153,19 +153,17 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 </div>
                 <div class="spell-slots-grid">
                     {move || {
-                        let slots = store.spellcasting().read()
-                            .as_ref()
-                            .map(|sc| sc.spell_slots.clone())
-                            .unwrap_or_default();
+                        let sc_data = store.spellcasting().read();
+                        let sc_default = SpellcastingData::default();
+                        let sc = sc_data.as_ref().unwrap_or(&sc_default);
                         let expanded = slots_expanded.get();
-                        slots
-                            .into_iter()
-                            .enumerate()
+                        sc.all_spell_slots()
                             .filter(|(_, slot)| expanded || slot.total > 0)
-                            .map(|(i, slot)| {
+                            .map(|(level, slot)| {
+                                let idx = (level - 1) as usize;
                                 view! {
                                     <div class="spell-slot-entry">
-                                        <span class="slot-level">"Lv " {slot.level}</span>
+                                        <span class="slot-level">"Lv " {level}</span>
                                         <input
                                             type="number"
                                             class="short-input"
@@ -175,7 +173,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>()
                                                     && let Some(sc) = store.spellcasting().write().as_mut()
-                                                    && let Some(s) = sc.spell_slots.get_mut(i)
+                                                    && let Some(s) = sc.spell_slots.get_mut(idx)
                                                 {
                                                     s.used = v;
                                                 }
@@ -191,9 +189,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>()
                                                     && let Some(sc) = store.spellcasting().write().as_mut()
-                                                    && let Some(s) = sc.spell_slots.get_mut(i)
                                                 {
-                                                    s.total = v;
+                                                    sc.spell_slots.resize_with(idx + 1, Default::default);
+                                                    sc.spell_slots[idx].total = v;
+                                                    while sc.spell_slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
+                                                        sc.spell_slots.pop();
+                                                    }
                                                 }
                                             }
                                         />
