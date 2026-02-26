@@ -474,6 +474,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     .map(|def| {
                                         def.subclasses
                                             .iter()
+                                            .filter(|sc| sc.min_level() <= current_level)
                                             .map(|sc| (sc.name.clone(), sc.description.clone()))
                                             .collect()
                                     })

@@ -58,6 +58,12 @@ pub struct SubclassDefinition {
     pub levels: Vec<SubclassLevelRules>,
 }
 
+impl SubclassDefinition {
+    pub fn min_level(&self) -> u32 {
+        self.levels.first().map_or(1, |lr| lr.level)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubclassLevelRules {
     pub level: u32,
