@@ -6,12 +6,14 @@ use reactive_stores::Store;
 
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
-    model::{Character, CharacterStoreFields, Feature, RacialTrait},
+    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, RacialTrait},
+    rules::RulesRegistry,
 };
 
 #[component]
 pub fn FeaturesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
 
     let features = store.features();
     let racial_traits = store.racial_traits();
@@ -24,6 +26,24 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     view! {
         <Panel title=move_tr!("panel-features") class="features-panel">
+            {move || {
+                registry.class_cache.track();
+                let classes = store.identity().classes().read();
+                let options: Vec<(String, String)> = classes.iter().filter_map(|c| {
+                    let def = registry.get_class(&c.class)?;
+                    Some(def.features(c.subclass.as_deref())
+                        .map(|f| (f.name.clone(), f.description.clone()))
+                        .collect::<Vec<_>>())
+                }).flatten().collect();
+                view! {
+                    <datalist id="feature-suggestions">
+                        {options.into_iter().map(|(name, desc)| {
+                            view! { <option value=name>{desc}</option> }
+                        }).collect_view()}
+                    </datalist>
+                }
+            }}
+
             <div class="features-list">
                 {move || {
                     features
@@ -43,10 +63,25 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     <input
                                         type="text"
                                         class="feature-name"
+                                        list="feature-suggestions"
                                         placeholder=move_tr!("feature-name")
                                         prop:value=name
                                         on:input=move |e| {
-                                            features.write()[i].name = event_target_value(&e);
+                                            let name = event_target_value(&e);
+                                            let classes = store.identity().classes().read();
+                                            let desc = classes.iter().find_map(|c| {
+                                                registry.get_class(&c.class).and_then(|def| {
+                                                    def.features(c.subclass.as_deref())
+                                                        .find(|f| f.name == name)
+                                                        .map(|f| f.description.clone())
+                                                })
+                                            });
+                                            drop(classes);
+                                            let mut w = features.write();
+                                            w[i].name = name;
+                                            if let Some(desc) = desc {
+                                                w[i].description = desc;
+                                            }
                                         }
                                     />
                                     <button

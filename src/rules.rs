@@ -47,6 +47,14 @@ pub struct ClassDefinition {
 }
 
 impl ClassDefinition {
+    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &ClassFeature> {
+        let sc_features = subclass
+            .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
+            .map(|sc| sc.features.as_slice())
+            .unwrap_or_default();
+        self.features.iter().chain(sc_features.iter())
+    }
+
     pub fn spells(&self, subclass: Option<&str>) -> impl Iterator<Item = &ClassSpell> {
         let sc_spells = subclass
             .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
