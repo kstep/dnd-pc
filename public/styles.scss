@@ -51,6 +51,10 @@ input, select, textarea {
   font-family: var(--font-sans);
 }
 
+input, select {
+  height: 2rem;
+}
+
 /* --------------------- Panel Pattern ------------------------- */
 .panel {
   background: var(--panel-bg);
