@@ -473,7 +473,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     .map(|def| {
                                         def.subclasses
                                             .iter()
-                                            .map(|sc| (sc.name.clone(), String::new()))
+                                            .map(|sc| (sc.name.clone(), sc.description.clone()))
                                             .collect()
                                     })
                                     .unwrap_or_default();

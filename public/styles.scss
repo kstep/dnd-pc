@@ -253,8 +253,7 @@ body {
   align-items: center;
   gap: var(--size-1);
 
-  .class-name {
-    width: 120px;
+  input {
     padding: var(--size-1) var(--size-2);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
@@ -263,26 +262,9 @@ body {
     font-size: var(--font-size-1);
   }
 
-  .class-hit-die {
-    width: 60px;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    font-size: var(--font-size-1);
-  }
-
-  .class-level {
-    width: 55px;
-    text-align: center;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    font-size: var(--font-size-1);
-  }
+  .class-name, .class-subclass { width: 120px; }
+  .class-hit-die { width: 60px; }
+  .class-level { width: 55px; text-align: center; }
 }
 
 .btn-add-class {
