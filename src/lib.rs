@@ -23,14 +23,13 @@ static_loader! {
     };
 }
 
-use wasm_bindgen::JsCast;
-
 use components::language_switcher::LanguageSwitcher;
 use pages::{
     character_list::CharacterList, character_sheet::CharacterSheet,
     import_character::ImportCharacter, not_found::NotFound,
 };
 use rules::RulesRegistry;
+use wasm_bindgen::JsCast;
 
 /// Returns a reactive signal that tracks the current theme name.
 /// Seeds from `window.matchMedia("(prefers-color-scheme: dark)")` and
@@ -40,17 +39,19 @@ fn use_theme() -> ReadSignal<&'static str> {
         .match_media("(prefers-color-scheme: dark)")
         .ok()
         .flatten();
-    let theme = RwSignal::new(if mql.as_ref().map(|m| m.matches()).unwrap_or(false) { "dark" } else { "light" });
+    let theme = RwSignal::new(if mql.as_ref().map(|m| m.matches()).unwrap_or(false) {
+        "dark"
+    } else {
+        "light"
+    });
     if let Some(mql) = mql {
         let closure = wasm_bindgen::closure::Closure::<dyn Fn()>::new({
             let mql = mql.clone();
             move || theme.set(if mql.matches() { "dark" } else { "light" })
         });
-        let _ = mql.add_event_listener_with_callback(
-            "change",
-            closure.as_ref().unchecked_ref(),
-        );
-        // Leak the closure to keep the event listener alive for the entire app lifetime.
+        let _ = mql.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref());
+        // Leak the closure to keep the event listener alive for the entire app
+        // lifetime.
         closure.forget();
     }
     theme.read_only()
