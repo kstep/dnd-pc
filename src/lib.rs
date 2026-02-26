@@ -23,6 +23,7 @@ static_loader! {
     };
 }
 
+use components::language_switcher::LanguageSwitcher;
 use pages::{
     character_list::CharacterList, character_sheet::CharacterSheet,
     import_character::ImportCharacter, not_found::NotFound,
@@ -42,6 +43,7 @@ pub fn App() -> impl IntoView {
         <Link rel="apple-touch-icon" href=format!("{BASE_URL}/icons/icon-192.png") />
 
         <I18nProvider>
+            <LanguageSwitcher />
             <Router base=option_env!("BASE_URL").unwrap_or_default()>
                 <Routes fallback=|| view! { <NotFound /> }>
                     <Route path=path!("/") view=CharacterList />
