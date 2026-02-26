@@ -385,6 +385,31 @@ pub struct Currency {
     pub pp: u32,
 }
 
+impl std::fmt::Display for Currency {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut first = true;
+        for (amount, label) in [
+            (self.pp, "pp"),
+            (self.gp, "gp"),
+            (self.ep, "ep"),
+            (self.sp, "sp"),
+            (self.cp, "cp"),
+        ] {
+            if amount > 0 {
+                if !first {
+                    f.write_str(" ")?;
+                }
+                write!(f, "{amount}{label}")?;
+                first = false;
+            }
+        }
+        if first {
+            f.write_str("\u{2014}")?;
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,

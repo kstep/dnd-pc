@@ -27,9 +27,14 @@ share-link = Поделиться
 share-copied = Скопировано
 share-error = Не удалось декодировать персонажа
 import-conflict-title = Персонаж уже существует
-import-conflict-message = У вас уже есть более новая версия «{$name}». Импорт перезапишет её.
+import-conflict-message = У вас уже есть более новая версия «{$name}». Импорт перезапишет её. Различия указаны ниже.
 import-anyway = Импортировать
 import-cancel = Отмена
+diff-section-identity = Общие сведения
+diff-field = Поле
+diff-local = Локальный
+diff-imported = Импортируемый
+diff-no-differences = Видимых различий нет
 no-class = Нет класса
 level-prefix = Уровень
 

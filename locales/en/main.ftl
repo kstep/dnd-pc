@@ -27,9 +27,14 @@ share-link = Share
 share-copied = Copied
 share-error = Failed to decode shared character
 import-conflict-title = Character already exists
-import-conflict-message = You already have a newer version of "{$name}". Importing will overwrite it.
+import-conflict-message = You already have a newer version of "{$name}". Importing will overwrite it. See differences below.
 import-anyway = Import Anyway
 import-cancel = Cancel
+diff-section-identity = Identity
+diff-field = Field
+diff-local = Local
+diff-imported = Imported
+diff-no-differences = No visible differences
 no-class = No class
 level-prefix = Level
 

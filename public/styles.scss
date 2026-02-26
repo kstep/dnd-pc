@@ -1081,6 +1081,55 @@ body {
   }
 }
 
+/* --------------------- Import Conflict Diff ------------------- */
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--size-3) 0;
+  font-size: var(--font-size-1);
+
+  th, td {
+    padding: var(--size-1) var(--size-2);
+    text-align: left;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  thead th {
+    font-size: var(--font-size-0);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+}
+
+.diff-section td {
+  font-weight: var(--font-weight-7);
+  color: var(--panel-header);
+  padding-top: var(--size-2);
+  border-bottom: 2px solid var(--panel-header);
+}
+
+.diff-local {
+  color: var(--success);
+}
+
+.diff-imported {
+  color: var(--danger);
+}
+
+.diff-no-differences {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: var(--size-3) 0;
+}
+
+.import-conflict-actions {
+  display: flex;
+  gap: var(--size-2);
+  margin-top: var(--size-3);
+}
+
 /* --------------------- Not Found ----------------------------- */
 .not-found {
   text-align: center;
