@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_fluent::{move_tr, tr};
+use leptos_fluent::move_tr;
 use leptos_router::{
     components::A,
     hooks::{use_navigate, use_params},
@@ -10,7 +10,8 @@ use strum::IntoEnumIterator;
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, Proficiency, ProficiencyLevel, Skill, SpellcastingData, Translatable,
+        Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, SpellcastingData,
+        Translatable,
     },
     share, storage,
 };
@@ -60,6 +61,19 @@ fn format_names<T>(items: &[T], name_fn: impl Fn(&T) -> &str) -> String {
         "\u{2014}".to_string()
     } else {
         format!("{} ({})", names.len(), names.join(", "))
+    }
+}
+
+fn format_items(items: &[Item]) -> String {
+    let entries: Vec<String> = items
+        .iter()
+        .filter(|item| !item.name.is_empty())
+        .map(|item| item.to_string())
+        .collect();
+    if entries.is_empty() {
+        "\u{2014}".to_string()
+    } else {
+        format!("{} ({})", entries.len(), entries.join(", "))
     }
 }
 
@@ -244,8 +258,8 @@ fn compute_diff(
     let imported_val = format_names(&imported.equipment.weapons, |w| &w.name);
     push_if_diff(&mut rows, sec, "weapons", local_val, imported_val);
 
-    let local_val = format_names(&local.equipment.items, |item| &item.name);
-    let imported_val = format_names(&imported.equipment.items, |item| &item.name);
+    let local_val = format_items(&local.equipment.items);
+    let imported_val = format_items(&imported.equipment.items);
     push_if_diff(&mut rows, sec, "items", local_val, imported_val);
 
     if local.equipment.currency != imported.equipment.currency {
@@ -382,10 +396,44 @@ fn compute_diff(
     rows
 }
 
+// --- Restore stripped descriptions ---
+
+fn restore_description_by_name<T>(imported: &mut [T], local: &[T], name_fn: fn(&T) -> &str, desc_fn: fn(&mut T) -> &mut String, get_desc: fn(&T) -> &str) {
+    for item in imported.iter_mut() {
+        if get_desc(item).is_empty()
+            && let Some(local_item) = local.iter().find(|l| name_fn(l) == name_fn(item))
+        {
+            *desc_fn(item) = get_desc(local_item).to_string();
+        }
+    }
+}
+
+fn restore_stripped_fields(imported: &mut Character, local: &Character) {
+    // Restore temp combat state zeroed by strip_for_sharing
+    imported.combat.death_save_successes = local.combat.death_save_successes;
+    imported.combat.death_save_failures = local.combat.death_save_failures;
+    imported.combat.hp_temp = local.combat.hp_temp;
+
+    // Restore descriptions stripped for sharing
+    restore_description_by_name(&mut imported.features, &local.features, |f| &f.name, |f| &mut f.description, |f| &f.description);
+    restore_description_by_name(&mut imported.racial_traits, &local.racial_traits, |t| &t.name, |t| &mut t.description, |t| &t.description);
+
+    if let (Some(imp_sc), Some(loc_sc)) = (&mut imported.spellcasting, &local.spellcasting) {
+        restore_description_by_name(&mut imp_sc.spells, &loc_sc.spells, |s| &s.name, |s| &mut s.description, |s| &s.description);
+        if let (Some(imp_mm), Some(loc_mm)) = (&mut imp_sc.metamagic, &loc_sc.metamagic) {
+            restore_description_by_name(&mut imp_mm.options, &loc_mm.options, |o| &o.name, |o| &mut o.description, |o| &o.description);
+        }
+    }
+}
+
 // --- Components ---
 
 fn do_import(character: &Character) -> impl IntoView {
-    storage::save_character(character);
+    let mut character = character.clone();
+    if let Some(existing) = storage::load_character(&character.id) {
+        restore_stripped_fields(&mut character, &existing);
+    }
+    storage::save_character(&character);
     let id = character.id;
 
     let navigate = use_navigate();
@@ -404,20 +452,23 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let import_anyway = move |_| {
-        storage::save_character(&incoming.get_value());
+        let mut character = incoming.get_value();
+        restore_stripped_fields(&mut character, &existing.get_value());
+        storage::save_character(&character);
         let navigate = use_navigate();
         navigate(&format!("{BASE_URL}/c/{id}"), Default::default());
     };
 
     let name = existing.get_value().identity.name.clone();
-    let message = tr!("import-conflict-message", { "name" => name });
+    let message = move_tr!("import-conflict-message", { "name" => name.clone() });
 
-    let diff_rows = compute_diff(&existing.get_value(), &incoming.get_value(), i18n);
+    let diff_rows =
+        untrack(|| compute_diff(&existing.get_value(), &incoming.get_value(), i18n));
     let sections = group_diff_rows(diff_rows);
     let has_diffs = !sections.is_empty();
 
     view! {
-        <div class="panel">
+        <div class="import-conflict panel">
             <h2>{move_tr!("import-conflict-title")}</h2>
             <p>{message}</p>
 
@@ -435,7 +486,7 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
                             {sections
                                 .into_iter()
                                 .map(|(section_key, rows)| {
-                                    let section_title = i18n.tr(section_key);
+                                    let section_title = untrack(|| i18n.tr(section_key));
                                     view! {
                                         <tr class="diff-section">
                                             <td colspan="3">{section_title}</td>
@@ -443,7 +494,7 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
                                         {rows
                                             .into_iter()
                                             .map(|row| {
-                                                let label = i18n.tr(row.label);
+                                                let label = untrack(|| i18n.tr(row.label));
                                                 view! {
                                                     <tr>
                                                         <td>{label}</td>
@@ -470,8 +521,8 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
             }}
 
             <div class="import-conflict-actions">
-                <button on:click=import_anyway>{move_tr!("import-anyway")}</button>
-                <A href=format!("{BASE_URL}/")>{move_tr!("import-cancel")}</A>
+                <button class="btn-add" on:click=import_anyway>{move_tr!("import-anyway")}</button>
+                <A href=format!("{BASE_URL}/") attr:class="btn-cancel">{move_tr!("import-cancel")}</A>
             </div>
         </div>
     }
@@ -484,7 +535,7 @@ struct ImportParams {
 
 #[component]
 pub fn ImportCharacter() -> impl IntoView {
-    let data = use_params::<ImportParams>().get().ok().map(|p| p.data);
+    let data = use_params::<ImportParams>().get_untracked().ok().map(|p| p.data);
 
     match data {
         Some(data) => match share::decode_character(&data) {

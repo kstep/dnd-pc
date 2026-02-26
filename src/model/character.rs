@@ -371,6 +371,16 @@ pub struct Item {
     pub description: String,
 }
 
+impl std::fmt::Display for Item {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name)?;
+        if self.quantity > 1 {
+            write!(f, " \u{00d7}{}", self.quantity)?;
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Currency {
     #[serde(default)]

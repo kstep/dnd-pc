@@ -1082,11 +1082,21 @@ body {
 }
 
 /* --------------------- Import Conflict Diff ------------------- */
+.import-conflict {
+  max-width: 900px;
+  margin: 0 auto;
+
+  p, h2 {
+    max-inline-size: none;
+  }
+}
 .diff-table {
   width: 100%;
   border-collapse: collapse;
   margin: var(--size-3) 0;
   font-size: var(--font-size-1);
+  display: block;
+  overflow-x: auto;
 
   th, td {
     padding: var(--size-1) var(--size-2);
@@ -1124,10 +1134,27 @@ body {
   padding: var(--size-3) 0;
 }
 
+.btn-cancel {
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid var(--panel-border);
+  padding: var(--size-1) var(--size-3);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-size: var(--font-size-1);
+  text-decoration: none;
+}
+
 .import-conflict-actions {
   display: flex;
+  align-items: center;
   gap: var(--size-2);
   margin-top: var(--size-3);
+
+  .btn-add, .btn-cancel {
+    margin-top: 0;
+    white-space: nowrap;
+  }
 }
 
 /* --------------------- Not Found ----------------------------- */
