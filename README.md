@@ -1,79 +1,76 @@
-<picture>
-    <source srcset="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_Solid_White.svg" media="(prefers-color-scheme: dark)">
-    <img src="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_RGB.svg" alt="Leptos Logo">
-</picture>
+# D&D 5e Character Sheet
 
-# Leptos Client-Side Rendered (CSR) App Starter Template
+A web-based D&D 5th Edition character sheet manager built with Rust and WebAssembly.
 
-This is a template for use with the [Leptos][Leptos] web framework using the [Trunk][Trunk] tool to compile and serve your app in development.
+**[Live Demo](https://kstep.github.io/dnd-pc/)**
 
-## Creating your repo from the template
+## Features
 
-This template requires you to have `cargo-generate` and `trunk` installed. [`leptosfmt`](https://github.com/bram209/leptosfmt) is optional but highly recommended. You can install them with
+- Create, edit, and delete multiple characters
+- Auto-save to browser localStorage
+- Ability scores, modifiers, and saving throws
+- Skills with proficiency tracking
+- Combat stats (AC, HP, initiative, speed, hit dice)
+- Spellcasting with spell slots and spell lists
+- Equipment and inventory management
+- Multiclassing support with automatic class feature application
+- Share characters via compressed URL
+- JSON import/export
+- Internationalization (English and Russian)
+- PWA with offline support
 
-```sh
-cargo install cargo-generate trunk leptosfmt
-```
+## Tech Stack
 
+- [Leptos 0.8](https://github.com/leptos-rs/leptos) — reactive Rust web framework (CSR mode)
+- [Trunk](https://trunkrs.dev/) — WASM bundler and dev server
+- SCSS with [Open Props](https://open-props.style/) design tokens
+- [leptos-fluent](https://github.com/mondeja/leptos-fluent) — i18n via Fluent
+- `gloo-storage` — localStorage persistence
+- `postcard` + `brotli` + `base64` — character sharing pipeline
 
-To set up your project with this template, run
+## Getting Started
 
-```sh
-cargo generate --git https://github.com/leptos-rs/start-trunk
-```
+### Prerequisites
 
-to generate your new project, then
+- Rust nightly toolchain
+- `wasm32-unknown-unknown` target
+- Trunk
 
-```sh
-cd dnd-pc
-```
-
-to go to your newly created project.
-
-By default, this template uses Rust `nightly` and requires that you've installed the `wasm` compilation target for your toolchain.
-
-
-Sass and Tailwind are also supported by the Trunk build tool, but are optional additions: [see here for more info on how to set those up with Trunk][Trunk-instructions].
-
-
-If you don't have Rust nightly, you can install it with
 ```sh
 rustup toolchain install nightly --allow-downgrade
-```
-
-You can add the `wasm` compilation target to rust using
-```sh
 rustup target add wasm32-unknown-unknown
+cargo install trunk
 ```
 
-
-## Developing your Leptos CSR project
-
-To develop your Leptos CSR project, running
+### Development
 
 ```sh
 trunk serve --port 3000 --open
 ```
 
-will open your app in your default browser at `http://localhost:3000`.
+Opens the app at `http://localhost:3000` with hot reload.
 
+### Linting and Formatting
 
-## Deploying your Leptos CSR project
+```sh
+cargo clippy
+cargo +nightly fmt
+```
 
-To build a Leptos CSR app for release, use the command
+## Building & Deployment
+
+### Release Build
 
 ```sh
 trunk build --release
 ```
 
-This will output the files necessary to run your app into the `dist` folder; you can then use any static site host to serve these files.
+Outputs static files to the `dist/` directory.
 
-For further information about hosting Leptos CSR apps, please refer to [the Leptos Book chapter on deployment available here][deploy-csr].
+### GitHub Pages
 
+The project deploys automatically via GitHub Actions (`.github/workflows/deploy.yml`):
 
-[Leptos]: https://github.com/leptos-rs/leptos
-
-[Trunk]: https://github.com/trunk-rs/trunk
-[Trunk-instructions]: https://trunkrs.dev/assets/
-
-[deploy-csr]: https://book.leptos.dev/deployment/csr.html
+```sh
+trunk build --release --public-url /dnd-pc/
+```
