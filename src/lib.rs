@@ -35,7 +35,7 @@ use rules::RulesRegistry;
 /// Returns a reactive signal that tracks whether the OS is in dark mode.
 /// Seeds from `window.matchMedia("(prefers-color-scheme: dark)")` and
 /// updates in real time via a `change` event listener.
-fn use_theme() -> RwSignal<bool> {
+fn use_theme() -> ReadSignal<bool> {
     let mql = leptos::prelude::window()
         .match_media("(prefers-color-scheme: dark)")
         .ok()
@@ -53,7 +53,7 @@ fn use_theme() -> RwSignal<bool> {
         // Leak the closure to keep the event listener alive for the entire app lifetime.
         closure.forget();
     }
-    dark
+    dark.read_only()
 }
 
 #[component]
