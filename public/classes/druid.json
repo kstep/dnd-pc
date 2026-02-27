@@ -34,64 +34,212 @@
         },
         "levels": [
           {
-            "cantrips": 2
+            "cantrips": 2,
+            "slots": [
+              2
+            ]
           },
           {
-            "cantrips": 2
+            "cantrips": 2,
+            "slots": [
+              3
+            ]
           },
           {
-            "cantrips": 2
+            "cantrips": 2,
+            "slots": [
+              4,
+              2
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              2
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
           },
           {
-            "cantrips": 3
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
           },
           {
-            "cantrips": 4
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
           }
         ],
         "caster_coef": 1
