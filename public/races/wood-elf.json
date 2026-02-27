@@ -27,15 +27,11 @@
   "features": [
     {
       "name": "Elf Weapon Training",
-      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
-      "spells": null,
-      "fields": null
+      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
     },
     {
       "name": "Mask of the Wild",
-      "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
-      "spells": null,
-      "fields": null
+      "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."
     },
     {
       "name": "Elven Lineage",
@@ -47,8 +43,7 @@
           "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire.",
           "sticky": true
         }
-      ],
-      "fields": null
+      ]
     }
   ]
 }

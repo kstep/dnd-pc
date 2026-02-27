@@ -31,8 +31,7 @@
           "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion also ends if you dismiss it as an action or cast this spell again.",
           "sticky": true
         }
-      ],
-      "fields": null
+      ]
     }
   ]
 }

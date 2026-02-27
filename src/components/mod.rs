@@ -2,6 +2,7 @@ pub mod ability_score_block;
 pub mod ability_scores_panel;
 pub mod character_card;
 pub mod character_header;
+pub mod class_fields_panel;
 pub mod combat_panel;
 pub mod datalist_input;
 pub mod equipment_panel;

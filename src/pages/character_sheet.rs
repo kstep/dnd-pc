@@ -8,10 +8,11 @@ use crate::{
     BASE_URL,
     components::{
         ability_scores_panel::AbilityScoresPanel, character_header::CharacterHeader,
-        combat_panel::CombatPanel, equipment_panel::EquipmentPanel, features_panel::FeaturesPanel,
-        notes_panel::NotesPanel, personality_panel::PersonalityPanel,
-        proficiencies_panel::ProficienciesPanel, saving_throws_panel::SavingThrowsPanel,
-        skills_panel::SkillsPanel, spellcasting_panel::SpellcastingPanel,
+        class_fields_panel::ClassFieldsPanels, combat_panel::CombatPanel,
+        equipment_panel::EquipmentPanel, features_panel::FeaturesPanel, notes_panel::NotesPanel,
+        personality_panel::PersonalityPanel, proficiencies_panel::ProficienciesPanel,
+        saving_throws_panel::SavingThrowsPanel, skills_panel::SkillsPanel,
+        spellcasting_panel::SpellcastingPanel,
     },
     storage,
 };
@@ -61,6 +62,7 @@ pub fn CharacterSheet() -> impl IntoView {
                         <div class="sheet-column sheet-column-right">
                             <SpellcastingPanel />
                             <FeaturesPanel />
+                            <ClassFieldsPanels />
                             <ProficienciesPanel />
                         </div>
                     </div>

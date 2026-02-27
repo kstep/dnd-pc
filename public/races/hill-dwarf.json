@@ -31,9 +31,7 @@
   "features": [
     {
       "name": "Dwarven Combat Training",
-      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
-      "spells": null,
-      "fields": null
+      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
     }
   ]
 }

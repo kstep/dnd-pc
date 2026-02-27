@@ -81,7 +81,6 @@
       "description": "You can attack four times instead of once whenever you take the Attack action on your turn."
     }
   ],
-  "spells": [],
   "levels": [
     {
       "features": [
@@ -229,8 +228,8 @@
           "description": "Your Superiority Die becomes a d12."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Battle Master",
@@ -239,31 +238,31 @@
             "Student of War"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Know Your Enemy"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Improved Combat Superiority"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Relentless"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Ultimate Combat Superiority"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Champion",
@@ -291,15 +290,15 @@
         },
         {
           "name": "Superior Critical",
-          "description": "Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18\u201320 on the d20."
+          "description": "Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18–20 on the d20."
         },
         {
           "name": "Survivor",
-          "description": "You attain the pinnacle of resilience in battle, giving you these benefits. Defy Death: You have Advantage on Death Saving Throw. Moreover, when you roll 18\u201320 on a Death Saving Throw, you gain the benefit of rolling a 20 on it. Heroic Rally: At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Points."
+          "description": "You attain the pinnacle of resilience in battle, giving you these benefits. Defy Death: You have Advantage on Death Saving Throw. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it. Heroic Rally: At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Points."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Champion",
@@ -307,31 +306,31 @@
             "Remarkable Athlete"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Additional Fighting Style"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Heroic Warrior"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Superior Critical"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Survivor"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Eldritch Knight",
@@ -366,8 +365,8 @@
           "description": "When you take the Attack action on your turn, you can replace two of the attacks with a casting of one of your level 1 or level 2 Wizard spells that has a casting time of an action."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Eldritch Knight",
@@ -375,31 +374,31 @@
             "War Bond"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "War Magic"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Eldritch Strike"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Arcane Charge"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Improved War Magic"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Purple Dragon Knight (Banneret)",
@@ -430,8 +429,8 @@
           "description": "Beginning at 15th level, you can extend the benefit of your Indomitable feature to an ally. When you decide to use Indomitable to reroll an Intelligence, a Wisdom, or a Charisma saving throw and you aren't incapacitated, you can choose one ally within 60 feet of you that also failed its saving throw against the same effect."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Purple Dragon Knight (Banneret)",
@@ -439,31 +438,31 @@
             "Restriction: Knighthood"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Royal Envoy"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Inspiring Surge"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Bulwark"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Inspiring Surge"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Arcane Archer",
@@ -475,7 +474,7 @@
         },
         {
           "name": "Arcane Archer Lore",
-          "description": "At 3rd level, you learn magical theory or some of the secrets of nature\u2014typical for practitioners of this elven martial tradition. You choose to gain proficiency in either the Arcana or the Nature skill, and you choose to learn either the prestidigitation or the druidcraft cantrip."
+          "description": "At 3rd level, you learn magical theory or some of the secrets of nature—typical for practitioners of this elven martial tradition. You choose to gain proficiency in either the Arcana or the Nature skill, and you choose to learn either the prestidigitation or the druidcraft cantrip."
         },
         {
           "name": "Arcane Shot",
@@ -502,8 +501,8 @@
           "description": "Starting at 15th level, your magical archery is available whenever battle starts. If you roll initiative and have no uses of Arcane Shot remaining, you regain one use of it."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Arcane Archer",
@@ -512,7 +511,7 @@
             "Arcane Shot Options"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Additional Arcane Shot Option",
@@ -520,26 +519,26 @@
             "Magic Arrow"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Additional Arcane Shot Option"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Additional Arcane Shot Option",
             "Ever-Ready Shot"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Additional Arcane Shot Option"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Cavalier",
@@ -578,8 +577,8 @@
           "description": "Starting at 18th level, you respond to danger with extraordinary vigilance. In combat, you get a special reaction that you can take once on every creature's turn, except your turn. You can use this special reaction only to make an opportunity attack, and you can't use it on the same turn that you take your normal reaction."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Cavalier",
@@ -588,31 +587,31 @@
             "Unwavering Mark"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Warding Maneuver"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Hold the Line"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Ferocious Charger"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Vigilant Defender"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Samurai",
@@ -647,8 +646,8 @@
           "description": "Starting at 18th level, your fighting spirit can delay the grasp of death. If you take damage that reduces you to 0 hit points and doesn't kill you outright, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn, interrupting the current turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Samurai",
@@ -656,31 +655,31 @@
             "Fighting Spirit"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Elegant Courtier"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Tireless Spirit"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Rapid Strike"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Strength before Death"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Echo Knight",
@@ -715,8 +714,8 @@
           "description": "18th-level Echo Knight feature You can use a bonus action to create two echoes with your Manifest Echo feature, and these echoes can coexist. If you try to create a third echo, the previous two echoes are destroyed. Anything you can do from one echo's position can be done from the other's instead."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Echo Knight",
@@ -724,31 +723,31 @@
             "Unleash Incarnation"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Echo Avatar"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Shadow Martyr"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Reclaim Potential"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Legion of One"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Psi Warrior",
@@ -799,8 +798,8 @@
           "description": "You always have the Telekinesis spell prepared. With this feature, you can cast it without a spell slot or components, and your spellcasting ability for it is Intelligence. On each of your turns while you maintain Concentration on it, including the turn when you cast it, you can make one attack with a weapon as a Bonus Action."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Psi Warrior",
@@ -810,7 +809,7 @@
             "Telekinetic Movement"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Psi-Powered Leap",
@@ -818,25 +817,25 @@
             "Telekinetic Thrust"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Guarded Mind"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Bulwark of Force"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Telekinetic Master"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Rune Knight",
@@ -879,8 +878,8 @@
           "description": "18th-level Rune Knight feature You learn how to amplify your rune-powered transformation. As a result, the extra damage you deal with the Giant's Might feature increases to 1d10. Moreover, when you use that feature, your size can increase to Huge, and while you are that size, your reach increases by 5 feet."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Rune Knight",
@@ -889,42 +888,42 @@
             "Rune Carver"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Additional Rune Known",
             "Runic Shield"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Additional Rune Known",
             "Great Stature"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Additional Rune Known",
             "Master of Runes"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Runic Juggernaut"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Banneret",
-      "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faer\u00fbn.",
+      "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn.",
       "features": [
         {
           "name": "Banneret",
-          "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faer\u00fbn. They wander the realms as knights errant, taking the fight against evil beyond their kingdom's borders."
+          "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn. They wander the realms as knights errant, taking the fight against evil beyond their kingdom's borders."
         },
         {
           "name": "Group Recovery",
@@ -951,8 +950,8 @@
           "description": "You gain the following benefits. Bolstered Rally: The area of effect for both Group Recovery and Rallying Surge is now a 60-foot Emanation [Area of Effect]. Unshakable Bravery: You have Immunity to the Charmed and Frightened conditions."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Banneret",
@@ -960,31 +959,31 @@
             "Knightly Envoy"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Team Tactics"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Rallying Surge"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Shared Resilience"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Inspiring Commander"
           ]
         }
-      ]
+      }
     }
   ]
 }

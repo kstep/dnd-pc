@@ -128,7 +128,6 @@
       "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25."
     }
   ],
-  "spells": [],
   "levels": [
     {
       "features": [
@@ -271,33 +270,33 @@
           "description": "At 17th level, you can exploit a creature's momentary distraction when it is hit by an attack. Whenever a creature within 5 feet of you is hit by an attack made by a creature other than you, you can use your reaction to make a melee attack against that creature."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of Shadow",
             "Shadow Arts"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Shadow Step"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Cloak of Shadows"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Opportunist"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Four Elements",
@@ -320,8 +319,8 @@
           "description": "You learn one additional elemental discipline of your choice. You should know 2 elemental disciplines, as well as Elemental Attunement. Whenever you learn a new elemental discipline, you can also replace one elemental discipline that you already know with a different discipline."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Four Elements",
@@ -329,25 +328,25 @@
             "Elemental Disciplines"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Extra Elemental Discipline"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Extra Elemental Discipline"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Extra Elemental Discipline"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Open Hand",
@@ -374,33 +373,33 @@
           "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Open Hand",
             "Open Hand Technique"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Wholeness of Body"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Tranquility"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Quivering Palm"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Long Death",
@@ -427,33 +426,33 @@
           "description": "Starting at 17th level, your touch can channel the energy of death into a creature. As an action, you touch one creature within 5 feet of you, and you expend 1 to 10 ki points. The target must make a Constitution saving throw, and it takes 2d10 necrotic damage per ki point spent on a failed save, or half as much damage on a successful one."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Long Death",
             "Touch of Death"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Hour of Reaping"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Mastery of Death"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Touch of the Long Death"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Drunken Master",
@@ -492,8 +491,8 @@
           "description": "At 17th level, you gain the ability to make an overwhelming number of attacks against a group of enemies. When you use your Flurry of Blows, you can make up to three additional attacks with it (up to a total of five Flurry of Blows attacks), provided that each Flurry of Blows attack targets a different creature this turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Drunken Master",
@@ -501,7 +500,7 @@
             "Drunken Technique"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Leap to Your Feet",
@@ -509,19 +508,19 @@
             "Tipsy Sway"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Drunkard's Luck"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Intoxicated Frenzy"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Kensei",
@@ -556,8 +555,8 @@
           "description": "At 17th level, your mastery of weapons grants you extraordinary accuracy. If you miss with an attack roll using a monk weapon on your turn, you can reroll it. You can use this feature only once on each of your turns."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Agile Parry",
@@ -566,25 +565,25 @@
             "Path of the Kensei"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "One with the Blade"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Sharpen the Blade"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Unerring Accuracy"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Sun Soul",
@@ -611,33 +610,33 @@
           "description": "At 17th level, you become wreathed in a luminous, magical aura. You shed bright light in a 30-foot radius and dim light for an additional 30 feet. You can extinguish or restore the light as a bonus action. If a creature hits you with a melee attack while this light shines, you can use your reaction to deal radiant damage to the creature. The radiant damage equals 5 + your Wisdom modifier."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Sun Soul",
             "Radiant Sun Bolt"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Searing Arc Strike"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Searing Sunburst"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Sun Shield"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of Mercy",
@@ -672,8 +671,8 @@
           "description": "17th-level Way of Mercy feature Your mastery of life energy opens the door to the ultimate mercy. As an action, you can touch the corpse of a creature that died within the past 24 hours and expend 5 ki points. The creature then returns to life, regaining a number of hit points equal to 4d10 + your Wisdom modifier."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of Mercy",
@@ -682,25 +681,25 @@
             "Implements of Mercy"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Physician's Touch"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Flurry of Healing and Harm"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Hand of Ultimate Mercy"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Astral Self",
@@ -731,8 +730,8 @@
           "description": "17th-level Way of the Astral Self feature Your connection to your astral self is complete, allowing you to unleash its full potential. As a bonus action, you can spend 5 ki points to summon the arms, visage, and body of your astral self and awaken it for 10 minutes. This awakening ends early if you are incapacitated or die. While your astral self is awakened, you gain the following benefits."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Astral Self",
@@ -740,25 +739,25 @@
             "Forms of Your Astral Self"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Visage of the Astral Self"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Body of the Astral Self"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Awakened Astral Self"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Way of the Ascendant Dragon",
@@ -789,8 +788,8 @@
           "description": "17th-level Way of the Ascendant Dragon feature Your draconic spirit reaches its peak. You gain the following benefits: Augment Breath:  Blindsight:  Explosive Fury:"
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Way of the Ascendant Dragon",
@@ -798,25 +797,25 @@
             "Draconic Disciple"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Wings Unfurled"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Aspect of the Wyrm"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Ascendant Aspect"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Warrior of Mercy",
@@ -851,8 +850,8 @@
           "description": "Your mastery of life energy opens the door to the ultimate mercy. As a Magic action, you can touch the corpse of a creature that died within the past 24 hours and expend 5 Focus Points. The creature then returns to life with a number of Hit Points equal to 4d10 plus your Wisdom modifier."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Warrior of Mercy",
@@ -861,25 +860,25 @@
             "Implements of Mercy"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Physician's Touch"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Flurry of Healing and Harm"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Hand of Ultimate Mercy"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Warrior of Shadow",
@@ -903,7 +902,14 @@
         },
         {
           "name": "Shadowy Figments",
-          "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it."
+          "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it.",
+          "spells": [
+            {
+              "name": "Minor Illusion",
+              "level": 0,
+              "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
+            }
+          ]
         },
         {
           "name": "Shadow Step",
@@ -918,8 +924,8 @@
           "description": "As a Magic action while entirely within Dim Light or Darkness, you can expend 3 Focus Points to shroud yourself with shadows for 1 minute, until you have the Incapacitated condition, or until you end your turn in Bright Light. While shrouded by these shadows, you gain the following benefits. Invisibility: You have the Invisible condition."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Shadow Arts",
@@ -929,32 +935,25 @@
             "Shadowy Figments"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Shadow Step"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Improved Shadow Step"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Cloak of Shadows"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Minor Illusion",
-          "level": 0,
-          "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
-        }
-      ]
+      }
     },
     {
       "name": "Warrior of the Elements",
@@ -966,7 +965,14 @@
         },
         {
           "name": "Manipulate Elements",
-          "description": "You know the Elementalism spell. Wisdom is your spellcasting ability for it."
+          "description": "You know the Elementalism spell. Wisdom is your spellcasting ability for it.",
+          "spells": [
+            {
+              "name": "Elementalism",
+              "level": 0,
+              "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
+            }
+          ]
         },
         {
           "name": "Warrior of the Elements",
@@ -985,8 +991,8 @@
           "description": "While your Elemental Attunement is active, you also gain the following benefits. Damage Resistance: You gain Resistance to one of the following damage types of your choice: Acid, Cold, Fire, Lightning, or Thunder. At the start of each of your turns, you can change this choice. Destructive Stride: When you use your Step of the Wind, your Speed increases by 20 feet until the end of the turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Elemental Attunement",
@@ -994,32 +1000,25 @@
             "Warrior of the Elements"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Elemental Burst"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Stride of the Elements"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Elemental Epitome"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Elementalism",
-          "level": 0,
-          "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
-        }
-      ]
+      }
     },
     {
       "name": "Warrior of the Open Hand",
@@ -1046,33 +1045,33 @@
           "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Open Hand Technique",
             "Warrior of the Open Hand"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Wholeness of Body"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Fleet Step"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Quivering Palm"
           ]
         }
-      ]
+      }
     }
   ]
 }

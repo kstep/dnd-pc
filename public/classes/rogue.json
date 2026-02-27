@@ -131,7 +131,6 @@
       "description": "You have a marvelous knack for succeeding when you need to. If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a Short Rest or Long Rest."
     }
   ],
-  "spells": [],
   "levels": [
     {
       "features": [
@@ -261,7 +260,14 @@
         },
         {
           "name": "Spellcasting",
-          "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Arcane Trickster. Cantrips: You know three cantrips: Mage Hand and two other cantrips of your choice from the Wizard spell list (see that class's section for its list). Mind Sliver and Minor Illusion are recommended."
+          "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Arcane Trickster. Cantrips: You know three cantrips: Mage Hand and two other cantrips of your choice from the Wizard spell list (see that class's section for its list). Mind Sliver and Minor Illusion are recommended.",
+          "spells": [
+            {
+              "name": "Mage Hand",
+              "level": 0,
+              "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again."
+            }
+          ]
         },
         {
           "name": "Magical Ambush",
@@ -276,8 +282,8 @@
           "description": "You gain the ability to magically steal the knowledge of how to cast a spell from another spellcaster. Immediately after a creature casts a spell that targets you or includes you in its area of effect, you can take a Reaction to force the creature to make an Intelligence saving throw. The DC equals your spell save DC."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Arcane Trickster",
@@ -285,32 +291,25 @@
             "Spellcasting"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Magical Ambush"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Versatile Trickster"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Spell Thief"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Mage Hand",
-          "level": 0,
-          "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again."
-        }
-      ]
+      }
     },
     {
       "name": "Assassin",
@@ -341,8 +340,8 @@
           "description": "When you hit with your Sneak Attack on the first round of a combat, the target must succeed on a Constitution saving throw (8 plus your Dexterity modifier and Proficiency), or the attack's damage is doubled against the target."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Assassin",
@@ -350,25 +349,25 @@
             "Assassinate"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Infiltration Expertise"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Envenom Weapons"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Death Strike"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Thief",
@@ -399,8 +398,8 @@
           "description": "You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Fast Hands",
@@ -408,25 +407,25 @@
             "Thief"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Supreme Sneak"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Use Magic Device"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Thief's Reflexes"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Inquisitive",
@@ -461,8 +460,8 @@
           "description": "At 17th level, you learn to exploit a creature's weaknesses by carefully studying its tactics and movement. While your Insightful Fighting feature applies to a creature, your Sneak Attack damage against that creature increases by 3d6."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Inquisitive",
@@ -471,25 +470,25 @@
             "Insightful Fighting"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Steady Eye"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Unerring Eye"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Eye for Weakness"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Mastermind",
@@ -520,8 +519,8 @@
           "description": "Starting at 17th level, your thoughts can't be read by telepathy or other means, unless you allow it. You can present false thoughts by succeeding on a Charisma (Deception) check contested by the mind reader's Wisdom (Insight) check."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Mastermind",
@@ -529,25 +528,25 @@
             "Master of Tactics"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Insightful Manipulator"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Misdirection"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Soul of Deceit"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Scout",
@@ -578,8 +577,8 @@
           "description": "Starting at 17th level, you can strike with deadly speed. If you take the Attack action on your turn, you can make one additional attack as a bonus action. This attack can benefit from your Sneak Attack even if you have already used it this turn, but you can't use your Sneak Attack against the same target more than once in a turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Scout",
@@ -587,25 +586,25 @@
             "Survivalist"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Superior Mobility"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Ambush Master"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Sudden Strike"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Swashbuckler",
@@ -636,8 +635,8 @@
           "description": "Beginning at 17th level, your mastery of the blade lets you turn failure into success in combat. If you miss with an attack roll, you can roll it again with advantage. Once you do so, you can't use this feature again until you finish a short or long rest."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Swashbuckler",
@@ -645,25 +644,25 @@
             "Rakish Audacity"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Panache"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Elegant Maneuver"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Master Duelist"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Phantom",
@@ -694,8 +693,8 @@
           "description": "17th-level Phantom feature Your association with death has become so close that you gain the following benefits: When you use your Wails from the Grave, you can deal the necrotic damage to both the first and the second creature. At the end of a long rest, a soul trinket appears in your hand if you don't have any soul trinkets, as the spirits of the dead are drawn to you."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Phantom",
@@ -703,25 +702,25 @@
             "Whispers of the Dead"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Tokens of the Departed"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Ghost Walk"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Death's Friend"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Soulknife",
@@ -768,8 +767,8 @@
           "description": "You can sweep your Psychic Blades through a creature's mind. When you use your Psychic Blades to deal Sneak Attack damage to a creature, you can force that target to make a Wisdom saving throw (8 plus your Dexterity modifier and Proficiency). If the save fails, the target has the Stunned condition for 1 minute."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Soulknife",
@@ -779,7 +778,7 @@
             "Psychic Whispers"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Homing Strikes",
@@ -787,19 +786,19 @@
             "Soul Blades"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Psychic Veil"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Rend Mind"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Scion of the Three",
@@ -830,8 +829,8 @@
           "description": "You gain the following benefits. Cutthroat: You regain one expended use of Bloodthirst when you finish a Short Rest. Murderous Intent: When you roll for your Sneak Attack damage, you can treat a roll of a 1 or 2 on the die as a 3."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Bloodthirst",
@@ -839,25 +838,25 @@
             "Scion of the Three"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Strike Fear"
           ]
         },
-        {
+        "13": {
           "level": 13,
           "features": [
             "Aura of Malevolence"
           ]
         },
-        {
+        "17": {
           "level": 17,
           "features": [
             "Dread Incarnate"
           ]
         }
-      ]
+      }
     }
   ]
 }

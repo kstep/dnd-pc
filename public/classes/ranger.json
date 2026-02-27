@@ -677,33 +677,33 @@
           "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion beast with the spell if the beast is within 30 feet of you."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Beast Master",
             "Primal Companion"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Exceptional Training"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Bestial Fury"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Share Spells"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Hunter",
@@ -734,8 +734,8 @@
           "description": "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Hunter",
@@ -743,25 +743,25 @@
             "Hunter's Prey"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Defensive Tactics"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Superior Hunter's Prey"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Superior Hunter's Defense"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Gloom Stalker",
@@ -777,7 +777,34 @@
         },
         {
           "name": "Gloom Stalker Spells",
-          "description": "When you reach a Ranger level specified in the Gloom Stalker Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach a Ranger level specified in the Gloom Stalker Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Disguise Self",
+              "level": 1,
+              "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+            },
+            {
+              "name": "Rope Trick",
+              "level": 2,
+              "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends."
+            },
+            {
+              "name": "Fear",
+              "level": 3,
+              "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
+            },
+            {
+              "name": "Greater Invisibility",
+              "level": 4,
+              "description": "A creature you touch has the Invisible condition until the spell ends."
+            },
+            {
+              "name": "Seeming",
+              "level": 5,
+              "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+            }
+          ]
         },
         {
           "name": "Umbral Sight",
@@ -796,8 +823,8 @@
           "description": "When a creature makes an attack roll against you, you can take a Reaction to impose Disadvantage on that roll. Whether the attack hits or misses, you can then teleport up to 30 feet to an unoccupied space you can see."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Dread Ambusher",
@@ -806,52 +833,25 @@
             "Umbral Sight"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Iron Mind"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Stalker's Flurry"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Shadowy Dodge"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Disguise Self",
-          "level": 1,
-          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
-        },
-        {
-          "name": "Rope Trick",
-          "level": 2,
-          "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends."
-        },
-        {
-          "name": "Fear",
-          "level": 3,
-          "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
-        },
-        {
-          "name": "Greater Invisibility",
-          "level": 4,
-          "description": "A creature you touch has the Invisible condition until the spell ends."
-        },
-        {
-          "name": "Seeming",
-          "level": 5,
-          "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
-        }
-      ]
+      }
     },
     {
       "name": "Horizon Walker",
@@ -886,8 +886,8 @@
           "description": "At 15th level, your ability to move between planes enables you to slip through the planar boundaries to lessen the harm done to you during battle. When you take damage from an attack, you can use your reaction to give yourself resistance to all of that attack's damage on this turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Horizon Walker",
@@ -896,25 +896,25 @@
             "Planar Warrior"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Ethereal Step"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Distant Strike"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Spectral Defense"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Monster Slayer",
@@ -949,8 +949,8 @@
           "description": "At 15th level, you gain the ability to counterattack when your prey tries to sabotage you. If the target of your Slayer's Prey forces you to make a saving throw, you can use your reaction to make one weapon attack against the quarry. You make this attack immediately before making the saving throw. If your attack hits, your save automatically succeeds, in addition to the attack's normal effects."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Monster Slayer",
@@ -959,25 +959,25 @@
             "Slayer's Prey"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Supernatural Defense"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Magic-User's Nemesis"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Slayer's Counter"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Fey Wanderer",
@@ -993,7 +993,34 @@
         },
         {
           "name": "Fey Wanderer Spells",
-          "description": "When you reach a Ranger level specified in the Fey Wanderer Spells table, you thereafter always have the listed spells prepared. You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly."
+          "description": "When you reach a Ranger level specified in the Fey Wanderer Spells table, you thereafter always have the listed spells prepared. You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly.",
+          "spells": [
+            {
+              "name": "Charm Person",
+              "level": 1,
+              "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+            },
+            {
+              "name": "Misty Step",
+              "level": 2,
+              "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+            },
+            {
+              "name": "Summon Fey",
+              "level": 3,
+              "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+            },
+            {
+              "name": "Dimension Door",
+              "level": 4,
+              "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
+            },
+            {
+              "name": "Mislead",
+              "level": 5,
+              "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell."
+            }
+          ]
         },
         {
           "name": "Otherworldly Glamour",
@@ -1012,8 +1039,8 @@
           "description": "You can cast Misty Step without expending a spell slot. You can do so a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest. In addition, whenever you cast Misty Step, you can bring along one willing creature you can see within 5 feet of yourself."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Fey Wanderer",
@@ -1022,52 +1049,25 @@
             "Otherworldly Glamour"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Beguiling Twist"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Fey Reinforcements"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Misty Wanderer"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Charm Person",
-          "level": 1,
-          "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
-        },
-        {
-          "name": "Misty Step",
-          "level": 2,
-          "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
-        },
-        {
-          "name": "Summon Fey",
-          "level": 3,
-          "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
-        },
-        {
-          "name": "Dimension Door",
-          "level": 4,
-          "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
-        },
-        {
-          "name": "Mislead",
-          "level": 5,
-          "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell."
-        }
-      ]
+      }
     },
     {
       "name": "Swarmkeeper",
@@ -1098,8 +1098,8 @@
           "description": "15th-level Swarmkeeper feature You can discorporate into your swarm, avoiding danger. When you take damage, you can use your reaction to give yourself resistance to that damage. You vanish into your swarm and then teleport to an unoccupied space that you can see within 30 feet of you, where you reappear with the swarm."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Swarmkeeper",
@@ -1107,25 +1107,25 @@
             "Swarmkeeper Magic"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Writhing Tide"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Mighty Swarm"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Swarming Dispersal"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Drakewarden",
@@ -1156,8 +1156,8 @@
           "description": "15th-level Drakewarden feature Your bond to your drake reaches the pinnacle of its power. While your drake is summoned, you and the drake gain the following benefits: Empowered Bite: The drake's Bite attack deals an extra 1d6 damage of the type chosen for its Draconic Essence (for a total of 2d6 extra damage). Large Drake: The drake grows to Large size."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Drakewarden",
@@ -1165,25 +1165,25 @@
             "Drake Companion"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Bond of Fang and Scale"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Drake's Breath"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Perfected Bond"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Winter Walker",
@@ -1203,7 +1203,34 @@
         },
         {
           "name": "Winter Walker Spells",
-          "description": "When you reach a Ranger level specified in the Winter Walker Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach a Ranger level specified in the Winter Walker Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Ice Knife",
+              "level": 1,
+              "description": "You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Piercing damage. Hit or miss, the shard then explodes."
+            },
+            {
+              "name": "Hold Person",
+              "level": 2,
+              "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+            },
+            {
+              "name": "Remove Curse",
+              "level": 3,
+              "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
+            },
+            {
+              "name": "Ice Storm",
+              "level": 4,
+              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+            },
+            {
+              "name": "Cone of Cold",
+              "level": 5,
+              "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+            }
+          ]
         },
         {
           "name": "Fortifying Soul",
@@ -1218,8 +1245,8 @@
           "description": "When you cast Hunter's Mark, you can adopt a ghostly, snowy form. This form lasts until the spell ends, and while you are in this form, you gain the following benefits. Once you use this feature, you can't use it again until you finish a Long Rest unless you expend a level 4+ spell slot (no action required). Frozen Soul: You have Immunity to Cold damage."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Frigid Explorer",
@@ -1228,52 +1255,25 @@
             "Winter Walker Spells"
           ]
         },
-        {
+        "7": {
           "level": 7,
           "features": [
             "Fortifying Soul"
           ]
         },
-        {
+        "11": {
           "level": 11,
           "features": [
             "Chilling Retribution"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Frozen Haunt"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Ice Knife",
-          "level": 1,
-          "description": "You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Piercing damage. Hit or miss, the shard then explodes."
-        },
-        {
-          "name": "Hold Person",
-          "level": 2,
-          "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-        },
-        {
-          "name": "Remove Curse",
-          "level": 3,
-          "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
-        },
-        {
-          "name": "Ice Storm",
-          "level": 4,
-          "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-        },
-        {
-          "name": "Cone of Cold",
-          "level": 5,
-          "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
-        }
-      ]
+      }
     }
   ]
 }

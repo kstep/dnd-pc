@@ -980,46 +980,6 @@ input, select {
   }
 }
 
-.metamagic-entry {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  gap: var(--size-1);
-  margin-bottom: var(--size-2);
-  padding-bottom: var(--size-2);
-  border-bottom: 1px solid var(--panel-border);
-  align-items: center;
-
-  &:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-  }
-
-  .metamagic-name {
-    min-width: 0;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    font-weight: var(--font-weight-6);
-  }
-
-  .metamagic-cost {
-    width: 50px;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-    text-align: center;
-  }
-
-  .metamagic-desc {
-    @extend .collapsible-desc;
-  }
-}
-
 .spell-entry {
   display: grid;
   grid-template-columns: auto auto 1fr auto auto;
@@ -1216,6 +1176,58 @@ input, select {
   .btn-add, .btn-cancel {
     margin-top: 0;
     white-space: nowrap;
+  }
+}
+
+/* --------------------- Class Fields -------------------------- */
+.class-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.field-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+
+  .field-label {
+    font-weight: var(--font-weight-6);
+    white-space: nowrap;
+  }
+
+  .field-value {
+    font-size: var(--font-size-2);
+  }
+}
+
+.field-points .points-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.field-choice {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  width: 100%;
+}
+
+.choice-entry {
+  .choice-desc {
+    margin: var(--size-1) 0 0;
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+  }
+
+  input[type="text"] {
+    width: 100%;
   }
 }
 

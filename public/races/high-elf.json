@@ -31,9 +31,7 @@
   "features": [
     {
       "name": "Elf Weapon Training",
-      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
-      "spells": null,
-      "fields": null
+      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
     },
     {
       "name": "Elven Lineage",
@@ -45,8 +43,7 @@
           "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several minor magical effects: a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
           "sticky": true
         }
-      ],
-      "fields": null
+      ]
     }
   ]
 }

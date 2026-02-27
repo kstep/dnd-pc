@@ -29,14 +29,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
     let spell_save_dc = Memo::new(move |_| store.get().spell_save_dc());
     let spell_attack = Memo::new(move |_| store.get().spell_attack_bonus());
 
-    let toggle_spellcasting = move |_| {
-        if store.spellcasting().read().is_some() {
-            store.spellcasting().set(None);
-        } else {
-            store.spellcasting().set(Some(SpellcastingData::default()));
-        }
-    };
-
     let registry = expect_context::<RulesRegistry>();
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -44,17 +36,8 @@ pub fn SpellcastingPanel() -> impl IntoView {
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
 
     view! {
+        <Show when=move || has_spellcasting.get()>
         <Panel title=move_tr!("panel-spellcasting") class="spellcasting-panel">
-            <label class="toggle-row">
-                <input
-                    type="checkbox"
-                    prop:checked=move || has_spellcasting.get()
-                    on:change=toggle_spellcasting
-                />
-                " " {move_tr!("enable-spellcasting")}
-            </label>
-
-            <Show when=move || has_spellcasting.get()>
                 {move || {
                     let classes = store.identity().classes().read();
                     (0..=9u32).map(|level| {
@@ -214,6 +197,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 let spell_name = spell.name.clone();
                                 let spell_level = spell.level.to_string();
                                 let spell_prepared = spell.prepared;
+                                let spell_sticky = spell.sticky;
                                 let spell_desc = spell.description.clone();
                                 let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
                                 view! {
@@ -225,9 +209,11 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                         <label class="spell-prepared">
                                             <input
                                                 type="checkbox"
-                                                prop:checked=spell_prepared
+                                                prop:checked=spell_prepared || spell_sticky
+                                                prop:disabled=spell_sticky
                                                 on:change=move |_| {
-                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                    if !spell_sticky
+                                                        && let Some(sc) = store.spellcasting().write().as_mut()
                                                         && let Some(s) = sc.spells.get_mut(i)
                                                     {
                                                         s.prepared = !s.prepared;
@@ -276,18 +262,20 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                 }
                                             }
                                         />
-                                        <button
-                                            class="btn-remove"
-                                            on:click=move |_| {
-                                                if let Some(sc) = store.spellcasting().write().as_mut()
-                                                    && i < sc.spells.len()
-                                                {
-                                                    sc.spells.remove(i);
+                                        <Show when=move || !spell_sticky>
+                                            <button
+                                                class="btn-remove"
+                                                on:click=move |_| {
+                                                    if let Some(sc) = store.spellcasting().write().as_mut()
+                                                        && i < sc.spells.len()
+                                                    {
+                                                        sc.spells.remove(i);
+                                                    }
                                                 }
-                                            }
-                                        >
-                                            "X"
-                                        </button>
+                                            >
+                                                "X"
+                                            </button>
+                                        </Show>
                                         <Show when=move || is_open.get()>
                                             <textarea
                                                 class="spell-desc"
@@ -318,7 +306,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 >
                     {move_tr!("btn-add-spell")}
                 </button>
-            </Show>
         </Panel>
+        </Show>
     }
 }

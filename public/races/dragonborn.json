@@ -19,9 +19,7 @@
   "features": [
     {
       "name": "Breath Weapon",
-      "description": "You can use your action to exhale destructive energy. Shape and damage type are determined by your draconic ancestry. Each creature in the area must make a saving throw (DC = 8 + CON modifier + proficiency bonus). Damage: 2d6 at 1st level, 3d6 at 6th, 4d6 at 11th, 5d6 at 16th. Usable once per short or long rest.",
-      "spells": null,
-      "fields": null
+      "description": "You can use your action to exhale destructive energy. Shape and damage type are determined by your draconic ancestry. Each creature in the area must make a saving throw (DC = 8 + CON modifier + proficiency bonus). Damage: 2d6 at 1st level, 3d6 at 6th, 4d6 at 11th, 5d6 at 16th. Usable once per short or long rest."
     }
   ]
 }

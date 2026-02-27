@@ -931,8 +931,8 @@
           "description": "You gain the following benefits. Alchemical Eruption: When you cast an Artificer spell that deals Acid, Fire, or Poison damage to a target, you can also deal 2d8 Force damage to that target. You can use this benefit only once on each of your turns. Chemical Resistance: You gain Resistance to Acid damage and Poison damage. You also gain Immunity to the Poisoned condition."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Alchemist",
@@ -941,25 +941,25 @@
             "Tools of the Trade"
           ]
         },
-        {
+        "5": {
           "level": 5,
           "features": [
             "Alchemical Savant"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Restorative Reagents"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Chemical Mastery"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Armorer",
@@ -1062,8 +1062,8 @@
           "description": "Your Arcane Armor gains additional benefits based on its model, as detailed below. Dreadnaught: The damage die of your Force Demolisher increases to 2d6 Force damage. In addition, when you use your Giant Stature, your reach increases by 10 feet, your size can increase to Large or Huge (your choice), and you have Advantage on Strength checks and Strength saving throws for the duration."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Arcane Armor",
@@ -1076,25 +1076,25 @@
             "Tools of the Trade"
           ]
         },
-        {
+        "5": {
           "level": 5,
           "features": [
             "Extra Attack"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Improved Armorer"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Perfected Armor"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Artillerist",
@@ -1106,7 +1106,59 @@
         },
         {
           "name": "Artillerist Spells",
-          "description": "When you reach an Artificer level specified in the Artillerist Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach an Artificer level specified in the Artillerist Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Shield",
+              "level": 1,
+              "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
+            },
+            {
+              "name": "Thunderwave",
+              "level": 1,
+              "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
+            },
+            {
+              "name": "Scorching Ray",
+              "level": 2,
+              "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+            },
+            {
+              "name": "Shatter",
+              "level": 2,
+              "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
+            },
+            {
+              "name": "Fireball",
+              "level": 3,
+              "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
+            },
+            {
+              "name": "Wind Wall",
+              "level": 3,
+              "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration."
+            },
+            {
+              "name": "Ice Storm",
+              "level": 4,
+              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+            },
+            {
+              "name": "Wall of Fire",
+              "level": 4,
+              "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+            },
+            {
+              "name": "Cone of Cold",
+              "level": 5,
+              "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+            },
+            {
+              "name": "Wall of Force",
+              "level": 5,
+              "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
+            }
+          ]
         },
         {
           "name": "Eldritch Cannon",
@@ -1129,8 +1181,8 @@
           "description": "You're a master at forming well-defended emplacements using your Eldritch Cannon. You gain the following benefits. Shimmering Field Projection: You and your allies have Cover while within 10 feet of your Eldritch Cannon."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Artillerist",
@@ -1139,77 +1191,25 @@
             "Tools of the Trade"
           ]
         },
-        {
+        "5": {
           "level": 5,
           "features": [
             "Arcane Firearm"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Explosive Cannon"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Fortified Position"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Shield",
-          "level": 1,
-          "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
-        },
-        {
-          "name": "Thunderwave",
-          "level": 1,
-          "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
-        },
-        {
-          "name": "Scorching Ray",
-          "level": 2,
-          "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
-        },
-        {
-          "name": "Shatter",
-          "level": 2,
-          "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
-        },
-        {
-          "name": "Fireball",
-          "level": 3,
-          "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
-        },
-        {
-          "name": "Wind Wall",
-          "level": 3,
-          "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration."
-        },
-        {
-          "name": "Ice Storm",
-          "level": 4,
-          "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-        },
-        {
-          "name": "Wall of Fire",
-          "level": 4,
-          "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
-        },
-        {
-          "name": "Cone of Cold",
-          "level": 5,
-          "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
-        },
-        {
-          "name": "Wall of Force",
-          "level": 5,
-          "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
-        }
-      ]
+      }
     },
     {
       "name": "Battle Smith",
@@ -1225,7 +1225,59 @@
         },
         {
           "name": "Battle Smith Spells",
-          "description": "When you reach an Artificer level specified in the Battle Smith Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach an Artificer level specified in the Battle Smith Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Heroism",
+              "level": 1,
+              "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
+            },
+            {
+              "name": "Shield",
+              "level": 1,
+              "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
+            },
+            {
+              "name": "Shining Smite",
+              "level": 2,
+              "description": "The target hit by the strike takes an extra 2d6 Radiant damage from the attack. Until the spell ends, the target sheds Bright Light in a 5-foot radius, attack rolls against it have Advantage, and it can't benefit from the Invisible condition."
+            },
+            {
+              "name": "Warding Bond",
+              "level": 2,
+              "description": "You touch another creature that is willing and create a mystic connection between you and the target until the spell ends. While the target is within 60 feet of you, it gains a +1 bonus to AC and saving throws, and it has Resistance to all damage."
+            },
+            {
+              "name": "Aura of Vitality",
+              "level": 3,
+              "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
+            },
+            {
+              "name": "Conjure Barrage",
+              "level": 3,
+              "description": "You brandish the weapon used to cast the spell and conjure similar spectral weapons (or ammunition appropriate to the weapon) that launch forward and then disappear."
+            },
+            {
+              "name": "Aura of Purity",
+              "level": 4,
+              "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunn..."
+            },
+            {
+              "name": "Fire Shield",
+              "level": 4,
+              "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+            },
+            {
+              "name": "Banishing Smite",
+              "level": 5,
+              "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
+            },
+            {
+              "name": "Mass Cure Wounds",
+              "level": 5,
+              "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+            }
+          ]
         },
         {
           "name": "Steel Defender",
@@ -1248,8 +1300,8 @@
           "description": "Your Arcane Jolt and Steel Defender have become more powerful, granting these benefits. Improved Jolt: The extra damage and healing of your Arcane Jolt both increase to 4d6. Improved Deflection: Whenever your Steel Defender uses its Deflect Attack, the attacker takes Force damage equal to 1d4 plus your Intelligence modifier."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Battle Ready",
@@ -1259,77 +1311,25 @@
             "Tools of the Trade"
           ]
         },
-        {
+        "5": {
           "level": 5,
           "features": [
             "Extra Attack"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Arcane Jolt"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Improved Defender"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Heroism",
-          "level": 1,
-          "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
-        },
-        {
-          "name": "Shield",
-          "level": 1,
-          "description": "An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile."
-        },
-        {
-          "name": "Shining Smite",
-          "level": 2,
-          "description": "The target hit by the strike takes an extra 2d6 Radiant damage from the attack. Until the spell ends, the target sheds Bright Light in a 5-foot radius, attack rolls against it have Advantage, and it can't benefit from the Invisible condition."
-        },
-        {
-          "name": "Warding Bond",
-          "level": 2,
-          "description": "You touch another creature that is willing and create a mystic connection between you and the target until the spell ends. While the target is within 60 feet of you, it gains a +1 bonus to AC and saving throws, and it has Resistance to all damage."
-        },
-        {
-          "name": "Aura of Vitality",
-          "level": 3,
-          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
-        },
-        {
-          "name": "Conjure Barrage",
-          "level": 3,
-          "description": "You brandish the weapon used to cast the spell and conjure similar spectral weapons (or ammunition appropriate to the weapon) that launch forward and then disappear."
-        },
-        {
-          "name": "Aura of Purity",
-          "level": 4,
-          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunn..."
-        },
-        {
-          "name": "Fire Shield",
-          "level": 4,
-          "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
-        },
-        {
-          "name": "Banishing Smite",
-          "level": 5,
-          "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
-        },
-        {
-          "name": "Mass Cure Wounds",
-          "level": 5,
-          "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
-        }
-      ]
+      }
     },
     {
       "name": "Cartographer",
@@ -1345,7 +1345,64 @@
         },
         {
           "name": "Cartographer Spells",
-          "description": "When you reach an Artificer level specified in the Cartographer Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach an Artificer level specified in the Cartographer Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Faerie Fire",
+              "level": 1,
+              "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
+            },
+            {
+              "name": "Guiding Bolt",
+              "level": 1,
+              "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+            },
+            {
+              "name": "Healing Word",
+              "level": 1,
+              "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
+            },
+            {
+              "name": "Locate Object",
+              "level": 2,
+              "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement."
+            },
+            {
+              "name": "Mind Spike",
+              "level": 2,
+              "description": "You drive a spike of psionic energy into the mind of one creature you can see within range. The target makes a Wisdom saving throw, taking 3d8 Psychic damage on a failed save or half as much damage on a successful one."
+            },
+            {
+              "name": "Call Lightning",
+              "level": 3,
+              "description": "A storm cloud appears at a point within range that you can see above yourself. It takes the shape of a Cylinder [Area of Effect] that is 10 feet tall with a 60-foot radius. When you cast the spell, choose a point you can see under the cloud. A lightning bolt shoots from the cloud to that point."
+            },
+            {
+              "name": "Clairvoyance",
+              "level": 3,
+              "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees)."
+            },
+            {
+              "name": "Banishment",
+              "level": 4,
+              "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition."
+            },
+            {
+              "name": "Locate Creature",
+              "level": 4,
+              "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement."
+            },
+            {
+              "name": "Scrying",
+              "level": 5,
+              "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
+            },
+            {
+              "name": "Teleportation Circle",
+              "level": 5,
+              "description": "As you cast the spell, you draw a 5-foot-radius circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know and that is on the same plane of existence as you."
+            }
+          ]
         },
         {
           "name": "Mapping Magic",
@@ -1368,8 +1425,8 @@
           "description": "Your Adventurer's Atlas improves, gaining the following benefits. Safe Haven: When a map holder would be reduced to 0 Hit Points but not killed outright, that creature can destroy its map. The creature's Hit Points instead change to a number equal to twice your Artificer level, and the creature is teleported to an unoccupied space within 5 feet of you or another map holder of its choice."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Adventurer's Atlas",
@@ -1379,82 +1436,25 @@
             "Tools of the Trade"
           ]
         },
-        {
+        "5": {
           "level": 5,
           "features": [
             "Guided Precision"
           ]
         },
-        {
+        "9": {
           "level": 9,
           "features": [
             "Ingenious Movement"
           ]
         },
-        {
+        "15": {
           "level": 15,
           "features": [
             "Superior Atlas"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Faerie Fire",
-          "level": 1,
-          "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
-        },
-        {
-          "name": "Guiding Bolt",
-          "level": 1,
-          "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
-        },
-        {
-          "name": "Healing Word",
-          "level": 1,
-          "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
-        },
-        {
-          "name": "Locate Object",
-          "level": 2,
-          "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement."
-        },
-        {
-          "name": "Mind Spike",
-          "level": 2,
-          "description": "You drive a spike of psionic energy into the mind of one creature you can see within range. The target makes a Wisdom saving throw, taking 3d8 Psychic damage on a failed save or half as much damage on a successful one."
-        },
-        {
-          "name": "Call Lightning",
-          "level": 3,
-          "description": "A storm cloud appears at a point within range that you can see above yourself. It takes the shape of a Cylinder [Area of Effect] that is 10 feet tall with a 60-foot radius. When you cast the spell, choose a point you can see under the cloud. A lightning bolt shoots from the cloud to that point."
-        },
-        {
-          "name": "Clairvoyance",
-          "level": 3,
-          "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees)."
-        },
-        {
-          "name": "Banishment",
-          "level": 4,
-          "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition."
-        },
-        {
-          "name": "Locate Creature",
-          "level": 4,
-          "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement."
-        },
-        {
-          "name": "Scrying",
-          "level": 5,
-          "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
-        },
-        {
-          "name": "Teleportation Circle",
-          "level": 5,
-          "description": "As you cast the spell, you draw a 5-foot-radius circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know and that is on the same plane of existence as you."
-        }
-      ]
+      }
     }
   ]
 }

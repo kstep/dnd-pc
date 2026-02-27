@@ -263,33 +263,33 @@
           "description": "As a Bonus Action, you can strike terror into others with your menacing presence and primal power. When you do so, each creature of your choice in a 30-foot Emanation [Area of Effect] originating from you must make a Wisdom saving throw (8 plus your Strength modifier and Proficiency). On a failed save, a creature has the Frightened condition for 1 minute."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Berserker",
             "Frenzy"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Mindless Rage"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Retaliation"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Intimidating Presence"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Totem Warrior",
@@ -325,7 +325,7 @@
         },
         {
           "name": "Totem Spirit",
-          "description": "At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. You must make or acquire a physical totem object\u2014an amulet or similar adornment\u2014that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your option, you also gain minor physical attributes that are reminiscent of your totem spirit."
+          "description": "At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. You must make or acquire a physical totem object—an amulet or similar adornment—that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your option, you also gain minor physical attributes that are reminiscent of your totem spirit."
         },
         {
           "name": "Aspect of the Beast",
@@ -340,8 +340,8 @@
           "description": "At 14th level, you gain a magical benefit based on a totem animal of your choice. You can choose the same animal you selected previously or a different one."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Bear",
@@ -354,7 +354,7 @@
             "Totem Spirit"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bear",
@@ -365,13 +365,13 @@
             "Aspect of the Beast"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Spirit Walker"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Bear",
@@ -382,7 +382,7 @@
             "Totemic Attunement"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Battlerager",
@@ -397,7 +397,7 @@
           "description": "When you choose this path at 3rd level, you gain the ability to use spiked armor as a weapon. While you are wearing spiked armor and are raging, you can use a bonus action to make one melee weapon attack with your armor spikes at a target within 5 feet of you. If the attack hits, the spikes deal 1d4 piercing damage. You use your Strength modifier for the attack and damage rolls."
         },
         {
-          "name": "Restriction\u2014Dwarves Only",
+          "name": "Restriction—Dwarves Only",
           "description": "Only dwarves can follow the Path of the Battlerager. The battlerager fills a particular niche in dwarven society and culture. Your DM can lift this restriction to better suit the campaign. The restriction exists for the Forgotten Realms. It might not apply to your DM's setting or your DM's version of the Realms."
         },
         {
@@ -413,34 +413,34 @@
           "description": "Starting at 14th level, when a creature within 5 feet of you hits you with a melee attack, the attacker takes 3 piercing damage if you are raging, aren't incapacitated, and are wearing spiked armor."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Battlerager",
             "Battlerager Armor",
-            "Restriction\u2014Dwarves Only"
+            "Restriction—Dwarves Only"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Reckless Abandon"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Battlerager Charge"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Spiked Retribution"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Ancestral Guardian",
@@ -467,33 +467,33 @@
           "description": "At 14th level, your ancestral spirits grow powerful enough to retaliate. When you use your Spirit Shield to reduce the damage of an attack, the attacker takes an amount of force damage equal to the damage that your Spirit Shield prevents."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Ancestral Guardian",
             "Ancestral Protectors"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Spirit Shield"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Consult the Spirits"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Vengeful Ancestors"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Storm Herald",
@@ -532,8 +532,8 @@
           "description": "At 14th level, the power of the storm you channel grows mightier, lashing out at your foes. The effect is based on the environment you chose for your Storm Aura."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Desert",
@@ -543,7 +543,7 @@
             "Storm Aura"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Desert",
@@ -552,13 +552,13 @@
             "Storm Soul"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Shielding Storm"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Desert",
@@ -567,7 +567,7 @@
             "Raging Storm"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Zealot",
@@ -598,8 +598,8 @@
           "description": "When you activate your Rage, you can assume the form of a divine warrior. This form lasts for 1 minute or until you drop to 0 Hit Points. Once you use this feature, you can't do so again until you finish a Long Rest. While in this form, you gain the benefits below. Flight: You have a Fly Speed equal to your Speed and can hover."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Zealot",
@@ -607,25 +607,25 @@
             "Warrior of the Gods"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Fanatical Focus"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Zealous Presence"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Rage of the Gods"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Beast",
@@ -652,33 +652,33 @@
           "description": "14th-level Path of the Beast feature The beast within you grows so powerful that you can spread its ferocity to others and gain resilience from them joining your hunt. When you enter your rage, you can choose a number of other willing creatures you can see within 30 feet of you equal to your Constitution modifier (minimum of one creature)."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Beast",
             "Form of the Beast"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bestial Soul"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Infectious Fury"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Call the Hunt"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of Wild Magic",
@@ -709,8 +709,8 @@
           "description": "14th-level Path of Wild Magic feature Whenever you roll on the Wild Magic table, you can roll the die twice and choose which of the two effects to unleash. If you roll the same number on both dice, you can ignore the number and choose any effect on the table."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of Wild Magic",
@@ -718,25 +718,25 @@
             "Wild Surge"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bolstering Magic"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Unstable Backlash"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Controlled Surge"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Giant",
@@ -767,8 +767,8 @@
           "description": "14th-Level Path of the Giant Feature The primordial power of your rage intensifies. When you rage, your reach increases by 10 feet, your size can increase to Large or Huge (your choice), and you can use your Mighty Impel to move creatures that are Large or smaller. In addition, the extra damage dealt by your Elemental Cleaver feature increases to 2d6."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Giant Power",
@@ -776,25 +776,25 @@
             "Path of the Giant"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Elemental Cleaver"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Mighty Impel"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Demiurgic Colossus"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the Wild Heart",
@@ -825,8 +825,8 @@
           "description": "Whenever you activate your Rage, you gain one of the following options of your choice. Falcon: While your Rage is active, you have a Fly Speed equal to your Speed if you aren't wearing any armor. Lion: While your Rage is active, any of your enemies within 5 feet of you have Disadvantage on attack rolls against targets other than you or another Barbarian who has this option active."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the Wild Heart",
@@ -834,25 +834,25 @@
             "Rage of the Wilds"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Aspect of the Wilds"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Nature Speaker"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Power of the Wilds"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Path of the World Tree",
@@ -879,33 +879,33 @@
           "description": "When you activate your Rage and as a Bonus Action while your Rage is active, you can teleport up to 60 feet to an unoccupied space you can see. In addition, once per Rage, you can increase the range of that teleport to 150 feet. When you do so, you can also bring up to six willing creatures who are within 10 feet of you."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Path of the World Tree",
             "Vitality of the Tree"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Branches of the Tree"
           ]
         },
-        {
+        "10": {
           "level": 10,
           "features": [
             "Battering Roots"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Travel Along the Tree"
           ]
         }
-      ]
+      }
     }
   ]
 }

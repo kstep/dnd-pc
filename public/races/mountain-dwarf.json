@@ -27,15 +27,11 @@
   "features": [
     {
       "name": "Dwarven Combat Training",
-      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
-      "spells": null,
-      "fields": null
+      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
     },
     {
       "name": "Dwarven Armor Training",
-      "description": "You have proficiency with light and medium armor.",
-      "spells": null,
-      "fields": null
+      "description": "You have proficiency with light and medium armor."
     }
   ]
 }

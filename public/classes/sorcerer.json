@@ -1323,8 +1323,8 @@
           "description": "Beginning at 18th level, you can channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened. As an action, you can spend 5 sorcery points to draw on this power and exude an aura of awe or fear (your choice) to a distance of 60 feet."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Draconic Bloodline",
@@ -1332,31 +1332,31 @@
             "Dragon Ancestor"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Draconic Bloodline"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Elemental Affinity"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Dragon Wings"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Draconic Presence"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Wild Magic",
@@ -1387,8 +1387,8 @@
           "description": "Beginning at 18th level, the harmful energy of your spells intensifies. When you roll damage for a spell and roll the highest number possible on any of the dice, choose one of those dice, roll it again and add that roll to the damage. You can use the feature only once per turn."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Wild Magic",
@@ -1396,31 +1396,31 @@
             "Wild Magic Surge"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Wild Magic"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bend Luck"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Controlled Chaos"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Spell Bombardment"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Pyromancer (PSK)",
@@ -1447,39 +1447,39 @@
           "description": "At 18th level, you gain immunity to fire damage. In addition, any spell or effect you create ignores resistance to fire damage and treats immunity to fire damage as resistance to fire damage."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Pyromancer (PSK)",
             "Heart of Fire"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Pyromancer (PSK)"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Fire in the Veins"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Pyromancer's Fury"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Fiery Soul"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Divine Soul",
@@ -1510,8 +1510,8 @@
           "description": "At 18th level, you gain the ability to overcome grievous injuries. As a bonus action when you have fewer than half of your hit points remaining, you can regain a number of hit points equal to half your hit point maximum. Once you use this feature, you can't use it again until you finish a long rest."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Divine Soul",
@@ -1519,31 +1519,31 @@
             "Favored by the Gods"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Divine Soul"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Empowered Healing"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Otherworldly Wings"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Unearthly Recovery"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Shadow Magic",
@@ -1574,8 +1574,8 @@
           "description": "Starting at 18th level, you can spend 6 sorcery points as a bonus action to magically transform yourself into a shadowy form. In this form, you have resistance to all damage except force and radiant damage, and you can move through other creatures and objects as if they were difficult terrain. You take 5 force damage if you end your turn inside an object. You remain in this form for 1 minute."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Shadow Magic",
@@ -1583,31 +1583,31 @@
             "Strength of the Grave"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Shadow Magic"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Hound of Ill Omen"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Shadow Walk"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Umbral Form"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Storm Sorcery",
@@ -1642,8 +1642,8 @@
           "description": "At 18th level, you gain immunity to lightning and thunder damage. You also gain a magical flying speed of 60 feet. As an action, you can reduce your flying speed to 30 feet for 1 hour and choose a number of creatures within 30 feet of you equal to 3 + your Charisma modifier. The chosen creatures gain a magical flying speed of 30 feet for 1 hour."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Storm Sorcery",
@@ -1651,32 +1651,32 @@
             "Wind Speaker"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Storm Sorcery"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Heart of the Storm",
             "Storm Guide"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Storm's Fury"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Wind Soul"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Aberrant Mind",
@@ -1711,8 +1711,8 @@
           "description": "18th-level Aberrant Mind feature You can unleash your aberrant power as a space-warping anomaly. As an action, you can teleport to an unoccupied space you can see within 120 feet of you. Immediately after you disappear, each creature within 30 feet of the space you left must make a Strength saving throw against your spell save DC."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Aberrant Mind",
@@ -1720,32 +1720,32 @@
             "Telepathic Speech"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Aberrant Mind"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Psionic Sorcery",
             "Psychic Defenses"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Revelation in Flesh"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Warping Implosion"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Clockwork Soul",
@@ -1776,8 +1776,8 @@
           "description": "18th-level Clockwork Soul feature You summon spirits of order to expunge disorder around you. As an action, you summon the spirits in a 30-foot cube originating from you. The spirits look like modrons or other constructs of your choice."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Clockwork Soul",
@@ -1785,31 +1785,31 @@
             "Restore Balance"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Clockwork Soul"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bastion of Law"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Trance of Order"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Clockwork Cavalcade"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Lunar Sorcery",
@@ -1844,8 +1844,8 @@
           "description": "18th-Level Lunar Sorcery feature As a bonus action, you can tap into a special power of your current Lunar Embodiment phase. Alternatively, as part of the bonus action you take to change your lunar phase using the Waxing and Waning feature, you can immediately use the power of the lunar phase you are entering: Full Moon: You radiate moonlight for a moment."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "1": {
           "level": 1,
           "features": [
             "Lunar Sorcery",
@@ -1853,32 +1853,32 @@
             "Moon Fire"
           ]
         },
-        {
+        "3": {
           "level": 3,
           "features": [
             "Lunar Sorcery"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Lunar Boons",
             "Waxing and Waning"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Lunar Empowerment"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Lunar Phenomenon"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Aberrant Sorcery",
@@ -1890,7 +1890,64 @@
         },
         {
           "name": "Psionic Spells",
-          "description": "When you reach a Sorcerer level specified in the Psionic Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach a Sorcerer level specified in the Psionic Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Mind Sliver",
+              "level": 0,
+              "description": "You try to temporarily sliver the mind of one creature you can see within range. The target must succeed on an Intelligence saving throw or take 1d6 Psychic damage and subtract 1d4 from the next saving throw it makes before the end of your next turn."
+            },
+            {
+              "name": "Arms of Hadar",
+              "level": 1,
+              "description": "Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10-foot Emanation [Area of Effect] originating from you makes a Strength saving throw. On a failed save, a target takes 2d6 Necrotic damage and can't take Reactions until the start of its next turn."
+            },
+            {
+              "name": "Dissonant Whispers",
+              "level": 1,
+              "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route."
+            },
+            {
+              "name": "Calm Emotions",
+              "level": 2,
+              "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe..."
+            },
+            {
+              "name": "Detect Thoughts",
+              "level": 2,
+              "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic."
+            },
+            {
+              "name": "Hunger of Hadar",
+              "level": 3,
+              "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration."
+            },
+            {
+              "name": "Sending",
+              "level": 3,
+              "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately."
+            },
+            {
+              "name": "Evard's Black Tentacles",
+              "level": 4,
+              "description": "Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in that area into Difficult Terrain. Each creature in that area makes a Strength saving throw."
+            },
+            {
+              "name": "Summon Aberration",
+              "level": 4,
+              "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad."
+            },
+            {
+              "name": "Rary's Telepathic Bond",
+              "level": 5,
+              "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell."
+            },
+            {
+              "name": "Telekinesis",
+              "level": 5,
+              "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below."
+            }
+          ]
         },
         {
           "name": "Telepathic Speech",
@@ -1913,8 +1970,8 @@
           "description": "You can unleash a space-warping anomaly. As a Magic action, you teleport to an unoccupied space you can see within 120 feet of yourself. Immediately after you disappear, each creature within 30 feet of the space you left must make a Strength saving throw against your spell save DC."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Aberrant Sorcery",
@@ -1922,83 +1979,26 @@
             "Telepathic Speech"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Psionic Sorcery",
             "Psychic Defenses"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Revelation in Flesh"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Warping Implosion"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Mind Sliver",
-          "level": 0,
-          "description": "You try to temporarily sliver the mind of one creature you can see within range. The target must succeed on an Intelligence saving throw or take 1d6 Psychic damage and subtract 1d4 from the next saving throw it makes before the end of your next turn."
-        },
-        {
-          "name": "Arms of Hadar",
-          "level": 1,
-          "description": "Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10-foot Emanation [Area of Effect] originating from you makes a Strength saving throw. On a failed save, a target takes 2d6 Necrotic damage and can't take Reactions until the start of its next turn."
-        },
-        {
-          "name": "Dissonant Whispers",
-          "level": 1,
-          "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route."
-        },
-        {
-          "name": "Calm Emotions",
-          "level": 2,
-          "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe..."
-        },
-        {
-          "name": "Detect Thoughts",
-          "level": 2,
-          "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic."
-        },
-        {
-          "name": "Hunger of Hadar",
-          "level": 3,
-          "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration."
-        },
-        {
-          "name": "Sending",
-          "level": 3,
-          "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately."
-        },
-        {
-          "name": "Evard's Black Tentacles",
-          "level": 4,
-          "description": "Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in that area into Difficult Terrain. Each creature in that area makes a Strength saving throw."
-        },
-        {
-          "name": "Summon Aberration",
-          "level": 4,
-          "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad."
-        },
-        {
-          "name": "Rary's Telepathic Bond",
-          "level": 5,
-          "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell."
-        },
-        {
-          "name": "Telekinesis",
-          "level": 5,
-          "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below."
-        }
-      ]
+      }
     },
     {
       "name": "Clockwork Sorcery",
@@ -2010,7 +2010,59 @@
         },
         {
           "name": "Clockwork Spells",
-          "description": "When you reach a Sorcerer level specified in the Clockwork Spells table, you thereafter always have the listed spells prepared. In addition, consult the Manifestations of Order table and choose or randomly determine a way your connection to order manifests while you are casting any of your Sorcerer spells."
+          "description": "When you reach a Sorcerer level specified in the Clockwork Spells table, you thereafter always have the listed spells prepared. In addition, consult the Manifestations of Order table and choose or randomly determine a way your connection to order manifests while you are casting any of your Sorcerer spells.",
+          "spells": [
+            {
+              "name": "Alarm",
+              "level": 1,
+              "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area."
+            },
+            {
+              "name": "Protection from Evil and Good",
+              "level": 1,
+              "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target."
+            },
+            {
+              "name": "Aid",
+              "level": 2,
+              "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+            },
+            {
+              "name": "Lesser Restoration",
+              "level": 2,
+              "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+            },
+            {
+              "name": "Dispel Magic",
+              "level": 3,
+              "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+            },
+            {
+              "name": "Protection from Energy",
+              "level": 3,
+              "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+            },
+            {
+              "name": "Freedom of Movement",
+              "level": 4,
+              "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+            },
+            {
+              "name": "Summon Construct",
+              "level": 4,
+              "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone."
+            },
+            {
+              "name": "Greater Restoration",
+              "level": 5,
+              "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+            },
+            {
+              "name": "Wall of Force",
+              "level": 5,
+              "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
+            }
+          ]
         },
         {
           "name": "Restore Balance",
@@ -2029,8 +2081,8 @@
           "description": "You momentarily summon spirits of order to expunge disorder around you. As a Magic action, you summon the spirits in a 30-foot Cube [Area of Effect] originating from you. The spirits look like modrons or other Constructs of your choice. The spirits are intangible and invulnerable, and they create the effects below within the Cube [Area of Effect] before vanishing."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Clockwork Sorcery",
@@ -2038,77 +2090,25 @@
             "Restore Balance"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bastion of Law"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Trance of Order"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Clockwork Cavalcade"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Alarm",
-          "level": 1,
-          "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area."
-        },
-        {
-          "name": "Protection from Evil and Good",
-          "level": 1,
-          "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target."
-        },
-        {
-          "name": "Aid",
-          "level": 2,
-          "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
-        },
-        {
-          "name": "Lesser Restoration",
-          "level": 2,
-          "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
-        },
-        {
-          "name": "Dispel Magic",
-          "level": 3,
-          "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
-        },
-        {
-          "name": "Protection from Energy",
-          "level": 3,
-          "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
-        },
-        {
-          "name": "Freedom of Movement",
-          "level": 4,
-          "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
-        },
-        {
-          "name": "Summon Construct",
-          "level": 4,
-          "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone."
-        },
-        {
-          "name": "Greater Restoration",
-          "level": 5,
-          "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
-        },
-        {
-          "name": "Wall of Force",
-          "level": 5,
-          "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
-        }
-      ]
+      }
     },
     {
       "name": "Draconic Sorcery",
@@ -2120,7 +2120,59 @@
         },
         {
           "name": "Draconic Spells",
-          "description": "When you reach a Sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach a Sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Chromatic Orb",
+              "level": 1,
+              "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
+            },
+            {
+              "name": "Command",
+              "level": 1,
+              "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
+            },
+            {
+              "name": "Alter Self",
+              "level": 2,
+              "description": "You alter your physical form. Choose one of the following options. Its effects last for the duration, during which you can take a Magic action to replace the option you chose with a different one. Aquatic Adaptation: You sprout gills and grow webs between your fingers."
+            },
+            {
+              "name": "Dragon's Breath",
+              "level": 2,
+              "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone [Area of Effect]."
+            },
+            {
+              "name": "Fear",
+              "level": 3,
+              "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
+            },
+            {
+              "name": "Fly",
+              "level": 3,
+              "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall."
+            },
+            {
+              "name": "Arcane Eye",
+              "level": 4,
+              "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction."
+            },
+            {
+              "name": "Charm Monster",
+              "level": 4,
+              "description": "One creature you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+            },
+            {
+              "name": "Legend Lore",
+              "level": 5,
+              "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
+            },
+            {
+              "name": "Summon Dragon",
+              "level": 5,
+              "description": "You call forth a Dragon spirit. It manifests in an unoccupied space that you can see within range and uses the Draconic Spirit stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
+            }
+          ]
         },
         {
           "name": "Draconic Resilience",
@@ -2139,8 +2191,8 @@
           "description": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest. Whenever you start casting the spell, you can modify it so that it doesn't require Concentration. If you do so, the spell's duration becomes 1 minute for that casting."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Draconic Sorcery",
@@ -2148,77 +2200,25 @@
             "Draconic Resilience"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Elemental Affinity"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Dragon Wings"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Dragon Companion"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Chromatic Orb",
-          "level": 1,
-          "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
-        },
-        {
-          "name": "Command",
-          "level": 1,
-          "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
-        },
-        {
-          "name": "Alter Self",
-          "level": 2,
-          "description": "You alter your physical form. Choose one of the following options. Its effects last for the duration, during which you can take a Magic action to replace the option you chose with a different one. Aquatic Adaptation: You sprout gills and grow webs between your fingers."
-        },
-        {
-          "name": "Dragon's Breath",
-          "level": 2,
-          "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone [Area of Effect]."
-        },
-        {
-          "name": "Fear",
-          "level": 3,
-          "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
-        },
-        {
-          "name": "Fly",
-          "level": 3,
-          "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall."
-        },
-        {
-          "name": "Arcane Eye",
-          "level": 4,
-          "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction."
-        },
-        {
-          "name": "Charm Monster",
-          "level": 4,
-          "description": "One creature you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
-        },
-        {
-          "name": "Legend Lore",
-          "level": 5,
-          "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
-        },
-        {
-          "name": "Summon Dragon",
-          "level": 5,
-          "description": "You call forth a Dragon spirit. It manifests in an unoccupied space that you can see within range and uses the Draconic Spirit stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
-        }
-      ]
+      }
     },
     {
       "name": "Wild Magic Sorcery",
@@ -2249,8 +2249,8 @@
           "description": "Immediately after you cast a Sorcerer spell with a spell slot, you can create an effect of your choice from the Wild Magic Surge table instead of rolling on that table. You can choose any effect in the table except for the final row, and if the chosen effect involves a roll, you must make it. Once you use this feature, you can't do so again until you finish a Long Rest."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Wild Magic Sorcery",
@@ -2258,25 +2258,25 @@
             "Wild Magic Surge"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Bend Luck"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Controlled Chaos"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Tamed Surge"
           ]
         }
-      ]
+      }
     },
     {
       "name": "Spellfire Sorcery",
@@ -2300,7 +2300,64 @@
         },
         {
           "name": "Spellfire Spells",
-          "description": "When you reach a Sorcerer level specified in the Spellfire Spells table, you thereafter always have the listed spells prepared."
+          "description": "When you reach a Sorcerer level specified in the Spellfire Spells table, you thereafter always have the listed spells prepared.",
+          "spells": [
+            {
+              "name": "Cure Wounds",
+              "level": 1,
+              "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+            },
+            {
+              "name": "Guiding Bolt",
+              "level": 1,
+              "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+            },
+            {
+              "name": "Lesser Restoration",
+              "level": 2,
+              "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+            },
+            {
+              "name": "Scorching Ray",
+              "level": 2,
+              "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+            },
+            {
+              "name": "Aura of Vitality",
+              "level": 3,
+              "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
+            },
+            {
+              "name": "Counterspell",
+              "level": 3,
+              "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
+            },
+            {
+              "name": "Dispel Magic",
+              "level": 3,
+              "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+            },
+            {
+              "name": "Fire Shield",
+              "level": 4,
+              "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+            },
+            {
+              "name": "Wall of Fire",
+              "level": 4,
+              "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+            },
+            {
+              "name": "Flame Strike",
+              "level": 5,
+              "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
+            },
+            {
+              "name": "Greater Restoration",
+              "level": 5,
+              "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+            }
+          ]
         },
         {
           "name": "Absorb Spells",
@@ -2315,8 +2372,8 @@
           "description": "When you use Innate Sorcery, you can alter it and infuse yourself with the essence of spellfire, gaining the following benefits while this use of Innate Sorcery is active. Once you use this feature to alter Innate Sorcery, you can't use it again until you finish a Long Rest unless you spend 5 Sorcery Points (no action required) to restore your use of it."
         }
       ],
-      "levels": [
-        {
+      "levels": {
+        "3": {
           "level": 3,
           "features": [
             "Bolstering Flames",
@@ -2326,82 +2383,25 @@
             "Spellfire Spells"
           ]
         },
-        {
+        "6": {
           "level": 6,
           "features": [
             "Absorb Spells"
           ]
         },
-        {
+        "14": {
           "level": 14,
           "features": [
             "Honed Spellfire"
           ]
         },
-        {
+        "18": {
           "level": 18,
           "features": [
             "Crown of Spellfire"
           ]
         }
-      ],
-      "spells": [
-        {
-          "name": "Cure Wounds",
-          "level": 1,
-          "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
-        },
-        {
-          "name": "Guiding Bolt",
-          "level": 1,
-          "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
-        },
-        {
-          "name": "Lesser Restoration",
-          "level": 2,
-          "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
-        },
-        {
-          "name": "Scorching Ray",
-          "level": 2,
-          "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
-        },
-        {
-          "name": "Aura of Vitality",
-          "level": 3,
-          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
-        },
-        {
-          "name": "Counterspell",
-          "level": 3,
-          "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
-        },
-        {
-          "name": "Dispel Magic",
-          "level": 3,
-          "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
-        },
-        {
-          "name": "Fire Shield",
-          "level": 4,
-          "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
-        },
-        {
-          "name": "Wall of Fire",
-          "level": 4,
-          "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
-        },
-        {
-          "name": "Flame Strike",
-          "level": 5,
-          "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
-        },
-        {
-          "name": "Greater Restoration",
-          "level": 5,
-          "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
-        }
-      ]
+      }
     }
   ]
 }
