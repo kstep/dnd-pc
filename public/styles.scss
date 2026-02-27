@@ -1214,21 +1214,21 @@ input[type="checkbox"] {
 }
 
 .field-entry {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
   align-items: center;
   gap: var(--size-2);
 
   .field-desc {
-    width: 100%;
-    margin: 0;
-    font-size: var(--font-size-0);
-    color: var(--text-secondary);
+    @extend .collapsible-desc;
   }
 
   .field-label {
-    font-weight: var(--font-weight-6);
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-7);
+    color: var(--text-secondary);
     white-space: nowrap;
+    margin: 0;
   }
 
   .field-value {
@@ -1243,8 +1243,15 @@ input[type="checkbox"] {
 }
 
 .field-choice {
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
 }
 
 .choice-list {
@@ -1255,8 +1262,8 @@ input[type="checkbox"] {
 }
 
 .choice-entry {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: var(--size-1);
 
@@ -1266,14 +1273,10 @@ input[type="checkbox"] {
   }
 
   .choice-desc {
-    width: 100%;
-    margin: 0;
-    font-size: var(--font-size-0);
-    color: var(--text-secondary);
+    @extend .collapsible-desc;
   }
 
   input[type="text"] {
-    flex: 1;
     min-width: 0;
   }
 }

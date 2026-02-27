@@ -35,6 +35,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                 let desc_expanded = RwSignal::new(HashSet::<usize>::new());
 
+                let all_fields = fields.clone();
                 let field_views = fields
                     .into_iter()
                     .enumerate()
@@ -222,7 +223,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     &field_name,
                                 );
                                 let all_options = registry
-                                    .get_choice_options(&classes, &feature_name, &field_name);
+                                    .get_choice_options(&classes, &feature_name, &field_name, &all_fields);
                                 drop(classes);
 
                                 let opt_expanded = RwSignal::new(HashSet::<usize>::new());
@@ -263,8 +264,10 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                     options=suggestions
                                                     on_input=move |val: String| {
                                                         let classes = store.identity().classes().read();
+                                                        let char_fields: Vec<_> = store.fields().read()
+                                                            .get(&fname).cloned().unwrap_or_default();
                                                         let found = registry
-                                                            .get_choice_options(&classes, &fname, &fld_name)
+                                                            .get_choice_options(&classes, &fname, &fld_name, &char_fields)
                                                             .into_iter()
                                                             .find(|o| o.name == val);
                                                         drop(classes);
@@ -362,31 +365,14 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                                 view! {
                                     <div class="field-entry field-choice">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || desc_expanded.update(|set| {
-                                                if !set.remove(&field_idx) { set.insert(field_idx); }
-                                            })
-                                        />
-                                        <span class="field-label">{label_view}</span>
-                                        <div class="choice-list">
-                                            {option_views}
-                                            <button
-                                                class="btn-add"
-                                                on:click=move |_| {
-                                                    let fname = fname_add.clone();
-                                                    store.fields().update(|m| {
-                                                        if let Some(fields) = m.get_mut(&fname)
-                                                            && let Some(f) = fields.get_mut(field_idx)
-                                                            && let FeatureValue::Choice { options } = &mut f.value
-                                                        {
-                                                            options.push(FeatureOption::default());
-                                                        }
-                                                    });
-                                                }
-                                            >
-                                                {move_tr!("btn-add-option")}
-                                            </button>
+                                        <div class="field-header">
+                                            <ToggleButton
+                                                expanded=is_open
+                                                on_toggle=move || desc_expanded.update(|set| {
+                                                    if !set.remove(&field_idx) { set.insert(field_idx); }
+                                                })
+                                            />
+                                            <span class="field-label">{label_view}</span>
                                         </div>
                                         <Show when=move || is_open.get()>
                                             <textarea
@@ -408,6 +394,25 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 }
                                             />
                                         </Show>
+                                        <div class="choice-list">
+                                            {option_views}
+                                            <button
+                                                class="btn-add"
+                                                on:click=move |_| {
+                                                    let fname = fname_add.clone();
+                                                    store.fields().update(|m| {
+                                                        if let Some(fields) = m.get_mut(&fname)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                            && let FeatureValue::Choice { options } = &mut f.value
+                                                        {
+                                                            options.push(FeatureOption::default());
+                                                        }
+                                                    });
+                                                }
+                                            >
+                                                {move_tr!("btn-add-option")}
+                                            </button>
+                                        </div>
                                     </div>
                                 }
                                 .into_any()

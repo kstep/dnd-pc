@@ -174,9 +174,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         on:click=move |_| {
                             if let Some(sc) = store.spellcasting().write().as_mut() {
                                 sc.spells.sort_by(|a, b| {
-                                    a.level.cmp(&b.level).then_with(|| {
-                                        a.name.to_lowercase().cmp(&b.name.to_lowercase())
-                                    })
+                                    b.sticky
+                                        .cmp(&a.sticky)
+                                        .then_with(|| a.level.cmp(&b.level))
+                                        .then_with(|| {
+                                            a.name.to_lowercase().cmp(&b.name.to_lowercase())
+                                        })
                                 });
                             }
                         }

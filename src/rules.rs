@@ -637,6 +637,7 @@ impl RulesRegistry {
         classes: &[ClassLevel],
         feature_name: &str,
         field_name: &str,
+        character_fields: &[FeatureField],
     ) -> Vec<ChoiceOption> {
         let cache = self.class_cache.read();
         for cl in classes {
@@ -646,7 +647,7 @@ impl RulesRegistry {
                         continue;
                     }
                     if let Some(fields) = &feat.fields {
-                        return Self::resolve_choice_options(fields, field_name);
+                        return Self::resolve_choice_options(fields, field_name, character_fields);
                     }
                 }
             }
@@ -654,7 +655,11 @@ impl RulesRegistry {
         Vec::new()
     }
 
-    fn resolve_choice_options(fields: &[FieldDefinition], field_name: &str) -> Vec<ChoiceOption> {
+    fn resolve_choice_options(
+        fields: &[FieldDefinition],
+        field_name: &str,
+        character_fields: &[FeatureField],
+    ) -> Vec<ChoiceOption> {
         for fd in fields {
             if fd.name != field_name {
                 continue;
@@ -662,7 +667,19 @@ impl RulesRegistry {
             if let FieldKind::Choice { options, .. } = &fd.kind {
                 return match options {
                     ChoiceOptions::List(list) => list.clone(),
-                    ChoiceOptions::Ref { from } => Self::resolve_choice_options(fields, from),
+                    ChoiceOptions::Ref { from } => character_fields
+                        .iter()
+                        .find(|cf| cf.name == *from)
+                        .into_iter()
+                        .flat_map(|cf| cf.value.choices())
+                        .filter(|o| !o.name.is_empty())
+                        .map(|o| ChoiceOption {
+                            name: o.name.clone(),
+                            description: o.description.clone(),
+                            cost: o.cost,
+                            level: 0,
+                        })
+                        .collect(),
                 };
             }
         }
