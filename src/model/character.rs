@@ -100,25 +100,6 @@ impl Character {
         self.updated_at = now_epoch_secs();
     }
 
-    /// Migrate legacy data: merge per-feature spell_slots into the top-level
-    /// pool and clear them from features.
-    pub fn migrate(&mut self) {
-        if self.spell_slots.is_empty() {
-            for sc in self.spellcasting.values() {
-                for (i, slot) in sc.spell_slots.iter().enumerate() {
-                    if self.spell_slots.len() <= i {
-                        self.spell_slots.resize_with(i + 1, Default::default);
-                    }
-                    self.spell_slots[i].total += slot.total;
-                    self.spell_slots[i].used += slot.used;
-                }
-            }
-        }
-        for sc in self.spellcasting.values_mut() {
-            sc.spell_slots.clear();
-        }
-    }
-
     pub fn level(&self) -> u32 {
         self.identity
             .classes
@@ -409,17 +390,22 @@ pub struct FeatureField {
     pub name: String,
     #[serde(default)]
     pub description: String,
-    #[serde(flatten)]
+    #[serde(default)]
     pub value: FeatureValue,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-#[serde(tag = "kind")]
 pub enum FeatureValue {
     Points { used: u32, max: u32 },
     Choice { options: Vec<FeatureOption> },
     Die(String),
     Bonus(i32),
+}
+
+impl Default for FeatureValue {
+    fn default() -> Self {
+        FeatureValue::Points { used: 0, max: 0 }
+    }
 }
 
 impl FeatureValue {
@@ -531,11 +517,6 @@ impl std::fmt::Display for Currency {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,
-    /// Deprecated: spell slots now live on Character. Kept only for
-    /// deserialization of old data; `Character::migrate()` moves them to
-    /// the top-level pool then clears this. Always empty at runtime.
-    #[serde(default, skip_serializing)]
-    pub spell_slots: Vec<SpellSlotLevel>,
     #[serde(default)]
     pub spells: Vec<Spell>,
 }
@@ -554,7 +535,6 @@ impl Default for SpellcastingData {
     fn default() -> Self {
         Self {
             casting_ability: Ability::Intelligence,
-            spell_slots: Vec::new(),
             spells: Vec::new(),
         }
     }
