@@ -100,10 +100,6 @@ impl Character {
         self.updated_at = now_epoch_secs();
     }
 
-    /// Migrate legacy data formats on load.
-    pub fn migrate(&mut self) {
-    }
-
     pub fn level(&self) -> u32 {
         self.identity
             .classes
