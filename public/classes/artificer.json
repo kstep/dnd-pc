@@ -2,7 +2,6 @@
   "name": "Artificer",
   "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
   "hit_die": 8,
-  "casting_ability": 3,
   "proficiencies": [
     0,
     1,
@@ -17,468 +16,194 @@
     {
       "name": "Spellcasting",
       "description": "You have learned how to channel magical energy through objects. See the Player's Handbook for the rules on spellcasting. The information below details how you use those rules with Artificer spells, which appear in the Artificer spell list later in the class's description. Tools Required: You produce your Artificer spells through tools.",
-      "spells": [
-        {
-          "name": "Acid Splash",
-          "level": 0,
-          "description": "You create an acidic bubble at a point within range, where it explodes in a 5-foot-radius Sphere [Area of Effect]. Each creature in that Sphere [Area of Effect] must succeed on a Dexterity saving throw or take 1d6 Acid damage. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
-        },
-        {
-          "name": "Booming Blade",
-          "level": 0,
-          "description": "You brandish the weapon used in the spell's casting and make a melee attack with it against one creature within 5 feet of you. On a hit, the target suffers the weapon attack's normal effects and then becomes sheathed in booming energy until the start of your next turn. If the target willingly moves 5 feet or more before then, the target takes 1d8 thunder damage, and the spell ends. This spell's damage increases when you reach certain levels."
-        },
-        {
-          "name": "Dancing Lights",
-          "level": 0,
-          "description": "You create up to four torch-size lights within range, making them appear as torches, lanterns, or glowing orbs that hover for the duration. Alternatively, you combine the four lights into one glowing Medium form that is vaguely humanlike. Whichever form you choose, each light sheds Dim Light in a 10-foot radius. As a Bonus Action, you can move the lights up to 60 feet to a space within range."
-        },
-        {
-          "name": "Elementalism",
-          "level": 0,
-          "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]. Doors and shutters being held open by someone or something aren't affected."
-        },
-        {
-          "name": "Fire Bolt",
-          "level": 0,
-          "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell starts burning if it isn't being worn or carried. Cantrip Upgrade: The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
-        },
-        {
-          "name": "Green-Flame Blade",
-          "level": 0,
-          "description": "You brandish the weapon used in the spell's casting and make a melee attack with it against one creature within 5 feet of you. On a hit, the target suffers the weapon attack's normal effects, and you can cause green fire to leap from the target to a different creature of your choice that you can see within 5 feet of it. The second creature takes fire damage equal to your spellcasting ability modifier. This spell's damage increases when you reach certain levels."
-        },
-        {
-          "name": "Guidance",
-          "level": 0,
-          "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
-        },
-        {
-          "name": "Light",
-          "level": 0,
-          "description": "You touch one Large or smaller object that isn't being worn or carried by someone else. Until the spell ends, the object sheds Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. The light can be colored as you like. Covering the object with something opaque blocks the light. The spell ends if you cast it again."
-        },
-        {
-          "name": "Lightning Lure",
-          "level": 0,
-          "description": "You create a lash of lightning energy that strikes at one creature of your choice that you can see within 15 feet of you. The target must succeed on a Strength saving throw or be pulled up to 10 feet in a straight line toward you and then take 1d8 lightning damage if it is within 5 feet of you. This spell's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8)."
-        },
-        {
-          "name": "Mage Hand",
-          "level": 0,
-          "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. When you cast the spell, you can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial. As a Magic action on your later turns, you can control the hand thus again."
-        },
-        {
-          "name": "Mending",
-          "level": 0,
-          "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin. As long as the break or tear is no larger than 1 foot in any dimension, you mend it, leaving no trace of the former damage. This spell can physically repair a magic item, but it can't restore magic to such an object."
-        },
-        {
-          "name": "Message",
-          "level": 0,
-          "description": "You point toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear. You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence; 1 foot of stone, metal, or wood; or a thin sheet of lead blocks the spell."
-        },
-        {
-          "name": "Poison Spray",
-          "level": 0,
-          "description": "You spray toxic mist at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d12 Poison damage. Cantrip Upgrade: The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12)."
-        },
-        {
-          "name": "Prestidigitation",
-          "level": 0,
-          "description": "You create a magical effect within range. Choose the effect from the options below. If you cast this spell multiple times, you can have up to three of its non-instantaneous effects active at a time. Sensory Effect: You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. Fire Play: You instantaneously light or snuff out a candle, a torch, or a small campfire."
-        },
-        {
-          "name": "Ray of Frost",
-          "level": 0,
-          "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
-        },
-        {
-          "name": "Resistance",
-          "level": 0,
-          "description": "You touch a willing creature and choose a damage type: Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder. When the creature takes damage of the chosen type before the spell ends, the creature reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn."
-        },
-        {
-          "name": "Shocking Grasp",
-          "level": 0,
-          "description": "Lightning springs from you to a creature that you try to touch. Make a melee spell attack against the target. On a hit, the target takes 1d8 Lightning damage, and it can't make Opportunity Attack until the start of its next turn. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
-        },
-        {
-          "name": "Spare the Dying",
-          "level": 0,
-          "description": "Choose a creature within range that has 0 Hit Points and isn't dead. The creature becomes Stable. Cantrip Upgrade: The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)."
-        },
-        {
-          "name": "Sword Burst",
-          "level": 0,
-          "description": "You create a momentary circle of spectral blades that sweep around you. All other creatures within 5 feet of you must succeed on a Dexterity saving throw or take 1d6 force damage. This spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6)."
-        },
-        {
-          "name": "Thorn Whip",
-          "level": 0,
-          "description": "You create a vine-like whip covered in thorns that lashes out at your command toward a creature in range. Make a melee spell attack against the target. On a hit, the target takes 1d6 Piercing damage, and if it is Large or smaller, you can pull it up to 10 feet closer to you. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
-        },
-        {
-          "name": "Thunderclap",
-          "level": 0,
-          "description": "Each creature in a 5-foot Emanation [Area of Effect] originating from you must succeed on a Constitution saving throw or take 1d6 Thunder damage. The spell's thunderous sound can be heard up to 100 feet away. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
-        },
-        {
-          "name": "True Strike",
-          "level": 0,
-          "description": "Guided by a flash of magical insight, you make one attack with the weapon used in the spell's casting. The attack uses your spellcasting ability for the attack and damage rolls instead of using Strength or Dexterity. If the attack deals damage, it can be Radiant damage or the weapon's normal damage type (your choice). Cantrip Upgrade: Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6)."
-        },
-        {
-          "name": "Alarm",
-          "level": 1,
-          "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is audible or mental: Audible Alarm: The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area."
-        },
-        {
-          "name": "Cure Wounds",
-          "level": 1,
-          "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
-        },
-        {
-          "name": "Detect Magic",
-          "level": 1,
-          "description": "For the duration, you sense the presence of magical effects within 30 feet of yourself. If you sense such effects, you can take the Magic action to see a faint aura around any visible creature or object in the area that bears the magic, and if an effect was created by a spell, you learn the spell's school of magic. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
-        },
-        {
-          "name": "Disguise Self",
-          "level": 1,
-          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
-        },
-        {
-          "name": "Expeditious Retreat",
-          "level": 1,
-          "description": "You take the Dash action, and until the spell ends, you can take that action again as a Bonus Action."
-        },
-        {
-          "name": "Faerie Fire",
-          "level": 1,
-          "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed Dim Light in a 10-foot radius and can't benefit from the Invisible condition. Attack rolls against an affected creature or object have Advantage if the attacker can see it."
-        },
-        {
-          "name": "False Life",
-          "level": 1,
-          "description": "You gain 2d4 + 4 Temporary Hit Points. Using a Higher-Level Spell Slot: You gain 5 additional Temporary Hit Points for each spell slot level above 1."
-        },
-        {
-          "name": "Feather Fall",
-          "level": 1,
-          "description": "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If a creature lands before the spell ends, the creature takes no damage from the fall, and the spell ends for that creature."
-        },
-        {
-          "name": "Grease",
-          "level": 1,
-          "description": "Nonflammable grease covers the ground in a 10-foot square centered on a point within range and turns it into Difficult Terrain for the duration. When the grease appears, each creature standing in its area must succeed on a Dexterity saving throw or have the Prone condition. A creature that enters the area or ends its turn there must also succeed on that save or fall Prone."
-        },
-        {
-          "name": "Identify",
-          "level": 1,
-          "description": "You touch an object throughout the spell's casting. If the object is a magic item or some other magical object, you learn its properties and how to use them, whether it requires Attunement, and how many charges it has, if any. You learn whether any ongoing spells are affecting the item and what they are. If the item was created by a spell, you learn that spell's name. If you instead touch a creature throughout the casting, you learn which ongoing spells, if any, are currently affecting it."
-        },
-        {
-          "name": "Jump",
-          "level": 1,
-          "description": "You touch a willing creature. Once on each of its turns until the spell ends, that creature can jump up to 30 feet by spending 10 feet of movement. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Longstrider",
-          "level": 1,
-          "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Purify Food and Drink",
-          "level": 1,
-          "description": "You remove poison and rot from nonmagical food and drink in a 5-foot-radius Sphere [Area of Effect] centered on a point within range."
-        },
-        {
-          "name": "Sanctuary",
-          "level": 1,
-          "description": "You ward a creature within range. Until the spell ends, any creature who targets the warded creature with an attack roll or a damaging spell must succeed on a Wisdom saving throw or either choose a new target or lose the attack or spell. This spell doesn't protect the warded creature from areas of effect. The spell ends if the warded creature makes an attack roll, casts a spell, or deals damage."
-        },
-        {
-          "name": "Tasha's Caustic Brew",
-          "level": 1,
-          "description": "A stream of acid emanates from you in a line 30 feet long and 5 feet wide in a direction you choose. Each creature in the line must succeed on a Dexterity saving throw or be covered in acid for the spell's duration or until a creature uses its action to scrape or wash the acid off itself or another creature. A creature covered in the acid takes 2d4 acid damage at start of each of its turns."
-        },
-        {
-          "name": "Aid",
-          "level": 2,
-          "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration. Using a Higher-Level Spell Slot: Each target's Hit Points increase by 5 for each spell slot level above 2."
-        },
-        {
-          "name": "Air Bubble",
-          "level": 2,
-          "description": "You create a spectral globe around the head of a willing creature you can see within range. The globe is filled with fresh air that lasts until the spell ends. If the creature has more than one head, the globe of air appears around only one of its heads (which is all the creature needs to avoid suffocation, assuming that all its heads share the same respiratory system)."
-        },
-        {
-          "name": "Alter Self",
-          "level": 2,
-          "description": "You alter your physical form. Choose one of the following options. Its effects last for the duration, during which you can take a Magic action to replace the option you chose with a different one. Aquatic Adaptation: You sprout gills and grow webs between your fingers. You can breathe underwater and gain a Swim Speed equal to your Speed. Change Appearance: You alter your appearance."
-        },
-        {
-          "name": "Arcane Lock",
-          "level": 2,
-          "description": "You touch a closed door, window, gate, container, or hatch and magically lock it for the duration. This lock can't be unlocked by any nonmagical means. You and any creatures you designate when you cast the spell can open and close the object despite the lock. You can also set a password that, when spoken within 5 feet of the object, unlocks it for 1 minute."
-        },
-        {
-          "name": "Arcane Vigor",
-          "level": 2,
-          "description": "You tap into your life force to heal yourself. Roll one or two of your unexpended Hit Point Dice, and regain a number of Hit Points equal to the roll's total plus your spellcasting ability modifier. Those dice are then expended. Using a Higher-Level Spell Slot: The number of unexpended Hit Dice you can roll increases by one for each spell slot level above 2."
-        },
-        {
-          "name": "Blur",
-          "level": 2,
-          "description": "Your body becomes blurred. For the duration, any creature has Disadvantage on attack rolls against you. An attacker is immune to this effect if it perceives you with Blindsight or Truesight."
-        },
-        {
-          "name": "Continual Flame",
-          "level": 2,
-          "description": "A flame springs from an object that you touch. The effect casts Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. It looks like a regular flame, but it creates no heat and consumes no fuel. The flame can be covered or hidden but not smothered or quenched."
-        },
-        {
-          "name": "Darkvision",
-          "level": 2,
-          "description": "For the duration, a willing creature you touch has Darkvision with a range of 150 feet."
-        },
-        {
-          "name": "Dragon's Breath",
-          "level": 2,
-          "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone [Area of Effect]. Each creature in that area makes a Dexterity saving throw, taking 3d6 damage of the chosen type on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: The damage increases by 3d6 for each spell slot level above 2."
-        },
-        {
-          "name": "Enhance Ability",
-          "level": 2,
-          "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
-        },
-        {
-          "name": "Enlarge/Reduce",
-          "level": 2,
-          "description": "For the duration, the spell enlarges or reduces a creature or an object you can see within range (see the chosen effect below). A targeted object must be neither worn nor carried. If the target is an unwilling creature, it can make a Constitution saving throw. On a successful save, the spell has no effect. Everything that a targeted creature is wearing and carrying changes size with it. Any item it drops returns to normal size at once."
-        },
-        {
-          "name": "Heat Metal",
-          "level": 2,
-          "description": "Choose a manufactured metal object, such as a metal weapon or a suit of Heavy or Medium metal armor, that you can see within range. You cause the object to glow red-hot. Any creature in physical contact with the object takes 2d8 Fire damage when you cast the spell. Until the spell ends, you can take a Bonus Action on each of your later turns to deal this damage again if the object is within range."
-        },
-        {
-          "name": "Homunculus Servant",
-          "level": 2,
-          "description": "You summon a special homunculus in an unoccupied space within range. This creature uses the Homunculus Servant stat block. If you already have a homunculus from this spell, the homunculus is replaced by the new one. You determine the homunculus's appearance, such as a mechanical-looking bird, winged vial, or miniature animate cauldron. Combat: The homunculus is an ally to you and your allies. In combat, it shares your Initiative count, but it takes its turn immediately after yours."
-        },
-        {
-          "name": "Invisibility",
-          "level": 2,
-          "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
-        },
-        {
-          "name": "Kinetic Jaunt",
-          "level": 2,
-          "description": "You magically empower your movement with dance-like steps, giving yourself the following benefits for the duration. Your walking speed increases by 10 feet. You don't provoke opportunity attacks. You can move through the space of another creature, and it doesn't count as difficult terrain. If you end your turn in another creature's space, you are shunted to the last unoccupied space you occupied, and you take 1d8 force damage."
-        },
-        {
-          "name": "Lesser Restoration",
-          "level": 2,
-          "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
-        },
-        {
-          "name": "Levitate",
-          "level": 2,
-          "description": "One creature or loose object of your choice that you can see within range rises vertically up to 20 feet and remains suspended there for the duration. The spell can levitate an object that weighs up to 500 pounds. An unwilling creature that succeeds on a Constitution saving throw is unaffected. The target can move only by pushing or pulling against a fixed object or surface within reach (such as a wall or a ceiling), which allows it to move as if it were climbing."
-        },
-        {
-          "name": "Magic Mouth",
-          "level": 2,
-          "description": "You implant a message within an object in range—a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
-        },
-        {
-          "name": "Magic Weapon",
-          "level": 2,
-          "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again. Using a Higher-Level Spell Slot: The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
-        },
-        {
-          "name": "Protection from Poison",
-          "level": 2,
-          "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
-        },
-        {
-          "name": "Rope Trick",
-          "level": 2,
-          "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends. That space can be reached by climbing the rope, which can be pulled into or dropped out of it. The space can hold up to eight Medium or smaller creatures."
-        },
-        {
-          "name": "See Invisibility",
-          "level": 2,
-          "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
-        },
-        {
-          "name": "Spider Climb",
-          "level": 2,
-          "description": "Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and along ceilings, while leaving its hands free. The target also gains a Climb Speed equal to its Speed. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
-        },
-        {
-          "name": "Vortex Warp",
-          "level": 2,
-          "description": "You magically twist space around another creature you can see within range. The target must succeed on a Constitution saving throw (the target can choose to fail), or the target is teleported to an unoccupied space of your choice that you can see within range. The chosen space must be on a surface or in a liquid that can support the target without the target having to squeeze."
-        },
-        {
-          "name": "Web",
-          "level": 2,
-          "description": "You conjure a mass of sticky webbing at a point within range. The webs fill a 20-foot Cube [Area of Effect] there for the duration. The webs are Difficult Terrain, and the area within them is Lightly Obscured. If the webs aren't anchored between two solid masses (such as walls or trees) or layered across a floor, wall, or ceiling, the web collapses on itself, and the spell ends at the start of your next turn. Webs layered over a flat surface have a depth of 5 feet."
-        },
-        {
-          "name": "Blink",
-          "level": 3,
-          "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane). While on the Ethereal Plane, you can perceive the plane you left, which is cast in shades of gray, but you can't see anything there more than 60 feet away."
-        },
-        {
-          "name": "Create Food and Water",
-          "level": 3,
-          "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
-        },
-        {
-          "name": "Dispel Magic",
-          "level": 3,
-          "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
-        },
-        {
-          "name": "Elemental Weapon",
-          "level": 3,
-          "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
-        },
-        {
-          "name": "Fly",
-          "level": 3,
-          "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 3."
-        },
-        {
-          "name": "Glyph of Warding",
-          "level": 3,
-          "description": "You inscribe a glyph that later unleashes a magical effect. You inscribe it either on a surface (such as a table or a section of floor) or within an object that can be closed (such as a book or chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter. If the surface or object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered."
-        },
-        {
-          "name": "Haste",
-          "level": 3,
-          "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns. That action can be used to take only the Attack (one attack only), Dash, Disengage, Hide, or Utilize action. When the spell ends, the target is Incapacitated and has a Speed of 0 until the end of its next turn, as a wave of lethargy washes over it."
-        },
-        {
-          "name": "Intellect Fortress",
-          "level": 3,
-          "description": "For the duration, you or one willing creature you can see within range has resistance to psychic damage, as well as advantage on Intelligence, Wisdom, and Charisma saving throws. At Higher Levels: When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd. The creatures must be within 30 feet of each other when you target them."
-        },
-        {
-          "name": "Linked Glyphs",
-          "level": 3,
-          "description": "When you cast this spell, you inscribe a detection glyph that later activates a magical effect at the site of a separate, linked glyph. You inscribe the detection glyph either on a surface (such as a table or a section of floor or wall) or within an object that can be closed (such as a book, a scroll, or a treasure chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter."
-        },
-        {
-          "name": "Protection from Energy",
-          "level": 3,
-          "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
-        },
-        {
-          "name": "Revivify",
-          "level": 3,
-          "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
-        },
-        {
-          "name": "Water Breathing",
-          "level": 3,
-          "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
-        },
-        {
-          "name": "Water Walk",
-          "level": 3,
-          "description": "This spell grants the ability to move across any liquid surface—such as water, acid, mud, snow, quicksand, or lava—as if it were harmless solid ground (creatures crossing molten lava can still take damage from the heat). Up to ten willing creatures of your choice within range gain this ability for the duration."
-        },
-        {
-          "name": "Arcane Eye",
-          "level": 4,
-          "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction. A solid barrier blocks the eye's movement, but the eye can pass through an opening as small as 1 inch in diameter."
-        },
-        {
-          "name": "Fabricate",
-          "level": 4,
-          "description": "You convert raw materials into products of the same material. For example, you can fabricate a wooden bridge from a clump of trees, a rope from a patch of hemp, or clothes from flax or wool. Choose raw materials that you can see within range. You can fabricate a Large or smaller object (contained within a 10-foot Cube [Area of Effect] or eight connected 5-foot Cubes) given a sufficient quantity of material."
-        },
-        {
-          "name": "Freedom of Movement",
-          "level": 4,
-          "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions. The target also has a Swim Speed equal to its Speed. In addition, the target can spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature imposing the Grappled condition on it."
-        },
-        {
-          "name": "Leomund's Secret Chest",
-          "level": 4,
-          "description": "You hide a chest and all its contents on the Ethereal Plane. You must touch the chest and the miniature replica that serve as Material components for the spell. The chest can contain up to 12 cubic feet of nonliving material (3 feet by 2 feet by 2 feet). While the chest remains on the Ethereal Plane, you can take a Magic action and touch the replica to recall the chest. It appears in an unoccupied space on the ground within 5 feet of you."
-        },
-        {
-          "name": "Mordenkainen's Faithful Hound",
-          "level": 4,
-          "description": "You conjure a phantom watchdog in an unoccupied space that you can see within range. The hound remains for the duration or until the two of you are more than 300 feet apart from each other. No one but you can see the hound, and it is intangible and invulnerable. When a Small or larger creature comes within 30 feet of it without first speaking the password that you specify when you cast this spell, the hound starts barking loudly. The hound has Truesight with a range of 30 feet."
-        },
-        {
-          "name": "Mordenkainen's Private Sanctum",
-          "level": 4,
-          "description": "You make an area within range magically secure. The area is a Cube [Area of Effect] that can be as small as 5 feet to as large as 100 feet on each side. The spell lasts for the duration. When you cast the spell, you decide what sort of security the spell provides, choosing any of the following properties: Sound can't pass through the barrier at the edge of the warded area. The barrier of the warded area appears dark and foggy, preventing vision (including Darkvision) through it."
-        },
-        {
-          "name": "Otiluke's Resilient Sphere",
-          "level": 4,
-          "description": "A shimmering sphere encloses a Large or smaller creature or object within range. An unwilling creature must succeed on a Dexterity saving throw or be enclosed for the duration. Nothing—not physical objects, energy, or other spell effects—can pass through the barrier, in or out, though a creature in the sphere can breathe there."
-        },
-        {
-          "name": "Stone Shape",
-          "level": 4,
-          "description": "You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape you like. For example, you could shape a large rock into a weapon, statue, or coffer, or you could make a small passage through a wall that is 5 feet thick. You could also shape a stone door or its frame to seal the door shut. The object you create can have up to two hinges and a latch, but finer mechanical detail isn't possible."
-        },
-        {
-          "name": "Stoneskin",
-          "level": 4,
-          "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
-        },
-        {
-          "name": "Summon Construct",
-          "level": 4,
-          "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone. The creature resembles an animate statue (you determine the appearance) made of the chosen material, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
-        },
-        {
-          "name": "Animate Objects",
-          "level": 5,
-          "description": "Objects animate at your command. Choose a number of nonmagical objects within range that aren't being worn or carried, aren't fixed to a surface, and aren't Gargantuan. The maximum number of objects is equal to your spellcasting ability modifier; for this number, a Medium or smaller target counts as one object, a Large target counts as two, and a Huge target counts as three."
-        },
-        {
-          "name": "Bigby's Hand",
-          "level": 5,
-          "description": "You create a Large hand of shimmering magical energy in an unoccupied space that you can see within range. The hand lasts for the duration, and it moves at your command, mimicking the movements of your own hand. The hand is an object that has AC 20 and Hit Points equal to your Hit Points maximum. If it drops to 0 Hit Points, the spell ends. The hand doesn't occupy its space."
-        },
-        {
-          "name": "Circle of Power",
-          "level": 5,
-          "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Advantage on saving throws against spells and other magical effects. When an affected creature makes a saving throw against a spell or magical effect that allows a save to take only half damage, it takes no damage if it succeeds on the save."
-        },
-        {
-          "name": "Create Spelljamming Helm",
-          "level": 5,
-          "description": "Holding the rod used in the casting of the spell, you touch a Large or smaller chair that is unoccupied. The rod disappears, and the chair is transformed into a spelljamming helm."
-        },
-        {
-          "name": "Creation",
-          "level": 5,
-          "description": "You pull wisps of shadow material from the Shadowfell to create an object within range. It is either an object of vegetable matter (soft goods, rope, wood, and the like) or mineral matter (stone, crystal, metal, and the like). The object must be no larger than a 5-foot Cube [Area of Effect], and the object must be of a form and material that you have seen. The spell's duration depends on the object's material, as shown in the Materials table."
-        },
-        {
-          "name": "Greater Restoration",
-          "level": 5,
-          "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
-        },
-        {
-          "name": "Wall of Stone",
-          "level": 5,
-          "description": "A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with another panel. Alternatively, you can create 10-foot-by-20-foot panels that are only 3 inches thick. If the wall cuts through a creature's space when it appears, the creature is pushed to one side of the wall (you choose which side)."
-        }
-      ]
+      "spells": {
+        "casting_ability": 3,
+        "list": {
+          "from": "spells/artificer.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 2,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 4,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Tinker's Magic",
@@ -522,91 +247,334 @@
             "20": 8
           },
           "options": [
-            {"name": "Alchemy Jug", "level": 2},
-            {"name": "Bag of Holding", "level": 2},
-            {"name": "Cap of Water Breathing", "level": 2},
-            {"name": "Goggles of Night", "level": 2},
-            {"name": "Manifold Tool", "level": 2},
-            {"name": "Repeating Shot", "level": 2},
-            {"name": "Returning Weapon", "level": 2},
-            {"name": "Rope of Climbing", "level": 2},
-            {"name": "Sending Stones", "level": 2},
-            {"name": "Shield +1", "level": 2},
-            {"name": "Wand of Magic Detection", "level": 2},
-            {"name": "Wand of Secrets", "level": 2},
-            {"name": "Wand of the War Mage +1", "level": 2},
-            {"name": "Weapon +1", "level": 2},
-            {"name": "Wraps of Unarmed Power +1", "level": 2},
-
-            {"name": "Armor +1", "level": 6},
-            {"name": "Boots of Elvenkind", "level": 6},
-            {"name": "Boots of the Winding Path", "level": 6},
-            {"name": "Cloak of Elvenkind", "level": 6},
-            {"name": "Cloak of the Manta Ray", "level": 6},
-            {"name": "Dazzling Weapon", "level": 6},
-            {"name": "Eyes of Charming", "level": 6},
-            {"name": "Eyes of Minute Seeing", "level": 6},
-            {"name": "Gloves of Thievery", "level": 6},
-            {"name": "Helm of Awareness", "level": 6},
-            {"name": "Lantern of Revealing", "level": 6},
-            {"name": "Mind Sharpener", "level": 6},
-            {"name": "Necklace of Adaptation", "level": 6},
-            {"name": "Pipes of Haunting", "level": 6},
-            {"name": "Repulsion Shield", "level": 6},
-            {"name": "Ring of Swimming", "level": 6},
-            {"name": "Ring of Water Walking", "level": 6},
-            {"name": "Sentinel Shield", "level": 6},
-            {"name": "Spell-Refueling Ring", "level": 6},
-            {"name": "Wand of Magic Missiles", "level": 6},
-            {"name": "Wand of Web", "level": 6},
-            {"name": "Weapon of Warning", "level": 6},
-
-            {"name": "Armor of Resistance", "level": 10},
-            {"name": "Boots of Striding and Springing", "level": 10},
-            {"name": "Boots of the Winterlands", "level": 10},
-            {"name": "Bracers of Archery", "level": 10},
-            {"name": "Brooch of Shielding", "level": 10},
-            {"name": "Cloak of Protection", "level": 10},
-            {"name": "Dagger of Venom", "level": 10},
-            {"name": "Elven Chain", "level": 10},
-            {"name": "Eyes of the Eagle", "level": 10},
-            {"name": "Gauntlets of Ogre Power", "level": 10},
-            {"name": "Gloves of Missile Snaring", "level": 10},
-            {"name": "Gloves of Swimming and Climbing", "level": 10},
-            {"name": "Hat of Disguise", "level": 10},
-            {"name": "Headband of Intellect", "level": 10},
-            {"name": "Helm of Telepathy", "level": 10},
-            {"name": "Medallion of Thoughts", "level": 10},
-            {"name": "Periapt of Wound Closure", "level": 10},
-            {"name": "Pipes of the Sewers", "level": 10},
-            {"name": "Quiver of Ehlonna", "level": 10},
-            {"name": "Ring of Feather Falling", "level": 10},
-            {"name": "Ring of Jumping", "level": 10},
-            {"name": "Ring of Mind Shielding", "level": 10},
-            {"name": "Shield +2", "level": 10},
-            {"name": "Slippers of Spider Climbing", "level": 10},
-            {"name": "Ventilating Lungs", "level": 10},
-            {"name": "Wand of the War Mage +2", "level": 10},
-            {"name": "Weapon +2", "level": 10},
-            {"name": "Winged Boots", "level": 10},
-            {"name": "Wraps of Unarmed Power +2", "level": 10},
-
-            {"name": "Amulet of Health", "level": 14},
-            {"name": "Arcane Propulsion Arm", "level": 14},
-            {"name": "Armor +2", "level": 14},
-            {"name": "Arrow-Catching Shield", "level": 14},
-            {"name": "Belt of Hill Giant Strength", "level": 14},
-            {"name": "Boots of Levitation", "level": 14},
-            {"name": "Boots of Speed", "level": 14},
-            {"name": "Bracers of Defense", "level": 14},
-            {"name": "Cloak of the Bat", "level": 14},
-            {"name": "Dimensional Shackles", "level": 14},
-            {"name": "Flame Tongue", "level": 14},
-            {"name": "Gem of Seeing", "level": 14},
-            {"name": "Horn of Blasting", "level": 14},
-            {"name": "Ring of Free Action", "level": 14},
-            {"name": "Ring of Protection", "level": 14},
-            {"name": "Ring of the Ram", "level": 14}
+            {
+              "name": "Alchemy Jug",
+              "level": 2
+            },
+            {
+              "name": "Bag of Holding",
+              "level": 2
+            },
+            {
+              "name": "Cap of Water Breathing",
+              "level": 2
+            },
+            {
+              "name": "Goggles of Night",
+              "level": 2
+            },
+            {
+              "name": "Manifold Tool",
+              "level": 2
+            },
+            {
+              "name": "Repeating Shot",
+              "level": 2
+            },
+            {
+              "name": "Returning Weapon",
+              "level": 2
+            },
+            {
+              "name": "Rope of Climbing",
+              "level": 2
+            },
+            {
+              "name": "Sending Stones",
+              "level": 2
+            },
+            {
+              "name": "Shield +1",
+              "level": 2
+            },
+            {
+              "name": "Wand of Magic Detection",
+              "level": 2
+            },
+            {
+              "name": "Wand of Secrets",
+              "level": 2
+            },
+            {
+              "name": "Wand of the War Mage +1",
+              "level": 2
+            },
+            {
+              "name": "Weapon +1",
+              "level": 2
+            },
+            {
+              "name": "Wraps of Unarmed Power +1",
+              "level": 2
+            },
+            {
+              "name": "Armor +1",
+              "level": 6
+            },
+            {
+              "name": "Boots of Elvenkind",
+              "level": 6
+            },
+            {
+              "name": "Boots of the Winding Path",
+              "level": 6
+            },
+            {
+              "name": "Cloak of Elvenkind",
+              "level": 6
+            },
+            {
+              "name": "Cloak of the Manta Ray",
+              "level": 6
+            },
+            {
+              "name": "Dazzling Weapon",
+              "level": 6
+            },
+            {
+              "name": "Eyes of Charming",
+              "level": 6
+            },
+            {
+              "name": "Eyes of Minute Seeing",
+              "level": 6
+            },
+            {
+              "name": "Gloves of Thievery",
+              "level": 6
+            },
+            {
+              "name": "Helm of Awareness",
+              "level": 6
+            },
+            {
+              "name": "Lantern of Revealing",
+              "level": 6
+            },
+            {
+              "name": "Mind Sharpener",
+              "level": 6
+            },
+            {
+              "name": "Necklace of Adaptation",
+              "level": 6
+            },
+            {
+              "name": "Pipes of Haunting",
+              "level": 6
+            },
+            {
+              "name": "Repulsion Shield",
+              "level": 6
+            },
+            {
+              "name": "Ring of Swimming",
+              "level": 6
+            },
+            {
+              "name": "Ring of Water Walking",
+              "level": 6
+            },
+            {
+              "name": "Sentinel Shield",
+              "level": 6
+            },
+            {
+              "name": "Spell-Refueling Ring",
+              "level": 6
+            },
+            {
+              "name": "Wand of Magic Missiles",
+              "level": 6
+            },
+            {
+              "name": "Wand of Web",
+              "level": 6
+            },
+            {
+              "name": "Weapon of Warning",
+              "level": 6
+            },
+            {
+              "name": "Armor of Resistance",
+              "level": 10
+            },
+            {
+              "name": "Boots of Striding and Springing",
+              "level": 10
+            },
+            {
+              "name": "Boots of the Winterlands",
+              "level": 10
+            },
+            {
+              "name": "Bracers of Archery",
+              "level": 10
+            },
+            {
+              "name": "Brooch of Shielding",
+              "level": 10
+            },
+            {
+              "name": "Cloak of Protection",
+              "level": 10
+            },
+            {
+              "name": "Dagger of Venom",
+              "level": 10
+            },
+            {
+              "name": "Elven Chain",
+              "level": 10
+            },
+            {
+              "name": "Eyes of the Eagle",
+              "level": 10
+            },
+            {
+              "name": "Gauntlets of Ogre Power",
+              "level": 10
+            },
+            {
+              "name": "Gloves of Missile Snaring",
+              "level": 10
+            },
+            {
+              "name": "Gloves of Swimming and Climbing",
+              "level": 10
+            },
+            {
+              "name": "Hat of Disguise",
+              "level": 10
+            },
+            {
+              "name": "Headband of Intellect",
+              "level": 10
+            },
+            {
+              "name": "Helm of Telepathy",
+              "level": 10
+            },
+            {
+              "name": "Medallion of Thoughts",
+              "level": 10
+            },
+            {
+              "name": "Periapt of Wound Closure",
+              "level": 10
+            },
+            {
+              "name": "Pipes of the Sewers",
+              "level": 10
+            },
+            {
+              "name": "Quiver of Ehlonna",
+              "level": 10
+            },
+            {
+              "name": "Ring of Feather Falling",
+              "level": 10
+            },
+            {
+              "name": "Ring of Jumping",
+              "level": 10
+            },
+            {
+              "name": "Ring of Mind Shielding",
+              "level": 10
+            },
+            {
+              "name": "Shield +2",
+              "level": 10
+            },
+            {
+              "name": "Slippers of Spider Climbing",
+              "level": 10
+            },
+            {
+              "name": "Ventilating Lungs",
+              "level": 10
+            },
+            {
+              "name": "Wand of the War Mage +2",
+              "level": 10
+            },
+            {
+              "name": "Weapon +2",
+              "level": 10
+            },
+            {
+              "name": "Winged Boots",
+              "level": 10
+            },
+            {
+              "name": "Wraps of Unarmed Power +2",
+              "level": 10
+            },
+            {
+              "name": "Amulet of Health",
+              "level": 14
+            },
+            {
+              "name": "Arcane Propulsion Arm",
+              "level": 14
+            },
+            {
+              "name": "Armor +2",
+              "level": 14
+            },
+            {
+              "name": "Arrow-Catching Shield",
+              "level": 14
+            },
+            {
+              "name": "Belt of Hill Giant Strength",
+              "level": 14
+            },
+            {
+              "name": "Boots of Levitation",
+              "level": 14
+            },
+            {
+              "name": "Boots of Speed",
+              "level": 14
+            },
+            {
+              "name": "Bracers of Defense",
+              "level": 14
+            },
+            {
+              "name": "Cloak of the Bat",
+              "level": 14
+            },
+            {
+              "name": "Dimensional Shackles",
+              "level": 14
+            },
+            {
+              "name": "Flame Tongue",
+              "level": 14
+            },
+            {
+              "name": "Gem of Seeing",
+              "level": 14
+            },
+            {
+              "name": "Horn of Blasting",
+              "level": 14
+            },
+            {
+              "name": "Ring of Free Action",
+              "level": 14
+            },
+            {
+              "name": "Ring of Protection",
+              "level": 14
+            },
+            {
+              "name": "Ring of the Ram",
+              "level": 14
+            }
           ]
         },
         {
@@ -633,7 +601,9 @@
             "19": 6,
             "20": 6
           },
-          "options": {"from": "Plans Known"}
+          "options": {
+            "from": "Plans Known"
+          }
         }
       ]
     },
@@ -687,238 +657,98 @@
       "features": [
         "Spellcasting",
         "Tinker's Magic"
-      ],
-      "spell_slots": [
-        2
-      ],
-      "spells_known": 2,
-      "cantrips_known": 2
+      ]
     },
     {
       "features": [
         "Replicate Magic Item"
-      ],
-      "spell_slots": [
-        2
-      ],
-      "spells_known": 3,
-      "cantrips_known": 2
+      ]
     },
     {
       "features": [
         "Artificer Subclass"
-      ],
-      "spell_slots": [
-        3
-      ],
-      "cantrips_known": 2,
-      "spells_known": 4
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        3
-      ],
-      "cantrips_known": 2,
-      "spells_known": 5
+      ]
     },
     {
       "features": [
         "Subclass feature"
-      ],
-      "spell_slots": [
-        4,
-        2
-      ],
-      "cantrips_known": 2,
-      "spells_known": 6
+      ]
     },
     {
       "features": [
         "Magic Item Tinker"
-      ],
-      "spell_slots": [
-        4,
-        2
-      ],
-      "cantrips_known": 2,
-      "spells_known": 6
+      ]
     },
     {
       "features": [
         "Flash of Genius"
-      ],
-      "spell_slots": [
-        4,
-        3
-      ],
-      "cantrips_known": 2,
-      "spells_known": 7
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3
-      ],
-      "cantrips_known": 2,
-      "spells_known": 7
+      ]
     },
     {
       "features": [
         "Subclass feature"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        2
-      ],
-      "cantrips_known": 2,
-      "spells_known": 9
+      ]
     },
     {
       "features": [
         "Magic Item Adept"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        2
-      ],
-      "cantrips_known": 3,
-      "spells_known": 9
+      ]
     },
     {
       "features": [
         "Spell-Storing Item"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3
-      ],
-      "cantrips_known": 3,
-      "spells_known": 10
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3
-      ],
-      "cantrips_known": 3,
-      "spells_known": 10
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 3,
-      "spells_known": 11
+      "features": []
     },
     {
       "features": [
         "Advanced Artifice"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 11
+      ]
     },
     {
       "features": [
         "Subclass feature"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 4,
-      "spells_known": 12
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 4,
-      "spells_known": 12
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 14
+      "features": []
     },
     {
       "features": [
         "Magic Item Master"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 14
+      ]
     },
     {
       "features": [
         "Epic Boon"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 4,
-      "spells_known": 15
+      ]
     },
     {
       "features": [
         "Soul of Artifice"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 4,
-      "spells_known": 15
+      ]
     }
   ],
   "subclasses": [

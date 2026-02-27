@@ -1,10 +1,37 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use reactive_stores::Store;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::Deserializer};
 use uuid::Uuid;
 
 use super::enums::*;
+
+/// Backward-compatible deserialization: accepts both the old
+/// `Option<SpellcastingData>` (migrated to a single "Spellcasting" entry) and
+/// the new `BTreeMap<String, SpellcastingData>`.
+fn deserialize_spellcasting<'de, D>(
+    deserializer: D,
+) -> Result<BTreeMap<String, SpellcastingData>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum SpellcastingCompat {
+        Map(BTreeMap<String, SpellcastingData>),
+        Legacy(Option<SpellcastingData>),
+    }
+
+    match SpellcastingCompat::deserialize(deserializer)? {
+        SpellcastingCompat::Map(map) => Ok(map),
+        SpellcastingCompat::Legacy(Some(data)) => {
+            let mut map = BTreeMap::new();
+            map.insert("Spellcasting".to_string(), data);
+            Ok(map)
+        }
+        SpellcastingCompat::Legacy(None) => Ok(BTreeMap::new()),
+    }
+}
 
 // --- Character Index (for list page) ---
 
@@ -42,8 +69,8 @@ pub struct Character {
     pub features: Vec<Feature>,
     #[serde(default)]
     pub equipment: Equipment,
-    #[serde(default)]
-    pub spellcasting: Option<SpellcastingData>,
+    #[serde(default, deserialize_with = "deserialize_spellcasting")]
+    pub spellcasting: BTreeMap<String, SpellcastingData>,
     #[serde(default)]
     pub proficiencies: HashSet<Proficiency>,
     #[serde(default)]
@@ -115,16 +142,12 @@ impl Character {
         self.ability_modifier(Ability::Dexterity) + self.combat.initiative_misc_bonus
     }
 
-    pub fn spell_save_dc(&self) -> Option<i32> {
-        self.spellcasting
-            .as_ref()
-            .map(|sc| 8 + self.proficiency_bonus() + self.ability_modifier(sc.casting_ability))
+    pub fn spell_save_dc(&self, ability: Ability) -> i32 {
+        8 + self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
-    pub fn spell_attack_bonus(&self) -> Option<i32> {
-        self.spellcasting
-            .as_ref()
-            .map(|sc| self.proficiency_bonus() + self.ability_modifier(sc.casting_ability))
+    pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
+        self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
     pub fn class_summary(&self) -> String {
@@ -162,7 +185,7 @@ impl Default for Character {
             personality: Personality::default(),
             features: Vec::new(),
             equipment: Equipment::default(),
-            spellcasting: None,
+            spellcasting: BTreeMap::new(),
             proficiencies: HashSet::new(),
             languages: Vec::new(),
             racial_traits: Vec::new(),

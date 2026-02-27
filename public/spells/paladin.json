@@ -1,0 +1,262 @@
+[
+  {
+    "name": "Bless",
+    "level": 1,
+    "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
+  },
+  {
+    "name": "Command",
+    "level": 1,
+    "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn. Choose the command from these options: Approach: The target moves toward you by the shortest and most direct route, ending its turn if it moves within 5 feet of you. Drop: The target drops whatever it is holding and then ends its turn. Flee: The target spends its turn moving away from you by the fastest available means."
+  },
+  {
+    "name": "Compelled Duel",
+    "level": 1,
+    "description": "You try to compel a creature into a duel. One creature that you can see within range makes a Wisdom saving throw. On a failed save, the target has Disadvantage on attack rolls against creatures other than you, and it can't willingly move to a space that is more than 30 feet away from you."
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
+  },
+  {
+    "name": "Detect Evil and Good",
+    "level": 1,
+    "description": "For the duration, you sense the location of any Aberration, Celestial, Elemental, Fey, Fiend, or Undead within 30 feet of yourself. You also sense whether the Hallow spell is active there and, if so, where. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": "For the duration, you sense the presence of magical effects within 30 feet of yourself. If you sense such effects, you can take the Magic action to see a faint aura around any visible creature or object in the area that bears the magic, and if an effect was created by a spell, you learn the spell's school of magic. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
+  },
+  {
+    "name": "Detect Poison and Disease",
+    "level": 1,
+    "description": "For the duration, you sense the location of poisons, poisonous or venomous creatures, and magical contagions within 30 feet of yourself. You sense the kind of poison, creature, or contagion in each case. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
+  },
+  {
+    "name": "Divine Favor",
+    "level": 1,
+    "description": "Until the spell ends, your attacks with weapons deal an extra 1d4 Radiant damage on a hit."
+  },
+  {
+    "name": "Divine Smite",
+    "level": 1,
+    "description": "The target takes an extra 2d8 Radiant damage from the attack. The damage increases by 1d8 if the target is a Fiend or an Undead. Using a Higher-Level Spell Slot: The damage increases by 2d8 for each spell slot level above 1."
+  },
+  {
+    "name": "Heroism",
+    "level": 1,
+    "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
+  },
+  {
+    "name": "Protection from Evil and Good",
+    "level": 1,
+    "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target. The target also can't be possessed by or gain the Charmed or Frightened conditions from them."
+  },
+  {
+    "name": "Purify Food and Drink",
+    "level": 1,
+    "description": "You remove poison and rot from nonmagical food and drink in a 5-foot-radius Sphere [Area of Effect] centered on a point within range."
+  },
+  {
+    "name": "Searing Smite",
+    "level": 1,
+    "description": "As you hit the target, it takes an extra 1d6 Fire damage from the attack. At the start of each of its turns until the spell ends, the target takes 1d6 Fire damage and then makes a Constitution saving throw. On a failed save, the spell continues. On a successful save, the spell ends. Using a Higher-Level Spell Slot: All the damage increases by 1d6 for each spell slot level above 1."
+  },
+  {
+    "name": "Shield of Faith",
+    "level": 1,
+    "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+  },
+  {
+    "name": "Thunderous Smite",
+    "level": 1,
+    "description": "Your strike rings with thunder that is audible within 300 feet of you, and the target takes an extra 2d6 Thunder damage from the attack. Additionally, if the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet away from you and have the Prone condition. Using a Higher-Level Spell Slot: The damage increases by 2d6 for each spell slot level above 1."
+  },
+  {
+    "name": "Wardaway",
+    "level": 1,
+    "description": "You hurl a disorienting magical force toward one creature within range. The target makes a Constitution saving throw; Constructs and Undead automatically succeed on this save. On a failed save, the target takes 2d4 Force damage, its Speed is halved until the start of your next turn, and on its next turn, it can take only an action or a Bonus Action (but not both). On a successful save, the target takes half as much damage only."
+  },
+  {
+    "name": "Wrathful Smite",
+    "level": 1,
+    "description": "The target takes an extra 1d6 Necrotic damage from the attack, and it must succeed on a Wisdom saving throw or have the Frightened condition until the spell ends. At the end of each of its turns, the Frightened target repeats the save, ending the spell on itself on a success. Using a Higher-Level Spell Slot: The damage increases by 1d6 for each spell slot level above 1."
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration. Using a Higher-Level Spell Slot: Each target's Hit Points increase by 5 for each spell slot level above 2."
+  },
+  {
+    "name": "Find Steed",
+    "level": 2,
+    "description": "You summon an otherworldly being that appears as a loyal steed in an unoccupied space of your choice within range. This creature uses the Otherworldly Steed stat block. If you already have a steed from this spell, the steed is replaced by the new one. The steed resembles a Large, rideable animal of your choice, such as a horse, a camel, a dire wolf, or an elk."
+  },
+  {
+    "name": "Gentle Repose",
+    "level": 2,
+    "description": "You touch a corpse or other remains. For the duration, the target is protected from decay and can't become Undead. The spell also effectively extends the time limit on raising the target from the dead, since days spent under the influence of this spell don't count against the time limit of spells such as Raise Dead."
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+  },
+  {
+    "name": "Locate Object",
+    "level": 2,
+    "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
+  },
+  {
+    "name": "Magic Weapon",
+    "level": 2,
+    "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again. Using a Higher-Level Spell Slot: The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
+  },
+  {
+    "name": "Prayer of Healing",
+    "level": 2,
+    "description": "Up to five creatures of your choice who remain within range for the spell's entire casting gain the benefits of a Short Rest and also regain 2d8 Hit Points. A creature can't be affected by this spell again until that creature finishes a Long Rest. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 2."
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
+  },
+  {
+    "name": "Shining Smite",
+    "level": 2,
+    "description": "The target hit by the strike takes an extra 2d6 Radiant damage from the attack. Until the spell ends, the target sheds Bright Light in a 5-foot radius, attack rolls against it have Advantage, and it can't benefit from the Invisible condition. Using a Higher-Level Spell Slot: The damage increases by 2d6 for each spell slot level above 2."
+  },
+  {
+    "name": "Warding Bond",
+    "level": 2,
+    "description": "You touch another creature that is willing and create a mystic connection between you and the target until the spell ends. While the target is within 60 feet of you, it gains a +1 bonus to AC and saving throws, and it has Resistance to all damage. Also, each time it takes damage, you take the same amount of damage. The spell ends if you drop to 0 Hit Points or if you and the target become separated by more than 60 feet."
+  },
+  {
+    "name": "Zone of Truth",
+    "level": 2,
+    "description": "You create a magical zone that guards against deception in a 15-foot-radius Sphere [Area of Effect] centered on a point within range. Until the spell ends, a creature that enters the spell's area for the first time on a turn or starts its turn there makes a Charisma saving throw. On a failed save, a creature can't speak a deliberate lie while in the radius. You know whether a creature succeeds or fails on this save."
+  },
+  {
+    "name": "Aura of Vitality",
+    "level": 3,
+    "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
+  },
+  {
+    "name": "Blinding Smite",
+    "level": 3,
+    "description": "The target hit by the strike takes an extra 3d8 Radiant damage from the attack, and the target has the Blinded condition until the spell ends. At the end of each of its turns, the Blinded target makes a Constitution saving throw, ending the spell on itself on a success. Using a Higher-Level Spell Slot: The extra damage increases by 3d8 for each spell slot level above 3."
+  },
+  {
+    "name": "Create Food and Water",
+    "level": 3,
+    "description": "You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten."
+  },
+  {
+    "name": "Crusader's Mantle",
+    "level": 3,
+    "description": "You radiate a magical aura in a 30-foot Emanation [Area of Effect]. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike."
+  },
+  {
+    "name": "Daylight",
+    "level": 3,
+    "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet. Alternatively, you cast the spell on an object that isn't being worn or carried, causing the sunlight to fill a 60-foot Emanation [Area of Effect] originating from that object. Covering that object with something opaque, such as a bowl or helm, blocks the sunlight."
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
+  },
+  {
+    "name": "Elemental Weapon",
+    "level": 3,
+    "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
+  },
+  {
+    "name": "Magic Circle",
+    "level": 3,
+    "description": "You create a 10-foot-radius, 20-foot-tall Cylinder [Area of Effect] of magical energy centered on a point on the ground that you can see within range. Glowing runes appear wherever the Cylinder [Area of Effect] intersects with the floor or other surface. Choose one or more of the following types of creatures: Celestials, Elementals, Fey, Fiends, or Undead."
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
+  },
+  {
+    "name": "Aura of Life",
+    "level": 4,
+    "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points."
+  },
+  {
+    "name": "Aura of Purity",
+    "level": 4,
+    "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunned condition."
+  },
+  {
+    "name": "Banishment",
+    "level": 4,
+    "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition. When the spell ends, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied. If the target is an Aberration, a Celestial, an Elemental, a Fey, or a Fiend, the target doesn't return if the spell lasts for 1 minute."
+  },
+  {
+    "name": "Death Ward",
+    "level": 4,
+    "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends. If the spell is still in effect when the target is subjected to an effect that would kill it instantly without dealing damage, that effect is negated against the target, and the spell ends."
+  },
+  {
+    "name": "Locate Creature",
+    "level": 4,
+    "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
+  },
+  {
+    "name": "Staggering Smite",
+    "level": 4,
+    "description": "The target takes an extra 4d6 Psychic damage from the attack, and the target must succeed on a Wisdom saving throw or have the Stunned condition until the end of your next turn. Using a Higher-Level Spell Slot: The extra damage increases by 4d6 for each spell slot level above 4."
+  },
+  {
+    "name": "Banishing Smite",
+    "level": 5,
+    "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition. When the spell ends, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied."
+  },
+  {
+    "name": "Circle of Power",
+    "level": 5,
+    "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Advantage on saving throws against spells and other magical effects. When an affected creature makes a saving throw against a spell or magical effect that allows a save to take only half damage, it takes no damage if it succeeds on the save."
+  },
+  {
+    "name": "Destructive Wave",
+    "level": 5,
+    "description": "Destructive energy ripples outward from you in a 30-foot Emanation [Area of Effect]. Each creature you choose in the Emanation [Area of Effect] makes a Constitution saving throw. On a failed save, a target takes 5d6 Thunder damage and 5d6 Radiant or Necrotic damage (your choice) and has the Prone condition. On a successful save, a target takes half as much damage only."
+  },
+  {
+    "name": "Dispel Evil and Good",
+    "level": 5,
+    "description": "For the duration, Celestials, Elementals, Fey, Fiends, and Undead have Disadvantage on attack rolls against you. You can end the spell early by using either of the following special functions. Break Enchantment: As a Magic action, you touch a creature that is possessed by or has the Charmed or Frightened condition from one or more creatures of the types above. The target is no longer possessed, Charmed, or Frightened by such creatures."
+  },
+  {
+    "name": "Geas",
+    "level": 5,
+    "description": "You give a verbal command to a creature that you can see within range, ordering it to carry out some service or refrain from an action or a course of activity as you decide. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target automatically succeeds if it can't understand your command. While Charmed, the creature takes 5d10 Psychic damage if it acts in a manner directly counter to your command."
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+  },
+  {
+    "name": "Raise Dead",
+    "level": 5,
+    "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival—its head, for instance—the spell automatically fails."
+  },
+  {
+    "name": "Summon Celestial",
+    "level": 5,
+    "description": "You call forth a Celestial spirit. It manifests in an angelic form in an unoccupied space that you can see within range and uses the Celestial Spirit stat block. When you cast the spell, choose Avenger or Defender. Your choice determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies. In combat, the creature shares your Initiative count, but it takes its turn immediately after yours."
+  }
+]

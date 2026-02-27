@@ -73,8 +73,8 @@ mod u32_key_map {
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, ClassLevel, Feature, FeatureField, FeatureValue, Proficiency,
-        ProficiencyLevel, RacialTrait, Skill, Spell, SpellcastingData,
+        Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureValue,
+        Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell, SpellcastingData,
     },
 };
 
@@ -212,8 +212,6 @@ pub struct ClassDefinition {
     pub description: String,
     pub hit_die: u16,
     #[serde(default)]
-    pub casting_ability: Option<Ability>,
-    #[serde(default)]
     pub proficiencies: Vec<Proficiency>,
     #[serde(default)]
     pub saving_throws: Vec<Ability>,
@@ -232,12 +230,6 @@ impl ClassDefinition {
             .map(|sc| sc.features.as_slice())
             .unwrap_or_default();
         self.features.iter().chain(sc_features.iter())
-    }
-
-    pub fn spells(&self, subclass: Option<&str>) -> impl Iterator<Item = &SpellDefinition> {
-        self.features(subclass)
-            .filter_map(|f| f.spells.as_ref())
-            .flat_map(|spells| spells.iter())
     }
 }
 
@@ -268,7 +260,7 @@ pub struct SubclassLevelRules {
 pub struct FeatureDefinition {
     pub name: String,
     pub description: String,
-    pub spells: Option<Vec<SpellDefinition>>,
+    pub spells: Option<SpellsDefinition>,
     pub fields: Option<Vec<FieldDefinition>>,
 }
 
@@ -281,17 +273,77 @@ impl FeatureDefinition {
             });
         }
 
-        if let Some(spells) = &self.spells {
-            let spellcasting = character.spellcasting.get_or_insert_default();
-            for s in spells.iter().filter(|s| s.sticky && s.min_level <= level) {
-                if !spellcasting.spells.iter().any(|ex| ex.name == s.name) {
-                    spellcasting.spells.push(Spell {
-                        name: s.name.clone(),
-                        description: s.description.clone(),
-                        level: s.level,
-                        prepared: true,
-                        sticky: true,
-                    });
+        if let Some(spells_def) = &self.spells {
+            let sc = character
+                .spellcasting
+                .entry(self.name.clone())
+                .or_insert_with(|| SpellcastingData {
+                    casting_ability: spells_def.casting_ability,
+                    ..Default::default()
+                });
+
+            if let Some(rules) = spells_def.levels.get(level as usize - 1) {
+                // Spell slots
+                if let Some(slots) = &rules.slots {
+                    sc.spell_slots.resize_with(slots.len(), Default::default);
+                    for (i, &count) in slots.iter().enumerate() {
+                        sc.spell_slots[i].total = count;
+                    }
+                    while sc
+                        .spell_slots
+                        .last()
+                        .is_some_and(|s| s.total == 0 && s.used == 0)
+                    {
+                        sc.spell_slots.pop();
+                    }
+                }
+
+                // Cantrip slots
+                if let Some(n) = rules.cantrips {
+                    let current = sc.cantrips().filter(|s| !s.sticky).count();
+                    for _ in current..(n as usize) {
+                        sc.spells.push(Spell {
+                            level: 0,
+                            ..Default::default()
+                        });
+                    }
+                }
+
+                // Known spell slots
+                if let Some(n) = rules.spells {
+                    let current = sc.spells().filter(|s| !s.sticky).count();
+                    let max_level = rules
+                        .slots
+                        .as_ref()
+                        .and_then(|sl| {
+                            sl.iter()
+                                .enumerate()
+                                .rev()
+                                .find(|(_, c)| **c > 0)
+                                .map(|(i, _)| (i + 1) as u32)
+                        })
+                        .unwrap_or(1);
+                    for _ in current..(n as usize) {
+                        sc.spells.push(Spell {
+                            level: max_level,
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+
+            // Sticky spells from inline list
+            if let SpellList::Inline(list) = &spells_def.list {
+                for s in list.iter().filter(|s| s.sticky && s.min_level <= level) {
+                    if !sc.spells.iter().any(|ex| ex.name == s.name) {
+                        sc.spells.push(Spell {
+                            name: s.name.clone(),
+                            description: s.description.clone(),
+                            level: s.level,
+                            prepared: true,
+                            sticky: true,
+                        });
+                    }
                 }
             }
         }
@@ -346,8 +398,8 @@ impl FeatureDefinition {
 
 fn get_for_level<T: Clone + Default>(levels: &BTreeMap<u32, T>, level: u32) -> T {
     levels
-        .range(level..)
-        .next()
+        .range(..=level)
+        .next_back()
         .map(|(_, v)| v.clone())
         .unwrap_or_default()
 }
@@ -389,20 +441,13 @@ pub enum FieldKind {
 impl FieldKind {
     pub fn to_value(&self, level: u32) -> FeatureValue {
         match self {
-            FieldKind::Die { levels } => {
-                FeatureValue::Die(levels.get(&level).cloned().unwrap_or_default())
-            }
+            FieldKind::Die { levels } => FeatureValue::Die(get_for_level(levels, level)),
             FieldKind::Choice { levels, .. } => FeatureValue::Choice {
-                options: vec![
-                    Default::default();
-                    levels.get(&level).copied().unwrap_or_default() as usize
-                ],
+                options: vec![Default::default(); get_for_level(levels, level) as usize],
             },
-            FieldKind::Bonus { levels } => {
-                FeatureValue::Bonus(levels.get(&level).cloned().unwrap_or_default())
-            }
+            FieldKind::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
             FieldKind::Points { levels } => FeatureValue::Points {
-                max: levels.get(&level).copied().unwrap_or_default(),
+                max: get_for_level(levels, level),
                 used: 0,
             },
         }
@@ -444,16 +489,42 @@ pub struct SpellDefinition {
     pub min_level: u32,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct SpellsDefinition {
+    pub casting_ability: Ability,
+    #[serde(default)]
+    pub list: SpellList,
+    #[serde(default)]
+    pub levels: Vec<SpellLevelRules>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum SpellList {
+    Ref { from: String },
+    Inline(Vec<SpellDefinition>),
+}
+
+impl Default for SpellList {
+    fn default() -> Self {
+        Self::Inline(Vec::new())
+    }
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct SpellLevelRules {
+    #[serde(default)]
+    pub cantrips: Option<u32>,
+    #[serde(default)]
+    pub spells: Option<u32>,
+    #[serde(default)]
+    pub slots: Option<Vec<u32>>,
+}
+
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct ClassLevelRules {
     #[serde(default)]
     pub features: Vec<String>,
-    #[serde(default)]
-    pub spell_slots: Option<Vec<u32>>,
-    #[serde(default)]
-    pub cantrips_known: Option<u32>,
-    #[serde(default)]
-    pub spells_known: Option<u32>,
 }
 
 impl ClassDefinition {
@@ -482,14 +553,6 @@ impl ClassDefinition {
             for &prof in &self.proficiencies {
                 character.proficiencies.insert(prof);
             }
-            if let Some(ability) = self.casting_ability {
-                character
-                    .spellcasting
-                    .get_or_insert_with(|| SpellcastingData {
-                        casting_ability: ability,
-                        ..Default::default()
-                    });
-            }
         }
 
         let Some(rules) = self.levels.get(level as usize - 1) else {
@@ -503,61 +566,6 @@ impl ClassDefinition {
                 || character.features.iter().any(|f| f.name == feat.name)
             {
                 feat.apply(level, character);
-            }
-        }
-
-        // Update spell slots
-        if let Some(ref spell_slots) = rules.spell_slots {
-            let spellcasting = character.spellcasting.get_or_insert_default();
-
-            spellcasting
-                .spell_slots
-                .resize_with(spell_slots.len(), Default::default);
-            for (j, &count) in spell_slots.iter().enumerate() {
-                spellcasting.spell_slots[j].total = count;
-            }
-            while spellcasting
-                .spell_slots
-                .last()
-                .is_some_and(|s| s.total == 0 && s.used == 0)
-            {
-                spellcasting.spell_slots.pop();
-            }
-        }
-
-        // Ensure enough cantrip lines
-        if let Some(n) = rules.cantrips_known {
-            let spellcasting = character.spellcasting.get_or_insert_default();
-            let current = spellcasting.cantrips().filter(|s| !s.sticky).count();
-            for _ in current..(n as usize) {
-                spellcasting.spells.push(Spell {
-                    level: 0,
-                    ..Default::default()
-                });
-            }
-        }
-
-        // Ensure enough leveled spell lines
-        if let Some(n) = rules.spells_known {
-            let spellcasting = character.spellcasting.get_or_insert_default();
-            let current = spellcasting.spells().filter(|s| !s.sticky).count();
-            let max_spell_level = rules
-                .spell_slots
-                .as_ref()
-                .and_then(|slots| {
-                    slots
-                        .iter()
-                        .enumerate()
-                        .rev()
-                        .find(|(_, count)| **count > 0)
-                        .map(|(i, _)| (i + 1) as u32)
-                })
-                .unwrap_or(1);
-            for _ in current..(n as usize) {
-                spellcasting.spells.push(Spell {
-                    level: max_spell_level,
-                    ..Default::default()
-                });
             }
         }
 
@@ -582,6 +590,7 @@ pub struct RulesRegistry {
     class_cache: RwSignal<HashMap<String, ClassDefinition>>,
     race_cache: RwSignal<HashMap<String, RaceDefinition>>,
     background_cache: RwSignal<HashMap<String, BackgroundDefinition>>,
+    spell_list_cache: RwSignal<HashMap<String, Vec<SpellDefinition>>>,
 }
 
 async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
@@ -616,6 +625,7 @@ impl RulesRegistry {
             class_cache: RwSignal::new(HashMap::new()),
             race_cache: RwSignal::new(HashMap::new()),
             background_cache: RwSignal::new(HashMap::new()),
+            spell_list_cache: RwSignal::new(HashMap::new()),
         }
     }
 
@@ -630,6 +640,75 @@ impl RulesRegistry {
 
     pub fn get_class(&self, name: &str) -> Option<ClassDefinition> {
         self.class_cache.read().get(name).cloned()
+    }
+
+    pub fn fetch_spell_list(&self, path: &str) {
+        if self.spell_list_cache.read().contains_key(path) {
+            return;
+        }
+
+        let url = format!("{BASE_URL}/{path}");
+        let cache = self.spell_list_cache;
+        let path = path.to_string();
+        leptos::task::spawn_local(async move {
+            match fetch_json::<Vec<SpellDefinition>>(&url).await {
+                Ok(list) => {
+                    cache.update(|m| {
+                        m.insert(path, list);
+                    });
+                }
+                Err(error) => {
+                    log::error!("Failed to fetch spell list: {error}");
+                }
+            }
+        });
+    }
+
+    pub fn with_spell_list<R>(
+        &self,
+        list: &SpellList,
+        f: impl FnOnce(&[SpellDefinition]) -> R,
+    ) -> R {
+        match list {
+            SpellList::Inline(spells) => f(spells),
+            SpellList::Ref { from } => {
+                self.fetch_spell_list(from);
+                let cache = self.spell_list_cache.read();
+                f(cache.get(from.as_str()).map_or(&[], |v| v.as_slice()))
+            }
+        }
+    }
+
+    /// Find a feature definition by name, searching class, background, and race
+    /// definitions. Applies callback on a reference — no cloning.
+    pub fn with_feature<R>(
+        &self,
+        identity: &CharacterIdentity,
+        feature_name: &str,
+        f: impl FnOnce(&FeatureDefinition) -> R,
+    ) -> Option<R> {
+        let class_cache = self.class_cache.read();
+        let bg_cache = self.background_cache.read();
+        let race_cache = self.race_cache.read();
+
+        let class_feats = identity.classes.iter().flat_map(|cl| {
+            class_cache
+                .get(&cl.class)
+                .into_iter()
+                .flat_map(|def| def.features(cl.subclass.as_deref()))
+        });
+
+        let bg_def = bg_cache.get(&identity.background);
+        let bg_feats = bg_def.iter().flat_map(|def| def.features.iter());
+
+        let race_def = race_cache.get(&identity.race);
+        let race_feats = race_def.iter().flat_map(|def| def.features.iter());
+
+        class_feats
+            .chain(bg_feats)
+            .chain(race_feats)
+            .find(|feat| feat.name == feature_name)
+            .map(f)
     }
 
     pub fn get_choice_options(

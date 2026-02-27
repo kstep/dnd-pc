@@ -2,7 +2,6 @@
   "name": "Fighter",
   "description": "A master of martial combat, skilled with a variety of weapons and armor.",
   "hit_die": 10,
-  "casting_ability": null,
   "proficiencies": [
     0,
     1,

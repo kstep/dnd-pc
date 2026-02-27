@@ -25,7 +25,7 @@ fn strip_for_sharing(character: &Character) -> Character {
         racial_trait.description.clear();
     }
 
-    if let Some(sc) = &mut character.spellcasting {
+    for sc in character.spellcasting.values_mut() {
         for spell in &mut sc.spells {
             spell.description.clear();
         }

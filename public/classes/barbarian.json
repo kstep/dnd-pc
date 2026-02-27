@@ -2,7 +2,6 @@
   "name": "Barbarian",
   "description": "A fierce warrior who can enter a battle rage.",
   "hit_die": 12,
-  "casting_ability": null,
   "proficiencies": [
     0,
     1,

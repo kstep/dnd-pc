@@ -248,8 +248,8 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         }
                         // Reset spell slots and sorcery points
-                        store.spellcasting().update(|sc| {
-                            if let Some(sc) = sc.as_mut() {
+                        store.spellcasting().update(|map| {
+                            for sc in map.values_mut() {
                                 for slot in &mut sc.spell_slots {
                                     slot.used = 0;
                                 }

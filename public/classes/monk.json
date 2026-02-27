@@ -2,7 +2,6 @@
   "name": "Monk",
   "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
   "hit_die": 8,
-  "casting_ability": null,
   "proficiencies": [
     4
   ],

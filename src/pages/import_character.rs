@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_router::{
@@ -273,43 +275,54 @@ fn compute_diff(
 
     // --- Spellcasting ---
     let sec = "panel-spellcasting";
-    match (&local.spellcasting, &imported.spellcasting) {
-        (None, None) => {}
-        (Some(local_sc), Some(imported_sc)) => {
-            if local_sc.casting_ability != imported_sc.casting_ability {
-                rows.push(DiffRow {
-                    section: sec,
-                    label: "casting-ability",
-                    local: i18n.tr(local_sc.casting_ability.tr_key()),
-                    imported: i18n.tr(imported_sc.casting_ability.tr_key()),
-                });
+    {
+        let all_keys: BTreeSet<&String> = local
+            .spellcasting
+            .keys()
+            .chain(imported.spellcasting.keys())
+            .collect();
+        for key in all_keys {
+            let local_sc = local.spellcasting.get(key);
+            let imported_sc = imported.spellcasting.get(key);
+            match (local_sc, imported_sc) {
+                (Some(local_sc), Some(imported_sc)) => {
+                    if local_sc.casting_ability != imported_sc.casting_ability {
+                        rows.push(DiffRow {
+                            section: sec,
+                            label: "casting-ability",
+                            local: i18n.tr(local_sc.casting_ability.tr_key()),
+                            imported: i18n.tr(imported_sc.casting_ability.tr_key()),
+                        });
+                    }
+                    push_if_diff(
+                        &mut rows,
+                        sec,
+                        "spell-slots",
+                        format_spell_slots(local_sc),
+                        format_spell_slots(imported_sc),
+                    );
+                    let local_val = format_names(&local_sc.spells, |spell| &spell.name);
+                    let imported_val = format_names(&imported_sc.spells, |spell| &spell.name);
+                    push_if_diff(&mut rows, sec, "spells", local_val, imported_val);
+                }
+                (Some(local_sc), None) => {
+                    rows.push(DiffRow {
+                        section: sec,
+                        label: "enable-spellcasting",
+                        local: i18n.tr(local_sc.casting_ability.tr_key()),
+                        imported: "\u{2014}".to_string(),
+                    });
+                }
+                (None, Some(imported_sc)) => {
+                    rows.push(DiffRow {
+                        section: sec,
+                        label: "enable-spellcasting",
+                        local: "\u{2014}".to_string(),
+                        imported: i18n.tr(imported_sc.casting_ability.tr_key()),
+                    });
+                }
+                (None, None) => {}
             }
-            push_if_diff(
-                &mut rows,
-                sec,
-                "spell-slots",
-                format_spell_slots(local_sc),
-                format_spell_slots(imported_sc),
-            );
-            let local_val = format_names(&local_sc.spells, |spell| &spell.name);
-            let imported_val = format_names(&imported_sc.spells, |spell| &spell.name);
-            push_if_diff(&mut rows, sec, "spells", local_val, imported_val);
-        }
-        (Some(local_sc), None) => {
-            rows.push(DiffRow {
-                section: sec,
-                label: "enable-spellcasting",
-                local: i18n.tr(local_sc.casting_ability.tr_key()),
-                imported: "\u{2014}".to_string(),
-            });
-        }
-        (None, Some(imported_sc)) => {
-            rows.push(DiffRow {
-                section: sec,
-                label: "enable-spellcasting",
-                local: "\u{2014}".to_string(),
-                imported: i18n.tr(imported_sc.casting_ability.tr_key()),
-            });
         }
     }
 
@@ -454,14 +467,16 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
         |t| &t.description,
     );
 
-    if let (Some(imp_sc), Some(loc_sc)) = (&mut imported.spellcasting, &local.spellcasting) {
-        restore_description_by_name(
-            &mut imp_sc.spells,
-            &loc_sc.spells,
-            |s| &s.name,
-            |s| &mut s.description,
-            |s| &s.description,
-        );
+    for (key, imp_sc) in &mut imported.spellcasting {
+        if let Some(loc_sc) = local.spellcasting.get(key) {
+            restore_description_by_name(
+                &mut imp_sc.spells,
+                &loc_sc.spells,
+                |s| &s.name,
+                |s| &mut s.description,
+                |s| &s.description,
+            );
+        }
     }
 }
 

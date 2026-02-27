@@ -2,7 +2,6 @@
   "name": "Bard",
   "description": "An inspiring magician whose power echoes the music of creation.",
   "hit_die": 8,
-  "casting_ability": 5,
   "proficiencies": [
     0,
     4
@@ -19,778 +18,242 @@
     {
       "name": "Spellcasting",
       "description": "You have learned to cast spells through your bardic arts. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Bard spells, which appear in the Bard spell list later in the class's description. Cantrips: You know two cantrips of your choice from the Bard spell list. Dancing Lights and Vicious Mockery are recommended.",
-      "spells": [
-        {
-          "name": "Blade Ward",
-          "level": 0,
-          "description": "Whenever a creature makes an attack roll against you before the spell ends, the attacker subtracts 1d4 from the attack roll."
-        },
-        {
-          "name": "Dancing Lights",
-          "level": 0,
-          "description": "You create up to four torch-size lights within range, making them appear as torches, lanterns, or glowing orbs that hover for the duration. Alternatively, you combine the four lights into one glowing Medium form that is vaguely humanlike. Whichever form you choose, each light sheds Dim Light in a 10-foot radius. As a Bonus Action, you can move the lights up to 60 feet to a space within range."
-        },
-        {
-          "name": "Friends",
-          "level": 0,
-          "description": "You magically emanate a sense of friendship toward one creature you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target succeeds automatically if it isn't a Humanoid, if you're fighting it, or if you have cast this spell on it within the past 24 hours. The spell ends early if the target takes damage or if you make an attack roll, deal damage, or force anyone to make a saving throw."
-        },
-        {
-          "name": "Light",
-          "level": 0,
-          "description": "You touch one Large or smaller object that isn't being worn or carried by someone else. Until the spell ends, the object sheds Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. The light can be colored as you like. Covering the object with something opaque blocks the light. The spell ends if you cast it again."
-        },
-        {
-          "name": "Mage Hand",
-          "level": 0,
-          "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. When you cast the spell, you can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial. As a Magic action on your later turns, you can control the hand thus again."
-        },
-        {
-          "name": "Mending",
-          "level": 0,
-          "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin. As long as the break or tear is no larger than 1 foot in any dimension, you mend it, leaving no trace of the former damage. This spell can physically repair a magic item, but it can't restore magic to such an object."
-        },
-        {
-          "name": "Message",
-          "level": 0,
-          "description": "You point toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear. You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence; 1 foot of stone, metal, or wood; or a thin sheet of lead blocks the spell."
-        },
-        {
-          "name": "Minor Illusion",
-          "level": 0,
-          "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again. If a creature takes a Study action to examine the sound or image, the creature can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the illusion becomes faint to the creature."
-        },
-        {
-          "name": "Prestidigitation",
-          "level": 0,
-          "description": "You create a magical effect within range. Choose the effect from the options below. If you cast this spell multiple times, you can have up to three of its non-instantaneous effects active at a time. Sensory Effect: You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. Fire Play: You instantaneously light or snuff out a candle, a torch, or a small campfire."
-        },
-        {
-          "name": "Starry Wisp",
-          "level": 0,
-          "description": "You launch a mote of light at one creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d8 Radiant damage, and until the end of your next turn, it emits Dim Light in a 10-foot radius and can't benefit from the Invisible condition. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
-        },
-        {
-          "name": "Thunderclap",
-          "level": 0,
-          "description": "Each creature in a 5-foot Emanation [Area of Effect] originating from you must succeed on a Constitution saving throw or take 1d6 Thunder damage. The spell's thunderous sound can be heard up to 100 feet away. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
-        },
-        {
-          "name": "True Strike",
-          "level": 0,
-          "description": "Guided by a flash of magical insight, you make one attack with the weapon used in the spell's casting. The attack uses your spellcasting ability for the attack and damage rolls instead of using Strength or Dexterity. If the attack deals damage, it can be Radiant damage or the weapon's normal damage type (your choice). Cantrip Upgrade: Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6)."
-        },
-        {
-          "name": "Vicious Mockery",
-          "level": 0,
-          "description": "You unleash a string of insults laced with subtle enchantments at one creature you can see or hear within range. The target must succeed on a Wisdom saving throw or take 1d6 Psychic damage and have Disadvantage on the next attack roll it makes before the end of its next turn. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
-        },
-        {
-          "name": "Animal Friendship",
-          "level": 1,
-          "description": "Target a Beast that you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. If you or one of your allies deals damage to the target, the spells ends. Using a Higher-Level Spell Slot: You can target one additional Beast for each spell slot level above 1."
-        },
-        {
-          "name": "Bane",
-          "level": 1,
-          "description": "Up to three creatures of your choice that you can see within range must each make a Charisma saving throw. Whenever a target that fails this save makes an attack roll or a saving throw before the spell ends, the target must subtract 1d4 from the attack roll or save. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Charm Person",
-          "level": 1,
-          "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you. When the spell ends, the target knows it was Charmed by you. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Color Spray",
-          "level": 1,
-          "description": "You launch a dazzling array of flashing, colorful light. Each creature in a 15-foot Cone [Area of Effect] originating from you must succeed on a Constitution saving throw or have the Blinded condition until the end of your next turn."
-        },
-        {
-          "name": "Command",
-          "level": 1,
-          "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn. Choose the command from these options: Approach: The target moves toward you by the shortest and most direct route, ending its turn if it moves within 5 feet of you. Drop: The target drops whatever it is holding and then ends its turn. Flee: The target spends its turn moving away from you by the fastest available means."
-        },
-        {
-          "name": "Comprehend Languages",
-          "level": 1,
-          "description": "For the duration, you understand the literal meaning of any language that you hear or see signed. You also understand any written language that you see, but you must be touching the surface on which the words are written. It takes about 1 minute to read one page of text. This spell doesn't decode symbols or secret messages."
-        },
-        {
-          "name": "Cure Wounds",
-          "level": 1,
-          "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
-        },
-        {
-          "name": "Detect Magic",
-          "level": 1,
-          "description": "For the duration, you sense the presence of magical effects within 30 feet of yourself. If you sense such effects, you can take the Magic action to see a faint aura around any visible creature or object in the area that bears the magic, and if an effect was created by a spell, you learn the spell's school of magic. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
-        },
-        {
-          "name": "Disguise Self",
-          "level": 1,
-          "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have. Otherwise, the extent of the illusion is up to you. The changes wrought by this spell fail to hold up to physical inspection."
-        },
-        {
-          "name": "Dissonant Whispers",
-          "level": 1,
-          "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route. On a successful save, the target takes half as much damage only. Using a Higher-Level Spell Slot: The damage increases by 3d6 for each spell slot level above 1."
-        },
-        {
-          "name": "Distort Value",
-          "level": 1,
-          "description": "Do you need to squeeze a few more gold pieces out of a merchant as you try to sell that weird octopus statue you liberated from the chaos temple? Do you need to downplay the worth of some magical assets when the tax collector stops by? Distort value has you covered."
-        },
-        {
-          "name": "Faerie Fire",
-          "level": 1,
-          "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed Dim Light in a 10-foot radius and can't benefit from the Invisible condition. Attack rolls against an affected creature or object have Advantage if the attacker can see it."
-        },
-        {
-          "name": "Feather Fall",
-          "level": 1,
-          "description": "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If a creature lands before the spell ends, the creature takes no damage from the fall, and the spell ends for that creature."
-        },
-        {
-          "name": "Healing Word",
-          "level": 1,
-          "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d4 for each spell slot level above 1."
-        },
-        {
-          "name": "Heroism",
-          "level": 1,
-          "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Identify",
-          "level": 1,
-          "description": "You touch an object throughout the spell's casting. If the object is a magic item or some other magical object, you learn its properties and how to use them, whether it requires Attunement, and how many charges it has, if any. You learn whether any ongoing spells are affecting the item and what they are. If the item was created by a spell, you learn that spell's name. If you instead touch a creature throughout the casting, you learn which ongoing spells, if any, are currently affecting it."
-        },
-        {
-          "name": "Illusory Script",
-          "level": 1,
-          "description": "You write on parchment, paper, or another suitable material and imbue it with an illusion that lasts for the duration. To you and any creatures you designate when you cast the spell, the writing appears normal, seems to be written in your hand, and conveys whatever meaning you intended when you wrote the text. To all others, the writing appears as if it were written in an unknown or magical script that is unintelligible."
-        },
-        {
-          "name": "Longstrider",
-          "level": 1,
-          "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
-        },
-        {
-          "name": "Silent Image",
-          "level": 1,
-          "description": "You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 15-foot Cube [Area of Effect]. The image appears at a spot within range and lasts for the duration. The image is purely visual; it isn't accompanied by sound, smell, or other sensory effects. As a Magic action, you can cause the image to move to any spot within range. As the image changes location, you can alter its appearance so that its movements appear natural for the image."
-        },
-        {
-          "name": "Silvery Barbs",
-          "level": 1,
-          "description": "You magically distract the triggering creature and turn its momentary uncertainty into encouragement for another creature. The triggering creature must reroll the d20 and use the lower roll. You can then choose a different creature you can see within range (you can choose yourself). The chosen creature has advantage on the next attack roll, ability check, or saving throw it makes within 1 minute. A creature can be empowered by only one use of this spell at a time."
-        },
-        {
-          "name": "Sleep",
-          "level": 1,
-          "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save. If the target fails the second save, the target has the Unconscious condition for the duration. The spell ends on a target if it takes damage or someone within 5 feet of it takes an action to shake it out of the spell's effect."
-        },
-        {
-          "name": "Speak with Animals",
-          "level": 1,
-          "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nearby locations and monsters, including whatever it has perceived within the past day."
-        },
-        {
-          "name": "Tasha's Hideous Laughter",
-          "level": 1,
-          "description": "One creature of your choice that you can see within range makes a Wisdom saving throw. On a failed save, it has the Prone and Incapacitated conditions for the duration. During that time, it laughs uncontrollably if it's capable of laughter, and it can't end the Prone condition on itself. At the end of each of its turns and each time it takes damage, it makes another Wisdom saving throw. The target has Advantage on the save if the save is triggered by damage."
-        },
-        {
-          "name": "Thunderwave",
-          "level": 1,
-          "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you. On a successful save, a creature takes half as much damage only. In addition, unsecured objects that are entirely within the Cube [Area of Effect] are pushed 10 feet away from you, and a thunderous boom is audible within 300 feet."
-        },
-        {
-          "name": "Unseen Servant",
-          "level": 1,
-          "description": "This spell creates an Invisible, mindless, shapeless, Medium force that performs simple tasks at your command until the spell ends. The servant springs into existence in an unoccupied space on the ground within range. It has AC 10, 1 Hit Points, and a Strength of 2, and it can't attack. If it drops to 0 Hit Points, the spell ends. Once on each of your turns as a Bonus Action, you can mentally command the servant to move up to 15 feet and interact with an object."
-        },
-        {
-          "name": "Wardaway",
-          "level": 1,
-          "description": "You hurl a disorienting magical force toward one creature within range. The target makes a Constitution saving throw; Constructs and Undead automatically succeed on this save. On a failed save, the target takes 2d4 Force damage, its Speed is halved until the start of your next turn, and on its next turn, it can take only an action or a Bonus Action (but not both). On a successful save, the target takes half as much damage only."
-        },
-        {
-          "name": "Aid",
-          "level": 2,
-          "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration. Using a Higher-Level Spell Slot: Each target's Hit Points increase by 5 for each spell slot level above 2."
-        },
-        {
-          "name": "Animal Messenger",
-          "level": 2,
-          "description": "A Tiny Beast of your choice that you can see within range must succeed on a Charisma saving throw, or it attempts to deliver a message for you (if the target's Challenge Rating isn't 0, it automatically succeeds). You specify a location you have visited and a recipient who matches a general description, such as \"a person dressed in the uniform of the town guard\" or \"a red-haired dwarf wearing a pointed hat.\" You also communicate a message of up to twenty-five words."
-        },
-        {
-          "name": "Blindness/Deafness",
-          "level": 2,
-          "description": "One creature that you can see within range must succeed on a Constitution saving throw, or it has the Blinded or Deafened condition (your choice) for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
-        },
-        {
-          "name": "Borrowed Knowledge",
-          "level": 2,
-          "description": "You draw on knowledge from spirits of the past. Choose one skill in which you lack proficiency. For the spell's duration, you have proficiency in the chosen skill. The spell ends early if you cast it again."
-        },
-        {
-          "name": "Calm Emotions",
-          "level": 2,
-          "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spell ends. If the creature was already Charmed or Frightened, those conditions are suppressed for the duration."
-        },
-        {
-          "name": "Cloud of Daggers",
-          "level": 2,
-          "description": "You conjure spinning daggers in a 5-foot Cube [Area of Effect] centered on a point within range. Each creature in that area takes 4d4 Slashing damage. A creature also takes this damage if it enters the Cube [Area of Effect] or ends its turn there or if the Cube [Area of Effect] moves into its space. A creature takes this damage only once per turn. On your later turns, you can take a Magic action to teleport the Cube [Area of Effect] up to 30 feet."
-        },
-        {
-          "name": "Crown of Madness",
-          "level": 2,
-          "description": "One creature that you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The creature succeeds automatically if it isn't Humanoid. A spectral crown appears on the Charmed target's head, and it must use its action before moving on each of its turns to make a melee attack against a creature other than itself that you mentally choose. The target can act normally on its turn if you choose no creature or if no creature is within its reach."
-        },
-        {
-          "name": "Detect Thoughts",
-          "level": 2,
-          "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic. You don't read the thoughts, but you know that a thinking creature is present. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
-        },
-        {
-          "name": "Enhance Ability",
-          "level": 2,
-          "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
-        },
-        {
-          "name": "Enlarge/Reduce",
-          "level": 2,
-          "description": "For the duration, the spell enlarges or reduces a creature or an object you can see within range (see the chosen effect below). A targeted object must be neither worn nor carried. If the target is an unwilling creature, it can make a Constitution saving throw. On a successful save, the spell has no effect. Everything that a targeted creature is wearing and carrying changes size with it. Any item it drops returns to normal size at once."
-        },
-        {
-          "name": "Enthrall",
-          "level": 2,
-          "description": "You weave a distracting string of words, causing creatures of your choice that you can see within range to make a Wisdom saving throw. Any creature you or your companions are fighting automatically succeeds on this save. On a failed save, a target has a -10 penalty to Wisdom (Perception) checks and Passive Perception until the spell ends."
-        },
-        {
-          "name": "Gift of Gab",
-          "level": 2,
-          "description": "Jim Darkmagic is said to have invented this spell, originally calling it I said what?! Have you ever been talking to the local monarch and accidentally mentioned how their son looks like your favorite hog from when you were growing up on the family farm? We've all been there! But rather than being beheaded for an honest slip of the tongue, you can pretend it never happened—by ensuring that no one knows it happened."
-        },
-        {
-          "name": "Heat Metal",
-          "level": 2,
-          "description": "Choose a manufactured metal object, such as a metal weapon or a suit of Heavy or Medium metal armor, that you can see within range. You cause the object to glow red-hot. Any creature in physical contact with the object takes 2d8 Fire damage when you cast the spell. Until the spell ends, you can take a Bonus Action on each of your later turns to deal this damage again if the object is within range."
-        },
-        {
-          "name": "Hold Person",
-          "level": 2,
-          "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success. Using a Higher-Level Spell Slot: You can target one additional Humanoid for each spell slot level above 2."
-        },
-        {
-          "name": "Invisibility",
-          "level": 2,
-          "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2."
-        },
-        {
-          "name": "Kinetic Jaunt",
-          "level": 2,
-          "description": "You magically empower your movement with dance-like steps, giving yourself the following benefits for the duration. Your walking speed increases by 10 feet. You don't provoke opportunity attacks. You can move through the space of another creature, and it doesn't count as difficult terrain. If you end your turn in another creature's space, you are shunted to the last unoccupied space you occupied, and you take 1d8 force damage."
-        },
-        {
-          "name": "Knock",
-          "level": 2,
-          "description": "Choose an object that you can see within range. The object can be a door, a box, a chest, a set of manacles, a padlock, or another object that contains a mundane or magical means that prevents access. A target that is held shut by a mundane lock or that is stuck or barred becomes unlocked, unstuck, or unbarred. If the object has multiple locks, only one of them is unlocked."
-        },
-        {
-          "name": "Lesser Restoration",
-          "level": 2,
-          "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
-        },
-        {
-          "name": "Locate Animals or Plants",
-          "level": 2,
-          "description": "Describe or name a specific kind of Beast, Plant creature, or nonmagical plant. You learn the direction and distance to the closest creature or plant of that kind within 5 miles, if any are present."
-        },
-        {
-          "name": "Locate Object",
-          "level": 2,
-          "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement. The spell can locate a specific object known to you if you have seen it up close—within 30 feet—at least once. Alternatively, the spell can locate the nearest object of a particular kind, such as a certain kind of apparel, jewelry, furniture, tool, or weapon."
-        },
-        {
-          "name": "Magic Mouth",
-          "level": 2,
-          "description": "You implant a message within an object in range—a message that is uttered when a trigger condition is met. Choose an object that you can see and that isn't being worn or carried by another creature. Then speak the message, which must be 25 words or fewer, though it can be delivered over as long as 10 minutes. Finally, determine the circumstance that will trigger the spell to deliver your message."
-        },
-        {
-          "name": "Mirror Image",
-          "level": 2,
-          "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real. Each time a creature hits you with an attack roll during the spell's duration, roll a d6 for each of your remaining duplicates. If any of the d6s rolls a 3 or higher, one of the duplicates is hit instead of you, and the duplicate is destroyed."
-        },
-        {
-          "name": "Phantasmal Force",
-          "level": 2,
-          "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli."
-        },
-        {
-          "name": "See Invisibility",
-          "level": 2,
-          "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
-        },
-        {
-          "name": "Shatter",
-          "level": 2,
-          "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save. A nonmagical object that isn't being worn or carried also takes the damage if it's in the spell's area. Using a Higher-Level Spell Slot: The damage increases by 3d8 for each spell slot level above 2."
-        },
-        {
-          "name": "Silence",
-          "level": 2,
-          "description": "For the duration, no sound can be created within or pass through a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. Any creature or object entirely inside the Sphere [Area of Effect] has Immunity to Thunder damage, and creatures have the Deafened condition while entirely inside it. Casting a spell that includes a Verbal component is impossible there."
-        },
-        {
-          "name": "Suggestion",
-          "level": 2,
-          "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
-        },
-        {
-          "name": "Zone of Truth",
-          "level": 2,
-          "description": "You create a magical zone that guards against deception in a 15-foot-radius Sphere [Area of Effect] centered on a point within range. Until the spell ends, a creature that enters the spell's area for the first time on a turn or starts its turn there makes a Charisma saving throw. On a failed save, a creature can't speak a deliberate lie while in the radius. You know whether a creature succeeds or fails on this save."
-        },
-        {
-          "name": "Bestow Curse",
-          "level": 3,
-          "description": "You touch a creature, which must succeed on a Wisdom saving throw or become cursed for the duration. Until the curse ends, the target suffers one of the following effects of your choice: Choose one ability. The target has Disadvantage on ability checks and saving throws made with that ability. The target has Disadvantage on attack rolls against you. In combat, the target must succeed on a Wisdom saving throw at the start of each of its turns or be forced to take the Dodge action on that turn."
-        },
-        {
-          "name": "Cacophonic Shield",
-          "level": 3,
-          "description": "Thunderous reverberations fill a 10-foot Emanation [Area of Effect] originating from you for the duration. Whenever the Emanation [Area of Effect] enters a creature's space and whenever a creature enters the Emanation [Area of Effect] or ends its turn there, the creature makes a Constitution saving throw. On a failed save, the creature takes 3d6 Thunder damage and has the Deafened condition until the start of your next turn. On a successful save, the creature takes half as much damage only."
-        },
-        {
-          "name": "Clairvoyance",
-          "level": 3,
-          "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees). The intangible, invulnerable sensor remains in place for the duration. When you cast the spell, choose seeing or hearing. You can use the chosen sense through the sensor as if you were in its space. As a Bonus Action, you can switch between seeing and hearing."
-        },
-        {
-          "name": "Dispel Magic",
-          "level": 3,
-          "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
-        },
-        {
-          "name": "Fast Friends",
-          "level": 3,
-          "description": "When you need to make sure something gets done, you can't rely on vague promises, sworn oaths, or binding contracts of employment. When you cast this spell, choose one humanoid within range that can see and hear you, and that can understand you. The creature must succeed on a Wisdom saving throw or become charmed by you for the duration. While the creature is charmed in this way, it undertakes to perform any services or activities you ask of it in a friendly manner, to the best of its ability."
-        },
-        {
-          "name": "Fear",
-          "level": 3,
-          "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration. A Frightened creature takes the Dash action and moves away from you by the safest route on each of its turns unless there is nowhere to move. If the creature ends its turn in a space where it doesn't have line of sight to you, the creature makes a Wisdom saving throw. On a successful save, the spell ends on that creature."
-        },
-        {
-          "name": "Feign Death",
-          "level": 3,
-          "description": "You touch a willing creature and put it into a cataleptic state that is indistinguishable from death. For the duration, the target appears dead to outward inspection and to spells used to determine the target's status. The target has the Blinded and Incapacitated conditions, and its Speed is 0. The target also has Resistance to all damage except Psychic damage, and it has Immunity to the Poisoned condition."
-        },
-        {
-          "name": "Glyph of Warding",
-          "level": 3,
-          "description": "You inscribe a glyph that later unleashes a magical effect. You inscribe it either on a surface (such as a table or a section of floor) or within an object that can be closed (such as a book or chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter. If the surface or object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered."
-        },
-        {
-          "name": "Hypnotic Pattern",
-          "level": 3,
-          "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration. While Charmed, the creature has the Incapacitated condition and a Speed of 0. The spell ends for an affected creature if it takes any damage or if someone else uses an action to shake the creature out of its stupor."
-        },
-        {
-          "name": "Leomund's Tiny Hut",
-          "level": 3,
-          "description": "A 10-foot Emanation [Area of Effect] springs into existence around you and remains stationary for the duration. The spell fails when you cast it if the Emanation [Area of Effect] isn't big enough to fully encapsulate all creatures in its area. Creatures and objects within the Emanation [Area of Effect] when you cast the spell can move through it freely. All other creatures and objects are barred from passing through it."
-        },
-        {
-          "name": "Linked Glyphs",
-          "level": 3,
-          "description": "When you cast this spell, you inscribe a detection glyph that later activates a magical effect at the site of a separate, linked glyph. You inscribe the detection glyph either on a surface (such as a table or a section of floor or wall) or within an object that can be closed (such as a book, a scroll, or a treasure chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter."
-        },
-        {
-          "name": "Major Image",
-          "level": 3,
-          "description": "You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 20-foot Cube [Area of Effect]. The image appears at a spot that you can see within range and lasts for the duration. It seems real, including sounds, smells, and temperature appropriate to the thing depicted, but it can't deal damage or cause conditions. If you are within range of the illusion, you can take a Magic action to cause the image to move to any other spot within range."
-        },
-        {
-          "name": "Mass Healing Word",
-          "level": 3,
-          "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d4 for each spell slot level above 3."
-        },
-        {
-          "name": "Motivational Speech",
-          "level": 3,
-          "description": "You address allies, staff, or innocent bystanders to exhort and inspire them to greatness, whether they have anything to get excited about or not. Choose up to five creatures within range that can hear you. For the duration, each affected creature gains 5 temporary hit points and has advantage on Wisdom saving throws. If an affected creature is hit by an attack, it has advantage on the next attack roll it makes."
-        },
-        {
-          "name": "Nondetection",
-          "level": 3,
-          "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors."
-        },
-        {
-          "name": "Plant Growth",
-          "level": 3,
-          "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range. All normal plants in a 100-foot-radius Sphere [Area of Effect] centered on that point become thick and overgrown. A creature moving through that area must spend 4 feet of movement for every 1 foot it moves. You can exclude one or more areas of any size within the spell's area from being affected."
-        },
-        {
-          "name": "Sending",
-          "level": 3,
-          "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately. The spell enables targets to understand the meaning of your message."
-        },
-        {
-          "name": "Slow",
-          "level": 3,
-          "description": "You alter time around up to six creatures of your choice in a 40-foot Cube [Area of Effect] within range. Each target must succeed on a Wisdom saving throw or be affected by this spell for the duration. An affected target's Speed is halved, it takes a -2 penalty to AC and Dexterity saving throws, and it can't take Reactions. On its turns, it can take either an action or a Bonus Action, not both, and it can make only one attack if it takes the Attack action."
-        },
-        {
-          "name": "Speak with Dead",
-          "level": 3,
-          "description": "You grant the semblance of life to a corpse of your choice within range, allowing it to answer questions you pose. The corpse must have a mouth, and this spell fails if the deceased creature was Undead when it died. The spell also fails if the corpse was the target of this spell within the past 10 days. Until the spell ends, you can ask the corpse up to five questions. The corpse knows only what it knew in life, including the languages it knew."
-        },
-        {
-          "name": "Speak with Plants",
-          "level": 3,
-          "description": "You imbue plants in an immobile 30-foot Emanation [Area of Effect] with limited sentience and animation, giving them the ability to communicate with you and follow your simple commands. You can question plants about events in the spell's area within the past day, gaining information about creatures that have passed, weather, and other circumstances. You can also turn Difficult Terrain caused by plant growth (such as thickets and undergrowth) into ordinary terrain that lasts for the duration."
-        },
-        {
-          "name": "Stinking Cloud",
-          "level": 3,
-          "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it. Each creature that starts its turn in the Sphere [Area of Effect] must succeed on a Constitution saving throw or have the Poisoned condition until the end of the current turn."
-        },
-        {
-          "name": "Tongues",
-          "level": 3,
-          "description": "This spell grants the creature you touch the ability to understand any spoken or signed language that it hears or sees. Moreover, when the target communicates by speaking or signing, any creature that knows at least one language can understand it if that creature can hear the speech or see the signing."
-        },
-        {
-          "name": "Backlash",
-          "level": 4,
-          "description": "You ward yourself against destructive energy, reducing the damage taken by 4d6 plus your spellcasting ability modifier. If the triggering damage was from a creature within range, you can force the creature to make a Constitution saving throw. The creature takes 4d6 Force damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: The damage reduction and Force damage from this spell both increase by 4d6 for every spell slot level above 4."
-        },
-        {
-          "name": "Charm Monster",
-          "level": 4,
-          "description": "One creature you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you. When the spell ends, the target knows it was Charmed by you. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 4."
-        },
-        {
-          "name": "Compulsion",
-          "level": 4,
-          "description": "Each creature of your choice that you can see within range must succeed on a Wisdom saving throw or have the Charmed condition until the spell ends. For the duration, you can take a Bonus Action to designate a direction that is horizontal to you. Each Charmed target must use as much of its movement as possible to move in that direction on its next turn, taking the safest route. After moving in this way, a target repeats the save, ending the spell on itself on a success."
-        },
-        {
-          "name": "Confusion",
-          "level": 4,
-          "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn, consulting the table below. At the end of each of its turns, an affected target repeats the save, ending the spell on itself on a success."
-        },
-        {
-          "name": "Dimension Door",
-          "level": 4,
-          "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You can also teleport one willing creature. The creature must be within 5 feet of you when you teleport, and it teleports to a space within 5 feet of your destination space."
-        },
-        {
-          "name": "Doomtide",
-          "level": 4,
-          "description": "You create a 20-foot-radius Sphere [Area of Effect] of inky fog within range. The fog is magical Darkness and lasts for the duration or until a strong wind (such as the one created by the Gust of Wind spell) disperses it, ending the spell. Each creature in the Sphere [Area of Effect] when it appears makes a Wisdom saving throw. On a failed save, a creature takes 5d6 Psychic damage and subtracts 1d6 from its saving throws until the end of its next turn."
-        },
-        {
-          "name": "Fount of Moonlight",
-          "level": 4,
-          "description": "A cool light wreathes your body for the duration, emitting Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. Until the spell ends, you have Resistance to Radiant damage, and your melee attacks deal an extra 2d6 Radiant damage on a hit. In addition, immediately after you take damage from a creature you can see within 60 feet of yourself, you can take a Reaction to force the creature to make a Constitution saving throw."
-        },
-        {
-          "name": "Freedom of Movement",
-          "level": 4,
-          "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions. The target also has a Swim Speed equal to its Speed. In addition, the target can spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature imposing the Grappled condition on it."
-        },
-        {
-          "name": "Greater Invisibility",
-          "level": 4,
-          "description": "A creature you touch has the Invisible condition until the spell ends."
-        },
-        {
-          "name": "Hallucinatory Terrain",
-          "level": 4,
-          "description": "You make natural terrain in a 150-foot Cube [Area of Effect] in range look, sound, and smell like another sort of natural terrain. Thus, open fields or a road can be made to resemble a swamp, hill, crevasse, or some other difficult or impassable terrain. A pond can be made to seem like a grassy meadow, a precipice like a gentle slope, or a rock-strewn gully like a wide and smooth road. Manufactured structures, equipment, and creatures within the area aren't changed."
-        },
-        {
-          "name": "Locate Creature",
-          "level": 4,
-          "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
-        },
-        {
-          "name": "Phantasmal Killer",
-          "level": 4,
-          "description": "You tap into the nightmares of a creature you can see within range and create an illusion of its deepest fears, visible only to that creature. The target makes a Wisdom saving throw. On a failed save, the target takes 4d10 Psychic damage and has Disadvantage on ability checks and attack rolls for the duration. On a successful save, the target takes half as much damage, and the spell ends. For the duration, the target makes a Wisdom saving throw at the end of each of its turns."
-        },
-        {
-          "name": "Polymorph",
-          "level": 4,
-          "description": "You attempt to transform a creature that you can see within range into a Beast. The target must succeed on a Wisdom saving throw or shape-shift into Beast form for the duration. That form can be any Beast you choose that has a Challenge Rating equal to or less than the target's (or the target's level if it doesn't have a Challenge Rating)."
-        },
-        {
-          "name": "Alustriel's Mooncloak",
-          "level": 5,
-          "description": "For the duration, moonlight fills a 20-foot Emanation [Area of Effect] originating from you with Dim Light. While in that area, you and your allies have Cover and Resistance to Cold, Lightning, and Radiant damage. While the spell lasts, you can use one of the following options, ending the spell immediately: Liberation: When you fail a saving throw to avoid or end the Frightened, Grappled, or Restrained condition, you can take a Reaction to succeed on the save instead."
-        },
-        {
-          "name": "Animate Objects",
-          "level": 5,
-          "description": "Objects animate at your command. Choose a number of nonmagical objects within range that aren't being worn or carried, aren't fixed to a surface, and aren't Gargantuan. The maximum number of objects is equal to your spellcasting ability modifier; for this number, a Medium or smaller target counts as one object, a Large target counts as two, and a Huge target counts as three."
-        },
-        {
-          "name": "Awaken",
-          "level": 5,
-          "description": "You spend the casting time tracing magical pathways within a precious gemstone, and then touch the target. The target must be either a Beast or Plant creature with an Intelligence of 3 or less or a natural plant that isn't a creature. The target gains an Intelligence of 10 and the ability to speak one language you know."
-        },
-        {
-          "name": "Dominate Person",
-          "level": 5,
-          "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success. You have a telepathic link with the Charmed target while the two of you are on the same plane of existence."
-        },
-        {
-          "name": "Dream",
-          "level": 5,
-          "description": "You target a creature you know on the same plane of existence. You or a willing creature you touch enters a trance state to act as a dream messenger. While in the trance, the messenger is Incapacitated and has a Speed of 0. If the target is asleep, the messenger appears in the target's dreams and can converse with the target as long as it remains asleep, through the spell's duration. The messenger can also shape the dream's environment, creating landscapes, objects, and other images."
-        },
-        {
-          "name": "Geas",
-          "level": 5,
-          "description": "You give a verbal command to a creature that you can see within range, ordering it to carry out some service or refrain from an action or a course of activity as you decide. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target automatically succeeds if it can't understand your command. While Charmed, the creature takes 5d10 Psychic damage if it acts in a manner directly counter to your command."
-        },
-        {
-          "name": "Greater Restoration",
-          "level": 5,
-          "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
-        },
-        {
-          "name": "Hold Monster",
-          "level": 5,
-          "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 5."
-        },
-        {
-          "name": "Legend Lore",
-          "level": 5,
-          "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known. The more information you already know about the thing, the more precise and detailed the information you receive is."
-        },
-        {
-          "name": "Mass Cure Wounds",
-          "level": 5,
-          "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 5d8 for each spell slot level above 5."
-        },
-        {
-          "name": "Mislead",
-          "level": 5,
-          "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell. As a Magic action, you can move the illusory double up to twice your Speed and make it gesture, speak, and behave in whatever way you choose. It is intangible and invulnerable."
-        },
-        {
-          "name": "Modify Memory",
-          "level": 5,
-          "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration. While Charmed in this way, the target also has the Incapacitated condition and is unaware of its surroundings, though it can hear you. If it takes any damage or is targeted by another spell, this spell ends, and no memories are modified."
-        },
-        {
-          "name": "Planar Binding",
-          "level": 5,
-          "description": "You attempt to bind a Celestial, an Elemental, a Fey, or a Fiend to your service. The creature must be within range for the entire casting of the spell. (Typically, the creature is first summoned into the center of the inverted version of the Magic Circle spell to trap it while this spell is cast.) At the completion of the casting, the target must succeed on a Charisma saving throw or be bound to serve you for the duration."
-        },
-        {
-          "name": "Raise Dead",
-          "level": 5,
-          "description": "With a touch, you revive a dead creature if it has been dead no longer than 10 days and it wasn't Undead when it died. The creature returns to life with 1 Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds, but it doesn't restore missing body parts. If the creature is lacking body parts or organs integral for its survival—its head, for instance—the spell automatically fails."
-        },
-        {
-          "name": "Rary's Telepathic Bond",
-          "level": 5,
-          "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell. Until the spell ends, the targets can communicate telepathically through the bond whether or not they share a language. The communication is possible over any distance, though it can't extend to other planes of existence."
-        },
-        {
-          "name": "Scrying",
-          "level": 5,
-          "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it. The target doesn't know what it is making the save against, only that it feels uneasy. On a successful save, the target isn't affected, and you can't use this spell on it again for 24 hours."
-        },
-        {
-          "name": "Seeming",
-          "level": 5,
-          "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets. The spell can change the appearance of the targets' bodies and equipment. You can make each creature seem 1 foot shorter or taller and appear heavier or lighter."
-        },
-        {
-          "name": "Synaptic Static",
-          "level": 5,
-          "description": "You cause psychic energy to erupt at a point within range. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes an Intelligence saving throw, taking 8d6 Psychic damage on a failed save or half as much damage on a successful one. On a failed save, a target also has muddled thoughts for 1 minute. During that time, it subtracts 1d6 from all its attack rolls and ability checks, as well as any Constitution saving throws to maintain Concentration."
-        },
-        {
-          "name": "Teleportation Circle",
-          "level": 5,
-          "description": "As you cast the spell, you draw a 5-foot-radius circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know and that is on the same plane of existence as you. A shimmering portal opens within the circle you drew and remains open until the end of your next turn."
-        },
-        {
-          "name": "Yolande's Regal Presence",
-          "level": 5,
-          "description": "You surround yourself with unearthly majesty in a 10-foot Emanation [Area of Effect]. Whenever the Emanation [Area of Effect] enters the space of a creature you can see and whenever a creature you can see enters the Emanation [Area of Effect] or ends its turn there, you can force that creature to make a Wisdom saving throw. On a failed save, the target takes 4d6 Psychic damage and has the Prone condition, and you can push it up to 10 feet away."
-        },
-        {
-          "name": "Dirge",
-          "level": 6,
-          "description": "Deathly power fills a 60-foot Emanation [Area of Effect] originating from you for the duration. When you cast this spell, you can designate creatures to be unaffected by it. Any other creature can't regain Hit Points while in the Emanation [Area of Effect]. Whenever the Emanation [Area of Effect] enters a creature's space and whenever a creature enters the Emanation [Area of Effect] or ends its turn there, the creature makes a Constitution saving throw."
-        },
-        {
-          "name": "Eyebite",
-          "level": 6,
-          "description": "For the duration, your eyes become an inky void. One creature of your choice within 60 feet of you that you can see must succeed on a Wisdom saving throw or be affected by one of the following effects of your choice for the duration. On each of your turns until the spell ends, you can take a Magic action to target another creature but can't target a creature again if it has succeeded on a save against this casting of the spell. Asleep: The target has the Unconscious condition."
-        },
-        {
-          "name": "Find the Path",
-          "level": 6,
-          "description": "You magically sense the most direct physical route to a location you name. You must be familiar with the location, and the spell fails if you name a destination on another plane of existence, a moving destination (such as a mobile fortress), or an unspecific destination (such as \"a green dragon's lair\"). For the duration, as long as you are on the same plane of existence as the destination, you know how far it is and in what direction it lies."
-        },
-        {
-          "name": "Guards and Wards",
-          "level": 6,
-          "description": "You create a ward that protects up to 2,500 square feet of floor space. The warded area can be up to 20 feet tall, and you shape it as one 50-foot square, one hundred 5-foot squares that are contiguous, or twenty-five 10-foot squares that are contiguous. When you cast this spell, you can specify individuals that are unaffected by the spell's effects. You can also specify a password that, when spoken aloud within 5 feet of the warded area, makes the speaker immune to its effects."
-        },
-        {
-          "name": "Heroes' Feast",
-          "level": 6,
-          "description": "You conjure a feast that appears on a surface in an unoccupied 10-foot Cube [Area of Effect] next to you. The feast takes 1 hour to consume and disappears at the end of that time, and the beneficial effects don't set in until this hour is over. Up to twelve creatures can partake of the feast. A creature that partakes gains several benefits, which last for 24 hours. The creature has Resistance to Poison damage, and it has Immunity to the Frightened and Poisoned conditions."
-        },
-        {
-          "name": "Mass Suggestion",
-          "level": 6,
-          "description": "You suggest a course of activity—described in no more than 25 words—to twelve or fewer creatures you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to any of the targets or their allies. For example, you could say, \"Walk to the village down that road, and help the villagers there harvest crops until sunset.\" Or you could say, \"Now is not the time for violence."
-        },
-        {
-          "name": "Otto's Irresistible Dance",
-          "level": 6,
-          "description": "One creature that you can see within range must make a Wisdom saving throw. On a successful save, the target dances comically until the end of its next turn, during which it must spend all its movement to dance in place. On a failed save, the target has the Charmed condition for the duration."
-        },
-        {
-          "name": "Programmed Illusion",
-          "level": 6,
-          "description": "You create an illusion of an object, a creature, or some other visible phenomenon within range that activates when a specific trigger occurs. The illusion is imperceptible until then. It must be no larger than a 30-foot Cube [Area of Effect], and you decide when you cast the spell how the illusion behaves and what sounds it makes. This scripted performance can last up to 5 minutes. When the trigger you specify occurs, the illusion springs into existence and performs in the manner you described."
-        },
-        {
-          "name": "True Seeing",
-          "level": 6,
-          "description": "For the duration, the willing creature you touch has Truesight with a range of 120 feet."
-        },
-        {
-          "name": "Etherealness",
-          "level": 7,
-          "description": "You step into the border regions of the Ethereal Plane, where it overlaps with your current plane. You remain in the Border Ethereal for the duration. During this time, you can move in any direction. If you move up or down, every foot of movement costs an extra foot. You can perceive the plane you left, which looks gray, and you can't see anything there more than 60 feet away. While on the Ethereal Plane, you can affect and be affected only by creatures, objects, and effects on that plane."
-        },
-        {
-          "name": "Forcecage",
-          "level": 7,
-          "description": "An immobile, Invisible, Cube [Area of Effect]-shaped prison composed of magical force springs into existence around an area you choose within range. The prison can be a cage or a solid box, as you choose. A prison in the shape of a cage can be up to 20 feet on a side and is made from 1/2-inch diameter bars spaced 1/2 inch apart."
-        },
-        {
-          "name": "Mirage Arcane",
-          "level": 7,
-          "description": "You make terrain in an area up to 1 mile square look, sound, smell, and even feel like some other sort of terrain. Open fields or a road could be made to resemble a swamp, hill, crevasse, or some other rough or impassable terrain. A pond can be made to seem like a grassy meadow, a precipice like a gentle slope, or a rock-strewn gully like a wide and smooth road. Similarly, you can alter the appearance of structures or add them where none are present."
-        },
-        {
-          "name": "Mordenkainen's Magnificent Mansion",
-          "level": 7,
-          "description": "You conjure a shimmering door in range that lasts for the duration. The door leads to an extradimensional dwelling and is 5 feet wide and 10 feet tall. You and any creature you designate when you cast the spell can enter the extradimensional dwelling as long as the door remains open. You can open or close it (no action required) if you are within 30 feet of it. While closed, the door is imperceptible. Beyond the door is a magnificent foyer with numerous chambers beyond."
-        },
-        {
-          "name": "Mordenkainen's Sword",
-          "level": 7,
-          "description": "You create a spectral sword that hovers within range. It lasts for the duration. When the sword appears, you make a melee spell attack against a target within 5 feet of the sword. On a hit, the target takes Force damage equal to 4d12 plus your spellcasting ability modifier. On your later turns, you can take a Bonus Action to move the sword up to 30 feet to a spot you can see and repeat the attack against the same target or a different one."
-        },
-        {
-          "name": "Power Word Fortify",
-          "level": 7,
-          "description": "You fortify up to six creatures you can see within range. The spell bestows 120 Temporary Hit Points, which you divide among the spell's recipients."
-        },
-        {
-          "name": "Prismatic Spray",
-          "level": 7,
-          "description": "Eight rays of light flash from you in a 60-foot Cone [Area of Effect]. Each creature in the Cone [Area of Effect] makes a Dexterity saving throw. For each target, roll 1d8 to determine which color ray affects it, consulting the Prismatic Rays table."
-        },
-        {
-          "name": "Project Image",
-          "level": 7,
-          "description": "You create an illusory copy of yourself that lasts for the duration. The copy can appear at any location within range that you have seen before, regardless of intervening obstacles. The illusion looks and sounds like you, but it is intangible. If the illusion takes any damage, it disappears, and the spell ends. You can see through the illusion's eyes and hear through its ears as if you were in its space."
-        },
-        {
-          "name": "Regenerate",
-          "level": 7,
-          "description": "A creature you touch regains 4d8 + 15 Hit Points. For the duration, the target regains 1 Hit Points at the start of each of its turns, and any severed body parts regrow after 2 minutes."
-        },
-        {
-          "name": "Resurrection",
-          "level": 7,
-          "description": "With a touch, you revive a dead creature that has been dead for no more than a century, didn't die of old age, and wasn't Undead when it died. The creature returns to life with all its Hit Points. This spell also neutralizes any poisons that affected the creature at the time of death. This spell closes all mortal wounds and restores any missing body parts. Coming back from the dead is an ordeal. The target takes a -4 penalty to D20 Test."
-        },
-        {
-          "name": "Symbol",
-          "level": 7,
-          "description": "You inscribe a harmful glyph either on a surface (such as a section of floor or wall) or within an object that can be closed (such as a book or chest). The glyph can cover an area no larger than 10 feet in diameter. If you choose an object, it must remain in place; if it is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered."
-        },
-        {
-          "name": "Teleport",
-          "level": 7,
-          "description": "This spell instantly transports you and up to eight willing creatures that you can see within range, or a single object that you can see within range, to a destination you select. If you target an object, it must be Large or smaller, and it can't be held or carried by an unwilling creature. The destination you choose must be known to you, and it must be on the same plane of existence as you. Your familiarity with the destination determines whether you arrive there successfully."
-        },
-        {
-          "name": "Antipathy/Sympathy",
-          "level": 8,
-          "description": "As you cast the spell, choose whether it creates antipathy or sympathy, and target one creature or object that is Huge or smaller. Then specify a kind of creature, such as red dragons, goblins, or vampires. A creature of the chosen kind makes a Wisdom saving throw when it comes within 120 feet of the target. Your choice of antipathy or sympathy determines what happens to a creature when it fails that save: Antipathy: The creature has the Frightened condition."
-        },
-        {
-          "name": "Befuddlement",
-          "level": 8,
-          "description": "You blast the mind of a creature that you can see within range. The target makes an Intelligence saving throw. On a failed save, the target takes 10d12 Psychic damage and can't cast spells or take the Magic action. At the end of every 30 days, the target repeats the save, ending the effect on a success. The effect can also be ended by the Greater Restoration, Heal, or Wish spell. On a successful save, the target takes half as much damage only."
-        },
-        {
-          "name": "Dominate Monster",
-          "level": 8,
-          "description": "One creature you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success. You have a telepathic link with the Charmed target while the two of you are on the same plane of existence."
-        },
-        {
-          "name": "Glibness",
-          "level": 8,
-          "description": "Until the spell ends, when you make a Charisma check, you can replace the number you roll with a 15. Additionally, no matter what you say, magic that would determine if you are telling the truth indicates that you are being truthful."
-        },
-        {
-          "name": "Mind Blank",
-          "level": 8,
-          "description": "Until the spell ends, one willing creature you touch has Immunity to Psychic damage and the Charmed condition. The target is also unaffected by anything that would sense its emotions or alignment, read its thoughts, or magically detect its location, and no spell—not even Wish—can gather information about the target, observe it remotely, or control its mind."
-        },
-        {
-          "name": "Power Word Stun",
-          "level": 8,
-          "description": "You overwhelm the mind of one creature you can see within range. If the target has 150 Hit Points or fewer, it has the Stunned condition. Otherwise, its Speed is 0 until the start of your next turn. The Stunned target makes a Constitution saving throw at the end of each of its turns, ending the condition on itself on a success."
-        },
-        {
-          "name": "Foresight",
-          "level": 9,
-          "description": "You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target has Advantage on D20 Test, and other creatures have Disadvantage on attack rolls against it. The spell ends early if you cast it again."
-        },
-        {
-          "name": "Power Word Heal",
-          "level": 9,
-          "description": "A wave of healing energy washes over one creature you can see within range. The target regains all its Hit Points. If the creature has the Charmed, Frightened, Paralyzed, Poisoned, or Stunned condition, the condition ends. If the creature has the Prone condition, it can use its Reaction to stand up."
-        },
-        {
-          "name": "Power Word Kill",
-          "level": 9,
-          "description": "You compel one creature you can see within range to die. If the target has 100 Hit Points or fewer, it dies. Otherwise, it takes 12d12 Psychic damage."
-        },
-        {
-          "name": "Prismatic Wall",
-          "level": 9,
-          "description": "A shimmering, multicolored plane of light forms a vertical opaque wall—up to 90 feet long, 30 feet high, and 1 inch thick—centered on a point within range. Alternatively, you shape the wall into a globe up to 30 feet in diameter centered on a point within range. The wall lasts for the duration. If you position the wall in a space occupied by a creature, the spell ends instantly without effect. The wall sheds Bright Light within 100 feet and Dim Light for an additional 100 feet."
-        },
-        {
-          "name": "True Polymorph",
-          "level": 9,
-          "description": "Choose one creature or nonmagical object that you can see within range. The creature shape-shifts into a different creature or a nonmagical object, or the object shape-shifts into a creature (the object must be neither worn nor carried). The transformation lasts for the duration or until the target dies or is destroyed, but if you maintain Concentration on this spell for the full duration, the spell lasts until dispelled."
-        }
-      ]
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/bard.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 4,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 8,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 16,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 18,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 19,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 19,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 20,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 22,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 22,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 22,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Expertise",
@@ -842,283 +305,95 @@
       "features": [
         "Bardic Inspiration",
         "Spellcasting"
-      ],
-      "spell_slots": [
-        2
-      ],
-      "cantrips_known": 2,
-      "spells_known": 4
+      ]
     },
     {
       "features": [
         "Expertise",
         "Jack of All Trades"
-      ],
-      "spell_slots": [
-        3
-      ],
-      "cantrips_known": 2,
-      "spells_known": 5
+      ]
     },
     {
       "features": [
         "Bard Subclass"
-      ],
-      "spell_slots": [
-        4,
-        2
-      ],
-      "cantrips_known": 2,
-      "spells_known": 6
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3
-      ],
-      "cantrips_known": 3,
-      "spells_known": 7
+      ]
     },
     {
       "features": [
         "Font of Inspiration"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        2
-      ],
-      "cantrips_known": 3,
-      "spells_known": 8
+      ]
     },
     {
       "features": [
         "Subclass Feature"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3
-      ],
-      "cantrips_known": 3,
-      "spells_known": 9
+      ]
     },
     {
       "features": [
         "Countercharm"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 3,
-      "spells_known": 10
+      ]
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 3,
-      "spells_known": 11
+      ]
     },
     {
       "features": [
         "Expertise"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        1
-      ],
-      "cantrips_known": 3,
-      "spells_known": 12
+      ]
     },
     {
       "features": [
         "Magical Secrets"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2
-      ],
-      "cantrips_known": 4,
-      "spells_known": 14
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 15
+      "features": []
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 15
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 16
+      "features": []
     },
     {
       "features": [
         "Subclass Feature"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 18
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 19
+      "features": []
     },
     {
       "features": [
         "Ability Score Improvement"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 19
+      ]
     },
     {
-      "features": [],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 20
+      "features": []
     },
     {
       "features": [
         "Superior Inspiration"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        3,
-        1,
-        1,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 22
+      ]
     },
     {
       "features": [
         "Epic Boon"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        3,
-        2,
-        1,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 22
+      ]
     },
     {
       "features": [
         "Words of Creation"
-      ],
-      "spell_slots": [
-        4,
-        3,
-        3,
-        3,
-        3,
-        2,
-        2,
-        1,
-        1
-      ],
-      "cantrips_known": 4,
-      "spells_known": 22
+      ]
     }
   ],
   "subclasses": [

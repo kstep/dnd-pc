@@ -2,7 +2,6 @@
   "name": "Rogue",
   "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
   "hit_die": 8,
-  "casting_ability": null,
   "proficiencies": [
     0,
     4
@@ -261,13 +260,35 @@
         {
           "name": "Spellcasting",
           "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Arcane Trickster. Cantrips: You know three cantrips: Mage Hand and two other cantrips of your choice from the Wizard spell list (see that class's section for its list). Mind Sliver and Minor Illusion are recommended.",
-          "spells": [
-            {
-              "name": "Mage Hand",
-              "level": 0,
-              "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again."
-            }
-          ]
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Mage Hand",
+                "level": 0,
+                "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again."
+              }
+            ],
+            "levels": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          }
         },
         {
           "name": "Magical Ambush",
