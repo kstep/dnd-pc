@@ -6,7 +6,7 @@ use crate::{
     components::panel::Panel,
     model::{
         Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        CombatStatsStoreFields,
+        CombatStatsStoreFields, FeatureValue,
     },
 };
 
@@ -251,6 +251,16 @@ pub fn CombatPanel() -> impl IntoView {
                         store.spell_slots().update(|slots| {
                             for slot in slots.iter_mut() {
                                 slot.used = 0;
+                            }
+                        });
+                        // Reset feature points (sorcery points, etc.)
+                        store.fields().update(|fields| {
+                            for field_list in fields.values_mut() {
+                                for field in field_list.iter_mut() {
+                                    if let FeatureValue::Points { used, .. } = &mut field.value {
+                                        *used = 0;
+                                    }
+                                }
                             }
                         });
                     }

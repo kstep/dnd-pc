@@ -25,6 +25,7 @@ btn-apply-background = Применить предысторию
 back-to-characters = < Назад к персонажам
 export-json = Экспорт
 import-json = Импорт
+reset-character = Сброс
 share-link = Поделиться
 share-copied = Скопировано
 share-error = Не удалось декодировать персонажа

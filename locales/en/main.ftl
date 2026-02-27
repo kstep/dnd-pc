@@ -25,6 +25,7 @@ btn-apply-background = Apply background
 back-to-characters = < Back to Characters
 export-json = Export
 import-json = Import
+reset-character = Reset
 share-link = Share
 share-copied = Copied
 share-error = Failed to decode shared character

@@ -1072,6 +1072,10 @@ input[type="checkbox"] {
   cursor: pointer;
   font-size: var(--font-size-1);
   margin-top: var(--size-1);
+
+  &.btn-danger {
+    background: var(--danger);
+  }
 }
 
 .btn-remove {

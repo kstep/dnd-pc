@@ -544,6 +544,17 @@ pub fn CharacterHeader() -> impl IntoView {
                 </button>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
+                <button
+                    class="btn-add btn-danger"
+                    on:click=move |_| {
+                        let window = web_sys::window().unwrap();
+                        if window.confirm_with_message("Reset character to blank?").unwrap_or(false) {
+                            store.set(Character { id: store.get().id, ..Default::default() });
+                        }
+                    }
+                >
+                    {move_tr!("reset-character")}
+                </button>
             </div>
             <A href=format!("{BASE_URL}/") attr:class="back-link">{move_tr!("back-to-characters")}</A>
         </div>
