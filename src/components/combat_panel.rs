@@ -247,12 +247,10 @@ pub fn CombatPanel() -> impl IntoView {
                                 cl.hit_dice_used -= regain;
                             }
                         }
-                        // Reset spell slots and sorcery points
-                        store.spellcasting().update(|map| {
-                            for sc in map.values_mut() {
-                                for slot in &mut sc.spell_slots {
-                                    slot.used = 0;
-                                }
+                        // Reset spell slots
+                        store.spell_slots().update(|slots| {
+                            for slot in slots.iter_mut() {
+                                slot.used = 0;
                             }
                         });
                     }

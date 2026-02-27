@@ -15,7 +15,7 @@ use crate::{
 };
 
 #[component]
-fn FeatureSpellcastingPanel(
+fn FeatureSpellcastingSection(
     #[prop(into)] feature_name: String,
     sc_data: SpellcastingData,
 ) -> impl IntoView {
@@ -37,7 +37,6 @@ fn FeatureSpellcastingPanel(
     let spell_save_dc = Memo::new(move |_| store.get().spell_save_dc(casting_ability.get()));
     let spell_attack = Memo::new(move |_| store.get().spell_attack_bonus(casting_ability.get()));
 
-    let slots_expanded = RwSignal::new(false);
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
 
     // Reactively resolve spell list for datalist suggestions (re-runs when
@@ -53,7 +52,8 @@ fn FeatureSpellcastingPanel(
     let panel_title = feature_name;
 
     view! {
-        <Panel title=panel_title class="spellcasting-panel">
+        <div class="spellcasting-section">
+            <h4 class="skill-group-header">{panel_title}</h4>
             {move || {
                 let suggestions = spell_suggestions.get();
                 (0..=9u32)
@@ -127,79 +127,6 @@ fn FeatureSpellcastingPanel(
                         }}
                     </span>
                 </div>
-            </div>
-
-            <div class="section-header">
-                <ToggleButton
-                    expanded=Signal::derive(move || slots_expanded.get())
-                    on_toggle=move || slots_expanded.update(|v| *v = !*v)
-                />
-                <h4>{move_tr!("spell-slots")}</h4>
-            </div>
-            <div class="spell-slots-grid">
-                {move || {
-                    let key = fname.get_value();
-                    let expanded = slots_expanded.get();
-                    let slots: Vec<_> = store
-                        .spellcasting()
-                        .read()
-                        .get(&key)
-                        .map(|sc| sc.all_spell_slots().collect())
-                        .unwrap_or_default();
-                    slots
-                        .into_iter()
-                        .filter(|(_, slot)| expanded || slot.total > 0)
-                        .map(|(level, slot)| {
-                            let idx = (level - 1) as usize;
-                            view! {
-                                <div class="spell-slot-entry">
-                                    <span class="slot-level">"Lv " {level}</span>
-                                    <input
-                                        type="number"
-                                        class="short-input"
-                                        min="0"
-                                        placeholder=move_tr!("used")
-                                        prop:value=slot.used.to_string()
-                                        on:input=move |e| {
-                                            if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                let key = fname.get_value();
-                                                store.spellcasting().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key)
-                                                        && let Some(s) = sc.spell_slots.get_mut(idx)
-                                                    {
-                                                        s.used = v;
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    />
-                                    <span>"/"</span>
-                                    <input
-                                        type="number"
-                                        class="short-input"
-                                        min="0"
-                                        placeholder=move_tr!("total")
-                                        prop:value=slot.total.to_string()
-                                        on:input=move |e| {
-                                            if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                let key = fname.get_value();
-                                                store.spellcasting().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key) {
-                                                        sc.spell_slots.resize_with(idx + 1, Default::default);
-                                                        sc.spell_slots[idx].total = v;
-                                                        while sc.spell_slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
-                                                            sc.spell_slots.pop();
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    />
-                                </div>
-                            }
-                        })
-                        .collect_view()
-                }}
             </div>
 
             <div class="section-header">
@@ -365,7 +292,7 @@ fn FeatureSpellcastingPanel(
             >
                 {move_tr!("btn-add-spell")}
             </button>
-        </Panel>
+        </div>
     }
 }
 
@@ -394,27 +321,88 @@ fn resolve_feature_spell_list(
 #[component]
 pub fn SpellcastingPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let has_spells = Memo::new(move |_| !store.spellcasting().read().is_empty());
+    let slots_expanded = RwSignal::new(false);
 
-    move || {
-        let entries: Vec<_> = store
-            .spellcasting()
-            .read()
-            .iter()
-            .map(|(name, data)| (name.clone(), data.clone()))
-            .collect();
-
-        if entries.is_empty() {
-            return Vec::new().into_view();
-        }
-
-        entries
-            .into_iter()
-            .map(|(feature_name, sc_data)| {
-                view! {
-                    <FeatureSpellcastingPanel feature_name=feature_name sc_data=sc_data />
-                }
-            })
-            .collect_view()
-            .into_view()
+    view! {
+        <Show when=move || has_spells.get()>
+            <Panel title=move_tr!("panel-spellcasting") class="spellcasting-panel">
+                <div class="section-header">
+                    <ToggleButton
+                        expanded=Signal::derive(move || slots_expanded.get())
+                        on_toggle=move || slots_expanded.update(|v| *v = !*v)
+                    />
+                    <h4>{move_tr!("spell-slots")}</h4>
+                </div>
+                <div class="spell-slots-grid">
+                    {move || {
+                        let expanded = slots_expanded.get();
+                        let ch = store.get();
+                        let slots: Vec<_> = ch.all_spell_slots().collect();
+                        slots
+                            .into_iter()
+                            .filter(|(_, slot)| expanded || slot.total > 0)
+                            .map(|(level, slot)| {
+                                let idx = (level - 1) as usize;
+                                view! {
+                                    <div class="spell-slot-entry">
+                                        <span class="slot-level">"Lv " {level}</span>
+                                        <input
+                                            type="number"
+                                            class="short-input"
+                                            min="0"
+                                            placeholder=move_tr!("used")
+                                            prop:value=slot.used.to_string()
+                                            on:input=move |e| {
+                                                if let Ok(v) = event_target_value(&e).parse::<u32>() {
+                                                    store.spell_slots().update(|slots| {
+                                                        slots.resize_with(idx + 1, Default::default);
+                                                        slots[idx].used = v;
+                                                    });
+                                                }
+                                            }
+                                        />
+                                        <span>"/"</span>
+                                        <input
+                                            type="number"
+                                            class="short-input"
+                                            min="0"
+                                            placeholder=move_tr!("total")
+                                            prop:value=slot.total.to_string()
+                                            on:input=move |e| {
+                                                if let Ok(v) = event_target_value(&e).parse::<u32>() {
+                                                    store.spell_slots().update(|slots| {
+                                                        slots.resize_with(idx + 1, Default::default);
+                                                        slots[idx].total = v;
+                                                        while slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
+                                                            slots.pop();
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        />
+                                    </div>
+                                }
+                            })
+                            .collect_view()
+                    }}
+                </div>
+                {move || {
+                    store
+                        .spellcasting()
+                        .read()
+                        .iter()
+                        .map(|(name, data)| (name.clone(), data.clone()))
+                        .collect::<Vec<_>>()
+                        .into_iter()
+                        .map(|(feature_name, sc_data)| {
+                            view! {
+                                <FeatureSpellcastingSection feature_name=feature_name sc_data=sc_data />
+                            }
+                        })
+                        .collect_view()
+                }}
+            </Panel>
+        </Show>
     }
 }

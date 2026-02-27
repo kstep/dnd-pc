@@ -504,23 +504,26 @@
         {
           "name": "Beguiling Magic",
           "description": "You always have the Charm Person and Mirror Image spells prepared. In addition, immediately after you cast an Enchantment or Illusion spell using a spell slot, you can cause a creature you can see within 60 feet of yourself to make a Wisdom saving throw against your spell save DC. On a failed save, the target has the Charmed or Frightened condition (your choice) for 1 minute.",
-          "spells": [
-            {
-              "name": "Charm Person",
-              "level": 1,
-              "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
-            },
-            {
-              "name": "Command",
-              "level": 1,
-              "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
-            },
-            {
-              "name": "Mirror Image",
-              "level": 2,
-              "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Charm Person",
+                "level": 1,
+                "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+              },
+              {
+                "name": "Command",
+                "level": 1,
+                "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
+              },
+              {
+                "name": "Mirror Image",
+                "level": 2,
+                "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
+              }
+            ]
+          }
         },
         {
           "name": "Mantle of Inspiration",

@@ -903,6 +903,14 @@ input[type="checkbox"] {
 }
 
 /* --------------------- Spellcasting Panel -------------------- */
+.spellcasting-section {
+  margin-bottom: var(--size-2);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
 .toggle-row {
   display: flex;
   align-items: center;

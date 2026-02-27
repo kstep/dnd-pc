@@ -12,8 +12,7 @@ use strum::IntoEnumIterator;
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, SpellcastingData,
-        Translatable,
+        Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable,
     },
     share, storage,
 };
@@ -79,8 +78,8 @@ fn format_items(items: &[Item]) -> String {
     }
 }
 
-fn format_spell_slots(sc: &SpellcastingData) -> String {
-    let slots: Vec<String> = sc
+fn format_spell_slots(ch: &Character) -> String {
+    let slots: Vec<String> = ch
         .all_spell_slots()
         .filter(|(_, slot)| slot.total > 0)
         .map(|(level, slot)| format!("L{level}: {}", slot.total))
@@ -275,6 +274,13 @@ fn compute_diff(
 
     // --- Spellcasting ---
     let sec = "panel-spellcasting";
+    push_if_diff(
+        &mut rows,
+        sec,
+        "spell-slots",
+        format_spell_slots(local),
+        format_spell_slots(imported),
+    );
     {
         let all_keys: BTreeSet<&String> = local
             .spellcasting
@@ -294,13 +300,6 @@ fn compute_diff(
                             imported: i18n.tr(imported_sc.casting_ability.tr_key()),
                         });
                     }
-                    push_if_diff(
-                        &mut rows,
-                        sec,
-                        "spell-slots",
-                        format_spell_slots(local_sc),
-                        format_spell_slots(imported_sc),
-                    );
                     let local_val = format_names(&local_sc.spells, |spell| &spell.name);
                     let imported_val = format_names(&imported_sc.spells, |spell| &spell.name);
                     push_if_diff(&mut rows, sec, "spells", local_val, imported_val);

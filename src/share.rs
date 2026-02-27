@@ -59,5 +59,7 @@ pub fn decode_character(data: &str) -> Option<Character> {
     let mut decoder = brotli::Decompressor::new(&compressed[..], 4096);
     let mut bytes = Vec::new();
     decoder.read_to_end(&mut bytes).ok()?;
-    postcard::from_bytes(&bytes).ok()
+    let mut ch: Character = postcard::from_bytes(&bytes).ok()?;
+    ch.migrate();
+    Some(ch)
 }

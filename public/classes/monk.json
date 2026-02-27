@@ -902,13 +902,16 @@
         {
           "name": "Shadowy Figments",
           "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it.",
-          "spells": [
-            {
-              "name": "Minor Illusion",
-              "level": 0,
-              "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Minor Illusion",
+                "level": 0,
+                "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
+              }
+            ]
+          }
         },
         {
           "name": "Shadow Step",
@@ -965,13 +968,16 @@
         {
           "name": "Manipulate Elements",
           "description": "You know the Elementalism spell. Wisdom is your spellcasting ability for it.",
-          "spells": [
-            {
-              "name": "Elementalism",
-              "level": 0,
-              "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Elementalism",
+                "level": 0,
+                "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
+              }
+            ]
+          }
         },
         {
           "name": "Warrior of the Elements",

@@ -78,6 +78,8 @@ pub struct Character {
     #[serde(default)]
     pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
+    pub spell_slots: Vec<SpellSlotLevel>,
+    #[serde(default)]
     pub notes: String,
     #[serde(default)]
     pub updated_at: u64,
@@ -96,6 +98,25 @@ impl Character {
 
     pub fn touch(&mut self) {
         self.updated_at = now_epoch_secs();
+    }
+
+    /// Migrate legacy data: merge per-feature spell_slots into the top-level
+    /// pool and clear them from features.
+    pub fn migrate(&mut self) {
+        if self.spell_slots.is_empty() {
+            for sc in self.spellcasting.values() {
+                for (i, slot) in sc.spell_slots.iter().enumerate() {
+                    if self.spell_slots.len() <= i {
+                        self.spell_slots.resize_with(i + 1, Default::default);
+                    }
+                    self.spell_slots[i].total += slot.total;
+                    self.spell_slots[i].used += slot.used;
+                }
+            }
+        }
+        for sc in self.spellcasting.values_mut() {
+            sc.spell_slots.clear();
+        }
     }
 
     pub fn level(&self) -> u32 {
@@ -150,6 +171,17 @@ impl Character {
         self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
+    pub fn spell_slot(&self, level: u32) -> SpellSlotLevel {
+        self.spell_slots
+            .get((level - 1) as usize)
+            .copied()
+            .unwrap_or_default()
+    }
+
+    pub fn all_spell_slots(&self) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
+        (1..=9u32).map(|level| (level, self.spell_slot(level)))
+    }
+
     pub fn class_summary(&self) -> String {
         self.identity
             .classes
@@ -186,6 +218,7 @@ impl Default for Character {
             features: Vec::new(),
             equipment: Equipment::default(),
             spellcasting: BTreeMap::new(),
+            spell_slots: Vec::new(),
             proficiencies: HashSet::new(),
             languages: Vec::new(),
             racial_traits: Vec::new(),
@@ -498,24 +531,14 @@ impl std::fmt::Display for Currency {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,
-    #[serde(default)]
+    /// Legacy field kept for deserialization migration; not used at runtime.
+    #[serde(default, skip_serializing)]
     pub spell_slots: Vec<SpellSlotLevel>,
     #[serde(default)]
     pub spells: Vec<Spell>,
 }
 
 impl SpellcastingData {
-    pub fn spell_slot(&self, level: u32) -> SpellSlotLevel {
-        self.spell_slots
-            .get((level - 1) as usize)
-            .copied()
-            .unwrap_or_default()
-    }
-
-    pub fn all_spell_slots(&self) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
-        (1..=9u32).map(|level| (level, self.spell_slot(level)))
-    }
-
     pub fn cantrips(&self) -> impl Iterator<Item = &Spell> {
         self.spells.iter().filter(|s| s.level == 0)
     }

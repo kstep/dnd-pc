@@ -356,58 +356,61 @@
         {
           "name": "Oath of Devotion Spells",
           "description": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Devotion Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Protection from Evil and Good",
-              "level": 1,
-              "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target."
-            },
-            {
-              "name": "Shield of Faith",
-              "level": 1,
-              "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
-            },
-            {
-              "name": "Aid",
-              "level": 2,
-              "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
-            },
-            {
-              "name": "Zone of Truth",
-              "level": 2,
-              "description": "You create a magical zone that guards against deception in a 15-foot-radius Sphere [Area of Effect] centered on a point within range. Until the spell ends, a creature that enters the spell's area for the first time on a turn or starts its turn there makes a Charisma saving throw."
-            },
-            {
-              "name": "Beacon of Hope",
-              "level": 3,
-              "description": "Choose any number of creatures within range. For the duration, each target has Advantage on Wisdom saving throws and Death Saving Throw and regains the maximum number of Hit Points possible from any healing."
-            },
-            {
-              "name": "Dispel Magic",
-              "level": 3,
-              "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
-            },
-            {
-              "name": "Freedom of Movement",
-              "level": 4,
-              "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
-            },
-            {
-              "name": "Guardian of Faith",
-              "level": 4,
-              "description": "A Large spectral guardian appears and hovers for the duration in an unoccupied space that you can see within range. The guardian occupies that space and is invulnerable, and it appears in a form appropriate for your deity or pantheon."
-            },
-            {
-              "name": "Commune",
-              "level": 5,
-              "description": "You contact a deity or a divine proxy and ask up to three questions that can be answered with yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question."
-            },
-            {
-              "name": "Flame Strike",
-              "level": 5,
-              "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Protection from Evil and Good",
+                "level": 1,
+                "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target."
+              },
+              {
+                "name": "Shield of Faith",
+                "level": 1,
+                "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+              },
+              {
+                "name": "Aid",
+                "level": 2,
+                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+              },
+              {
+                "name": "Zone of Truth",
+                "level": 2,
+                "description": "You create a magical zone that guards against deception in a 15-foot-radius Sphere [Area of Effect] centered on a point within range. Until the spell ends, a creature that enters the spell's area for the first time on a turn or starts its turn there makes a Charisma saving throw."
+              },
+              {
+                "name": "Beacon of Hope",
+                "level": 3,
+                "description": "Choose any number of creatures within range. For the duration, each target has Advantage on Wisdom saving throws and Death Saving Throw and regains the maximum number of Hit Points possible from any healing."
+              },
+              {
+                "name": "Dispel Magic",
+                "level": 3,
+                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+              },
+              {
+                "name": "Guardian of Faith",
+                "level": 4,
+                "description": "A Large spectral guardian appears and hovers for the duration in an unoccupied space that you can see within range. The guardian occupies that space and is invulnerable, and it appears in a form appropriate for your deity or pantheon."
+              },
+              {
+                "name": "Commune",
+                "level": 5,
+                "description": "You contact a deity or a divine proxy and ask up to three questions that can be answered with yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question."
+              },
+              {
+                "name": "Flame Strike",
+                "level": 5,
+                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
+              }
+            ]
+          }
         },
         {
           "name": "Sacred Weapon",
@@ -470,58 +473,61 @@
         {
           "name": "Oath of the Ancients Spells",
           "description": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of the Ancients Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Ensnaring Strike",
-              "level": 1,
-              "description": "As you hit the target, grasping vines appear on it, and it makes a Strength saving throw. A Large or larger creature has Advantage on this save. On a failed save, the target has the Restrained condition until the spell ends. On a successful save, the vines shrivel away, and the spell ends."
-            },
-            {
-              "name": "Speak with Animals",
-              "level": 1,
-              "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nea..."
-            },
-            {
-              "name": "Misty Step",
-              "level": 2,
-              "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
-            },
-            {
-              "name": "Moonbeam",
-              "level": 2,
-              "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Until the spell ends, Dim Light fills the Cylinder [Area of Effect], and you can take a Magic action on later turns to move the Cylinder [Area of Effect] up to 60..."
-            },
-            {
-              "name": "Plant Growth",
-              "level": 3,
-              "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range."
-            },
-            {
-              "name": "Protection from Energy",
-              "level": 3,
-              "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
-            },
-            {
-              "name": "Ice Storm",
-              "level": 4,
-              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-            },
-            {
-              "name": "Stoneskin",
-              "level": 4,
-              "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
-            },
-            {
-              "name": "Commune with Nature",
-              "level": 5,
-              "description": "You commune with nature spirits and gain knowledge of the surrounding area. In the outdoors, the spell gives you knowledge of the area within 3 miles of you. In caves and other natural underground settings, the radius is limited to 300 feet."
-            },
-            {
-              "name": "Tree Stride",
-              "level": 5,
-              "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Ensnaring Strike",
+                "level": 1,
+                "description": "As you hit the target, grasping vines appear on it, and it makes a Strength saving throw. A Large or larger creature has Advantage on this save. On a failed save, the target has the Restrained condition until the spell ends. On a successful save, the vines shrivel away, and the spell ends."
+              },
+              {
+                "name": "Speak with Animals",
+                "level": 1,
+                "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nea..."
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+              },
+              {
+                "name": "Moonbeam",
+                "level": 2,
+                "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Until the spell ends, Dim Light fills the Cylinder [Area of Effect], and you can take a Magic action on later turns to move the Cylinder [Area of Effect] up to 60..."
+              },
+              {
+                "name": "Plant Growth",
+                "level": 3,
+                "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range."
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+              },
+              {
+                "name": "Stoneskin",
+                "level": 4,
+                "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
+              },
+              {
+                "name": "Commune with Nature",
+                "level": 5,
+                "description": "You commune with nature spirits and gain knowledge of the surrounding area. In the outdoors, the spell gives you knowledge of the area within 3 miles of you. In caves and other natural underground settings, the radius is limited to 300 feet."
+              },
+              {
+                "name": "Tree Stride",
+                "level": 5,
+                "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree."
+              }
+            ]
+          }
         },
         {
           "name": "Aura of Warding",
@@ -576,58 +582,61 @@
         {
           "name": "Oath of Vengeance Spells",
           "description": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Vengeance Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Bane",
-              "level": 1,
-              "description": "Up to three creatures of your choice that you can see within range must each make a Charisma saving throw. Whenever a target that fails this save makes an attack roll or a saving throw before the spell ends, the target must subtract 1d4 from the attack roll or save."
-            },
-            {
-              "name": "Hunter's Mark",
-              "level": 1,
-              "description": "You magically mark one creature you can see within range as your quarry. Until the spell ends, you deal an extra 1d6 Force damage to the target whenever you hit it with an attack roll. You also have Advantage on any Wisdom (Perception or Survival) check you make to find it."
-            },
-            {
-              "name": "Hold Person",
-              "level": 2,
-              "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-            },
-            {
-              "name": "Misty Step",
-              "level": 2,
-              "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
-            },
-            {
-              "name": "Haste",
-              "level": 3,
-              "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns."
-            },
-            {
-              "name": "Protection from Energy",
-              "level": 3,
-              "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
-            },
-            {
-              "name": "Banishment",
-              "level": 4,
-              "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition."
-            },
-            {
-              "name": "Dimension Door",
-              "level": 4,
-              "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
-            },
-            {
-              "name": "Hold Monster",
-              "level": 5,
-              "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-            },
-            {
-              "name": "Scrying",
-              "level": 5,
-              "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Bane",
+                "level": 1,
+                "description": "Up to three creatures of your choice that you can see within range must each make a Charisma saving throw. Whenever a target that fails this save makes an attack roll or a saving throw before the spell ends, the target must subtract 1d4 from the attack roll or save."
+              },
+              {
+                "name": "Hunter's Mark",
+                "level": 1,
+                "description": "You magically mark one creature you can see within range as your quarry. Until the spell ends, you deal an extra 1d6 Force damage to the target whenever you hit it with an attack roll. You also have Advantage on any Wisdom (Perception or Survival) check you make to find it."
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+              },
+              {
+                "name": "Haste",
+                "level": 3,
+                "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns."
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+              },
+              {
+                "name": "Banishment",
+                "level": 4,
+                "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition."
+              },
+              {
+                "name": "Dimension Door",
+                "level": 4,
+                "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
+              },
+              {
+                "name": "Hold Monster",
+                "level": 5,
+                "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+              },
+              {
+                "name": "Scrying",
+                "level": 5,
+                "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
+              }
+            ]
+          }
         },
         {
           "name": "Vow of Enmity",
@@ -977,58 +986,61 @@
         {
           "name": "Oath of Glory Spells",
           "description": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Glory Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Guiding Bolt",
-              "level": 1,
-              "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
-            },
-            {
-              "name": "Heroism",
-              "level": 1,
-              "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
-            },
-            {
-              "name": "Enhance Ability",
-              "level": 2,
-              "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability."
-            },
-            {
-              "name": "Magic Weapon",
-              "level": 2,
-              "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again."
-            },
-            {
-              "name": "Haste",
-              "level": 3,
-              "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns."
-            },
-            {
-              "name": "Protection from Energy",
-              "level": 3,
-              "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
-            },
-            {
-              "name": "Compulsion",
-              "level": 4,
-              "description": "Each creature of your choice that you can see within range must succeed on a Wisdom saving throw or have the Charmed condition until the spell ends. For the duration, you can take a Bonus Action to designate a direction that is horizontal to you."
-            },
-            {
-              "name": "Freedom of Movement",
-              "level": 4,
-              "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
-            },
-            {
-              "name": "Legend Lore",
-              "level": 5,
-              "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
-            },
-            {
-              "name": "Yolande's Regal Presence",
-              "level": 5,
-              "description": "You surround yourself with unearthly majesty in a 10-foot Emanation [Area of Effect]. Whenever the Emanation [Area of Effect] enters the space of a creature you can see and whenever a creature you can see enters the Emanation [Area of Effect] or ends its turn there, you can force that creature to..."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+              },
+              {
+                "name": "Heroism",
+                "level": 1,
+                "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
+              },
+              {
+                "name": "Enhance Ability",
+                "level": 2,
+                "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability."
+              },
+              {
+                "name": "Magic Weapon",
+                "level": 2,
+                "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again."
+              },
+              {
+                "name": "Haste",
+                "level": 3,
+                "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns."
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+              },
+              {
+                "name": "Compulsion",
+                "level": 4,
+                "description": "Each creature of your choice that you can see within range must succeed on a Wisdom saving throw or have the Charmed condition until the spell ends. For the duration, you can take a Bonus Action to designate a direction that is horizontal to you."
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+              },
+              {
+                "name": "Legend Lore",
+                "level": 5,
+                "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
+              },
+              {
+                "name": "Yolande's Regal Presence",
+                "level": 5,
+                "description": "You surround yourself with unearthly majesty in a 10-foot Emanation [Area of Effect]. Whenever the Emanation [Area of Effect] enters the space of a creature you can see and whenever a creature you can see enters the Emanation [Area of Effect] or ends its turn there, you can force that creature to..."
+              }
+            ]
+          }
         },
         {
           "name": "Peerless Athlete",
@@ -1173,63 +1185,66 @@
         {
           "name": "Genie Spells",
           "description": "When you reach a Paladin level specified in the Genie Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Elementalism",
-              "level": 0,
-              "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
-            },
-            {
-              "name": "Chromatic Orb",
-              "level": 1,
-              "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
-            },
-            {
-              "name": "Thunderous Smite",
-              "level": 1,
-              "description": "Your strike rings with thunder that is audible within 300 feet of you, and the target takes an extra 2d6 Thunder damage from the attack. Additionally, if the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet away from you and have the Prone condition."
-            },
-            {
-              "name": "Mirror Image",
-              "level": 2,
-              "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
-            },
-            {
-              "name": "Phantasmal Force",
-              "level": 2,
-              "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t..."
-            },
-            {
-              "name": "Fly",
-              "level": 3,
-              "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall."
-            },
-            {
-              "name": "Gaseous Form",
-              "level": 3,
-              "description": "A willing creature you touch shape-shifts, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends on the target if it drops to 0 Hit Points or if it takes a Magic action to end the spell on itself."
-            },
-            {
-              "name": "Conjure Minor Elementals",
-              "level": 4,
-              "description": "You conjure spirits from the Elemental Planes that flit around you in a 15-foot Emanation [Area of Effect] for the duration. Until the spell ends, any attack you make deals an extra 2d8 damage when you hit a creature in the Emanation [Area of Effect]."
-            },
-            {
-              "name": "Summon Elemental",
-              "level": 4,
-              "description": "You call forth an Elemental spirit. It manifests in an unoccupied space that you can see within range and uses the Elemental Spirit stat block. When you cast the spell, choose an element: Air, Earth, Fire, or Water."
-            },
-            {
-              "name": "Banishing Smite",
-              "level": 5,
-              "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
-            },
-            {
-              "name": "Contact Other Plane",
-              "level": 5,
-              "description": "You mentally contact a demigod, the spirit of a long-dead sage, or some other knowledgeable entity from another plane. Contacting this otherworldly intelligence can break your mind. When you cast this spell, make a 15 Intelligence saving throw."
-            }
-          ]
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Elementalism",
+                "level": 0,
+                "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
+              },
+              {
+                "name": "Chromatic Orb",
+                "level": 1,
+                "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
+              },
+              {
+                "name": "Thunderous Smite",
+                "level": 1,
+                "description": "Your strike rings with thunder that is audible within 300 feet of you, and the target takes an extra 2d6 Thunder damage from the attack. Additionally, if the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet away from you and have the Prone condition."
+              },
+              {
+                "name": "Mirror Image",
+                "level": 2,
+                "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
+              },
+              {
+                "name": "Phantasmal Force",
+                "level": 2,
+                "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t..."
+              },
+              {
+                "name": "Fly",
+                "level": 3,
+                "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall."
+              },
+              {
+                "name": "Gaseous Form",
+                "level": 3,
+                "description": "A willing creature you touch shape-shifts, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends on the target if it drops to 0 Hit Points or if it takes a Magic action to end the spell on itself."
+              },
+              {
+                "name": "Conjure Minor Elementals",
+                "level": 4,
+                "description": "You conjure spirits from the Elemental Planes that flit around you in a 15-foot Emanation [Area of Effect] for the duration. Until the spell ends, any attack you make deals an extra 2d8 damage when you hit a creature in the Emanation [Area of Effect]."
+              },
+              {
+                "name": "Summon Elemental",
+                "level": 4,
+                "description": "You call forth an Elemental spirit. It manifests in an unoccupied space that you can see within range and uses the Elemental Spirit stat block. When you cast the spell, choose an element: Air, Earth, Fire, or Water."
+              },
+              {
+                "name": "Banishing Smite",
+                "level": 5,
+                "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
+              },
+              {
+                "name": "Contact Other Plane",
+                "level": 5,
+                "description": "You mentally contact a demigod, the spirit of a long-dead sage, or some other knowledgeable entity from another plane. Contacting this otherworldly intelligence can break your mind. When you cast this spell, make a 15 Intelligence saving throw."
+              }
+            ]
+          }
         },
         {
           "name": "Genie's Splendor",

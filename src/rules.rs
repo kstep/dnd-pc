@@ -285,16 +285,18 @@ impl FeatureDefinition {
             if let Some(rules) = spells_def.levels.get(level as usize - 1) {
                 // Spell slots
                 if let Some(slots) = &rules.slots {
-                    sc.spell_slots.resize_with(slots.len(), Default::default);
+                    character
+                        .spell_slots
+                        .resize_with(slots.len(), Default::default);
                     for (i, &count) in slots.iter().enumerate() {
-                        sc.spell_slots[i].total = count;
+                        character.spell_slots[i].total = count;
                     }
-                    while sc
+                    while character
                         .spell_slots
                         .last()
                         .is_some_and(|s| s.total == 0 && s.used == 0)
                     {
-                        sc.spell_slots.pop();
+                        character.spell_slots.pop();
                     }
                 }
 

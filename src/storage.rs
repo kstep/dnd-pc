@@ -18,7 +18,9 @@ pub fn save_index(index: &CharacterIndex) {
 }
 
 pub fn load_character(id: &Uuid) -> Option<Character> {
-    LocalStorage::get(character_key(id)).ok()
+    let mut ch: Character = LocalStorage::get(character_key(id)).ok()?;
+    ch.migrate();
+    Some(ch)
 }
 
 pub fn save_character(character: &Character) {

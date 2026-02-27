@@ -1219,18 +1219,21 @@
         {
           "name": "Spell Breaker",
           "description": "You always have the Counterspell and Dispel Magic spells prepared. In addition, you can cast Dispel Magic as a Bonus Action, and you can add your Proficiency to its ability check. When you cast either spell with a spell slot, that slot isn't expended if the spell fails to stop a spell.",
-          "spells": [
-            {
-              "name": "Counterspell",
-              "level": 3,
-              "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
-            },
-            {
-              "name": "Dispel Magic",
-              "level": 3,
-              "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
-            }
-          ]
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Counterspell",
+                "level": 3,
+                "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
+              },
+              {
+                "name": "Dispel Magic",
+                "level": 3,
+                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+              }
+            ]
+          }
         },
         {
           "name": "Spell Resistance",
@@ -1289,13 +1292,16 @@
         {
           "name": "The Third Eye",
           "description": "You can increase your powers of perception. As a Bonus Action, choose one of the following benefits, which lasts until you start a Short Rest or Long Rest. You can't use this feature again until you finish a Short Rest or Long Rest. Darkvision: You gain Darkvision with a range of 120 feet. Greater Comprehension: You can read any language.",
-          "spells": [
-            {
-              "name": "See Invisibility",
-              "level": 2,
-              "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
-            }
-          ]
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "See Invisibility",
+                "level": 2,
+                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
+              }
+            ]
+          }
         },
         {
           "name": "Greater Portent",
@@ -1404,29 +1410,35 @@
         {
           "name": "Improved Illusions",
           "description": "You can cast Illusion spells without providing Verbal components, and if an Illusion spell you cast has a range of 10+ feet, the range increases by 60 feet. You also know the Minor Illusion cantrip. If you already know it, you learn a different Wizard cantrip of your choice. The cantrip doesn't count against your number of cantrips known.",
-          "spells": [
-            {
-              "name": "Minor Illusion",
-              "level": 0,
-              "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
-            }
-          ]
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Minor Illusion",
+                "level": 0,
+                "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
+              }
+            ]
+          }
         },
         {
           "name": "Phantasmal Creatures",
           "description": "You always have the Summon Beast and Summon Fey spells prepared. Whenever you cast either spell, you can change its school to Illusion, which causes the summoned creature to appear spectral. You can cast the Illusion version of each spell without expending a spell slot, but casting it without a slot halves the creature's Hit Points.",
-          "spells": [
-            {
-              "name": "Summon Beast",
-              "level": 2,
-              "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water."
-            },
-            {
-              "name": "Summon Fey",
-              "level": 3,
-              "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
-            }
-          ]
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Summon Beast",
+                "level": 2,
+                "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water."
+              },
+              {
+                "name": "Summon Fey",
+                "level": 3,
+                "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+              }
+            ]
+          }
         },
         {
           "name": "Illusory Self",

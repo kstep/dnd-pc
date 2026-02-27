@@ -51,7 +51,19 @@ Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at
 Pipeline: `Character` → strip descriptions/temps → `postcard` binary serialize → `brotli` compress (quality 11) → `base64` URL-safe no-pad encode. Decode reverses the pipeline. Character UUID is preserved for future sync.
 
 ### Rules Registry (`src/rules.rs`)
-`RulesRegistry` is provided as context at the App root. Class definitions (JSON files in `public/classes/`) are lazily fetched via `LocalResource` and cached in a `RwSignal<HashMap>`. The `apply_level()` logic in `character_header.rs` applies class features, proficiencies, spell slots, and HP on level-up.
+`RulesRegistry` is provided as context at the App root. Class, race, and background definitions (JSON in `public/classes/`, `public/races/`, `public/backgrounds/`) are lazily fetched via `LocalResource` and cached in `RwSignal<HashMap>` per type. Spell lists (JSON in `public/spells/`) are also lazily fetched and cached in a separate `spell_list_cache`.
+
+**Key types:**
+- `SpellsDefinition` — per-feature spellcasting config: `casting_ability`, `list` (spell list), `levels` (slot/cantrip/spell progression per character level)
+- `SpellList` — `#[serde(untagged)]` enum: `Inline(Vec<SpellDefinition>)` or `Ref { from: String }` (path to JSON file)
+- `SpellLevelRules` — per-level spell slot counts, cantrips known, spells known (keyed by character level in a `BTreeMap<u32, _>`)
+
+**Key patterns:**
+- `with_feature(identity, name, |feat| ...)` — finds a `FeatureDefinition` across class/background/race caches without cloning, calls the callback with a reference
+- `with_spell_list(list, |spells| ...)` — resolves a `SpellList` (inline or fetched ref) and calls the callback with `&[SpellDefinition]`
+- `get_for_level(levels, level)` — finds the highest `BTreeMap` key `<= level` using `.range(..=level).next_back()`
+
+**Level-up:** `apply_level()` in `character_header.rs` applies class features, proficiencies, and HP. Spell slot progression is handled by `FeatureDefinition::apply()` which populates `character.spellcasting` (a `BTreeMap<String, SpellcastingData>` keyed by feature name).
 
 ### Enums (`src/model/enums.rs`)
 All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact serialization (single byte) while accepting legacy string format on deserialization. Enums implement `Translatable` trait for i18n keys.
@@ -65,5 +77,16 @@ Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Lan
 - `group_imports = "StdExternalCrate"` — std first, then external, then local
 - `merge_derives = false` — keep separate derive attributes as-is
 
+## Data Files (`public/`)
+- `public/classes/*.json` — class definitions with features, levels, and `SpellsDefinition` in spellcasting features
+- `public/races/*.json` — race definitions with traits and features (racial spells use `SpellsDefinition`)
+- `public/backgrounds/*.json` — background definitions with features (Magic Initiate uses `SpellsDefinition`)
+- `public/spells/*.json` — extracted spell lists (referenced via `SpellList::Ref { from }`)
+- `public/index.json` — index of available classes, races, backgrounds
+
+Each `public/` subdirectory needs an explicit `<link data-trunk rel="copy-dir" href="public/..." />` in `index.html` to be included in the build output.
+
 ## Model Essentials
-All model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc()`, `spell_attack_bonus()`.
+All model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`.
+
+**Spellcasting:** `Character.spellcasting` is a `BTreeMap<String, SpellcastingData>` keyed by feature name (e.g. "Spellcasting", "Pact Magic", "Infernal Legacy", "Magic Initiate (Wizard)"). Each entry has its own `casting_ability`, `spell_slots`, and `spells` list. The spellcasting panel renders a separate section per feature. A custom `deserialize_spellcasting` handles backward compatibility with the old `Option<SpellcastingData>` format.

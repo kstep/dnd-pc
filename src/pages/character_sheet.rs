@@ -52,6 +52,7 @@ pub fn CharacterSheet() -> impl IntoView {
                             <AbilityScoresPanel />
                             <SavingThrowsPanel />
                             <SkillsPanel />
+                            <ProficienciesPanel />
                         </div>
                         <div class="sheet-column sheet-column-center">
                             <CombatPanel />
@@ -61,9 +62,8 @@ pub fn CharacterSheet() -> impl IntoView {
                         </div>
                         <div class="sheet-column sheet-column-right">
                             <SpellcastingPanel />
-                            <FeaturesPanel />
                             <ClassFieldsPanels />
-                            <ProficienciesPanel />
+                            <FeaturesPanel />
                         </div>
                     </div>
                 </div>

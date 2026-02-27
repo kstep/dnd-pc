@@ -17,15 +17,18 @@
     {
       "name": "Favored Enemy",
       "description": "You always have the Hunter's Mark spell prepared. You can cast it twice without expending a spell slot, and you regain all expended uses of this ability when you finish a Long Rest. The number of times you can cast the spell without a spell slot increases when you reach certain Ranger levels, as shown in the Favored Enemy column of the Ranger Features table.",
-      "spells": [
-        {
-          "name": "Hunter's Mark",
-          "description": "You choose a creature you can see within range and mystically mark it as your quarry. Until the spell ends, you deal an extra 1d6 damage to the target whenever you hit it with a weapon attack, and you have advantage on any Wisdom (Perception) or Wisdom (Survival) check to find it. If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to mark a new creature.",
-          "level": 1,
-          "cost": "Favored Enemy",
-          "sticky": true
-        }
-      ],
+      "spells": {
+        "casting_ability": 4,
+        "list": [
+          {
+            "name": "Hunter's Mark",
+            "description": "You choose a creature you can see within range and mystically mark it as your quarry. Until the spell ends, you deal an extra 1d6 damage to the target whenever you hit it with a weapon attack, and you have advantage on any Wisdom (Perception) or Wisdom (Survival) check to find it. If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to mark a new creature.",
+            "level": 1,
+            "cost": "Favored Enemy",
+            "sticky": true
+          }
+        ]
+      },
       "fields": [
         {
           "name": "Favored Enemy",
@@ -508,33 +511,36 @@
         {
           "name": "Gloom Stalker Spells",
           "description": "When you reach a Ranger level specified in the Gloom Stalker Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Disguise Self",
-              "level": 1,
-              "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
-            },
-            {
-              "name": "Rope Trick",
-              "level": 2,
-              "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends."
-            },
-            {
-              "name": "Fear",
-              "level": 3,
-              "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
-            },
-            {
-              "name": "Greater Invisibility",
-              "level": 4,
-              "description": "A creature you touch has the Invisible condition until the spell ends."
-            },
-            {
-              "name": "Seeming",
-              "level": 5,
-              "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Disguise Self",
+                "level": 1,
+                "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+              },
+              {
+                "name": "Rope Trick",
+                "level": 2,
+                "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends."
+              },
+              {
+                "name": "Fear",
+                "level": 3,
+                "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration."
+              },
+              {
+                "name": "Greater Invisibility",
+                "level": 4,
+                "description": "A creature you touch has the Invisible condition until the spell ends."
+              },
+              {
+                "name": "Seeming",
+                "level": 5,
+                "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+              }
+            ]
+          }
         },
         {
           "name": "Umbral Sight",
@@ -724,33 +730,36 @@
         {
           "name": "Fey Wanderer Spells",
           "description": "When you reach a Ranger level specified in the Fey Wanderer Spells table, you thereafter always have the listed spells prepared. You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly.",
-          "spells": [
-            {
-              "name": "Charm Person",
-              "level": 1,
-              "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
-            },
-            {
-              "name": "Misty Step",
-              "level": 2,
-              "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
-            },
-            {
-              "name": "Summon Fey",
-              "level": 3,
-              "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
-            },
-            {
-              "name": "Dimension Door",
-              "level": 4,
-              "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
-            },
-            {
-              "name": "Mislead",
-              "level": 5,
-              "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Charm Person",
+                "level": 1,
+                "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+              },
+              {
+                "name": "Summon Fey",
+                "level": 3,
+                "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+              },
+              {
+                "name": "Dimension Door",
+                "level": 4,
+                "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
+              },
+              {
+                "name": "Mislead",
+                "level": 5,
+                "description": "You gain the Invisible condition at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell."
+              }
+            ]
+          }
         },
         {
           "name": "Otherworldly Glamour",
@@ -934,33 +943,36 @@
         {
           "name": "Winter Walker Spells",
           "description": "When you reach a Ranger level specified in the Winter Walker Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Ice Knife",
-              "level": 1,
-              "description": "You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Piercing damage. Hit or miss, the shard then explodes."
-            },
-            {
-              "name": "Hold Person",
-              "level": 2,
-              "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-            },
-            {
-              "name": "Remove Curse",
-              "level": 3,
-              "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
-            },
-            {
-              "name": "Ice Storm",
-              "level": 4,
-              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-            },
-            {
-              "name": "Cone of Cold",
-              "level": 5,
-              "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Ice Knife",
+                "level": 1,
+                "description": "You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Piercing damage. Hit or miss, the shard then explodes."
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+              },
+              {
+                "name": "Remove Curse",
+                "level": 3,
+                "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+              },
+              {
+                "name": "Cone of Cold",
+                "level": 5,
+                "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+              }
+            ]
+          }
         },
         {
           "name": "Fortifying Soul",

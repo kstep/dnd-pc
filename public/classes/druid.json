@@ -414,128 +414,131 @@
         {
           "name": "Circle of the Land Spells",
           "description": "Whenever you finish a Long Rest, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
-          "spells": [
-            {
-              "name": "Acid Splash",
-              "level": 0,
-              "description": "You create an acidic bubble at a point within range, where it explodes in a 5-foot-radius Sphere [Area of Effect]. Each creature in that Sphere [Area of Effect] must succeed on a Dexterity saving throw or take 1d6 Acid damage."
-            },
-            {
-              "name": "Fire Bolt",
-              "level": 0,
-              "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell starts burning if it isn't being worn or carried."
-            },
-            {
-              "name": "Ray of Frost",
-              "level": 0,
-              "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn."
-            },
-            {
-              "name": "Shocking Grasp",
-              "level": 0,
-              "description": "Lightning springs from you to a creature that you try to touch. Make a melee spell attack against the target. On a hit, the target takes 1d8 Lightning damage, and it can't make Opportunity Attack until the start of its next turn."
-            },
-            {
-              "name": "Burning Hands",
-              "level": 1,
-              "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one."
-            },
-            {
-              "name": "Fog Cloud",
-              "level": 1,
-              "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
-            },
-            {
-              "name": "Ray of Sickness",
-              "level": 1,
-              "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn."
-            },
-            {
-              "name": "Sleep",
-              "level": 1,
-              "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save."
-            },
-            {
-              "name": "Blur",
-              "level": 2,
-              "description": "Your body becomes blurred. For the duration, any creature has Disadvantage on attack rolls against you. An attacker is immune to this effect if it perceives you with Blindsight or Truesight."
-            },
-            {
-              "name": "Hold Person",
-              "level": 2,
-              "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-            },
-            {
-              "name": "Misty Step",
-              "level": 2,
-              "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
-            },
-            {
-              "name": "Web",
-              "level": 2,
-              "description": "You conjure a mass of sticky webbing at a point within range. The webs fill a 20-foot Cube [Area of Effect] there for the duration. The webs are Difficult Terrain, and the area within them is Lightly Obscured."
-            },
-            {
-              "name": "Fireball",
-              "level": 3,
-              "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
-            },
-            {
-              "name": "Lightning Bolt",
-              "level": 3,
-              "description": "A stroke of lightning forming a 100-foot-long, 5-foot-wide Line [Area of Effect] blasts out from you in a direction you choose. Each creature in the Line [Area of Effect] makes a Dexterity saving throw, taking 8d6 Lightning damage on a failed save or half as much damage on a successful one."
-            },
-            {
-              "name": "Sleet Storm",
-              "level": 3,
-              "description": "Until the spell ends, sleet falls in a 40-foot-tall, 20-foot-radius Cylinder [Area of Effect] centered on a point you choose within range. The area is Heavily Obscured, and exposed flames in the area are doused. Ground in the Cylinder [Area of Effect] is Difficult Terrain."
-            },
-            {
-              "name": "Stinking Cloud",
-              "level": 3,
-              "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it."
-            },
-            {
-              "name": "Blight",
-              "level": 4,
-              "description": "A creature that you can see within range makes a Constitution saving throw, taking 8d8 Necrotic damage on a failed save or half as much damage on a successful one. A Plant creature automatically fails the save. Alternatively, target a nonmagical plant that isn't a creature, such as a tree or shrub."
-            },
-            {
-              "name": "Freedom of Movement",
-              "level": 4,
-              "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
-            },
-            {
-              "name": "Ice Storm",
-              "level": 4,
-              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-            },
-            {
-              "name": "Polymorph",
-              "level": 4,
-              "description": "You attempt to transform a creature that you can see within range into a Beast. The target must succeed on a Wisdom saving throw or shape-shift into Beast form for the duration."
-            },
-            {
-              "name": "Cone of Cold",
-              "level": 5,
-              "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
-            },
-            {
-              "name": "Insect Plague",
-              "level": 5,
-              "description": "Swarming locusts fill a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. The Sphere [Area of Effect] remains for the duration, and its area is Lightly Obscured and Difficult Terrain."
-            },
-            {
-              "name": "Tree Stride",
-              "level": 5,
-              "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree."
-            },
-            {
-              "name": "Wall of Stone",
-              "level": 5,
-              "description": "A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with another panel."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Acid Splash",
+                "level": 0,
+                "description": "You create an acidic bubble at a point within range, where it explodes in a 5-foot-radius Sphere [Area of Effect]. Each creature in that Sphere [Area of Effect] must succeed on a Dexterity saving throw or take 1d6 Acid damage."
+              },
+              {
+                "name": "Fire Bolt",
+                "level": 0,
+                "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell starts burning if it isn't being worn or carried."
+              },
+              {
+                "name": "Ray of Frost",
+                "level": 0,
+                "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn."
+              },
+              {
+                "name": "Shocking Grasp",
+                "level": 0,
+                "description": "Lightning springs from you to a creature that you try to touch. Make a melee spell attack against the target. On a hit, the target takes 1d8 Lightning damage, and it can't make Opportunity Attack until the start of its next turn."
+              },
+              {
+                "name": "Burning Hands",
+                "level": 1,
+                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one."
+              },
+              {
+                "name": "Fog Cloud",
+                "level": 1,
+                "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
+              },
+              {
+                "name": "Ray of Sickness",
+                "level": 1,
+                "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn."
+              },
+              {
+                "name": "Sleep",
+                "level": 1,
+                "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save."
+              },
+              {
+                "name": "Blur",
+                "level": 2,
+                "description": "Your body becomes blurred. For the duration, any creature has Disadvantage on attack rolls against you. An attacker is immune to this effect if it perceives you with Blindsight or Truesight."
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "description": "Choose a Humanoid that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+              },
+              {
+                "name": "Web",
+                "level": 2,
+                "description": "You conjure a mass of sticky webbing at a point within range. The webs fill a 20-foot Cube [Area of Effect] there for the duration. The webs are Difficult Terrain, and the area within them is Lightly Obscured."
+              },
+              {
+                "name": "Fireball",
+                "level": 3,
+                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
+              },
+              {
+                "name": "Lightning Bolt",
+                "level": 3,
+                "description": "A stroke of lightning forming a 100-foot-long, 5-foot-wide Line [Area of Effect] blasts out from you in a direction you choose. Each creature in the Line [Area of Effect] makes a Dexterity saving throw, taking 8d6 Lightning damage on a failed save or half as much damage on a successful one."
+              },
+              {
+                "name": "Sleet Storm",
+                "level": 3,
+                "description": "Until the spell ends, sleet falls in a 40-foot-tall, 20-foot-radius Cylinder [Area of Effect] centered on a point you choose within range. The area is Heavily Obscured, and exposed flames in the area are doused. Ground in the Cylinder [Area of Effect] is Difficult Terrain."
+              },
+              {
+                "name": "Stinking Cloud",
+                "level": 3,
+                "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it."
+              },
+              {
+                "name": "Blight",
+                "level": 4,
+                "description": "A creature that you can see within range makes a Constitution saving throw, taking 8d8 Necrotic damage on a failed save or half as much damage on a successful one. A Plant creature automatically fails the save. Alternatively, target a nonmagical plant that isn't a creature, such as a tree or shrub."
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+              },
+              {
+                "name": "Polymorph",
+                "level": 4,
+                "description": "You attempt to transform a creature that you can see within range into a Beast. The target must succeed on a Wisdom saving throw or shape-shift into Beast form for the duration."
+              },
+              {
+                "name": "Cone of Cold",
+                "level": 5,
+                "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
+              },
+              {
+                "name": "Insect Plague",
+                "level": 5,
+                "description": "Swarming locusts fill a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. The Sphere [Area of Effect] remains for the duration, and its area is Lightly Obscured and Difficult Terrain."
+              },
+              {
+                "name": "Tree Stride",
+                "level": 5,
+                "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree."
+              },
+              {
+                "name": "Wall of Stone",
+                "level": 5,
+                "description": "A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with another panel."
+              }
+            ]
+          }
         },
         {
           "name": "Land's Aid",
@@ -598,38 +601,41 @@
         {
           "name": "Circle of the Moon Spells",
           "description": "When you reach a Druid level specified in the Circle of the Moon Spells table, you thereafter always have the listed spells prepared. In addition, you can cast the spells from this feature while you're in a Wild Shape form.",
-          "spells": [
-            {
-              "name": "Starry Wisp",
-              "level": 0,
-              "description": "You launch a mote of light at one creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d8 Radiant damage, and until the end of your next turn, it emits Dim Light in a 10-foot radius and can't benefit from the Invisible condition."
-            },
-            {
-              "name": "Cure Wounds",
-              "level": 1,
-              "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
-            },
-            {
-              "name": "Moonbeam",
-              "level": 2,
-              "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Until the spell ends, Dim Light fills the Cylinder [Area of Effect], and you can take a Magic action on later turns to move the Cylinder [Area of Effect] up to 60..."
-            },
-            {
-              "name": "Conjure Animals",
-              "level": 3,
-              "description": "You conjure nature spirits that appear as a Large pack of spectral, intangible animals in an unoccupied space you can see within range. The pack lasts for the duration, and you choose the spirits' animal form, such as wolves, serpents, or birds."
-            },
-            {
-              "name": "Fount of Moonlight",
-              "level": 4,
-              "description": "A cool light wreathes your body for the duration, emitting Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. Until the spell ends, you have Resistance to Radiant damage, and your melee attacks deal an extra 2d6 Radiant damage on a hit."
-            },
-            {
-              "name": "Mass Cure Wounds",
-              "level": 5,
-              "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Starry Wisp",
+                "level": 0,
+                "description": "You launch a mote of light at one creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d8 Radiant damage, and until the end of your next turn, it emits Dim Light in a 10-foot radius and can't benefit from the Invisible condition."
+              },
+              {
+                "name": "Cure Wounds",
+                "level": 1,
+                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+              },
+              {
+                "name": "Moonbeam",
+                "level": 2,
+                "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Until the spell ends, Dim Light fills the Cylinder [Area of Effect], and you can take a Magic action on later turns to move the Cylinder [Area of Effect] up to 60..."
+              },
+              {
+                "name": "Conjure Animals",
+                "level": 3,
+                "description": "You conjure nature spirits that appear as a Large pack of spectral, intangible animals in an unoccupied space you can see within range. The pack lasts for the duration, and you choose the spirits' animal form, such as wolves, serpents, or birds."
+              },
+              {
+                "name": "Fount of Moonlight",
+                "level": 4,
+                "description": "A cool light wreathes your body for the duration, emitting Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. Until the spell ends, you have Resistance to Radiant damage, and your melee attacks deal an extra 2d6 Radiant damage on a hit."
+              },
+              {
+                "name": "Mass Cure Wounds",
+                "level": 5,
+                "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+              }
+            ]
+          }
         },
         {
           "name": "Improved Circle Forms",
@@ -1019,63 +1025,66 @@
         {
           "name": "Circle of the Sea Spells",
           "description": "When you reach a Druid level specified in the Circle of the Sea Spells table, you thereafter always have the listed spells prepared.",
-          "spells": [
-            {
-              "name": "Ray of Frost",
-              "level": 0,
-              "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn."
-            },
-            {
-              "name": "Fog Cloud",
-              "level": 1,
-              "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
-            },
-            {
-              "name": "Thunderwave",
-              "level": 1,
-              "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
-            },
-            {
-              "name": "Gust of Wind",
-              "level": 2,
-              "description": "A Line [Area of Effect] of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature in the Line [Area of Effect] must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the Line [Area of Effect]."
-            },
-            {
-              "name": "Shatter",
-              "level": 2,
-              "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
-            },
-            {
-              "name": "Lightning Bolt",
-              "level": 3,
-              "description": "A stroke of lightning forming a 100-foot-long, 5-foot-wide Line [Area of Effect] blasts out from you in a direction you choose. Each creature in the Line [Area of Effect] makes a Dexterity saving throw, taking 8d6 Lightning damage on a failed save or half as much damage on a successful one."
-            },
-            {
-              "name": "Water Breathing",
-              "level": 3,
-              "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
-            },
-            {
-              "name": "Control Water",
-              "level": 4,
-              "description": "Until the spell ends, you control any water inside an area you choose that is a Cube [Area of Effect] up to 100 feet on a side, using one of the following effects. As a Magic action on your later turns, you can repeat the same effect or choose a different one."
-            },
-            {
-              "name": "Ice Storm",
-              "level": 4,
-              "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
-            },
-            {
-              "name": "Conjure Elemental",
-              "level": 5,
-              "description": "You conjure a Large, intangible spirit from the Elemental Planes that appears in an unoccupied space within range. Choose the spirit's element, which determines its damage type: air (Lightning), earth (Thunder), fire (Fire), or water (Cold). The spirit lasts for the duration."
-            },
-            {
-              "name": "Hold Monster",
-              "level": 5,
-              "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Ray of Frost",
+                "level": 0,
+                "description": "A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 Cold damage, and its Speed is reduced by 10 feet until the start of your next turn."
+              },
+              {
+                "name": "Fog Cloud",
+                "level": 1,
+                "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
+              },
+              {
+                "name": "Thunderwave",
+                "level": 1,
+                "description": "You unleash a wave of thunderous energy. Each creature in a 15-foot Cube [Area of Effect] originating from you makes a Constitution saving throw. On a failed save, a creature takes 2d8 Thunder damage and is pushed 10 feet away from you."
+              },
+              {
+                "name": "Gust of Wind",
+                "level": 2,
+                "description": "A Line [Area of Effect] of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature in the Line [Area of Effect] must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the Line [Area of Effect]."
+              },
+              {
+                "name": "Shatter",
+                "level": 2,
+                "description": "A loud noise erupts from a point of your choice within range. Each creature in a 10-foot-radius Sphere [Area of Effect] centered there makes a Constitution saving throw, taking 3d8 Thunder damage on a failed save or half as much damage on a successful one. A Construct has Disadvantage on the save."
+              },
+              {
+                "name": "Lightning Bolt",
+                "level": 3,
+                "description": "A stroke of lightning forming a 100-foot-long, 5-foot-wide Line [Area of Effect] blasts out from you in a direction you choose. Each creature in the Line [Area of Effect] makes a Dexterity saving throw, taking 8d6 Lightning damage on a failed save or half as much damage on a successful one."
+              },
+              {
+                "name": "Water Breathing",
+                "level": 3,
+                "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
+              },
+              {
+                "name": "Control Water",
+                "level": 4,
+                "description": "Until the spell ends, you control any water inside an area you choose that is a Cube [Area of Effect] up to 100 feet on a side, using one of the following effects. As a Magic action on your later turns, you can repeat the same effect or choose a different one."
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw."
+              },
+              {
+                "name": "Conjure Elemental",
+                "level": 5,
+                "description": "You conjure a Large, intangible spirit from the Elemental Planes that appears in an unoccupied space within range. Choose the spirit's element, which determines its damage type: air (Lightning), earth (Thunder), fire (Fire), or water (Cold). The spirit lasts for the duration."
+              },
+              {
+                "name": "Hold Monster",
+                "level": 5,
+                "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+              }
+            ]
+          }
         },
         {
           "name": "Wrath of the Sea",
@@ -1134,18 +1143,21 @@
         {
           "name": "Star Map",
           "description": "You've created a star chart as part of your heavenly studies. It is a Tiny object, and you can use it as a Spellcasting Focus for your Druid spells. You determine its form by rolling on the Star Map table or by choosing one. While holding the map, you have the Guidance and Guiding Bolt spells prepared, and you can cast Guiding Bolt without expending a spell slot.",
-          "spells": [
-            {
-              "name": "Guidance",
-              "level": 0,
-              "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
-            },
-            {
-              "name": "Guiding Bolt",
-              "level": 1,
-              "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
-            }
-          ]
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Guidance",
+                "level": 0,
+                "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
+              },
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+              }
+            ]
+          }
         },
         {
           "name": "Starry Form",
