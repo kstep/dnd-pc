@@ -1,0 +1,24 @@
+{
+  "name": "Soldier",
+  "description": "You began training for war as a youth, drilling with weapons and performing forced marches in heavy armor. The horrors of battle have steeled your resolve and given you a ruthless edge in combat.",
+  "ability_modifiers": [
+    {
+      "ability": 0,
+      "modifier": 2
+    },
+    {
+      "ability": 2,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    3,
+    7
+  ],
+  "features": [
+    {
+      "name": "Savage Attacker",
+      "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the damage dice twice and use either roll against the target."
+    }
+  ]
+}

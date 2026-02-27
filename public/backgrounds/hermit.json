@@ -1,0 +1,24 @@
+{
+  "name": "Hermit",
+  "description": "You lived for a time in seclusion, either in a sheltered community or entirely alone, devoted to contemplation and self-discovery. During your isolation you gained insight into healing and the natural world.",
+  "ability_modifiers": [
+    {
+      "ability": 4,
+      "modifier": 2
+    },
+    {
+      "ability": 2,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    9,
+    14
+  ],
+  "features": [
+    {
+      "name": "Healer",
+      "description": "You gain proficiency with Healer's Kit. When you use it to stabilize a dying creature, that creature regains 1 Hit Point. As an action, you can use a charge to restore 2d6 + your Proficiency Bonus Hit Points to a creature."
+    }
+  ]
+}

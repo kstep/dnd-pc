@@ -1,0 +1,24 @@
+{
+  "name": "Guard",
+  "description": "You served as a guard, standing watch over the walls and gates of a settlement, keeping a keen eye out for threats. Your experience taught you vigilance and the value of physical strength in maintaining order.",
+  "ability_modifiers": [
+    {
+      "ability": 0,
+      "modifier": 2
+    },
+    {
+      "ability": 4,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    3,
+    11
+  ],
+  "features": [
+    {
+      "name": "Alert",
+      "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Acolyte",
+  "description": "You devoted yourself to service in a temple, learning sacred rites and providing sacrifices to the god or gods you worship. Serving the gods and discovering their sacred works will guide you to greatness.",
+  "ability_modifiers": [
+    {
+      "ability": 4,
+      "modifier": 2
+    },
+    {
+      "ability": 3,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    6,
+    14
+  ],
+  "features": [
+    {
+      "name": "Magic Initiate (Cleric)",
+      "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+    }
+  ]
+}

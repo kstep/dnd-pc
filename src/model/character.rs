@@ -39,7 +39,7 @@ pub struct Character {
     #[serde(default)]
     pub personality: Personality,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Vec<CharacterFeature>,
     #[serde(default)]
     pub equipment: Equipment,
     #[serde(default)]
@@ -190,6 +190,8 @@ pub struct CharacterIdentity {
     pub experience_points: u32,
     #[serde(default)]
     pub race_applied: bool,
+    #[serde(default)]
+    pub background_applied: bool,
 }
 
 impl Default for CharacterIdentity {
@@ -202,6 +204,7 @@ impl Default for CharacterIdentity {
             alignment: Alignment::TrueNeutral,
             experience_points: 0,
             race_applied: false,
+            background_applied: false,
         }
     }
 }
@@ -338,7 +341,7 @@ pub struct Personality {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Feature {
+pub struct CharacterFeature {
     #[serde(default)]
     pub name: String,
     #[serde(default)]

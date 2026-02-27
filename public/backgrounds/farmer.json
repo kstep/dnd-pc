@@ -1,0 +1,24 @@
+{
+  "name": "Farmer",
+  "description": "You grew up close to the land, tending crops and caring for livestock. The rhythms of nature and the hard work of the harvest shaped your strong constitution and practical outlook on life.",
+  "ability_modifiers": [
+    {
+      "ability": 2,
+      "modifier": 2
+    },
+    {
+      "ability": 4,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    1,
+    10
+  ],
+  "features": [
+    {
+      "name": "Tough",
+      "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points."
+    }
+  ]
+}

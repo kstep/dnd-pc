@@ -2,10 +2,6 @@
   "name": "Wood Elf",
   "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests.",
   "speed": 35,
-  "ability_modifiers": [
-    { "ability": 1, "modifier": 2 },
-    { "ability": 4, "modifier": 1 }
-  ],
   "traits": [
     {
       "name": "Darkvision",
@@ -13,35 +9,41 @@
     },
     {
       "name": "Fey Ancestry",
-      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
-    },
-    {
-      "name": "Trance",
-      "description": "Elves don't need to sleep. Instead, they meditate deeply for 4 hours a day."
+      "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
     },
     {
       "name": "Keen Senses",
-      "description": "You have proficiency in the Perception skill."
+      "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
+    },
+    {
+      "name": "Trance",
+      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
     }
   ],
   "features": [
     {
-      "name": "Elf Weapon Training",
-      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
-    },
-    {
-      "name": "Mask of the Wild",
-      "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."
-    },
-    {
       "name": "Elven Lineage",
-      "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Wisdom is your spellcasting ability for these spells.",
+      "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
       "spells": [
         {
           "name": "Druidcraft",
           "level": 0,
           "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire.",
           "sticky": true
+        },
+        {
+          "name": "Longstrider",
+          "level": 1,
+          "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial).",
+          "sticky": true,
+          "min_level": 3
+        },
+        {
+          "name": "Pass without Trace",
+          "level": 2,
+          "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial).",
+          "sticky": true,
+          "min_level": 5
         }
       ]
     }

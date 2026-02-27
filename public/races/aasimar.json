@@ -1,0 +1,37 @@
+{
+  "name": "Aasimar",
+  "description": "Aasimar bear within their souls the light of the heavens, granting them celestial power and a touch of the divine.",
+  "speed": 30,
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
+      "name": "Celestial Resistance",
+      "description": "You have resistance to Necrotic damage and Radiant damage."
+    },
+    {
+      "name": "Healing Hands",
+      "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains hit points equal to the total. Once per Long Rest."
+    }
+  ],
+  "features": [
+    {
+      "name": "Light Bearer",
+      "description": "You know the Light cantrip. Charisma is your spellcasting ability for it.",
+      "spells": [
+        {
+          "name": "Light",
+          "level": 0,
+          "description": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.",
+          "sticky": true
+        }
+      ]
+    },
+    {
+      "name": "Celestial Revelation",
+      "description": "Starting at 3rd level, as a Bonus Action you transform for 1 minute (once per Long Rest). Choose: Heavenly Wings (Fly Speed = Speed, extra Radiant damage = Prof Bonus), Inner Radiance (shed bright light 10 ft, Radiant damage to nearby creatures = Prof Bonus), or Necrotic Shroud (CHA save or Frightened, extra Necrotic damage = Prof Bonus)."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Merchant",
+  "description": "You earned a living by buying and selling goods, traversing trade routes and navigating bustling marketplaces. Your keen business sense and social savvy have served you well in negotiations both mercantile and otherwise.",
+  "ability_modifiers": [
+    {
+      "ability": 5,
+      "modifier": 2
+    },
+    {
+      "ability": 3,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    1,
+    13
+  ],
+  "features": [
+    {
+      "name": "Lucky",
+      "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
+    }
+  ]
+}

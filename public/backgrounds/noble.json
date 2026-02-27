@@ -1,0 +1,24 @@
+{
+  "name": "Noble",
+  "description": "You were raised in a family among the social elite, accustomed to power and privilege. Your noble birth grants you a measure of respect and influence, along with an education in history and courtly manners.",
+  "ability_modifiers": [
+    {
+      "ability": 5,
+      "modifier": 2
+    },
+    {
+      "ability": 3,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    5,
+    13
+  ],
+  "features": [
+    {
+      "name": "Skilled",
+      "description": "You gain proficiency in any combination of three skills or tools of your choice."
+    }
+  ]
+}

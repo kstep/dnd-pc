@@ -1,0 +1,24 @@
+{
+  "name": "Sailor",
+  "description": "You spent years aboard a ship, working as a deckhand, navigator, or even first mate. The open sea taught you agility, sharp awareness, and how to handle yourself in a rough-and-tumble brawl.",
+  "ability_modifiers": [
+    {
+      "ability": 1,
+      "modifier": 2
+    },
+    {
+      "ability": 4,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    0,
+    11
+  ],
+  "features": [
+    {
+      "name": "Tavern Brawler",
+      "description": "You deal 1d4 enhanced Unarmed Strike damage. When you hit with your Unarmed Strike as part of the Attack action, you can make one Unarmed Strike as a Bonus Action. You have proficiency with improvised weapons."
+    }
+  ]
+}

@@ -106,75 +106,39 @@
     }
   ],
   "races": [
-    {
-      "name": "Human",
-      "url": "races/human.json",
-      "description": "Versatile and ambitious, humans are the most adaptable of all races."
-    },
-    {
-      "name": "High Elf",
-      "url": "races/high-elf.json",
-      "description": "High elves are graceful and intelligent, with a natural affinity for magic."
-    },
-    {
-      "name": "Wood Elf",
-      "url": "races/wood-elf.json",
-      "description": "Wood elves are fleet of foot and stealthy, at home in the wilderness."
-    },
-    {
-      "name": "Hill Dwarf",
-      "url": "races/hill-dwarf.json",
-      "description": "Hill dwarves are tough and resilient, with keen senses and deep intuition."
-    },
-    {
-      "name": "Mountain Dwarf",
-      "url": "races/mountain-dwarf.json",
-      "description": "Mountain dwarves are strong and hardy, accustomed to life in rugged terrain."
-    },
-    {
-      "name": "Lightfoot Halfling",
-      "url": "races/lightfoot-halfling.json",
-      "description": "Lightfoot halflings are naturally stealthy and social, adept at avoiding notice."
-    },
-    {
-      "name": "Stout Halfling",
-      "url": "races/stout-halfling.json",
-      "description": "Stout halflings are hardier than most, with a resistance to poison."
-    },
-    {
-      "name": "Dragonborn",
-      "url": "races/dragonborn.json",
-      "description": "Proud dragon-kin with a breath weapon and draconic resistance."
-    },
-    {
-      "name": "Half-Elf",
-      "url": "races/half-elf.json",
-      "description": "Combining the best of elves and humans, half-elves are charismatic and versatile."
-    },
-    {
-      "name": "Half-Orc",
-      "url": "races/half-orc.json",
-      "description": "Fierce and enduring, half-orcs combine human versatility with orcish strength."
-    },
-    {
-      "name": "Tiefling",
-      "url": "races/tiefling.json",
-      "description": "Descended from fiends, tieflings possess innate magical abilities and dark resilience."
-    },
-    {
-      "name": "Rock Gnome",
-      "url": "races/rock-gnome.json",
-      "description": "Inventive and curious, rock gnomes are natural tinkerers with a knack for illusions."
-    },
-    {
-      "name": "Forest Gnome",
-      "url": "races/forest-gnome.json",
-      "description": "Shy and secretive, forest gnomes have a natural talent for illusion and stealth."
-    },
-    {
-      "name": "Drow",
-      "url": "races/drow.json",
-      "description": "Dark elves with innate spellcasting, hailing from the Underdark."
-    }
+    { "name": "Aasimar", "url": "races/aasimar.json", "description": "Celestial-touched with healing hands and divine transformation." },
+    { "name": "Dragonborn", "url": "races/dragonborn.json", "description": "Dragon-kin with a breath weapon, damage resistance, and draconic flight." },
+    { "name": "Drow", "url": "races/drow.json", "description": "Elves of the Underdark with superior darkvision and innate magic." },
+    { "name": "Dwarf", "url": "races/dwarf.json", "description": "Resilient and tough, with poison resistance and stonecunning." },
+    { "name": "Forest Gnome", "url": "races/forest-gnome.json", "description": "Small and cunning, with a knack for illusion and speaking with beasts." },
+    { "name": "Goliath", "url": "races/goliath.json", "description": "Towering giant-kin with powerful build and giant ancestry." },
+    { "name": "Halfling", "url": "races/halfling.json", "description": "Small, brave, and lucky, with natural stealth." },
+    { "name": "High Elf", "url": "races/high-elf.json", "description": "Elves with arcane talent and a flexible wizard cantrip." },
+    { "name": "Human", "url": "races/human.json", "description": "Resourceful, skillful, and versatile — the most adaptable species." },
+    { "name": "Orc", "url": "races/orc.json", "description": "Hardy and fierce, with adrenaline rush and relentless endurance." },
+    { "name": "Rock Gnome", "url": "races/rock-gnome.json", "description": "Inventive and cunning, with tinker's magic." },
+    { "name": "Tiefling", "url": "races/tiefling.json", "description": "Fiend-touched with Thaumaturgy. Choose a legacy for full traits." },
+    { "name": "Tiefling (Abyssal)", "url": "races/tiefling-abyssal.json", "description": "Abyssal legacy: poison resistance, Poison Spray, Ray of Sickness, Hold Person." },
+    { "name": "Tiefling (Chthonic)", "url": "races/tiefling-chthonic.json", "description": "Chthonic legacy: necrotic resistance, Chill Touch, False Life, Ray of Enfeeblement." },
+    { "name": "Tiefling (Infernal)", "url": "races/tiefling-infernal.json", "description": "Infernal legacy: fire resistance, Fire Bolt, Hellish Rebuke, Darkness." },
+    { "name": "Wood Elf", "url": "races/wood-elf.json", "description": "Fleet-footed elves with Druidcraft and woodland magic." }
+  ],
+  "backgrounds": [
+    { "name": "Acolyte", "url": "backgrounds/acolyte.json", "description": "Temple servant with sacred rites. Feat: Magic Initiate (Cleric)." },
+    { "name": "Artisan", "url": "backgrounds/artisan.json", "description": "Skilled craftsperson and guild member. Feat: Crafter." },
+    { "name": "Charlatan", "url": "backgrounds/charlatan.json", "description": "Con artist with a silver tongue. Feat: Skilled." },
+    { "name": "Criminal", "url": "backgrounds/criminal.json", "description": "Experienced lawbreaker with underworld contacts. Feat: Alert." },
+    { "name": "Entertainer", "url": "backgrounds/entertainer.json", "description": "Performer who thrives before an audience. Feat: Musician." },
+    { "name": "Farmer", "url": "backgrounds/farmer.json", "description": "Hardy worker of the land. Feat: Tough." },
+    { "name": "Guard", "url": "backgrounds/guard.json", "description": "Trained sentinel who keeps watch. Feat: Alert." },
+    { "name": "Guide", "url": "backgrounds/guide.json", "description": "Wilderness expert and pathfinder. Feat: Magic Initiate (Druid)." },
+    { "name": "Hermit", "url": "backgrounds/hermit.json", "description": "Recluse who discovered a deep truth. Feat: Healer." },
+    { "name": "Merchant", "url": "backgrounds/merchant.json", "description": "Trader with a nose for profit. Feat: Lucky." },
+    { "name": "Noble", "url": "backgrounds/noble.json", "description": "Aristocrat raised in wealth and privilege. Feat: Skilled." },
+    { "name": "Sage", "url": "backgrounds/sage.json", "description": "Scholar devoted to learning. Feat: Magic Initiate (Wizard)." },
+    { "name": "Sailor", "url": "backgrounds/sailor.json", "description": "Seafarer hardened by storms. Feat: Tavern Brawler." },
+    { "name": "Scribe", "url": "backgrounds/scribe.json", "description": "Keeper of records and lore. Feat: Skilled." },
+    { "name": "Soldier", "url": "backgrounds/soldier.json", "description": "Military veteran of rank and discipline. Feat: Savage Attacker." },
+    { "name": "Wayfarer", "url": "backgrounds/wayfarer.json", "description": "Wanderer who survives by luck and wits. Feat: Lucky." }
   ]
 }

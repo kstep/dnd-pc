@@ -1,0 +1,24 @@
+{
+  "name": "Guide",
+  "description": "You came of age outdoors, far from civilization, and learned to sustain yourself in the wild. You are skilled at navigating trackless terrain and can find food and fresh water for yourself and others.",
+  "ability_modifiers": [
+    {
+      "ability": 4,
+      "modifier": 2
+    },
+    {
+      "ability": 1,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    16,
+    17
+  ],
+  "features": [
+    {
+      "name": "Magic Initiate (Druid)",
+      "description": "You learn two cantrips and one 1st-level spell from the Druid spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+    }
+  ]
+}

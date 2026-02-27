@@ -1,0 +1,24 @@
+{
+  "name": "Entertainer",
+  "description": "You spent much of your youth following minstrels, actors, and other entertainers around, eventually learning their craft. You thrive in front of an audience, knowing how to captivate, inspire, and even shock them.",
+  "ability_modifiers": [
+    {
+      "ability": 5,
+      "modifier": 2
+    },
+    {
+      "ability": 1,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    0,
+    12
+  ],
+  "features": [
+    {
+      "name": "Musician",
+      "description": "You gain proficiency with three Musical Instruments of your choice. After finishing a Short or Long Rest, you and allies who hear your performance gain Heroic Inspiration."
+    }
+  ]
+}

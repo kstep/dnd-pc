@@ -2,14 +2,19 @@
   "name": "Human",
   "description": "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.",
   "speed": 30,
-  "ability_modifiers": [
-    { "ability": 0, "modifier": 1 },
-    { "ability": 1, "modifier": 1 },
-    { "ability": 2, "modifier": 1 },
-    { "ability": 3, "modifier": 1 },
-    { "ability": 4, "modifier": 1 },
-    { "ability": 5, "modifier": 1 }
+  "traits": [
+    {
+      "name": "Resourceful",
+      "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+    },
+    {
+      "name": "Skillful",
+      "description": "You gain proficiency in one skill of your choice."
+    },
+    {
+      "name": "Versatile",
+      "description": "You gain an Origin feat of your choice."
+    }
   ],
-  "traits": [],
   "features": []
 }

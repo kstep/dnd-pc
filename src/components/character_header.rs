@@ -148,7 +148,19 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         return;
     };
 
-    store.update(|c| def.apply_level(level, c));
+    store.update(|c| {
+        def.apply_level(level, c);
+
+        // Re-apply race features at new total level (unlocks level-gated spells)
+        if c.identity.race_applied
+            && let Some(race_def) = registry.get_race(&c.identity.race)
+        {
+            let total_level = c.level();
+            for feat in &race_def.features {
+                feat.apply(total_level, c);
+            }
+        }
+    });
 }
 
 #[component]
@@ -269,15 +281,64 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     }}
                 </div>
-                <div class="header-field">
+                <div class="header-field background-field">
                     <label>{move_tr!("background")}</label>
-                    <input
-                        type="text"
-                        prop:value=move || store.identity().background().get()
-                        on:input=move |e| {
-                            store.identity().background().set(event_target_value(&e));
+                    {move || {
+                        let bg_name = store.identity().background().get();
+                        let bg_applied = store.identity().background_applied().get();
+
+                        let bg_options: Vec<(String, String)> = registry.with_background_entries(|entries| {
+                            entries.iter().map(|entry| {
+                                (entry.name.clone(), entry.description.clone())
+                            }).collect()
+                        });
+
+                        if !bg_name.is_empty() {
+                            registry.fetch_background(&bg_name);
                         }
-                    />
+
+                        let bg_def = registry.get_background(&bg_name);
+                        let show_apply = bg_def.is_some() && !bg_applied;
+
+                        view! {
+                            <div class="race-input-row">
+                                <DatalistInput
+                                    value=bg_name
+                                    placeholder=tr!("background")
+                                    options=bg_options
+                                    on_input=move |name: String| {
+                                        let old = store.identity().background().get_untracked();
+                                        store.identity().background().set(name.clone());
+                                        if name != old {
+                                            store.identity().background_applied().set(false);
+                                        }
+                                        if registry.with_background_entries(|entries| entries.iter().any(|e| e.name == name)) {
+                                            registry.fetch_background(&name);
+                                        }
+                                    }
+                                />
+                                {if show_apply {
+                                    let title = tr!("btn-apply-background");
+                                    Some(view! {
+                                        <button
+                                            class="btn-apply-level"
+                                            title=title
+                                            on:click=move |_| {
+                                                let bg_name = store.identity().background().get_untracked();
+                                                if let Some(def) = registry.get_background(&bg_name) {
+                                                    store.update(|c| def.apply(c));
+                                                }
+                                            }
+                                        >
+                                            "⬆"
+                                        </button>
+                                    })
+                                } else {
+                                    None
+                                }}
+                            </div>
+                        }
+                    }}
                 </div>
                 <div class="header-field">
                     <label>{move_tr!("alignment")}</label>

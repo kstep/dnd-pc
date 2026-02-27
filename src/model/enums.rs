@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIter};
+use strum::{Display, EnumIter, EnumString};
 
 pub trait Translatable {
     fn tr_key(&self) -> &'static str;
@@ -70,7 +70,7 @@ enum_serde_u8!(Ability {
     Charisma
 });
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, EnumString)]
 #[repr(u8)]
 pub enum Skill {
     Acrobatics,

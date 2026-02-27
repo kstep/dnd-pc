@@ -2,24 +2,28 @@
   "name": "Dragonborn",
   "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension.",
   "speed": 30,
-  "ability_modifiers": [
-    { "ability": 0, "modifier": 2 },
-    { "ability": 5, "modifier": 1 }
-  ],
   "traits": [
     {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
       "name": "Draconic Ancestry",
-      "description": "Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type: Black (Acid, 5x30 ft. line, DEX save), Blue (Lightning, 5x30 ft. line, DEX save), Brass (Fire, 5x30 ft. line, DEX save), Bronze (Lightning, 5x30 ft. line, DEX save), Copper (Acid, 5x30 ft. line, DEX save), Gold (Fire, 15 ft. cone, DEX save), Green (Poison, 15 ft. cone, CON save), Red (Fire, 15 ft. cone, DEX save), Silver (Cold, 15 ft. cone, CON save), White (Cold, 15 ft. cone, CON save)."
+      "description": "Choose a dragon type: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), White (Cold). This determines your Breath Weapon damage type and Damage Resistance."
     },
     {
       "name": "Damage Resistance",
-      "description": "You have resistance to the damage type associated with your draconic ancestry."
+      "description": "You have resistance to the damage type determined by your Draconic Ancestry."
     }
   ],
   "features": [
     {
       "name": "Breath Weapon",
-      "description": "You can use your action to exhale destructive energy. Shape and damage type are determined by your draconic ancestry. Each creature in the area must make a saving throw (DC = 8 + CON modifier + proficiency bonus). Damage: 2d6 at 1st level, 3d6 at 6th, 4d6 at 11th, 5d6 at 16th. Usable once per short or long rest."
+      "description": "When you take the Attack action, you can replace one attack with an exhalation in a 15-foot Cone or 30-foot Line (5 ft wide). DEX save (DC = 8 + CON mod + Prof Bonus). Damage: 1d10 (1st), 2d10 (5th), 3d10 (11th), 4d10 (17th). Uses: Proficiency Bonus per Long Rest."
+    },
+    {
+      "name": "Draconic Flight",
+      "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
     }
   ]
 }

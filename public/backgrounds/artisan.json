@@ -1,0 +1,24 @@
+{
+  "name": "Artisan",
+  "description": "You began mopping floors and scrubbing counters in an artisan's workshop for a few coppers per day as soon as you were strong enough to carry a bucket. Eventually you learned your trade and became a googled artisan in your own right.",
+  "ability_modifiers": [
+    {
+      "ability": 3,
+      "modifier": 2
+    },
+    {
+      "ability": 5,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    8,
+    13
+  ],
+  "features": [
+    {
+      "name": "Crafter",
+      "description": "You gain proficiency with three Artisan's Tools of your choice. Items you craft with tools cost 20% less, and you can craft items during a Long Rest."
+    }
+  ]
+}

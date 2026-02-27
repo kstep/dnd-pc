@@ -1,34 +1,26 @@
 {
   "name": "Forest Gnome",
-  "description": "As a forest gnome, you have a natural knack for illusion and an inherent quickness and stealth.",
-  "speed": 25,
-  "ability_modifiers": [
-    { "ability": 3, "modifier": 2 },
-    { "ability": 1, "modifier": 1 }
-  ],
+  "description": "As a forest gnome, you have a natural knack for illusion and an inherent connection to small beasts.",
+  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",
       "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
     },
     {
-      "name": "Gnome Cunning",
-      "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
-    },
-    {
-      "name": "Speak with Small Beasts",
-      "description": "Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts."
+      "name": "Gnomish Cunning",
+      "description": "You have advantage on Intelligence, Wisdom, and Charisma saving throws."
     }
   ],
   "features": [
     {
-      "name": "Natural Illusionist",
-      "description": "You know the Minor Illusion cantrip. Intelligence is your spellcasting ability for it.",
+      "name": "Gnomish Lineage",
+      "description": "You know the Minor Illusion cantrip. You always have Speak with Animals prepared and can cast it without a spell slot a number of times equal to your Proficiency Bonus per Long Rest. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
       "spells": [
         {
           "name": "Minor Illusion",
           "level": 0,
-          "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion also ends if you dismiss it as an action or cast this spell again.",
+          "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion ends if you dismiss it or cast this spell again.",
           "sticky": true
         }
       ]

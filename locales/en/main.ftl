@@ -21,6 +21,7 @@ subclass = Subclass
 btn-add-class = + Add Class
 btn-apply-level = Apply Lvl { $level }
 btn-apply-race = Apply race traits
+btn-apply-background = Apply background
 back-to-characters = < Back to Characters
 export-json = Export
 import-json = Import

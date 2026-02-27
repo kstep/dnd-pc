@@ -1,0 +1,24 @@
+{
+  "name": "Wayfarer",
+  "description": "You grew up on the road, traveling with a band of wanderers or drifting from place to place on your own. Life on the move taught you how to read people, stay out of sight, and rely on your wits to survive.",
+  "ability_modifiers": [
+    {
+      "ability": 4,
+      "modifier": 2
+    },
+    {
+      "ability": 2,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    6,
+    16
+  ],
+  "features": [
+    {
+      "name": "Lucky",
+      "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
+    }
+  ]
+}

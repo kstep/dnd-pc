@@ -1,0 +1,24 @@
+{
+  "name": "Scribe",
+  "description": "You spent years copying documents and cataloguing texts in a scriptorium or government office. Your meticulous attention to detail and keen powers of observation served you well in your scholarly duties.",
+  "ability_modifiers": [
+    {
+      "ability": 3,
+      "modifier": 2
+    },
+    {
+      "ability": 4,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    8,
+    11
+  ],
+  "features": [
+    {
+      "name": "Skilled",
+      "description": "You gain proficiency in any combination of three skills or tools of your choice."
+    }
+  ]
+}

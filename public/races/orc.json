@@ -1,0 +1,21 @@
+{
+  "name": "Orc",
+  "description": "Orcs are hardy, powerful people who trace their creation to Gruumsh. They are known for their endurance and ferocity.",
+  "speed": 30,
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 120 feet of you as if it were bright light, and in darkness as if it were dim light."
+    }
+  ],
+  "features": [
+    {
+      "name": "Adrenaline Rush",
+      "description": "You can take the Dash action as a Bonus Action, gaining Temporary Hit Points equal to your Proficiency Bonus. Uses: Proficiency Bonus per Short or Long Rest."
+    },
+    {
+      "name": "Relentless Endurance",
+      "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. Once per Long Rest."
+    }
+  ]
+}

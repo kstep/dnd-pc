@@ -73,8 +73,8 @@ mod u32_key_map {
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, ClassLevel, Feature, FeatureField, FeatureValue, Proficiency,
-        RacialTrait, Spell, SpellcastingData,
+        Ability, Character, CharacterFeature, ClassLevel, FeatureField, FeatureValue, Proficiency,
+        ProficiencyLevel, RacialTrait, Skill, Spell, SpellcastingData,
     },
 };
 
@@ -85,6 +85,8 @@ struct Index {
     classes: Vec<ClassIndexEntry>,
     #[serde(default)]
     races: Vec<RaceIndexEntry>,
+    #[serde(default)]
+    backgrounds: Vec<BackgroundIndexEntry>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -128,7 +130,7 @@ pub struct RaceDefinition {
     #[serde(default)]
     pub traits: Vec<RaceTrait>,
     #[serde(default)]
-    pub features: Vec<ClassFeature>,
+    pub features: Vec<Feature>,
 }
 
 impl RaceDefinition {
@@ -151,11 +153,56 @@ impl RaceDefinition {
             });
         }
 
+        let total_level = character.level();
+        for feat in &self.features {
+            feat.apply(total_level, character);
+        }
+
+        character.identity.race_applied = true;
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BackgroundIndexEntry {
+    pub name: String,
+    pub url: String,
+    #[serde(default)]
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BackgroundDefinition {
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub ability_modifiers: Vec<AbilityModifier>,
+    #[serde(default)]
+    pub proficiencies: Vec<Skill>,
+    #[serde(default)]
+    pub features: Vec<Feature>,
+}
+
+impl BackgroundDefinition {
+    pub fn apply(&self, character: &mut Character) {
+        for am in &self.ability_modifiers {
+            let current = character.abilities.get(am.ability) as i32;
+            character
+                .abilities
+                .set(am.ability, (current + am.modifier).max(1) as u32);
+        }
+
+        for &skill in &self.proficiencies {
+            character
+                .skills
+                .entry(skill)
+                .or_insert(ProficiencyLevel::Proficient);
+        }
+
         for feat in &self.features {
             feat.apply(1, character);
         }
 
-        character.identity.race_applied = true;
+        character.identity.background_applied = true;
     }
 }
 
@@ -171,7 +218,7 @@ pub struct ClassDefinition {
     #[serde(default)]
     pub saving_throws: Vec<Ability>,
     #[serde(default)]
-    pub features: Vec<ClassFeature>,
+    pub features: Vec<Feature>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
     #[serde(default)]
@@ -179,7 +226,7 @@ pub struct ClassDefinition {
 }
 
 impl ClassDefinition {
-    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &ClassFeature> {
+    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &Feature> {
         let sc_features = subclass
             .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
             .map(|sc| sc.features.as_slice())
@@ -187,7 +234,7 @@ impl ClassDefinition {
         self.features.iter().chain(sc_features.iter())
     }
 
-    pub fn spells(&self, subclass: Option<&str>) -> impl Iterator<Item = &ClassSpell> {
+    pub fn spells(&self, subclass: Option<&str>) -> impl Iterator<Item = &SpellDefinition> {
         self.features(subclass)
             .filter_map(|f| f.spells.as_ref())
             .flat_map(|spells| spells.iter())
@@ -199,7 +246,7 @@ pub struct SubclassDefinition {
     pub name: String,
     pub description: String,
     #[serde(default)]
-    pub features: Vec<ClassFeature>,
+    pub features: Vec<Feature>,
     #[serde(default, deserialize_with = "u32_key_map::deserialize")]
     pub levels: BTreeMap<u32, SubclassLevelRules>,
 }
@@ -218,34 +265,34 @@ pub struct SubclassLevelRules {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ClassFeature {
+pub struct Feature {
     pub name: String,
     pub description: String,
-    pub spells: Option<Vec<ClassSpell>>,
+    pub spells: Option<Vec<SpellDefinition>>,
     pub fields: Option<Vec<FieldDefinition>>,
 }
 
-impl ClassFeature {
+impl Feature {
     pub fn apply(&self, level: u32, character: &mut Character) {
-        let has_feature = character.features.iter().any(|f| f.name == self.name);
-
-        if !has_feature {
-            character.features.push(Feature {
+        if !character.features.iter().any(|f| f.name == self.name) {
+            character.features.push(CharacterFeature {
                 name: self.name.clone(),
                 description: self.description.clone(),
             });
+        }
 
-            if let Some(spells) = &self.spells {
-                let spellcasting = character.spellcasting.get_or_insert_default();
-                spellcasting
-                    .spells
-                    .extend(spells.iter().filter(|s| s.sticky).map(|s| Spell {
+        if let Some(spells) = &self.spells {
+            let spellcasting = character.spellcasting.get_or_insert_default();
+            for s in spells.iter().filter(|s| s.sticky && s.min_level <= level) {
+                if !spellcasting.spells.iter().any(|ex| ex.name == s.name) {
+                    spellcasting.spells.push(Spell {
                         name: s.name.clone(),
                         description: s.description.clone(),
                         level: s.level,
                         prepared: true,
                         sticky: true,
-                    }));
+                    });
+                }
             }
         }
 
@@ -387,12 +434,14 @@ pub struct ChoiceOption {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ClassSpell {
+pub struct SpellDefinition {
     pub name: String,
     pub level: u32,
     pub description: String,
     #[serde(default)]
     pub sticky: bool,
+    #[serde(default)]
+    pub min_level: u32,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -532,6 +581,7 @@ pub struct RulesRegistry {
     class_index: LocalResource<Result<Index, String>>,
     class_cache: RwSignal<HashMap<String, ClassDefinition>>,
     race_cache: RwSignal<HashMap<String, RaceDefinition>>,
+    background_cache: RwSignal<HashMap<String, BackgroundDefinition>>,
 }
 
 async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
@@ -565,6 +615,7 @@ impl RulesRegistry {
             class_index,
             class_cache: RwSignal::new(HashMap::new()),
             race_cache: RwSignal::new(HashMap::new()),
+            background_cache: RwSignal::new(HashMap::new()),
         }
     }
 
@@ -692,6 +743,52 @@ impl RulesRegistry {
                 }
                 Err(error) => {
                     log::error!("Failed to fetch race definition: {error}");
+                }
+            }
+        });
+    }
+
+    pub fn with_background_entries<R>(&self, f: impl FnOnce(&[BackgroundIndexEntry]) -> R) -> R {
+        let guard = self.class_index.read();
+        let entries = guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| idx.backgrounds.as_slice());
+        f(entries.unwrap_or(&[]))
+    }
+
+    pub fn get_background(&self, name: &str) -> Option<BackgroundDefinition> {
+        self.background_cache.read().get(name).cloned()
+    }
+
+    pub fn fetch_background(&self, name: &str) {
+        if self.background_cache.read().contains_key(name) {
+            return;
+        }
+
+        let url = {
+            let guard = self.class_index.read();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index.backgrounds.iter().find(|e| e.name == name) {
+                Some(entry) => format!("{BASE_URL}/{}", entry.url),
+                None => return,
+            }
+        };
+
+        let cache = self.background_cache;
+        let name = name.to_string();
+        leptos::task::spawn_local(async move {
+            match fetch_json::<BackgroundDefinition>(&url).await {
+                Ok(def) => {
+                    cache.update(|m| {
+                        m.insert(name, def);
+                    });
+                }
+                Err(error) => {
+                    log::error!("Failed to fetch background definition: {error}");
                 }
             }
         });

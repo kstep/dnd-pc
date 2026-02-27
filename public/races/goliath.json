@@ -1,0 +1,21 @@
+{
+  "name": "Goliath",
+  "description": "Goliaths are towering, powerful people descended from giants, driven by competition and a desire to prove themselves.",
+  "speed": 35,
+  "traits": [
+    {
+      "name": "Powerful Build",
+      "description": "You have advantage on saving throws to end the Grappled condition. You count as one size larger for carrying capacity."
+    }
+  ],
+  "features": [
+    {
+      "name": "Giant Ancestry",
+      "description": "Choose one: Cloud's Jaunt (teleport 30 ft as Bonus Action), Fire's Burn (+1d10 fire on hit), Frost's Chill (+1d6 cold on hit, -10 ft speed), Hill's Tumble (knock Large or smaller Prone on hit), Stone's Endurance (Reaction: reduce damage by 1d12 + CON mod), Storm's Thunder (Reaction: 1d8 thunder to attacker within 60 ft). Uses: Proficiency Bonus per Long Rest."
+    },
+    {
+      "name": "Large Form",
+      "description": "Starting at 5th level, as a Bonus Action you become Large for 10 minutes (if space permits). You have advantage on Strength checks and your Speed increases by 10 feet. Once per Long Rest."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Charlatan",
+  "description": "Once combative and headstrong, you have since tempered your behavior with cunning, learning that deceiving others is far more effective than strong-arming them. You employ trickery, misdirection, and forgery to get what you want.",
+  "ability_modifiers": [
+    {
+      "ability": 5,
+      "modifier": 2
+    },
+    {
+      "ability": 1,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    4,
+    15
+  ],
+  "features": [
+    {
+      "name": "Skilled",
+      "description": "You gain proficiency in any combination of three skills or tools of your choice."
+    }
+  ]
+}

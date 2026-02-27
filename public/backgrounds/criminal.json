@@ -1,0 +1,24 @@
+{
+  "name": "Criminal",
+  "description": "You eked out a living in dark alleyways, cutting purses or burgling shops. Perhaps you were part of a small gang of like-minded criminals who looked out for each other, or maybe you were a lone wolf.",
+  "ability_modifiers": [
+    {
+      "ability": 1,
+      "modifier": 2
+    },
+    {
+      "ability": 3,
+      "modifier": 1
+    }
+  ],
+  "proficiencies": [
+    15,
+    16
+  ],
+  "features": [
+    {
+      "name": "Alert",
+      "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
+    }
+  ]
+}

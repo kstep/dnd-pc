@@ -1,0 +1,49 @@
+{
+  "name": "Tiefling (Infernal)",
+  "description": "Your fiendish legacy connects you to the Nine Hells, granting fire resistance and infernal spellcasting.",
+  "speed": 30,
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
+      "name": "Hellish Resistance",
+      "description": "You have resistance to Fire damage."
+    }
+  ],
+  "features": [
+    {
+      "name": "Infernal Legacy",
+      "description": "You know the Thaumaturgy and Fire Bolt cantrips. At 3rd level you can cast Hellish Rebuke once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
+      "spells": [
+        {
+          "name": "Thaumaturgy",
+          "level": 0,
+          "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles.",
+          "sticky": true
+        },
+        {
+          "name": "Fire Bolt",
+          "level": 0,
+          "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack. On a hit, the target takes 1d10 fire damage.",
+          "sticky": true
+        },
+        {
+          "name": "Hellish Rebuke",
+          "level": 1,
+          "description": "As a Reaction when you are damaged by a creature within 60 feet, the creature must make a Dexterity save, taking 2d10 fire damage on a failed save, half on success. Once per Long Rest (racial).",
+          "sticky": true,
+          "min_level": 3
+        },
+        {
+          "name": "Darkness",
+          "level": 2,
+          "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial).",
+          "sticky": true,
+          "min_level": 5
+        }
+      ]
+    }
+  ]
+}

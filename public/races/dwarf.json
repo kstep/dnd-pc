@@ -1,0 +1,25 @@
+{
+  "name": "Dwarf",
+  "description": "Dwarves are solidly built, with broad shoulders and thick frames. They are known for their resilience, craftsmanship, and connection to stone.",
+  "speed": 30,
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 120 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
+      "name": "Dwarven Resilience",
+      "description": "You have resistance to Poison damage. You have advantage on saving throws you make to avoid or end the Poisoned condition."
+    },
+    {
+      "name": "Dwarven Toughness",
+      "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+    }
+  ],
+  "features": [
+    {
+      "name": "Stonecunning",
+      "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching a stone surface. You can use this a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest."
+    }
+  ]
+}
