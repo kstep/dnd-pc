@@ -16,20 +16,23 @@
     {
       "name": "Gnomish Lineage",
       "description": "You know the Mending and Prestidigitation cantrips. You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP) that produces its effect when activated with a Bonus Action. You can have three such devices at a time; each falls apart after 8 hours. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
-      "spells": [
-        {
-          "name": "Mending",
-          "level": 0,
-          "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin.",
-          "sticky": true
-        },
-        {
-          "name": "Prestidigitation",
-          "level": 0,
-          "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
-          "sticky": true
-        }
-      ]
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Mending",
+            "level": 0,
+            "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin.",
+            "sticky": true
+          },
+          {
+            "name": "Prestidigitation",
+            "level": 0,
+            "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
+            "sticky": true
+          }
+        ]
+      }
     }
   ]
 }

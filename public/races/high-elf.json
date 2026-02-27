@@ -24,28 +24,31 @@
     {
       "name": "Elven Lineage",
       "description": "You know the Prestidigitation cantrip (replaceable with another Wizard cantrip after each Long Rest). At 3rd level you can cast Detect Magic once per long rest. At 5th level you can cast Misty Step once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
-      "spells": [
-        {
-          "name": "Prestidigitation",
-          "level": 0,
-          "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
-          "sticky": true
-        },
-        {
-          "name": "Detect Magic",
-          "level": 1,
-          "description": "For the duration, you sense the presence of magic within 30 feet of you. The spell can penetrate most barriers. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 3
-        },
-        {
-          "name": "Misty Step",
-          "level": 2,
-          "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 5
-        }
-      ]
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Prestidigitation",
+            "level": 0,
+            "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
+            "sticky": true
+          },
+          {
+            "name": "Detect Magic",
+            "level": 1,
+            "description": "For the duration, you sense the presence of magic within 30 feet of you. The spell can penetrate most barriers. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 3
+          },
+          {
+            "name": "Misty Step",
+            "level": 2,
+            "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 5
+          }
+        ]
+      }
     }
   ]
 }

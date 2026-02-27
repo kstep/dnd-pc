@@ -24,28 +24,31 @@
     {
       "name": "Elven Lineage",
       "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
-      "spells": [
-        {
-          "name": "Druidcraft",
-          "level": 0,
-          "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire.",
-          "sticky": true
-        },
-        {
-          "name": "Longstrider",
-          "level": 1,
-          "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 3
-        },
-        {
-          "name": "Pass without Trace",
-          "level": 2,
-          "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 5
-        }
-      ]
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Druidcraft",
+            "level": 0,
+            "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire.",
+            "sticky": true
+          },
+          {
+            "name": "Longstrider",
+            "level": 1,
+            "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 3
+          },
+          {
+            "name": "Pass without Trace",
+            "level": 2,
+            "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 5
+          }
+        ]
+      }
     }
   ]
 }

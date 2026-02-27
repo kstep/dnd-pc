@@ -24,28 +24,31 @@
     {
       "name": "Drow Magic",
       "description": "You know the Dancing Lights cantrip. At 3rd level you can cast Faerie Fire once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
-      "spells": [
-        {
-          "name": "Dancing Lights",
-          "level": 0,
-          "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration.",
-          "sticky": true
-        },
-        {
-          "name": "Faerie Fire",
-          "level": 1,
-          "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 3
-        },
-        {
-          "name": "Darkness",
-          "level": 2,
-          "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial).",
-          "sticky": true,
-          "min_level": 5
-        }
-      ]
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Dancing Lights",
+            "level": 0,
+            "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration.",
+            "sticky": true
+          },
+          {
+            "name": "Faerie Fire",
+            "level": 1,
+            "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 3
+          },
+          {
+            "name": "Darkness",
+            "level": 2,
+            "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial).",
+            "sticky": true,
+            "min_level": 5
+          }
+        ]
+      }
     }
   ]
 }
