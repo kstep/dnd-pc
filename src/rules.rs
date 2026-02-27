@@ -669,6 +669,34 @@ impl RulesRegistry {
         Vec::new()
     }
 
+    pub fn get_choice_cost_label(
+        &self,
+        classes: &[ClassLevel],
+        feature_name: &str,
+        field_name: &str,
+    ) -> Option<String> {
+        let cache = self.class_cache.read();
+        for cl in classes {
+            if let Some(def) = cache.get(&cl.class) {
+                for feat in def.features(cl.subclass.as_deref()) {
+                    if feat.name != feature_name {
+                        continue;
+                    }
+                    if let Some(fields) = &feat.fields {
+                        for fd in fields {
+                            if fd.name == field_name
+                                && let FieldKind::Choice { cost, .. } = &fd.kind
+                            {
+                                return cost.clone();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        None
+    }
+
     pub fn fetch_class(&self, name: &str) {
         if self.class_cache.read().contains_key(name) {
             return;

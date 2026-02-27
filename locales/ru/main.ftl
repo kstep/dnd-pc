@@ -110,6 +110,7 @@ max = Макс.
 cost = Цена
 btn-add-spell = + Добавить заклинание
 choose-option = Выбрать
+btn-add-option = + Добавить вариант
 
 ## Характеристики
 ability-strength = Сила

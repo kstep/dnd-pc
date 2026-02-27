@@ -1215,8 +1215,16 @@ input[type="checkbox"] {
 
 .field-entry {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--size-2);
+
+  .field-desc {
+    width: 100%;
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+  }
 
   .field-label {
     font-weight: var(--font-weight-6);
@@ -1247,14 +1255,26 @@ input[type="checkbox"] {
 }
 
 .choice-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-1);
+
+  .choice-cost {
+    width: 3.5em;
+    text-align: center;
+  }
+
   .choice-desc {
-    margin: var(--size-1) 0 0;
+    width: 100%;
+    margin: 0;
     font-size: var(--font-size-0);
     color: var(--text-secondary);
   }
 
   input[type="text"] {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 }
 

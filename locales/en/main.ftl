@@ -110,6 +110,7 @@ max = Max
 cost = Cost
 btn-add-spell = + Add Spell
 choose-option = Choose option
+btn-add-option = + Add Option
 
 ## Abilities
 ability-strength = Strength

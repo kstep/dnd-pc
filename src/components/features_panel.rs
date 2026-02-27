@@ -6,10 +6,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
-    model::{
-        Character, Feature, CharacterIdentityStoreFields, CharacterStoreFields,
-        RacialTrait,
-    },
+    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, RacialTrait},
     rules::RulesRegistry,
 };
 

@@ -385,7 +385,10 @@ impl FeatureValue {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct FeatureOption {
     pub name: String,
+    #[serde(default)]
     pub description: String,
+    #[serde(default)]
+    pub cost: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
