@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
@@ -54,6 +54,8 @@ pub struct Character {
     pub notes: String,
     #[serde(default)]
     pub updated_at: u64,
+    #[serde(default)]
+    pub fields: BTreeMap<String, Vec<FeatureField>>,
 }
 
 fn now_epoch_secs() -> u64 {
@@ -166,6 +168,7 @@ impl Default for Character {
             racial_traits: Vec::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
+            fields: BTreeMap::new(),
         }
     }
 }
@@ -339,6 +342,46 @@ pub struct Feature {
     pub description: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
+pub struct FeatureField {
+    pub name: String,
+    #[serde(default)]
+    pub description: String,
+    #[serde(flatten)]
+    pub value: FeatureValue,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
+#[serde(tag = "kind")]
+pub enum FeatureValue {
+    Points { used: u32, max: u32 },
+    Choice { options: Vec<FeatureOption> },
+    Die(String),
+    Bonus(i32),
+}
+
+impl FeatureValue {
+    pub fn choices(&self) -> &[FeatureOption] {
+        match self {
+            FeatureValue::Choice { options } => options,
+            _ => &[],
+        }
+    }
+
+    pub fn choices_mut(&mut self) -> &mut [FeatureOption] {
+        match self {
+            FeatureValue::Choice { options } => options,
+            _ => &mut [],
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct FeatureOption {
+    pub name: String,
+    pub description: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
     #[serde(default)]
@@ -427,8 +470,6 @@ pub struct SpellcastingData {
     pub spell_slots: Vec<SpellSlotLevel>,
     #[serde(default)]
     pub spells: Vec<Spell>,
-    #[serde(default)]
-    pub metamagic: Option<MetamagicData>,
 }
 
 impl SpellcastingData {
@@ -442,6 +483,14 @@ impl SpellcastingData {
     pub fn all_spell_slots(&self) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
         (1..=9u32).map(|level| (level, self.spell_slot(level)))
     }
+
+    pub fn cantrips(&self) -> impl Iterator<Item = &Spell> {
+        self.spells.iter().filter(|s| s.level == 0)
+    }
+
+    pub fn spells(&self) -> impl Iterator<Item = &Spell> {
+        self.spells.iter().filter(|s| s.level > 0)
+    }
 }
 
 impl Default for SpellcastingData {
@@ -450,29 +499,8 @@ impl Default for SpellcastingData {
             casting_ability: Ability::Intelligence,
             spell_slots: Vec::new(),
             spells: Vec::new(),
-            metamagic: None,
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct MetamagicData {
-    #[serde(default)]
-    pub sorcery_points_max: u32,
-    #[serde(default)]
-    pub sorcery_points_used: u32,
-    #[serde(default)]
-    pub options: Vec<MetamagicOption>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct MetamagicOption {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub cost: u32,
-    #[serde(default)]
-    pub description: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
@@ -493,6 +521,8 @@ pub struct Spell {
     pub prepared: bool,
     #[serde(default)]
     pub description: String,
+    #[serde(default)]
+    pub sticky: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

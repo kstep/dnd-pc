@@ -428,6 +428,24 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
         |f| &mut f.description,
         |f| &f.description,
     );
+
+    for (feature, fields) in &mut imported.fields {
+        let Some(local_fields) = local.fields.get(feature) else {
+            continue;
+        };
+
+        for (field, local_field) in fields.iter_mut().zip(local_fields.iter()) {
+            field.description = local_field.description.clone();
+
+            restore_description_by_name(
+                field.value.choices_mut(),
+                local_field.value.choices(),
+                |c| &c.name,
+                |c| &mut c.description,
+                |c| &c.description,
+            );
+        }
+    }
     restore_description_by_name(
         &mut imported.racial_traits,
         &local.racial_traits,
@@ -444,15 +462,6 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
             |s| &mut s.description,
             |s| &s.description,
         );
-        if let (Some(imp_mm), Some(loc_mm)) = (&mut imp_sc.metamagic, &loc_sc.metamagic) {
-            restore_description_by_name(
-                &mut imp_mm.options,
-                &loc_mm.options,
-                |o| &o.name,
-                |o| &mut o.description,
-                |o| &o.description,
-            );
-        }
     }
 }
 

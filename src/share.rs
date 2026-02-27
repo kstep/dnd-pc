@@ -15,6 +15,12 @@ fn strip_for_sharing(character: &Character) -> Character {
         feature.description.clear();
     }
 
+    for fields in &mut character.fields.values_mut() {
+        for field in fields {
+            field.description.clear();
+        }
+    }
+
     for racial_trait in &mut character.racial_traits {
         racial_trait.description.clear();
     }
@@ -22,11 +28,6 @@ fn strip_for_sharing(character: &Character) -> Character {
     if let Some(sc) = &mut character.spellcasting {
         for spell in &mut sc.spells {
             spell.description.clear();
-        }
-        if let Some(mm) = &mut sc.metamagic {
-            for option in &mut mm.options {
-                option.description.clear();
-            }
         }
     }
 

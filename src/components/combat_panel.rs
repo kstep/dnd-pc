@@ -253,9 +253,6 @@ pub fn CombatPanel() -> impl IntoView {
                                 for slot in &mut sc.spell_slots {
                                     slot.used = 0;
                                 }
-                                if let Some(mm) = &mut sc.metamagic {
-                                    mm.sorcery_points_used = 0;
-                                }
                             }
                         });
                     }

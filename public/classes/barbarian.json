@@ -17,7 +17,29 @@
   "features": [
     {
       "name": "Rage",
-      "description": "You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren't wearing Heavy armor. You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table."
+      "description": "You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren't wearing Heavy armor. You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table.",
+      "fields": [
+        {
+          "name": "Rages",
+          "kind": "Points",
+          "levels": {
+            "1": 2,
+            "3": 3,
+            "6": 4,
+            "12": 5,
+            "17": 6
+          }
+        },
+        {
+          "name": "Rage Damage",
+          "kind": "Bonus",
+          "levels": {
+            "1": 2,
+            "9": 3,
+            "16": 4
+          }
+        }
+      ]
     },
     {
       "name": "Unarmored Defense",
@@ -25,7 +47,18 @@
     },
     {
       "name": "Weapon Mastery",
-      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of Simple or Martial Melee weapons of your choice, such as Greataxe and Handaxe. Whenever you finish a Long Rest, you can practice weapon drills and change one of those weapon choices."
+      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of Simple or Martial Melee weapons of your choice, such as Greataxe and Handaxe. Whenever you finish a Long Rest, you can practice weapon drills and change one of those weapon choices.",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2,
+            "4": 3,
+            "10": 4
+          }
+        }
+      ]
     },
     {
       "name": "Danger Sense",
@@ -96,7 +129,6 @@
       "description": "You embody primal power. Your Strength and Constitution scores increase by 4, to a maximum of 25."
     }
   ],
-  "spells": [],
   "levels": [
     {
       "features": [

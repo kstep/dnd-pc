@@ -10,8 +10,7 @@ use crate::{
     components::datalist_input::DatalistInput,
     model::{
         Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        ClassLevel, CombatStatsStoreFields, Feature, MetamagicData, Spell, SpellcastingData,
-        Translatable,
+        ClassLevel, CombatStatsStoreFields, Spell, SpellcastingData, Translatable,
     },
     rules::RulesRegistry,
     share,
@@ -138,9 +137,13 @@ fn import_character(store: Store<Character>) {
 
 fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
     let classes = store.identity().classes();
-    let class_name = classes.read()[class_index].class.clone();
+    let classes_ref = classes.read();
+    let Some(class_level) = classes_ref.get(class_index) else {
+        log::error!("Invalid class index: {class_index}");
+        return;
+    };
 
-    let def = match registry.get_class(&class_name) {
+    let def = match registry.get_class(&class_level.class) {
         Some(d) => d,
         None => return,
     };
@@ -163,62 +166,25 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
                 profs.insert(prof);
             }
         });
-    }
 
-    // Add class features
-    let features_to_add: Vec<Feature> = rules
-        .features
-        .iter()
-        .filter_map(|name| {
-            def.features
-                .iter()
-                .find(|f| &f.name == name)
-                .map(|f| Feature {
-                    name: f.name.clone(),
-                    description: f.description.clone(),
-                })
-        })
-        .collect();
-
-    if !features_to_add.is_empty() {
-        store.features().write().extend(features_to_add);
-    }
-
-    // Add subclass features
-    if let Some(ref subclass_name) = classes.read()[class_index].subclass
-        && let Some(subclass_def) = def.subclasses.iter().find(|sc| &sc.name == subclass_name)
-        && let Some(sc_rules) = subclass_def.levels.iter().find(|lr| lr.level == level)
-    {
-        let sc_features: Vec<Feature> = sc_rules
-            .features
-            .iter()
-            .filter_map(|name| {
-                subclass_def
-                    .features
-                    .iter()
-                    .find(|f| &f.name == name)
-                    .map(|f| Feature {
-                        name: f.name.clone(),
-                        description: f.description.clone(),
-                    })
-            })
-            .collect();
-
-        if !sc_features.is_empty() {
-            store.features().write().extend(sc_features);
+        if let Some(ability) = def.casting_ability
+            && store.spellcasting().read().is_none()
+        {
+            store.spellcasting().set(Some(SpellcastingData {
+                casting_ability: ability,
+                ..Default::default()
+            }));
         }
     }
 
-    // Enable spellcasting at level 1 for caster classes
-    if level == 1
-        && let Some(ability) = def.casting_ability
-        && store.spellcasting().read().is_none()
-    {
-        store.spellcasting().set(Some(SpellcastingData {
-            casting_ability: ability,
-            ..Default::default()
-        }));
-    }
+    store.update(|c| {
+        for feat in def.features(class_level.subclass.as_deref()) {
+            if rules.features.contains(&feat.name) || c.features.iter().any(|f| f.name == feat.name)
+            {
+                feat.apply(level, c);
+            }
+        }
+    });
 
     // Update spell slots and sorcery points
     {
@@ -237,10 +203,6 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
                 {
                     sc.spell_slots.pop();
                 }
-            }
-            if let Some(sp) = rules.sorcery_points {
-                let mm = sc.metamagic.get_or_insert_with(MetamagicData::default);
-                mm.sorcery_points_max = sp;
             }
 
             // Ensure enough cantrip lines

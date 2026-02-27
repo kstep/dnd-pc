@@ -18,7 +18,25 @@
     },
     {
       "name": "Sneak Attack",
-      "description": "You know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage's type is the same as the weapon's type."
+      "description": "You know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage's type is the same as the weapon's type.",
+      "fields": [
+        {
+          "name": "Sneak Attack",
+          "kind": "Die",
+          "levels": {
+            "1": "1d6",
+            "3": "2d6",
+            "5": "3d6",
+            "7": "4d6",
+            "9": "5d6",
+            "11": "6d6",
+            "13": "7d6",
+            "15": "8d6",
+            "17": "9d6",
+            "19": "10d6"
+          }
+        }
+      ]
     },
     {
       "name": "Thieves' Cant",
