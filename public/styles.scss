@@ -81,6 +81,14 @@ input, select {
   height: 2rem;
 }
 
+input[type="checkbox"] {
+  height: auto;
+  width: 0.9em;
+  height: 0.9em;
+  align-self: center;
+  margin: 0;
+}
+
 /* --------------------- Panel Pattern ------------------------- */
 .panel {
   background: var(--panel-bg);
@@ -999,6 +1007,14 @@ input, select {
   padding-bottom: var(--size-2);
   border-bottom: 1px solid var(--panel-border);
   align-items: center;
+
+  .spell-prepared {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    line-height: 1;
+  }
 
   &:last-child {
     margin-bottom: 0;
