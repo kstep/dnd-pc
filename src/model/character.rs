@@ -106,13 +106,30 @@ impl Character {
             .floor() as u32
     }
 
-    pub fn update_spell_slots(&mut self) {
-        let cl = self.caster_level() as usize;
-        let slots = cl
-            .checked_sub(1)
-            .and_then(|i| SPELL_SLOT_TABLE.get(i))
-            .copied()
-            .unwrap_or(&[]);
+    pub fn update_spell_slots(&mut self, slots: Option<&[u32]>) {
+        let caster_classes = self
+            .identity
+            .classes
+            .iter()
+            .filter(|c| c.caster_coef != 0)
+            .count();
+        let slots: &[u32] = if caster_classes <= 1 {
+            if let Some(s) = slots.filter(|s| !s.is_empty()) {
+                s
+            } else {
+                let cl = self.caster_level() as usize;
+                cl.checked_sub(1)
+                    .and_then(|i| SPELL_SLOT_TABLE.get(i))
+                    .copied()
+                    .unwrap_or(&[])
+            }
+        } else {
+            let cl = self.caster_level() as usize;
+            cl.checked_sub(1)
+                .and_then(|i| SPELL_SLOT_TABLE.get(i))
+                .copied()
+                .unwrap_or(&[])
+        };
         self.spell_slots
             .resize_with(slots.len().max(self.spell_slots.len()), Default::default);
         for (i, entry) in self.spell_slots.iter_mut().enumerate() {

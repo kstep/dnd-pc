@@ -494,7 +494,7 @@ fn do_import(character: &Character) -> impl IntoView {
 
     let navigate = use_navigate();
     request_animation_frame(move || {
-        navigate(&format!("{BASE_URL}/c/{id}"), Default::default());
+        navigate(&format!("/c/{id}"), Default::default());
     });
 
     view! { <p>"Importing..."</p> }
@@ -512,7 +512,7 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
         restore_stripped_fields(&mut character, &existing.get_value());
         storage::save_character(&character);
         let navigate = use_navigate();
-        navigate(&format!("{BASE_URL}/c/{id}"), Default::default());
+        navigate(&format!("/c/{id}"), Default::default());
     };
 
     let name = existing.get_value().identity.name.clone();

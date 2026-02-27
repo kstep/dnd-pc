@@ -148,6 +148,17 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         return;
     };
 
+    let subclass = {
+        let classes = store.identity().classes().read();
+        classes.get(class_index).and_then(|c| c.subclass.clone())
+    };
+
+    let slots: Option<Vec<u32>> = def
+        .features(subclass.as_deref())
+        .filter_map(|f| f.spells.as_ref())
+        .find_map(|s| s.levels.get(level as usize - 1))
+        .and_then(|l| l.slots.clone());
+
     store.update(|c| {
         def.apply_level(level, c);
 
@@ -161,7 +172,7 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
             }
         }
 
-        c.update_spell_slots();
+        c.update_spell_slots(slots.as_deref());
     });
 }
 

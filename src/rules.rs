@@ -502,6 +502,8 @@ pub struct SpellLevelRules {
     pub cantrips: Option<u32>,
     #[serde(default)]
     pub spells: Option<u32>,
+    #[serde(default)]
+    pub slots: Option<Vec<u32>>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
