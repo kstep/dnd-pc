@@ -21,10 +21,16 @@
       "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot.",
       "spells": {
         "casting_ability": 4,
-        "list": {"from": "spells/cleric.json"},
+        "list": {
+          "from": "spells/cleric.json"
+        },
         "levels": [
-          {"cantrips": 2, "spells": 1, "slots": [1]}
-        ]
+          {
+            "cantrips": 2,
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
       }
     }
   ]

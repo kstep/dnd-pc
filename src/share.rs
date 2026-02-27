@@ -15,19 +15,18 @@ fn strip_for_sharing(character: &Character) -> Character {
         feature.description.clear();
     }
 
-    for fields in &mut character.fields.values_mut() {
-        for field in fields {
-            field.description.clear();
-        }
-    }
-
     for racial_trait in &mut character.racial_traits {
         racial_trait.description.clear();
     }
 
-    for sc in character.spellcasting.values_mut() {
-        for spell in &mut sc.spells {
-            spell.description.clear();
+    for entry in character.feature_data.values_mut() {
+        // Fields use #[serde(flatten)] incompatible with postcard — clear them;
+        // they can be re-applied from level-up rules after import.
+        entry.fields.clear();
+        if let Some(spells) = &mut entry.spells {
+            for spell in &mut spells.spells {
+                spell.description.clear();
+            }
         }
     }
 

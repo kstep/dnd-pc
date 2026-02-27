@@ -254,9 +254,9 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         });
                         // Reset feature points (sorcery points, etc.)
-                        store.fields().update(|fields| {
-                            for field_list in fields.values_mut() {
-                                for field in field_list.iter_mut() {
+                        store.feature_data().update(|map| {
+                            for entry in map.values_mut() {
+                                for field in entry.fields.iter_mut() {
                                     if let FeatureValue::Points { used, .. } = &mut field.value {
                                         *used = 0;
                                     }

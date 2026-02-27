@@ -27,7 +27,8 @@
             "cost": "Favored Enemy",
             "sticky": true
           }
-        ]
+        ],
+        "caster_coef": 2
       },
       "fields": [
         {
@@ -52,166 +53,66 @@
           "from": "spells/ranger.json"
         },
         "levels": [
+          {},
           {
-            "slots": [
-              2
-            ]
+            "spells": 2
           },
           {
-            "spells": 2,
-            "slots": [
-              2
-            ]
+            "spells": 3
           },
           {
-            "spells": 3,
-            "slots": [
-              3
-            ]
+            "spells": 3
           },
           {
-            "spells": 3,
-            "slots": [
-              3
-            ]
+            "spells": 4
           },
           {
-            "spells": 4,
-            "slots": [
-              4,
-              2
-            ]
+            "spells": 4
           },
           {
-            "spells": 4,
-            "slots": [
-              4,
-              2
-            ]
+            "spells": 5
           },
           {
-            "spells": 5,
-            "slots": [
-              4,
-              3
-            ]
+            "spells": 5
           },
           {
-            "spells": 5,
-            "slots": [
-              4,
-              3
-            ]
+            "spells": 6
           },
           {
-            "spells": 6,
-            "slots": [
-              4,
-              3,
-              2
-            ]
+            "spells": 6
           },
           {
-            "spells": 6,
-            "slots": [
-              4,
-              3,
-              2
-            ]
+            "spells": 7
           },
           {
-            "spells": 7,
-            "slots": [
-              4,
-              3,
-              3
-            ]
+            "spells": 7
           },
           {
-            "spells": 7,
-            "slots": [
-              4,
-              3,
-              3
-            ]
+            "spells": 8
           },
           {
-            "spells": 8,
-            "slots": [
-              4,
-              3,
-              3,
-              1
-            ]
+            "spells": 8
           },
           {
-            "spells": 8,
-            "slots": [
-              4,
-              3,
-              3,
-              1
-            ]
+            "spells": 9
           },
           {
-            "spells": 9,
-            "slots": [
-              4,
-              3,
-              3,
-              2
-            ]
+            "spells": 9
           },
           {
-            "spells": 9,
-            "slots": [
-              4,
-              3,
-              3,
-              2
-            ]
+            "spells": 10
           },
           {
-            "spells": 10,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              1
-            ]
+            "spells": 10
           },
           {
-            "spells": 10,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              1
-            ]
+            "spells": 11
           },
           {
-            "spells": 11,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2
-            ]
-          },
-          {
-            "spells": 11,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2
-            ]
+            "spells": 11
           }
-        ]
+        ],
+        "caster_coef": 2
       }
     },
     {

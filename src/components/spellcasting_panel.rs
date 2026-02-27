@@ -8,8 +8,7 @@ use strum::IntoEnumIterator;
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
     model::{
-        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellcastingData,
-        Translatable,
+        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellData, Translatable,
     },
     rules::RulesRegistry,
 };
@@ -17,7 +16,7 @@ use crate::{
 #[component]
 fn FeatureSpellcastingSection(
     #[prop(into)] feature_name: String,
-    sc_data: SpellcastingData,
+    sc_data: SpellData,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
@@ -28,9 +27,10 @@ fn FeatureSpellcastingSection(
 
     let casting_ability = Memo::new(move |_| {
         store
-            .spellcasting()
+            .feature_data()
             .read()
             .get(&fname.get_value())
+            .and_then(|e| e.spells.as_ref())
             .map(|sc| sc.casting_ability)
             .unwrap_or(default_ability)
     });
@@ -89,8 +89,8 @@ fn FeatureSpellcastingSection(
                             let val = event_target_value(&e);
                             if let Ok(a) = serde_json::from_str::<Ability>(&format!("\"{val}\"")) {
                                 let fname = fname.get_value();
-                                store.spellcasting().update(|map| {
-                                    if let Some(sc) = map.get_mut(&fname) {
+                                store.feature_data().update(|map| {
+                                    if let Some(sc) = map.get_mut(&fname).and_then(|e| e.spells.as_mut()) {
                                         sc.casting_ability = a;
                                     }
                                 });
@@ -135,8 +135,8 @@ fn FeatureSpellcastingSection(
                     class="btn-toggle-desc"
                     on:click=move |_| {
                         let key = fname.get_value();
-                        store.spellcasting().update(|map| {
-                            if let Some(sc) = map.get_mut(&key) {
+                        store.feature_data().update(|map| {
+                            if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut()) {
                                 sc.spells.sort_by(|a, b| {
                                     b.sticky
                                         .cmp(&a.sticky)
@@ -155,8 +155,9 @@ fn FeatureSpellcastingSection(
             <div class="spells-list">
                 {move || {
                     let key = fname.get_value();
-                    let spell_list = store.spellcasting().read()
+                    let spell_list = store.feature_data().read()
                         .get(&key)
+                        .and_then(|e| e.spells.as_ref())
                         .map(|sc| sc.spells.clone())
                         .unwrap_or_default();
                     spell_list
@@ -184,8 +185,8 @@ fn FeatureSpellcastingSection(
                                             on:change=move |_| {
                                                 if !spell_sticky {
                                                     let key = fname.get_value();
-                                                    store.spellcasting().update(|map| {
-                                                        if let Some(sc) = map.get_mut(&key)
+                                                    store.feature_data().update(|map| {
+                                                        if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
                                                             && let Some(s) = sc.spells.get_mut(i)
                                                         {
                                                             s.prepared = !s.prepared;
@@ -207,8 +208,8 @@ fn FeatureSpellcastingSection(
                                                 .find(|(_, n, _)| *n == name)
                                                 .map(|(_, _, d)| d.clone());
                                             let key = fname.get_value();
-                                            store.spellcasting().update(|map| {
-                                                if let Some(sc) = map.get_mut(&key)
+                                            store.feature_data().update(|map| {
+                                                if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
                                                     && let Some(s) = sc.spells.get_mut(i)
                                                 {
                                                     s.name = name;
@@ -229,8 +230,8 @@ fn FeatureSpellcastingSection(
                                         on:input=move |e| {
                                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
                                                 let key = fname.get_value();
-                                                store.spellcasting().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key)
+                                                store.feature_data().update(|map| {
+                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
                                                         && let Some(s) = sc.spells.get_mut(i)
                                                     {
                                                         s.level = v;
@@ -244,8 +245,8 @@ fn FeatureSpellcastingSection(
                                             class="btn-remove"
                                             on:click=move |_| {
                                                 let key = fname.get_value();
-                                                store.spellcasting().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key)
+                                                store.feature_data().update(|map| {
+                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
                                                         && i < sc.spells.len()
                                                     {
                                                         sc.spells.remove(i);
@@ -263,8 +264,8 @@ fn FeatureSpellcastingSection(
                                             prop:value=spell_desc.clone()
                                             on:change=move |e| {
                                                 let key = fname.get_value();
-                                                store.spellcasting().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key)
+                                                store.feature_data().update(|map| {
+                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
                                                         && let Some(s) = sc.spells.get_mut(i)
                                                     {
                                                         s.description = event_target_value(&e);
@@ -283,8 +284,8 @@ fn FeatureSpellcastingSection(
                 class="btn-add"
                 on:click=move |_| {
                     let key = fname.get_value();
-                    store.spellcasting().update(|map| {
-                        if let Some(sc) = map.get_mut(&key) {
+                    store.feature_data().update(|map| {
+                        if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut()) {
                             sc.spells.push(Spell::default());
                         }
                     });
@@ -321,7 +322,13 @@ fn resolve_feature_spell_list(
 #[component]
 pub fn SpellcastingPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
-    let has_spells = Memo::new(move |_| !store.spellcasting().read().is_empty());
+    let has_spells = Memo::new(move |_| {
+        store
+            .feature_data()
+            .read()
+            .values()
+            .any(|e| e.spells.is_some())
+    });
     let slots_expanded = RwSignal::new(false);
 
     view! {
@@ -389,10 +396,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 </div>
                 {move || {
                     store
-                        .spellcasting()
+                        .feature_data()
                         .read()
                         .iter()
-                        .map(|(name, data)| (name.clone(), data.clone()))
+                        .filter_map(|(name, entry)| {
+                            entry.spells.as_ref().map(|sc| (name.clone(), sc.clone()))
+                        })
                         .collect::<Vec<_>>()
                         .into_iter()
                         .map(|(feature_name, sc_data)| {

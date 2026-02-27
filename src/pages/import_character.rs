@@ -11,9 +11,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     BASE_URL,
-    model::{
-        Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable,
-    },
+    model::{Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable},
     share, storage,
 };
 
@@ -283,13 +281,16 @@ fn compute_diff(
     );
     {
         let all_keys: BTreeSet<&String> = local
-            .spellcasting
+            .feature_data
             .keys()
-            .chain(imported.spellcasting.keys())
+            .chain(imported.feature_data.keys())
             .collect();
         for key in all_keys {
-            let local_sc = local.spellcasting.get(key);
-            let imported_sc = imported.spellcasting.get(key);
+            let local_sc = local.feature_data.get(key).and_then(|e| e.spells.as_ref());
+            let imported_sc = imported
+                .feature_data
+                .get(key)
+                .and_then(|e| e.spells.as_ref());
             match (local_sc, imported_sc) {
                 (Some(local_sc), Some(imported_sc)) => {
                     if local_sc.casting_ability != imported_sc.casting_ability {
@@ -441,12 +442,14 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
         |f| &f.description,
     );
 
-    for (feature, fields) in &mut imported.fields {
-        let Some(local_fields) = local.fields.get(feature) else {
-            continue;
-        };
+    for (feature, entry) in &mut imported.feature_data {
+        let local_fields = local
+            .feature_data
+            .get(feature)
+            .map(|e| e.fields.as_slice())
+            .unwrap_or(&[]);
 
-        for (field, local_field) in fields.iter_mut().zip(local_fields.iter()) {
+        for (field, local_field) in entry.fields.iter_mut().zip(local_fields.iter()) {
             field.description = local_field.description.clone();
 
             restore_description_by_name(
@@ -457,17 +460,11 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
                 |c| &c.description,
             );
         }
-    }
-    restore_description_by_name(
-        &mut imported.racial_traits,
-        &local.racial_traits,
-        |t| &t.name,
-        |t| &mut t.description,
-        |t| &t.description,
-    );
 
-    for (key, imp_sc) in &mut imported.spellcasting {
-        if let Some(loc_sc) = local.spellcasting.get(key) {
+        if let (Some(imp_sc), Some(loc_entry)) =
+            (&mut entry.spells, local.feature_data.get(feature))
+            && let Some(loc_sc) = &loc_entry.spells
+        {
             restore_description_by_name(
                 &mut imp_sc.spells,
                 &loc_sc.spells,
@@ -477,9 +474,15 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
             );
         }
     }
-}
 
-// --- Components ---
+    restore_description_by_name(
+        &mut imported.racial_traits,
+        &local.racial_traits,
+        |t| &t.name,
+        |t| &mut t.description,
+        |t| &t.description,
+    );
+}
 
 fn do_import(character: &Character) -> impl IntoView {
     let mut character = character.clone();

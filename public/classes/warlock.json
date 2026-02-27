@@ -30,203 +30,83 @@
         "levels": [
           {
             "cantrips": 2,
-            "spells": 2,
-            "slots": [
-              1
-            ]
+            "spells": 2
           },
           {
             "cantrips": 2,
-            "spells": 3,
-            "slots": [
-              2
-            ]
+            "spells": 3
           },
           {
             "cantrips": 2,
-            "spells": 4,
-            "slots": [
-              0,
-              2
-            ]
+            "spells": 4
           },
           {
             "cantrips": 3,
-            "spells": 5,
-            "slots": [
-              0,
-              2
-            ]
+            "spells": 5
           },
           {
             "cantrips": 3,
-            "spells": 6,
-            "slots": [
-              0,
-              0,
-              2
-            ]
+            "spells": 6
           },
           {
             "cantrips": 3,
-            "spells": 7,
-            "slots": [
-              0,
-              0,
-              2
-            ]
+            "spells": 7
           },
           {
             "cantrips": 3,
-            "spells": 8,
-            "slots": [
-              0,
-              0,
-              0,
-              2
-            ]
+            "spells": 8
           },
           {
             "cantrips": 3,
-            "spells": 9,
-            "slots": [
-              0,
-              0,
-              0,
-              2
-            ]
+            "spells": 9
           },
           {
             "cantrips": 3,
-            "spells": 10,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              2
-            ]
+            "spells": 10
           },
           {
             "cantrips": 4,
-            "spells": 10,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              2
-            ]
+            "spells": 10
           },
           {
             "cantrips": 4,
-            "spells": 11,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 11
           },
           {
             "cantrips": 4,
-            "spells": 11,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 11
           },
           {
             "cantrips": 4,
-            "spells": 12,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 12
           },
           {
             "cantrips": 4,
-            "spells": 12,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 12
           },
           {
             "cantrips": 4,
-            "spells": 13,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 13
           },
           {
             "cantrips": 4,
-            "spells": 13,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              3
-            ]
+            "spells": 13
           },
           {
             "cantrips": 4,
-            "spells": 14,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              4
-            ]
+            "spells": 14
           },
           {
             "cantrips": 4,
-            "spells": 14,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              4
-            ]
+            "spells": 14
           },
           {
             "cantrips": 4,
-            "spells": 15,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              4
-            ]
+            "spells": 15
           },
           {
             "cantrips": 4,
-            "spells": 15,
-            "slots": [
-              0,
-              0,
-              0,
-              0,
-              4
-            ]
+            "spells": 15
           }
         ]
       }

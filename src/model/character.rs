@@ -1,37 +1,35 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use reactive_stores::Store;
-use serde::{Deserialize, Serialize, de::Deserializer};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
 
-/// Backward-compatible deserialization: accepts both the old
-/// `Option<SpellcastingData>` (migrated to a single "Spellcasting" entry) and
-/// the new `BTreeMap<String, SpellcastingData>`.
-fn deserialize_spellcasting<'de, D>(
-    deserializer: D,
-) -> Result<BTreeMap<String, SpellcastingData>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    #[derive(Deserialize)]
-    #[serde(untagged)]
-    enum SpellcastingCompat {
-        Map(BTreeMap<String, SpellcastingData>),
-        Legacy(Option<SpellcastingData>),
-    }
-
-    match SpellcastingCompat::deserialize(deserializer)? {
-        SpellcastingCompat::Map(map) => Ok(map),
-        SpellcastingCompat::Legacy(Some(data)) => {
-            let mut map = BTreeMap::new();
-            map.insert("Spellcasting".to_string(), data);
-            Ok(map)
-        }
-        SpellcastingCompat::Legacy(None) => Ok(BTreeMap::new()),
-    }
-}
+/// Spell slot table (full-caster Wizard progression), indexed by caster level
+/// 1–20. Each row lists slot counts for spell levels 1–9.
+pub const SPELL_SLOT_TABLE: &[&[u32]] = &[
+    &[2],                         // caster level 1
+    &[3],                         // 2
+    &[4, 2],                      // 3
+    &[4, 3],                      // 4
+    &[4, 3, 2],                   // 5
+    &[4, 3, 3],                   // 6
+    &[4, 3, 3, 1],                // 7
+    &[4, 3, 3, 2],                // 8
+    &[4, 3, 3, 3, 1],             // 9
+    &[4, 3, 3, 3, 2],             // 10
+    &[4, 3, 3, 3, 2, 1],          // 11
+    &[4, 3, 3, 3, 2, 1],          // 12
+    &[4, 3, 3, 3, 2, 1, 1],       // 13
+    &[4, 3, 3, 3, 2, 1, 1],       // 14
+    &[4, 3, 3, 3, 2, 1, 1, 1],    // 15
+    &[4, 3, 3, 3, 2, 1, 1, 1],    // 16
+    &[4, 3, 3, 3, 2, 1, 1, 1, 1], // 17
+    &[4, 3, 3, 3, 3, 1, 1, 1, 1], // 18
+    &[4, 3, 3, 3, 3, 2, 1, 1, 1], // 19
+    &[4, 3, 3, 3, 3, 2, 2, 1, 1], // 20
+];
 
 // --- Character Index (for list page) ---
 
@@ -69,8 +67,8 @@ pub struct Character {
     pub features: Vec<Feature>,
     #[serde(default)]
     pub equipment: Equipment,
-    #[serde(default, deserialize_with = "deserialize_spellcasting")]
-    pub spellcasting: BTreeMap<String, SpellcastingData>,
+    #[serde(default)]
+    pub feature_data: BTreeMap<String, FeatureData>,
     #[serde(default)]
     pub proficiencies: HashSet<Proficiency>,
     #[serde(default)]
@@ -83,8 +81,6 @@ pub struct Character {
     pub notes: String,
     #[serde(default)]
     pub updated_at: u64,
-    #[serde(default)]
-    pub fields: BTreeMap<String, Vec<FeatureField>>,
 }
 
 fn now_epoch_secs() -> u64 {
@@ -98,6 +94,37 @@ impl Character {
 
     pub fn touch(&mut self) {
         self.updated_at = now_epoch_secs();
+    }
+
+    pub fn caster_level(&self) -> u32 {
+        self.identity
+            .classes
+            .iter()
+            .filter(|c| c.caster_coef != 0)
+            .map(|c| c.level as f32 / c.caster_coef as f32)
+            .sum::<f32>()
+            .floor() as u32
+    }
+
+    pub fn update_spell_slots(&mut self) {
+        let cl = self.caster_level() as usize;
+        let slots = cl
+            .checked_sub(1)
+            .and_then(|i| SPELL_SLOT_TABLE.get(i))
+            .copied()
+            .unwrap_or(&[]);
+        self.spell_slots
+            .resize_with(slots.len().max(self.spell_slots.len()), Default::default);
+        for (i, entry) in self.spell_slots.iter_mut().enumerate() {
+            entry.total = slots.get(i).copied().unwrap_or(0);
+        }
+        while self
+            .spell_slots
+            .last()
+            .is_some_and(|s| s.total == 0 && s.used == 0)
+        {
+            self.spell_slots.pop();
+        }
     }
 
     pub fn level(&self) -> u32 {
@@ -198,14 +225,13 @@ impl Default for Character {
             personality: Personality::default(),
             features: Vec::new(),
             equipment: Equipment::default(),
-            spellcasting: BTreeMap::new(),
+            feature_data: BTreeMap::new(),
             spell_slots: Vec::new(),
             proficiencies: HashSet::new(),
             languages: Vec::new(),
             racial_traits: Vec::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
-            fields: BTreeMap::new(),
         }
     }
 }
@@ -260,6 +286,8 @@ pub struct ClassLevel {
     pub hit_dice_used: u32,
     #[serde(default)]
     pub applied_levels: Vec<u32>,
+    #[serde(default)]
+    pub caster_coef: u8,
 }
 
 impl Default for ClassLevel {
@@ -271,6 +299,7 @@ impl Default for ClassLevel {
             hit_die_sides: 8,
             hit_dice_used: 0,
             applied_levels: Vec::new(),
+            caster_coef: 0,
         }
     }
 }
@@ -383,6 +412,14 @@ pub struct Feature {
     pub name: String,
     #[serde(default)]
     pub description: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct FeatureData {
+    #[serde(default)]
+    pub fields: Vec<FeatureField>,
+    #[serde(default)]
+    pub spells: Option<SpellData>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
@@ -515,13 +552,13 @@ impl std::fmt::Display for Currency {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct SpellcastingData {
+pub struct SpellData {
     pub casting_ability: Ability,
     #[serde(default)]
     pub spells: Vec<Spell>,
 }
 
-impl SpellcastingData {
+impl SpellData {
     pub fn cantrips(&self) -> impl Iterator<Item = &Spell> {
         self.spells.iter().filter(|s| s.level == 0)
     }
@@ -531,7 +568,7 @@ impl SpellcastingData {
     }
 }
 
-impl Default for SpellcastingData {
+impl Default for SpellData {
     fn default() -> Self {
         Self {
             casting_ability: Ability::Intelligence,

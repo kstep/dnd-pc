@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap, btree_map::Entry};
+use std::collections::{BTreeMap, HashMap};
 
 use leptos::prelude::*;
 use serde::Deserialize;
@@ -74,7 +74,7 @@ use crate::{
     BASE_URL,
     model::{
         Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureValue,
-        Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell, SpellcastingData,
+        Proficiency, ProficiencyLevel, RacialTrait, SPELL_SLOT_TABLE, Skill, Spell, SpellData,
     },
 };
 
@@ -274,33 +274,14 @@ impl FeatureDefinition {
         }
 
         if let Some(spells_def) = &self.spells {
-            let sc = character
-                .spellcasting
-                .entry(self.name.clone())
-                .or_insert_with(|| SpellcastingData {
-                    casting_ability: spells_def.casting_ability,
-                    ..Default::default()
-                });
+            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            let sc = entry.spells.get_or_insert_with(|| SpellData {
+                casting_ability: spells_def.casting_ability,
+                ..Default::default()
+            });
 
             if let Some(rules) = spells_def.levels.get(level as usize - 1) {
-                // Spell slots
-                if let Some(slots) = &rules.slots {
-                    character
-                        .spell_slots
-                        .resize_with(slots.len(), Default::default);
-                    for (i, &count) in slots.iter().enumerate() {
-                        character.spell_slots[i].total = count;
-                    }
-                    while character
-                        .spell_slots
-                        .last()
-                        .is_some_and(|s| s.total == 0 && s.used == 0)
-                    {
-                        character.spell_slots.pop();
-                    }
-                }
-
-                // Cantrip slots
+                // Cantrips known
                 if let Some(n) = rules.cantrips {
                     let current = sc.cantrips().filter(|s| !s.sticky).count();
                     for _ in current..(n as usize) {
@@ -311,20 +292,21 @@ impl FeatureDefinition {
                     }
                 }
 
-                // Known spell slots
+                // Known spells
                 if let Some(n) = rules.spells {
                     let current = sc.spells().filter(|s| !s.sticky).count();
-                    let max_level = rules
-                        .slots
-                        .as_ref()
-                        .and_then(|sl| {
-                            sl.iter()
-                                .enumerate()
-                                .rev()
-                                .find(|(_, c)| **c > 0)
-                                .map(|(i, _)| (i + 1) as u32)
-                        })
+                    let caster_level = character.caster_level() as usize;
+                    let max_level = caster_level
+                        .checked_sub(1)
+                        .and_then(|i| SPELL_SLOT_TABLE.get(i))
+                        .map(|row| row.len() as u32)
                         .unwrap_or(1);
+                    // Re-borrow sc after the immutable borrow of character.identity above
+                    let sc = character
+                        .feature_data
+                        .get_mut(&self.name)
+                        .and_then(|e| e.spells.as_mut())
+                        .expect("just inserted");
                     for _ in current..(n as usize) {
                         sc.spells.push(Spell {
                             level: max_level,
@@ -335,6 +317,11 @@ impl FeatureDefinition {
             }
 
             // Sticky spells from inline list
+            let sc = character
+                .feature_data
+                .get_mut(&self.name)
+                .and_then(|e| e.spells.as_mut())
+                .expect("just inserted");
             if let SpellList::Inline(list) = &spells_def.list {
                 for s in list.iter().filter(|s| s.sticky && s.min_level <= level) {
                     if !sc.spells.iter().any(|ex| ex.name == s.name) {
@@ -351,46 +338,40 @@ impl FeatureDefinition {
         }
 
         if let Some(defs) = &self.fields {
-            match character.fields.entry(self.name.clone()) {
-                Entry::Vacant(place) => {
-                    place.insert(
-                        defs.iter()
-                            .map(|f| FeatureField {
-                                name: f.name.clone(),
-                                description: f.description.clone(),
-                                value: f.kind.to_value(level),
-                            })
-                            .collect(),
-                    );
-                }
-                Entry::Occupied(mut place) => {
-                    let fields = place.get_mut();
-                    for (def, field) in defs.iter().zip(fields.iter_mut()) {
-                        if field.name != def.name {
-                            continue;
-                        }
+            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            let fields = &mut entry.fields;
+            if fields.is_empty() {
+                *fields = defs
+                    .iter()
+                    .map(|f| FeatureField {
+                        name: f.name.clone(),
+                        description: f.description.clone(),
+                        value: f.kind.to_value(level),
+                    })
+                    .collect();
+            } else {
+                for (def, field) in defs.iter().zip(fields.iter_mut()) {
+                    if field.name != def.name {
+                        continue;
+                    }
 
-                        match (&def.kind, &mut field.value) {
-                            (FieldKind::Die { levels }, FeatureValue::Die(d)) => {
-                                *d = get_for_level(levels, level);
-                            }
-                            (
-                                FieldKind::Choice { levels, .. },
-                                FeatureValue::Choice { options },
-                            ) => {
-                                let new_len = get_for_level(levels, level) as usize;
-                                if options.len() < new_len {
-                                    options.resize(new_len, Default::default());
-                                }
-                            }
-                            (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
-                                *b = get_for_level(levels, level);
-                            }
-                            (FieldKind::Points { levels }, FeatureValue::Points { max, .. }) => {
-                                *max = get_for_level(levels, level);
-                            }
-                            _ => {}
+                    match (&def.kind, &mut field.value) {
+                        (FieldKind::Die { levels }, FeatureValue::Die(d)) => {
+                            *d = get_for_level(levels, level);
                         }
+                        (FieldKind::Choice { levels, .. }, FeatureValue::Choice { options }) => {
+                            let new_len = get_for_level(levels, level) as usize;
+                            if options.len() < new_len {
+                                options.resize(new_len, Default::default());
+                            }
+                        }
+                        (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
+                            *b = get_for_level(levels, level);
+                        }
+                        (FieldKind::Points { levels }, FeatureValue::Points { max, .. }) => {
+                            *max = get_for_level(levels, level);
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -495,6 +476,8 @@ pub struct SpellDefinition {
 pub struct SpellsDefinition {
     pub casting_ability: Ability,
     #[serde(default)]
+    pub caster_coef: u8,
+    #[serde(default)]
     pub list: SpellList,
     #[serde(default)]
     pub levels: Vec<SpellLevelRules>,
@@ -519,8 +502,6 @@ pub struct SpellLevelRules {
     pub cantrips: Option<u32>,
     #[serde(default)]
     pub spells: Option<u32>,
-    #[serde(default)]
-    pub slots: Option<Vec<u32>>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -562,6 +543,22 @@ impl ClassDefinition {
         };
 
         let subclass = class_level.subclass.clone();
+
+        // Set caster_coef from the class's spellcasting feature (if any)
+        let caster_coef = self
+            .features(subclass.as_deref())
+            .filter_map(|f| f.spells.as_ref())
+            .map(|s| s.caster_coef)
+            .max()
+            .unwrap_or(0);
+        if let Some(cl) = character
+            .identity
+            .classes
+            .iter_mut()
+            .find(|c| c.class == self.name)
+        {
+            cl.caster_coef = caster_coef;
+        }
 
         for feat in self.features(subclass.as_deref()) {
             if rules.features.contains(&feat.name)

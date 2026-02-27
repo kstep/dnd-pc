@@ -160,6 +160,8 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
                 feat.apply(total_level, c);
             }
         }
+
+        c.update_spell_slots();
     });
 }
 
