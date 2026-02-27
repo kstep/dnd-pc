@@ -188,6 +188,8 @@ pub struct CharacterIdentity {
     pub alignment: Alignment,
     #[serde(default)]
     pub experience_points: u32,
+    #[serde(default)]
+    pub race_applied: bool,
 }
 
 impl Default for CharacterIdentity {
@@ -199,6 +201,7 @@ impl Default for CharacterIdentity {
             background: String::new(),
             alignment: Alignment::TrueNeutral,
             experience_points: 0,
+            race_applied: false,
         }
     }
 }

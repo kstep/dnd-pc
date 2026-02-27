@@ -1,0 +1,34 @@
+{
+  "name": "Tiefling",
+  "description": "Tieflings are derived from human bloodlines, and in the broadest possible sense, they still look human. However, their infernal heritage has left a clear imprint on their appearance.",
+  "speed": 30,
+  "ability_modifiers": [
+    { "ability": 5, "modifier": 2 },
+    { "ability": 3, "modifier": 1 }
+  ],
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
+      "name": "Hellish Resistance",
+      "description": "You have resistance to fire damage."
+    }
+  ],
+  "features": [
+    {
+      "name": "Infernal Legacy",
+      "description": "You know the Thaumaturgy cantrip. At 3rd level you can cast Hellish Rebuke as a 2nd-level spell once per long rest. At 5th level you can cast Darkness once per long rest. Charisma is your spellcasting ability for these spells.",
+      "spells": [
+        {
+          "name": "Thaumaturgy",
+          "level": 0,
+          "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles.",
+          "sticky": true
+        }
+      ],
+      "fields": null
+    }
+  ]
+}

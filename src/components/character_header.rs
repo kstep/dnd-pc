@@ -9,8 +9,8 @@ use crate::{
     BASE_URL,
     components::datalist_input::DatalistInput,
     model::{
-        Ability, Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        ClassLevel, CombatStatsStoreFields, Spell, SpellcastingData, Translatable,
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
+        Translatable,
     },
     rules::RulesRegistry,
     share,
@@ -136,126 +136,19 @@ fn import_character(store: Store<Character>) {
 }
 
 fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
-    let classes = store.identity().classes();
-    let classes_ref = classes.read();
-    let Some(class_level) = classes_ref.get(class_index) else {
-        log::error!("Invalid class index: {class_index}");
+    let class_name = {
+        let classes = store.identity().classes().read();
+        let Some(cl) = classes.get(class_index) else {
+            return;
+        };
+        cl.class.clone()
+    };
+
+    let Some(def) = registry.get_class(&class_name) else {
         return;
     };
 
-    let def = match registry.get_class(&class_level.class) {
-        Some(d) => d,
-        None => return,
-    };
-
-    let level_idx = (level as usize).saturating_sub(1);
-    let rules = match def.levels.get(level_idx) {
-        Some(r) => r,
-        None => return,
-    };
-
-    // Apply saving throws and proficiencies at level 1
-    if level == 1 {
-        store.saving_throws().update(|st| {
-            for &ability in &def.saving_throws {
-                st.insert(ability);
-            }
-        });
-        store.proficiencies().update(|profs| {
-            for &prof in &def.proficiencies {
-                profs.insert(prof);
-            }
-        });
-
-        if let Some(ability) = def.casting_ability
-            && store.spellcasting().read().is_none()
-        {
-            store.spellcasting().set(Some(SpellcastingData {
-                casting_ability: ability,
-                ..Default::default()
-            }));
-        }
-    }
-
-    store.update(|c| {
-        for feat in def.features(class_level.subclass.as_deref()) {
-            if rules.features.contains(&feat.name) || c.features.iter().any(|f| f.name == feat.name)
-            {
-                feat.apply(level, c);
-            }
-        }
-    });
-
-    // Update spell slots and sorcery points
-    {
-        let spellcasting = store.spellcasting();
-        let mut guard = spellcasting.write();
-        if let Some(ref mut sc) = *guard {
-            if let Some(ref slots) = rules.spell_slots {
-                sc.spell_slots.resize_with(slots.len(), Default::default);
-                for (j, &count) in slots.iter().enumerate() {
-                    sc.spell_slots[j].total = count;
-                }
-                while sc
-                    .spell_slots
-                    .last()
-                    .is_some_and(|s| s.total == 0 && s.used == 0)
-                {
-                    sc.spell_slots.pop();
-                }
-            }
-
-            // Ensure enough cantrip lines
-            if let Some(n) = rules.cantrips_known {
-                let current = sc.spells.iter().filter(|s| s.level == 0).count();
-                for _ in current..(n as usize) {
-                    sc.spells.push(Spell {
-                        level: 0,
-                        ..Default::default()
-                    });
-                }
-            }
-
-            // Ensure enough leveled spell lines
-            if let Some(n) = rules.spells_known {
-                let current = sc.spells.iter().filter(|s| s.level > 0).count();
-                let max_spell_level = rules
-                    .spell_slots
-                    .as_ref()
-                    .and_then(|slots| {
-                        slots
-                            .iter()
-                            .enumerate()
-                            .rev()
-                            .find(|(_, count)| **count > 0)
-                            .map(|(i, _)| (i + 1) as u32)
-                    })
-                    .unwrap_or(1);
-                for _ in current..(n as usize) {
-                    sc.spells.push(Spell {
-                        level: max_spell_level,
-                        ..Default::default()
-                    });
-                }
-            }
-        }
-    }
-
-    // Apply hit dice to max HP
-    let con_mod = store.get().ability_modifier(Ability::Constitution);
-    let hp_gain = if level == 1 {
-        def.hit_die as i32 + con_mod
-    } else {
-        (def.hit_die as i32) / 2 + 1 + con_mod
-    };
-    let combat = store.combat();
-    combat.hp_max().update(|hp| *hp += hp_gain);
-    combat.hp_current().update(|hp| *hp += hp_gain);
-
-    // Auto-set hit die and mark level as applied
-    let mut cl = classes.write();
-    cl[class_index].hit_die_sides = def.hit_die;
-    cl[class_index].applied_levels.push(level);
+    store.update(|c| def.apply_level(level, c));
 }
 
 #[component]
@@ -317,15 +210,64 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     />
                 </div>
-                <div class="header-field">
+                <div class="header-field race-field">
                     <label>{move_tr!("race")}</label>
-                    <input
-                        type="text"
-                        prop:value=move || store.identity().race().get()
-                        on:input=move |e| {
-                            store.identity().race().set(event_target_value(&e));
+                    {move || {
+                        let race_name = store.identity().race().get();
+                        let race_applied = store.identity().race_applied().get();
+
+                        let race_options: Vec<(String, String)> = registry.with_race_entries(|entries| {
+                            entries.iter().map(|entry| {
+                                (entry.name.clone(), entry.description.clone())
+                            }).collect()
+                        });
+
+                        if !race_name.is_empty() {
+                            registry.fetch_race(&race_name);
                         }
-                    />
+
+                        let race_def = registry.get_race(&race_name);
+                        let show_apply = race_def.is_some() && !race_applied;
+
+                        view! {
+                            <div class="race-input-row">
+                                <DatalistInput
+                                    value=race_name
+                                    placeholder=tr!("race")
+                                    options=race_options
+                                    on_input=move |name: String| {
+                                        let old = store.identity().race().get_untracked();
+                                        store.identity().race().set(name.clone());
+                                        if name != old {
+                                            store.identity().race_applied().set(false);
+                                        }
+                                        if registry.with_race_entries(|entries| entries.iter().any(|e| e.name == name)) {
+                                            registry.fetch_race(&name);
+                                        }
+                                    }
+                                />
+                                {if show_apply {
+                                    let title = tr!("btn-apply-race");
+                                    Some(view! {
+                                        <button
+                                            class="btn-apply-level"
+                                            title=title
+                                            on:click=move |_| {
+                                                let race_name = store.identity().race().get_untracked();
+                                                if let Some(def) = registry.get_race(&race_name) {
+                                                    store.update(|c| def.apply(c));
+                                                }
+                                            }
+                                        >
+                                            "⬆"
+                                        </button>
+                                    })
+                                } else {
+                                    None
+                                }}
+                            </div>
+                        }
+                    }}
                 </div>
                 <div class="header-field">
                     <label>{move_tr!("background")}</label>

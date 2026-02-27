@@ -20,6 +20,7 @@ class = Class
 subclass = Subclass
 btn-add-class = + Add Class
 btn-apply-level = Apply Lvl { $level }
+btn-apply-race = Apply race traits
 back-to-characters = < Back to Characters
 export-json = Export
 import-json = Import
@@ -65,16 +66,13 @@ short-rest = Short Rest
 long-rest = Long Rest
 
 ## Spellcasting panel
-enable-spellcasting = Enable Spellcasting
 casting-ability = Casting Ability
 spell-save-dc = Spell Save DC
 spell-attack = Spell Attack
 spell-slots = Spell Slots
 spells = Spells
 spell-name = Spell name
-enable-metamagic = Enable Metamagic
 sorcery-points = Sorcery Points
-metamagic = Metamagic
 
 ## Equipment panel
 weapons = Weapons
@@ -109,8 +107,8 @@ used = Used
 total = Total
 max = Max
 cost = Cost
-btn-add-metamagic = + Add Metamagic
 btn-add-spell = + Add Spell
+choose-option = Choose option
 
 ## Abilities
 ability-strength = Strength

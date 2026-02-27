@@ -1,0 +1,52 @@
+{
+  "name": "High Elf",
+  "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
+  "speed": 30,
+  "ability_modifiers": [
+    { "ability": 1, "modifier": 2 },
+    { "ability": 3, "modifier": 1 }
+  ],
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
+    },
+    {
+      "name": "Trance",
+      "description": "Elves don't need to sleep. Instead, they meditate deeply for 4 hours a day."
+    },
+    {
+      "name": "Keen Senses",
+      "description": "You have proficiency in the Perception skill."
+    },
+    {
+      "name": "Extra Language",
+      "description": "You can speak, read, and write one extra language of your choice."
+    }
+  ],
+  "features": [
+    {
+      "name": "Elf Weapon Training",
+      "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
+      "spells": null,
+      "fields": null
+    },
+    {
+      "name": "Elven Lineage",
+      "description": "You know the Prestidigitation cantrip. Whenever you finish a long rest, you can replace it with a different cantrip from the wizard spell list. Intelligence is your spellcasting ability. At 3rd level you can cast Detect Magic once per long rest. At 5th level you can cast Misty Step once per long rest.",
+      "spells": [
+        {
+          "name": "Prestidigitation",
+          "level": 0,
+          "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several minor magical effects: a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
+          "sticky": true
+        }
+      ],
+      "fields": null
+    }
+  ]
+}

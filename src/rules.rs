@@ -3,9 +3,79 @@ use std::collections::{BTreeMap, HashMap, btree_map::Entry};
 use leptos::prelude::*;
 use serde::Deserialize;
 
+/// Deserialize a `BTreeMap<u32, V>` accepting both numeric keys (binary
+/// formats) and stringified numbers (JSON).
+mod u32_key_map {
+    use std::collections::BTreeMap;
+
+    use serde::{Deserialize, Deserializer, de};
+
+    pub fn deserialize<'de, D, V>(deserializer: D) -> Result<BTreeMap<u32, V>, D::Error>
+    where
+        D: Deserializer<'de>,
+        V: Deserialize<'de>,
+    {
+        struct Visitor<V>(std::marker::PhantomData<V>);
+
+        impl<'de, V: Deserialize<'de>> de::Visitor<'de> for Visitor<V> {
+            type Value = BTreeMap<u32, V>;
+
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                f.write_str("a map with u32 keys (numeric or stringified)")
+            }
+
+            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+            where
+                A: de::MapAccess<'de>,
+            {
+                let mut result = BTreeMap::new();
+                while let Some((key, value)) = map.next_entry::<FlexU32, V>()? {
+                    result.insert(key.0, value);
+                }
+                Ok(result)
+            }
+        }
+
+        deserializer.deserialize_map(Visitor(std::marker::PhantomData))
+    }
+
+    struct FlexU32(u32);
+
+    impl<'de> Deserialize<'de> for FlexU32 {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            struct V;
+
+            impl<'de> de::Visitor<'de> for V {
+                type Value = FlexU32;
+
+                fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                    f.write_str("u32 or stringified u32")
+                }
+
+                fn visit_u32<E: de::Error>(self, v: u32) -> Result<FlexU32, E> {
+                    Ok(FlexU32(v))
+                }
+
+                fn visit_u64<E: de::Error>(self, v: u64) -> Result<FlexU32, E> {
+                    Ok(FlexU32(v as u32))
+                }
+
+                fn visit_str<E: de::Error>(self, v: &str) -> Result<FlexU32, E> {
+                    v.parse().map(FlexU32).map_err(de::Error::custom)
+                }
+            }
+
+            d.deserialize_any(V)
+        }
+    }
+}
+
 use crate::{
     BASE_URL,
-    model::{Ability, Character, Feature, FeatureField, FeatureValue, Proficiency, Spell},
+    model::{
+        Ability, Character, ClassLevel, Feature, FeatureField, FeatureValue, Proficiency,
+        RacialTrait, Spell, SpellcastingData,
+    },
 };
 
 // --- JSON types ---
@@ -13,6 +83,8 @@ use crate::{
 #[derive(Debug, Clone, Deserialize)]
 struct Index {
     classes: Vec<ClassIndexEntry>,
+    #[serde(default)]
+    races: Vec<RaceIndexEntry>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -23,6 +95,68 @@ pub struct ClassIndexEntry {
     pub description: String,
     #[serde(default)]
     pub prerequisites: Vec<Ability>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RaceIndexEntry {
+    pub name: String,
+    pub url: String,
+    #[serde(default)]
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RaceTrait {
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct AbilityModifier {
+    pub ability: Ability,
+    pub modifier: i32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RaceDefinition {
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub speed: u32,
+    #[serde(default)]
+    pub ability_modifiers: Vec<AbilityModifier>,
+    #[serde(default)]
+    pub traits: Vec<RaceTrait>,
+    #[serde(default)]
+    pub features: Vec<ClassFeature>,
+}
+
+impl RaceDefinition {
+    pub fn apply(&self, character: &mut Character) {
+        if self.speed > 0 {
+            character.combat.speed = self.speed;
+        }
+
+        for am in &self.ability_modifiers {
+            let current = character.abilities.get(am.ability) as i32;
+            character
+                .abilities
+                .set(am.ability, (current + am.modifier).max(1) as u32);
+        }
+
+        for t in &self.traits {
+            character.racial_traits.push(RacialTrait {
+                name: t.name.clone(),
+                description: t.description.clone(),
+            });
+        }
+
+        for feat in &self.features {
+            feat.apply(1, character);
+        }
+
+        character.identity.race_applied = true;
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -66,7 +200,7 @@ pub struct SubclassDefinition {
     pub description: String,
     #[serde(default)]
     pub features: Vec<ClassFeature>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "u32_key_map::deserialize")]
     pub levels: BTreeMap<u32, SubclassLevelRules>,
 }
 
@@ -184,22 +318,23 @@ pub struct FieldDefinition {
 #[serde(tag = "kind")]
 pub enum FieldKind {
     Points {
-        #[serde(default)]
+        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, u32>,
     },
     Choice {
-        options: Vec<ChoiceOption>,
+        #[serde(default)]
+        options: ChoiceOptions,
         #[serde(default)]
         cost: Option<String>,
-        #[serde(default)]
+        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, u32>,
     },
     Die {
-        #[serde(default)]
+        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, String>,
     },
     Bonus {
-        #[serde(default)]
+        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, i32>,
     },
 }
@@ -224,6 +359,19 @@ impl FieldKind {
                 used: 0,
             },
         }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum ChoiceOptions {
+    List(Vec<ChoiceOption>),
+    Ref { from: String },
+}
+
+impl Default for ChoiceOptions {
+    fn default() -> Self {
+        Self::List(Vec::new())
     }
 }
 
@@ -260,7 +408,7 @@ pub struct ClassLevelRules {
 }
 
 impl ClassDefinition {
-    pub fn apply(&self, character: &mut Character) {
+    pub fn apply_level(&self, level: u32, character: &mut Character) {
         let Some(class_level) = character
             .identity
             .classes
@@ -270,14 +418,30 @@ impl ClassDefinition {
             return;
         };
 
-        let level = class_level.level;
-
         if class_level.applied_levels.contains(&level) {
             return;
         }
 
-        class_level.applied_levels.push(class_level.level);
+        class_level.applied_levels.push(level);
         class_level.hit_die_sides = self.hit_die;
+
+        // Apply saving throws and proficiencies at level 1
+        if level == 1 {
+            for &ability in &self.saving_throws {
+                character.saving_throws.insert(ability);
+            }
+            for &prof in &self.proficiencies {
+                character.proficiencies.insert(prof);
+            }
+            if let Some(ability) = self.casting_ability {
+                character
+                    .spellcasting
+                    .get_or_insert_with(|| SpellcastingData {
+                        casting_ability: ability,
+                        ..Default::default()
+                    });
+            }
+        }
 
         let Some(rules) = self.levels.get(level as usize - 1) else {
             return;
@@ -293,28 +457,28 @@ impl ClassDefinition {
             }
         }
 
-        let Some(spell_slots) = rules.spell_slots.as_ref() else {
-            return;
-        };
+        // Update spell slots
+        if let Some(ref spell_slots) = rules.spell_slots {
+            let spellcasting = character.spellcasting.get_or_insert_default();
 
-        let spellcasting = character.spellcasting.get_or_insert_default();
-
-        spellcasting
-            .spell_slots
-            .resize_with(spell_slots.len(), Default::default);
-        for (j, &count) in spell_slots.iter().enumerate() {
-            spellcasting.spell_slots[j].total = count;
-        }
-        while spellcasting
-            .spell_slots
-            .last()
-            .is_some_and(|s| s.total == 0 && s.used == 0)
-        {
-            spellcasting.spell_slots.pop();
+            spellcasting
+                .spell_slots
+                .resize_with(spell_slots.len(), Default::default);
+            for (j, &count) in spell_slots.iter().enumerate() {
+                spellcasting.spell_slots[j].total = count;
+            }
+            while spellcasting
+                .spell_slots
+                .last()
+                .is_some_and(|s| s.total == 0 && s.used == 0)
+            {
+                spellcasting.spell_slots.pop();
+            }
         }
 
         // Ensure enough cantrip lines
         if let Some(n) = rules.cantrips_known {
+            let spellcasting = character.spellcasting.get_or_insert_default();
             let current = spellcasting.cantrips().filter(|s| !s.sticky).count();
             for _ in current..(n as usize) {
                 spellcasting.spells.push(Spell {
@@ -326,6 +490,7 @@ impl ClassDefinition {
 
         // Ensure enough leveled spell lines
         if let Some(n) = rules.spells_known {
+            let spellcasting = character.spellcasting.get_or_insert_default();
             let current = spellcasting.spells().filter(|s| !s.sticky).count();
             let max_spell_level = rules
                 .spell_slots
@@ -366,6 +531,7 @@ impl ClassDefinition {
 pub struct RulesRegistry {
     class_index: LocalResource<Result<Index, String>>,
     class_cache: RwSignal<HashMap<String, ClassDefinition>>,
+    race_cache: RwSignal<HashMap<String, RaceDefinition>>,
 }
 
 async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
@@ -389,7 +555,7 @@ impl Default for RulesRegistry {
 
 impl RulesRegistry {
     pub fn new() -> Self {
-        let index_url = format!("{BASE_URL}/classes/index.json");
+        let index_url = format!("{BASE_URL}/index.json");
         let class_index = LocalResource::new(move || {
             let url = index_url.clone();
             async move { fetch_json::<Index>(&url).await }
@@ -398,6 +564,7 @@ impl RulesRegistry {
         Self {
             class_index,
             class_cache: RwSignal::new(HashMap::new()),
+            race_cache: RwSignal::new(HashMap::new()),
         }
     }
 
@@ -412,6 +579,43 @@ impl RulesRegistry {
 
     pub fn get_class(&self, name: &str) -> Option<ClassDefinition> {
         self.class_cache.read().get(name).cloned()
+    }
+
+    pub fn get_choice_options(
+        &self,
+        classes: &[ClassLevel],
+        feature_name: &str,
+        field_name: &str,
+    ) -> Vec<ChoiceOption> {
+        let cache = self.class_cache.read();
+        for cl in classes {
+            if let Some(def) = cache.get(&cl.class) {
+                for feat in def.features(cl.subclass.as_deref()) {
+                    if feat.name != feature_name {
+                        continue;
+                    }
+                    if let Some(fields) = &feat.fields {
+                        return Self::resolve_choice_options(fields, field_name);
+                    }
+                }
+            }
+        }
+        Vec::new()
+    }
+
+    fn resolve_choice_options(fields: &[FieldDefinition], field_name: &str) -> Vec<ChoiceOption> {
+        for fd in fields {
+            if fd.name != field_name {
+                continue;
+            }
+            if let FieldKind::Choice { options, .. } = &fd.kind {
+                return match options {
+                    ChoiceOptions::List(list) => list.clone(),
+                    ChoiceOptions::Ref { from } => Self::resolve_choice_options(fields, from),
+                };
+            }
+        }
+        Vec::new()
     }
 
     pub fn fetch_class(&self, name: &str) {
@@ -442,6 +646,52 @@ impl RulesRegistry {
                 }
                 Err(error) => {
                     log::error!("Failed to fetch class definition: {error}");
+                }
+            }
+        });
+    }
+
+    pub fn with_race_entries<R>(&self, f: impl FnOnce(&[RaceIndexEntry]) -> R) -> R {
+        let guard = self.class_index.read();
+        let entries = guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| idx.races.as_slice());
+        f(entries.unwrap_or(&[]))
+    }
+
+    pub fn get_race(&self, name: &str) -> Option<RaceDefinition> {
+        self.race_cache.read().get(name).cloned()
+    }
+
+    pub fn fetch_race(&self, name: &str) {
+        if self.race_cache.read().contains_key(name) {
+            return;
+        }
+
+        let url = {
+            let guard = self.class_index.read();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index.races.iter().find(|e| e.name == name) {
+                Some(entry) => format!("{BASE_URL}/{}", entry.url),
+                None => return,
+            }
+        };
+
+        let cache = self.race_cache;
+        let name = name.to_string();
+        leptos::task::spawn_local(async move {
+            match fetch_json::<RaceDefinition>(&url).await {
+                Ok(def) => {
+                    cache.update(|m| {
+                        m.insert(name, def);
+                    });
+                }
+                Err(error) => {
+                    log::error!("Failed to fetch race definition: {error}");
                 }
             }
         });

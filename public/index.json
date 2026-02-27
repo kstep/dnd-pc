@@ -104,5 +104,77 @@
         3
       ]
     }
+  ],
+  "races": [
+    {
+      "name": "Human",
+      "url": "races/human.json",
+      "description": "Versatile and ambitious, humans are the most adaptable of all races."
+    },
+    {
+      "name": "High Elf",
+      "url": "races/high-elf.json",
+      "description": "High elves are graceful and intelligent, with a natural affinity for magic."
+    },
+    {
+      "name": "Wood Elf",
+      "url": "races/wood-elf.json",
+      "description": "Wood elves are fleet of foot and stealthy, at home in the wilderness."
+    },
+    {
+      "name": "Hill Dwarf",
+      "url": "races/hill-dwarf.json",
+      "description": "Hill dwarves are tough and resilient, with keen senses and deep intuition."
+    },
+    {
+      "name": "Mountain Dwarf",
+      "url": "races/mountain-dwarf.json",
+      "description": "Mountain dwarves are strong and hardy, accustomed to life in rugged terrain."
+    },
+    {
+      "name": "Lightfoot Halfling",
+      "url": "races/lightfoot-halfling.json",
+      "description": "Lightfoot halflings are naturally stealthy and social, adept at avoiding notice."
+    },
+    {
+      "name": "Stout Halfling",
+      "url": "races/stout-halfling.json",
+      "description": "Stout halflings are hardier than most, with a resistance to poison."
+    },
+    {
+      "name": "Dragonborn",
+      "url": "races/dragonborn.json",
+      "description": "Proud dragon-kin with a breath weapon and draconic resistance."
+    },
+    {
+      "name": "Half-Elf",
+      "url": "races/half-elf.json",
+      "description": "Combining the best of elves and humans, half-elves are charismatic and versatile."
+    },
+    {
+      "name": "Half-Orc",
+      "url": "races/half-orc.json",
+      "description": "Fierce and enduring, half-orcs combine human versatility with orcish strength."
+    },
+    {
+      "name": "Tiefling",
+      "url": "races/tiefling.json",
+      "description": "Descended from fiends, tieflings possess innate magical abilities and dark resilience."
+    },
+    {
+      "name": "Rock Gnome",
+      "url": "races/rock-gnome.json",
+      "description": "Inventive and curious, rock gnomes are natural tinkerers with a knack for illusions."
+    },
+    {
+      "name": "Forest Gnome",
+      "url": "races/forest-gnome.json",
+      "description": "Shy and secretive, forest gnomes have a natural talent for illusion and stealth."
+    },
+    {
+      "name": "Drow",
+      "url": "races/drow.json",
+      "description": "Dark elves with innate spellcasting, hailing from the Underdark."
+    }
   ]
 }

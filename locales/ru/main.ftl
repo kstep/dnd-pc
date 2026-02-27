@@ -20,6 +20,7 @@ class = Класс
 subclass = Подкласс
 btn-add-class = + Добавить класс
 btn-apply-level = Ур. { $level }
+btn-apply-race = Применить расовые черты
 back-to-characters = < Назад к персонажам
 export-json = Экспорт
 import-json = Импорт
@@ -65,16 +66,13 @@ short-rest = Короткий отдых
 long-rest = Длинный отдых
 
 ## Панель заклинаний
-enable-spellcasting = Заклинания
 casting-ability = Заклинательная хар-ка
 spell-save-dc = Сложность спасения
 spell-attack = Атака заклинанием
 spell-slots = Ячейки заклинаний
 spells = Заклинания
 spell-name = Название заклинания
-enable-metamagic = Метамагия
 sorcery-points = Очки чародейства
-metamagic = Метамагия
 
 ## Панель снаряжения
 weapons = Оружие
@@ -109,8 +107,8 @@ used = Исп.
 total = Всего
 max = Макс.
 cost = Цена
-btn-add-metamagic = + Добавить метамагию
 btn-add-spell = + Добавить заклинание
+choose-option = Выбрать
 
 ## Характеристики
 ability-strength = Сила
