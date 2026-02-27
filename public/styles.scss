@@ -244,6 +244,17 @@ input, select {
       color: var(--text-primary);
       font-size: var(--font-size-1);
     }
+
+    .race-input-row {
+      display: flex;
+      gap: var(--size-1);
+      align-items: center;
+
+      input {
+        flex: 1;
+        min-width: 0;
+      }
+    }
   }
 
   .name-field {
