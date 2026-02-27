@@ -73,7 +73,7 @@ mod u32_key_map {
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, CharacterFeature, ClassLevel, FeatureField, FeatureValue, Proficiency,
+        Ability, Character, ClassLevel, Feature, FeatureField, FeatureValue, Proficiency,
         ProficiencyLevel, RacialTrait, Skill, Spell, SpellcastingData,
     },
 };
@@ -130,7 +130,7 @@ pub struct RaceDefinition {
     #[serde(default)]
     pub traits: Vec<RaceTrait>,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Vec<FeatureDefinition>,
 }
 
 impl RaceDefinition {
@@ -179,7 +179,7 @@ pub struct BackgroundDefinition {
     #[serde(default)]
     pub proficiencies: Vec<Skill>,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Vec<FeatureDefinition>,
 }
 
 impl BackgroundDefinition {
@@ -218,7 +218,7 @@ pub struct ClassDefinition {
     #[serde(default)]
     pub saving_throws: Vec<Ability>,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Vec<FeatureDefinition>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
     #[serde(default)]
@@ -226,7 +226,7 @@ pub struct ClassDefinition {
 }
 
 impl ClassDefinition {
-    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &Feature> {
+    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &FeatureDefinition> {
         let sc_features = subclass
             .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
             .map(|sc| sc.features.as_slice())
@@ -246,7 +246,7 @@ pub struct SubclassDefinition {
     pub name: String,
     pub description: String,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Vec<FeatureDefinition>,
     #[serde(default, deserialize_with = "u32_key_map::deserialize")]
     pub levels: BTreeMap<u32, SubclassLevelRules>,
 }
@@ -265,17 +265,17 @@ pub struct SubclassLevelRules {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct Feature {
+pub struct FeatureDefinition {
     pub name: String,
     pub description: String,
     pub spells: Option<Vec<SpellDefinition>>,
     pub fields: Option<Vec<FieldDefinition>>,
 }
 
-impl Feature {
+impl FeatureDefinition {
     pub fn apply(&self, level: u32, character: &mut Character) {
         if !character.features.iter().any(|f| f.name == self.name) {
-            character.features.push(CharacterFeature {
+            character.features.push(Feature {
                 name: self.name.clone(),
                 description: self.description.clone(),
             });

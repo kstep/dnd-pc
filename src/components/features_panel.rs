@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
     model::{
-        Character, CharacterFeature, CharacterIdentityStoreFields, CharacterStoreFields,
+        Character, Feature, CharacterIdentityStoreFields, CharacterStoreFields,
         RacialTrait,
     },
     rules::RulesRegistry,
@@ -24,7 +24,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     let rt_expanded = RwSignal::new(HashSet::<usize>::new());
 
     let add_feature = move |_| {
-        features.write().push(CharacterFeature::default());
+        features.write().push(Feature::default());
     };
 
     view! {

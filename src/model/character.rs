@@ -39,7 +39,7 @@ pub struct Character {
     #[serde(default)]
     pub personality: Personality,
     #[serde(default)]
-    pub features: Vec<CharacterFeature>,
+    pub features: Vec<Feature>,
     #[serde(default)]
     pub equipment: Equipment,
     #[serde(default)]
@@ -341,7 +341,7 @@ pub struct Personality {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct CharacterFeature {
+pub struct Feature {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
