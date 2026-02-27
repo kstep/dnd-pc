@@ -531,7 +531,9 @@ impl std::fmt::Display for Currency {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellcastingData {
     pub casting_ability: Ability,
-    /// Legacy field kept for deserialization migration; not used at runtime.
+    /// Deprecated: spell slots now live on Character. Kept only for
+    /// deserialization of old data; `Character::migrate()` moves them to
+    /// the top-level pool then clears this. Always empty at runtime.
     #[serde(default, skip_serializing)]
     pub spell_slots: Vec<SpellSlotLevel>,
     #[serde(default)]

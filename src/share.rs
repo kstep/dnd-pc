@@ -31,6 +31,10 @@ fn strip_for_sharing(character: &Character) -> Character {
         }
     }
 
+    // Fields use #[serde(flatten)] which is incompatible with postcard;
+    // they can be re-applied from level-up rules after import.
+    character.fields.clear();
+
     character
 }
 
