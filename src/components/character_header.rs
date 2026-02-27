@@ -201,10 +201,13 @@ pub fn CharacterHeader() -> impl IntoView {
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
             share_copied.set(true);
         });
-    };
-
-    let on_share_blur = move |_| {
-        share_copied.set(false);
+        let cb = Closure::once_into_js(move || share_copied.set(false));
+        let _ = web_sys::window()
+            .unwrap()
+            .set_timeout_with_callback_and_timeout_and_arguments_0(
+                cb.as_ref().unchecked_ref(),
+                2_000,
+            );
     };
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -539,7 +542,7 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
-                <button class="btn-add" on:click=on_share on:blur=on_share_blur>
+                <button class="btn-add" on:click=on_share>
                     {move || if share_copied.get() { tr!("share-copied") } else { tr!("share-link") }}
                 </button>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
