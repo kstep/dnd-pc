@@ -8,6 +8,7 @@ use leptos_router::{
     params::Params,
 };
 use strum::IntoEnumIterator;
+use uuid::Uuid;
 
 use crate::{
     BASE_URL,
@@ -489,7 +490,7 @@ fn do_import(character: &Character) -> impl IntoView {
     if let Some(existing) = storage::load_character(&character.id) {
         restore_stripped_fields(&mut character, &existing);
     }
-    storage::save_character(&character);
+    storage::save_character(&mut character);
     let id = character.id;
 
     let navigate = use_navigate();
@@ -510,9 +511,20 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
     let import_anyway = move |_| {
         let mut character = incoming.get_value();
         restore_stripped_fields(&mut character, &existing.get_value());
-        storage::save_character(&character);
+        storage::save_character(&mut character);
         let navigate = use_navigate();
         navigate(&format!("/c/{id}"), Default::default());
+    };
+
+    let import_as_copy = move |_| {
+        let mut character = incoming.get_value();
+        restore_stripped_fields(&mut character, &existing.get_value());
+        character.id = Uuid::new_v4();
+        character.identity.name = format!("{} (Copy)", character.identity.name);
+        storage::save_character(&mut character);
+        let new_id = character.id;
+        let navigate = use_navigate();
+        navigate(&format!("/c/{new_id}"), Default::default());
     };
 
     let name = existing.get_value().identity.name.clone();
@@ -577,6 +589,7 @@ fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
 
             <div class="import-conflict-actions">
                 <button class="btn-add" on:click=import_anyway>{move_tr!("import-anyway")}</button>
+                <button class="btn-add" on:click=import_as_copy>{move_tr!("import-as-copy")}</button>
                 <A href=format!("{BASE_URL}/") attr:class="btn-cancel">{move_tr!("import-cancel")}</A>
             </div>
         </div>

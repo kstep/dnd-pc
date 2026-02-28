@@ -1,8 +1,9 @@
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
-use leptos_router::components::A;
+use leptos_router::{components::A, hooks::use_navigate};
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
+use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
@@ -13,7 +14,7 @@ use crate::{
         Translatable,
     },
     rules::RulesRegistry,
-    share,
+    share, storage,
 };
 
 fn export_character(character: &Character) {
@@ -215,6 +216,16 @@ pub fn CharacterHeader() -> impl IntoView {
                 cb.as_ref().unchecked_ref(),
                 2_000,
             );
+    };
+
+    let on_copy = move |_| {
+        let mut character = store.get();
+        character.id = Uuid::new_v4();
+        character.identity.name = format!("{} (Copy)", character.identity.name);
+        storage::save_character(&mut character);
+        let id = character.id;
+        let navigate = use_navigate();
+        navigate(&format!("/c/{id}"), Default::default());
     };
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -550,6 +561,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 </button>
                 <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
                 <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
+                <button class="btn-add" on:click=on_copy>{move_tr!("copy-character")}</button>
                 <button
                     class="btn-add btn-danger"
                     on:click=move |_| {
