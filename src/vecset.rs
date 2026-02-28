@@ -111,3 +111,85 @@ impl<'de, T: Deserialize<'de> + PartialEq> Deserialize<'de> for VecSet<T> {
         Ok(Self::from(vec))
     }
 }
+
+#[cfg(test)]
+pub mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn insert_returns_true_on_new() {
+        let mut set = VecSet::<i32>::new();
+        assert!(set.insert(1));
+        assert!(set.insert(2));
+        assert_eq!(&*set, &[1, 2]);
+    }
+
+    #[wasm_bindgen_test]
+    fn insert_returns_false_on_duplicate() {
+        let mut set = VecSet::<i32>::new();
+        assert!(set.insert(1));
+        assert!(!set.insert(1));
+        assert_eq!(set.len(), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn remove_returns_true_when_found() {
+        let mut set = VecSet::<i32>::new();
+        set.insert(1);
+        set.insert(2);
+        assert!(set.remove(&1));
+        assert_eq!(&*set, &[2]);
+    }
+
+    #[wasm_bindgen_test]
+    fn remove_returns_false_when_missing() {
+        let mut set = VecSet::<i32>::new();
+        set.insert(1);
+        assert!(!set.remove(&42));
+    }
+
+    #[wasm_bindgen_test]
+    fn push_allows_duplicates() {
+        let mut set = VecSet::<i32>::new();
+        set.push(1);
+        set.push(1);
+        assert_eq!(set.len(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn from_vec_deduplicates() {
+        let set = VecSet::from(vec![1, 2, 2, 3, 1]);
+        assert_eq!(&*set, &[1, 2, 3]);
+    }
+
+    #[wasm_bindgen_test]
+    fn extend_preserves_uniqueness() {
+        let mut set = VecSet::<i32>::new();
+        set.insert(1);
+        set.extend(vec![1, 2, 3]);
+        assert_eq!(&*set, &[1, 2, 3]);
+    }
+
+    #[wasm_bindgen_test]
+    fn from_iterator_preserves_uniqueness() {
+        let set: VecSet<i32> = vec![3, 1, 2, 1, 3].into_iter().collect();
+        assert_eq!(&*set, &[3, 1, 2]);
+    }
+
+    #[wasm_bindgen_test]
+    fn serde_roundtrip() {
+        let set = VecSet::from(vec![1, 2, 3]);
+        let json = serde_json::to_string(&set).unwrap();
+        let deserialized: VecSet<i32> = serde_json::from_str(&json).unwrap();
+        assert_eq!(&*set, &*deserialized);
+    }
+
+    #[wasm_bindgen_test]
+    fn deserialize_deduplicates() {
+        let json = "[1, 2, 2, 3, 1]";
+        let set: VecSet<i32> = serde_json::from_str(json).unwrap();
+        assert_eq!(&*set, &[1, 2, 3]);
+    }
+}

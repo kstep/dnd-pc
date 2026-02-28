@@ -9,6 +9,7 @@ trunk serve --port 3000 --open   # Dev server with hot reload
 trunk build --release             # Production build
 cargo clippy                      # Lint
 cargo +nightly fmt                # Format (requires nightly — uses edition 2024 rustfmt features)
+WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown  # Run tests in headless Chrome
 ```
 
 Default toolchain is stable (`rust-toolchain.toml`). Nightly is only needed for `cargo +nightly fmt`.

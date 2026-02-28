@@ -624,3 +624,324 @@ pub struct RacialTrait {
     #[serde(default)]
     pub description: String,
 }
+
+#[cfg(test)]
+pub mod tests {
+    use std::collections::{BTreeMap, HashMap, HashSet};
+
+    use wasm_bindgen_test::*;
+
+    use super::*;
+    use crate::vecset::VecSet;
+
+    /// Build a minimal character for testing (avoids Default which calls
+    /// js_sys::Date)
+    fn test_character() -> Character {
+        Character {
+            id: Uuid::nil(),
+            identity: CharacterIdentity {
+                name: "Test".to_string(),
+                classes: vec![ClassLevel {
+                    class: "Fighter".to_string(),
+                    subclass: None,
+                    level: 5,
+                    hit_die_sides: 10,
+                    hit_dice_used: 0,
+                    applied_levels: VecSet::new(),
+                    caster_coef: 0,
+                }],
+                race: "Human".to_string(),
+                background: "Soldier".to_string(),
+                alignment: Alignment::TrueNeutral,
+                experience_points: 0,
+                race_applied: false,
+                background_applied: false,
+            },
+            abilities: AbilityScores {
+                strength: 16,
+                dexterity: 14,
+                constitution: 12,
+                intelligence: 10,
+                wisdom: 8,
+                charisma: 13,
+            },
+            saving_throws: HashSet::from([Ability::Strength, Ability::Constitution]),
+            skills: HashMap::from([
+                (Skill::Athletics, ProficiencyLevel::Proficient),
+                (Skill::Perception, ProficiencyLevel::Expertise),
+            ]),
+            combat: CombatStats {
+                armor_class: 18,
+                speed: 30,
+                hp_max: 44,
+                hp_current: 44,
+                hp_temp: 0,
+                death_save_successes: 0,
+                death_save_failures: 0,
+                initiative_misc_bonus: 0,
+            },
+            personality: Personality::default(),
+            features: Vec::new(),
+            equipment: Equipment::default(),
+            feature_data: BTreeMap::new(),
+            proficiencies: HashSet::new(),
+            languages: VecSet::new(),
+            racial_traits: Vec::new(),
+            spell_slots: Vec::new(),
+            notes: String::new(),
+            updated_at: 0,
+        }
+    }
+
+    // --- level() ---
+
+    #[wasm_bindgen_test]
+    fn level_single_class() {
+        let ch = test_character();
+        assert_eq!(ch.level(), 5);
+    }
+
+    #[wasm_bindgen_test]
+    fn level_multiclass() {
+        let mut ch = test_character();
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        assert_eq!(ch.level(), 8);
+    }
+
+    #[wasm_bindgen_test]
+    fn level_no_classes_returns_1() {
+        let mut ch = test_character();
+        ch.identity.classes.clear();
+        assert_eq!(ch.level(), 1);
+    }
+
+    // --- proficiency_bonus() ---
+
+    #[wasm_bindgen_test]
+    fn proficiency_bonus_levels() {
+        let mut ch = test_character();
+        let expected = [
+            (1, 2),
+            (4, 2),
+            (5, 3),
+            (8, 3),
+            (9, 4),
+            (12, 4),
+            (13, 5),
+            (16, 5),
+            (17, 6),
+            (20, 6),
+        ];
+        for (level, bonus) in expected {
+            ch.identity.classes[0].level = level;
+            assert_eq!(ch.proficiency_bonus(), bonus, "level {level}");
+        }
+    }
+
+    // --- ability_modifier() ---
+
+    #[wasm_bindgen_test]
+    fn ability_modifier_values() {
+        let ch = test_character();
+        // STR 16 -> +3, DEX 14 -> +2, CON 12 -> +1, INT 10 -> 0, WIS 8 -> -1, CHA 13 ->
+        // +1
+        assert_eq!(ch.ability_modifier(Ability::Strength), 3);
+        assert_eq!(ch.ability_modifier(Ability::Dexterity), 2);
+        assert_eq!(ch.ability_modifier(Ability::Constitution), 1);
+        assert_eq!(ch.ability_modifier(Ability::Intelligence), 0);
+        assert_eq!(ch.ability_modifier(Ability::Wisdom), -1);
+        assert_eq!(ch.ability_modifier(Ability::Charisma), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn ability_modifier_odd_scores() {
+        let mut ch = test_character();
+        // score 1 -> -5, score 9 -> -1, score 11 -> 0, score 20 -> +5
+        let cases = [(1, -5), (9, -1), (11, 0), (20, 5)];
+        for (score, expected_mod) in cases {
+            ch.abilities.strength = score;
+            assert_eq!(
+                ch.ability_modifier(Ability::Strength),
+                expected_mod,
+                "score {score}"
+            );
+        }
+    }
+
+    // --- skill_bonus() ---
+
+    #[wasm_bindgen_test]
+    fn skill_bonus_no_proficiency() {
+        let ch = test_character();
+        // Stealth: DEX mod (+2), no proficiency
+        assert_eq!(ch.skill_bonus(Skill::Stealth), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn skill_bonus_proficient() {
+        let ch = test_character();
+        // Athletics: STR mod (+3) + proficiency bonus (3) = 6
+        assert_eq!(ch.skill_bonus(Skill::Athletics), 6);
+    }
+
+    #[wasm_bindgen_test]
+    fn skill_bonus_expertise() {
+        let ch = test_character();
+        // Perception: WIS mod (-1) + 2 * proficiency bonus (3) = -1 + 6 = 5
+        assert_eq!(ch.skill_bonus(Skill::Perception), 5);
+    }
+
+    // --- saving_throw_bonus() ---
+
+    #[wasm_bindgen_test]
+    fn saving_throw_proficient() {
+        let ch = test_character();
+        // STR: mod (+3) + prof bonus (3) = 6
+        assert_eq!(ch.saving_throw_bonus(Ability::Strength), 6);
+    }
+
+    #[wasm_bindgen_test]
+    fn saving_throw_not_proficient() {
+        let ch = test_character();
+        // DEX: mod (+2) only
+        assert_eq!(ch.saving_throw_bonus(Ability::Dexterity), 2);
+    }
+
+    // --- initiative() ---
+
+    #[wasm_bindgen_test]
+    fn initiative_basic() {
+        let ch = test_character();
+        // DEX mod (+2) + misc (0)
+        assert_eq!(ch.initiative(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn initiative_with_misc_bonus() {
+        let mut ch = test_character();
+        ch.combat.initiative_misc_bonus = 3;
+        assert_eq!(ch.initiative(), 5);
+    }
+
+    // --- spell_save_dc() and spell_attack_bonus() ---
+
+    #[wasm_bindgen_test]
+    fn spell_save_dc() {
+        let ch = test_character();
+        // 8 + prof (3) + WIS mod (-1) = 10
+        assert_eq!(ch.spell_save_dc(Ability::Wisdom), 10);
+    }
+
+    #[wasm_bindgen_test]
+    fn spell_attack_bonus() {
+        let ch = test_character();
+        // prof (3) + CHA mod (+1) = 4
+        assert_eq!(ch.spell_attack_bonus(Ability::Charisma), 4);
+    }
+
+    // --- caster_level() ---
+
+    #[wasm_bindgen_test]
+    fn caster_level_no_caster() {
+        let ch = test_character();
+        assert_eq!(ch.caster_level(), 0);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_full_caster() {
+        let mut ch = test_character();
+        ch.identity.classes[0].caster_coef = 1;
+        assert_eq!(ch.caster_level(), 5);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_half_caster() {
+        let mut ch = test_character();
+        ch.identity.classes[0].caster_coef = 2;
+        // 5 / 2 = 2.5 -> floor = 2
+        assert_eq!(ch.caster_level(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_multiclass() {
+        let mut ch = test_character();
+        ch.identity.classes[0].caster_coef = 1; // full caster, level 5
+        ch.identity.classes.push(ClassLevel {
+            class: "Paladin".to_string(),
+            level: 4,
+            caster_coef: 2, // half caster
+            ..ClassLevel::default()
+        });
+        // 5/1 + 4/2 = 5 + 2 = 7
+        assert_eq!(ch.caster_level(), 7);
+    }
+
+    // --- update_spell_slots() ---
+
+    #[wasm_bindgen_test]
+    fn update_spell_slots_single_full_caster() {
+        let mut ch = test_character();
+        ch.identity.classes[0].caster_coef = 1; // full caster level 5
+        ch.update_spell_slots(None);
+        // Caster level 5: [4, 3, 2]
+        assert_eq!(ch.spell_slots.len(), 3);
+        assert_eq!(ch.spell_slots[0].total, 4);
+        assert_eq!(ch.spell_slots[1].total, 3);
+        assert_eq!(ch.spell_slots[2].total, 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn update_spell_slots_with_class_override() {
+        let mut ch = test_character();
+        ch.identity.classes[0].caster_coef = 1;
+        ch.update_spell_slots(Some(&[2, 1]));
+        assert_eq!(ch.spell_slots.len(), 2);
+        assert_eq!(ch.spell_slots[0].total, 2);
+        assert_eq!(ch.spell_slots[1].total, 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn update_spell_slots_no_caster() {
+        let mut ch = test_character();
+        ch.update_spell_slots(None);
+        assert!(ch.spell_slots.is_empty());
+    }
+
+    // --- class_summary() ---
+
+    #[wasm_bindgen_test]
+    fn class_summary_single() {
+        let ch = test_character();
+        assert_eq!(ch.class_summary(), "Fighter 5");
+    }
+
+    #[wasm_bindgen_test]
+    fn class_summary_with_subclass() {
+        let mut ch = test_character();
+        ch.identity.classes[0].subclass = Some("Champion".to_string());
+        assert_eq!(ch.class_summary(), "Fighter (Champion) 5");
+    }
+
+    #[wasm_bindgen_test]
+    fn class_summary_multiclass() {
+        let mut ch = test_character();
+        ch.identity.classes.push(ClassLevel {
+            class: "Rogue".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        assert_eq!(ch.class_summary(), "Fighter 5 / Rogue 3");
+    }
+
+    #[wasm_bindgen_test]
+    fn class_summary_skips_empty_class() {
+        let mut ch = test_character();
+        ch.identity.classes.push(ClassLevel::default());
+        // Default ClassLevel has empty class name, should be skipped
+        assert_eq!(ch.class_summary(), "Fighter 5");
+    }
+}

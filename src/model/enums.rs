@@ -345,3 +345,97 @@ impl Translatable for Proficiency {
         }
     }
 }
+
+#[cfg(test)]
+pub mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn proficiency_level_multiplier() {
+        assert_eq!(ProficiencyLevel::None.multiplier(), 0);
+        assert_eq!(ProficiencyLevel::Proficient.multiplier(), 1);
+        assert_eq!(ProficiencyLevel::Expertise.multiplier(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn proficiency_level_next_cycles() {
+        assert_eq!(ProficiencyLevel::None.next(), ProficiencyLevel::Proficient);
+        assert_eq!(
+            ProficiencyLevel::Proficient.next(),
+            ProficiencyLevel::Expertise
+        );
+        assert_eq!(ProficiencyLevel::Expertise.next(), ProficiencyLevel::None);
+    }
+
+    #[wasm_bindgen_test]
+    fn proficiency_level_symbol() {
+        assert_eq!(ProficiencyLevel::None.symbol(), "\u{25CB}");
+        assert_eq!(ProficiencyLevel::Proficient.symbol(), "\u{25CF}");
+        assert_eq!(ProficiencyLevel::Expertise.symbol(), "\u{25C9}");
+    }
+
+    #[wasm_bindgen_test]
+    fn skill_ability_mapping() {
+        assert_eq!(Skill::Athletics.ability(), Ability::Strength);
+
+        assert_eq!(Skill::Acrobatics.ability(), Ability::Dexterity);
+        assert_eq!(Skill::SleightOfHand.ability(), Ability::Dexterity);
+        assert_eq!(Skill::Stealth.ability(), Ability::Dexterity);
+
+        assert_eq!(Skill::Arcana.ability(), Ability::Intelligence);
+        assert_eq!(Skill::History.ability(), Ability::Intelligence);
+        assert_eq!(Skill::Investigation.ability(), Ability::Intelligence);
+        assert_eq!(Skill::Nature.ability(), Ability::Intelligence);
+        assert_eq!(Skill::Religion.ability(), Ability::Intelligence);
+
+        assert_eq!(Skill::AnimalHandling.ability(), Ability::Wisdom);
+        assert_eq!(Skill::Insight.ability(), Ability::Wisdom);
+        assert_eq!(Skill::Medicine.ability(), Ability::Wisdom);
+        assert_eq!(Skill::Perception.ability(), Ability::Wisdom);
+        assert_eq!(Skill::Survival.ability(), Ability::Wisdom);
+
+        assert_eq!(Skill::Deception.ability(), Ability::Charisma);
+        assert_eq!(Skill::Intimidation.ability(), Ability::Charisma);
+        assert_eq!(Skill::Performance.ability(), Ability::Charisma);
+        assert_eq!(Skill::Persuasion.ability(), Ability::Charisma);
+    }
+
+    #[wasm_bindgen_test]
+    fn ability_serde_u8_roundtrip() {
+        let ability = Ability::Wisdom;
+        let json = serde_json::to_string(&ability).unwrap();
+        assert_eq!(json, "4"); // Wisdom is index 4
+        let deserialized: Ability = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, ability);
+    }
+
+    #[wasm_bindgen_test]
+    fn ability_serde_all_variants() {
+        use strum::IntoEnumIterator;
+        for (i, ability) in Ability::iter().enumerate() {
+            let json = serde_json::to_string(&ability).unwrap();
+            assert_eq!(json, i.to_string());
+            let back: Ability = serde_json::from_str(&json).unwrap();
+            assert_eq!(back, ability);
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn skill_serde_u8_roundtrip() {
+        let skill = Skill::Stealth;
+        let json = serde_json::to_string(&skill).unwrap();
+        let deserialized: Skill = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, skill);
+    }
+
+    #[wasm_bindgen_test]
+    fn proficiency_level_serde_u8_roundtrip() {
+        let pl = ProficiencyLevel::Expertise;
+        let json = serde_json::to_string(&pl).unwrap();
+        assert_eq!(json, "2");
+        let deserialized: ProficiencyLevel = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, pl);
+    }
+}
