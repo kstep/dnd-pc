@@ -16,7 +16,7 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
             .unwrap_or(ProficiencyLevel::None)
     });
 
-    let bonus = Memo::new(move |_| store.get().skill_bonus(skill));
+    let bonus = Memo::new(move |_| store.read().skill_bonus(skill));
 
     let bonus_display = move || {
         let b = bonus.get();

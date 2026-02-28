@@ -176,8 +176,8 @@ pub fn CharacterHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
 
-    let total_level = Memo::new(move |_| store.get().level());
-    let prof_bonus = Memo::new(move |_| store.get().proficiency_bonus());
+    let total_level = Memo::new(move |_| store.read().level());
+    let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
 
     let classes = store.identity().classes();
 
@@ -186,7 +186,7 @@ pub fn CharacterHeader() -> impl IntoView {
     };
 
     let on_export = move |_| {
-        export_character(&store.get());
+        store.with_untracked(export_character);
     };
 
     let on_import = move |_| {
@@ -196,7 +196,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let share_copied = RwSignal::new(false);
 
     let on_share = move |_| {
-        let encoded = share::encode_character(&store.get());
+        let encoded = store.with_untracked(share::encode_character);
         let origin = leptos::prelude::window()
             .location()
             .origin()
@@ -567,7 +567,8 @@ pub fn CharacterHeader() -> impl IntoView {
                     on:click=move |_| {
                         let window = web_sys::window().unwrap();
                         if window.confirm_with_message("Reset character to blank?").unwrap_or(false) {
-                            store.set(Character { id: store.get().id, ..Default::default() });
+                            let id = store.read_untracked().id;
+                            store.set(Character { id, ..Default::default() });
                         }
                     }
                 >

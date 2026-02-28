@@ -36,11 +36,11 @@ pub fn CharacterSheet() -> impl IntoView {
         if let Some(char_data) = character() {
             let store = Store::new(char_data);
 
-            // Auto-save effect
+            // Auto-save effect: track() subscribes to changes,
+            // update_untracked() gives &mut without re-triggering.
             Effect::new(move || {
-                store.update(|c| {
-                    storage::save_character(c);
-                });
+                store.track();
+                store.update_untracked(storage::save_character);
             });
 
             // Fill empty descriptions from registry definitions

@@ -16,7 +16,7 @@ pub fn CombatPanel() -> impl IntoView {
 
     let combat = store.combat();
     let classes = store.identity().classes();
-    let initiative = Memo::new(move |_| store.get().initiative());
+    let initiative = Memo::new(move |_| store.read().initiative());
 
     let init_display = move || {
         let i = initiative.get();
@@ -146,7 +146,7 @@ pub fn CombatPanel() -> impl IntoView {
                                             if classes.read()[i].hit_dice_used >= level {
                                                 return;
                                             }
-                                            let con_mod = store.get().ability_modifier(Ability::Constitution);
+                                            let con_mod = store.read_untracked().ability_modifier(Ability::Constitution);
                                             let roll = (js_sys::Math::random() * sides as f64).floor() as i32 + 1;
                                             let heal = (roll + con_mod).max(1);
                                             let hp = combat.hp_current().get();

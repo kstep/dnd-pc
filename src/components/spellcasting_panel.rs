@@ -36,15 +36,15 @@ fn FeatureSpellcastingSection(
                 .unwrap_or(default_ability)
         })
     });
-    let spell_save_dc = Memo::new(move |_| store.get().spell_save_dc(casting_ability.get()));
-    let spell_attack = Memo::new(move |_| store.get().spell_attack_bonus(casting_ability.get()));
+    let spell_save_dc = Memo::new(move |_| store.read().spell_save_dc(casting_ability.get()));
+    let spell_attack = Memo::new(move |_| store.read().spell_attack_bonus(casting_ability.get()));
 
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
 
     // Reactively resolve spell list for datalist suggestions (re-runs when
     // spell_list_cache populates after async fetch)
     let spell_suggestions = Memo::new(move |_| {
-        fname.with_value(|key| resolve_feature_spell_list(&registry, &store.get().identity, key))
+        fname.with_value(|key| resolve_feature_spell_list(&registry, &store.read().identity, key))
     });
 
     view! {
@@ -349,8 +349,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                 <div class="spell-slots-grid">
                     {move || {
                         let expanded = slots_expanded.get();
-                        let ch = store.get();
-                        let slots: Vec<_> = ch.all_spell_slots().collect();
+                        let slots: Vec<_> = store.read().all_spell_slots().collect();
                         slots
                             .into_iter()
                             .filter(|(_, slot)| expanded || slot.total > 0)

@@ -21,7 +21,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                     let proficient = Memo::new(move |_| {
                         store.saving_throws().read().contains(&ability)
                     });
-                    let bonus = Memo::new(move |_| store.get().saving_throw_bonus(ability));
+                    let bonus = Memo::new(move |_| store.read().saving_throw_bonus(ability));
                     let bonus_display = move || {
                         let b = bonus.get();
                         if b >= 0 { format!("+{b}") } else { format!("{b}") }

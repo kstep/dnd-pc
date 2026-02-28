@@ -7,8 +7,8 @@ use crate::model::{Ability, Character, CharacterStoreFields, Translatable};
 pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    let score = Memo::new(move |_| store.get().abilities.get(ability));
-    let modifier = Memo::new(move |_| store.get().ability_modifier(ability));
+    let score = Memo::new(move |_| store.read().abilities.get(ability));
+    let modifier = Memo::new(move |_| store.read().ability_modifier(ability));
 
     let modifier_display = move || {
         let m = modifier.get();
