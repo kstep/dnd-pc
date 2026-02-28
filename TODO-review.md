@@ -3,6 +3,14 @@
 Findings from the BTreeMap refactoring review (2026-02-28) that were not addressed.
 All are pre-existing issues or intentional design tradeoffs.
 
+## Medium — Design
+
+- [ ] `feature_data` is keyed by feature name (`BTreeMap<String, FeatureData>`).
+  Cross-class features with the same name collide. Worked around by renaming features
+  to include class name (e.g. "Spellcasting (Bard)"), but the proper fix is to key by
+  `(class_name, feature_name)` tuple or similar composite key.
+  Files: `src/model/character.rs` (`FeatureData`), `src/rules.rs` (`apply()`/`fill_descriptions()`)
+
 ## Medium — Code Quality
 
 - [ ] `get_class()`/`get_race()`/`get_background()` clone entire definitions on every call.

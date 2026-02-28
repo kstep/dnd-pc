@@ -47,7 +47,16 @@
     },
     {
       "name": "Weapon Mastery (Rogue)",
-      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Dagger and Shortbow. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Shortsword."
+      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Dagger and Shortbow. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Shortsword.",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2
+          }
+        }
+      ]
     },
     {
       "name": "Cunning Action",

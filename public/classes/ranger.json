@@ -218,7 +218,16 @@
     },
     {
       "name": "Weapon Mastery (Ranger)",
-      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbow and Shortsword. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Longsword."
+      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbow and Shortsword. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Longsword.",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2
+          }
+        }
+      ]
     },
     {
       "name": "Deft Explorer",

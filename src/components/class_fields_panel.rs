@@ -29,10 +29,8 @@ pub fn ClassFieldsPanels() -> impl IntoView {
         entries
             .into_iter()
             .map(|(feature_name, fields)| {
-                let title = Signal::derive({
-                    let feature_name = feature_name.clone();
-                    move || feature_name.clone()
-                });
+                let fname = StoredValue::new(feature_name);
+                let title = Signal::derive(move || fname.get_value());
 
                 let desc_expanded = RwSignal::new(HashSet::<usize>::new());
 
@@ -41,7 +39,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                     .into_iter()
                     .enumerate()
                     .map(|(field_idx, field)| {
-                        let feature_name = feature_name.clone();
                         let desc = field.description.clone();
                         let is_open =
                             Signal::derive(move || desc_expanded.get().contains(&field_idx));
@@ -51,7 +48,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let label = field.name.clone();
                                 let die = die_str.clone();
                                 let d = desc.clone();
-                                let fname = feature_name.clone();
                                 view! {
                                     <div class="field-entry">
                                         <ToggleButton
@@ -67,18 +63,15 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 class="field-desc"
                                                 placeholder=move_tr!("description")
                                                 prop:value=d.clone()
-                                                on:change={
-                                                    let fname = fname.clone();
-                                                    move |e| {
-                                                        let fname = fname.clone();
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    }
+                                                on:change=move |e| {
+                                                    let key = fname.get_value();
+                                                    store.feature_data().update(|m| {
+                                                        if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                        {
+                                                            f.description = event_target_value(&e);
+                                                        }
+                                                    });
                                                 }
                                             />
                                         </Show>
@@ -94,7 +87,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     format!("{val}")
                                 };
                                 let d = desc.clone();
-                                let fname = feature_name.clone();
                                 view! {
                                     <div class="field-entry">
                                         <ToggleButton
@@ -110,18 +102,15 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 class="field-desc"
                                                 placeholder=move_tr!("description")
                                                 prop:value=d.clone()
-                                                on:change={
-                                                    let fname = fname.clone();
-                                                    move |e| {
-                                                        let fname = fname.clone();
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    }
+                                                on:change=move |e| {
+                                                    let key = fname.get_value();
+                                                    store.feature_data().update(|m| {
+                                                        if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                        {
+                                                            f.description = event_target_value(&e);
+                                                        }
+                                                    });
                                                 }
                                             />
                                         </Show>
@@ -133,9 +122,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let label = field.name.clone();
                                 let used_val = used.to_string();
                                 let max_val = max.to_string();
-                                let fname = feature_name.clone();
-                                let fname2 = feature_name.clone();
-                                let fname3 = feature_name.clone();
                                 let d = desc.clone();
                                 view! {
                                     <div class="field-entry field-points">
@@ -155,9 +141,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 prop:value=used_val
                                                 on:input=move |e| {
                                                     if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                        let fname = fname.clone();
+                                                        let key = fname.get_value();
                                                         store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                            if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Points { used, .. } = &mut f.value
                                                             {
@@ -176,9 +162,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 prop:value=max_val
                                                 on:input=move |e| {
                                                     if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                        let fname = fname2.clone();
+                                                        let key = fname.get_value();
                                                         store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                            if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Points { max, .. } = &mut f.value
                                                             {
@@ -194,18 +180,15 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 class="field-desc"
                                                 placeholder=move_tr!("description")
                                                 prop:value=d.clone()
-                                                on:change={
-                                                    let fname = fname3.clone();
-                                                    move |e| {
-                                                        let fname = fname.clone();
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    }
+                                                on:change=move |e| {
+                                                    let key = fname.get_value();
+                                                    store.feature_data().update(|m| {
+                                                        if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                        {
+                                                            f.description = event_target_value(&e);
+                                                        }
+                                                    });
                                                 }
                                             />
                                         </Show>
@@ -218,27 +201,24 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let field_name = field.name.clone();
 
                                 let classes = store.identity().classes().read();
+                                let feature_name_str = fname.get_value();
                                 let cost_label = registry.get_choice_cost_label(
                                     &classes,
-                                    &feature_name,
+                                    &feature_name_str,
                                     &field_name,
                                 );
                                 let all_options = registry
-                                    .get_choice_options(&classes, &feature_name, &field_name, &all_fields);
+                                    .get_choice_options(&classes, &feature_name_str, &field_name, &all_fields);
                                 drop(classes);
 
                                 let opt_expanded = RwSignal::new(HashSet::<usize>::new());
                                 let has_cost = cost_label.is_some();
+                                let fld_name = StoredValue::new(field_name.clone());
 
                                 let option_views = options
                                     .iter()
                                     .enumerate()
                                     .map(|(opt_idx, option)| {
-                                        let fname = feature_name.clone();
-                                        let fname2 = feature_name.clone();
-                                        let fname3 = feature_name.clone();
-                                        let fname4 = feature_name.clone();
-                                        let fld_name = field_name.clone();
                                         let opt_name = option.name.clone();
                                         let opt_desc = option.description.clone();
                                         let opt_cost = option.cost.to_string();
@@ -264,19 +244,20 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                     placeholder=move_tr!("choose-option").get()
                                                     options=suggestions
                                                     on_input=move |val: String| {
+                                                        let key = fname.get_value();
+                                                        let fld = fld_name.get_value();
                                                         let classes = store.identity().classes().read();
                                                         let char_fields: Vec<_> = store.feature_data().read()
-                                                            .get(&fname)
+                                                            .get(&key)
                                                             .map(|e| e.fields.clone())
                                                             .unwrap_or_default();
                                                         let found = registry
-                                                            .get_choice_options(&classes, &fname, &fld_name, &char_fields)
+                                                            .get_choice_options(&classes, &key, &fld, &char_fields)
                                                             .into_iter()
                                                             .find(|o| o.name == val);
                                                         drop(classes);
-                                                        let fname = fname.clone();
                                                         store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                            if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Choice { options } = &mut f.value
                                                                 && let Some(opt) = options.get_mut(opt_idx)
@@ -298,9 +279,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                         prop:value=opt_cost.clone()
                                                         on:input=move |e| {
                                                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                                let fname = fname2.clone();
+                                                                let key = fname.get_value();
                                                                 store.feature_data().update(|m| {
-                                                                    if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                                    if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                                         && let Some(f) = fields.get_mut(field_idx)
                                                                         && let FeatureValue::Choice { options } = &mut f.value
                                                                         && let Some(opt) = options.get_mut(opt_idx)
@@ -315,9 +296,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 <button
                                                     class="btn-remove"
                                                     on:click=move |_| {
-                                                        let fname = fname3.clone();
+                                                        let key = fname.get_value();
                                                         store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                            if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Choice { options } = &mut f.value
                                                                 && opt_idx < options.len()
@@ -334,20 +315,17 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                         class="choice-desc"
                                                         placeholder=move_tr!("description")
                                                         prop:value=opt_desc.clone()
-                                                        on:change={
-                                                            let fname = fname4.clone();
-                                                            move |e| {
-                                                                let fname = fname.clone();
-                                                                store.feature_data().update(|m| {
-                                                                    if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
-                                                                        && let Some(f) = fields.get_mut(field_idx)
-                                                                        && let FeatureValue::Choice { options } = &mut f.value
-                                                                        && let Some(opt) = options.get_mut(opt_idx)
-                                                                    {
-                                                                        opt.description = event_target_value(&e);
-                                                                    }
-                                                                });
-                                                            }
+                                                        on:change=move |e| {
+                                                            let key = fname.get_value();
+                                                            store.feature_data().update(|m| {
+                                                                if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
+                                                                    && let Some(f) = fields.get_mut(field_idx)
+                                                                    && let FeatureValue::Choice { options } = &mut f.value
+                                                                    && let Some(opt) = options.get_mut(opt_idx)
+                                                                {
+                                                                    opt.description = event_target_value(&e);
+                                                                }
+                                                            });
                                                         }
                                                     />
                                                 </Show>
@@ -357,8 +335,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     .collect_view();
 
                                 let d = desc.clone();
-                                let fname_desc = feature_name.clone();
-                                let fname_add = feature_name.clone();
 
                                 let label_view = if let Some(ref cost_title) = cost_label {
                                     format!("{label} ({cost_title})")
@@ -382,18 +358,15 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 class="field-desc"
                                                 placeholder=move_tr!("description")
                                                 prop:value=d.clone()
-                                                on:change={
-                                                    let fname = fname_desc.clone();
-                                                    move |e| {
-                                                        let fname = fname.clone();
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    }
+                                                on:change=move |e| {
+                                                    let key = fname.get_value();
+                                                    store.feature_data().update(|m| {
+                                                        if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                        {
+                                                            f.description = event_target_value(&e);
+                                                        }
+                                                    });
                                                 }
                                             />
                                         </Show>
@@ -402,9 +375,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                             <button
                                                 class="btn-add"
                                                 on:click=move |_| {
-                                                    let fname = fname_add.clone();
+                                                    let key = fname.get_value();
                                                     store.feature_data().update(|m| {
-                                                        if let Some(fields) = m.get_mut(&fname).map(|e| &mut e.fields)
+                                                        if let Some(fields) = m.get_mut(&key).map(|e| &mut e.fields)
                                                             && let Some(f) = fields.get_mut(field_idx)
                                                             && let FeatureValue::Choice { options } = &mut f.value
                                                         {

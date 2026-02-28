@@ -174,7 +174,16 @@
     },
     {
       "name": "Weapon Mastery (Paladin)",
-      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longsword and Javelin. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Halberd and Flail."
+      "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longsword and Javelin. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Halberd and Flail.",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2
+          }
+        }
+      ]
     },
     {
       "name": "Fighting Style",

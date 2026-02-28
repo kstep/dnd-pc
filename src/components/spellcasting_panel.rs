@@ -7,23 +7,20 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
-    model::{
-        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellData, Translatable,
-    },
+    model::{Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, Translatable},
     rules::RulesRegistry,
 };
 
 #[component]
 fn FeatureSpellcastingSection(
     #[prop(into)] feature_name: String,
-    sc_data: SpellData,
+    default_ability: Ability,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let fname = StoredValue::new(feature_name.clone());
-    let default_ability = sc_data.casting_ability;
 
     let casting_ability = Memo::new(move |_| {
         store
@@ -399,13 +396,16 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         .read()
                         .iter()
                         .filter_map(|(name, entry)| {
-                            entry.spells.as_ref().map(|sc| (name.clone(), sc.clone()))
+                            entry
+                                .spells
+                                .as_ref()
+                                .map(|sc| (name.clone(), sc.casting_ability))
                         })
                         .collect::<Vec<_>>()
                         .into_iter()
-                        .map(|(feature_name, sc_data)| {
+                        .map(|(feature_name, default_ability)| {
                             view! {
-                                <FeatureSpellcastingSection feature_name=feature_name sc_data=sc_data />
+                                <FeatureSpellcastingSection feature_name=feature_name default_ability=default_ability />
                             }
                         })
                         .collect_view()
