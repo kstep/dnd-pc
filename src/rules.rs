@@ -310,6 +310,8 @@ pub struct SubclassLevelRules {
 pub struct FeatureDefinition {
     pub name: String,
     pub description: String,
+    #[serde(default)]
+    pub languages: Vec<String>,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "named_map::deserialize")]
     pub fields: BTreeMap<String, FieldDefinition>,
@@ -328,6 +330,12 @@ impl FeatureDefinition {
                 name: self.name.clone(),
                 description: self.description.clone(),
             });
+        }
+
+        for lang in &self.languages {
+            if !character.languages.contains(lang) {
+                character.languages.push(lang.clone());
+            }
         }
 
         if let Some(spells_def) = &self.spells {

@@ -494,7 +494,8 @@
         },
         {
           "name": "Dragon Ancestor",
-          "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. You can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. You can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check.",
+          "languages": ["Draconic"]
         },
         {
           "name": "Elemental Affinity",
@@ -809,7 +810,8 @@
         },
         {
           "name": "Wind Speaker",
-          "description": "The arcane magic you command is infused with elemental air. You can speak, read, and write Primordial. Knowing this language allows you to understand and be understood by those who speak its dialects: Primordial, Primordial, Primordial, and Primordial."
+          "description": "The arcane magic you command is infused with elemental air. You can speak, read, and write Primordial. Knowing this language allows you to understand and be understood by those who speak its dialects: Primordial, Primordial, Primordial, and Primordial.",
+          "languages": ["Primordial"]
         },
         {
           "name": "Heart of the Storm",

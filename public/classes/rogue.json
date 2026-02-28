@@ -39,7 +39,8 @@
     },
     {
       "name": "Thieves' Cant",
-      "description": "You picked up various languages in the communities where you plied your roguish talents. You know Thieves' Cant and one other language of your choice, which you choose from the language tables in chapter 2."
+      "description": "You picked up various languages in the communities where you plied your roguish talents. You know Thieves' Cant and one other language of your choice, which you choose from the language tables in chapter 2.",
+      "languages": ["Thieves' Cant"]
     },
     {
       "name": "Weapon Mastery",

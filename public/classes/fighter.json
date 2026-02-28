@@ -846,7 +846,8 @@
         },
         {
           "name": "Bonus Proficiencies",
-          "description": "3rd-level Rune Knight feature You gain proficiency with smith's tools, and you learn to speak, read, and write Giant."
+          "description": "3rd-level Rune Knight feature You gain proficiency with smith's tools, and you learn to speak, read, and write Giant.",
+          "languages": ["Giant"]
         },
         {
           "name": "Giant's Might",
