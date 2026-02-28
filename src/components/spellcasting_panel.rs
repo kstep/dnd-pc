@@ -306,14 +306,13 @@ fn resolve_feature_spell_list(
 ) -> Vec<(u32, String, String)> {
     registry
         .with_feature(identity, feature_name, |feat| {
-            feat.spells.as_ref().map(|spells_def| {
-                registry.with_spell_list(&spells_def.list, |spells| {
-                    spells
-                        .iter()
-                        .map(|s| (s.level, s.name.clone(), s.description.clone()))
-                        .collect()
-                })
-            })
+            let spells_def = feat.spells.as_ref()?;
+            Some(registry.with_spell_list(&spells_def.list, |spells| {
+                spells
+                    .iter()
+                    .map(|s| (s.level, s.name.clone(), s.description.clone()))
+                    .collect()
+            }))
         })
         .flatten()
         .unwrap_or_default()

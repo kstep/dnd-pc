@@ -69,11 +69,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             let name = event_target_value(&e);
                                             let classes = store.identity().classes().read();
                                             let desc = classes.iter().find_map(|c| {
-                                                registry.get_class(&c.class).and_then(|def| {
-                                                    def.features(c.subclass.as_deref())
-                                                        .find(|f| f.name == name)
-                                                        .map(|f| f.description.clone())
-                                                })
+                                                let def = registry.get_class(&c.class)?;
+                                                def.find_feature(&name, c.subclass.as_deref())
+                                                    .map(|f| f.description.clone())
                                             });
                                             drop(classes);
                                             let mut w = features.write();

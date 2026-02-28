@@ -57,7 +57,7 @@ mod u32_key_map {
                 }
 
                 fn visit_u64<E: de::Error>(self, v: u64) -> Result<FlexU32, E> {
-                    Ok(FlexU32(v as u32))
+                    u32::try_from(v).map(FlexU32).map_err(de::Error::custom)
                 }
 
                 fn visit_str<E: de::Error>(self, v: &str) -> Result<FlexU32, E> {
@@ -67,6 +67,36 @@ mod u32_key_map {
 
             d.deserialize_any(V)
         }
+    }
+}
+
+/// Trait for types that have a `name` field, used by `named_map`.
+trait Named {
+    fn name(&self) -> &str;
+}
+
+/// Deserialize a JSON array `[{"name": "Foo", ...}, ...]` into a
+/// `BTreeMap<String, T>` keyed by each element's `name()`.
+mod named_map {
+    use std::collections::BTreeMap;
+
+    use serde::{Deserialize, Deserializer};
+
+    use super::Named;
+
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<BTreeMap<String, T>, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: Deserialize<'de> + Named,
+    {
+        let vec = Vec::<T>::deserialize(deserializer)?;
+        Ok(vec
+            .into_iter()
+            .map(|item| {
+                let key = item.name().to_string();
+                (key, item)
+            })
+            .collect())
     }
 }
 
@@ -113,6 +143,12 @@ pub struct RaceTrait {
     pub description: String,
 }
 
+impl Named for RaceTrait {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct AbilityModifier {
     pub ability: Ability,
@@ -127,10 +163,10 @@ pub struct RaceDefinition {
     pub speed: u32,
     #[serde(default)]
     pub ability_modifiers: Vec<AbilityModifier>,
-    #[serde(default)]
-    pub traits: Vec<RaceTrait>,
-    #[serde(default)]
-    pub features: Vec<FeatureDefinition>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub traits: BTreeMap<String, RaceTrait>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub features: BTreeMap<String, FeatureDefinition>,
 }
 
 impl RaceDefinition {
@@ -146,7 +182,7 @@ impl RaceDefinition {
                 .set(am.ability, (current + am.modifier).max(1) as u32);
         }
 
-        for t in &self.traits {
+        for t in self.traits.values() {
             character.racial_traits.push(RacialTrait {
                 name: t.name.clone(),
                 description: t.description.clone(),
@@ -154,7 +190,7 @@ impl RaceDefinition {
         }
 
         let total_level = character.level();
-        for feat in &self.features {
+        for feat in self.features.values() {
             feat.apply(total_level, character);
         }
 
@@ -178,8 +214,8 @@ pub struct BackgroundDefinition {
     pub ability_modifiers: Vec<AbilityModifier>,
     #[serde(default)]
     pub proficiencies: Vec<Skill>,
-    #[serde(default)]
-    pub features: Vec<FeatureDefinition>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub features: BTreeMap<String, FeatureDefinition>,
 }
 
 impl BackgroundDefinition {
@@ -198,7 +234,7 @@ impl BackgroundDefinition {
                 .or_insert(ProficiencyLevel::Proficient);
         }
 
-        for feat in &self.features {
+        for feat in self.features.values() {
             feat.apply(1, character);
         }
 
@@ -215,21 +251,29 @@ pub struct ClassDefinition {
     pub proficiencies: Vec<Proficiency>,
     #[serde(default)]
     pub saving_throws: Vec<Ability>,
-    #[serde(default)]
-    pub features: Vec<FeatureDefinition>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub features: BTreeMap<String, FeatureDefinition>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
-    #[serde(default)]
-    pub subclasses: Vec<SubclassDefinition>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub subclasses: BTreeMap<String, SubclassDefinition>,
 }
 
 impl ClassDefinition {
     pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &FeatureDefinition> {
         let sc_features = subclass
-            .and_then(|name| self.subclasses.iter().find(|sc| sc.name == name))
-            .map(|sc| sc.features.as_slice())
-            .unwrap_or_default();
-        self.features.iter().chain(sc_features.iter())
+            .and_then(|name| self.subclasses.get(name))
+            .into_iter()
+            .flat_map(|sc| sc.features.values());
+        self.features.values().chain(sc_features)
+    }
+
+    pub fn find_feature(&self, name: &str, subclass: Option<&str>) -> Option<&FeatureDefinition> {
+        self.features.get(name).or_else(|| {
+            subclass
+                .and_then(|sc| self.subclasses.get(sc))
+                .and_then(|sc| sc.features.get(name))
+        })
     }
 }
 
@@ -237,15 +281,21 @@ impl ClassDefinition {
 pub struct SubclassDefinition {
     pub name: String,
     pub description: String,
-    #[serde(default)]
-    pub features: Vec<FeatureDefinition>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub features: BTreeMap<String, FeatureDefinition>,
     #[serde(default, deserialize_with = "u32_key_map::deserialize")]
     pub levels: BTreeMap<u32, SubclassLevelRules>,
 }
 
+impl Named for SubclassDefinition {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 impl SubclassDefinition {
     pub fn min_level(&self) -> u32 {
-        self.levels.keys().next().cloned().unwrap_or(1)
+        self.levels.keys().next().copied().unwrap_or(1)
     }
 }
 
@@ -261,7 +311,14 @@ pub struct FeatureDefinition {
     pub name: String,
     pub description: String,
     pub spells: Option<SpellsDefinition>,
-    pub fields: Option<Vec<FieldDefinition>>,
+    #[serde(default, deserialize_with = "named_map::deserialize")]
+    pub fields: BTreeMap<String, FieldDefinition>,
+}
+
+impl Named for FeatureDefinition {
+    fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 impl FeatureDefinition {
@@ -337,12 +394,13 @@ impl FeatureDefinition {
             }
         }
 
-        if let Some(defs) = &self.fields {
+        if !self.fields.is_empty() {
             let entry = character.feature_data.entry(self.name.clone()).or_default();
             let fields = &mut entry.fields;
             if fields.is_empty() {
-                *fields = defs
-                    .iter()
+                *fields = self
+                    .fields
+                    .values()
                     .map(|f| FeatureField {
                         name: f.name.clone(),
                         description: f.description.clone(),
@@ -350,28 +408,29 @@ impl FeatureDefinition {
                     })
                     .collect();
             } else {
-                for (def, field) in defs.iter().zip(fields.iter_mut()) {
-                    if field.name != def.name {
-                        continue;
-                    }
-
-                    match (&def.kind, &mut field.value) {
-                        (FieldKind::Die { levels }, FeatureValue::Die(d)) => {
-                            *d = get_for_level(levels, level);
-                        }
-                        (FieldKind::Choice { levels, .. }, FeatureValue::Choice { options }) => {
-                            let new_len = get_for_level(levels, level) as usize;
-                            if options.len() < new_len {
-                                options.resize(new_len, Default::default());
+                for field in fields.iter_mut() {
+                    if let Some(def) = self.fields.get(&field.name) {
+                        match (&def.kind, &mut field.value) {
+                            (FieldKind::Die { levels }, FeatureValue::Die(d)) => {
+                                *d = get_for_level(levels, level);
                             }
+                            (
+                                FieldKind::Choice { levels, .. },
+                                FeatureValue::Choice { options },
+                            ) => {
+                                let new_len = get_for_level(levels, level) as usize;
+                                if options.len() < new_len {
+                                    options.resize(new_len, Default::default());
+                                }
+                            }
+                            (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
+                                *b = get_for_level(levels, level);
+                            }
+                            (FieldKind::Points { levels }, FeatureValue::Points { max, .. }) => {
+                                *max = get_for_level(levels, level);
+                            }
+                            _ => {}
                         }
-                        (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
-                            *b = get_for_level(levels, level);
-                        }
-                        (FieldKind::Points { levels }, FeatureValue::Points { max, .. }) => {
-                            *max = get_for_level(levels, level);
-                        }
-                        _ => {}
                     }
                 }
             }
@@ -394,6 +453,12 @@ pub struct FieldDefinition {
     pub description: String,
     #[serde(flatten)]
     pub kind: FieldKind,
+}
+
+impl Named for FieldDefinition {
+    fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -470,6 +535,12 @@ pub struct SpellDefinition {
     pub sticky: bool,
     #[serde(default)]
     pub min_level: u32,
+}
+
+impl Named for SpellDefinition {
+    fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -692,24 +763,29 @@ impl RulesRegistry {
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
 
-        let class_feats = identity.classes.iter().flat_map(|cl| {
-            class_cache
-                .get(&cl.class)
-                .into_iter()
-                .flat_map(|def| def.features(cl.subclass.as_deref()))
-        });
+        for cl in &identity.classes {
+            if let Some(def) = class_cache.get(&cl.class)
+                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
+            {
+                return Some(f(feat));
+            }
+        }
 
-        let bg_def = bg_cache.get(&identity.background);
-        let bg_feats = bg_def.iter().flat_map(|def| def.features.iter());
+        if let Some(feat) = bg_cache
+            .get(&identity.background)
+            .and_then(|def| def.features.get(feature_name))
+        {
+            return Some(f(feat));
+        }
 
-        let race_def = race_cache.get(&identity.race);
-        let race_feats = race_def.iter().flat_map(|def| def.features.iter());
+        if let Some(feat) = race_cache
+            .get(&identity.race)
+            .and_then(|def| def.features.get(feature_name))
+        {
+            return Some(f(feat));
+        }
 
-        class_feats
-            .chain(bg_feats)
-            .chain(race_feats)
-            .find(|feat| feat.name == feature_name)
-            .map(f)
+        None
     }
 
     /// Return the class level for the class that owns the given feature.
@@ -723,9 +799,8 @@ impl RulesRegistry {
         let class_cache = self.class_cache.read();
         identity.classes.iter().find_map(|cl| {
             let def = class_cache.get(&cl.class)?;
-            def.features(cl.subclass.as_deref())
-                .any(|f| f.name == feature_name)
-                .then_some(cl.level)
+            def.find_feature(feature_name, cl.subclass.as_deref())
+                .map(|_| cl.level)
         })
     }
 
@@ -738,47 +813,37 @@ impl RulesRegistry {
     ) -> Vec<ChoiceOption> {
         let cache = self.class_cache.read();
         for cl in classes {
-            if let Some(def) = cache.get(&cl.class) {
-                for feat in def.features(cl.subclass.as_deref()) {
-                    if feat.name != feature_name {
-                        continue;
-                    }
-                    if let Some(fields) = &feat.fields {
-                        return Self::resolve_choice_options(fields, field_name, character_fields);
-                    }
-                }
+            if let Some(def) = cache.get(&cl.class)
+                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
+                && let Some(field_def) = feat.fields.get(field_name)
+            {
+                return Self::resolve_choice_options(field_def, character_fields);
             }
         }
         Vec::new()
     }
 
     fn resolve_choice_options(
-        fields: &[FieldDefinition],
-        field_name: &str,
+        field_def: &FieldDefinition,
         character_fields: &[FeatureField],
     ) -> Vec<ChoiceOption> {
-        for fd in fields {
-            if fd.name != field_name {
-                continue;
-            }
-            if let FieldKind::Choice { options, .. } = &fd.kind {
-                return match options {
-                    ChoiceOptions::List(list) => list.clone(),
-                    ChoiceOptions::Ref { from } => character_fields
-                        .iter()
-                        .find(|cf| cf.name == *from)
-                        .into_iter()
-                        .flat_map(|cf| cf.value.choices())
-                        .filter(|o| !o.name.is_empty())
-                        .map(|o| ChoiceOption {
-                            name: o.name.clone(),
-                            description: o.description.clone(),
-                            cost: o.cost,
-                            level: 0,
-                        })
-                        .collect(),
-                };
-            }
+        if let FieldKind::Choice { options, .. } = &field_def.kind {
+            return match options {
+                ChoiceOptions::List(list) => list.clone(),
+                ChoiceOptions::Ref { from } => character_fields
+                    .iter()
+                    .find(|cf| cf.name == *from)
+                    .into_iter()
+                    .flat_map(|cf| cf.value.choices())
+                    .filter(|o| !o.name.is_empty())
+                    .map(|o| ChoiceOption {
+                        name: o.name.clone(),
+                        description: o.description.clone(),
+                        cost: o.cost,
+                        level: 0,
+                    })
+                    .collect(),
+            };
         }
         Vec::new()
     }
@@ -791,21 +856,12 @@ impl RulesRegistry {
     ) -> Option<String> {
         let cache = self.class_cache.read();
         for cl in classes {
-            if let Some(def) = cache.get(&cl.class) {
-                for feat in def.features(cl.subclass.as_deref()) {
-                    if feat.name != feature_name {
-                        continue;
-                    }
-                    if let Some(fields) = &feat.fields {
-                        for fd in fields {
-                            if fd.name == field_name
-                                && let FieldKind::Choice { cost, .. } = &fd.kind
-                            {
-                                return cost.clone();
-                            }
-                        }
-                    }
-                }
+            if let Some(def) = cache.get(&cl.class)
+                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
+                && let Some(fd) = feat.fields.get(field_name)
+                && let FieldKind::Choice { cost, .. } = &fd.kind
+            {
+                return cost.clone();
             }
         }
         None
@@ -944,26 +1000,25 @@ impl RulesRegistry {
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
 
-        // Helper: find a FeatureDefinition by name across all sources
+        // Helper: find a FeatureDefinition by name across all sources.
+        // Duplicates with_feature() logic to reuse pre-acquired read guards.
         let find_feat = |name: &str| -> Option<&FeatureDefinition> {
-            let class_feats = character.identity.classes.iter().flat_map(|cl| {
-                class_cache
-                    .get(&cl.class)
-                    .into_iter()
-                    .flat_map(|def| def.features(cl.subclass.as_deref()))
-            });
-            let bg_feats = bg_cache
+            for cl in &character.identity.classes {
+                if let Some(def) = class_cache.get(&cl.class)
+                    && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
+                {
+                    return Some(feat);
+                }
+            }
+            if let Some(feat) = bg_cache
                 .get(&character.identity.background)
-                .into_iter()
-                .flat_map(|def| def.features.iter());
-            let race_feats = race_cache
+                .and_then(|def| def.features.get(name))
+            {
+                return Some(feat);
+            }
+            race_cache
                 .get(&character.identity.race)
-                .into_iter()
-                .flat_map(|def| def.features.iter());
-            class_feats
-                .chain(bg_feats)
-                .chain(race_feats)
-                .find(|f| f.name == name)
+                .and_then(|def| def.features.get(name))
         };
 
         // Feature descriptions
@@ -982,8 +1037,7 @@ impl RulesRegistry {
             for racial_trait in &mut character.racial_traits {
                 if racial_trait.description.is_empty()
                     && !racial_trait.name.is_empty()
-                    && let Some(def_trait) =
-                        race_def.traits.iter().find(|t| t.name == racial_trait.name)
+                    && let Some(def_trait) = race_def.traits.get(&racial_trait.name)
                     && !def_trait.description.is_empty()
                 {
                     racial_trait.description = def_trait.description.clone();
@@ -1010,9 +1064,9 @@ impl RulesRegistry {
             };
 
             // Field descriptions and choice option descriptions
-            if let Some(field_defs) = &feat_def.fields {
+            if !feat_def.fields.is_empty() {
                 for field in &mut entry.fields {
-                    if let Some(field_def) = field_defs.iter().find(|d| d.name == field.name) {
+                    if let Some(field_def) = feat_def.fields.get(&field.name) {
                         if field.description.is_empty() && !field_def.description.is_empty() {
                             field.description = field_def.description.clone();
                         }
@@ -1038,23 +1092,25 @@ impl RulesRegistry {
             }
 
             // Spell descriptions
-            if let Some(spells_def) = &feat_def.spells {
-                let spell_defs: &[SpellDefinition] = match &spells_def.list {
-                    SpellList::Inline(spells) => spells,
-                    SpellList::Ref { from } => spell_list_cache
-                        .get(from.as_str())
-                        .map_or(&[], |v| v.as_slice()),
-                };
-
-                if let Some(spell_data) = &mut entry.spells {
-                    for spell in &mut spell_data.spells {
-                        if spell.description.is_empty()
-                            && !spell.name.is_empty()
-                            && let Some(spell_def) =
-                                spell_defs.iter().find(|s| s.name == spell.name)
-                            && !spell_def.description.is_empty()
+            if let Some(spells_def) = &feat_def.spells
+                && let Some(spell_data) = &mut entry.spells
+            {
+                for spell in &mut spell_data.spells {
+                    if spell.description.is_empty() && !spell.name.is_empty() {
+                        let spell_defs: &[SpellDefinition] = match &spells_def.list {
+                            SpellList::Inline(spells) => spells,
+                            SpellList::Ref { from } => spell_list_cache
+                                .get(from.as_str())
+                                .map_or(&[], |v| v.as_slice()),
+                        };
+                        let desc = spell_defs
+                            .iter()
+                            .find(|s| s.name == spell.name)
+                            .map(|s| &s.description);
+                        if let Some(desc) = desc
+                            && !desc.is_empty()
                         {
-                            spell.description = spell_def.description.clone();
+                            spell.description = desc.clone();
                         }
                     }
                 }

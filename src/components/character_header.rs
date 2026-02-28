@@ -73,13 +73,11 @@ fn import_character(store: Store<Character>) {
 
     let input_clone = input.clone();
     let closure = Closure::<dyn Fn()>::new(move || {
-        let files = match input_clone.files() {
-            Some(f) => f,
-            None => return,
+        let Some(files) = input_clone.files() else {
+            return;
         };
-        let file = match files.get(0) {
-            Some(f) => f,
-            None => return,
+        let Some(file) = files.get(0) else {
+            return;
         };
 
         let reader = match web_sys::FileReader::new() {
@@ -99,12 +97,9 @@ fn import_character(store: Store<Character>) {
                     return;
                 }
             };
-            let text = match result.as_string() {
-                Some(t) => t,
-                None => {
-                    log::error!("File result is not a string");
-                    return;
-                }
+            let Some(text) = result.as_string() else {
+                log::error!("File result is not a string");
+                return;
             };
             match serde_json::from_str::<Character>(&text) {
                 Ok(mut imported) => {
@@ -167,7 +162,7 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
             && let Some(race_def) = registry.get_race(&c.identity.race)
         {
             let total_level = c.level();
-            for feat in &race_def.features {
+            for feat in race_def.features.values() {
                 feat.apply(total_level, c);
             }
         }
@@ -373,7 +368,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let selected = move || store.identity().alignment().get() == a;
                                 let label = Signal::derive(move || i18n.tr(tr_key));
                                 view! {
-                                    <option value=val.clone() selected=selected>
+                                    <option value=val selected=selected>
                                         {label}
                                     </option>
                                 }
@@ -447,7 +442,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     .as_ref()
                                     .map(|def| {
                                         def.subclasses
-                                            .iter()
+                                            .values()
                                             .filter(|sc| sc.min_level() <= current_level)
                                             .map(|sc| (sc.name.clone(), sc.description.clone()))
                                             .collect()
@@ -463,7 +458,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             class="class-name"
                                             options=class_options
                                             on_input=move |name: String| {
-                                                classes.write()[i].class = name.clone();
+                                                classes.write()[i].class.clone_from(&name);
                                                 if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
                                                     registry.fetch_class(&name);
                                                     if let Some(def) = registry.get_class(&name) {

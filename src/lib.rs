@@ -1,8 +1,11 @@
 use fluent_templates::static_loader;
 use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
-use leptos_meta::*;
-use leptos_router::{components::*, path};
+use leptos_meta::{Html, Link, Meta, provide_meta_context};
+use leptos_router::{
+    components::{Route, Router, Routes},
+    path,
+};
 
 mod components;
 mod model;
