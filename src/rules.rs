@@ -712,6 +712,23 @@ impl RulesRegistry {
             .map(f)
     }
 
+    /// Return the class level for the class that owns the given feature.
+    /// Returns `None` if the feature is not a class feature (e.g.
+    /// background/race).
+    pub fn feature_class_level(
+        &self,
+        identity: &CharacterIdentity,
+        feature_name: &str,
+    ) -> Option<u32> {
+        let class_cache = self.class_cache.read();
+        identity.classes.iter().find_map(|cl| {
+            let def = class_cache.get(&cl.class)?;
+            def.features(cl.subclass.as_deref())
+                .any(|f| f.name == feature_name)
+                .then_some(cl.level)
+        })
+    }
+
     pub fn get_choice_options(
         &self,
         classes: &[ClassLevel],

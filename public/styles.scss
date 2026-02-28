@@ -741,7 +741,7 @@ input[type="checkbox"] {
 
 .feature-entry {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: var(--size-1);
   margin-bottom: var(--size-2);
   padding-bottom: var(--size-2);

@@ -22,6 +22,7 @@ btn-add-class = + Добавить класс
 btn-apply-level = Ур. { $level }
 btn-apply-race = Применить расовые черты
 btn-apply-background = Применить предысторию
+btn-apply-feature = Применить способность
 back-to-characters = < Назад к персонажам
 export-json = 💾
 import-json = 📂

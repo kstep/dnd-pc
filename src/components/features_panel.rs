@@ -84,6 +84,24 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         }
                                     />
                                     <button
+                                        class="btn-apply-level"
+                                        title=move_tr!("btn-apply-feature")
+                                        on:click=move |_| {
+                                            let name = features.read()[i].name.clone();
+                                            let (level, identity) = store.with_untracked(|c| {
+                                                let level = registry
+                                                    .feature_class_level(&c.identity, &name)
+                                                    .unwrap_or_else(|| c.level());
+                                                (level, c.identity.clone())
+                                            });
+                                            registry.with_feature(&identity, &name, |feat_def| {
+                                                store.update(|c| feat_def.apply(level, c));
+                                            });
+                                        }
+                                    >
+                                        "\u{2B06}"
+                                    </button>
+                                    <button
                                         class="btn-remove"
                                         on:click=move |_| {
                                             if i < features.read().len() {
