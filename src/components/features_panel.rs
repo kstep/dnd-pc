@@ -105,7 +105,10 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         class="btn-remove"
                                         on:click=move |_| {
                                             if i < features.read().len() {
-                                                features.write().remove(i);
+                                                let removed = features.write().remove(i);
+                                                if !features.read().iter().any(|f| f.name == removed.name) {
+                                                    store.feature_data().write().remove(&removed.name);
+                                                }
                                             }
                                         }
                                     >
