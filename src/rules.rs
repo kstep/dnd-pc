@@ -991,18 +991,26 @@ impl RulesRegistry {
             }
         }
 
+        // Trigger spell list fetches before acquiring the read guard
+        for key in character.feature_data.keys() {
+            if let Some(feat_def) = find_feat(key)
+                && let Some(spells_def) = &feat_def.spells
+                && let SpellList::Ref { from } = &spells_def.list
+            {
+                self.fetch_spell_list(from);
+            }
+        }
+
         // Feature data entries: fields, choices, spells
         let spell_list_cache = self.spell_list_cache.read();
-        let keys: Vec<String> = character.feature_data.keys().cloned().collect();
 
-        for key in keys {
-            let feat_def = find_feat(&key);
+        for (key, entry) in &mut character.feature_data {
+            let Some(feat_def) = find_feat(key) else {
+                continue;
+            };
 
             // Field descriptions and choice option descriptions
-            if let Some(feat_def) = feat_def
-                && let Some(field_defs) = &feat_def.fields
-                && let Some(entry) = character.feature_data.get_mut(&key)
-            {
+            if let Some(field_defs) = &feat_def.fields {
                 for field in &mut entry.fields {
                     if let Some(field_def) = field_defs.iter().find(|d| d.name == field.name) {
                         if field.description.is_empty() && !field_def.description.is_empty() {
@@ -1030,22 +1038,15 @@ impl RulesRegistry {
             }
 
             // Spell descriptions
-            if let Some(feat_def) = feat_def
-                && let Some(spells_def) = &feat_def.spells
-            {
+            if let Some(spells_def) = &feat_def.spells {
                 let spell_defs: &[SpellDefinition] = match &spells_def.list {
                     SpellList::Inline(spells) => spells,
-                    SpellList::Ref { from } => {
-                        self.fetch_spell_list(from);
-                        spell_list_cache
-                            .get(from.as_str())
-                            .map_or(&[], |v| v.as_slice())
-                    }
+                    SpellList::Ref { from } => spell_list_cache
+                        .get(from.as_str())
+                        .map_or(&[], |v| v.as_slice()),
                 };
 
-                if let Some(entry) = character.feature_data.get_mut(&key)
-                    && let Some(spell_data) = &mut entry.spells
-                {
+                if let Some(spell_data) = &mut entry.spells {
                     for spell in &mut spell_data.spells {
                         if spell.description.is_empty()
                             && !spell.name.is_empty()
