@@ -935,4 +935,129 @@ impl RulesRegistry {
             }
         });
     }
+
+    /// Fill empty descriptions on a character from registry definitions.
+    /// Reads registry caches (providing reactive tracking) and only writes
+    /// when a description is empty and the registry has a non-empty one.
+    pub fn fill_descriptions(&self, character: &mut Character) {
+        let class_cache = self.class_cache.read();
+        let bg_cache = self.background_cache.read();
+        let race_cache = self.race_cache.read();
+
+        // Helper: find a FeatureDefinition by name across all sources
+        let find_feat = |name: &str| -> Option<&FeatureDefinition> {
+            let class_feats = character.identity.classes.iter().flat_map(|cl| {
+                class_cache
+                    .get(&cl.class)
+                    .into_iter()
+                    .flat_map(|def| def.features(cl.subclass.as_deref()))
+            });
+            let bg_feats = bg_cache
+                .get(&character.identity.background)
+                .into_iter()
+                .flat_map(|def| def.features.iter());
+            let race_feats = race_cache
+                .get(&character.identity.race)
+                .into_iter()
+                .flat_map(|def| def.features.iter());
+            class_feats
+                .chain(bg_feats)
+                .chain(race_feats)
+                .find(|f| f.name == name)
+        };
+
+        // Feature descriptions
+        for feature in &mut character.features {
+            if feature.description.is_empty()
+                && !feature.name.is_empty()
+                && let Some(feat_def) = find_feat(&feature.name)
+                && !feat_def.description.is_empty()
+            {
+                feature.description = feat_def.description.clone();
+            }
+        }
+
+        // Racial trait descriptions
+        if let Some(race_def) = race_cache.get(&character.identity.race) {
+            for racial_trait in &mut character.racial_traits {
+                if racial_trait.description.is_empty()
+                    && !racial_trait.name.is_empty()
+                    && let Some(def_trait) =
+                        race_def.traits.iter().find(|t| t.name == racial_trait.name)
+                    && !def_trait.description.is_empty()
+                {
+                    racial_trait.description = def_trait.description.clone();
+                }
+            }
+        }
+
+        // Feature data entries: fields, choices, spells
+        let spell_list_cache = self.spell_list_cache.read();
+        let keys: Vec<String> = character.feature_data.keys().cloned().collect();
+
+        for key in keys {
+            let feat_def = find_feat(&key);
+
+            // Field descriptions and choice option descriptions
+            if let Some(feat_def) = feat_def
+                && let Some(field_defs) = &feat_def.fields
+                && let Some(entry) = character.feature_data.get_mut(&key)
+            {
+                for field in &mut entry.fields {
+                    if let Some(field_def) = field_defs.iter().find(|d| d.name == field.name) {
+                        if field.description.is_empty() && !field_def.description.is_empty() {
+                            field.description = field_def.description.clone();
+                        }
+
+                        if let FieldKind::Choice { options, .. } = &field_def.kind {
+                            let def_options = match options {
+                                ChoiceOptions::List(list) => list.as_slice(),
+                                ChoiceOptions::Ref { .. } => &[],
+                            };
+                            for opt in field.value.choices_mut() {
+                                if opt.description.is_empty()
+                                    && !opt.name.is_empty()
+                                    && let Some(def_opt) =
+                                        def_options.iter().find(|o| o.name == opt.name)
+                                    && !def_opt.description.is_empty()
+                                {
+                                    opt.description = def_opt.description.clone();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Spell descriptions
+            if let Some(feat_def) = feat_def
+                && let Some(spells_def) = &feat_def.spells
+            {
+                let spell_defs: &[SpellDefinition] = match &spells_def.list {
+                    SpellList::Inline(spells) => spells,
+                    SpellList::Ref { from } => {
+                        self.fetch_spell_list(from);
+                        spell_list_cache
+                            .get(from.as_str())
+                            .map_or(&[], |v| v.as_slice())
+                    }
+                };
+
+                if let Some(entry) = character.feature_data.get_mut(&key)
+                    && let Some(spell_data) = &mut entry.spells
+                {
+                    for spell in &mut spell_data.spells {
+                        if spell.description.is_empty()
+                            && !spell.name.is_empty()
+                            && let Some(spell_def) =
+                                spell_defs.iter().find(|s| s.name == spell.name)
+                            && !spell_def.description.is_empty()
+                        {
+                            spell.description = spell_def.description.clone();
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

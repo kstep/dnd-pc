@@ -20,9 +20,12 @@ fn strip_for_sharing(character: &Character) -> Character {
     }
 
     for entry in character.feature_data.values_mut() {
-        // Fields use #[serde(flatten)] incompatible with postcard — clear them;
-        // they can be re-applied from level-up rules after import.
-        entry.fields.clear();
+        for field in &mut entry.fields {
+            field.description.clear();
+            for opt in field.value.choices_mut() {
+                opt.description.clear();
+            }
+        }
         if let Some(spells) = &mut entry.spells {
             for spell in &mut spells.spells {
                 spell.description.clear();

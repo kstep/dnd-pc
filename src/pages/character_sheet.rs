@@ -14,6 +14,7 @@ use crate::{
         saving_throws_panel::SavingThrowsPanel, skills_panel::SkillsPanel,
         spellcasting_panel::SpellcastingPanel,
     },
+    rules::RulesRegistry,
     storage,
 };
 
@@ -39,6 +40,22 @@ pub fn CharacterSheet() -> impl IntoView {
             Effect::new(move || {
                 let c = store.get();
                 storage::save_character(&c);
+            });
+
+            // Fill empty descriptions from registry definitions
+            let registry = expect_context::<RulesRegistry>();
+            {
+                let c = store.get_untracked();
+                for cl in &c.identity.classes {
+                    registry.fetch_class(&cl.class);
+                }
+                registry.fetch_race(&c.identity.race);
+                registry.fetch_background(&c.identity.background);
+            }
+            Effect::new(move || {
+                store.update(|c| {
+                    registry.fill_descriptions(c);
+                });
             });
 
             // Provide context so child components can access the store
