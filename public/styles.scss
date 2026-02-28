@@ -1208,6 +1208,7 @@ input[type="checkbox"] {
 
 .import-conflict-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--size-2);
   margin-top: var(--size-3);
