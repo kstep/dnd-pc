@@ -139,35 +139,34 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         cl.class.clone()
     };
 
-    let Some(def) = registry.get_class(&class_name) else {
-        return;
-    };
-
     let subclass = {
         let classes = store.identity().classes().read();
         classes.get(class_index).and_then(|c| c.subclass.clone())
     };
 
-    let slots: Option<Vec<u32>> = def
-        .features(subclass.as_deref())
-        .filter_map(|f| f.spells.as_ref())
-        .find_map(|s| s.levels.get(level as usize - 1))
-        .and_then(|l| l.slots.clone());
+    registry.with_class(&class_name, |def| {
+        let slots: Option<Vec<u32>> = def
+            .features(subclass.as_deref())
+            .filter_map(|f| f.spells.as_ref())
+            .find_map(|s| s.levels.get(level as usize - 1))
+            .and_then(|l| l.slots.clone());
 
-    store.update(|c| {
-        def.apply_level(level, c);
+        store.update(|c| {
+            def.apply_level(level, c);
 
-        // Re-apply race features at new total level (unlocks level-gated spells)
-        if c.identity.race_applied
-            && let Some(race_def) = registry.get_race(&c.identity.race)
-        {
-            let total_level = c.level();
-            for feat in race_def.features.values() {
-                feat.apply(total_level, c);
+            // Re-apply race features at new total level (unlocks level-gated spells)
+            if c.identity.race_applied {
+                let race_name = c.identity.race.clone();
+                registry.with_race(&race_name, |race_def| {
+                    let total_level = c.level();
+                    for feat in race_def.features.values() {
+                        feat.apply(total_level, c);
+                    }
+                });
             }
-        }
 
-        c.update_spell_slots(slots.as_deref());
+            c.update_spell_slots(slots.as_deref());
+        });
     });
 }
 
@@ -249,8 +248,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry.fetch_race(&race_name);
                         }
 
-                        let race_def = registry.get_race(&race_name);
-                        let show_apply = race_def.is_some() && !race_applied;
+                        let show_apply = registry.has_race(&race_name) && !race_applied;
 
                         view! {
                             <div class="race-input-row">
@@ -277,9 +275,9 @@ pub fn CharacterHeader() -> impl IntoView {
                                             title=title
                                             on:click=move |_| {
                                                 let race_name = store.identity().race().get_untracked();
-                                                if let Some(def) = registry.get_race(&race_name) {
+                                                registry.with_race(&race_name, |def| {
                                                     store.update(|c| def.apply(c));
-                                                }
+                                                });
                                             }
                                         >
                                             "⬆"
@@ -308,8 +306,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry.fetch_background(&bg_name);
                         }
 
-                        let bg_def = registry.get_background(&bg_name);
-                        let show_apply = bg_def.is_some() && !bg_applied;
+                        let show_apply = registry.has_background(&bg_name) && !bg_applied;
 
                         view! {
                             <div class="race-input-row">
@@ -336,9 +333,9 @@ pub fn CharacterHeader() -> impl IntoView {
                                             title=title
                                             on:click=move |_| {
                                                 let bg_name = store.identity().background().get_untracked();
-                                                if let Some(def) = registry.get_background(&bg_name) {
+                                                registry.with_background(&bg_name, |def| {
                                                     store.update(|c| def.apply(c));
-                                                }
+                                                });
                                             }
                                         >
                                             "⬆"
@@ -430,24 +427,22 @@ pub fn CharacterHeader() -> impl IntoView {
                                     registry.fetch_class(&class_name);
                                 }
 
-                                let class_def = registry.get_class(&class_name);
+                                let class_loaded = registry.has_class(&class_name);
 
-                                let next_unapplied: Option<u32> = class_def.as_ref()
-                                    .and_then(|_| {
-                                        (1..=current_level)
-                                            .find(|lvl| !applied.contains(lvl))
-                                    });
+                                let next_unapplied: Option<u32> = if class_loaded {
+                                    (1..=current_level)
+                                        .find(|lvl| !applied.contains(lvl))
+                                } else {
+                                    None
+                                };
 
-                                let subclass_options: Vec<(String, String)> = class_def
-                                    .as_ref()
-                                    .map(|def| {
-                                        def.subclasses
-                                            .values()
-                                            .filter(|sc| sc.min_level() <= current_level)
-                                            .map(|sc| (sc.name.clone(), sc.description.clone()))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
+                                let subclass_options: Vec<(String, String)> = registry.with_class(&class_name, |def| {
+                                    def.subclasses
+                                        .values()
+                                        .filter(|sc| sc.min_level() <= current_level)
+                                        .map(|sc| (sc.name.clone(), sc.description.clone()))
+                                        .collect()
+                                }).unwrap_or_default();
                                 let has_subclasses = !subclass_options.is_empty();
 
                                 view! {
@@ -461,8 +456,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 classes.write()[i].class.clone_from(&name);
                                                 if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
                                                     registry.fetch_class(&name);
-                                                    if let Some(def) = registry.get_class(&name) {
-                                                        classes.write()[i].hit_die_sides = def.hit_die;
+                                                    if let Some(hit_die) = registry.with_class(&name, |def| def.hit_die) {
+                                                        classes.write()[i].hit_die_sides = hit_die;
                                                     }
                                                 }
                                             }

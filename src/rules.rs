@@ -106,6 +106,7 @@ use crate::{
         Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureValue,
         Proficiency, ProficiencyLevel, RacialTrait, SPELL_SLOT_TABLE, Skill, Spell, SpellData,
     },
+    vecset::VecSet,
 };
 
 // --- JSON types ---
@@ -213,7 +214,7 @@ pub struct BackgroundDefinition {
     #[serde(default)]
     pub ability_modifiers: Vec<AbilityModifier>,
     #[serde(default)]
-    pub proficiencies: Vec<Skill>,
+    pub proficiencies: VecSet<Skill>,
     #[serde(default, deserialize_with = "named_map::deserialize")]
     pub features: BTreeMap<String, FeatureDefinition>,
 }
@@ -248,9 +249,9 @@ pub struct ClassDefinition {
     pub description: String,
     pub hit_die: u16,
     #[serde(default)]
-    pub proficiencies: Vec<Proficiency>,
+    pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
-    pub saving_throws: Vec<Ability>,
+    pub saving_throws: VecSet<Ability>,
     #[serde(default, deserialize_with = "named_map::deserialize")]
     pub features: BTreeMap<String, FeatureDefinition>,
     #[serde(default)]
@@ -303,7 +304,7 @@ impl SubclassDefinition {
 pub struct SubclassLevelRules {
     pub level: u32,
     #[serde(default)]
-    pub features: Vec<String>,
+    pub features: VecSet<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -311,7 +312,9 @@ pub struct FeatureDefinition {
     pub name: String,
     pub description: String,
     #[serde(default)]
-    pub languages: Vec<String>,
+    pub languages: VecSet<String>,
+    #[serde(default)]
+    pub stackable: bool,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "named_map::deserialize")]
     pub fields: BTreeMap<String, FieldDefinition>,
@@ -332,11 +335,7 @@ impl FeatureDefinition {
             });
         }
 
-        for lang in &self.languages {
-            if !character.languages.contains(lang) {
-                character.languages.push(lang.clone());
-            }
-        }
+        character.languages.extend(self.languages.iter().cloned());
 
         if let Some(spells_def) = &self.spells {
             let entry = character.feature_data.entry(self.name.clone()).or_default();
@@ -588,7 +587,7 @@ pub struct SpellLevelRules {
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct ClassLevelRules {
     #[serde(default)]
-    pub features: Vec<String>,
+    pub features: VecSet<String>,
 }
 
 impl ClassDefinition {
@@ -602,21 +601,19 @@ impl ClassDefinition {
             return;
         };
 
-        if class_level.applied_levels.contains(&level) {
+        if !class_level.applied_levels.insert(level) {
             return;
         }
-
-        class_level.applied_levels.push(level);
         class_level.hit_die_sides = self.hit_die;
 
         // Apply saving throws and proficiencies at level 1
         if level == 1 {
-            for &ability in &self.saving_throws {
-                character.saving_throws.insert(ability);
-            }
-            for &prof in &self.proficiencies {
-                character.proficiencies.insert(prof);
-            }
+            character
+                .saving_throws
+                .extend(self.saving_throws.iter().copied());
+            character
+                .proficiencies
+                .extend(self.proficiencies.iter().copied());
         }
 
         let Some(rules) = self.levels.get(level as usize - 1) else {
@@ -642,9 +639,15 @@ impl ClassDefinition {
         }
 
         for feat in self.features(subclass.as_deref()) {
-            if rules.features.contains(&feat.name)
-                || character.features.iter().any(|f| f.name == feat.name)
-            {
+            let is_new = rules.features.contains(&feat.name);
+            let already_has = character.features.iter().any(|f| f.name == feat.name);
+
+            // Skip non-stackable features that would be granted again from another source
+            if is_new && already_has && !feat.stackable {
+                continue;
+            }
+
+            if is_new || already_has {
                 feat.apply(level, character);
             }
         }
@@ -718,8 +721,12 @@ impl RulesRegistry {
         f(entries.unwrap_or(&[]))
     }
 
-    pub fn get_class(&self, name: &str) -> Option<ClassDefinition> {
-        self.class_cache.read().get(name).cloned()
+    pub fn has_class(&self, name: &str) -> bool {
+        self.class_cache.read().contains_key(name)
+    }
+
+    pub fn with_class<R>(&self, name: &str, f: impl FnOnce(&ClassDefinition) -> R) -> Option<R> {
+        self.class_cache.read().get(name).map(f)
     }
 
     pub fn fetch_spell_list(&self, path: &str) {
@@ -917,8 +924,12 @@ impl RulesRegistry {
         f(entries.unwrap_or(&[]))
     }
 
-    pub fn get_race(&self, name: &str) -> Option<RaceDefinition> {
-        self.race_cache.read().get(name).cloned()
+    pub fn has_race(&self, name: &str) -> bool {
+        self.race_cache.read().contains_key(name)
+    }
+
+    pub fn with_race<R>(&self, name: &str, f: impl FnOnce(&RaceDefinition) -> R) -> Option<R> {
+        self.race_cache.read().get(name).map(f)
     }
 
     pub fn fetch_race(&self, name: &str) {
@@ -963,8 +974,16 @@ impl RulesRegistry {
         f(entries.unwrap_or(&[]))
     }
 
-    pub fn get_background(&self, name: &str) -> Option<BackgroundDefinition> {
-        self.background_cache.read().get(name).cloned()
+    pub fn has_background(&self, name: &str) -> bool {
+        self.background_cache.read().contains_key(name)
+    }
+
+    pub fn with_background<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(&BackgroundDefinition) -> R,
+    ) -> Option<R> {
+        self.background_cache.read().get(name).map(f)
     }
 
     pub fn fetch_background(&self, name: &str) {

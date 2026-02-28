@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
+use crate::vecset::VecSet;
 
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
@@ -72,7 +73,7 @@ pub struct Character {
     #[serde(default)]
     pub proficiencies: HashSet<Proficiency>,
     #[serde(default)]
-    pub languages: Vec<String>,
+    pub languages: VecSet<String>,
     #[serde(default)]
     pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
@@ -245,7 +246,7 @@ impl Default for Character {
             feature_data: BTreeMap::new(),
             spell_slots: Vec::new(),
             proficiencies: HashSet::new(),
-            languages: Vec::new(),
+            languages: VecSet::new(),
             racial_traits: Vec::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
@@ -302,7 +303,7 @@ pub struct ClassLevel {
     #[serde(default)]
     pub hit_dice_used: u32,
     #[serde(default)]
-    pub applied_levels: Vec<u32>,
+    pub applied_levels: VecSet<u32>,
     #[serde(default)]
     pub caster_coef: u8,
 }
@@ -315,7 +316,7 @@ impl Default for ClassLevel {
             level: 1,
             hit_die_sides: 8,
             hit_dice_used: 0,
-            applied_levels: Vec::new(),
+            applied_levels: VecSet::new(),
             caster_coef: 0,
         }
     }

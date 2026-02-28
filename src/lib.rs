@@ -13,6 +13,7 @@ mod pages;
 pub mod rules;
 mod share;
 mod storage;
+pub mod vecset;
 
 pub const BASE_URL: &str = match option_env!("BASE_URL") {
     Some(url) => url,

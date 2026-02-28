@@ -67,14 +67,14 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                         placeholder=move_tr!("language")
                                         prop:value=val
                                         on:input=move |e| {
-                                            languages.write()[i] = event_target_value(&e);
+                                            languages.write().set(i, event_target_value(&e));
                                         }
                                     />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
                                             if i < languages.read().len() {
-                                                languages.write().remove(i);
+                                                languages.write().remove_at(i);
                                             }
                                         }
                                     >

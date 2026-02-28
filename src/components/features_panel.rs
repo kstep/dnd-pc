@@ -29,10 +29,11 @@ pub fn FeaturesPanel() -> impl IntoView {
             {move || {
                 let classes = store.identity().classes().read();
                 let options: Vec<(String, String)> = classes.iter().filter_map(|c| {
-                    let def = registry.get_class(&c.class)?;
-                    Some(def.features(c.subclass.as_deref())
-                        .map(|f| (f.name.clone(), f.description.clone()))
-                        .collect::<Vec<_>>())
+                    registry.with_class(&c.class, |def| {
+                        def.features(c.subclass.as_deref())
+                            .map(|f| (f.name.clone(), f.description.clone()))
+                            .collect::<Vec<_>>()
+                    })
                 }).flatten().collect();
                 view! {
                     <datalist id="feature-suggestions">
@@ -69,9 +70,10 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             let name = event_target_value(&e);
                                             let classes = store.identity().classes().read();
                                             let desc = classes.iter().find_map(|c| {
-                                                let def = registry.get_class(&c.class)?;
-                                                def.find_feature(&name, c.subclass.as_deref())
-                                                    .map(|f| f.description.clone())
+                                                registry.with_class(&c.class, |def| {
+                                                    def.find_feature(&name, c.subclass.as_deref())
+                                                        .map(|f| f.description.clone())
+                                                })?
                                             });
                                             drop(classes);
                                             let mut w = features.write();
