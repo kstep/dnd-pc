@@ -1249,14 +1249,17 @@ input[type="checkbox"] {
 }
 
 .field-points {
-  grid-template-columns: auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
 
   .points-inputs {
-    grid-column: 2;
-    justify-self: start;
     display: flex;
     align-items: center;
     gap: var(--size-1);
+  }
+
+  .field-desc {
+    width: 100%;
   }
 }
 
