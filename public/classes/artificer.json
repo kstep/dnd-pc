@@ -14,7 +14,7 @@
   ],
   "features": [
     {
-      "name": "Spellcasting",
+      "name": "Spellcasting (Artificer)",
       "description": "You have learned how to channel magical energy through objects. See the Player's Handbook for the rules on spellcasting. The information below details how you use those rules with Artificer spells, which appear in the Artificer spell list later in the class's description. Tools Required: You produce your Artificer spells through tools.",
       "spells": {
         "casting_ability": 3,
@@ -618,11 +618,13 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Artificer levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Artificer levels 8, 12, and 16.",
+      "stackable": true
     },
     {
-      "name": "Subclass feature",
-      "description": "You gain a feature from your Artificer Subclass."
+      "name": "Subclass Feature",
+      "description": "You gain a feature from your Artificer Subclass.",
+      "stackable": true
     },
     {
       "name": "Magic Item Tinker",
@@ -650,7 +652,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Energy Resistance is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Energy Resistance is recommended.",
+      "stackable": true
     },
     {
       "name": "Soul of Artifice",
@@ -660,7 +663,7 @@
   "levels": [
     {
       "features": [
-        "Spellcasting",
+        "Spellcasting (Artificer)",
         "Tinker's Magic"
       ]
     },
@@ -681,7 +684,7 @@
     },
     {
       "features": [
-        "Subclass feature"
+        "Subclass Feature"
       ]
     },
     {
@@ -701,7 +704,7 @@
     },
     {
       "features": [
-        "Subclass feature"
+        "Subclass Feature"
       ]
     },
     {
@@ -729,7 +732,7 @@
     },
     {
       "features": [
-        "Subclass feature"
+        "Subclass Feature"
       ]
     },
     {

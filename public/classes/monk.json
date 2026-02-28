@@ -64,7 +64,8 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Monk levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Monk levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Slow Fall",
@@ -84,7 +85,8 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Monk subclass."
+      "description": "You gain a feature from your Monk subclass.",
+      "stackable": true
     },
     {
       "name": "Evasion",
@@ -120,7 +122,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.",
+      "stackable": true
     },
     {
       "name": "Body and Mind",

@@ -241,11 +241,13 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Warlock levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Warlock levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Warlock subclass."
+      "description": "You gain a feature from your Warlock subclass.",
+      "stackable": true
     },
     {
       "name": "Contact Patron",
@@ -253,11 +255,13 @@
     },
     {
       "name": "Mystic Arcanum",
-      "description": "Your patron grants you a magical secret called an arcanum. Choose one level 6 Warlock spell as this arcanum. You can cast your arcanum spell once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again."
+      "description": "Your patron grants you a magical secret called an arcanum. Choose one level 6 Warlock spell as this arcanum. You can cast your arcanum spell once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again.",
+      "stackable": true
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended.",
+      "stackable": true
     },
     {
       "name": "Eldritch Master",

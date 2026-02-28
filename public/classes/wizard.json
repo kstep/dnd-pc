@@ -19,7 +19,7 @@
       "description": "You can cast any spell as a Ritual if that spell has the Ritual tag and the spell is in your spellbook. You needn't have the spell prepared, but you must read from the book to cast a spell in this way."
     },
     {
-      "name": "Spellcasting",
+      "name": "Spellcasting (Wizard)",
       "description": "As a student of arcane magic, you have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Wizard spells, which appear in the Wizard spell list later in the class's description. Cantrips: You know three Wizard cantrips of your choice. Light, Mage Hand, and Ray of Frost are recommended.",
       "spells": {
         "casting_ability": 3,
@@ -249,7 +249,8 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Wizard levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Wizard levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Memorize Spell",
@@ -257,7 +258,8 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Wizard Subclass."
+      "description": "You gain a feature from your Wizard Subclass.",
+      "stackable": true
     },
     {
       "name": "Spell Mastery",
@@ -265,7 +267,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Spell Recall is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Spell Recall is recommended.",
+      "stackable": true
     },
     {
       "name": "Signature Spells",
@@ -277,7 +280,7 @@
       "features": [
         "Arcane Recovery",
         "Ritual Adept",
-        "Spellcasting"
+        "Spellcasting (Wizard)"
       ]
     },
     {

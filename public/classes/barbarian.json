@@ -45,7 +45,7 @@
       "description": "While you aren't wearing any armor, your base Armor Class equals 10 plus your Dexterity and Constitution modifiers. You can use a Shield and still gain this benefit."
     },
     {
-      "name": "Weapon Mastery",
+      "name": "Weapon Mastery (Barbarian)",
       "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of Simple or Martial Melee weapons of your choice, such as Greataxe and Handaxe. Whenever you finish a Long Rest, you can practice weapon drills and change one of those weapon choices.",
       "fields": [
         {
@@ -77,7 +77,8 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Barbarian levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Barbarian levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Extra Attack",
@@ -89,7 +90,8 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Barbarian subclass."
+      "description": "You gain a feature from your Barbarian subclass.",
+      "stackable": true
     },
     {
       "name": "Feral Instinct",
@@ -109,7 +111,8 @@
     },
     {
       "name": "Improved Brutal Strike",
-      "description": "You have honed new ways to attack furiously. The following effects are now among your Brutal Strike options. Staggering Blow: The target has Disadvantage on the next saving throw it makes, and it can't make Opportunity Attack until the start of your next turn."
+      "description": "You have honed new ways to attack furiously. The following effects are now among your Brutal Strike options. Staggering Blow: The target has Disadvantage on the next saving throw it makes, and it can't make Opportunity Attack until the start of your next turn.",
+      "stackable": true
     },
     {
       "name": "Persistent Rage",
@@ -121,7 +124,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.",
+      "stackable": true
     },
     {
       "name": "Primal Champion",
@@ -133,7 +137,7 @@
       "features": [
         "Rage",
         "Unarmored Defense",
-        "Weapon Mastery"
+        "Weapon Mastery (Barbarian)"
       ]
     },
     {
@@ -744,7 +748,9 @@
         {
           "name": "Giant Power",
           "description": "3rd-Level Path of the Giant Feature When you choose this path, you learn to speak, read, and write Giant or one other language of your choice if you already know Giant. Additionally, you learn a cantrip of your choice: either druidcraft or thaumaturgy. Wisdom is your spellcasting ability for this spell.",
-          "languages": ["Giant"]
+          "languages": [
+            "Giant"
+          ]
         },
         {
           "name": "Giant's Havoc",

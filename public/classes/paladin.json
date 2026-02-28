@@ -20,7 +20,7 @@
       "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level."
     },
     {
-      "name": "Spellcasting",
+      "name": "Spellcasting (Paladin)",
       "description": "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Paladin spells, which appear in the Paladin spell list later in the class's description. Spell Slots: The Paladin Features table shows how many spell slots you have to cast your level 1+ spells.",
       "spells": {
         "casting_ability": 5,
@@ -173,7 +173,7 @@
       }
     },
     {
-      "name": "Weapon Mastery",
+      "name": "Weapon Mastery (Paladin)",
       "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longsword and Javelin. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Halberd and Flail."
     },
     {
@@ -186,7 +186,8 @@
     },
     {
       "name": "Channel Divinity",
-      "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice."
+      "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice.",
+      "stackable": true
     },
     {
       "name": "Divine Sense",
@@ -198,7 +199,8 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Paladin levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Paladin levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Extra Attack",
@@ -214,7 +216,8 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Paladin Subclass."
+      "description": "You gain a feature from your Paladin Subclass.",
+      "stackable": true
     },
     {
       "name": "Abjure Foes",
@@ -238,15 +241,16 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Truesight is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Truesight is recommended.",
+      "stackable": true
     }
   ],
   "levels": [
     {
       "features": [
         "Lay on Hands",
-        "Spellcasting",
-        "Weapon Mastery"
+        "Spellcasting (Paladin)",
+        "Weapon Mastery (Paladin)"
       ]
     },
     {

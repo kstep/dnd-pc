@@ -15,7 +15,7 @@
       "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: The spell save DC of your Sorcerer spells increases by 1. You have Advantage on the attack rolls of Sorcerer spells you cast."
     },
     {
-      "name": "Spellcasting",
+      "name": "Spellcasting (Sorcerer)",
       "description": "Drawing from your innate magic, you can cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Sorcerer spells, which appear in the Sorcerer spell list later in the class's description. Cantrips: You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended.",
       "spells": {
         "casting_ability": 5,
@@ -354,15 +354,22 @@
             }
           ]
         }
-      ]
+      ],
+      "stackable": true
     },
     {
       "name": "Sorcerer Subclass",
       "description": "You gain a Sorcerer subclass of your choice. A subclass is a specialization that grants you features at certain Sorcerer levels. For the rest of your career, you gain each of your subclass's features that are of your Sorcerer level or lower."
     },
     {
+      "name": "Subclass Feature",
+      "description": "You gain a feature from your Sorcerer Subclass.",
+      "stackable": true
+    },
+    {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Sorcerer levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Sorcerer levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Sorcerous Restoration",
@@ -374,7 +381,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.",
+      "stackable": true
     },
     {
       "name": "Arcane Apotheosis",
@@ -385,14 +393,13 @@
     {
       "features": [
         "Innate Sorcery",
-        "Spellcasting"
+        "Spellcasting (Sorcerer)"
       ]
     },
     {
       "features": [
         "Font of Magic",
-        "Metamagic",
-        "Metamagic Options"
+        "Metamagic"
       ]
     },
     {
@@ -495,7 +502,9 @@
         {
           "name": "Dragon Ancestor",
           "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. You can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check.",
-          "languages": ["Draconic"]
+          "languages": [
+            "Draconic"
+          ]
         },
         {
           "name": "Elemental Affinity",
@@ -811,7 +820,9 @@
         {
           "name": "Wind Speaker",
           "description": "The arcane magic you command is infused with elemental air. You can speak, read, and write Primordial. Knowing this language allows you to understand and be understood by those who speak its dialects: Primordial, Primordial, Primordial, and Primordial.",
-          "languages": ["Primordial"]
+          "languages": [
+            "Primordial"
+          ]
         },
         {
           "name": "Heart of the Storm",
@@ -1322,71 +1333,71 @@
                 "name": "Chromatic Orb",
                 "level": 1,
                 "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type.",
-		"sticky": true,
-		"min_level": 3
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Command",
                 "level": 1,
                 "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn.",
-		"sticky": true,
-		"min_level": 3
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Alter Self",
                 "level": 2,
                 "description": "You alter your physical form. Choose one of the following options. Its effects last for the duration, during which you can take a Magic action to replace the option you chose with a different one. Aquatic Adaptation: You sprout gills and grow webs between your fingers.",
-		"sticky": true,
-		"min_level": 3
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Dragon's Breath",
                 "level": 2,
                 "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone [Area of Effect].",
-		"sticky": true,
-		"min_level": 3
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Fear",
                 "level": 3,
                 "description": "Each creature in a 30-foot Cone [Area of Effect] must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration.",
-		"sticky": true,
-		"min_level": 5
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Fly",
                 "level": 3,
                 "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall.",
-		"sticky": true,
-		"min_level": 5
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Arcane Eye",
                 "level": 4,
                 "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction.",
-		"sticky": true,
-		"min_level": 7
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Charm Monster",
                 "level": 4,
                 "description": "One creature you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you.",
-		"sticky": true,
-		"min_level": 7
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Legend Lore",
                 "level": 5,
                 "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known.",
-		"sticky": true,
-		"min_level": 9
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Summon Dragon",
                 "level": 5,
                 "description": "You call forth a Dragon spirit. It manifests in an unoccupied space that you can see within range and uses the Draconic Spirit stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies.",
-		"sticky": true,
-		"min_level": 9
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }

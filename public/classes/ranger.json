@@ -45,7 +45,7 @@
       ]
     },
     {
-      "name": "Spellcasting",
+      "name": "Spellcasting (Ranger)",
       "description": "You have learned to channel the magical essence of nature to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class's description. Spell Slots: The Ranger Features table shows how many spell slots you have to cast your level 1+ spells.",
       "spells": {
         "casting_ability": 4,
@@ -217,7 +217,7 @@
       }
     },
     {
-      "name": "Weapon Mastery",
+      "name": "Weapon Mastery (Ranger)",
       "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbow and Shortsword. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Longsword."
     },
     {
@@ -234,7 +234,8 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Ranger levels 8, 12, and 16."
+      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Ranger levels 8, 12, and 16.",
+      "stackable": true
     },
     {
       "name": "Extra Attack",
@@ -246,11 +247,13 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "You gain a feature from your Ranger Subclass."
+      "description": "You gain a feature from your Ranger Subclass.",
+      "stackable": true
     },
     {
       "name": "Expertise",
-      "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills."
+      "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills.",
+      "stackable": true
     },
     {
       "name": "Tireless",
@@ -274,7 +277,8 @@
     },
     {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.",
+      "stackable": true
     },
     {
       "name": "Foe Slayer",
@@ -285,8 +289,8 @@
     {
       "features": [
         "Favored Enemy",
-        "Spellcasting",
-        "Weapon Mastery"
+        "Spellcasting (Ranger)",
+        "Weapon Mastery (Ranger)"
       ]
     },
     {
