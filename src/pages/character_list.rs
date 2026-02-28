@@ -9,8 +9,8 @@ pub fn CharacterList() -> impl IntoView {
     let (characters, set_characters) = signal(storage::load_index().characters);
 
     let create_character = move |_| {
-        let character = Character::new();
-        storage::save_character(&character);
+        let mut character = Character::new();
+        storage::save_character(&mut character);
         let id = character.id;
         set_characters.set(storage::load_index().characters);
         let navigate = use_navigate();

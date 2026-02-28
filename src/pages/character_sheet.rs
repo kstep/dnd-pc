@@ -38,8 +38,9 @@ pub fn CharacterSheet() -> impl IntoView {
 
             // Auto-save effect
             Effect::new(move || {
-                let c = store.get();
-                storage::save_character(&c);
+                store.update(|c| {
+                    storage::save_character(c);
+                });
             });
 
             // Fill empty descriptions from registry definitions
