@@ -20,16 +20,21 @@ fn FeatureSpellcastingSection(
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    let fname = StoredValue::new(feature_name.clone());
+    let datalist_prefix = feature_name.replace(' ', "-").to_lowercase();
+    let datalist_prefix = StoredValue::new(datalist_prefix);
+    let panel_title = feature_name.clone();
+    let fname = StoredValue::new(feature_name);
 
     let casting_ability = Memo::new(move |_| {
-        store
-            .feature_data()
-            .read()
-            .get(&fname.get_value())
-            .and_then(|e| e.spells.as_ref())
-            .map(|sc| sc.casting_ability)
-            .unwrap_or(default_ability)
+        fname.with_value(|key| {
+            store
+                .feature_data()
+                .read()
+                .get(key)
+                .and_then(|e| e.spells.as_ref())
+                .map(|sc| sc.casting_ability)
+                .unwrap_or(default_ability)
+        })
     });
     let spell_save_dc = Memo::new(move |_| store.get().spell_save_dc(casting_ability.get()));
     let spell_attack = Memo::new(move |_| store.get().spell_attack_bonus(casting_ability.get()));
@@ -39,14 +44,8 @@ fn FeatureSpellcastingSection(
     // Reactively resolve spell list for datalist suggestions (re-runs when
     // spell_list_cache populates after async fetch)
     let spell_suggestions = Memo::new(move |_| {
-        resolve_feature_spell_list(&registry, &store.get().identity, &fname.get_value())
+        fname.with_value(|key| resolve_feature_spell_list(&registry, &store.get().identity, key))
     });
-
-    // Build datalist options per level (reactive)
-    let datalist_prefix = feature_name.replace(' ', "-").to_lowercase();
-    let datalist_prefix = StoredValue::new(datalist_prefix);
-
-    let panel_title = feature_name;
 
     view! {
         <div class="spellcasting-section">
@@ -55,10 +54,9 @@ fn FeatureSpellcastingSection(
                 let suggestions = spell_suggestions.get();
                 (0..=9u32)
                     .map(|level| {
-                        let datalist_id = format!(
-                            "spell-suggestions-{}-{level}",
-                            datalist_prefix.get_value()
-                        );
+                        let datalist_id = datalist_prefix.with_value(|prefix| {
+                            format!("spell-suggestions-{prefix}-{level}")
+                        });
                         let options: Vec<_> = suggestions
                             .iter()
                             .filter(|(l, _, _)| *l == level)
@@ -85,11 +83,12 @@ fn FeatureSpellcastingSection(
                         on:change=move |e| {
                             let val = event_target_value(&e);
                             if let Ok(a) = serde_json::from_str::<Ability>(&format!("\"{val}\"")) {
-                                let fname = fname.get_value();
-                                store.feature_data().update(|map| {
-                                    if let Some(sc) = map.get_mut(&fname).and_then(|e| e.spells.as_mut()) {
-                                        sc.casting_ability = a;
-                                    }
+                                fname.with_value(|key| {
+                                    store.feature_data().update(|map| {
+                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
+                                            sc.casting_ability = a;
+                                        }
+                                    });
                                 });
                             }
                         }
@@ -131,18 +130,19 @@ fn FeatureSpellcastingSection(
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        let key = fname.get_value();
-                        store.feature_data().update(|map| {
-                            if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut()) {
-                                sc.spells.sort_by(|a, b| {
-                                    b.sticky
-                                        .cmp(&a.sticky)
-                                        .then_with(|| a.level.cmp(&b.level))
-                                        .then_with(|| {
-                                            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-                                        })
-                                });
-                            }
+                        fname.with_value(|key| {
+                            store.feature_data().update(|map| {
+                                if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
+                                    sc.spells.sort_by(|a, b| {
+                                        b.sticky
+                                            .cmp(&a.sticky)
+                                            .then_with(|| a.level.cmp(&b.level))
+                                            .then_with(|| {
+                                                a.name.to_lowercase().cmp(&b.name.to_lowercase())
+                                            })
+                                    });
+                                }
+                            });
                         });
                     }
                 >
@@ -151,12 +151,13 @@ fn FeatureSpellcastingSection(
             </div>
             <div class="spells-list">
                 {move || {
-                    let key = fname.get_value();
-                    let spell_list = store.feature_data().read()
-                        .get(&key)
-                        .and_then(|e| e.spells.as_ref())
-                        .map(|sc| sc.spells.clone())
-                        .unwrap_or_default();
+                    let spell_list = fname.with_value(|key| {
+                        store.feature_data().read()
+                            .get(key)
+                            .and_then(|e| e.spells.as_ref())
+                            .map(|sc| sc.spells.clone())
+                            .unwrap_or_default()
+                    });
                     spell_list
                         .into_iter()
                         .enumerate()
@@ -167,7 +168,9 @@ fn FeatureSpellcastingSection(
                             let spell_sticky = spell.sticky;
                             let spell_desc = spell.description.clone();
                             let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
-                            let datalist_id = format!("spell-suggestions-{}-{}", datalist_prefix.get_value(), spell.level);
+                            let datalist_id = datalist_prefix.with_value(|prefix| {
+                                format!("spell-suggestions-{prefix}-{}", spell.level)
+                            });
                             view! {
                                 <div class="spell-entry">
                                     <ToggleButton
@@ -181,13 +184,14 @@ fn FeatureSpellcastingSection(
                                             prop:disabled=spell_sticky
                                             on:change=move |_| {
                                                 if !spell_sticky {
-                                                    let key = fname.get_value();
-                                                    store.feature_data().update(|map| {
-                                                        if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
-                                                            && let Some(s) = sc.spells.get_mut(i)
-                                                        {
-                                                            s.prepared = !s.prepared;
-                                                        }
+                                                    fname.with_value(|key| {
+                                                        store.feature_data().update(|map| {
+                                                            if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                                && let Some(s) = sc.spells.get_mut(i)
+                                                            {
+                                                                s.prepared = !s.prepared;
+                                                            }
+                                                        });
                                                     });
                                                 }
                                             }
@@ -204,16 +208,17 @@ fn FeatureSpellcastingSection(
                                             let desc = spell_suggestions.get().iter()
                                                 .find(|(_, n, _)| *n == name)
                                                 .map(|(_, _, d)| d.clone());
-                                            let key = fname.get_value();
-                                            store.feature_data().update(|map| {
-                                                if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
-                                                    && let Some(s) = sc.spells.get_mut(i)
-                                                {
-                                                    s.name = name;
-                                                    if let Some(desc) = desc {
-                                                        s.description = desc;
+                                            fname.with_value(|key| {
+                                                store.feature_data().update(|map| {
+                                                    if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                        && let Some(s) = sc.spells.get_mut(i)
+                                                    {
+                                                        s.name = name;
+                                                        if let Some(desc) = desc {
+                                                            s.description = desc;
+                                                        }
                                                     }
-                                                }
+                                                });
                                             });
                                         }
                                     />
@@ -226,13 +231,14 @@ fn FeatureSpellcastingSection(
                                         prop:value=spell_level
                                         on:input=move |e| {
                                             if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                                                let key = fname.get_value();
-                                                store.feature_data().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
-                                                        && let Some(s) = sc.spells.get_mut(i)
-                                                    {
-                                                        s.level = v;
-                                                    }
+                                                fname.with_value(|key| {
+                                                    store.feature_data().update(|map| {
+                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                            && let Some(s) = sc.spells.get_mut(i)
+                                                        {
+                                                            s.level = v;
+                                                        }
+                                                    });
                                                 });
                                             }
                                         }
@@ -241,13 +247,14 @@ fn FeatureSpellcastingSection(
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| {
-                                                let key = fname.get_value();
-                                                store.feature_data().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
-                                                        && i < sc.spells.len()
-                                                    {
-                                                        sc.spells.remove(i);
-                                                    }
+                                                fname.with_value(|key| {
+                                                    store.feature_data().update(|map| {
+                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                            && i < sc.spells.len()
+                                                        {
+                                                            sc.spells.remove(i);
+                                                        }
+                                                    });
                                                 });
                                             }
                                         >
@@ -260,13 +267,14 @@ fn FeatureSpellcastingSection(
                                             placeholder=move_tr!("description")
                                             prop:value=spell_desc.clone()
                                             on:change=move |e| {
-                                                let key = fname.get_value();
-                                                store.feature_data().update(|map| {
-                                                    if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut())
-                                                        && let Some(s) = sc.spells.get_mut(i)
-                                                    {
-                                                        s.description = event_target_value(&e);
-                                                    }
+                                                fname.with_value(|key| {
+                                                    store.feature_data().update(|map| {
+                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                            && let Some(s) = sc.spells.get_mut(i)
+                                                        {
+                                                            s.description = event_target_value(&e);
+                                                        }
+                                                    });
                                                 });
                                             }
                                         />
@@ -280,11 +288,12 @@ fn FeatureSpellcastingSection(
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    let key = fname.get_value();
-                    store.feature_data().update(|map| {
-                        if let Some(sc) = map.get_mut(&key).and_then(|e| e.spells.as_mut()) {
-                            sc.spells.push(Spell::default());
-                        }
+                    fname.with_value(|key| {
+                        store.feature_data().update(|map| {
+                            if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
+                                sc.spells.push(Spell::default());
+                            }
+                        });
                     });
                 }
             >
