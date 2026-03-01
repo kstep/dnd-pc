@@ -367,17 +367,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>() {
                                                     store.spell_slots().update(|slots| {
-                                                        match slots.get_mut(idx) {
-                                                            Some(slot) => slot.used = v,
-                                                            None if v > 0 => {
-                                                                slots.resize_with(idx + 1, Default::default);
-                                                                slots[idx].used = v;
-                                                            }
-                                                            None => {}
-                                                        }
-                                                        while slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
-                                                            slots.pop();
-                                                        }
+                                                        slots[idx].used = v;
                                                     });
                                                 }
                                             }
@@ -392,17 +382,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>() {
                                                     store.spell_slots().update(|slots| {
-                                                        match slots.get_mut(idx) {
-                                                            Some(slot) => slot.total = v,
-                                                            None if v > 0 => {
-                                                                slots.resize_with(idx + 1, Default::default);
-                                                                slots[idx].total = v;
-                                                            }
-                                                            None => {}
-                                                        }
-                                                        while slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
-                                                            slots.pop();
-                                                        }
+                                                        slots[idx].total = v;
                                                     });
                                                 }
                                             }

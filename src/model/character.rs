@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
-use crate::vecset::VecSet;
+use crate::{constvec::ConstVec, vecset::VecSet};
 
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
@@ -77,7 +77,7 @@ pub struct Character {
     #[serde(default)]
     pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
-    pub spell_slots: Vec<SpellSlotLevel>,
+    pub spell_slots: ConstVec<SpellSlotLevel, 9>,
     #[serde(default)]
     pub notes: String,
     #[serde(default)]
@@ -107,6 +107,14 @@ impl Character {
             .floor() as u32
     }
 
+    fn spell_slots_for_caster_level(&self) -> &'static [u32] {
+        self.caster_level()
+            .checked_sub(1)
+            .and_then(|level| SPELL_SLOT_TABLE.get(level as usize))
+            .copied()
+            .unwrap_or(&[])
+    }
+
     pub fn update_spell_slots(&mut self, slots: Option<&[u32]>) {
         let caster_classes = self
             .identity
@@ -114,38 +122,18 @@ impl Character {
             .iter()
             .filter(|c| c.caster_coef != 0)
             .count();
-        let slots: &[u32] = if caster_classes <= 1 {
-            if let Some(s) = slots.filter(|s| !s.is_empty()) {
-                s
-            } else {
-                let cl = self.caster_level() as usize;
-                cl.checked_sub(1)
-                    .and_then(|i| SPELL_SLOT_TABLE.get(i))
-                    .copied()
-                    .unwrap_or(&[])
-            }
-        } else {
-            let cl = self.caster_level() as usize;
-            cl.checked_sub(1)
-                .and_then(|i| SPELL_SLOT_TABLE.get(i))
-                .copied()
-                .unwrap_or(&[])
+
+        let slots: &[u32] = match caster_classes {
+            0 => &[],
+            1 => slots
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| self.spell_slots_for_caster_level()),
+            _ => self.spell_slots_for_caster_level(),
         };
-        // Expand to cover table slots (never shrink below current length).
-        self.spell_slots
-            .resize_with(slots.len().max(self.spell_slots.len()), Default::default);
-        // Only raise totals; never lower values the user may have set manually.
+
         for (i, entry) in self.spell_slots.iter_mut().enumerate() {
             let table_total = slots.get(i).copied().unwrap_or(0);
             entry.total = entry.total.max(table_total);
-        }
-        // Compact: trim trailing all-zero entries.
-        while self
-            .spell_slots
-            .last()
-            .is_some_and(|s| s.total == 0 && s.used == 0)
-        {
-            self.spell_slots.pop();
         }
     }
 
@@ -248,7 +236,7 @@ impl Default for Character {
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
-            spell_slots: Vec::new(),
+            spell_slots: ConstVec::new(),
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
@@ -648,7 +636,7 @@ pub mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::vecset::VecSet;
+    use crate::{constvec::ConstVec, vecset::VecSet};
 
     /// Build a minimal character for testing (avoids Default which calls
     /// js_sys::Date)
@@ -703,7 +691,7 @@ pub mod tests {
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
-            spell_slots: Vec::new(),
+            spell_slots: ConstVec::new(),
             notes: String::new(),
             updated_at: 0,
         }
