@@ -1101,52 +1101,72 @@
               {
                 "name": "Arms of Hadar",
                 "level": 1,
-                "description": "Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10-foot Emanation [Area of Effect] originating from you makes a Strength saving throw. On a failed save, a target takes 2d6 Necrotic damage and can't take Reactions until the start of its next turn."
+                "description": "Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10-foot Emanation [Area of Effect] originating from you makes a Strength saving throw. On a failed save, a target takes 2d6 Necrotic damage and can't take Reactions until the start of its next turn.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Dissonant Whispers",
                 "level": 1,
-                "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route."
+                "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Calm Emotions",
                 "level": 2,
-                "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe..."
+                "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe...",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Detect Thoughts",
                 "level": 2,
-                "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic."
+                "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Hunger of Hadar",
                 "level": 3,
-                "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration."
+                "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Sending",
                 "level": 3,
-                "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately."
+                "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Evard's Black Tentacles",
                 "level": 4,
-                "description": "Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in that area into Difficult Terrain. Each creature in that area makes a Strength saving throw."
+                "description": "Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in that area into Difficult Terrain. Each creature in that area makes a Strength saving throw.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Summon Aberration",
                 "level": 4,
-                "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad."
+                "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Rary's Telepathic Bond",
                 "level": 5,
-                "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell."
+                "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Telekinesis",
                 "level": 5,
-                "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below."
+                "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -1219,52 +1239,72 @@
               {
                 "name": "Alarm",
                 "level": 1,
-                "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area."
+                "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Protection from Evil and Good",
                 "level": 1,
-                "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target."
+                "description": "Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Aid",
                 "level": 2,
-                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Protection from Energy",
                 "level": 3,
-                "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
+                "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Freedom of Movement",
                 "level": 4,
-                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Summon Construct",
                 "level": 4,
-                "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone."
+                "description": "You call forth the spirit of a Construct. It manifests in an unoccupied space that you can see within range and uses the Construct Spirit stat block. When you cast the spell, choose a material: Clay, Metal, or Stone.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Wall of Force",
                 "level": 5,
-                "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface."
+                "description": "An Invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle. It can be free floating or resting on a solid surface.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -1535,57 +1575,79 @@
               {
                 "name": "Cure Wounds",
                 "level": 1,
-                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Guiding Bolt",
                 "level": 1,
-                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Scorching Ray",
                 "level": 2,
-                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Aura of Vitality",
                 "level": 3,
-                "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
+                "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Counterspell",
                 "level": 3,
-                "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
+                "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Fire Shield",
                 "level": 4,
-                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Wall of Fire",
                 "level": 4,
-                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Flame Strike",
                 "level": 5,
-                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
+                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf...",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }

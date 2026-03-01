@@ -945,57 +945,79 @@
               {
                 "name": "Faerie Fire",
                 "level": 1,
-                "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
+                "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Sleep",
                 "level": 1,
-                "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save."
+                "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Calm Emotions",
                 "level": 2,
-                "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe..."
+                "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spe...",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Misty Step",
                 "level": 2,
-                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+                "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Phantasmal Force",
                 "level": 2,
-                "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t..."
+                "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t...",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Blink",
                 "level": 3,
-                "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane)."
+                "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane).",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Plant Growth",
                 "level": 3,
-                "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range."
+                "description": "This spell channels vitality into plants. The casting time you use determines whether the spell has the Overgrowth or the Enrichment effect below. Overgrowth: Choose a point within range.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Dominate Beast",
                 "level": 4,
-                "description": "One Beast you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success."
+                "description": "One Beast you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Greater Invisibility",
                 "level": 4,
-                "description": "A creature you touch has the Invisible condition until the spell ends."
+                "description": "A creature you touch has the Invisible condition until the spell ends.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Dominate Person",
                 "level": 5,
-                "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success."
+                "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Seeming",
                 "level": 5,
-                "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+                "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -1073,52 +1095,72 @@
               {
                 "name": "Cure Wounds",
                 "level": 1,
-                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Guiding Bolt",
                 "level": 1,
-                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Aid",
                 "level": 2,
-                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Daylight",
                 "level": 3,
-                "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet."
+                "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Revivify",
                 "level": 3,
-                "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
+                "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Guardian of Faith",
                 "level": 4,
-                "description": "A Large spectral guardian appears and hovers for the duration in an unoccupied space that you can see within range. The guardian occupies that space and is invulnerable, and it appears in a form appropriate for your deity or pantheon."
+                "description": "A Large spectral guardian appears and hovers for the duration in an unoccupied space that you can see within range. The guardian occupies that space and is invulnerable, and it appears in a form appropriate for your deity or pantheon.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Wall of Fire",
                 "level": 4,
-                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Summon Celestial",
                 "level": 5,
-                "description": "You call forth a Celestial spirit. It manifests in an angelic form in an unoccupied space that you can see within range and uses the Celestial Spirit stat block. When you cast the spell, choose Avenger or Defender. Your choice determines certain details in its stat block."
+                "description": "You call forth a Celestial spirit. It manifests in an angelic form in an unoccupied space that you can see within range and uses the Celestial Spirit stat block. When you cast the spell, choose Avenger or Defender. Your choice determines certain details in its stat block.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -1190,52 +1232,72 @@
               {
                 "name": "Burning Hands",
                 "level": 1,
-                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one."
+                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Command",
                 "level": 1,
-                "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
+                "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Scorching Ray",
                 "level": 2,
-                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Suggestion",
                 "level": 2,
-                "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
+                "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Fireball",
                 "level": 3,
-                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
+                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da...",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Stinking Cloud",
                 "level": 3,
-                "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it."
+                "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Fire Shield",
                 "level": 4,
-                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Wall of Fire",
                 "level": 4,
-                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Geas",
                 "level": 5,
-                "description": "You give a verbal command to a creature that you can see within range, ordering it to carry out some service or refrain from an action or a course of activity as you decide. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
+                "description": "You give a verbal command to a creature that you can see within range, ordering it to carry out some service or refrain from an action or a course of activity as you decide. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Insect Plague",
                 "level": 5,
-                "description": "Swarming locusts fill a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. The Sphere [Area of Effect] remains for the duration, and its area is Lightly Obscured and Difficult Terrain."
+                "description": "Swarming locusts fill a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. The Sphere [Area of Effect] remains for the duration, and its area is Lightly Obscured and Difficult Terrain.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -1303,57 +1365,79 @@
               {
                 "name": "Dissonant Whispers",
                 "level": 1,
-                "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route."
+                "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Hex",
                 "level": 1,
-                "description": "You place a curse on a creature that you can see within range. Until the spell ends, you deal an extra 1d6 Necrotic damage to the target whenever you hit it with an attack roll. Also, choose one ability when you cast the spell."
+                "description": "You place a curse on a creature that you can see within range. Until the spell ends, you deal an extra 1d6 Necrotic damage to the target whenever you hit it with an attack roll. Also, choose one ability when you cast the spell.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Tasha's Hideous Laughter",
                 "level": 1,
-                "description": "One creature of your choice that you can see within range makes a Wisdom saving throw. On a failed save, it has the Prone and Incapacitated conditions for the duration. During that time, it laughs uncontrollably if it's capable of laughter, and it can't end the Prone condition on itself."
+                "description": "One creature of your choice that you can see within range makes a Wisdom saving throw. On a failed save, it has the Prone and Incapacitated conditions for the duration. During that time, it laughs uncontrollably if it's capable of laughter, and it can't end the Prone condition on itself.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Detect Thoughts",
                 "level": 2,
-                "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic."
+                "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Phantasmal Force",
                 "level": 2,
-                "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t..."
+                "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only t...",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Clairvoyance",
                 "level": 3,
-                "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees)."
+                "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees).",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Hunger of Hadar",
                 "level": 3,
-                "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration."
+                "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Confusion",
                 "level": 4,
-                "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn, consultin..."
+                "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn, consultin...",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Summon Aberration",
                 "level": 4,
-                "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad."
+                "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Modify Memory",
                 "level": 5,
-                "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration."
+                "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Telekinesis",
                 "level": 5,
-                "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below."
+                "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }

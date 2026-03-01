@@ -1229,12 +1229,16 @@
               {
                 "name": "Counterspell",
                 "level": 3,
-                "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
+                "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted.",
+                "sticky": true,
+                "min_level": 10
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
+                "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends.",
+                "sticky": true,
+                "min_level": 10
               }
             ]
           }
@@ -1302,7 +1306,9 @@
               {
                 "name": "See Invisibility",
                 "level": 2,
-                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
+                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly.",
+                "sticky": true,
+                "min_level": 10
               }
             ]
           }
@@ -1434,12 +1440,16 @@
               {
                 "name": "Summon Beast",
                 "level": 2,
-                "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water."
+                "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water.",
+                "sticky": true,
+                "min_level": 6
               },
               {
                 "name": "Summon Fey",
                 "level": 3,
-                "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+                "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy.",
+                "sticky": true,
+                "min_level": 6
               }
             ]
           }

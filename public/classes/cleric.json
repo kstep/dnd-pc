@@ -503,52 +503,72 @@
               {
                 "name": "Bless",
                 "level": 1,
-                "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save."
+                "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Cure Wounds",
                 "level": 1,
-                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Aid",
                 "level": 2,
-                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Mass Healing Word",
                 "level": 3,
-                "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier."
+                "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Revivify",
                 "level": 3,
-                "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
+                "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Aura of Life",
                 "level": 4,
-                "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points."
+                "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Death Ward",
                 "level": 4,
-                "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends."
+                "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Mass Cure Wounds",
                 "level": 5,
-                "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+                "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -607,52 +627,72 @@
               {
                 "name": "Burning Hands",
                 "level": 1,
-                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one."
+                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Faerie Fire",
                 "level": 1,
-                "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
+                "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Scorching Ray",
                 "level": 2,
-                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "See Invisibility",
                 "level": 2,
-                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
+                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Daylight",
                 "level": 3,
-                "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet."
+                "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Fireball",
                 "level": 3,
-                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da..."
+                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much da...",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Arcane Eye",
                 "level": 4,
-                "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction."
+                "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Wall of Fire",
                 "level": 4,
-                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration."
+                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Flame Strike",
                 "level": 5,
-                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf..."
+                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successf...",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Scrying",
                 "level": 5,
-                "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
+                "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -883,52 +923,72 @@
               {
                 "name": "Charm Person",
                 "level": 1,
-                "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+                "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Disguise Self",
                 "level": 1,
-                "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+                "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Invisibility",
                 "level": 2,
-                "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell."
+                "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Pass without Trace",
                 "level": 2,
-                "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
+                "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Hypnotic Pattern",
                 "level": 3,
-                "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
+                "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Nondetection",
                 "level": 3,
-                "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors."
+                "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Confusion",
                 "level": 4,
-                "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn, consultin..."
+                "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn, consultin...",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Dimension Door",
                 "level": 4,
-                "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca..."
+                "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You ca...",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Dominate Person",
                 "level": 5,
-                "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success."
+                "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Modify Memory",
                 "level": 5,
-                "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration."
+                "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
@@ -987,52 +1047,72 @@
               {
                 "name": "Guiding Bolt",
                 "level": 1,
-                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Shield of Faith",
                 "level": 1,
-                "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+                "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Magic Weapon",
                 "level": 2,
-                "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again."
+                "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Spiritual Weapon",
                 "level": 2,
-                "description": "You create a floating, spectral force that resembles a weapon of your choice and lasts for the duration. The force appears within range in a space of your choice, and you can immediately make one melee spell attack against one creature within 5 feet of the force."
+                "description": "You create a floating, spectral force that resembles a weapon of your choice and lasts for the duration. The force appears within range in a space of your choice, and you can immediately make one melee spell attack against one creature within 5 feet of the force.",
+                "sticky": true,
+                "min_level": 3
               },
               {
                 "name": "Crusader's Mantle",
                 "level": 3,
-                "description": "You radiate a magical aura in a 30-foot Emanation [Area of Effect]. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike."
+                "description": "You radiate a magical aura in a 30-foot Emanation [Area of Effect]. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Spirit Guardians",
                 "level": 3,
-                "description": "Protective spirits flit around you in a 15-foot Emanation [Area of Effect] for the duration. If you are good or neutral, their spectral form appears angelic or fey (your choice). If you are evil, they appear fiendish. When you cast this spell, you can designate creatures to be unaffected by it."
+                "description": "Protective spirits flit around you in a 15-foot Emanation [Area of Effect] for the duration. If you are good or neutral, their spectral form appears angelic or fey (your choice). If you are evil, they appear fiendish. When you cast this spell, you can designate creatures to be unaffected by it.",
+                "sticky": true,
+                "min_level": 5
               },
               {
                 "name": "Fire Shield",
                 "level": 4,
-                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Freedom of Movement",
                 "level": 4,
-                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions.",
+                "sticky": true,
+                "min_level": 7
               },
               {
                 "name": "Hold Monster",
                 "level": 5,
-                "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+                "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success.",
+                "sticky": true,
+                "min_level": 9
               },
               {
                 "name": "Steel Wind Strike",
                 "level": 5,
-                "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 Force damage."
+                "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 Force damage.",
+                "sticky": true,
+                "min_level": 9
               }
             ]
           }
