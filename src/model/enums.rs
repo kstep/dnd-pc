@@ -346,6 +346,30 @@ impl Translatable for Proficiency {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
+#[repr(u8)]
+pub enum ArmorType {
+    #[default]
+    Light,
+    Medium,
+    Heavy,
+}
+enum_serde_u8!(ArmorType {
+    Light,
+    Medium,
+    Heavy
+});
+
+impl Translatable for ArmorType {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            ArmorType::Light => "armor-type-light",
+            ArmorType::Medium => "armor-type-medium",
+            ArmorType::Heavy => "armor-type-heavy",
+        }
+    }
+}
+
 #[cfg(test)]
 pub mod tests {
     use wasm_bindgen_test::*;

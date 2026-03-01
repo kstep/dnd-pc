@@ -3,11 +3,13 @@ use std::collections::HashSet;
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
+use strum::IntoEnumIterator;
 
 use crate::{
     components::{panel::Panel, toggle_button::ToggleButton},
     model::{
-        Character, CharacterStoreFields, CurrencyStoreFields, EquipmentStoreFields, Item, Weapon,
+        Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields,
+        EquipmentStoreFields, Item, Translatable, Weapon,
     },
 };
 
@@ -15,8 +17,11 @@ use crate::{
 pub fn EquipmentPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
+    let i18n = expect_context::<leptos_fluent::I18n>();
+
     let equipment = store.equipment();
     let weapons = equipment.weapons();
+    let armors = equipment.armors();
     let items = equipment.items();
     let currency = equipment.currency();
 
@@ -104,6 +109,101 @@ pub fn EquipmentPanel() -> impl IntoView {
                 }
             >
                 {move_tr!("btn-add-weapon")}
+            </button>
+
+            <div class="section-header">
+                <h4>{move_tr!("armor")}</h4>
+                <button
+                    class="btn-toggle-desc"
+                    on:click=move |_| {
+                        armors.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                    }
+                >
+                    "\u{21C5}"
+                </button>
+            </div>
+            <div class="armors-list">
+                {move || {
+                    armors
+                        .read()
+                        .iter()
+                        .enumerate()
+                        .map(|(i, armor)| {
+                            let name = armor.name.clone();
+                            let base_ac = armor.base_ac.to_string();
+                            let armor_type = armor.armor_type as u8;
+                            view! {
+                                <div class="armor-entry">
+                                    <input
+                                        type="text"
+                                        placeholder=move_tr!("name")
+                                        prop:value=name
+                                        on:input=move |e| {
+                                            armors.write()[i].name = event_target_value(&e);
+                                        }
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder=move_tr!("base-ac")
+                                        class="short-input"
+                                        min="0"
+                                        prop:value=base_ac
+                                        on:input=move |e| {
+                                            if let Ok(v) = event_target_value(&e).parse::<u32>() {
+                                                armors.write()[i].base_ac = v;
+                                            }
+                                        }
+                                    />
+                                    <select
+                                        prop:value=armor_type.to_string()
+                                        on:change=move |e| {
+                                            let val = event_target_value(&e);
+                                            if let Ok(idx) = val.parse::<u8>() {
+                                                let at = match idx {
+                                                    1 => ArmorType::Medium,
+                                                    2 => ArmorType::Heavy,
+                                                    _ => ArmorType::Light,
+                                                };
+                                                armors.write()[i].armor_type = at;
+                                            }
+                                        }
+                                    >
+                                        {ArmorType::iter()
+                                            .map(|at| {
+                                                let val = (at as u8).to_string();
+                                                let selected = at as u8 == armor_type;
+                                                let label = Signal::derive(move || i18n.tr(at.tr_key()));
+                                                view! {
+                                                    <option value=val selected=selected>
+                                                        {label}
+                                                    </option>
+                                                }
+                                            })
+                                            .collect_view()}
+                                    </select>
+                                    <button
+                                        class="btn-remove"
+                                        on:click=move |_| {
+                                            if i < armors.read().len() {
+                                                armors.write().remove(i);
+                                            }
+                                        }
+                                    >
+                                        "X"
+                                    </button>
+                                </div>
+                            }
+                        })
+                        .collect_view()
+                }}
+            </div>
+            <button
+                class="btn-add"
+                on:click=move |_| {
+                    armors.write().push(Armor::default());
+                }
+            >
+                {move_tr!("btn-add-armor")}
             </button>
 
             <div class="section-header">

@@ -493,9 +493,21 @@ pub struct Equipment {
     #[serde(default)]
     pub weapons: Vec<Weapon>,
     #[serde(default)]
+    pub armors: Vec<Armor>,
+    #[serde(default)]
     pub items: Vec<Item>,
     #[serde(default)]
     pub currency: Currency,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct Armor {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub base_ac: u32,
+    #[serde(default)]
+    pub armor_type: ArmorType,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
