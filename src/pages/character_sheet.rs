@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
+use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 use reactive_stores::Store;
 use uuid::Uuid;
@@ -14,6 +15,7 @@ use crate::{
         saving_throws_panel::SavingThrowsPanel, skills_panel::SkillsPanel,
         spellcasting_panel::SpellcastingPanel,
     },
+    model::{CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
     storage,
 };
@@ -62,7 +64,19 @@ pub fn CharacterSheet() -> impl IntoView {
             // Provide context so child components can access the store
             provide_context(store);
 
+            let title = move || {
+                let name = store.identity().name().get();
+                let summary = store.get().class_summary();
+                match (name.is_empty(), summary.is_empty()) {
+                    (true, true) => "D&D PC".to_string(),
+                    (true, false) => summary,
+                    (false, true) => name,
+                    (false, false) => format!("{name} — {summary}"),
+                }
+            };
+
             view! {
+                <Title text=title />
                 <div class="character-sheet">
                     <CharacterHeader />
                     <div class="sheet-grid">
