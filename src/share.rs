@@ -74,6 +74,7 @@ pub mod tests {
 
     use super::*;
     use crate::{
+        constvec::ConstVec,
         model::{
             Ability, AbilityScores, Alignment, CharacterIdentity, ClassLevel, CombatStats,
             Equipment, Feature, FeatureData, Personality, Spell, SpellData,
@@ -147,7 +148,7 @@ pub mod tests {
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
-            spell_slots: Vec::new(),
+            spell_slots: ConstVec::new(),
             notes: String::new(),
             updated_at: 0,
         };

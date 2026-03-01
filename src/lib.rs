@@ -8,6 +8,7 @@ use leptos_router::{
 };
 
 mod components;
+pub mod constvec;
 mod model;
 mod pages;
 pub mod rules;
