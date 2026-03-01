@@ -131,12 +131,21 @@ impl Character {
                 .copied()
                 .unwrap_or(&[])
         };
-        // Always keep the vec at exactly 9 levels (backward compat: expand if shorter).
-        self.spell_slots.resize_with(9, Default::default);
+        // Expand to cover table slots (never shrink below current length).
+        self.spell_slots
+            .resize_with(slots.len().max(self.spell_slots.len()), Default::default);
         // Only raise totals; never lower values the user may have set manually.
         for (i, entry) in self.spell_slots.iter_mut().enumerate() {
             let table_total = slots.get(i).copied().unwrap_or(0);
             entry.total = entry.total.max(table_total);
+        }
+        // Compact: trim trailing all-zero entries.
+        while self
+            .spell_slots
+            .last()
+            .is_some_and(|s| s.total == 0 && s.used == 0)
+        {
+            self.spell_slots.pop();
         }
     }
 
@@ -239,7 +248,7 @@ impl Default for Character {
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
-            spell_slots: vec![SpellSlotLevel::default(); 9],
+            spell_slots: Vec::new(),
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
@@ -694,7 +703,7 @@ pub mod tests {
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
-            spell_slots: vec![SpellSlotLevel::default(); 9],
+            spell_slots: Vec::new(),
             notes: String::new(),
             updated_at: 0,
         }
@@ -894,12 +903,11 @@ pub mod tests {
         let mut ch = test_character();
         ch.identity.classes[0].caster_coef = 1; // full caster level 5
         ch.update_spell_slots(None);
-        // Caster level 5: [4, 3, 2]; vec always has 9 elements
-        assert_eq!(ch.spell_slots.len(), 9);
+        // Caster level 5: [4, 3, 2]; trailing zeros trimmed
+        assert_eq!(ch.spell_slots.len(), 3);
         assert_eq!(ch.spell_slots[0].total, 4);
         assert_eq!(ch.spell_slots[1].total, 3);
         assert_eq!(ch.spell_slots[2].total, 2);
-        assert_eq!(ch.spell_slots[3].total, 0);
     }
 
     #[wasm_bindgen_test]
@@ -907,27 +915,26 @@ pub mod tests {
         let mut ch = test_character();
         ch.identity.classes[0].caster_coef = 1;
         ch.update_spell_slots(Some(&[2, 1]));
-        assert_eq!(ch.spell_slots.len(), 9);
+        assert_eq!(ch.spell_slots.len(), 2);
         assert_eq!(ch.spell_slots[0].total, 2);
         assert_eq!(ch.spell_slots[1].total, 1);
-        assert_eq!(ch.spell_slots[2].total, 0);
     }
 
     #[wasm_bindgen_test]
     fn update_spell_slots_no_caster() {
         let mut ch = test_character();
         ch.update_spell_slots(None);
-        assert_eq!(ch.spell_slots.len(), 9);
-        assert!(ch.spell_slots.iter().all(|s| s.total == 0));
+        assert!(ch.spell_slots.is_empty());
     }
 
     #[wasm_bindgen_test]
     fn update_spell_slots_never_decreases_user_set_total() {
         let mut ch = test_character();
         ch.identity.classes[0].caster_coef = 1; // full caster level 5: [4, 3, 2]
-        ch.spell_slots[0].total = 10; // user set level-1 slots higher than table
+        ch.update_spell_slots(None); // initialise compact vec to [4,3,2]
+        ch.spell_slots[0].total = 10; // user sets level-1 higher than table
         ch.update_spell_slots(None);
-        assert_eq!(ch.spell_slots.len(), 9);
+        assert_eq!(ch.spell_slots.len(), 3);
         assert_eq!(ch.spell_slots[0].total, 10); // preserved
         assert_eq!(ch.spell_slots[1].total, 3); // from table
         assert_eq!(ch.spell_slots[2].total, 2); // from table
