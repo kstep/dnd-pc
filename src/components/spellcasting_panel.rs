@@ -367,7 +367,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>() {
                                                     store.spell_slots().update(|slots| {
-                                                        slots.resize_with(idx + 1, Default::default);
+                                                        if slots.len() < idx + 1 {
+                                                            slots.resize_with(idx + 1, Default::default);
+                                                        }
                                                         slots[idx].used = v;
                                                     });
                                                 }
@@ -383,7 +385,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                             on:input=move |e| {
                                                 if let Ok(v) = event_target_value(&e).parse::<u32>() {
                                                     store.spell_slots().update(|slots| {
-                                                        slots.resize_with(idx + 1, Default::default);
+                                                        if slots.len() < idx + 1 {
+                                                            slots.resize_with(idx + 1, Default::default);
+                                                        }
                                                         slots[idx].total = v;
                                                         while slots.last().is_some_and(|s| s.total == 0 && s.used == 0) {
                                                             slots.pop();
