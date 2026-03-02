@@ -26,6 +26,7 @@ btn-apply-feature = Apply feature
 back-to-characters = < Back to Characters
 export-json = 💾
 import-json = 📂
+refill-from-registry = 🔃
 reset-character = 🔄
 share-link = 📤
 share-copied = ✅
@@ -60,6 +61,7 @@ panel-notes = Notes
 armor-class = Armor Class
 initiative = Initiative
 speed = Speed
+hp = Health Points
 current-hp = Current HP
 hp-max = HP Max
 temp-hp = Temp HP
@@ -174,6 +176,39 @@ prof-heavy-armor = Heavy Armor
 prof-shields = Shields
 prof-simple-weapons = Simple Weapons
 prof-martial-weapons = Martial Weapons
+
+## Damage types
+damage-acid = Acid
+damage-bludgeoning = Bludgeoning
+damage-cold = Cold
+damage-fire = Fire
+damage-force = Force
+damage-lightning = Lightning
+damage-necrotic = Necrotic
+damage-piercing = Piercing
+damage-poison = Poison
+damage-psychic = Psychic
+damage-radiant = Radiant
+damage-slashing = Slashing
+damage-thunder = Thunder
+
+## Confirmation dialogs
+confirm-reset = Reset character to blank?
+
+## Summary page
+slot-level = Lv { $level }
+summary-actions = Spells and Weapons
+summary-stats = Main Stats
+summary-backpack = Backpack
+summary-resources = Resources
+view-summary = Summary
+view-full-sheet = Full Sheet
+summary-cantrips = Cantrips
+summary-no-weapons = No weapons
+summary-no-spells = No spells available
+summary-no-items = No items
+summary-ability-mods = Ability Modifiers
+summary-saving-throws = Saving Throws
 
 ## Language switcher
 lang-en = EN

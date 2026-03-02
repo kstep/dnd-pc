@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use crate::model::{Ability, Character, CharacterStoreFields, Translatable};
+use crate::model::{Ability, Character, CharacterStoreFields, Translatable, format_bonus};
 
 #[component]
 pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
@@ -10,14 +10,7 @@ pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
     let score = Memo::new(move |_| store.read().abilities.get(ability));
     let modifier = Memo::new(move |_| store.read().ability_modifier(ability));
 
-    let modifier_display = move || {
-        let m = modifier.get();
-        if m >= 0 {
-            format!("+{m}")
-        } else {
-            format!("{m}")
-        }
-    };
+    let modifier_display = move || format_bonus(modifier.get());
 
     let tr_key = ability.tr_key();
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -34,8 +27,8 @@ pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
                 max="30"
                 prop:value=move || score.get().to_string()
                 on:input=move |e| {
-                    if let Ok(v) = event_target_value(&e).parse::<u32>() {
-                        store.abilities().write().set(ability, v.clamp(1, 30));
+                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                        store.abilities().write().set(ability, value.clamp(1, 30));
                     }
                 }
             />

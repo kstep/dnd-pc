@@ -1,9 +1,11 @@
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 use leptos::prelude::*;
 
-static DATALIST_COUNTER: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 fn next_datalist_id() -> String {
-    let id = DATALIST_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let id = DATALIST_COUNTER.fetch_add(1, Ordering::Relaxed);
     format!("datalist-{id}")
 }
 

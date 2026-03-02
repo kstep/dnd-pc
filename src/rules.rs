@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use leptos::prelude::*;
 use serde::Deserialize;
@@ -123,6 +123,8 @@ struct Index {
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassIndexEntry {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub url: String,
     #[serde(default)]
     pub description: String,
@@ -130,18 +132,40 @@ pub struct ClassIndexEntry {
     pub prerequisites: Vec<Ability>,
 }
 
+impl ClassIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct RaceIndexEntry {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub url: String,
     #[serde(default)]
     pub description: String,
 }
 
+impl RaceIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct RaceTrait {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
+}
+
+impl RaceTrait {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 impl Named for RaceTrait {
@@ -159,6 +183,8 @@ pub struct AbilityModifier {
 #[derive(Debug, Clone, Deserialize)]
 pub struct RaceDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
     #[serde(default)]
     pub speed: u32,
@@ -171,6 +197,10 @@ pub struct RaceDefinition {
 }
 
 impl RaceDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+
     pub fn apply(&self, character: &mut Character) {
         if self.speed > 0 {
             character.combat.speed = self.speed;
@@ -186,6 +216,7 @@ impl RaceDefinition {
         for t in self.traits.values() {
             character.racial_traits.push(RacialTrait {
                 name: t.name.clone(),
+                label: t.label.clone(),
                 description: t.description.clone(),
             });
         }
@@ -202,14 +233,24 @@ impl RaceDefinition {
 #[derive(Debug, Clone, Deserialize)]
 pub struct BackgroundIndexEntry {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub url: String,
     #[serde(default)]
     pub description: String,
 }
 
+impl BackgroundIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct BackgroundDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
     #[serde(default)]
     pub ability_modifiers: Vec<AbilityModifier>,
@@ -220,6 +261,10 @@ pub struct BackgroundDefinition {
 }
 
 impl BackgroundDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+
     pub fn apply(&self, character: &mut Character) {
         for am in &self.ability_modifiers {
             let current = character.abilities.get(am.ability) as i32;
@@ -246,6 +291,8 @@ impl BackgroundDefinition {
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
     pub hit_die: u16,
     #[serde(default)]
@@ -261,6 +308,10 @@ pub struct ClassDefinition {
 }
 
 impl ClassDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+
     pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &FeatureDefinition> {
         let sc_features = subclass
             .and_then(|name| self.subclasses.get(name))
@@ -281,6 +332,8 @@ impl ClassDefinition {
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubclassDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
     #[serde(default, deserialize_with = "named_map::deserialize")]
     pub features: BTreeMap<String, FeatureDefinition>,
@@ -295,6 +348,10 @@ impl Named for SubclassDefinition {
 }
 
 impl SubclassDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+
     pub fn min_level(&self) -> u32 {
         self.levels.keys().next().copied().unwrap_or(1)
     }
@@ -310,6 +367,8 @@ pub struct SubclassLevelRules {
 #[derive(Debug, Clone, Deserialize)]
 pub struct FeatureDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub description: String,
     #[serde(default)]
     pub languages: VecSet<String>,
@@ -327,10 +386,15 @@ impl Named for FeatureDefinition {
 }
 
 impl FeatureDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+
     pub fn apply(&self, level: u32, character: &mut Character) {
         if !character.features.iter().any(|f| f.name == self.name) {
             character.features.push(Feature {
                 name: self.name.clone(),
+                label: self.label.clone(),
                 description: self.description.clone(),
             });
         }
@@ -391,6 +455,7 @@ impl FeatureDefinition {
                     if !sc.spells.iter().any(|ex| ex.name == s.name) {
                         sc.spells.push(Spell {
                             name: s.name.clone(),
+                            label: s.label.clone(),
                             description: s.description.clone(),
                             level: s.level,
                             prepared: true,
@@ -410,6 +475,7 @@ impl FeatureDefinition {
                     .values()
                     .map(|f| FeatureField {
                         name: f.name.clone(),
+                        label: f.label.clone(),
                         description: f.description.clone(),
                         value: f.kind.to_value(level),
                     })
@@ -457,9 +523,17 @@ fn get_for_level<T: Clone + Default>(levels: &BTreeMap<u32, T>, level: u32) -> T
 pub struct FieldDefinition {
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(flatten)]
     pub kind: FieldKind,
+}
+
+impl FieldDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 impl Named for FieldDefinition {
@@ -526,6 +600,8 @@ impl Default for ChoiceOptions {
 pub struct ChoiceOption {
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub cost: u32,
@@ -533,15 +609,29 @@ pub struct ChoiceOption {
     pub level: u32,
 }
 
+impl ChoiceOption {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpellDefinition {
     pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
     pub level: u32,
     pub description: String,
     #[serde(default)]
     pub sticky: bool,
     #[serde(default)]
     pub min_level: u32,
+}
+
+impl SpellDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 impl Named for SpellDefinition {
@@ -554,7 +644,7 @@ impl Named for SpellDefinition {
 pub struct SpellsDefinition {
     pub casting_ability: Ability,
     #[serde(default)]
-    pub caster_coef: u8,
+    pub caster_coef: u32,
     #[serde(default)]
     pub list: SpellList,
     #[serde(default)]
@@ -667,13 +757,82 @@ impl ClassDefinition {
 
 // --- Registry ---
 
+struct FetchCache<T: Send + Sync + 'static> {
+    data: RwSignal<HashMap<String, T>>,
+    pending: RwSignal<HashSet<String>>,
+}
+
+impl<T: Send + Sync + 'static> Clone for FetchCache<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<T: Send + Sync + 'static> Copy for FetchCache<T> {}
+
+impl<T: Send + Sync + 'static> std::ops::Deref for FetchCache<T> {
+    type Target = RwSignal<HashMap<String, T>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T: Send + Sync + 'static> FetchCache<T> {
+    fn new() -> Self {
+        Self {
+            data: RwSignal::new(HashMap::new()),
+            pending: RwSignal::new(HashSet::new()),
+        }
+    }
+
+    fn clear(&self) {
+        self.data.update(|m| m.clear());
+        self.pending.update(|s| s.clear());
+    }
+}
+
+impl<T: for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T> {
+    /// Fetch a resource if it's not already cached or in-flight.
+    /// Returns immediately if the resource is cached or a fetch is pending.
+    fn fetch(&self, name: &str, url: String, error_ctx: &'static str) {
+        if self.data.read_untracked().contains_key(name) {
+            return;
+        }
+        if self.pending.read_untracked().contains(name) {
+            return;
+        }
+
+        let name = name.to_string();
+        self.pending.update_untracked(|s| s.insert(name.clone()));
+
+        let data = self.data;
+        let pending = self.pending;
+        leptos::task::spawn_local(async move {
+            let result = fetch_json::<T>(&url).await;
+            pending.update_untracked(|s| s.remove(&name));
+            match result {
+                Ok(val) => {
+                    data.update(|m| {
+                        m.insert(name, val);
+                    });
+                }
+                Err(error) => {
+                    log::error!("Failed to fetch {error_ctx}: {error}");
+                }
+            }
+        });
+    }
+}
+
 #[derive(Clone, Copy)]
 pub struct RulesRegistry {
+    locale: Signal<String>,
     class_index: LocalResource<Result<Index, String>>,
-    class_cache: RwSignal<HashMap<String, ClassDefinition>>,
-    race_cache: RwSignal<HashMap<String, RaceDefinition>>,
-    background_cache: RwSignal<HashMap<String, BackgroundDefinition>>,
-    spell_list_cache: RwSignal<HashMap<String, Vec<SpellDefinition>>>,
+    class_cache: FetchCache<ClassDefinition>,
+    race_cache: FetchCache<RaceDefinition>,
+    background_cache: FetchCache<BackgroundDefinition>,
+    spell_list_cache: FetchCache<Vec<SpellDefinition>>,
 }
 
 async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
@@ -689,31 +848,56 @@ async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String
         .map_err(|error| format!("parse error: {error}"))
 }
 
-impl Default for RulesRegistry {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl RulesRegistry {
-    pub fn new() -> Self {
-        let index_url = format!("{BASE_URL}/index.json");
+    pub fn new(i18n: leptos_fluent::I18n) -> Self {
+        let locale = Signal::derive(move || i18n.language.get().id.to_string());
+
         let class_index = LocalResource::new(move || {
-            let url = index_url.clone();
+            let locale = locale.get();
+            let url = format!("{BASE_URL}/{locale}/index.json");
             async move { fetch_json::<Index>(&url).await }
         });
 
+        let class_cache = FetchCache::new();
+        let race_cache = FetchCache::new();
+        let background_cache = FetchCache::new();
+        let spell_list_cache = FetchCache::new();
+
+        // Clear all caches when locale changes
+        let prev_locale = RwSignal::new(locale.get_untracked());
+        Effect::new(move || {
+            let current = locale.get();
+            let prev = prev_locale.get_untracked();
+            if current != prev {
+                prev_locale.set(current);
+                class_cache.clear();
+                race_cache.clear();
+                background_cache.clear();
+                spell_list_cache.clear();
+            }
+        });
+
         Self {
+            locale,
             class_index,
-            class_cache: RwSignal::new(HashMap::new()),
-            race_cache: RwSignal::new(HashMap::new()),
-            background_cache: RwSignal::new(HashMap::new()),
-            spell_list_cache: RwSignal::new(HashMap::new()),
+            class_cache,
+            race_cache,
+            background_cache,
+            spell_list_cache,
         }
     }
 
+    pub fn track_spell_cache(&self) {
+        self.spell_list_cache.track();
+    }
+
+    fn localized_url(&self, path: &str) -> String {
+        let locale = self.locale.get_untracked();
+        format!("{BASE_URL}/{locale}/{path}")
+    }
+
     pub fn with_class_entries<R>(&self, f: impl FnOnce(&[ClassIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read();
+        let guard = self.class_index.read_untracked();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -722,33 +906,16 @@ impl RulesRegistry {
     }
 
     pub fn has_class(&self, name: &str) -> bool {
-        self.class_cache.read().contains_key(name)
+        self.class_cache.read_untracked().contains_key(name)
     }
 
     pub fn with_class<R>(&self, name: &str, f: impl FnOnce(&ClassDefinition) -> R) -> Option<R> {
-        self.class_cache.read().get(name).map(f)
+        self.class_cache.read_untracked().get(name).map(f)
     }
 
     pub fn fetch_spell_list(&self, path: &str) {
-        if self.spell_list_cache.read().contains_key(path) {
-            return;
-        }
-
-        let url = format!("{BASE_URL}/{path}");
-        let cache = self.spell_list_cache;
-        let path = path.to_string();
-        leptos::task::spawn_local(async move {
-            match fetch_json::<Vec<SpellDefinition>>(&url).await {
-                Ok(list) => {
-                    cache.update(|m| {
-                        m.insert(path, list);
-                    });
-                }
-                Err(error) => {
-                    log::error!("Failed to fetch spell list: {error}");
-                }
-            }
-        });
+        let url = self.localized_url(path);
+        self.spell_list_cache.fetch(path, url, "spell list");
     }
 
     pub fn with_spell_list<R>(
@@ -760,7 +927,7 @@ impl RulesRegistry {
             SpellList::Inline(spells) => f(spells),
             SpellList::Ref { from } => {
                 self.fetch_spell_list(from);
-                let cache = self.spell_list_cache.read();
+                let cache = self.spell_list_cache.read_untracked();
                 f(cache.get(from.as_str()).map_or(&[], |v| v.as_slice()))
             }
         }
@@ -774,9 +941,9 @@ impl RulesRegistry {
         feature_name: &str,
         f: impl FnOnce(&FeatureDefinition) -> R,
     ) -> Option<R> {
-        let class_cache = self.class_cache.read();
-        let bg_cache = self.background_cache.read();
-        let race_cache = self.race_cache.read();
+        let class_cache = self.class_cache.read_untracked();
+        let bg_cache = self.background_cache.read_untracked();
+        let race_cache = self.race_cache.read_untracked();
 
         for cl in &identity.classes {
             if let Some(def) = class_cache.get(&cl.class)
@@ -811,7 +978,7 @@ impl RulesRegistry {
         identity: &CharacterIdentity,
         feature_name: &str,
     ) -> Option<u32> {
-        let class_cache = self.class_cache.read();
+        let class_cache = self.class_cache.read_untracked();
         identity.classes.iter().find_map(|cl| {
             let def = class_cache.get(&cl.class)?;
             def.find_feature(feature_name, cl.subclass.as_deref())
@@ -826,7 +993,7 @@ impl RulesRegistry {
         field_name: &str,
         character_fields: &[FeatureField],
     ) -> Vec<ChoiceOption> {
-        let cache = self.class_cache.read();
+        let cache = self.class_cache.read_untracked();
         for cl in classes {
             if let Some(def) = cache.get(&cl.class)
                 && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
@@ -853,6 +1020,7 @@ impl RulesRegistry {
                     .filter(|o| !o.name.is_empty())
                     .map(|o| ChoiceOption {
                         name: o.name.clone(),
+                        label: o.label.clone(),
                         description: o.description.clone(),
                         cost: o.cost,
                         level: 0,
@@ -869,7 +1037,7 @@ impl RulesRegistry {
         feature_name: &str,
         field_name: &str,
     ) -> Option<String> {
-        let cache = self.class_cache.read();
+        let cache = self.class_cache.read_untracked();
         for cl in classes {
             if let Some(def) = cache.get(&cl.class)
                 && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
@@ -883,40 +1051,23 @@ impl RulesRegistry {
     }
 
     pub fn fetch_class(&self, name: &str) {
-        if self.class_cache.read().contains_key(name) {
-            return;
-        }
-
         let url = {
-            let guard = self.class_index.read();
+            let guard = self.class_index.read_untracked();
             let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
                 Some(idx) => idx,
                 None => return,
             };
             match index.classes.iter().find(|e| e.name == name) {
-                Some(entry) => format!("{BASE_URL}/{}", entry.url),
+                Some(entry) => self.localized_url(&entry.url),
                 None => return,
             }
         };
 
-        let cache = self.class_cache;
-        let name = name.to_string();
-        leptos::task::spawn_local(async move {
-            match fetch_json::<ClassDefinition>(&url).await {
-                Ok(def) => {
-                    cache.update(|m| {
-                        m.insert(name, def);
-                    });
-                }
-                Err(error) => {
-                    log::error!("Failed to fetch class definition: {error}");
-                }
-            }
-        });
+        self.class_cache.fetch(name, url, "class definition");
     }
 
     pub fn with_race_entries<R>(&self, f: impl FnOnce(&[RaceIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read();
+        let guard = self.class_index.read_untracked();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -925,48 +1076,31 @@ impl RulesRegistry {
     }
 
     pub fn has_race(&self, name: &str) -> bool {
-        self.race_cache.read().contains_key(name)
+        self.race_cache.read_untracked().contains_key(name)
     }
 
     pub fn with_race<R>(&self, name: &str, f: impl FnOnce(&RaceDefinition) -> R) -> Option<R> {
-        self.race_cache.read().get(name).map(f)
+        self.race_cache.read_untracked().get(name).map(f)
     }
 
     pub fn fetch_race(&self, name: &str) {
-        if self.race_cache.read().contains_key(name) {
-            return;
-        }
-
         let url = {
-            let guard = self.class_index.read();
+            let guard = self.class_index.read_untracked();
             let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
                 Some(idx) => idx,
                 None => return,
             };
             match index.races.iter().find(|e| e.name == name) {
-                Some(entry) => format!("{BASE_URL}/{}", entry.url),
+                Some(entry) => self.localized_url(&entry.url),
                 None => return,
             }
         };
 
-        let cache = self.race_cache;
-        let name = name.to_string();
-        leptos::task::spawn_local(async move {
-            match fetch_json::<RaceDefinition>(&url).await {
-                Ok(def) => {
-                    cache.update(|m| {
-                        m.insert(name, def);
-                    });
-                }
-                Err(error) => {
-                    log::error!("Failed to fetch race definition: {error}");
-                }
-            }
-        });
+        self.race_cache.fetch(name, url, "race definition");
     }
 
     pub fn with_background_entries<R>(&self, f: impl FnOnce(&[BackgroundIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read();
+        let guard = self.class_index.read_untracked();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -975,7 +1109,7 @@ impl RulesRegistry {
     }
 
     pub fn has_background(&self, name: &str) -> bool {
-        self.background_cache.read().contains_key(name)
+        self.background_cache.read_untracked().contains_key(name)
     }
 
     pub fn with_background<R>(
@@ -983,49 +1117,67 @@ impl RulesRegistry {
         name: &str,
         f: impl FnOnce(&BackgroundDefinition) -> R,
     ) -> Option<R> {
-        self.background_cache.read().get(name).map(f)
+        self.background_cache.read_untracked().get(name).map(f)
     }
 
     pub fn fetch_background(&self, name: &str) {
-        if self.background_cache.read().contains_key(name) {
-            return;
-        }
-
         let url = {
-            let guard = self.class_index.read();
+            let guard = self.class_index.read_untracked();
             let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
                 Some(idx) => idx,
                 None => return,
             };
             match index.backgrounds.iter().find(|e| e.name == name) {
-                Some(entry) => format!("{BASE_URL}/{}", entry.url),
+                Some(entry) => self.localized_url(&entry.url),
                 None => return,
             }
         };
 
-        let cache = self.background_cache;
-        let name = name.to_string();
-        leptos::task::spawn_local(async move {
-            match fetch_json::<BackgroundDefinition>(&url).await {
-                Ok(def) => {
-                    cache.update(|m| {
-                        m.insert(name, def);
-                    });
-                }
-                Err(error) => {
-                    log::error!("Failed to fetch background definition: {error}");
-                }
-            }
-        });
+        self.background_cache
+            .fetch(name, url, "background definition");
     }
 
-    /// Fill empty descriptions on a character from registry definitions.
-    /// Reads registry caches (providing reactive tracking) and only writes
-    /// when a description is empty and the registry has a non-empty one.
-    pub fn fill_descriptions(&self, character: &mut Character) {
+    /// Fill labels and empty descriptions on a character from registry
+    /// definitions. Labels are only filled when `None`. Descriptions are
+    /// only filled when empty (preserves user edits). Also triggers
+    /// fetches for missing definitions so it self-heals after cache clears.
+    pub fn fill_from_registry(&self, character: &mut Character) {
+        // Trigger fetches for any missing definitions (needed after locale
+        // change clears caches). The fetch methods are no-ops when data is
+        // already cached, and reading class_index here subscribes us to
+        // index changes so we re-run when the new locale's index arrives.
+        for cl in &character.identity.classes {
+            if !cl.class.is_empty() {
+                self.fetch_class(&cl.class);
+            }
+        }
+        if !character.identity.race.is_empty() {
+            self.fetch_race(&character.identity.race);
+        }
+        if !character.identity.background.is_empty() {
+            self.fetch_background(&character.identity.background);
+        }
+
         let class_cache = self.class_cache.read();
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
+
+        // Class/subclass labels (only if empty)
+        for cl in &mut character.identity.classes {
+            if !cl.class.is_empty()
+                && let Some(def) = class_cache.get(&cl.class)
+            {
+                if cl.class_label.is_none() {
+                    cl.class_label = def.label.clone();
+                }
+                if let Some(sc_name) = &cl.subclass
+                    && cl.subclass_label.is_none()
+                    && let Some(sc_def) = def.subclasses.get(sc_name)
+                {
+                    cl.subclass_label = sc_def.label.clone();
+                }
+            }
+        }
 
         // Helper: find a FeatureDefinition by name across all sources.
         // Duplicates with_feature() logic to reuse pre-acquired read guards.
@@ -1048,26 +1200,32 @@ impl RulesRegistry {
                 .and_then(|def| def.features.get(name))
         };
 
-        // Feature descriptions
+        // Feature labels and descriptions (only if empty)
         for feature in &mut character.features {
-            if feature.description.is_empty()
-                && !feature.name.is_empty()
+            if !feature.name.is_empty()
                 && let Some(feat_def) = find_feat(&feature.name)
-                && !feat_def.description.is_empty()
             {
-                feature.description = feat_def.description.clone();
+                if feature.label.is_none() {
+                    feature.label = feat_def.label.clone();
+                }
+                if feature.description.is_empty() && !feat_def.description.is_empty() {
+                    feature.description = feat_def.description.clone();
+                }
             }
         }
 
-        // Racial trait descriptions
+        // Racial trait labels and descriptions (only if empty)
         if let Some(race_def) = race_cache.get(&character.identity.race) {
             for racial_trait in &mut character.racial_traits {
-                if racial_trait.description.is_empty()
-                    && !racial_trait.name.is_empty()
+                if !racial_trait.name.is_empty()
                     && let Some(def_trait) = race_def.traits.get(&racial_trait.name)
-                    && !def_trait.description.is_empty()
                 {
-                    racial_trait.description = def_trait.description.clone();
+                    if racial_trait.label.is_none() {
+                        racial_trait.label = def_trait.label.clone();
+                    }
+                    if racial_trait.description.is_empty() && !def_trait.description.is_empty() {
+                        racial_trait.description = def_trait.description.clone();
+                    }
                 }
             }
         }
@@ -1090,10 +1248,14 @@ impl RulesRegistry {
                 continue;
             };
 
-            // Field descriptions and choice option descriptions
+            // Field labels/descriptions and choice option labels/descriptions (only if
+            // empty)
             if !feat_def.fields.is_empty() {
                 for field in &mut entry.fields {
                     if let Some(field_def) = feat_def.fields.get(&field.name) {
+                        if field.label.is_none() {
+                            field.label = field_def.label.clone();
+                        }
                         if field.description.is_empty() && !field_def.description.is_empty() {
                             field.description = field_def.description.clone();
                         }
@@ -1104,13 +1266,17 @@ impl RulesRegistry {
                                 ChoiceOptions::Ref { .. } => &[],
                             };
                             for opt in field.value.choices_mut() {
-                                if opt.description.is_empty()
-                                    && !opt.name.is_empty()
+                                if !opt.name.is_empty()
                                     && let Some(def_opt) =
                                         def_options.iter().find(|o| o.name == opt.name)
-                                    && !def_opt.description.is_empty()
                                 {
-                                    opt.description = def_opt.description.clone();
+                                    if opt.label.is_none() {
+                                        opt.label = def_opt.label.clone();
+                                    }
+                                    if opt.description.is_empty() && !def_opt.description.is_empty()
+                                    {
+                                        opt.description = def_opt.description.clone();
+                                    }
                                 }
                             }
                         }
@@ -1118,26 +1284,161 @@ impl RulesRegistry {
                 }
             }
 
-            // Spell descriptions
+            // Spell labels and descriptions (only if empty)
             if let Some(spells_def) = &feat_def.spells
                 && let Some(spell_data) = &mut entry.spells
             {
                 for spell in &mut spell_data.spells {
-                    if spell.description.is_empty() && !spell.name.is_empty() {
+                    if !spell.name.is_empty() {
                         let spell_defs: &[SpellDefinition] = match &spells_def.list {
                             SpellList::Inline(spells) => spells,
                             SpellList::Ref { from } => spell_list_cache
                                 .get(from.as_str())
                                 .map_or(&[], |v| v.as_slice()),
                         };
-                        let desc = spell_defs
-                            .iter()
-                            .find(|s| s.name == spell.name)
-                            .map(|s| &s.description);
-                        if let Some(desc) = desc
-                            && !desc.is_empty()
-                        {
-                            spell.description = desc.clone();
+                        if let Some(def) = spell_defs.iter().find(|s| s.name == spell.name) {
+                            if spell.label.is_none() {
+                                spell.label = def.label.clone();
+                            }
+                            if spell.description.is_empty() && !def.description.is_empty() {
+                                spell.description = def.description.clone();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Clear labels and descriptions that match registry values.
+    /// User-defined content (not matching registry) is preserved.
+    pub fn clear_from_registry(&self, character: &mut Character) {
+        let class_cache = self.class_cache.read_untracked();
+        let bg_cache = self.background_cache.read_untracked();
+        let race_cache = self.race_cache.read_untracked();
+
+        // Class/subclass labels
+        for cl in &mut character.identity.classes {
+            if !cl.class.is_empty()
+                && let Some(def) = class_cache.get(&cl.class)
+            {
+                if cl.class_label == def.label {
+                    cl.class_label = None;
+                }
+                if let Some(sc_name) = &cl.subclass
+                    && let Some(sc_def) = def.subclasses.get(sc_name)
+                    && cl.subclass_label == sc_def.label
+                {
+                    cl.subclass_label = None;
+                }
+            }
+        }
+
+        let find_feat = |name: &str| -> Option<&FeatureDefinition> {
+            for cl in &character.identity.classes {
+                if let Some(def) = class_cache.get(&cl.class)
+                    && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
+                {
+                    return Some(feat);
+                }
+            }
+            if let Some(feat) = bg_cache
+                .get(&character.identity.background)
+                .and_then(|def| def.features.get(name))
+            {
+                return Some(feat);
+            }
+            race_cache
+                .get(&character.identity.race)
+                .and_then(|def| def.features.get(name))
+        };
+
+        for feature in &mut character.features {
+            if !feature.name.is_empty()
+                && let Some(feat_def) = find_feat(&feature.name)
+            {
+                if feature.label == feat_def.label {
+                    feature.label = None;
+                }
+                if feature.description == feat_def.description {
+                    feature.description.clear();
+                }
+            }
+        }
+
+        if let Some(race_def) = race_cache.get(&character.identity.race) {
+            for racial_trait in &mut character.racial_traits {
+                if !racial_trait.name.is_empty()
+                    && let Some(def_trait) = race_def.traits.get(&racial_trait.name)
+                {
+                    if racial_trait.label == def_trait.label {
+                        racial_trait.label = None;
+                    }
+                    if racial_trait.description == def_trait.description {
+                        racial_trait.description.clear();
+                    }
+                }
+            }
+        }
+
+        let spell_list_cache = self.spell_list_cache.read_untracked();
+
+        for (key, entry) in &mut character.feature_data {
+            let Some(feat_def) = find_feat(key) else {
+                continue;
+            };
+
+            if !feat_def.fields.is_empty() {
+                for field in &mut entry.fields {
+                    if let Some(field_def) = feat_def.fields.get(&field.name) {
+                        if field.label == field_def.label {
+                            field.label = None;
+                        }
+                        if field.description == field_def.description {
+                            field.description.clear();
+                        }
+
+                        if let FieldKind::Choice { options, .. } = &field_def.kind {
+                            let def_options = match options {
+                                ChoiceOptions::List(list) => list.as_slice(),
+                                ChoiceOptions::Ref { .. } => &[],
+                            };
+                            for opt in field.value.choices_mut() {
+                                if !opt.name.is_empty()
+                                    && let Some(def_opt) =
+                                        def_options.iter().find(|o| o.name == opt.name)
+                                {
+                                    if opt.label == def_opt.label {
+                                        opt.label = None;
+                                    }
+                                    if opt.description == def_opt.description {
+                                        opt.description.clear();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if let Some(spells_def) = &feat_def.spells
+                && let Some(spell_data) = &mut entry.spells
+            {
+                for spell in &mut spell_data.spells {
+                    if !spell.name.is_empty() {
+                        let spell_defs: &[SpellDefinition] = match &spells_def.list {
+                            SpellList::Inline(spells) => spells,
+                            SpellList::Ref { from } => spell_list_cache
+                                .get(from.as_str())
+                                .map_or(&[], |v| v.as_slice()),
+                        };
+                        if let Some(def) = spell_defs.iter().find(|s| s.name == spell.name) {
+                            if spell.label == def.label {
+                                spell.label = None;
+                            }
+                            if spell.description == def.description {
+                                spell.description.clear();
+                            }
                         }
                     }
                 }

@@ -1,0 +1,317 @@
+{
+  "classes": [
+    {
+      "name": "Artificer",
+      "label": "Артифактор",
+      "url": "classes/artificer.json",
+      "description": "Мастер изобретений, использующий смекалку и магию для раскрытия необычайных возможностей предметов.",
+      "prerequisites": [
+        3
+      ]
+    },
+    {
+      "name": "Barbarian",
+      "label": "Варвар",
+      "url": "classes/barbarian.json",
+      "description": "Свирепый воитель, способный впадать в боевую ярость.",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Bard",
+      "label": "Бард",
+      "url": "classes/bard.json",
+      "description": "Вдохновляющий маг, чья сила отражает музыку творения.",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Cleric",
+      "label": "Жрец",
+      "url": "classes/cleric.json",
+      "description": "Жреческий заступник, владеющий божественной магией во служение высшей силе.",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Druid",
+      "label": "Друид",
+      "url": "classes/druid.json",
+      "description": "Служитель Старой Веры, повелевающий силами природы и принимающий звериные облики.",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Fighter",
+      "label": "Воин",
+      "url": "classes/fighter.json",
+      "description": "Мастер боевых искусств, искусно владеющий разнообразным оружием и доспехами.",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Monk",
+      "label": "Монах",
+      "url": "classes/monk.json",
+      "description": "Мастер боевых искусств, направляющий силу тела на достижение физического и духовного совершенства.",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Paladin",
+      "label": "Паладин",
+      "url": "classes/paladin.json",
+      "description": "Святой воитель, связанный священной клятвой.",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Ranger",
+      "label": "Следопыт",
+      "url": "classes/ranger.json",
+      "description": "Воитель, противостоящий угрозам на краю цивилизации.",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Rogue",
+      "label": "Плут",
+      "url": "classes/rogue.json",
+      "description": "Пройдоха, использующий скрытность и хитрость для преодоления препятствий и врагов.",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "label": "Чародей",
+      "url": "classes/sorcerer.json",
+      "description": "Заклинатель, черпающий врождённую магию из дара или родословной.",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Warlock",
+      "label": "Колдун",
+      "url": "classes/warlock.json",
+      "description": "Обладатель магии, полученной по договору с потусторонней сущностью.",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Wizard",
+      "label": "Волшебник",
+      "url": "classes/wizard.json",
+      "description": "Учёный маг, способный управлять структурами реальности.",
+      "prerequisites": [
+        3
+      ]
+    }
+  ],
+  "races": [
+    {
+      "name": "Aasimar",
+      "label": "Аасимар",
+      "url": "races/aasimar.json",
+      "description": "Отмеченный небожителями, с целительным прикосновением и божественным преображением."
+    },
+    {
+      "name": "Dragonborn",
+      "label": "Драконорождённый",
+      "url": "races/dragonborn.json",
+      "description": "Потомок драконов с оружием дыхания, сопротивлением урону и драконьим полётом."
+    },
+    {
+      "name": "Drow",
+      "label": "Дроу",
+      "url": "races/drow.json",
+      "description": "Эльфы Подземья с превосходным тёмным зрением и врождённой магией."
+    },
+    {
+      "name": "Dwarf",
+      "label": "Дварф",
+      "url": "races/dwarf.json",
+      "description": "Стойкий и крепкий, с сопротивлением яду и знанием камня."
+    },
+    {
+      "name": "Forest Gnome",
+      "label": "Лесной гном",
+      "url": "races/forest-gnome.json",
+      "description": "Маленький и хитроумный, со склонностью к иллюзиям и общению с животными."
+    },
+    {
+      "name": "Goliath",
+      "label": "Голиаф",
+      "url": "races/goliath.json",
+      "description": "Могучий потомок великанов с мощным телосложением и наследием гигантов."
+    },
+    {
+      "name": "Halfling",
+      "label": "Полурослик",
+      "url": "races/halfling.json",
+      "description": "Маленький, храбрый и удачливый, с природной скрытностью."
+    },
+    {
+      "name": "High Elf",
+      "label": "Высший эльф",
+      "url": "races/high-elf.json",
+      "description": "Эльф с магическим талантом и заговором волшебника на выбор."
+    },
+    {
+      "name": "Human",
+      "label": "Человек",
+      "url": "races/human.json",
+      "description": "Находчивый, умелый и разносторонний — самый приспособляемый вид."
+    },
+    {
+      "name": "Orc",
+      "label": "Орк",
+      "url": "races/orc.json",
+      "description": "Выносливый и свирепый, с приливом адреналина и неукротимой стойкостью."
+    },
+    {
+      "name": "Rock Gnome",
+      "label": "Скальный гном",
+      "url": "races/rock-gnome.json",
+      "description": "Артифакторный и хитроумный, с магией ремесленника."
+    },
+    {
+      "name": "Tiefling",
+      "label": "Тифлинг",
+      "url": "races/tiefling.json",
+      "description": "Отмеченный нечистью, с Чудотворством. Выберите наследие для полных свойств."
+    },
+    {
+      "name": "Tiefling (Abyssal)",
+      "label": "Тифлинг (Бездны)",
+      "url": "races/tiefling-abyssal.json",
+      "description": "Наследие Бездны: сопротивление яду, Ядовитые брызги, Луч болезни, Удержание личности."
+    },
+    {
+      "name": "Tiefling (Chthonic)",
+      "label": "Тифлинг (Хтонический)",
+      "url": "races/tiefling-chthonic.json",
+      "description": "Хтоническое наследие: сопротивление некротической энергии, Леденящее прикосновение, Псевдожизнь, Луч слабости."
+    },
+    {
+      "name": "Tiefling (Infernal)",
+      "label": "Тифлинг (Инфернальный)",
+      "url": "races/tiefling-infernal.json",
+      "description": "Инфернальное наследие: сопротивление огню, Огненный снаряд, Адское возмездие, Тьма."
+    },
+    {
+      "name": "Wood Elf",
+      "label": "Лесной эльф",
+      "url": "races/wood-elf.json",
+      "description": "Быстроногие эльфы с Искусством друидов и лесной магией."
+    }
+  ],
+  "backgrounds": [
+    {
+      "name": "Acolyte",
+      "label": "Послушник",
+      "url": "backgrounds/acolyte.json",
+      "description": "Служитель храма со священными обрядами. Черта: Посвящённый в магию (Жрец)."
+    },
+    {
+      "name": "Artisan",
+      "label": "Ремесленник",
+      "url": "backgrounds/artisan.json",
+      "description": "Искусный мастер и член гильдии. Черта: Умелец."
+    },
+    {
+      "name": "Charlatan",
+      "label": "Шарлатан",
+      "url": "backgrounds/charlatan.json",
+      "description": "Мошенник с подвешенным языком. Черта: Обученный."
+    },
+    {
+      "name": "Criminal",
+      "label": "Преступник",
+      "url": "backgrounds/criminal.json",
+      "description": "Опытный нарушитель закона со связями в преступном мире. Черта: Бдительность."
+    },
+    {
+      "name": "Entertainer",
+      "label": "Артист",
+      "url": "backgrounds/entertainer.json",
+      "description": "Выступающий, расцветающий перед публикой. Черта: Музыкант."
+    },
+    {
+      "name": "Farmer",
+      "label": "Фермер",
+      "url": "backgrounds/farmer.json",
+      "description": "Закалённый труженик земли. Черта: Стойкость."
+    },
+    {
+      "name": "Guard",
+      "label": "Стражник",
+      "url": "backgrounds/guard.json",
+      "description": "Обученный часовой, несущий дозор. Черта: Бдительность."
+    },
+    {
+      "name": "Guide",
+      "label": "Проводник",
+      "url": "backgrounds/guide.json",
+      "description": "Знаток дикой местности и следопыт. Черта: Посвящённый в магию (Друид)."
+    },
+    {
+      "name": "Hermit",
+      "label": "Отшельник",
+      "url": "backgrounds/hermit.json",
+      "description": "Затворник, постигший глубокую истину. Черта: Целитель."
+    },
+    {
+      "name": "Merchant",
+      "label": "Торговец",
+      "url": "backgrounds/merchant.json",
+      "description": "Торговец с чутьём на прибыль. Черта: Везунчик."
+    },
+    {
+      "name": "Noble",
+      "label": "Аристократ",
+      "url": "backgrounds/noble.json",
+      "description": "Аристократ, выросший в богатстве и привилегиях. Черта: Обученный."
+    },
+    {
+      "name": "Sage",
+      "label": "Мудрец",
+      "url": "backgrounds/sage.json",
+      "description": "Учёный, посвятивший себя знаниям. Черта: Посвящённый в магию (Волшебник)."
+    },
+    {
+      "name": "Sailor",
+      "label": "Моряк",
+      "url": "backgrounds/sailor.json",
+      "description": "Мореплаватель, закалённый штормами. Черта: Кабацкий боец."
+    },
+    {
+      "name": "Scribe",
+      "label": "Писарь",
+      "url": "backgrounds/scribe.json",
+      "description": "Хранитель записей и знаний. Черта: Обученный."
+    },
+    {
+      "name": "Soldier",
+      "label": "Солдат",
+      "url": "backgrounds/soldier.json",
+      "description": "Военный ветеран, знающий дисциплину и чин. Черта: Дикий боец."
+    },
+    {
+      "name": "Wayfarer",
+      "label": "Странник",
+      "url": "backgrounds/wayfarer.json",
+      "description": "Бродяга, выживающий благодаря удаче и смекалке. Черта: Везунчик."
+    }
+  ]
+}

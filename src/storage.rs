@@ -1,7 +1,7 @@
 use gloo_storage::{LocalStorage, Storage};
 use uuid::Uuid;
 
-use crate::model::{Character, CharacterIndex};
+use crate::model::{Character, CharacterIndex, DamageType};
 
 const INDEX_KEY: &str = "dnd_pc_index";
 
@@ -17,9 +17,35 @@ pub fn save_index(index: &CharacterIndex) {
     LocalStorage::set(INDEX_KEY, index).expect("failed to save index");
 }
 
+/// Migrate legacy string damage_type values to u8 enum representation.
+fn migrate_v1(value: &mut serde_json::Value) {
+    if let Some(weapons) = value
+        .get_mut("equipment")
+        .and_then(|e| e.get_mut("weapons"))
+        .and_then(|w| w.as_array_mut())
+    {
+        for weapon in weapons {
+            if let Some(dt) = weapon.get("damage_type").and_then(|v| v.as_str()) {
+                let new_val = match DamageType::from_name(dt) {
+                    Some(d) => serde_json::Value::Number((d as u8).into()),
+                    None => serde_json::Value::Null,
+                };
+                weapon["damage_type"] = new_val;
+            }
+        }
+    }
+}
+
 pub fn load_character(id: &Uuid) -> Option<Character> {
-    let ch: Character = LocalStorage::get(character_key(id)).ok()?;
-    Some(ch)
+    let key = character_key(id);
+    if let Ok(ch) = LocalStorage::get::<Character>(&key) {
+        return Some(ch);
+    }
+    // Fallback: migrate legacy format
+    let raw = LocalStorage::raw().get_item(&key).ok()??;
+    let mut value: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    migrate_v1(&mut value);
+    serde_json::from_value(value).ok()
 }
 
 pub fn save_character(character: &mut Character) {

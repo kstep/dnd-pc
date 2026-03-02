@@ -26,6 +26,7 @@ btn-apply-feature = Применить способность
 back-to-characters = < Назад к персонажам
 export-json = 💾
 import-json = 📂
+refill-from-registry = 🔃
 reset-character = 🔄
 share-link = 📤
 share-copied = ✅
@@ -60,6 +61,7 @@ panel-notes = Заметки
 armor-class = Класс защиты
 initiative = Инициатива
 speed = Скорость
+hp = Очки здоровья
 current-hp = Текущие ОЗ
 hp-max = Макс. ОЗ
 temp-hp = Врем. ОЗ
@@ -174,6 +176,39 @@ prof-heavy-armor = Тяжёлые доспехи
 prof-shields = Щиты
 prof-simple-weapons = Простое оружие
 prof-martial-weapons = Воинское оружие
+
+## Типы урона
+damage-acid = Кислота
+damage-bludgeoning = Дробящий
+damage-cold = Холод
+damage-fire = Огонь
+damage-force = Силовое поле
+damage-lightning = Электричество
+damage-necrotic = Некротический
+damage-piercing = Колющий
+damage-poison = Яд
+damage-psychic = Психический
+damage-radiant = Излучение
+damage-slashing = Рубящий
+damage-thunder = Звук
+
+## Диалоги подтверждения
+confirm-reset = Сбросить персонажа до пустого?
+
+## Сводка
+slot-level = Ур. { $level }
+summary-actions = Заклинания и оружие
+summary-stats = Основные показатели
+summary-backpack = Рюкзак
+summary-resources = Ресурсы
+view-summary = Сводка
+view-full-sheet = Полный лист
+summary-cantrips = Заговоры
+summary-no-weapons = Нет оружия
+summary-no-spells = Нет доступных заклинаний
+summary-no-items = Нет предметов
+summary-ability-mods = Модификаторы характеристик
+summary-saving-throws = Спасброски
 
 ## Переключатель языка
 lang-en = EN

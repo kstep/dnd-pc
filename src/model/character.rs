@@ -102,9 +102,9 @@ impl Character {
             .classes
             .iter()
             .filter(|c| c.caster_coef != 0)
-            .map(|c| c.level as f32 / c.caster_coef as f32)
-            .sum::<f32>()
-            .floor() as u32
+            .map(|c| 6 / c.caster_coef * c.level)
+            .sum::<u32>()
+            / 6
     }
 
     fn spell_slots_for_caster_level(&self) -> &'static [u32] {
@@ -200,14 +200,48 @@ impl Character {
         (1..=9u32).map(|level| (level, self.spell_slot(level)))
     }
 
+    /// Clear all labels and descriptions (blanket clear).
+    pub fn clear_all_labels(&mut self) {
+        for cl in &mut self.identity.classes {
+            cl.class_label = None;
+            cl.subclass_label = None;
+        }
+        for feature in &mut self.features {
+            feature.label = None;
+            feature.description.clear();
+        }
+        for racial_trait in &mut self.racial_traits {
+            racial_trait.label = None;
+            racial_trait.description.clear();
+        }
+        for entry in self.feature_data.values_mut() {
+            for field in &mut entry.fields {
+                field.label = None;
+                field.description.clear();
+                for opt in field.value.choices_mut() {
+                    opt.label = None;
+                    opt.description.clear();
+                }
+            }
+            if let Some(spells) = &mut entry.spells {
+                for spell in &mut spells.spells {
+                    spell.label = None;
+                    spell.description.clear();
+                }
+            }
+        }
+    }
+
     pub fn class_summary(&self) -> String {
         self.identity
             .classes
             .iter()
             .filter(|c| !c.class.is_empty())
-            .map(|c| match &c.subclass {
-                Some(sc) if !sc.is_empty() => format!("{} ({sc}) {}", c.class, c.level),
-                _ => format!("{} {}", c.class, c.level),
+            .map(|c| match c.subclass_label() {
+                Some(sc) if !sc.is_empty() => {
+                    format!("{} ({sc}) {}", c.class_label(), c.level)
+                }
+                _ => format!("{} {}", c.class_label(), c.level),
             })
             .collect::<Vec<_>>()
             .join(" / ")
@@ -287,7 +321,11 @@ pub struct ClassLevel {
     #[serde(default)]
     pub class: String,
     #[serde(default)]
+    pub class_label: Option<String>,
+    #[serde(default)]
     pub subclass: Option<String>,
+    #[serde(default)]
+    pub subclass_label: Option<String>,
     #[serde(default)]
     pub level: u32,
     #[serde(default)]
@@ -297,14 +335,26 @@ pub struct ClassLevel {
     #[serde(default)]
     pub applied_levels: VecSet<u32>,
     #[serde(default)]
-    pub caster_coef: u8,
+    pub caster_coef: u32,
+}
+
+impl ClassLevel {
+    pub fn class_label(&self) -> &str {
+        self.class_label.as_deref().unwrap_or(&self.class)
+    }
+
+    pub fn subclass_label(&self) -> Option<&str> {
+        self.subclass_label.as_deref().or(self.subclass.as_deref())
+    }
 }
 
 impl Default for ClassLevel {
     fn default() -> Self {
         Self {
             class: String::new(),
+            class_label: None,
             subclass: None,
+            subclass_label: None,
             level: 1,
             hit_die_sides: 8,
             hit_dice_used: 0,
@@ -421,7 +471,15 @@ pub struct Feature {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
+}
+
+impl Feature {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
@@ -436,9 +494,17 @@ pub struct FeatureData {
 pub struct FeatureField {
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub value: FeatureValue,
+}
+
+impl FeatureField {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
@@ -475,9 +541,17 @@ impl FeatureValue {
 pub struct FeatureOption {
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub cost: u32,
+}
+
+impl FeatureOption {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
@@ -511,7 +585,7 @@ pub struct Weapon {
     #[serde(default)]
     pub damage: String,
     #[serde(default)]
-    pub damage_type: String,
+    pub damage_type: Option<DamageType>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
@@ -612,6 +686,8 @@ pub struct Spell {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub level: u32,
     #[serde(default)]
     pub prepared: bool,
@@ -621,12 +697,26 @@ pub struct Spell {
     pub sticky: bool,
 }
 
+impl Spell {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct RacialTrait {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
+}
+
+impl RacialTrait {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 #[cfg(test)]
@@ -647,7 +737,9 @@ pub mod tests {
                 name: "Test".to_string(),
                 classes: vec![ClassLevel {
                     class: "Fighter".to_string(),
+                    class_label: None,
                     subclass: None,
+                    subclass_label: None,
                     level: 5,
                     hit_die_sides: 10,
                     hit_dice_used: 0,

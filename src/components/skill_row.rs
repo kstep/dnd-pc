@@ -1,7 +1,9 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use crate::model::{Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable};
+use crate::model::{
+    Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable, format_bonus,
+};
 
 #[component]
 pub fn SkillRow(skill: Skill) -> impl IntoView {
@@ -18,14 +20,7 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
 
     let bonus = Memo::new(move |_| store.read().skill_bonus(skill));
 
-    let bonus_display = move || {
-        let b = bonus.get();
-        if b >= 0 {
-            format!("+{b}")
-        } else {
-            format!("{b}")
-        }
-    };
+    let bonus_display = move || format_bonus(bonus.get());
 
     let skill_tr_key = skill.tr_key();
     let ability_abbr_key = skill.ability().tr_abbr_key();

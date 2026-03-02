@@ -2,42 +2,25 @@ use std::io::{Read, Write};
 
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 
-use crate::model::Character;
+use crate::{model::Character, rules::RulesRegistry};
 
-fn strip_for_sharing(character: &Character) -> Character {
+fn strip_for_sharing(character: &Character, registry: Option<&RulesRegistry>) -> Character {
     let mut character = character.clone();
 
     character.combat.death_save_successes = 0;
     character.combat.death_save_failures = 0;
     character.combat.hp_temp = 0;
-
-    for feature in &mut character.features {
-        feature.description.clear();
-    }
-
-    for racial_trait in &mut character.racial_traits {
-        racial_trait.description.clear();
-    }
-
-    for entry in character.feature_data.values_mut() {
-        for field in &mut entry.fields {
-            field.description.clear();
-            for opt in field.value.choices_mut() {
-                opt.description.clear();
-            }
-        }
-        if let Some(spells) = &mut entry.spells {
-            for spell in &mut spells.spells {
-                spell.description.clear();
-            }
-        }
+    if let Some(registry) = registry {
+        registry.clear_from_registry(&mut character);
+    } else {
+        character.clear_all_labels();
     }
 
     character
 }
 
-pub fn encode_character(character: &Character) -> String {
-    let character = strip_for_sharing(character);
+pub fn encode_character(character: &Character, registry: Option<&RulesRegistry>) -> String {
+    let character = strip_for_sharing(character, registry);
     let bytes = postcard::to_allocvec(&character).expect("failed to serialize character");
     let mut compressed = Vec::new();
     {
@@ -89,7 +72,9 @@ pub mod tests {
                 name: "Share Test".to_string(),
                 classes: vec![ClassLevel {
                     class: "Bard".to_string(),
+                    class_label: None,
                     subclass: None,
+                    subclass_label: None,
                     level: 3,
                     hit_die_sides: 8,
                     hit_dice_used: 0,
@@ -126,6 +111,7 @@ pub mod tests {
             personality: Personality::default(),
             features: vec![Feature {
                 name: "Bardic Inspiration".to_string(),
+                label: None,
                 description: "Use a bonus action...".to_string(),
             }],
             equipment: Equipment::default(),
@@ -137,6 +123,7 @@ pub mod tests {
                         casting_ability: Ability::Charisma,
                         spells: vec![Spell {
                             name: "Vicious Mockery".to_string(),
+                            label: None,
                             level: 0,
                             prepared: true,
                             description: "Unleash a string of insults...".to_string(),
@@ -159,7 +146,7 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn encode_decode_roundtrip() {
         let ch = test_character();
-        let encoded = encode_character(&ch);
+        let encoded = encode_character(&ch, None);
         let decoded = decode_character(&encoded).expect("decode failed");
 
         // Core identity preserved
@@ -181,7 +168,7 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn strip_zeros_death_saves_and_hp_temp() {
         let ch = test_character();
-        let stripped = strip_for_sharing(&ch);
+        let stripped = strip_for_sharing(&ch, None);
 
         assert_eq!(stripped.combat.death_save_successes, 0);
         assert_eq!(stripped.combat.death_save_failures, 0);
@@ -195,7 +182,7 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn strip_clears_descriptions() {
         let ch = test_character();
-        let stripped = strip_for_sharing(&ch);
+        let stripped = strip_for_sharing(&ch, None);
 
         // Feature descriptions cleared
         assert!(stripped.features[0].description.is_empty());

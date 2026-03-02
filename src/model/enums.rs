@@ -234,7 +234,6 @@ enum_serde_u8!(Proficiency {
     MartialWeapons,
 });
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Display, EnumIter)]
 #[repr(u8)]
 pub enum DamageType {
@@ -359,6 +358,47 @@ enum_serde_u8!(ArmorType {
     Medium,
     Heavy
 });
+
+impl DamageType {
+    pub fn from_name(s: &str) -> Option<Self> {
+        match s.to_ascii_lowercase().as_str() {
+            "acid" => Some(DamageType::Acid),
+            "bludgeoning" => Some(DamageType::Bludgeoning),
+            "cold" => Some(DamageType::Cold),
+            "fire" => Some(DamageType::Fire),
+            "force" => Some(DamageType::Force),
+            "lightning" => Some(DamageType::Lightning),
+            "necrotic" => Some(DamageType::Necrotic),
+            "piercing" => Some(DamageType::Piercing),
+            "poison" => Some(DamageType::Poison),
+            "psychic" => Some(DamageType::Psychic),
+            "radiant" => Some(DamageType::Radiant),
+            "slashing" => Some(DamageType::Slashing),
+            "thunder" => Some(DamageType::Thunder),
+            _ => None,
+        }
+    }
+}
+
+impl Translatable for DamageType {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            DamageType::Acid => "damage-acid",
+            DamageType::Bludgeoning => "damage-bludgeoning",
+            DamageType::Cold => "damage-cold",
+            DamageType::Fire => "damage-fire",
+            DamageType::Force => "damage-force",
+            DamageType::Lightning => "damage-lightning",
+            DamageType::Necrotic => "damage-necrotic",
+            DamageType::Piercing => "damage-piercing",
+            DamageType::Poison => "damage-poison",
+            DamageType::Psychic => "damage-psychic",
+            DamageType::Radiant => "damage-radiant",
+            DamageType::Slashing => "damage-slashing",
+            DamageType::Thunder => "damage-thunder",
+        }
+    }
+}
 
 impl Translatable for ArmorType {
     fn tr_key(&self) -> &'static str {

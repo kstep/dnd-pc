@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
 use leptos_meta::{Html, Link, Meta, provide_meta_context};
 use leptos_router::{
-    components::{Route, Router, Routes},
+    components::{ParentRoute, Route, Router, Routes},
     path,
 };
 
@@ -30,7 +30,8 @@ static_loader! {
 
 use components::language_switcher::LanguageSwitcher;
 use pages::{
-    character_list::CharacterList, character_sheet::CharacterSheet,
+    character_layout::CharacterLayout, character_list::CharacterList,
+    character_sheet::CharacterSheet, character_summary::CharacterSummary,
     import_character::ImportCharacter, not_found::NotFound,
 };
 use rules::RulesRegistry;
@@ -65,7 +66,6 @@ fn use_theme() -> ReadSignal<&'static str> {
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
-    provide_context(RulesRegistry::new());
 
     let theme = use_theme();
 
@@ -77,15 +77,28 @@ pub fn App() -> impl IntoView {
         <Link rel="apple-touch-icon" href=format!("{BASE_URL}/icons/icon-192.png") />
 
         <I18nProvider>
-            <LanguageSwitcher />
-            <Router base=option_env!("BASE_URL").unwrap_or_default()>
-                <Routes fallback=|| view! { <NotFound /> }>
-                    <Route path=path!("/") view=CharacterList />
-                    <Route path=path!("/c/:id") view=CharacterSheet />
-                    <Route path=path!("/s/:data") view=ImportCharacter />
-                </Routes>
-            </Router>
+            <AppInner />
         </I18nProvider>
+    }
+}
+
+#[component]
+fn AppInner() -> impl IntoView {
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    provide_context(RulesRegistry::new(i18n));
+
+    view! {
+        <LanguageSwitcher />
+        <Router base=option_env!("BASE_URL").unwrap_or_default()>
+            <Routes fallback=|| view! { <NotFound /> }>
+                <Route path=path!("/") view=CharacterList />
+                <ParentRoute path=path!("/c/:id") view=CharacterLayout>
+                    <Route path=path!("") view=CharacterSheet />
+                    <Route path=path!("/summary") view=CharacterSummary />
+                </ParentRoute>
+                <Route path=path!("/s/:data") view=ImportCharacter />
+            </Routes>
+        </Router>
     }
 }
 

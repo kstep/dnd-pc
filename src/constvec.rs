@@ -84,7 +84,7 @@ where
             .map_or(0, |pos| pos + 1)
     }
 
-    pub fn is_empty(&self) -> usize {
+    pub fn is_empty(&self) -> bool {
         let zero = T::default();
         self.data.iter().all(|x| *x == zero)
     }

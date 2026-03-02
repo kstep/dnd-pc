@@ -146,12 +146,14 @@ fn compute_diff(
         local.identity.experience_points.to_string(),
         imported.identity.experience_points.to_string(),
     );
-    if local.class_summary() != imported.class_summary() {
+    let local_classes = local.class_summary();
+    let imported_classes = imported.class_summary();
+    if local_classes != imported_classes {
         rows.push(DiffRow {
             section: sec,
             label: "classes",
-            local: local.class_summary(),
-            imported: imported.class_summary(),
+            local: local_classes,
+            imported: imported_classes,
         });
     }
 
