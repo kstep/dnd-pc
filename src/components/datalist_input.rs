@@ -9,10 +9,17 @@ fn next_datalist_id() -> String {
     format!("datalist-{id}")
 }
 
+fn resolve_name(options: &[(String, String, String)], input: &str) -> Option<String> {
+    options
+        .iter()
+        .find(|(name, label, _)| label == input || name == input)
+        .map(|(name, _, _)| name.clone())
+}
+
 /// A text input with an associated `<datalist>` for autocomplete suggestions.
 ///
 /// Each instance generates a unique datalist ID internally.
-/// A browse button (📋) opens a modal showing all options with descriptions,
+/// A browse button (▾) opens a modal showing all options with descriptions,
 /// providing consistent behaviour across mobile platforms.
 #[component]
 pub fn DatalistInput(
@@ -25,32 +32,38 @@ pub fn DatalistInput(
     /// CSS class for the input
     #[prop(into, optional)]
     class: Option<String>,
-    /// Autocomplete options as `(value, label)` pairs.
-    /// If label is empty, only the value is shown.
+    /// Autocomplete options as `(name, label, description)` triples.
+    /// `name` is the stable key, `label` is the display text, `description` is
+    /// shown below.
     #[prop(into)]
-    options: Vec<(String, String)>,
-    /// Called with the new value on each input event
-    on_input: impl Fn(String) + Send + Sync + 'static,
+    options: Vec<(String, String, String)>,
+    /// Called with `(input_text, resolved_name)` on each input event.
+    /// `resolved_name` is `Some(name)` if the input matches an option's label
+    /// or name.
+    on_input: impl Fn(String, Option<String>) + Send + Sync + 'static,
 ) -> impl IntoView {
-    let datalist_id = next_datalist_id();
-    let list_id = datalist_id.clone();
+    let id = next_datalist_id();
+    let datalist_id = id.clone();
 
     let show_modal = RwSignal::new(false);
     let search_query = RwSignal::new(String::new());
     let options_stored = StoredValue::new(options);
-    let on_input_stored = StoredValue::new(on_input);
+    let on_input = StoredValue::new(on_input);
 
     let filtered_options = move || {
         let query = search_query.get().to_lowercase();
         options_stored.with_value(|opts| {
+            if query.is_empty() {
+                return opts.clone();
+            }
             opts.iter()
-                .filter(|(val, label)| {
-                    query.is_empty()
-                        || val.to_lowercase().contains(&query)
+                .filter(|(name, label, description)| {
+                    name.to_lowercase().contains(&query)
                         || label.to_lowercase().contains(&query)
+                        || description.to_lowercase().contains(&query)
                 })
                 .cloned()
-                .collect::<Vec<_>>()
+                .collect()
         })
     };
 
@@ -60,13 +73,13 @@ pub fn DatalistInput(
         <div class="datalist-input-wrapper">
             <datalist id=datalist_id>
                 {options_stored.with_value(|opts| {
-                    opts.iter().map(|(val, label)| {
-                        let val = val.clone();
+                    opts.iter().map(|(_, label, description)| {
                         let label = label.clone();
-                        if label.is_empty() {
-                            view! { <option value=val /> }.into_any()
+                        let description = description.clone();
+                        if description.is_empty() {
+                            view! { <option value=label /> }.into_any()
                         } else {
-                            view! { <option value=val>{label}</option> }.into_any()
+                            view! { <option value=label>{description}</option> }.into_any()
                         }
                     }).collect_view()
                 })}
@@ -74,11 +87,13 @@ pub fn DatalistInput(
             <input
                 type="text"
                 class=class.unwrap_or_default()
-                list=list_id
+                list=id
                 placeholder=placeholder
                 prop:value=value
-                on:input=move |e| {
-                    on_input_stored.with_value(|f| f(event_target_value(&e)));
+                on:input=move |event| {
+                    let input = event_target_value(&event);
+                    let resolved = options_stored.with_value(|opts| resolve_name(opts, &input));
+                    on_input.with_value(|callback| callback(input, resolved));
                 }
             />
             <button
@@ -100,7 +115,7 @@ pub fn DatalistInput(
             >
                 <div
                     class="datalist-modal"
-                    on:click=move |e| e.stop_propagation()
+                    on:click=move |event| event.stop_propagation()
                 >
                     <div class="datalist-modal-header">
                         <span>{modal_title.clone()}</span>
@@ -117,26 +132,27 @@ pub fn DatalistInput(
                         class="datalist-modal-search"
                         placeholder="Search…"
                         prop:value=move || search_query.get()
-                        on:input=move |e| search_query.set(event_target_value(&e))
+                        on:input=move |event| search_query.set(event_target_value(&event))
                     />
                     <div class="datalist-modal-list">
                         <For
                             each=filtered_options
-                            key=|(val, _)| val.clone()
-                            children=move |(val, label)| {
-                                let selected_value = val.clone();
+                            key=|(name, _, _)| name.clone()
+                            children=move |(name, label, description)| {
+                                let selected_label = label.clone();
+                                let selected_name = name.clone();
                                 view! {
                                     <button
                                         type="button"
                                         class="datalist-option"
                                         on:click=move |_| {
-                                            on_input_stored.with_value(|f| f(selected_value.clone()));
+                                            on_input.with_value(|callback| callback(selected_label.clone(), Some(selected_name.clone())));
                                             show_modal.set(false);
                                         }
                                     >
-                                        <span class="datalist-option-value">{val.clone()}</span>
-                                        {(!label.is_empty()).then(|| view! {
-                                            <span class="datalist-option-label">{label.clone()}</span>
+                                        <span class="datalist-option-value">{label}</span>
+                                        {(!description.is_empty()).then(|| view! {
+                                            <span class="datalist-option-label">{description}</span>
                                         })}
                                     </button>
                                 }

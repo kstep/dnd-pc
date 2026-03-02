@@ -5,7 +5,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{panel::Panel, toggle_button::ToggleButton},
+    components::{datalist_input::DatalistInput, panel::Panel, toggle_button::ToggleButton},
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, RacialTrait},
     rules::RulesRegistry,
 };
@@ -26,26 +26,17 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     view! {
         <Panel title=move_tr!("panel-features") class="features-panel">
-            {move || {
-                let classes = store.identity().classes().read();
-                let options: Vec<(String, String)> = classes.iter().filter_map(|c| {
-                    registry.with_class(&c.class, |def| {
-                        def.features(c.subclass.as_deref())
-                            .map(|f| (f.label().to_string(), f.description.clone()))
-                            .collect::<Vec<_>>()
-                    })
-                }).flatten().collect();
-                view! {
-                    <datalist id="feature-suggestions">
-                        {options.into_iter().map(|(name, desc)| {
-                            view! { <option value=name>{desc}</option> }
-                        }).collect_view()}
-                    </datalist>
-                }
-            }}
-
             <div class="features-list">
                 {move || {
+                    let classes = store.identity().classes().read();
+                    let options: Vec<(String, String, String)> = classes.iter().filter_map(|c| {
+                        registry.with_class(&c.class, |def| {
+                            def.features(c.subclass.as_deref())
+                                .map(|f| (f.name.clone(), f.label().to_string(), f.description.clone()))
+                                .collect::<Vec<_>>()
+                        })
+                    }).flatten().collect();
+                    drop(classes);
                     features
                         .read()
                         .iter()
@@ -54,39 +45,23 @@ pub fn FeaturesPanel() -> impl IntoView {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
                             let is_open = Signal::derive(move || expanded.get().contains(&i));
+                            let options = options.clone();
                             view! {
                                 <div class="feature-entry">
                                     <ToggleButton
                                         expanded=is_open
                                         on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                     />
-                                    <input
-                                        type="text"
+                                    <DatalistInput
+                                        value=name
+                                        placeholder=move_tr!("feature-name").get()
                                         class="feature-name"
-                                        list="feature-suggestions"
-                                        placeholder=move_tr!("feature-name")
-                                        prop:value=name
-                                        on:input=move |e| {
-                                            let input = event_target_value(&e);
-                                            let classes = store.identity().classes().read();
-                                            // Resolve label → (name, label, description)
-                                            let found = classes.iter().find_map(|c| {
-                                                registry.with_class(&c.class, |def| {
-                                                    def.features(c.subclass.as_deref())
-                                                        .find(|f| f.label() == input || f.name == input)
-                                                        .map(|f| (f.name.clone(), f.label.clone(), f.description.clone()))
-                                                })?
-                                            });
-                                            drop(classes);
+                                        options=options
+                                        on_input=move |input, resolved| {
                                             let mut w = features.write();
-                                            if let Some((name, label, desc)) = found {
-                                                w[i].name = name;
-                                                w[i].label = label;
-                                                w[i].description = desc;
-                                            } else {
-                                                w[i].name = input;
-                                                w[i].label = None;
-                                            }
+                                            w[i].name = resolved.unwrap_or(input);
+                                            w[i].label = None;
+                                            w[i].description.clear();
                                         }
                                     />
                                     <button

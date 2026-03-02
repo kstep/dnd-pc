@@ -234,9 +234,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                             opt_expanded.get().contains(&opt_idx)
                                         });
 
-                                        let suggestions: Vec<(String, String)> = all_options
+                                        let suggestions: Vec<(String, String, String)> = all_options
                                             .iter()
-                                            .map(|o| (o.label().to_string(), o.description.clone()))
+                                            .map(|o| (o.name.clone(), o.label().to_string(), o.description.clone()))
                                             .collect();
 
                                         view! {
@@ -251,33 +251,32 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                     value=opt_name
                                                     placeholder=move_tr!("choose-option").get()
                                                     options=suggestions
-                                                    on_input=move |input: String| {
+                                                    on_input=move |input, resolved| {
                                                         fname.with_value(|key| {
                                                             fld_name.with_value(|fld| {
-                                                                let classes = store.identity().classes().read();
-                                                                let char_fields: Vec<_> = store.feature_data().read()
-                                                                    .get(key)
-                                                                    .map(|e| e.fields.clone())
-                                                                    .unwrap_or_default();
-                                                                let found = registry
-                                                                    .get_choice_options(&classes, key, fld, &char_fields)
-                                                                    .into_iter()
-                                                                    .find(|o| o.label() == input || o.name == input);
-                                                                drop(classes);
+                                                                let cost = resolved.as_ref().and_then(|name| {
+                                                                    let classes = store.identity().classes().read();
+                                                                    let char_fields: Vec<_> = store.feature_data().read()
+                                                                        .get(key)
+                                                                        .map(|e| e.fields.clone())
+                                                                        .unwrap_or_default();
+                                                                    registry
+                                                                        .get_choice_options(&classes, key, fld, &char_fields)
+                                                                        .into_iter()
+                                                                        .find(|o| o.name == *name)
+                                                                        .map(|o| o.cost)
+                                                                });
                                                                 store.feature_data().update(|m| {
                                                                     if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
                                                                         && let Some(f) = fields.get_mut(field_idx)
                                                                         && let FeatureValue::Choice { options } = &mut f.value
                                                                         && let Some(opt) = options.get_mut(opt_idx)
                                                                     {
-                                                                        if let Some(ref o) = found {
-                                                                            opt.name = o.name.clone();
-                                                                            opt.label = o.label.clone();
-                                                                            opt.description = o.description.clone();
-                                                                            opt.cost = o.cost;
-                                                                        } else {
-                                                                            opt.name = input.clone();
-                                                                            opt.label = None;
+                                                                        opt.name = resolved.unwrap_or(input);
+                                                                        opt.label = None;
+                                                                        opt.description.clear();
+                                                                        if let Some(cost) = cost {
+                                                                            opt.cost = cost;
                                                                         }
                                                                     }
                                                                 });

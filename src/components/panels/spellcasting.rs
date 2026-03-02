@@ -6,7 +6,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{panel::Panel, toggle_button::ToggleButton},
+    components::{datalist_input::DatalistInput, panel::Panel, toggle_button::ToggleButton},
     model::{
         Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, Translatable,
         format_bonus,
@@ -23,8 +23,6 @@ fn FeatureSpellcastingSection(
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    let datalist_prefix = feature_name.replace(' ', "-").to_lowercase();
-    let datalist_prefix = StoredValue::new(datalist_prefix);
     // Resolve feature name → label for display title
     let panel_title = {
         let identity = store.get_untracked().identity.clone();
@@ -60,31 +58,6 @@ fn FeatureSpellcastingSection(
     view! {
         <div class="spellcasting-section">
             <h4 class="skill-group-header">{panel_title}</h4>
-            {move || {
-                let suggestions = spell_suggestions.get();
-                (0..=9u32)
-                    .map(|level| {
-                        let datalist_id = datalist_prefix.with_value(|prefix| {
-                            format!("spell-suggestions-{prefix}-{level}")
-                        });
-                        let options: Vec<_> = suggestions
-                            .iter()
-                            .filter(|(spell_level, _, _)| *spell_level == level)
-                            .map(|(_, name, desc)| (name.clone(), desc.clone()))
-                            .collect();
-                        view! {
-                            <datalist id=datalist_id>
-                                {options
-                                    .into_iter()
-                                    .map(|(name, desc)| {
-                                        view! { <option value=name>{desc}</option> }
-                                    })
-                                    .collect_view()}
-                            </datalist>
-                        }
-                    })
-                    .collect_view()
-            }}
 
             <div class="spell-header">
                 <div class="spell-stat">
@@ -165,6 +138,7 @@ fn FeatureSpellcastingSection(
                             .map(|sc| sc.spells.clone())
                             .unwrap_or_default()
                     });
+                    let suggestions = spell_suggestions.get();
                     spell_list
                         .into_iter()
                         .enumerate()
@@ -175,9 +149,11 @@ fn FeatureSpellcastingSection(
                             let spell_sticky = spell.sticky;
                             let spell_desc = spell.description.clone();
                             let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
-                            let datalist_id = datalist_prefix.with_value(|prefix| {
-                                format!("spell-suggestions-{prefix}-{}", spell.level)
-                            });
+                            let options: Vec<(String, String, String)> = suggestions
+                                .iter()
+                                .filter(|(l, _, _, _)| *l == spell.level)
+                                .map(|(_, name, label, desc)| (name.clone(), label.clone(), desc.clone()))
+                                .collect();
                             view! {
                                 <div class="spell-entry">
                                     <ToggleButton
@@ -204,39 +180,20 @@ fn FeatureSpellcastingSection(
                                             }
                                         />
                                     </label>
-                                    <input
-                                        type="text"
+                                    <DatalistInput
+                                        value=spell_name
+                                        placeholder=move_tr!("spell-name").get()
                                         class="spell-name"
-                                        list=datalist_id
-                                        placeholder=move_tr!("spell-name")
-                                        prop:value=spell_name
-                                        on:change=move |e| {
-                                            let input = event_target_value(&e);
-                                            // Resolve label → (name, label, desc) from registry
-                                            let found = fname.with_value(|key| {
-                                                registry.with_feature(&store.read_untracked().identity, key, |feat| {
-                                                    feat.spells.as_ref().and_then(|sd| {
-                                                        registry.with_spell_list(&sd.list, |spells| {
-                                                            spells.iter()
-                                                                .find(|spell| spell.label() == input || spell.name == input)
-                                                                .map(|spell| (spell.name.clone(), spell.label.clone(), spell.description.clone()))
-                                                        })
-                                                    })
-                                                }).flatten()
-                                            });
+                                        options=options
+                                        on_input=move |input, resolved| {
                                             fname.with_value(|key| {
                                                 store.feature_data().update(|map| {
                                                     if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
                                                         && let Some(spell) = sc.spells.get_mut(i)
                                                     {
-                                                        if let Some((name, label, desc)) = found {
-                                                            spell.name = name;
-                                                            spell.label = label;
-                                                            spell.description = desc;
-                                                        } else {
-                                                            spell.name = input;
-                                                            spell.label = None;
-                                                        }
+                                                        spell.name = resolved.unwrap_or(input);
+                                                        spell.label = None;
+                                                        spell.description.clear();
                                                     }
                                                 });
                                             });
@@ -324,12 +281,12 @@ fn FeatureSpellcastingSection(
 }
 
 /// Resolve the spell list for a given feature name using registry's
-/// find_feature. Returns (level, display_label, description) tuples.
+/// find_feature. Returns (level, name, label, description) tuples.
 fn resolve_feature_spell_list(
     registry: &RulesRegistry,
     identity: &CharacterIdentity,
     feature_name: &str,
-) -> Vec<(u32, String, String)> {
+) -> Vec<(u32, String, String, String)> {
     registry
         .with_feature(identity, feature_name, |feat| {
             let spells_def = feat.spells.as_ref()?;
@@ -339,6 +296,7 @@ fn resolve_feature_spell_list(
                     .map(|spell| {
                         (
                             spell.level,
+                            spell.name.clone(),
                             spell.label().to_string(),
                             spell.description.clone(),
                         )

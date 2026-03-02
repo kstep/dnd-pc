@@ -195,8 +195,8 @@ pub fn CharacterHeader() -> impl IntoView {
                         let race_applied = store.identity().race_applied().get();
 
                         let (race_options, race_display) = registry.with_race_entries(|entries| {
-                            let options: Vec<(String, String)> = entries.iter().map(|entry| {
-                                (entry.label().to_string(), entry.description.clone())
+                            let options: Vec<(String, String, String)> = entries.iter().map(|entry| {
+                                (entry.name.clone(), entry.label().to_string(), entry.description.clone())
                             }).collect();
                             let display = entries.iter()
                                 .find(|e| e.name == race_name)
@@ -217,13 +217,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                     value=race_display
                                     placeholder=tr!("race")
                                     options=race_options
-                                    on_input=move |input: String| {
-                                        // Resolve label → name
-                                        let name = registry.with_race_entries(|entries| {
-                                            entries.iter()
-                                                .find(|e| e.label() == input || e.name == input)
-                                                .map(|e| e.name.clone())
-                                        }).unwrap_or_else(|| input.clone());
+                                    on_input=move |input, resolved| {
+                                        let name: String = resolved.unwrap_or(input);
                                         let old = store.identity().race().get_untracked();
                                         store.identity().race().set(name.clone());
                                         if name != old {
@@ -264,8 +259,8 @@ pub fn CharacterHeader() -> impl IntoView {
                         let bg_applied = store.identity().background_applied().get();
 
                         let (bg_options, bg_display) = registry.with_background_entries(|entries| {
-                            let options: Vec<(String, String)> = entries.iter().map(|entry| {
-                                (entry.label().to_string(), entry.description.clone())
+                            let options: Vec<(String, String, String)> = entries.iter().map(|entry| {
+                                (entry.name.clone(), entry.label().to_string(), entry.description.clone())
                             }).collect();
                             let display = entries.iter()
                                 .find(|e| e.name == bg_name)
@@ -286,12 +281,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                     value=bg_display
                                     placeholder=tr!("background")
                                     options=bg_options
-                                    on_input=move |input: String| {
-                                        let name = registry.with_background_entries(|entries| {
-                                            entries.iter()
-                                                .find(|e| e.label() == input || e.name == input)
-                                                .map(|e| e.name.clone())
-                                        }).unwrap_or_else(|| input.clone());
+                                    on_input=move |input, resolved| {
+                                        let name: String = resolved.unwrap_or(input);
                                         let old = store.identity().background().get_untracked();
                                         store.identity().background().set(name.clone());
                                         if name != old {
@@ -385,7 +376,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 entries.iter().filter(|entry| {
                                     entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
                                 }).map(|entry| {
-                                    (entry.label().to_string(), entry.description.clone())
+                                    (entry.name.clone(), entry.label().to_string(), entry.description.clone())
                                 }).collect::<Vec<_>>()
                             })
                         });
@@ -424,11 +415,11 @@ pub fn CharacterHeader() -> impl IntoView {
                                     None
                                 };
 
-                                let subclass_options: Vec<(String, String)> = registry.with_class(&class_key, |def| {
+                                let subclass_options: Vec<(String, String, String)> = registry.with_class(&class_key, |def| {
                                     def.subclasses
                                         .values()
                                         .filter(|sc| sc.min_level() <= current_level)
-                                        .map(|sc| (sc.label().to_string(), sc.description.clone()))
+                                        .map(|sc| (sc.name.clone(), sc.label().to_string(), sc.description.clone()))
                                         .collect()
                                 }).unwrap_or_default();
                                 let has_subclasses = !subclass_options.is_empty();
@@ -440,12 +431,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                             placeholder=tr!("class")
                                             class="class-name"
                                             options=class_options
-                                            on_input=move |input: String| {
-                                                let name = registry.with_class_entries(|entries| {
-                                                    entries.iter()
-                                                        .find(|e| e.label() == input || e.name == input)
-                                                        .map(|e| e.name.clone())
-                                                }).unwrap_or_else(|| input.clone());
+                                            on_input=move |input, resolved| {
+                                                let name: String = resolved.unwrap_or(input);
                                                 classes.write()[i].class.clone_from(&name);
                                                 if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
                                                     registry.fetch_class(&name);
@@ -462,17 +449,11 @@ pub fn CharacterHeader() -> impl IntoView {
                                                     placeholder=tr!("subclass")
                                                     class="class-subclass"
                                                     options=subclass_options
-                                                    on_input=move |input: String| {
+                                                    on_input=move |input, resolved| {
                                                         if input.is_empty() {
                                                             classes.write()[i].subclass = None;
                                                         } else {
-                                                            // Resolve label → name
-                                                            let class = classes.read()[i].class.clone();
-                                                            let name = registry.with_class(&class, |def| {
-                                                                def.subclasses.values()
-                                                                    .find(|sc| sc.label() == input || sc.name == input)
-                                                                    .map(|sc| sc.name.clone())
-                                                            }).flatten().unwrap_or_else(|| input.clone());
+                                                            let name: String = resolved.unwrap_or(input);
                                                             classes.write()[i].subclass = Some(name);
                                                         }
                                                     }
