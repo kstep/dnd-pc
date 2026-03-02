@@ -72,16 +72,14 @@ pub fn delete_character(id: &Uuid) {
     save_index(&index);
 }
 
-/// Open a `.json` file picker, read the selected file, and call `on_character` with the parsed
-/// [`Character`]. Shows a browser alert and logs on error.
+/// Open a `.json` file picker, read the selected file, and call `on_character`
+/// with the parsed [`Character`]. Shows a browser alert and logs on error.
 pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
     use std::rc::Rc;
 
     let on_character = Rc::new(on_character);
-    let input: web_sys::HtmlInputElement = document()
-        .create_element("input")
-        .unwrap()
-        .unchecked_into();
+    let input: web_sys::HtmlInputElement =
+        document().create_element("input").unwrap().unchecked_into();
 
     input.set_type("file");
     input.set_accept(".json");
