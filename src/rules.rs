@@ -1152,310 +1152,117 @@ mod tests {
 
     use super::*;
 
+    // Auto-generated map: relative path → file contents for every
+    // non-manifest JSON file under `public/`.
+    include!(concat!(env!("OUT_DIR"), "/public_json_files.rs"));
+
     /// Verify that every indented line in `content` uses spaces (not tabs)
     /// and that the number of leading spaces is a multiple of 2.
-    fn check_indentation(content: &str) {
+    fn check_indentation(path: &str, content: &str) {
         for (line_no, line) in content.lines().enumerate() {
             let leading: &str = &line[..line.len() - line.trim_start().len()];
             assert!(
                 leading.chars().all(|c| c == ' '),
-                "line {}: leading whitespace contains a non-space character",
+                "{path}: line {}: leading whitespace contains a non-space character",
                 line_no + 1
             );
             assert_eq!(
                 leading.len() % 2,
                 0,
-                "line {}: has {} leading space(s) — not a multiple of 2",
+                "{path}: line {}: has {} leading space(s) — not a multiple of 2",
                 line_no + 1,
                 leading.len()
             );
         }
     }
 
-    /// Generate a `#[wasm_bindgen_test]` that checks indentation and
-    /// deserialises `$path` into `$ty`.
-    macro_rules! json_test {
-        ($name:ident, $ty:ty, $path:literal) => {
-            #[wasm_bindgen_test]
-            fn $name() {
-                let content = include_str!($path);
-                check_indentation(content);
-                let _: $ty =
-                    serde_json::from_str(content).expect(concat!("failed to parse ", $path));
-            }
-        };
+    // ---------- index.json ----------
+
+    #[wasm_bindgen_test]
+    fn json_index_valid() {
+        let files = public_json_files();
+        let content = files.get("index.json").expect("index.json must exist in public/");
+        check_indentation("index.json", content);
+        let _: Index = serde_json::from_str(content).expect("index.json must be valid");
     }
 
-    // Index
-    json_test!(json_index, Index, "../public/index.json");
+    // ---------- classes ----------
 
-    // Classes
-    json_test!(
-        json_class_artificer,
-        ClassDefinition,
-        "../public/classes/artificer.json"
-    );
-    json_test!(
-        json_class_barbarian,
-        ClassDefinition,
-        "../public/classes/barbarian.json"
-    );
-    json_test!(
-        json_class_bard,
-        ClassDefinition,
-        "../public/classes/bard.json"
-    );
-    json_test!(
-        json_class_cleric,
-        ClassDefinition,
-        "../public/classes/cleric.json"
-    );
-    json_test!(
-        json_class_druid,
-        ClassDefinition,
-        "../public/classes/druid.json"
-    );
-    json_test!(
-        json_class_fighter,
-        ClassDefinition,
-        "../public/classes/fighter.json"
-    );
-    json_test!(
-        json_class_monk,
-        ClassDefinition,
-        "../public/classes/monk.json"
-    );
-    json_test!(
-        json_class_paladin,
-        ClassDefinition,
-        "../public/classes/paladin.json"
-    );
-    json_test!(
-        json_class_ranger,
-        ClassDefinition,
-        "../public/classes/ranger.json"
-    );
-    json_test!(
-        json_class_rogue,
-        ClassDefinition,
-        "../public/classes/rogue.json"
-    );
-    json_test!(
-        json_class_sorcerer,
-        ClassDefinition,
-        "../public/classes/sorcerer.json"
-    );
-    json_test!(
-        json_class_warlock,
-        ClassDefinition,
-        "../public/classes/warlock.json"
-    );
-    json_test!(
-        json_class_wizard,
-        ClassDefinition,
-        "../public/classes/wizard.json"
-    );
+    #[wasm_bindgen_test]
+    fn json_classes_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
 
-    // Races
-    json_test!(
-        json_race_aasimar,
-        RaceDefinition,
-        "../public/races/aasimar.json"
-    );
-    json_test!(
-        json_race_dragonborn,
-        RaceDefinition,
-        "../public/races/dragonborn.json"
-    );
-    json_test!(json_race_drow, RaceDefinition, "../public/races/drow.json");
-    json_test!(
-        json_race_dwarf,
-        RaceDefinition,
-        "../public/races/dwarf.json"
-    );
-    json_test!(
-        json_race_forest_gnome,
-        RaceDefinition,
-        "../public/races/forest-gnome.json"
-    );
-    json_test!(
-        json_race_goliath,
-        RaceDefinition,
-        "../public/races/goliath.json"
-    );
-    json_test!(
-        json_race_halfling,
-        RaceDefinition,
-        "../public/races/halfling.json"
-    );
-    json_test!(
-        json_race_high_elf,
-        RaceDefinition,
-        "../public/races/high-elf.json"
-    );
-    json_test!(
-        json_race_human,
-        RaceDefinition,
-        "../public/races/human.json"
-    );
-    json_test!(json_race_orc, RaceDefinition, "../public/races/orc.json");
-    json_test!(
-        json_race_rock_gnome,
-        RaceDefinition,
-        "../public/races/rock-gnome.json"
-    );
-    json_test!(
-        json_race_tiefling,
-        RaceDefinition,
-        "../public/races/tiefling.json"
-    );
-    json_test!(
-        json_race_tiefling_abyssal,
-        RaceDefinition,
-        "../public/races/tiefling-abyssal.json"
-    );
-    json_test!(
-        json_race_tiefling_chthonic,
-        RaceDefinition,
-        "../public/races/tiefling-chthonic.json"
-    );
-    json_test!(
-        json_race_tiefling_infernal,
-        RaceDefinition,
-        "../public/races/tiefling-infernal.json"
-    );
-    json_test!(
-        json_race_wood_elf,
-        RaceDefinition,
-        "../public/races/wood-elf.json"
-    );
+        for entry in &index.classes {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("class file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<ClassDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
 
-    // Backgrounds
-    json_test!(
-        json_background_acolyte,
-        BackgroundDefinition,
-        "../public/backgrounds/acolyte.json"
-    );
-    json_test!(
-        json_background_artisan,
-        BackgroundDefinition,
-        "../public/backgrounds/artisan.json"
-    );
-    json_test!(
-        json_background_charlatan,
-        BackgroundDefinition,
-        "../public/backgrounds/charlatan.json"
-    );
-    json_test!(
-        json_background_criminal,
-        BackgroundDefinition,
-        "../public/backgrounds/criminal.json"
-    );
-    json_test!(
-        json_background_entertainer,
-        BackgroundDefinition,
-        "../public/backgrounds/entertainer.json"
-    );
-    json_test!(
-        json_background_farmer,
-        BackgroundDefinition,
-        "../public/backgrounds/farmer.json"
-    );
-    json_test!(
-        json_background_guard,
-        BackgroundDefinition,
-        "../public/backgrounds/guard.json"
-    );
-    json_test!(
-        json_background_guide,
-        BackgroundDefinition,
-        "../public/backgrounds/guide.json"
-    );
-    json_test!(
-        json_background_hermit,
-        BackgroundDefinition,
-        "../public/backgrounds/hermit.json"
-    );
-    json_test!(
-        json_background_merchant,
-        BackgroundDefinition,
-        "../public/backgrounds/merchant.json"
-    );
-    json_test!(
-        json_background_noble,
-        BackgroundDefinition,
-        "../public/backgrounds/noble.json"
-    );
-    json_test!(
-        json_background_sage,
-        BackgroundDefinition,
-        "../public/backgrounds/sage.json"
-    );
-    json_test!(
-        json_background_sailor,
-        BackgroundDefinition,
-        "../public/backgrounds/sailor.json"
-    );
-    json_test!(
-        json_background_scribe,
-        BackgroundDefinition,
-        "../public/backgrounds/scribe.json"
-    );
-    json_test!(
-        json_background_soldier,
-        BackgroundDefinition,
-        "../public/backgrounds/soldier.json"
-    );
-    json_test!(
-        json_background_wayfarer,
-        BackgroundDefinition,
-        "../public/backgrounds/wayfarer.json"
-    );
+    // ---------- races ----------
 
-    // Spell lists
-    json_test!(
-        json_spells_artificer,
-        Vec<SpellDefinition>,
-        "../public/spells/artificer.json"
-    );
-    json_test!(
-        json_spells_bard,
-        Vec<SpellDefinition>,
-        "../public/spells/bard.json"
-    );
-    json_test!(
-        json_spells_cleric,
-        Vec<SpellDefinition>,
-        "../public/spells/cleric.json"
-    );
-    json_test!(
-        json_spells_druid,
-        Vec<SpellDefinition>,
-        "../public/spells/druid.json"
-    );
-    json_test!(
-        json_spells_paladin,
-        Vec<SpellDefinition>,
-        "../public/spells/paladin.json"
-    );
-    json_test!(
-        json_spells_ranger,
-        Vec<SpellDefinition>,
-        "../public/spells/ranger.json"
-    );
-    json_test!(
-        json_spells_sorcerer,
-        Vec<SpellDefinition>,
-        "../public/spells/sorcerer.json"
-    );
-    json_test!(
-        json_spells_warlock,
-        Vec<SpellDefinition>,
-        "../public/spells/warlock.json"
-    );
-    json_test!(
-        json_spells_wizard,
-        Vec<SpellDefinition>,
-        "../public/spells/wizard.json"
-    );
+    #[wasm_bindgen_test]
+    fn json_races_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
+
+        for entry in &index.races {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("race file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<RaceDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
+
+    // ---------- backgrounds ----------
+
+    #[wasm_bindgen_test]
+    fn json_backgrounds_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
+
+        for entry in &index.backgrounds {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("background file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<BackgroundDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
+
+    // ---------- spell lists ----------
+    // Spell list files live in `public/spells/` and are referenced from within
+    // class / race / background definitions.  We discover them by scanning the
+    // build-time map rather than hard-coding names.
+
+    #[wasm_bindgen_test]
+    fn json_spell_lists_valid() {
+        let files = public_json_files();
+        let mut paths: Vec<&str> =
+            files.keys().copied().filter(|k| k.starts_with("spells/")).collect();
+        paths.sort();
+        assert!(!paths.is_empty(), "no spell-list files found under public/spells/");
+        for path in paths {
+            let content = files[path];
+            check_indentation(path, content);
+            serde_json::from_str::<Vec<SpellDefinition>>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {path}: {e}"));
+        }
+    }
 }
