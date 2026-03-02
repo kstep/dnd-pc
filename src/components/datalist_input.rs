@@ -50,6 +50,16 @@ pub fn DatalistInput(
     let options_stored = StoredValue::new(options);
     let on_input = StoredValue::new(on_input);
 
+    let search_ref = NodeRef::<leptos::html::Input>::new();
+
+    Effect::new(move || {
+        if show_modal.get()
+            && let Some(input) = search_ref.get()
+        {
+            let _ = input.focus();
+        }
+    });
+
     let filtered_options = move || {
         let query = search_query.get().to_lowercase();
         options_stored.with_value(|opts| {
@@ -90,7 +100,7 @@ pub fn DatalistInput(
                 list=id
                 placeholder=placeholder
                 prop:value=value
-                on:input=move |event| {
+                on:change=move |event| {
                     let input = event_target_value(&event);
                     let resolved = options_stored.with_value(|opts| resolve_name(opts, &input));
                     on_input.with_value(|callback| callback(input, resolved));
@@ -128,6 +138,7 @@ pub fn DatalistInput(
                         </button>
                     </div>
                     <input
+                        node_ref=search_ref
                         type="search"
                         class="datalist-modal-search"
                         placeholder="Search…"
@@ -151,9 +162,7 @@ pub fn DatalistInput(
                                         }
                                     >
                                         <span class="datalist-option-value">{label}</span>
-                                        {(!description.is_empty()).then(|| view! {
-                                            <span class="datalist-option-label">{description}</span>
-                                        })}
+                                        <span class="datalist-option-label">{description}</span>
                                     </button>
                                 }
                             }

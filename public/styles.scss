@@ -813,8 +813,6 @@ input[type="checkbox"] {
 
   .feature-name {
     padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
     background: var(--input-bg);
     color: var(--text-primary);
     font-weight: var(--font-weight-6);
@@ -1098,8 +1096,6 @@ input[type="checkbox"] {
 
   .spell-name {
     padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
     background: var(--input-bg);
     color: var(--text-primary);
     font-size: var(--font-size-1);
@@ -1473,7 +1469,7 @@ input[type="checkbox"] {
 .summary-spell-desc {
   margin: var(--size-1) 0 0;
   padding-left: var(--size-3);
-  white-space: pre-wrap;
+  white-space: pre-line;
   overflow-wrap: break-word;
   font-size: var(--font-size-1);
   max-inline-size: none;
@@ -1790,7 +1786,6 @@ input[type="checkbox"] {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  min-height: 44px;
   padding: var(--size-2) var(--size-3);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
@@ -1816,9 +1811,7 @@ input[type="checkbox"] {
   color: var(--text-secondary);
   font-weight: normal;
   width: 100%;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  white-space: pre-line;
   overflow: hidden;
 }
 
