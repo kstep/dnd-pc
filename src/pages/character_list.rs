@@ -2,11 +2,17 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_router::hooks::use_navigate;
 
-use crate::{components::character_card::CharacterCard, model::Character, storage};
+use crate::{
+    components::character_card::CharacterCard,
+    model::Character,
+    pages::import_character::{ImportConflict, do_import},
+    storage,
+};
 
 #[component]
 pub fn CharacterList() -> impl IntoView {
     let (characters, set_characters) = signal(storage::load_index().characters);
+    let import_state = RwSignal::new(None::<Character>);
 
     let create_character = move |_| {
         let mut character = Character::new();
@@ -22,26 +28,49 @@ pub fn CharacterList() -> impl IntoView {
         set_characters.set(storage::load_index().characters);
     };
 
+    let load_from_file = move |_| {
+        storage::pick_character_from_file(move |character| import_state.set(Some(character)));
+    };
+
     view! {
-        <div class="character-list-page">
-            <div class="character-list-header">
-                <h1>{move_tr!("page-characters")}</h1>
-                <button class="btn-create" on:click=create_character>
-                    {move_tr!("btn-new-character")}
-                </button>
-            </div>
-            <div class="character-list">
-                <For
-                    each=move || characters.get()
-                    key=|c| c.id
-                    let:character
-                >
-                    <CharacterCard
-                        summary=character
-                        on_delete=delete_character
-                    />
-                </For>
-            </div>
-        </div>
+        {move || {
+            match import_state.get() {
+                Some(character) => {
+                    let existing = storage::load_character(&character.id);
+                    let has_conflict = existing
+                        .as_ref()
+                        .is_some_and(|ex| ex.updated_at > character.updated_at);
+                    if has_conflict {
+                        let existing = existing.unwrap();
+                        view! { <ImportConflict incoming=character existing=existing /> }.into_any()
+                    } else {
+                        do_import(&character).into_any()
+                    }
+                }
+                None => view! {
+                    <div class="character-list-page">
+                        <div class="character-list-header">
+                            <h1>{move_tr!("page-characters")}</h1>
+                            <button class="btn-create" on:click=create_character>
+                                {move_tr!("btn-new-character")}
+                            </button>
+                            <button class="btn-add" on:click=load_from_file>
+                                {move_tr!("btn-load-character")}
+                            </button>
+                        </div>
+                        <div class="character-list">
+                            <For
+                                each=move || characters.get()
+                                key=|c| c.id
+                                let:character
+                            >
+                                <CharacterCard summary=character on_delete=delete_character />
+                            </For>
+                        </div>
+                    </div>
+                }
+                .into_any(),
+            }
+        }}
     }
 }

@@ -2,6 +2,7 @@
 app-title = Лист персонажа D&D 5e
 page-characters = Персонажи D&D 5e
 btn-new-character = + Новый персонаж
+btn-load-character = Загрузить из файла
 page-not-found = Страница не найдена
 character-not-found = Персонаж не найден
 back-to-list = Назад к списку персонажей
