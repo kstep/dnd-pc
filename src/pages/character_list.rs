@@ -51,6 +51,8 @@ pub fn CharacterList() -> impl IntoView {
                     <div class="character-list-page">
                         <div class="character-list-header">
                             <h1>{move_tr!("page-characters")}</h1>
+                        </div>
+                        <div class="character-list-actions">
                             <button class="btn-create" on:click=create_character>
                                 {move_tr!("btn-new-character")}
                             </button>
