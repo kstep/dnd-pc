@@ -2,6 +2,7 @@
 app-title = D&D 5e Character Sheet
 page-characters = D&D 5e Characters
 btn-new-character = + New Character
+btn-load-character = 📂 Load from File
 page-not-found = Page not found
 character-not-found = Character not found
 back-to-list = Back to character list

@@ -430,7 +430,7 @@ fn restore_description_by_name<T>(
     }
 }
 
-fn restore_stripped_fields(imported: &mut Character, local: &Character) {
+pub fn restore_stripped_fields(imported: &mut Character, local: &Character) {
     // Restore temp combat state zeroed by strip_for_sharing
     imported.combat.death_save_successes = local.combat.death_save_successes;
     imported.combat.death_save_failures = local.combat.death_save_failures;
@@ -487,7 +487,7 @@ fn restore_stripped_fields(imported: &mut Character, local: &Character) {
     );
 }
 
-fn do_import(character: &Character) -> impl IntoView {
+pub fn do_import(character: &Character) -> impl IntoView {
     let mut character = character.clone();
     if let Some(existing) = storage::load_character(&character.id) {
         restore_stripped_fields(&mut character, &existing);
@@ -504,7 +504,7 @@ fn do_import(character: &Character) -> impl IntoView {
 }
 
 #[component]
-fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
+pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
     let id = incoming.id;
     let incoming = StoredValue::new(incoming);
     let existing = StoredValue::new(existing);
