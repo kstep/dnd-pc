@@ -1677,6 +1677,136 @@ input[type="checkbox"] {
   }
 }
 
+/* --------------------- Datalist Input ------------------------ */
+.datalist-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.datalist-browse-btn {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--size-1) var(--size-2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-1);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--font-size-2);
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover, &:focus-visible {
+    background: var(--accent);
+    color: var(--gray-0);
+  }
+}
+
+.datalist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--size-3);
+}
+
+.datalist-modal {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-2);
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.datalist-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--size-2) var(--size-3);
+  border-bottom: 1px solid var(--panel-border);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.datalist-modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--size-1);
+  border: none;
+  border-radius: var(--radius-1);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-3);
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover, &:focus-visible {
+    background: var(--panel-border);
+    color: var(--text-primary);
+  }
+}
+
+.datalist-modal-search {
+  margin: var(--size-2) var(--size-3);
+  width: calc(100% - 2 * var(--size-3));
+  flex-shrink: 0;
+}
+
+.datalist-modal-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--size-1) var(--size-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+}
+
+.datalist-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--size-2) var(--size-3);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover, &:focus-visible {
+    background: var(--panel-border);
+    border-color: var(--accent);
+  }
+}
+
+.datalist-option-value {
+  font-weight: 600;
+  font-size: var(--font-size-1);
+}
+
+.datalist-option-label {
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+  margin-top: var(--size-1);
+}
+
 /* --------------------- Not Found ----------------------------- */
 .not-found {
   text-align: center;
