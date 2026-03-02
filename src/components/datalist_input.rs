@@ -90,7 +90,7 @@ pub fn DatalistInput(
                     show_modal.set(true);
                 }
             >
-                "📋"
+                "▾"
             </button>
         </div>
         <Show when=move || show_modal.get()>
