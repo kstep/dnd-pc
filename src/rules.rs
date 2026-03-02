@@ -897,7 +897,7 @@ impl RulesRegistry {
     }
 
     pub fn with_class_entries<R>(&self, f: impl FnOnce(&[ClassIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read_untracked();
+        let guard = self.class_index.read();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -1067,7 +1067,7 @@ impl RulesRegistry {
     }
 
     pub fn with_race_entries<R>(&self, f: impl FnOnce(&[RaceIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read_untracked();
+        let guard = self.class_index.read();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -1100,7 +1100,7 @@ impl RulesRegistry {
     }
 
     pub fn with_background_entries<R>(&self, f: impl FnOnce(&[BackgroundIndexEntry]) -> R) -> R {
-        let guard = self.class_index.read_untracked();
+        let guard = self.class_index.read();
         let entries = guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
@@ -1142,20 +1142,43 @@ impl RulesRegistry {
     /// only filled when empty (preserves user edits). Also triggers
     /// fetches for missing definitions so it self-heals after cache clears.
     pub fn fill_from_registry(&self, character: &mut Character) {
+        // Tracked read of the index so the calling Effect re-runs when
+        // the index arrives (LocalResource fetch is lazy — this triggers it).
+        let index_guard = self.class_index.read();
+        let index = index_guard.as_ref().and_then(|r| r.as_ref().ok());
+
         // Trigger fetches for any missing definitions (needed after locale
         // change clears caches). The fetch methods are no-ops when data is
-        // already cached, and reading class_index here subscribes us to
-        // index changes so we re-run when the new locale's index arrives.
-        for cl in &character.identity.classes {
-            if !cl.class.is_empty() {
-                self.fetch_class(&cl.class);
+        // already cached.
+        if let Some(idx) = index {
+            for cl in &character.identity.classes {
+                if !cl.class.is_empty()
+                    && let Some(entry) = idx.classes.iter().find(|e| e.name == cl.class)
+                {
+                    let url = self.localized_url(&entry.url);
+                    self.class_cache.fetch(&cl.class, url, "class definition");
+                }
             }
-        }
-        if !character.identity.race.is_empty() {
-            self.fetch_race(&character.identity.race);
-        }
-        if !character.identity.background.is_empty() {
-            self.fetch_background(&character.identity.background);
+            if !character.identity.race.is_empty()
+                && let Some(entry) = idx.races.iter().find(|e| e.name == character.identity.race)
+            {
+                let url = self.localized_url(&entry.url);
+                self.race_cache
+                    .fetch(&character.identity.race, url, "race definition");
+            }
+            if !character.identity.background.is_empty()
+                && let Some(entry) = idx
+                    .backgrounds
+                    .iter()
+                    .find(|e| e.name == character.identity.background)
+            {
+                let url = self.localized_url(&entry.url);
+                self.background_cache.fetch(
+                    &character.identity.background,
+                    url,
+                    "background definition",
+                );
+            }
         }
 
         let class_cache = self.class_cache.read();
