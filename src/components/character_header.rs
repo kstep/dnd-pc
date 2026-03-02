@@ -65,70 +65,11 @@ fn export_character(character: &Character) {
 }
 
 fn import_character(store: Store<Character>) {
-    let document = leptos::prelude::document();
-    let input: web_sys::HtmlInputElement =
-        document.create_element("input").unwrap().unchecked_into();
-
-    input.set_type("file");
-    input.set_accept(".json");
-
-    let input_clone = input.clone();
-    let closure = Closure::<dyn Fn()>::new(move || {
-        let Some(files) = input_clone.files() else {
-            return;
-        };
-        let Some(file) = files.get(0) else {
-            return;
-        };
-
-        let reader = match web_sys::FileReader::new() {
-            Ok(reader) => reader,
-            Err(error) => {
-                log::error!("Failed to create FileReader: {error:?}");
-                return;
-            }
-        };
-
-        let reader_clone = reader.clone();
-        let onload = Closure::<dyn Fn()>::new(move || {
-            let result = match reader_clone.result() {
-                Ok(result) => result,
-                Err(error) => {
-                    log::error!("Failed to read file: {error:?}");
-                    return;
-                }
-            };
-            let Some(text) = result.as_string() else {
-                log::error!("File result is not a string");
-                return;
-            };
-            match serde_json::from_str::<Character>(&text) {
-                Ok(mut imported) => {
-                    let current_id = store.get_untracked().id;
-                    imported.id = current_id;
-                    store.set(imported);
-                }
-                Err(error) => {
-                    log::error!("Failed to parse character JSON: {error}");
-                    leptos::prelude::window()
-                        .alert_with_message(&format!("Invalid character file: {error}"))
-                        .ok();
-                }
-            }
-        });
-
-        reader.set_onload(Some(onload.as_ref().unchecked_ref()));
-        onload.forget();
-
-        if let Err(error) = reader.read_as_text(&file) {
-            log::error!("Failed to start reading file: {error:?}");
-        }
+    storage::pick_character_from_file(move |mut imported| {
+        let current_id = store.get_untracked().id;
+        imported.id = current_id;
+        store.set(imported);
     });
-
-    input.set_onchange(Some(closure.as_ref().unchecked_ref()));
-    closure.forget();
-
-    input.click();
 }
 
 fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
