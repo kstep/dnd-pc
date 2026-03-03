@@ -530,15 +530,16 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
-                <button class="btn-add" on:click=on_share>
-                    {move || if share_copied.get() { tr!("share-copied") } else { tr!("share-link") }}
+                <button class="btn-add" title=move_tr!("share-link") on:click=on_share>
+                    {move || if share_copied.get() { "\u{2705}" } else { "\u{1F4E4}" }}
                 </button>
-                <button class="btn-add" on:click=on_export>{move_tr!("export-json")}</button>
-                <button class="btn-add" on:click=on_import>{move_tr!("import-json")}</button>
-                <button class="btn-add" on:click=on_copy>{move_tr!("copy-character")}</button>
-                <button class="btn-add" on:click=on_refill>{move_tr!("refill-from-registry")}</button>
+                <button class="btn-add" title=move_tr!("export-json") on:click=on_export>"\u{1F4BE}"</button>
+                <button class="btn-add" title=move_tr!("import-json") on:click=on_import>"\u{1F4C2}"</button>
+                <button class="btn-add" title=move_tr!("copy-character") on:click=on_copy>"\u{1F4CB}"</button>
+                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill>"\u{1F503}"</button>
                 <button
                     class="btn-add btn-danger"
+                    title=move_tr!("reset-character")
                     on:click=move |_| {
                         let msg = tr!("confirm-reset");
                         let window = leptos::prelude::window();
@@ -548,7 +549,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     }
                 >
-                    {move_tr!("reset-character")}
+                    "\u{1F504}"
                 </button>
             </div>
             <hr />
