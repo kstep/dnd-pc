@@ -1920,6 +1920,10 @@ input[type="checkbox"] {
   align-items: start;
 }
 
+.reference-nav-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .reference-layout {
     grid-template-columns: 1fr;
@@ -1963,10 +1967,6 @@ input[type="checkbox"] {
   overflow: hidden;
   position: sticky;
   top: var(--size-3);
-}
-
-.reference-nav-toggle {
-  display: none;
 }
 
 .reference-home-link {
@@ -2083,8 +2083,6 @@ input[type="checkbox"] {
   }
 
   th {
-    position: sticky;
-    top: 0;
     background: var(--panel-bg);
     font-size: var(--font-size-0);
     text-transform: uppercase;
