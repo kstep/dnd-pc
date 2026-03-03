@@ -62,6 +62,7 @@ panel-notes = Notes
 armor-class = Armor Class
 initiative = Initiative
 speed = Speed
+inspiration = Inspiration
 hp = Health Points
 current-hp = Current HP
 hp-max = HP Max

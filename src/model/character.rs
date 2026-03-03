@@ -435,6 +435,8 @@ pub struct CombatStats {
     pub death_save_failures: u8,
     #[serde(default)]
     pub initiative_misc_bonus: i32,
+    #[serde(default)]
+    pub inspiration: bool,
 }
 
 impl Default for CombatStats {
@@ -448,6 +450,7 @@ impl Default for CombatStats {
             death_save_successes: 0,
             death_save_failures: 0,
             initiative_misc_bonus: 0,
+            inspiration: false,
         }
     }
 }

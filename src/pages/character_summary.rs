@@ -379,6 +379,19 @@ pub fn CharacterSummary() -> impl IntoView {
                             </span>
                         </div>
                     </div>
+                    // -- Inspiration toggle --
+                    <div class="summary-stat-box summary-inspiration-box">
+                        <label>{move_tr!("inspiration")}</label>
+                        <button
+                            class="inspiration-toggle"
+                            class:active=move || combat.inspiration().get()
+                            on:click=move |_| {
+                                combat.inspiration().update(|v| *v = !*v);
+                            }
+                        >
+                            {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
+                        </button>
+                    </div>
                 </div>
 
                 // -- Death saves (shown when HP <= 0) --

@@ -541,6 +541,22 @@ input[type="checkbox"] {
   margin-bottom: var(--size-2);
 }
 
+.inspiration-toggle {
+  background: none;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  font-size: var(--font-size-4);
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: var(--size-1) var(--size-2);
+  line-height: 1;
+
+  &.active {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
 .hit-dice-section {
   margin-bottom: var(--size-2);
 }
@@ -1539,8 +1555,8 @@ input[type="checkbox"] {
 }
 
 .summary-core-stats {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--size-2);
   margin-bottom: var(--size-3);
 }
@@ -1553,8 +1569,7 @@ input[type="checkbox"] {
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-2);
   padding: var(--size-2);
-  flex: 1 1 100px;
-  min-width: 100px;
+  min-width: 0;
 
   label {
     font-size: var(--font-size-1);
@@ -1569,6 +1584,8 @@ input[type="checkbox"] {
 }
 
 .summary-hp-box {
+  grid-column: span 2;
+
   .summary-hp-value {
     display: flex;
     align-items: center;

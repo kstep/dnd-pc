@@ -62,6 +62,7 @@ panel-notes = Заметки
 armor-class = Класс защиты
 initiative = Инициатива
 speed = Скорость
+inspiration = Вдохновение
 hp = Очки здоровья
 current-hp = Текущие ОЗ
 hp-max = Макс. ОЗ
