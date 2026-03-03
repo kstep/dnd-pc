@@ -13,6 +13,7 @@ pub struct InlineSpell {
     pub label: String,
     pub level: u32,
     pub min_level: u32,
+    pub sticky: bool,
     pub description: String,
 }
 
@@ -39,6 +40,7 @@ impl FeatureSpells {
                         label: s.label().to_string(),
                         level: s.level,
                         min_level: s.min_level,
+                        sticky: s.sticky,
                         description: s.description.clone(),
                     })
                     .collect(),
@@ -68,10 +70,14 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                         move_tr!("ref-spell-level", {"level" => spell.level.to_string()})
                     };
                     let min_level = spell.min_level;
+                    let sticky = spell.sticky;
                     view! {
                         <div class="feature-spell-entry">
                             <strong>{spell.label}</strong>
                             {" ("}{level_text}
+                            {sticky.then(|| view! {
+                                {", "}{move_tr!("ref-spell-always-ready")}
+                            })}
                             {(min_level > 0).then(|| view! {
                                 {", "}{move_tr!("ref-spell-min-level", {"level" => min_level.to_string()})}
                             })}

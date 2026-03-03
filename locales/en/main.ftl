@@ -233,14 +233,15 @@ ref-home = Home
 ref-spells = Spells
 ref-spell-list = Spell List
 ref-select-spell-list = Select a spell list to view spells
-ref-cantrips-level = Cantrips
+ref-cantrips-level = cantrips
 ref-spell-level = {$level ->
-    [1] 1st Level
-    [2] 2nd Level
-    [3] 3rd Level
-    *[other] {$level}th Level
+    [1] 1st level
+    [2] 2nd level
+    [3] 3rd level
+    *[other] {$level}th level
     }
 ref-spell-min-level = from level {$level}
+ref-spell-always-ready = always ready
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
 

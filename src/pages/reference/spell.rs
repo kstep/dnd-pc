@@ -78,6 +78,7 @@ pub fn SpellReference() -> impl IntoView {
                     label: String,
                     description: String,
                     min_level: u32,
+                    sticky: bool,
                 }
                 struct SpellGroup {
                     level: u32,
@@ -91,6 +92,7 @@ pub fn SpellReference() -> impl IntoView {
                         label: spell.label().to_string(),
                         description: spell.description.clone(),
                         min_level: spell.min_level,
+                        sticky: spell.sticky,
                     };
                     if let Some(group) = by_level.iter_mut().find(|g| g.level == level) {
                         group.spells.push(entry);
@@ -123,14 +125,24 @@ pub fn SpellReference() -> impl IntoView {
                                     {spells.into_iter().map(|spell| {
                                         let anchor_id = format!("spell-{}", spell.name);
                                         let min_level = spell.min_level;
+                                        let sticky = spell.sticky;
                                         view! {
                                             <div class="reference-feature" id=anchor_id>
                                                 <h3>
                                                     {spell.label}
-                                                    {(min_level > 0).then(|| view! {
-                                                        <span class="spell-prereq">
-                                                            {" ("}{move_tr!("ref-spell-min-level", {"level" => min_level.to_string()})}{")"}
-                                                        </span>
+                                                    {(min_level > 0 || sticky).then(|| {
+                                                        let mut parts = Vec::new();
+                                                        if sticky {
+                                                            parts.push(move_tr!("ref-spell-always-ready"));
+                                                        }
+                                                        if min_level > 0 {
+                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level.to_string()}));
+                                                        }
+                                                        view! {
+                                                            <span class="spell-prereq">
+                                                                {" ("}{move || parts.iter().map(|p| p.get()).collect::<Vec<_>>().join(", ")}{")"}
+                                                            </span>
+                                                        }
                                                     })}
                                                 </h3>
                                                 <p>{spell.description}</p>

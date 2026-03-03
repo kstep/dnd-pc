@@ -233,9 +233,10 @@ ref-home = Главная
 ref-spells = Заклинания
 ref-spell-list = Список заклинаний
 ref-select-spell-list = Выберите список заклинаний для просмотра
-ref-cantrips-level = Заговоры
+ref-cantrips-level = заговоры
 ref-spell-level = {$level}-й уровень
 ref-spell-min-level = с {$level}-го уровня
+ref-spell-always-ready = всегда подготовлено
 ref-prerequisites = Мультикласс
 ref-spell-list-link = Список заклинаний
 
