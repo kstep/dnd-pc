@@ -778,6 +778,7 @@ pub mod tests {
                 death_save_successes: 0,
                 death_save_failures: 0,
                 initiative_misc_bonus: 0,
+                inspiration: false,
             },
             personality: Personality::default(),
             features: Vec::new(),
