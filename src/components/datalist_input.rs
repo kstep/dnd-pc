@@ -47,6 +47,7 @@ pub fn DatalistInput(
 
     let show_modal = RwSignal::new(false);
     let search_query = RwSignal::new(String::new());
+    let display_value = RwSignal::new(value);
     let options_stored = StoredValue::new(options);
     let on_input = StoredValue::new(on_input);
 
@@ -99,9 +100,10 @@ pub fn DatalistInput(
                 class=class.unwrap_or_default()
                 list=id
                 placeholder=placeholder
-                prop:value=value
+                prop:value=move || display_value.get()
                 on:change=move |event| {
                     let input = event_target_value(&event);
+                    display_value.set(input.clone());
                     let resolved = options_stored.with_value(|opts| resolve_name(opts, &input));
                     on_input.with_value(|callback| callback(input, resolved));
                 }
@@ -157,6 +159,7 @@ pub fn DatalistInput(
                                         type="button"
                                         class="datalist-option"
                                         on:click=move |_| {
+                                            display_value.set(selected_label.clone());
                                             on_input.with_value(|callback| callback(selected_label.clone(), Some(selected_name.clone())));
                                             show_modal.set(false);
                                         }
