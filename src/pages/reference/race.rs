@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{FeatureSpells, FeatureSpellsView};
+use super::{FeatureSpells, FeatureSpellsView, ReferenceSidebar};
 use crate::{
     BASE_URL,
     model::{Translatable, format_bonus},
@@ -30,28 +30,7 @@ pub fn RaceReference() -> impl IntoView {
         }
     });
 
-    let sidebar = move || {
-        let home = view! {
-            <A href=format!("{BASE_URL}/") attr:class="reference-home-link">
-                {"\u{2190} "}{move_tr!("ref-home")}
-            </A>
-        };
-        let entries = registry.with_race_entries(|entries| {
-            entries
-                .iter()
-                .map(|entry| {
-                    let name = entry.name.clone();
-                    let label = entry.label().to_string();
-                    view! {
-                        <A href=format!("{BASE_URL}/r/race/{name}") attr:class="reference-nav-item">
-                            {label}
-                        </A>
-                    }
-                })
-                .collect_view()
-        });
-        view! { {home} {entries} }
-    };
+    let current_label = Signal::derive(move || registry.race_label_by_name(&race_name()));
 
     let detail = move || {
         let name = race_name();
@@ -84,19 +63,33 @@ pub fn RaceReference() -> impl IntoView {
                     .collect::<Vec<_>>()
                     .join(", ");
 
-                let traits: Vec<(String, String)> = def
+                let traits: Vec<(String, String, String)> = def
                     .traits
                     .values()
-                    .map(|t| (t.label().to_string(), t.description.clone()))
+                    .map(|trait_def| {
+                        let langs = trait_def.languages.join(", ");
+                        (
+                            trait_def.label().to_string(),
+                            trait_def.description.clone(),
+                            langs,
+                        )
+                    })
                     .collect();
 
-                let features: Vec<(String, String, FeatureSpells)> = def
+                let features: Vec<(String, String, String, FeatureSpells)> = def
                     .features
                     .values()
-                    .map(|f| {
-                        let spells =
-                            FeatureSpells::from_spell_list(f.spells.as_ref().map(|s| &s.list));
-                        (f.label().to_string(), f.description.clone(), spells)
+                    .map(|feat| {
+                        let spells = FeatureSpells::from_spell_list(
+                            feat.spells.as_ref().map(|spells_def| &spells_def.list),
+                        );
+                        let langs = feat.languages.join(", ");
+                        (
+                            feat.label().to_string(),
+                            feat.description.clone(),
+                            langs,
+                            spells,
+                        )
                     })
                     .collect();
 
@@ -124,11 +117,16 @@ pub fn RaceReference() -> impl IntoView {
                         {(!traits.is_empty()).then(|| view! {
                             <h2>{move_tr!("racial-traits")}</h2>
                             <div class="reference-features">
-                                {traits.into_iter().map(|(label, desc)| {
+                                {traits.into_iter().map(|(label, desc, langs)| {
                                     view! {
                                         <div class="reference-feature">
                                             <h3>{label}</h3>
                                             <p>{desc}</p>
+                                            {(!langs.is_empty()).then(|| view! {
+                                                <p class="feature-languages">
+                                                    {move_tr!("ref-languages")}{": "}{langs}
+                                                </p>
+                                            })}
                                         </div>
                                     }
                                 }).collect_view()}
@@ -138,11 +136,16 @@ pub fn RaceReference() -> impl IntoView {
                         {(!features.is_empty()).then(|| view! {
                             <h2>{move_tr!("ref-features")}</h2>
                             <div class="reference-features">
-                                {features.into_iter().map(|(label, desc, spells)| {
+                                {features.into_iter().map(|(label, desc, langs, spells)| {
                                     view! {
                                         <div class="reference-feature">
                                             <h3>{label}</h3>
                                             <p>{desc}</p>
+                                            {(!langs.is_empty()).then(|| view! {
+                                                <p class="feature-languages">
+                                                    {move_tr!("ref-languages")}{": "}{langs}
+                                                </p>
+                                            })}
                                             <FeatureSpellsView spells=spells />
                                         </div>
                                     }
@@ -161,9 +164,19 @@ pub fn RaceReference() -> impl IntoView {
     view! {
         <div class="reference-page">
             <div class="reference-layout">
-                <aside class="reference-sidebar">
-                    {sidebar}
-                </aside>
+                <ReferenceSidebar current_label>
+                    {move || registry.with_race_entries(|entries| {
+                        entries.iter().map(|entry| {
+                            let name = entry.name.clone();
+                            let label = entry.label().to_string();
+                            view! {
+                                <A href=format!("{BASE_URL}/r/race/{name}") attr:class="reference-nav-item">
+                                    {label}
+                                </A>
+                            }
+                        }).collect_view()
+                    })}
+                </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}
                 </main>

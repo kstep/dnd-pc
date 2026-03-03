@@ -1,11 +1,12 @@
 pub mod background;
 pub mod class;
 pub mod race;
+pub mod sidebar;
 pub mod spell;
-
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
+pub use sidebar::ReferenceSidebar;
 
 use crate::{BASE_URL, rules::SpellList};
 

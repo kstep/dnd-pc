@@ -176,6 +176,8 @@ pub struct RaceTrait {
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
+    #[serde(default)]
+    pub languages: VecSet<String>,
 }
 
 impl RaceTrait {
@@ -235,6 +237,7 @@ impl RaceDefinition {
                 label: t.label.clone(),
                 description: t.description.clone(),
             });
+            character.languages.extend(t.languages.iter().cloned());
         }
 
         let total_level = character.level();
@@ -921,6 +924,16 @@ impl RulesRegistry {
         f(entries.unwrap_or(&[]))
     }
 
+    pub fn class_label_by_name(&self, name: &str) -> String {
+        self.with_class_entries(|entries| {
+            entries
+                .iter()
+                .find(|e| e.name == name)
+                .map(|e| e.label().to_string())
+                .unwrap_or_default()
+        })
+    }
+
     pub fn has_class(&self, name: &str) -> bool {
         self.class_cache.read_untracked().contains_key(name)
     }
@@ -1115,6 +1128,16 @@ impl RulesRegistry {
         f(entries.unwrap_or(&[]))
     }
 
+    pub fn race_label_by_name(&self, name: &str) -> String {
+        self.with_race_entries(|entries| {
+            entries
+                .iter()
+                .find(|e| e.name == name)
+                .map(|e| e.label().to_string())
+                .unwrap_or_default()
+        })
+    }
+
     pub fn has_race(&self, name: &str) -> bool {
         self.race_cache.read_untracked().contains_key(name)
     }
@@ -1170,6 +1193,16 @@ impl RulesRegistry {
             .and_then(|r| r.as_ref().ok())
             .map(|idx| idx.backgrounds.as_slice());
         f(entries.unwrap_or(&[]))
+    }
+
+    pub fn background_label_by_name(&self, name: &str) -> String {
+        self.with_background_entries(|entries| {
+            entries
+                .iter()
+                .find(|e| e.name == name)
+                .map(|e| e.label().to_string())
+                .unwrap_or_default()
+        })
     }
 
     pub fn has_background(&self, name: &str) -> bool {
@@ -1233,6 +1266,16 @@ impl RulesRegistry {
             .and_then(|r| r.as_ref().ok())
             .map(|idx| idx.spells.as_slice());
         f(entries.unwrap_or(&[]))
+    }
+
+    pub fn spell_label_by_name(&self, name: &str) -> String {
+        self.with_spell_entries(|entries| {
+            entries
+                .iter()
+                .find(|e| e.name == name)
+                .map(|e| e.label().to_string())
+                .unwrap_or_default()
+        })
     }
 
     pub fn fetch_spell_list_tracked(&self, path: &str) {

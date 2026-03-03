@@ -1924,6 +1924,33 @@ input[type="checkbox"] {
   .reference-layout {
     grid-template-columns: 1fr;
   }
+
+  .reference-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--size-2) var(--size-3);
+    background: var(--accent);
+    color: white;
+    font-weight: var(--font-weight-6);
+    font-size: var(--font-size-1);
+    border: none;
+    cursor: pointer;
+
+    .icon {
+      transition: rotate 0.2s;
+      flex-shrink: 0;
+    }
+  }
+
+  .reference-sidebar.open .reference-nav-toggle .icon {
+    rotate: 180deg;
+  }
+
+  .reference-sidebar:not(.open) .reference-nav-item {
+    display: none;
+  }
 }
 
 .reference-sidebar {
@@ -1936,6 +1963,10 @@ input[type="checkbox"] {
   overflow: hidden;
   position: sticky;
   top: var(--size-3);
+}
+
+.reference-nav-toggle {
+  display: none;
 }
 
 .reference-home-link {

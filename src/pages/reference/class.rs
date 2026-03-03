@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{FeatureSpells, FeatureSpellsView};
+use super::{FeatureSpells, FeatureSpellsView, ReferenceSidebar};
 use crate::{
     BASE_URL,
     model::{Translatable, format_bonus},
@@ -32,28 +32,7 @@ pub fn ClassReference() -> impl IntoView {
         }
     });
 
-    let sidebar = move || {
-        let home = view! {
-            <A href=format!("{BASE_URL}/") attr:class="reference-home-link">
-                {"\u{2190} "}{move_tr!("ref-home")}
-            </A>
-        };
-        let entries = registry.with_class_entries(|entries| {
-            entries
-                .iter()
-                .map(|entry| {
-                    let name = entry.name.clone();
-                    let label = entry.label().to_string();
-                    view! {
-                        <A href=format!("{BASE_URL}/r/class/{name}") attr:class="reference-nav-item">
-                            {label}
-                        </A>
-                    }
-                })
-                .collect_view()
-        });
-        view! { {home} {entries} }
-    };
+    let current_label = Signal::derive(move || registry.class_label_by_name(&class_name()));
 
     let detail = move || {
         let name = class_name();
@@ -235,39 +214,45 @@ pub fn ClassReference() -> impl IntoView {
                     })
                     .collect();
 
-                let class_features: Vec<(String, String, String, FeatureSpells)> = def
+                let class_features: Vec<(String, String, String, String, FeatureSpells)> = def
                     .features
                     .values()
-                    .map(|f| {
-                        let spells =
-                            FeatureSpells::from_spell_list(f.spells.as_ref().map(|s| &s.list));
+                    .map(|feat| {
+                        let spells = FeatureSpells::from_spell_list(
+                            feat.spells.as_ref().map(|spells_def| &spells_def.list),
+                        );
+                        let langs = feat.languages.join(", ");
                         (
-                            f.name.clone(),
-                            f.label().to_string(),
-                            f.description.clone(),
+                            feat.name.clone(),
+                            feat.label().to_string(),
+                            feat.description.clone(),
+                            langs,
                             spells,
                         )
                     })
                     .collect();
 
-                let subclass_features: Vec<(String, String, String, FeatureSpells)> = subclass_def
-                    .map(|sc| {
-                        sc.features
-                            .values()
-                            .map(|f| {
-                                let spells = FeatureSpells::from_spell_list(
-                                    f.spells.as_ref().map(|s| &s.list),
-                                );
-                                (
-                                    f.name.clone(),
-                                    f.label().to_string(),
-                                    f.description.clone(),
-                                    spells,
-                                )
-                            })
-                            .collect()
-                    })
-                    .unwrap_or_default();
+                let subclass_features: Vec<(String, String, String, String, FeatureSpells)> =
+                    subclass_def
+                        .map(|sc| {
+                            sc.features
+                                .values()
+                                .map(|feat| {
+                                    let spells = FeatureSpells::from_spell_list(
+                                        feat.spells.as_ref().map(|spells_def| &spells_def.list),
+                                    );
+                                    let langs = feat.languages.join(", ");
+                                    (
+                                        feat.name.clone(),
+                                        feat.label().to_string(),
+                                        feat.description.clone(),
+                                        langs,
+                                        spells,
+                                    )
+                                })
+                                .collect()
+                        })
+                        .unwrap_or_default();
 
                 let subclass_list: Vec<(String, String, String)> = if subclass_def.is_none() {
                     def.subclasses
@@ -395,12 +380,17 @@ pub fn ClassReference() -> impl IntoView {
 
                         <h2>{move_tr!("ref-features")}</h2>
                         <div class="reference-features">
-                            {class_features.into_iter().map(|(feat_name, label, desc, spells)| {
+                            {class_features.into_iter().map(|(feat_name, label, desc, langs, spells)| {
                                 let anchor_id = format!("feat-{feat_name}");
                                 view! {
                                     <div class="reference-feature" id=anchor_id>
                                         <h3>{label}</h3>
                                         <p>{desc}</p>
+                                        {(!langs.is_empty()).then(|| view! {
+                                            <p class="feature-languages">
+                                                {move_tr!("ref-languages")}{": "}{langs}
+                                            </p>
+                                        })}
                                         <FeatureSpellsView spells=spells />
                                     </div>
                                 }
@@ -409,12 +399,17 @@ pub fn ClassReference() -> impl IntoView {
 
                         {(!subclass_features.is_empty()).then(|| view! {
                             <div class="reference-features">
-                                {subclass_features.into_iter().map(|(feat_name, label, desc, spells)| {
+                                {subclass_features.into_iter().map(|(feat_name, label, desc, langs, spells)| {
                                     let anchor_id = format!("feat-{feat_name}");
                                     view! {
                                         <div class="reference-feature" id=anchor_id>
                                             <h3>{label}</h3>
                                             <p>{desc}</p>
+                                            {(!langs.is_empty()).then(|| view! {
+                                                <p class="feature-languages">
+                                                    {move_tr!("ref-languages")}{": "}{langs}
+                                                </p>
+                                            })}
                                             <FeatureSpellsView spells=spells />
                                         </div>
                                     }
@@ -453,9 +448,19 @@ pub fn ClassReference() -> impl IntoView {
     view! {
         <div class="reference-page">
             <div class="reference-layout">
-                <aside class="reference-sidebar">
-                    {sidebar}
-                </aside>
+                <ReferenceSidebar current_label>
+                    {move || registry.with_class_entries(|entries| {
+                        entries.iter().map(|entry| {
+                            let name = entry.name.clone();
+                            let label = entry.label().to_string();
+                            view! {
+                                <A href=format!("{BASE_URL}/r/class/{name}") attr:class="reference-nav-item">
+                                    {label}
+                                </A>
+                            }
+                        }).collect_view()
+                    })}
+                </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}
                 </main>

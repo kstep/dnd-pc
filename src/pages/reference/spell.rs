@@ -3,6 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
+use super::ReferenceSidebar;
 use crate::{BASE_URL, rules::RulesRegistry};
 
 #[derive(Params, Clone, Debug, PartialEq)]
@@ -25,28 +26,7 @@ pub fn SpellReference() -> impl IntoView {
         }
     });
 
-    let sidebar = move || {
-        let home = view! {
-            <A href=format!("{BASE_URL}/") attr:class="reference-home-link">
-                {"\u{2190} "}{move_tr!("ref-home")}
-            </A>
-        };
-        let entries = registry.with_spell_entries(|entries| {
-            entries
-                .iter()
-                .map(|entry| {
-                    let name = entry.name.clone();
-                    let label = entry.label().to_string();
-                    view! {
-                        <A href=format!("{BASE_URL}/r/spell/{name}") attr:class="reference-nav-item">
-                            {label}
-                        </A>
-                    }
-                })
-                .collect_view()
-        });
-        view! { {home} {entries} }
-    };
+    let current_label = Signal::derive(move || registry.spell_label_by_name(&list_name()));
 
     let detail = move || {
         let name = list_name();
@@ -164,9 +144,19 @@ pub fn SpellReference() -> impl IntoView {
     view! {
         <div class="reference-page">
             <div class="reference-layout">
-                <aside class="reference-sidebar">
-                    {sidebar}
-                </aside>
+                <ReferenceSidebar current_label>
+                    {move || registry.with_spell_entries(|entries| {
+                        entries.iter().map(|entry| {
+                            let name = entry.name.clone();
+                            let label = entry.label().to_string();
+                            view! {
+                                <A href=format!("{BASE_URL}/r/spell/{name}") attr:class="reference-nav-item">
+                                    {label}
+                                </A>
+                            }
+                        }).collect_view()
+                    })}
+                </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}
                 </main>
