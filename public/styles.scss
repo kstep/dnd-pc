@@ -1955,6 +1955,10 @@ input[type="checkbox"] {
   .reference-sidebar:not(.open) .reference-nav-item {
     display: none;
   }
+
+  .reference-feature {
+    scroll-margin-top: 7rem;
+  }
 }
 
 .reference-sidebar {
