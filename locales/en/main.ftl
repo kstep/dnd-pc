@@ -244,6 +244,7 @@ ref-spell-min-level = from level {$level}
 ref-spell-always-ready = always ready
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
+ref-languages = Languages
 
 ## Language switcher
 lang-en = EN

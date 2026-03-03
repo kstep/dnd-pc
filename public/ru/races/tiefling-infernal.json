@@ -13,6 +13,12 @@
       "name": "Hellish Resistance",
       "label": "Адское сопротивление",
       "description": "Вы обладаете сопротивлением к урону огнём."
+    },
+    {
+      "name": "Languages",
+      "label": "Языки",
+      "description": "Вы можете говорить, читать и писать на Общем и Инфернальном языках.",
+      "languages": ["Common", "Infernal"]
     }
   ],
   "features": [

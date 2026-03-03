@@ -18,6 +18,11 @@
     {
       "name": "Trance",
       "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Elvish.",
+      "languages": ["Common", "Elvish"]
     }
   ],
   "features": [

@@ -10,6 +10,11 @@
     {
       "name": "Gnomish Cunning",
       "description": "You have advantage on Intelligence, Wisdom, and Charisma saving throws."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Gnomish.",
+      "languages": ["Common", "Gnomish"]
     }
   ],
   "features": [

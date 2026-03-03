@@ -10,6 +10,11 @@
     {
       "name": "Hellish Resistance",
       "description": "You have resistance to Fire damage."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Infernal.",
+      "languages": ["Common", "Infernal"]
     }
   ],
   "features": [

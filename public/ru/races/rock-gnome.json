@@ -13,6 +13,12 @@
       "name": "Gnomish Cunning",
       "label": "Гномья хитрость",
       "description": "Вы совершаете с преимуществом спасброски Интеллекта, Мудрости и Харизмы."
+    },
+    {
+      "name": "Languages",
+      "label": "Языки",
+      "description": "Вы можете говорить, читать и писать на Общем и Гномьем языках.",
+      "languages": ["Common", "Gnomish"]
     }
   ],
   "features": [

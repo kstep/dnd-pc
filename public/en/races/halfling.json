@@ -18,6 +18,11 @@
     {
       "name": "Naturally Stealthy",
       "description": "You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Halfling.",
+      "languages": ["Common", "Halfling"]
     }
   ],
   "features": []

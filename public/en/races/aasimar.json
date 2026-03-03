@@ -14,6 +14,11 @@
     {
       "name": "Healing Hands",
       "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains hit points equal to the total. Once per Long Rest."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Celestial.",
+      "languages": ["Common", "Celestial"]
     }
   ],
   "features": [

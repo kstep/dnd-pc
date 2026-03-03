@@ -13,6 +13,12 @@
       "name": "Chthonic Resistance",
       "label": "Хтоническое сопротивление",
       "description": "Вы обладаете сопротивлением к некротическому урону."
+    },
+    {
+      "name": "Languages",
+      "label": "Языки",
+      "description": "Вы можете говорить, читать и писать на Общем и Сильванском языках.",
+      "languages": ["Common", "Sylvan"]
     }
   ],
   "features": [

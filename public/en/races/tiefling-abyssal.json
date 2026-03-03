@@ -10,6 +10,11 @@
     {
       "name": "Abyssal Resistance",
       "description": "You have resistance to Poison damage."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Abyssal.",
+      "languages": ["Common", "Abyssal"]
     }
   ],
   "features": [

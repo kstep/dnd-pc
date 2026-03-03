@@ -14,6 +14,11 @@
     {
       "name": "Versatile",
       "description": "You gain an Origin feat of your choice."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and one language of your choice.",
+      "languages": ["Common"]
     }
   ],
   "features": []

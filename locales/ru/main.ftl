@@ -239,6 +239,7 @@ ref-spell-min-level = с {$level}-го уровня
 ref-spell-always-ready = всегда подготовлено
 ref-prerequisites = Мультикласс
 ref-spell-list-link = Список заклинаний
+ref-languages = Языки
 
 ## Переключатель языка
 lang-en = EN

@@ -10,6 +10,11 @@
     {
       "name": "Chthonic Resistance",
       "description": "You have resistance to Necrotic damage."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Sylvan.",
+      "languages": ["Common", "Sylvan"]
     }
   ],
   "features": [

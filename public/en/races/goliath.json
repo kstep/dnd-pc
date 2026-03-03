@@ -6,6 +6,11 @@
     {
       "name": "Powerful Build",
       "description": "You have advantage on saving throws to end the Grappled condition. You count as one size larger for carrying capacity."
+    },
+    {
+      "name": "Languages",
+      "description": "You can speak, read, and write Common and Giant.",
+      "languages": ["Common", "Giant"]
     }
   ],
   "features": [
