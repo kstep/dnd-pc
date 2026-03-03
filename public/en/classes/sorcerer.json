@@ -263,6 +263,7 @@
           "name": "Sorcery Points",
           "description": "The number of Sorcery Points you have.",
           "kind": "Points",
+          "short": "SP",
           "levels": {
             "2": 2,
             "3": 3,

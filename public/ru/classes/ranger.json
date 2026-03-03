@@ -38,6 +38,7 @@
           "name": "Favored Enemy",
           "label": "Избранный враг",
           "kind": "Points",
+          "short": "FE",
           "levels": {
             "1": 2,
             "5": 3,

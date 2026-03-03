@@ -101,7 +101,11 @@ pub fn feature_choices(fields: &BTreeMap<String, FieldDefinition>) -> Option<Vec
             })
         })
         .collect();
-    if values.is_empty() { None } else { Some(values) }
+    if values.is_empty() {
+        None
+    } else {
+        Some(values)
+    }
 }
 
 #[component]

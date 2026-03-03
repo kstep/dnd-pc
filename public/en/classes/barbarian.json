@@ -21,6 +21,7 @@
         {
           "name": "Rages",
           "kind": "Points",
+          "short": "R",
           "levels": {
             "1": 2,
             "3": 3,

@@ -21,7 +21,20 @@
     },
     {
       "name": "Second Wind",
-      "description": "You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level. You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest."
+      "description": "You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level. You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest.",
+      "fields": [
+        {
+          "name": "Second Wind",
+          "description": "As a Bonus Action, you can use Second Wind to regain 1d10 HP + Figher Level",
+          "short": "SW",
+          "kind": "Points",
+          "levels": {
+            "1": 2,
+            "4": 3,
+            "10": 4
+          }
+        }
+      ]
     },
     {
       "name": "Weapon Mastery (Fighter)",
@@ -362,27 +375,162 @@
           "spells": {
             "casting_ability": 3,
             "caster_coef": 3,
-            "list": { "from": "spells/wizard.json" },
+            "list": {
+              "from": "spells/wizard.json"
+            },
             "levels": [
-              {}, {},
-              { "cantrips": 2, "spells": 3, "slots": [2] },
-              { "spells": 4, "slots": [3] },
-              { "slots": [3] },
-              { "slots": [3] },
-              { "spells": 5, "slots": [4, 2] },
-              { "spells": 6, "slots": [4, 2] },
-              { "slots": [4, 2] },
-              { "cantrips": 3, "spells": 7, "slots": [4, 3] },
-              { "spells": 8, "slots": [4, 3] },
-              { "slots": [4, 3] },
-              { "spells": 9, "slots": [4, 3, 2] },
-              { "spells": 10, "slots": [4, 3, 2] },
-              { "slots": [4, 3, 2] },
-              { "spells": 11, "slots": [4, 3, 3] },
-              { "slots": [4, 3, 3] },
-              { "slots": [4, 3, 3] },
-              { "spells": 12, "slots": [4, 3, 3, 1] },
-              { "spells": 13, "slots": [4, 3, 3, 1] }
+              {},
+              {},
+              {
+                "cantrips": 2,
+                "spells": 3,
+                "slots": [
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 5,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 6,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 6,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 7,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 8,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 8,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 9,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 10,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 10,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 12,
+                "slots": [
+                  4,
+                  3,
+                  3,
+                  1
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 13,
+                "slots": [
+                  4,
+                  3,
+                  3,
+                  1
+                ]
+              }
             ]
           }
         },

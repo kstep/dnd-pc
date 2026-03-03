@@ -518,7 +518,10 @@ impl FeatureDefinition {
                             (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
                                 *b = get_for_level(levels, level);
                             }
-                            (FieldKind::Points { levels }, FeatureValue::Points { max, .. }) => {
+                            (
+                                FieldKind::Points { levels, .. },
+                                FeatureValue::Points { max, .. },
+                            ) => {
                                 *max = get_for_level(levels, level);
                             }
                             _ => {}
@@ -565,6 +568,8 @@ impl Named for FieldDefinition {
 #[serde(tag = "kind")]
 pub enum FieldKind {
     Points {
+        #[serde(default)]
+        short: Option<String>,
         #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, u32>,
     },
@@ -594,7 +599,7 @@ impl FieldKind {
                 options: vec![Default::default(); get_for_level(levels, level) as usize],
             },
             FieldKind::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
-            FieldKind::Points { levels } => FeatureValue::Points {
+            FieldKind::Points { levels, .. } => FeatureValue::Points {
                 max: get_for_level(levels, level),
                 used: 0,
             },
@@ -1080,8 +1085,22 @@ impl RulesRegistry {
                 && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
                 && let Some(fd) = feat.fields.get(field_name)
                 && let FieldKind::Choice { cost, .. } = &fd.kind
+                && let Some(cost_name) = cost
             {
-                return cost.clone();
+                let short = def
+                    .features(cl.subclass.as_deref())
+                    .flat_map(|f| f.fields.values())
+                    .find(|f| f.name == *cost_name)
+                    .and_then(|f| {
+                        if let FieldKind::Points { short, .. } = &f.kind {
+                            short.as_deref()
+                        } else {
+                            None
+                        }
+                    })
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| cost_name.clone());
+                return Some(short);
             }
         }
         None

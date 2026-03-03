@@ -169,7 +169,7 @@ pub fn ClassReference() -> impl IntoView {
                         let field_values: Vec<String> = field_columns
                             .iter()
                             .map(|fc| match fc.kind {
-                                FieldKind::Points { levels } => {
+                                FieldKind::Points { levels, .. } => {
                                     let v: u32 = get_for_level(levels, level);
                                     if v > 0 {
                                         v.to_string()

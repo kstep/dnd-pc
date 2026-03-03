@@ -24,6 +24,7 @@
           "name": "Rages",
           "label": "Ярости",
           "kind": "Points",
+          "short": "R",
           "levels": {
             "1": 2,
             "3": 3,
