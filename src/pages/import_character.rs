@@ -505,34 +505,33 @@ pub fn do_import(character: &Character) -> impl IntoView {
 
 #[component]
 pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
-    let id = incoming.id;
     let incoming = StoredValue::new(incoming);
     let existing = StoredValue::new(existing);
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    let import_anyway = move |_| {
-        let mut character = incoming.get_value();
-        restore_stripped_fields(&mut character, &existing.get_value());
-        storage::save_character(&mut character);
+    let save_character = move |character: &mut Character| {
+        restore_stripped_fields(character, &existing.read_value());
+        storage::save_character(character);
         let navigate = use_navigate();
-        navigate(&format!("/c/{id}"), Default::default());
+        navigate(&format!("/c/{}", character.id), Default::default());
+    };
+
+    let import_anyway = move |_| {
+        let mut character = incoming.write_value();
+        save_character(&mut character);
     };
 
     let import_as_copy = move |_| {
-        let mut character = incoming.get_value();
-        restore_stripped_fields(&mut character, &existing.get_value());
+        let mut character = incoming.write_value();
         character.id = Uuid::new_v4();
         character.identity.name = format!("{} (Copy)", character.identity.name);
-        storage::save_character(&mut character);
-        let new_id = character.id;
-        let navigate = use_navigate();
-        navigate(&format!("/c/{new_id}"), Default::default());
+        save_character(&mut character);
     };
 
-    let name = existing.get_value().identity.name.clone();
+    let name = existing.read_value().identity.name.clone();
     let message = move_tr!("import-conflict-message", { "name" => name.clone() });
 
-    let diff_rows = untrack(|| compute_diff(&existing.get_value(), &incoming.get_value(), i18n));
+    let diff_rows = untrack(|| compute_diff(&existing.read_value(), &incoming.read_value(), i18n));
     let sections = group_diff_rows(diff_rows);
     let has_diffs = !sections.is_empty();
 
