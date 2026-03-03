@@ -64,6 +64,13 @@ fn export_character(character: &Character) {
     let _ = web_sys::Url::revoke_object_url(&url);
 }
 
+fn split_resolved(input: String, resolved: Option<String>) -> (String, Option<String>) {
+    match resolved {
+        Some(name) => (name, Some(input)),
+        None => (input, None),
+    }
+}
+
 fn import_character(store: Store<Character>) {
     storage::pick_character_from_file(move |mut imported| {
         let current_id = store.get_untracked().id;
@@ -146,12 +153,10 @@ pub fn CharacterHeader() -> impl IntoView {
             share_copied.set(true);
         });
         let cb = Closure::once_into_js(move || share_copied.set(false));
-        let _ = web_sys::window()
-            .unwrap()
-            .set_timeout_with_callback_and_timeout_and_arguments_0(
-                cb.as_ref().unchecked_ref(),
-                2_000,
-            );
+        let _ = leptos::prelude::window().set_timeout_with_callback_and_timeout_and_arguments_0(
+            cb.as_ref().unchecked_ref(),
+            2_000,
+        );
     };
 
     let on_copy = move |_| {
@@ -175,6 +180,24 @@ pub fn CharacterHeader() -> impl IntoView {
 
     let char_id = store.read_untracked().id;
 
+    let race_options = Memo::new(move |_| {
+        registry.with_race_entries(|entries| {
+            entries
+                .iter()
+                .map(|e| (e.name.clone(), e.label().to_string(), e.description.clone()))
+                .collect::<Vec<_>>()
+        })
+    });
+
+    let bg_options = Memo::new(move |_| {
+        registry.with_background_entries(|entries| {
+            entries
+                .iter()
+                .map(|e| (e.name.clone(), e.label().to_string(), e.description.clone()))
+                .collect::<Vec<_>>()
+        })
+    });
+
     view! {
         <div class="panel character-header">
             <div class="header-row">
@@ -194,16 +217,12 @@ pub fn CharacterHeader() -> impl IntoView {
                         let race_name = store.identity().race().get();
                         let race_applied = store.identity().race_applied().get();
 
-                        let (race_options, race_display) = registry.with_race_entries(|entries| {
-                            let options: Vec<(String, String, String)> = entries.iter().map(|entry| {
-                                (entry.name.clone(), entry.label().to_string(), entry.description.clone())
-                            }).collect();
-                            let display = entries.iter()
-                                .find(|e| e.name == race_name)
-                                .map(|e| e.label().to_string())
-                                .unwrap_or_else(|| race_name.clone());
-                            (options, display)
-                        });
+                        let race_display = race_options
+                            .read()
+                            .iter()
+                            .find(|(name, _, _)| *name == race_name)
+                            .map(|(_, label, _)| label.clone())
+                            .unwrap_or_else(|| race_name.clone());
 
                         if !race_name.is_empty() {
                             registry.fetch_race(&race_name);
@@ -216,7 +235,11 @@ pub fn CharacterHeader() -> impl IntoView {
                                 <DatalistInput
                                     value=race_display
                                     placeholder=tr!("race")
-                                    options=race_options
+                                    options=race_options.get()
+                                    ref_href=move || {
+                                        let key = store.identity().race().get();
+                                        (!key.is_empty()).then(|| format!("{BASE_URL}/r/race/{key}"))
+                                    }
                                     on_input=move |input, resolved| {
                                         let name: String = resolved.unwrap_or(input);
                                         let old = store.identity().race().get_untracked();
@@ -224,9 +247,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                         if name != old {
                                             store.identity().race_applied().set(false);
                                         }
-                                        if registry.with_race_entries(|entries| entries.iter().any(|e| e.name == name)) {
-                                            registry.fetch_race(&name);
-                                        }
+                                        registry.fetch_race(&name);
                                     }
                                 />
                                 {if show_apply {
@@ -258,16 +279,12 @@ pub fn CharacterHeader() -> impl IntoView {
                         let bg_name = store.identity().background().get();
                         let bg_applied = store.identity().background_applied().get();
 
-                        let (bg_options, bg_display) = registry.with_background_entries(|entries| {
-                            let options: Vec<(String, String, String)> = entries.iter().map(|entry| {
-                                (entry.name.clone(), entry.label().to_string(), entry.description.clone())
-                            }).collect();
-                            let display = entries.iter()
-                                .find(|e| e.name == bg_name)
-                                .map(|e| e.label().to_string())
-                                .unwrap_or_else(|| bg_name.clone());
-                            (options, display)
-                        });
+                        let bg_display = bg_options
+                            .read()
+                            .iter()
+                            .find(|(name, _, _)| *name == bg_name)
+                            .map(|(_, label, _)| label.clone())
+                            .unwrap_or_else(|| bg_name.clone());
 
                         if !bg_name.is_empty() {
                             registry.fetch_background(&bg_name);
@@ -280,7 +297,11 @@ pub fn CharacterHeader() -> impl IntoView {
                                 <DatalistInput
                                     value=bg_display
                                     placeholder=tr!("background")
-                                    options=bg_options
+                                    options=bg_options.get()
+                                    ref_href=move || {
+                                        let key = store.identity().background().get();
+                                        (!key.is_empty()).then(|| format!("{BASE_URL}/r/background/{key}"))
+                                    }
                                     on_input=move |input, resolved| {
                                         let name: String = resolved.unwrap_or(input);
                                         let old = store.identity().background().get_untracked();
@@ -288,9 +309,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                         if name != old {
                                             store.identity().background_applied().set(false);
                                         }
-                                        if registry.with_background_entries(|entries| entries.iter().any(|e| e.name == name)) {
-                                            registry.fetch_background(&name);
-                                        }
+                                        registry.fetch_background(&name);
                                     }
                                 />
                                 {if show_apply {
@@ -393,7 +412,6 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let level_val = cl.level.to_string();
                                 let hit_die_val = cl.hit_die_sides.to_string();
                                 let current_level = cl.level;
-                                let applied = cl.applied_levels.clone();
                                 let class_options = class_options.clone();
 
                                 let class_name = cl.class_label().to_string();
@@ -410,7 +428,7 @@ pub fn CharacterHeader() -> impl IntoView {
 
                                 let next_unapplied: Option<u32> = if class_loaded {
                                     (1..=current_level)
-                                        .find(|lvl| !applied.contains(lvl))
+                                        .find(|lvl| !cl.applied_levels.contains(lvl))
                                 } else {
                                     None
                                 };
@@ -423,6 +441,9 @@ pub fn CharacterHeader() -> impl IntoView {
                                         .collect()
                                 }).unwrap_or_default();
                                 let has_subclasses = !subclass_options.is_empty();
+                                let hit_die_sides = Memo::new(move |_| {
+                                    classes.read().get(i).map_or(8, |cl| cl.hit_die_sides)
+                                });
 
                                 view! {
                                     <div class="class-entry">
@@ -431,22 +452,21 @@ pub fn CharacterHeader() -> impl IntoView {
                                             placeholder=tr!("class")
                                             class="class-name"
                                             options=class_options
+                                            ref_href=move || {
+                                                (!class_key.is_empty()).then(|| format!("{BASE_URL}/r/class/{class_key}"))
+                                            }
                                             on_input=move |input, resolved| {
-                                                let (name, label) = match resolved {
-                                                    Some(name) => (name, Some(input)),
-                                                    None => (input, None),
-                                                };
+                                                let (name, label) = split_resolved(input, resolved);
+                                                let hit_die = registry.with_class(&name, |def| def.hit_die);
                                                 {
                                                     let mut classes = classes.write();
                                                     classes[i].class.clone_from(&name);
                                                     classes[i].class_label = label;
-                                                }
-                                                if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
-                                                    registry.fetch_class(&name);
-                                                    if let Some(hit_die) = registry.with_class(&name, |def| def.hit_die) {
-                                                        classes.write()[i].hit_die_sides = hit_die;
+                                                    if let Some(hd) = hit_die {
+                                                        classes[i].hit_die_sides = hd;
                                                     }
                                                 }
+                                                registry.fetch_class(&name);
                                             }
                                         />
                                         {if has_subclasses {
@@ -456,16 +476,21 @@ pub fn CharacterHeader() -> impl IntoView {
                                                     placeholder=tr!("subclass")
                                                     class="class-subclass"
                                                     options=subclass_options
+                                                    ref_href=move || {
+                                                        let classes = classes.read();
+                                                        let cl = classes.get(i)?;
+                                                        let class_key = cl.class.as_str();
+                                                        let sub_key = cl.subclass.as_deref().unwrap_or_default();
+                                                        (!class_key.is_empty() && !sub_key.is_empty())
+                                                            .then(|| format!("{BASE_URL}/r/class/{class_key}/{sub_key}"))
+                                                    }
                                                     on_input=move |input, resolved| {
                                                         let mut classes = classes.write();
                                                         if input.is_empty() {
                                                             classes[i].subclass = None;
                                                             classes[i].subclass_label = None;
                                                         } else {
-                                                            let (name, label) = match resolved {
-                                                                Some(name) => (name, Some(input)),
-                                                                None => (input, None),
-                                                            };
+                                                            let (name, label) = split_resolved(input, resolved);
                                                             classes[i].subclass = Some(name);
                                                             classes[i].subclass_label = label;
                                                         }
@@ -484,10 +509,10 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 }
                                             }
                                         >
-                                            <option value="6" selected=move || classes.read()[i].hit_die_sides == 6>"d6"</option>
-                                            <option value="8" selected=move || classes.read()[i].hit_die_sides == 8>"d8"</option>
-                                            <option value="10" selected=move || classes.read()[i].hit_die_sides == 10>"d10"</option>
-                                            <option value="12" selected=move || classes.read()[i].hit_die_sides == 12>"d12"</option>
+                                            <option value="6" selected=move || hit_die_sides.get() == 6>"d6"</option>
+                                            <option value="8" selected=move || hit_die_sides.get() == 8>"d8"</option>
+                                            <option value="10" selected=move || hit_die_sides.get() == 10>"d10"</option>
+                                            <option value="12" selected=move || hit_die_sides.get() == 12>"d12"</option>
                                         </select>
                                         <input
                                             type="number"

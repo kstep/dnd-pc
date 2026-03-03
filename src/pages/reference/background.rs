@@ -3,7 +3,9 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{FeatureSpells, FeatureSpellsView, ReferenceSidebar};
+use super::{
+    FeatureChoicesView, FeatureSpells, FeatureSpellsView, ReferenceSidebar, feature_choices,
+};
 use crate::{
     BASE_URL,
     model::{Translatable, format_bonus},
@@ -30,8 +32,7 @@ pub fn BackgroundReference() -> impl IntoView {
         }
     });
 
-    let current_label =
-        Signal::derive(move || registry.background_label_by_name(&bg_name()));
+    let current_label = Signal::derive(move || registry.background_label_by_name(&bg_name()));
 
     let detail = move || {
         let name = bg_name();
@@ -70,19 +71,21 @@ pub fn BackgroundReference() -> impl IntoView {
                     .collect::<Vec<_>>()
                     .join(", ");
 
-                let features: Vec<(String, String, String, FeatureSpells)> = def
+                let features: Vec<_> = def
                     .features
                     .values()
                     .map(|feat| {
                         let spells = FeatureSpells::from_spell_list(
                             feat.spells.as_ref().map(|spells_def| &spells_def.list),
                         );
+                        let choices = feature_choices(&feat.fields);
                         let langs = feat.languages.join(", ");
                         (
                             feat.label().to_string(),
                             feat.description.clone(),
                             langs,
                             spells,
+                            choices,
                         )
                     })
                     .collect();
@@ -111,20 +114,24 @@ pub fn BackgroundReference() -> impl IntoView {
                         {(!features.is_empty()).then(|| view! {
                             <h2>{move_tr!("ref-features")}</h2>
                             <div class="reference-features">
-                                {features.into_iter().map(|(label, desc, langs, spells)| {
-                                    view! {
-                                        <div class="reference-feature">
-                                            <h3>{label}</h3>
-                                            <p>{desc}</p>
-                                            {(!langs.is_empty()).then(|| view! {
-                                                <p class="feature-languages">
-                                                    {move_tr!("ref-languages")}{": "}{langs}
-                                                </p>
-                                            })}
-                                            <FeatureSpellsView spells=spells />
-                                        </div>
-                                    }
-                                }).collect_view()}
+                                {features
+                                    .into_iter()
+                                    .map(|(label, desc, langs, spells, choices)| {
+                                        view! {
+                                            <div class="reference-feature">
+                                                <h3>{label}</h3>
+                                                <p>{desc}</p>
+                                                {(!langs.is_empty()).then(|| view! {
+                                                    <p class="feature-languages">
+                                                        {move_tr!("ref-languages")}{": "}{langs}
+                                                    </p>
+                                                })}
+                                                <FeatureSpellsView spells=spells />
+                                                <FeatureChoicesView choices=choices />
+                                            </div>
+                                        }
+                                    })
+                                    .collect_view()}
                             </div>
                         })}
                     </div>

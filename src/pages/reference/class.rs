@@ -3,7 +3,9 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{FeatureSpells, FeatureSpellsView, ReferenceSidebar};
+use super::{
+    FeatureChoicesView, FeatureSpells, FeatureSpellsView, ReferenceSidebar, feature_choices,
+};
 use crate::{
     BASE_URL,
     model::{Translatable, format_bonus},
@@ -214,13 +216,14 @@ pub fn ClassReference() -> impl IntoView {
                     })
                     .collect();
 
-                let class_features: Vec<(String, String, String, String, FeatureSpells)> = def
+                let class_features: Vec<_> = def
                     .features
                     .values()
                     .map(|feat| {
                         let spells = FeatureSpells::from_spell_list(
                             feat.spells.as_ref().map(|spells_def| &spells_def.list),
                         );
+                        let choices = feature_choices(&feat.fields);
                         let langs = feat.languages.join(", ");
                         (
                             feat.name.clone(),
@@ -228,31 +231,33 @@ pub fn ClassReference() -> impl IntoView {
                             feat.description.clone(),
                             langs,
                             spells,
+                            choices,
                         )
                     })
                     .collect();
 
-                let subclass_features: Vec<(String, String, String, String, FeatureSpells)> =
-                    subclass_def
-                        .map(|sc| {
-                            sc.features
-                                .values()
-                                .map(|feat| {
-                                    let spells = FeatureSpells::from_spell_list(
-                                        feat.spells.as_ref().map(|spells_def| &spells_def.list),
-                                    );
-                                    let langs = feat.languages.join(", ");
-                                    (
-                                        feat.name.clone(),
-                                        feat.label().to_string(),
-                                        feat.description.clone(),
-                                        langs,
-                                        spells,
-                                    )
-                                })
-                                .collect()
-                        })
-                        .unwrap_or_default();
+                let subclass_features: Vec<_> = subclass_def
+                    .map(|sc| {
+                        sc.features
+                            .values()
+                            .map(|feat| {
+                                let spells = FeatureSpells::from_spell_list(
+                                    feat.spells.as_ref().map(|spells_def| &spells_def.list),
+                                );
+                                let choices = feature_choices(&feat.fields);
+                                let langs = feat.languages.join(", ");
+                                (
+                                    feat.name.clone(),
+                                    feat.label().to_string(),
+                                    feat.description.clone(),
+                                    langs,
+                                    spells,
+                                    choices,
+                                )
+                            })
+                            .collect()
+                    })
+                    .unwrap_or_default();
 
                 let subclass_list: Vec<(String, String, String)> = if subclass_def.is_none() {
                     def.subclasses
@@ -380,26 +385,9 @@ pub fn ClassReference() -> impl IntoView {
 
                         <h2>{move_tr!("ref-features")}</h2>
                         <div class="reference-features">
-                            {class_features.into_iter().map(|(feat_name, label, desc, langs, spells)| {
-                                let anchor_id = format!("feat-{feat_name}");
-                                view! {
-                                    <div class="reference-feature" id=anchor_id>
-                                        <h3>{label}</h3>
-                                        <p>{desc}</p>
-                                        {(!langs.is_empty()).then(|| view! {
-                                            <p class="feature-languages">
-                                                {move_tr!("ref-languages")}{": "}{langs}
-                                            </p>
-                                        })}
-                                        <FeatureSpellsView spells=spells />
-                                    </div>
-                                }
-                            }).collect_view()}
-                        </div>
-
-                        {(!subclass_features.is_empty()).then(|| view! {
-                            <div class="reference-features">
-                                {subclass_features.into_iter().map(|(feat_name, label, desc, langs, spells)| {
+                            {class_features
+                                .into_iter()
+                                .map(|(feat_name, label, desc, langs, spells, choices)| {
                                     let anchor_id = format!("feat-{feat_name}");
                                     view! {
                                         <div class="reference-feature" id=anchor_id>
@@ -411,9 +399,34 @@ pub fn ClassReference() -> impl IntoView {
                                                 </p>
                                             })}
                                             <FeatureSpellsView spells=spells />
+                                            <FeatureChoicesView choices=choices />
                                         </div>
                                     }
-                                }).collect_view()}
+                                })
+                                .collect_view()}
+                        </div>
+
+                        {(!subclass_features.is_empty()).then(|| view! {
+                            <div class="reference-features">
+                                {subclass_features
+                                    .into_iter()
+                                    .map(|(feat_name, label, desc, langs, spells, choices)| {
+                                        let anchor_id = format!("feat-{feat_name}");
+                                        view! {
+                                            <div class="reference-feature" id=anchor_id>
+                                                <h3>{label}</h3>
+                                                <p>{desc}</p>
+                                                {(!langs.is_empty()).then(|| view! {
+                                                    <p class="feature-languages">
+                                                        {move_tr!("ref-languages")}{": "}{langs}
+                                                    </p>
+                                                })}
+                                                <FeatureSpellsView spells=spells />
+                                                <FeatureChoicesView choices=choices />
+                                            </div>
+                                        }
+                                    })
+                                    .collect_view()}
                             </div>
                         })}
 

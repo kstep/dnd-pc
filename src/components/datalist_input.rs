@@ -1,14 +1,14 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use leptos::prelude::*;
+use leptos_router::components::A;
 
 use crate::components::icon::Icon;
 
 static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
-fn next_datalist_id() -> String {
-    let id = DATALIST_COUNTER.fetch_add(1, Ordering::Relaxed);
-    format!("datalist-{id}")
+fn next_datalist_id() -> usize {
+    DATALIST_COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
 fn resolve_name(options: &[(String, String, String)], input: &str) -> Option<String> {
@@ -34,6 +34,10 @@ pub fn DatalistInput(
     /// CSS class for the input
     #[prop(into, optional)]
     class: Option<String>,
+    /// Optional href for reference link icon shown between input and browse
+    /// button. When `None` (default), the icon is hidden.
+    #[prop(into, optional)]
+    ref_href: Signal<Option<String>>,
     /// Autocomplete options as `(name, label, description)` triples.
     /// `name` is the stable key, `label` is the display text, `description` is
     /// shown below.
@@ -45,7 +49,6 @@ pub fn DatalistInput(
     on_input: impl Fn(String, Option<String>) + Send + Sync + 'static,
 ) -> impl IntoView {
     let id = next_datalist_id();
-    let datalist_id = id.clone();
 
     let show_modal = RwSignal::new(false);
     let search_query = RwSignal::new(String::new());
@@ -66,17 +69,15 @@ pub fn DatalistInput(
     let filtered_options = move || {
         let query = search_query.get().to_lowercase();
         options_stored.with_value(|opts| {
-            if query.is_empty() {
-                return opts.clone();
-            }
             opts.iter()
                 .filter(|(name, label, description)| {
-                    name.to_lowercase().contains(&query)
+                    query.is_empty()
+                        || name.to_lowercase().contains(&query)
                         || label.to_lowercase().contains(&query)
                         || description.to_lowercase().contains(&query)
                 })
                 .cloned()
-                .collect()
+                .collect::<Vec<_>>()
         })
     };
 
@@ -84,7 +85,7 @@ pub fn DatalistInput(
 
     view! {
         <div class="datalist-input-wrapper">
-            <datalist id=datalist_id>
+            <datalist id=format!("datalist-{id}")>
                 {options_stored.with_value(|opts| {
                     opts.iter().map(|(_, label, description)| {
                         let label = label.clone();
@@ -100,7 +101,7 @@ pub fn DatalistInput(
             <input
                 type="text"
                 class=class.unwrap_or_default()
-                list=id
+                list=format!("datalist-{id}")
                 placeholder=placeholder
                 prop:value=move || display_value.get()
                 on:change=move |event| {
@@ -110,6 +111,11 @@ pub fn DatalistInput(
                     on_input.with_value(|callback| callback(input, resolved));
                 }
             />
+            {move || ref_href.get().map(|href| view! {
+                <A href=href attr:class="datalist-ref-link" attr:title="Reference">
+                    <Icon name="info" size=12 />
+                </A>
+            })}
             <button
                 type="button"
                 class="datalist-browse-btn"
@@ -161,8 +167,9 @@ pub fn DatalistInput(
                                         type="button"
                                         class="datalist-option"
                                         on:click=move |_| {
-                                            display_value.set(selected_label.clone());
-                                            on_input.with_value(|callback| callback(selected_label.clone(), Some(selected_name.clone())));
+                                            let label = selected_label.clone();
+                                            display_value.set(label.clone());
+                                            on_input.with_value(|callback| callback(label, Some(selected_name.clone())));
                                             show_modal.set(false);
                                         }
                                     >

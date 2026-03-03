@@ -77,23 +77,11 @@
     },
     {
       "name": "Cunning Strike",
-      "description": "You've developed cunning ways to use your Sneak Attack. When you deal Sneak Attack damage, you can add one of the following Cunning Strike effects. Each effect has a die cost, which is the number of Sneak Attack damage dice you must forgo to add the effect. You remove the die before rolling, and the effect occurs immediately after the attack's damage is dealt."
-    },
-    {
-      "name": "Poison (Cost: 1d6)",
-      "description": "You add a toxin to your strike, forcing the target to make a Constitution saving throw. On a failed save, the target has the Poisoned condition for 1 minute. At the end of each of its turns, the Poisoned target repeats the save, ending the effect on itself on a success. To use this effect, you must have a Poisoner's Kit on your person."
-    },
-    {
-      "name": "Trip (Cost: 1d6)",
-      "description": "If the target is Large or smaller, it must succeed on a Dexterity saving throw or have the Prone condition."
+      "description": "You've developed cunning ways to use your Sneak Attack. When you deal Sneak Attack damage, you can add one of the following Cunning Strike effects. Each effect has a die cost, which is the number of Sneak Attack damage dice you must forgo to add the effect. You remove the die before rolling, and the effect occurs immediately after the attack's damage is dealt.\n\nPoison (Cost: 1d6)\nYou add a toxin to your strike, forcing the target to make a Constitution saving throw. On a failed save, the target has the Poisoned condition for 1 minute. At the end of each of its turns, the Poisoned target repeats the save, ending the effect on itself on a success. To use this effect, you must have a Poisoner's Kit on your person.\n\nTrip (Cost: 1d6)\nIf the target is Large or smaller, it must succeed on a Dexterity saving throw or have the Prone condition.\n\nWithdraw (Cost: 1d6)\nImmediately after the attack, you move up to half your Speed without provoking Opportunity Attack."
     },
     {
       "name": "Uncanny Dodge",
       "description": "When an attacker that you can see hits you with an attack roll, you can take a Reaction to halve the attack's damage against you (round down)."
-    },
-    {
-      "name": "Withdraw (Cost: 1d6)",
-      "description": "Immediately after the attack, you move up to half your Speed without provoking Opportunity Attack."
     },
     {
       "name": "Evasion",
@@ -174,10 +162,7 @@
     {
       "features": [
         "Cunning Strike",
-        "Poison (Cost: 1d6)",
-        "Trip (Cost: 1d6)",
-        "Uncanny Dodge",
-        "Withdraw (Cost: 1d6)"
+        "Uncanny Dodge"
       ]
     },
     {
