@@ -95,7 +95,7 @@ pub fn SpellReference() -> impl IntoView {
                             let level = group.level;
                             let spells = group.spells;
                             let heading = if level == 0 {
-                                move_tr!("ref-cantrips-level")
+                                move_tr!("ref-cantrips")
                             } else {
                                 move_tr!("ref-spell-level", {"level" => level.to_string()})
                             };
