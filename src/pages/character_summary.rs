@@ -286,7 +286,7 @@ pub fn CharacterSummary() -> impl IntoView {
                             entry.fields.iter().filter_map(|field| {
                                 if let FeatureValue::Choice { options } = &field.value {
                                     let selected: Vec<_> = options.iter()
-                                        .map(|opt| (opt.label().to_string(), opt.description.clone()))
+                                        .map(|opt| (opt.label().to_string(), opt.cost, opt.description.clone()))
                                         .collect();
                                     if selected.is_empty() {
                                         return None;
@@ -308,7 +308,7 @@ pub fn CharacterSummary() -> impl IntoView {
                         view! {
                             <h4 class="summary-subsection-title">{label}</h4>
                             <div class="summary-spells-list">
-                                {options.into_iter().enumerate().map(|(i, (name, desc))| {
+                                {options.into_iter().enumerate().map(|(i, (name, cost, desc))| {
                                     let is_open = Signal::derive(move || expanded.get().contains(&i));
                                     let has_desc = !desc.is_empty();
                                     view! {
@@ -325,6 +325,9 @@ pub fn CharacterSummary() -> impl IntoView {
                                                     None
                                                 }}
                                                 <span class="summary-spell-name">{name}</span>
+                                                {(cost > 0).then(|| view! {
+                                                    <span class="summary-choice-cost">{cost}</span>
+                                                })}
                                             </div>
                                             <Show when=move || is_open.get() && has_desc>
                                                 <p class="summary-spell-desc">{desc.clone()}</p>
