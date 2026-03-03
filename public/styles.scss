@@ -1427,6 +1427,11 @@ input[type="checkbox"] {
   input[type="text"] {
     min-width: 0;
   }
+
+  select {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
 }
 
 /* --------------------- Summary Page -------------------------- */

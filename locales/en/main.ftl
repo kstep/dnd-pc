@@ -210,6 +210,7 @@ summary-no-spells = No spells available
 summary-no-items = No items
 summary-ability-mods = Ability Modifiers
 summary-saving-throws = Saving Throws
+summary-languages = Comprehensible Languages
 
 ## Reference pages
 ref-reference = Reference

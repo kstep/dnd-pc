@@ -12,12 +12,131 @@
   ],
   "features": [
     {
-      "name": "Eldritch Invocation Options",
-      "description": "Eldritch Invocation options appear in alphabetical order."
-    },
-    {
       "name": "Eldritch Invocations",
-      "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the \"Eldritch Invocation Options\" section later in this class's description."
+      "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the \"Eldritch Invocation Options\" section later in this class's description.",
+      "fields": [
+        {
+          "kind": "Choice",
+          "name": "Invocations",
+          "levels": {
+            "1": 1, "2": 3, "5": 5, "7": 6, "9": 7, "12": 8, "15": 9, "18": 10
+          },
+          "options": [
+            {
+              "name": "Agonizing Blast",
+              "description": "Minimum level 2 Warlock. Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip."
+            },
+            {
+              "name": "Armor of Shadows",
+              "description": "You can cast Mage Armor on yourself without expending a spell slot."
+            },
+            {
+              "name": "Ascendant Step",
+              "description": "Minimum level 5 Warlock. You can cast Levitate on yourself without expending a spell slot."
+            },
+            {
+              "name": "Devil's Sight",
+              "description": "Minimum level 2 Warlock. You can see normally in Dim Light and Darkness—both magical and nonmagical—within 120 feet of yourself."
+            },
+            {
+              "name": "Devouring Blade",
+              "description": "Minimum level 12 Warlock. Prerequisite: Thirsting Blade invocation. The extra attack of your Thirsting Blade invocation becomes two extra attacks."
+            },
+            {
+              "name": "Eldritch Mind",
+              "description": "You have Advantage on Constitution saving throws that you make to maintain Concentration."
+            },
+            {
+              "name": "Eldritch Smite",
+              "description": "Minimum level 5 Warlock. Prerequisite: Pact of the Blade invocation. Once per turn when you hit a creature with your pact weapon, you can expend a Pact Magic spell slot to deal an extra 1d8 Force damage to the target, plus another 1d8 per level of the spell slot, and you can give the target the Prone condition if it is Huge or smaller."
+            },
+            {
+              "name": "Eldritch Spear",
+              "description": "Minimum level 2 Warlock. Choose one of your known Warlock cantrips that has a range of at least 10 feet. When you cast that cantrip, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip."
+            },
+            {
+              "name": "Fiendish Vigor",
+              "description": "Minimum level 2 Warlock. You can cast False Life on yourself without expending a spell slot. When you cast the spell with this feature, you don't roll the die for the Temporary Hit Points; you automatically get the highest number on the die."
+            },
+            {
+              "name": "Gaze of Two Minds",
+              "description": "Minimum level 5 Warlock. You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through another creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in that creature's space."
+            },
+            {
+              "name": "Gift of the Depths",
+              "description": "Minimum level 5 Warlock. You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way when you finish a Long Rest."
+            },
+            {
+              "name": "Gift of the Protectors",
+              "description": "Minimum level 9 Warlock. Prerequisite: Pact of the Tome invocation. A new page appears in your Book of Shadows when you gain this invocation. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of 1). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it."
+            },
+            {
+              "name": "Investment of the Chain Master",
+              "description": "Minimum level 5 Warlock. Prerequisite: Pact of the Chain invocation. When you cast Find Familiar, the familiar gains the following benefits: Aerial or Aquatic. The familiar gains a Fly Speed or Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant. Whenever the familiar deals damage, you choose the damage type: Necrotic or Radiant. Saving Throw. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Hit Points. The familiar's Hit Point maximum equals your Warlock level plus your Charisma modifier plus the familiar's Constitution modifier."
+            },
+            {
+              "name": "Lessons of the First Ones",
+              "description": "Minimum level 2 Warlock. You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat."
+            },
+            {
+              "name": "Lifedrinker",
+              "description": "Minimum level 9 Warlock. Prerequisite: Pact of the Blade invocation. Once on each of your turns when you hit a creature with your pact weapon, you can deal an extra 1d6 Necrotic, Psychic, or Radiant damage (your choice) to the creature, and you can expend one of your Hit Point Dice to roll it and regain a number of Hit Points equal to the roll plus your Constitution modifier (minimum of 1 Hit Point)."
+            },
+            {
+              "name": "Mask of Many Faces",
+              "description": "Minimum level 2 Warlock. You can cast Disguise Self without expending a spell slot."
+            },
+            {
+              "name": "Master of Myriad Forms",
+              "description": "Minimum level 5 Warlock. You can cast Alter Self without expending a spell slot."
+            },
+            {
+              "name": "Misty Visions",
+              "description": "Minimum level 2 Warlock. You can cast Silent Image without expending a spell slot."
+            },
+            {
+              "name": "One with Shadows",
+              "description": "Minimum level 5 Warlock. While you are in Dim Light or Darkness, you can cast Invisibility on yourself without expending a spell slot."
+            },
+            {
+              "name": "Otherworldly Leap",
+              "description": "Minimum level 2 Warlock. You can cast Jump on yourself without expending a spell slot."
+            },
+            {
+              "name": "Pact of the Blade",
+              "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch. Until the bond ends, you have proficiency with the weapon, and you can use it as a spellcasting focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity, and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon is destroyed when the bond ends."
+            },
+            {
+              "name": "Pact of the Chain",
+              "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
+            },
+            {
+              "name": "Pact of the Tome",
+              "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen cantrips prepared, and you can cast the chosen level 1 spells as Rituals. Spellcasting Focus. You can use the book as a Spellcasting Focus."
+            },
+            {
+              "name": "Repelling Blast",
+              "description": "Minimum level 2 Warlock. Choose one of your known Warlock cantrips that requires an attack roll. When you hit a creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip."
+            },
+            {
+              "name": "Thirsting Blade",
+              "description": "Minimum level 5 Warlock. Prerequisite: Pact of the Blade invocation. You gain the Extra Attack feature for your pact weapon only. With that feature, you can attack twice with the weapon instead of once when you take the Attack action on your turn."
+            },
+            {
+              "name": "Visions of Distant Realms",
+              "description": "Minimum level 9 Warlock. You can cast Arcane Eye without expending a spell slot."
+            },
+            {
+              "name": "Whispers of the Grave",
+              "description": "Minimum level 7 Warlock. You can cast Speak with Dead without expending a spell slot."
+            },
+            {
+              "name": "Witch Sight",
+              "description": "Minimum level 15 Warlock. You have Truesight with a range of 30 feet."
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Pact Magic",

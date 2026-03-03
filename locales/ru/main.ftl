@@ -210,6 +210,7 @@ summary-no-spells = Нет доступных заклинаний
 summary-no-items = Нет предметов
 summary-ability-mods = Модификаторы характеристик
 summary-saving-throws = Спасброски
+summary-languages = Понятные языки
 
 ## Справочные страницы
 ref-reference = Справочник

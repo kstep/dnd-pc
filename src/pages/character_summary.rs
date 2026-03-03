@@ -8,12 +8,27 @@ use strum::IntoEnumIterator;
 use crate::{
     components::{summary_header::SummaryHeader, toggle_button::ToggleButton},
     model::{
-        Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
+        Ability, Character, CharacterIdentity, CharacterIdentityStoreFields, CharacterStoreFields,
         CombatStatsStoreFields, EquipmentStoreFields, FeatureValue, ProficiencyLevel, Skill,
         Translatable, format_bonus,
     },
-    rules::RulesRegistry,
+    rules::{ChoiceOptions, FieldKind, RulesRegistry},
 };
+
+fn is_choice_ref(
+    registry: &RulesRegistry,
+    identity: &CharacterIdentity,
+    feat_name: &str,
+    field_name: &str,
+) -> bool {
+    registry
+        .with_feature(identity, feat_name, |feat| {
+            feat.fields.get(field_name).is_some_and(|fd| {
+                matches!(&fd.kind, FieldKind::Choice { options, .. } if matches!(options, ChoiceOptions::Ref { .. }))
+            })
+        })
+        .unwrap_or(false)
+}
 
 #[component]
 pub fn CharacterSummary() -> impl IntoView {
@@ -201,6 +216,51 @@ pub fn CharacterSummary() -> impl IntoView {
                     }).collect_view().into_any()
                 }}
 
+                // -- Spell slots (tracks only spell_slots) --
+                {move || {
+                    let spell_slots = store.spell_slots().read();
+                    let slots: Vec<_> = (1..=9u32)
+                        .filter_map(|level| {
+                            let idx = (level - 1) as usize;
+                            let slot = spell_slots.get(idx).copied().unwrap_or_default();
+                            if slot.total > 0 { Some((level, idx, slot)) } else { None }
+                        })
+                        .collect();
+                    if slots.is_empty() {
+                        return ().into_any();
+                    }
+                    view! {
+                        <h4 class="summary-subsection-title">{move_tr!("spell-slots")}</h4>
+                        <div class="summary-spell-slots">
+                            {slots.into_iter().map(|(level, idx, slot)| {
+                                let remaining = slot.total.saturating_sub(slot.used);
+                                view! {
+                                    <div class="summary-slot">
+                                        <span class="summary-slot-level">
+                                            {tr!("slot-level", {"level" => level.to_string()})}
+                                        </span>
+                                        <input
+                                            type="number"
+                                            class="short-input"
+                                            min="0"
+                                            prop:max=slot.total.to_string()
+                                            prop:value=slot.used.to_string()
+                                            on:input=move |e| {
+                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                    store.spell_slots().update(|slots| {
+                                                        slots[idx].used = value;
+                                                    });
+                                                }
+                                            }
+                                        />
+                                        <span>"/" {slot.total} " (" {remaining} ")"</span>
+                                    </div>
+                                }
+                            }).collect_view()}
+                        </div>
+                    }.into_any()
+                }}
+
                 // -- Feature resources (tracks only feature_data) --
                 {move || {
                     let feature_data = store.feature_data().read();
@@ -278,13 +338,16 @@ pub fn CharacterSummary() -> impl IntoView {
                     }.into_any()
                 }}
 
-                // -- Choice fields (metamagic, known items, etc.) --
+                // -- Choice fields (read-only for inline lists) --
                 {move || {
                     let feature_data = store.feature_data().read();
+                    let identity = store.identity().read();
                     let choices: Vec<_> = feature_data.iter()
-                        .flat_map(|(_feat_name, entry)| {
+                        .flat_map(|(feat_name, entry)| {
                             entry.fields.iter().filter_map(|field| {
-                                if let FeatureValue::Choice { options } = &field.value {
+                                if let FeatureValue::Choice { options } = &field.value
+                                    && !is_choice_ref(&registry, &identity, feat_name, &field.name)
+                                {
                                     let selected: Vec<_> = options.iter()
                                         .map(|opt| (opt.label().to_string(), opt.cost, opt.description.clone()))
                                         .collect();
@@ -298,6 +361,7 @@ pub fn CharacterSummary() -> impl IntoView {
                             })
                         })
                         .collect();
+                    drop(identity);
 
                     if choices.is_empty() {
                         return ().into_any();
@@ -338,6 +402,124 @@ pub fn CharacterSummary() -> impl IntoView {
                             </div>
                         }
                     }).collect_view().into_any()
+                }}
+
+                // -- Choice Ref fields (editable, e.g. Infused Items) --
+                {move || {
+                    let feature_data = store.feature_data().read();
+                    let identity = store.identity().read();
+                    let ref_choices: Vec<_> = feature_data.iter()
+                        .flat_map(|(feat_name, entry)| {
+                            let all_fields = entry.fields.clone();
+                            entry.fields.iter().enumerate().filter_map(|(field_idx, field)| {
+                                if let FeatureValue::Choice { .. } = &field.value
+                                    && is_choice_ref(&registry, &identity, feat_name, &field.name)
+                                {
+                                    Some((feat_name.clone(), field_idx, field.label().to_string(), field.name.clone(), all_fields.clone()))
+                                } else {
+                                    None
+                                }
+                            }).collect::<Vec<_>>()
+                        })
+                        .collect();
+                    drop(identity);
+
+                    if ref_choices.is_empty() {
+                        return ().into_any();
+                    }
+
+                    ref_choices.into_iter().map(|(feat_name, field_idx, label, field_name, all_fields)| {
+                        let fname = StoredValue::new(feat_name);
+
+                        let classes = store.identity().classes().read();
+                        let (cost_label, all_options) = fname.with_value(|key| {
+                            let cost_label = registry.get_choice_cost_label(&classes, key, &field_name);
+                            let all_options = registry.get_choice_options(&classes, key, &field_name, &all_fields);
+                            (cost_label, all_options)
+                        });
+                        drop(classes);
+
+                        let all_options = StoredValue::new(all_options);
+
+                        let options = store.feature_data().read()
+                            .get(&fname.get_value())
+                            .and_then(|e| e.fields.get(field_idx))
+                            .map(|f| f.value.choices().to_vec())
+                            .unwrap_or_default();
+
+                        let option_views = options.iter().enumerate().map(|(opt_idx, option)| {
+                            let selected_name = option.name.clone();
+
+                            view! {
+                                <div class="choice-entry">
+                                    <select
+                                        on:change=move |e| {
+                                            let value = event_target_value(&e);
+                                            fname.with_value(|key| {
+                                                let cost = all_options.with_value(|opts| {
+                                                    opts.iter()
+                                                        .find(|o| o.name == value)
+                                                        .map(|o| o.cost)
+                                                });
+                                                store.feature_data().update(|m| {
+                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                        && let FeatureValue::Choice { options } = &mut f.value
+                                                        && let Some(opt) = options.get_mut(opt_idx)
+                                                    {
+                                                        opt.name = value.clone();
+                                                        opt.label = None;
+                                                        opt.description.clear();
+                                                        if let Some(cost) = cost {
+                                                            opt.cost = cost;
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    >
+                                        <option value="" selected=selected_name.is_empty()>""</option>
+                                        {all_options.with_value(|opts| {
+                                            opts.iter().map(|o| {
+                                                let name = o.name.clone();
+                                                let label = o.label().to_string();
+                                                let is_selected = name == selected_name;
+                                                view! {
+                                                    <option value=name selected=is_selected>{label}</option>
+                                                }
+                                            }).collect_view()
+                                        })}
+                                    </select>
+                                </div>
+                            }
+                        }).collect_view();
+
+                        let label_view = if let Some(ref cost_title) = cost_label {
+                            format!("{label} ({cost_title})")
+                        } else {
+                            label
+                        };
+
+                        view! {
+                            <h4 class="summary-subsection-title">{label_view}</h4>
+                            <div class="choice-list">
+                                {option_views}
+                            </div>
+                        }
+                    }).collect_view().into_any()
+                }}
+
+                // -- Languages --
+                {move || {
+                    let languages = store.languages().read();
+                    let langs: Vec<_> = languages.iter().filter(|l| !l.is_empty()).cloned().collect();
+                    if langs.is_empty() {
+                        return ().into_any();
+                    }
+                    view! {
+                        <h4 class="summary-subsection-title">{move_tr!("summary-languages")}</h4>
+                        <p class="summary-languages">{langs.join(", ")}</p>
+                    }.into_any()
                 }}
             </div>
 
@@ -531,50 +713,6 @@ pub fn CharacterSummary() -> impl IntoView {
                     }).collect_view()}
                 </div>
 
-                // -- Spell slots (tracks only spell_slots) --
-                {move || {
-                    let spell_slots = store.spell_slots().read();
-                    let slots: Vec<_> = (1..=9u32)
-                        .filter_map(|level| {
-                            let idx = (level - 1) as usize;
-                            let slot = spell_slots.get(idx).copied().unwrap_or_default();
-                            if slot.total > 0 { Some((level, idx, slot)) } else { None }
-                        })
-                        .collect();
-                    if slots.is_empty() {
-                        return ().into_any();
-                    }
-                    view! {
-                        <h4 class="summary-subsection-title">{move_tr!("spell-slots")}</h4>
-                        <div class="summary-spell-slots">
-                            {slots.into_iter().map(|(level, idx, slot)| {
-                                let remaining = slot.total.saturating_sub(slot.used);
-                                view! {
-                                    <div class="summary-slot">
-                                        <span class="summary-slot-level">
-                                            {tr!("slot-level", {"level" => level.to_string()})}
-                                        </span>
-                                        <input
-                                            type="number"
-                                            class="short-input"
-                                            min="0"
-                                            prop:max=slot.total.to_string()
-                                            prop:value=slot.used.to_string()
-                                            on:input=move |e| {
-                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                    store.spell_slots().update(|slots| {
-                                                        slots[idx].used = value;
-                                                    });
-                                                }
-                                            }
-                                        />
-                                        <span>"/" {slot.total} " (" {remaining} ")"</span>
-                                    </div>
-                                }
-                            }).collect_view()}
-                        </div>
-                    }.into_any()
-                }}
             </div>
             </div>
 
