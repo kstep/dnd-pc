@@ -193,8 +193,13 @@ fn FeatureSpellcastingSection(
                                                     if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
                                                         && let Some(spell) = sc.spells.get_mut(i)
                                                     {
-                                                        spell.name = resolved.unwrap_or(input);
-                                                        spell.label = None;
+                                                        if let Some(name) = resolved {
+                                                            spell.name = name;
+                                                            spell.label = Some(input);
+                                                        } else {
+                                                            spell.name = input;
+                                                            spell.label = None;
+                                                        }
                                                         spell.description.clear();
                                                     }
                                                 });
