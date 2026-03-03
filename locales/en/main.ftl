@@ -241,6 +241,7 @@ ref-spell-level = {$level ->
     *[other] {$level}th Level
     }
 ref-spell-min-level = from level {$level}
+ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
 
 ## Language switcher

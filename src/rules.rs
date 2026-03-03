@@ -1263,7 +1263,10 @@ impl RulesRegistry {
         path: &str,
         f: impl FnOnce(&[SpellDefinition]) -> R,
     ) -> Option<R> {
-        self.spell_list_cache.read().get(path).map(|v| f(v.as_slice()))
+        self.spell_list_cache
+            .read()
+            .get(path)
+            .map(|v| f(v.as_slice()))
     }
 
     /// Fill labels and empty descriptions on a character from registry

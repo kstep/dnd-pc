@@ -68,6 +68,20 @@ pub fn ClassReference() -> impl IntoView {
             .into_any();
         }
 
+        let prerequisites = registry.with_class_entries(|entries| {
+            entries
+                .iter()
+                .find(|e| e.name == name)
+                .map(|e| {
+                    e.prerequisites
+                        .iter()
+                        .map(|a| i18n.tr(a.tr_key()))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                })
+                .unwrap_or_default()
+        });
+
         registry
             .with_class_tracked(&name, |def| {
                 let subclass_def =
@@ -308,6 +322,12 @@ pub fn ClassReference() -> impl IntoView {
                                 <span class="info-label">{move_tr!("proficiencies")}</span>
                                 <span class="info-value">{proficiencies}</span>
                             </div>
+                            {(!prerequisites.is_empty()).then(|| view! {
+                                <div class="info-item">
+                                    <span class="info-label">{move_tr!("ref-prerequisites")}</span>
+                                    <span class="info-value">{prerequisites.clone()}</span>
+                                </div>
+                            })}
                             {spell_list_name.map(|sln| view! {
                                 <div class="info-item">
                                     <span class="info-label">{move_tr!("ref-spell-list-link")}</span>
