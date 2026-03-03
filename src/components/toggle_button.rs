@@ -1,5 +1,7 @@
 use leptos::prelude::*;
 
+use crate::components::icon::Icon;
+
 #[component]
 pub fn ToggleButton(
     #[prop(into)] expanded: Signal<bool>,
@@ -10,7 +12,7 @@ pub fn ToggleButton(
             class="btn-toggle-desc"
             on:click=move |_| on_toggle()
         >
-            {move || if expanded.get() { "\u{2212}" } else { "+" }}
+            <Icon name=move || if expanded.get() { "minus" } else { "plus" } />
         </button>
     }
 }

@@ -1156,6 +1156,13 @@ input[type="checkbox"] {
   }
 }
 
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
 .btn-remove {
   background: var(--danger);
   color: white;
@@ -1182,6 +1189,9 @@ input[type="checkbox"] {
   font-size: 13px;
   line-height: 1.4;
   min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .btn-apply-level:hover {

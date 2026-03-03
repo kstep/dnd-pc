@@ -8,7 +8,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     BASE_URL,
-    components::datalist_input::DatalistInput,
+    components::{datalist_input::DatalistInput, icon::Icon},
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
         Translatable,
@@ -242,7 +242,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 });
                                             }
                                         >
-                                            "⬆"
+                                            <Icon name="arrow-up" size=14 />
                                         </button>
                                     })
                                 } else {
@@ -306,7 +306,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                                 });
                                             }
                                         >
-                                            "⬆"
+                                            <Icon name="arrow-up" size=14 />
                                         </button>
                                     })
                                 } else {
@@ -510,7 +510,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                                     }
                                                 }
                                             >
-                                                "X"
+                                                <Icon name="x" size=14 />
                                             </button>
                                         </Show>
                                         {if let Some(lvl) = next_unapplied {
@@ -524,7 +524,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                                             apply_level(store, registry, i, lvl);
                                                         }
                                                     >
-                                                        {format!("⬆{lvl}")}
+                                                        <Icon name="arrow-up" size=14 />
+                                                        {lvl}
                                                     </button>
                                                 </div>
                                             })
@@ -544,12 +545,12 @@ pub fn CharacterHeader() -> impl IntoView {
 
             <div class="header-actions">
                 <button class="btn-add" title=move_tr!("share-link") on:click=on_share>
-                    {move || if share_copied.get() { "\u{2705}" } else { "\u{1F4E4}" }}
+                    <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=18 />
                 </button>
-                <button class="btn-add" title=move_tr!("export-json") on:click=on_export>"\u{1F4BE}"</button>
-                <button class="btn-add" title=move_tr!("import-json") on:click=on_import>"\u{1F4C2}"</button>
-                <button class="btn-add" title=move_tr!("copy-character") on:click=on_copy>"\u{1F4CB}"</button>
-                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill>"\u{1F503}"</button>
+                <button class="btn-add" title=move_tr!("export-json") on:click=on_export><Icon name="download" size=18 /></button>
+                <button class="btn-add" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
+                <button class="btn-add" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
+                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="refresh-cw" size=18 /></button>
                 <button
                     class="btn-add btn-danger"
                     title=move_tr!("reset-character")
@@ -562,7 +563,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     }
                 >
-                    "\u{1F504}"
+                    <Icon name="rotate-ccw" size=18 />
                 </button>
             </div>
             <hr />

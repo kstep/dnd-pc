@@ -2,6 +2,7 @@ pub mod ability_score_block;
 pub mod character_card;
 pub mod character_header;
 pub mod datalist_input;
+pub mod icon;
 pub mod language_switcher;
 pub mod panel;
 pub mod panels;

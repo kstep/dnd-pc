@@ -2,6 +2,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use leptos::prelude::*;
 
+use crate::components::icon::Icon;
+
 static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 fn next_datalist_id() -> String {
@@ -117,7 +119,7 @@ pub fn DatalistInput(
                     show_modal.set(true);
                 }
             >
-                "▾"
+                <Icon name="chevron-down" size=14 />
             </button>
         </div>
         <Show when=move || show_modal.get()>
@@ -136,7 +138,7 @@ pub fn DatalistInput(
                             class="datalist-modal-close"
                             on:click=move |_| show_modal.set(false)
                         >
-                            "✕"
+                            <Icon name="x" size=20 />
                         </button>
                     </div>
                     <input

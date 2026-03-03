@@ -30,7 +30,6 @@ import-json = Load from file
 refill-from-registry = Refill from registry
 reset-character = Reset character
 share-link = Share link
-share-copied = ✅
 copy-character = Copy character
 share-error = Failed to decode shared character
 import-conflict-title = Character already exists

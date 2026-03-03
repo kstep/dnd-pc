@@ -6,7 +6,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{panel::Panel, toggle_button::ToggleButton},
+    components::{icon::Icon, panel::Panel, toggle_button::ToggleButton},
     model::{
         Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields, DamageType,
         EquipmentStoreFields, Item, Translatable, Weapon,
@@ -36,7 +36,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         weapons.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    "\u{21C5}"
+                    <Icon name="arrow-down-a-z" />
                 </button>
             </div>
             <div class="weapons-list">
@@ -111,7 +111,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             }
                                         }
                                     >
-                                        "X"
+                                        <Icon name="x" size=14 />
                                     </button>
                                 </div>
                             }
@@ -136,7 +136,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         armors.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    "\u{21C5}"
+                    <Icon name="arrow-down-a-z" />
                 </button>
             </div>
             <div class="armors-list">
@@ -206,7 +206,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             }
                                         }
                                     >
-                                        "X"
+                                        <Icon name="x" size=14 />
                                     </button>
                                 </div>
                             }
@@ -231,7 +231,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         items.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    "\u{21C5}"
+                    <Icon name="arrow-down-a-z" />
                 </button>
             </div>
             {
@@ -282,7 +282,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     }
                                                 }
                                             >
-                                                "X"
+                                                <Icon name="x" size=14 />
                                             </button>
                                             <Show when=move || is_open.get()>
                                                 <textarea

@@ -6,7 +6,9 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{datalist_input::DatalistInput, panel::Panel, toggle_button::ToggleButton},
+    components::{
+        datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
+    },
     model::{
         Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, Translatable,
         format_bonus,
@@ -126,7 +128,7 @@ fn FeatureSpellcastingSection(
                         });
                     }
                 >
-                    "\u{21C5}"
+                    <Icon name="arrow-down-a-z" />
                 </button>
             </div>
             <div class="spells-list">
@@ -235,7 +237,7 @@ fn FeatureSpellcastingSection(
                                                 });
                                             }
                                         >
-                                            "X"
+                                            <Icon name="x" size=14 />
                                         </button>
                                     </Show>
                                     <Show when=move || is_open.get()>

@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::panel::Panel,
+    components::{icon::Icon, panel::Panel},
     model::{Character, CharacterStoreFields, Proficiency, Translatable},
 };
 
@@ -78,7 +78,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                             }
                                         }
                                     >
-                                        "X"
+                                        <Icon name="x" size=14 />
                                     </button>
                                 </div>
                             }

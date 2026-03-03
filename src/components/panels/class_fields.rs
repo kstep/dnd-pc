@@ -5,7 +5,9 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{datalist_input::DatalistInput, panel::Panel, toggle_button::ToggleButton},
+    components::{
+        datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
+    },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureOption, FeatureValue,
         format_bonus,
@@ -323,7 +325,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                         });
                                                     }
                                                 >
-                                                    "X"
+                                                    <Icon name="x" size=14 />
                                                 </button>
                                                 <Show when=move || is_opt_open.get()>
                                                     <textarea

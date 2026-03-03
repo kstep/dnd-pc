@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::panel::Panel,
+    components::{icon::Icon, panel::Panel},
     model::{
         Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
         CombatStatsStoreFields, FeatureValue, format_bonus,
@@ -160,7 +160,7 @@ pub fn CombatPanel() -> impl IntoView {
                                             classes.write()[i].hit_dice_used += 1;
                                         }
                                     >
-                                        "\u{1F3B2}"
+                                        <Icon name="dices" size=14 />
                                     </button>
                                 </div>
                             }

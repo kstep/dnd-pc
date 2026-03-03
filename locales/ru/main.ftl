@@ -30,7 +30,6 @@ import-json = Загрузить из файла
 refill-from-registry = Обновить из справочника
 reset-character = Сбросить персонажа
 share-link = Поделиться ссылкой
-share-copied = ✅
 copy-character = Копировать персонажа
 share-error = Не удалось декодировать персонажа
 import-conflict-title = Персонаж уже существует
