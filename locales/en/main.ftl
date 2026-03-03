@@ -211,6 +211,38 @@ summary-no-items = No items
 summary-ability-mods = Ability Modifiers
 summary-saving-throws = Saving Throws
 
+## Reference pages
+ref-reference = Reference
+ref-classes = Classes
+ref-races = Races
+ref-backgrounds = Backgrounds
+ref-level = Level
+ref-features = Features
+ref-hit-die = Hit Die
+ref-cantrips = Cantrips
+ref-spells-known = Spells Known
+ref-subclasses = Subclasses
+ref-ability-mods = Ability Modifiers
+ref-skill-profs = Skill Proficiencies
+ref-progression = Progression
+ref-loading = Loading...
+ref-select-class = Select a class to view details
+ref-select-race = Select a race to view details
+ref-select-background = Select a background to view details
+ref-home = Home
+ref-spells = Spells
+ref-spell-list = Spell List
+ref-select-spell-list = Select a spell list to view spells
+ref-cantrips-level = Cantrips
+ref-spell-level = {$level ->
+    [1] 1st Level
+    [2] 2nd Level
+    [3] 3rd Level
+    *[other] {$level}th Level
+    }
+ref-spell-min-level = from level {$level}
+ref-spell-list-link = Spell List
+
 ## Language switcher
 lang-en = EN
 lang-ru = RU

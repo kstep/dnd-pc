@@ -4,3 +4,4 @@ pub mod character_sheet;
 pub mod character_summary;
 pub mod import_character;
 pub mod not_found;
+pub mod reference;

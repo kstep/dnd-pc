@@ -211,6 +211,33 @@ summary-no-items = Нет предметов
 summary-ability-mods = Модификаторы характеристик
 summary-saving-throws = Спасброски
 
+## Справочные страницы
+ref-reference = Справочник
+ref-classes = Классы
+ref-races = Расы
+ref-backgrounds = Предыстории
+ref-level = Уровень
+ref-features = Способности
+ref-hit-die = Кость хитов
+ref-cantrips = Заговоры
+ref-spells-known = Заклинаний
+ref-subclasses = Подклассы
+ref-ability-mods = Модификаторы характеристик
+ref-skill-profs = Навыки
+ref-progression = Прогрессия
+ref-loading = Загрузка...
+ref-select-class = Выберите класс для просмотра
+ref-select-race = Выберите расу для просмотра
+ref-select-background = Выберите предысторию для просмотра
+ref-home = Главная
+ref-spells = Заклинания
+ref-spell-list = Список заклинаний
+ref-select-spell-list = Выберите список заклинаний для просмотра
+ref-cantrips-level = Заговоры
+ref-spell-level = {$level}-й уровень
+ref-spell-min-level = с {$level}-го уровня
+ref-spell-list-link = Список заклинаний
+
 ## Переключатель языка
 lang-en = EN
 lang-ru = RU

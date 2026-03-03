@@ -118,6 +118,22 @@ struct Index {
     races: Vec<RaceIndexEntry>,
     #[serde(default)]
     backgrounds: Vec<BackgroundIndexEntry>,
+    #[serde(default)]
+    spells: Vec<SpellIndexEntry>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SpellIndexEntry {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub url: String,
+}
+
+impl SpellIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -511,7 +527,7 @@ impl FeatureDefinition {
     }
 }
 
-fn get_for_level<T: Clone + Default>(levels: &BTreeMap<u32, T>, level: u32) -> T {
+pub fn get_for_level<T: Clone + Default>(levels: &BTreeMap<u32, T>, level: u32) -> T {
     levels
         .range(..=level)
         .next_back()
@@ -913,6 +929,14 @@ impl RulesRegistry {
         self.class_cache.read_untracked().get(name).map(f)
     }
 
+    pub fn with_class_tracked<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(&ClassDefinition) -> R,
+    ) -> Option<R> {
+        self.class_cache.read().get(name).map(f)
+    }
+
     pub fn fetch_spell_list(&self, path: &str) {
         let url = self.localized_url(path);
         self.spell_list_cache.fetch(path, url, "spell list");
@@ -1066,6 +1090,22 @@ impl RulesRegistry {
         self.class_cache.fetch(name, url, "class definition");
     }
 
+    pub fn fetch_class_tracked(&self, name: &str) {
+        let url = {
+            let guard = self.class_index.read();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index.classes.iter().find(|e| e.name == name) {
+                Some(entry) => self.localized_url(&entry.url),
+                None => return,
+            }
+        };
+
+        self.class_cache.fetch(name, url, "class definition");
+    }
+
     pub fn with_race_entries<R>(&self, f: impl FnOnce(&[RaceIndexEntry]) -> R) -> R {
         let guard = self.class_index.read();
         let entries = guard
@@ -1083,9 +1123,33 @@ impl RulesRegistry {
         self.race_cache.read_untracked().get(name).map(f)
     }
 
+    pub fn with_race_tracked<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(&RaceDefinition) -> R,
+    ) -> Option<R> {
+        self.race_cache.read().get(name).map(f)
+    }
+
     pub fn fetch_race(&self, name: &str) {
         let url = {
             let guard = self.class_index.read_untracked();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index.races.iter().find(|e| e.name == name) {
+                Some(entry) => self.localized_url(&entry.url),
+                None => return,
+            }
+        };
+
+        self.race_cache.fetch(name, url, "race definition");
+    }
+
+    pub fn fetch_race_tracked(&self, name: &str) {
+        let url = {
+            let guard = self.class_index.read();
             let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
                 Some(idx) => idx,
                 None => return,
@@ -1120,6 +1184,14 @@ impl RulesRegistry {
         self.background_cache.read_untracked().get(name).map(f)
     }
 
+    pub fn with_background_tracked<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(&BackgroundDefinition) -> R,
+    ) -> Option<R> {
+        self.background_cache.read().get(name).map(f)
+    }
+
     pub fn fetch_background(&self, name: &str) {
         let url = {
             let guard = self.class_index.read_untracked();
@@ -1135,6 +1207,63 @@ impl RulesRegistry {
 
         self.background_cache
             .fetch(name, url, "background definition");
+    }
+
+    pub fn fetch_background_tracked(&self, name: &str) {
+        let url = {
+            let guard = self.class_index.read();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index.backgrounds.iter().find(|e| e.name == name) {
+                Some(entry) => self.localized_url(&entry.url),
+                None => return,
+            }
+        };
+
+        self.background_cache
+            .fetch(name, url, "background definition");
+    }
+
+    pub fn with_spell_entries<R>(&self, f: impl FnOnce(&[SpellIndexEntry]) -> R) -> R {
+        let guard = self.class_index.read();
+        let entries = guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| idx.spells.as_slice());
+        f(entries.unwrap_or(&[]))
+    }
+
+    pub fn fetch_spell_list_tracked(&self, path: &str) {
+        let url = {
+            let guard = self.class_index.read();
+            let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
+                Some(idx) => idx,
+                None => return,
+            };
+            match index
+                .spells
+                .iter()
+                .find(|e| e.url == path || e.name == path)
+            {
+                Some(entry) => self.localized_url(&entry.url),
+                None => {
+                    // Fall back to using the path directly (for direct URL references)
+                    self.localized_url(path)
+                }
+            }
+        };
+
+        self.spell_list_cache.fetch(path, url, "spell list");
+    }
+
+    pub fn with_spell_list_tracked<R>(
+        &self,
+        path: &str,
+        f: impl FnOnce(&[SpellDefinition]) -> R,
+    ) -> Option<R> {
+        self.spell_list_cache.read().get(path).map(|v| f(v.as_slice()))
     }
 
     /// Fill labels and empty descriptions on a character from registry

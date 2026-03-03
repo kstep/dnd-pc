@@ -1,8 +1,9 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::hooks::use_navigate;
+use leptos_router::{components::A, hooks::use_navigate};
 
 use crate::{
+    BASE_URL,
     components::character_card::CharacterCard,
     model::Character,
     pages::import_character::{ImportConflict, do_import},
@@ -68,6 +69,15 @@ pub fn CharacterList() -> impl IntoView {
                             >
                                 <CharacterCard summary=character on_delete=delete_character />
                             </For>
+                        </div>
+                        <div class="reference-links">
+                            <h2>{move_tr!("ref-reference")}</h2>
+                            <nav class="reference-links-nav">
+                                <A href=format!("{BASE_URL}/r/class")>{move_tr!("ref-classes")}</A>
+                                <A href=format!("{BASE_URL}/r/race")>{move_tr!("ref-races")}</A>
+                                <A href=format!("{BASE_URL}/r/background")>{move_tr!("ref-backgrounds")}</A>
+                                <A href=format!("{BASE_URL}/r/spell")>{move_tr!("ref-spells")}</A>
+                            </nav>
                         </div>
                     </div>
                 }

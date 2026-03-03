@@ -313,5 +313,16 @@
       "url": "backgrounds/wayfarer.json",
       "description": "Бродяга, выживающий благодаря удаче и смекалке. Черта: Везунчик."
     }
+  ],
+  "spells": [
+    { "name": "artificer", "label": "Артифактор", "url": "spells/artificer.json" },
+    { "name": "bard", "label": "Бард", "url": "spells/bard.json" },
+    { "name": "cleric", "label": "Жрец", "url": "spells/cleric.json" },
+    { "name": "druid", "label": "Друид", "url": "spells/druid.json" },
+    { "name": "paladin", "label": "Паладин", "url": "spells/paladin.json" },
+    { "name": "ranger", "label": "Следопыт", "url": "spells/ranger.json" },
+    { "name": "sorcerer", "label": "Чародей", "url": "spells/sorcerer.json" },
+    { "name": "warlock", "label": "Колдун", "url": "spells/warlock.json" },
+    { "name": "wizard", "label": "Волшебник", "url": "spells/wizard.json" }
   ]
 }

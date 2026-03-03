@@ -268,5 +268,16 @@
       "url": "backgrounds/wayfarer.json",
       "description": "Wanderer who survives by luck and wits. Feat: Lucky."
     }
+  ],
+  "spells": [
+    { "name": "artificer", "url": "spells/artificer.json" },
+    { "name": "bard", "url": "spells/bard.json" },
+    { "name": "cleric", "url": "spells/cleric.json" },
+    { "name": "druid", "url": "spells/druid.json" },
+    { "name": "paladin", "url": "spells/paladin.json" },
+    { "name": "ranger", "url": "spells/ranger.json" },
+    { "name": "sorcerer", "url": "spells/sorcerer.json" },
+    { "name": "warlock", "url": "spells/warlock.json" },
+    { "name": "wizard", "url": "spells/wizard.json" }
   ]
 }

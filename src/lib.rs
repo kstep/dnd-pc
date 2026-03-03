@@ -30,9 +30,16 @@ static_loader! {
 
 use components::language_switcher::LanguageSwitcher;
 use pages::{
-    character_layout::CharacterLayout, character_list::CharacterList,
-    character_sheet::CharacterSheet, character_summary::CharacterSummary,
-    import_character::ImportCharacter, not_found::NotFound,
+    character_layout::CharacterLayout,
+    character_list::CharacterList,
+    character_sheet::CharacterSheet,
+    character_summary::CharacterSummary,
+    import_character::ImportCharacter,
+    not_found::NotFound,
+    reference::{
+        background::BackgroundReference, class::ClassReference, race::RaceReference,
+        spell::SpellReference,
+    },
 };
 use rules::RulesRegistry;
 use wasm_bindgen::JsCast;
@@ -97,6 +104,15 @@ fn AppInner() -> impl IntoView {
                     <Route path=path!("/summary") view=CharacterSummary />
                 </ParentRoute>
                 <Route path=path!("/s/:data") view=ImportCharacter />
+                <Route path=path!("/r/class") view=ClassReference />
+                <Route path=path!("/r/class/:name") view=ClassReference />
+                <Route path=path!("/r/class/:name/:subname") view=ClassReference />
+                <Route path=path!("/r/race") view=RaceReference />
+                <Route path=path!("/r/race/:name") view=RaceReference />
+                <Route path=path!("/r/background") view=BackgroundReference />
+                <Route path=path!("/r/background/:name") view=BackgroundReference />
+                <Route path=path!("/r/spell") view=SpellReference />
+                <Route path=path!("/r/spell/:list") view=SpellReference />
             </Routes>
         </Router>
     }
