@@ -409,6 +409,25 @@ impl FeatureDefinition {
         self.label.as_deref().unwrap_or(&self.name)
     }
 
+    /// Resolve `ChoiceOptions` to definition options, following `Ref` links
+    /// within this feature's fields.
+    fn resolve_def_options<'a>(&'a self, options: &'a ChoiceOptions) -> &'a [ChoiceOption] {
+        match options {
+            ChoiceOptions::List(list) => list.as_slice(),
+            ChoiceOptions::Ref { from } => self
+                .fields
+                .get(from.as_str())
+                .and_then(|ref_fd| match &ref_fd.kind {
+                    FieldKind::Choice {
+                        options: ChoiceOptions::List(list),
+                        ..
+                    } => Some(list.as_slice()),
+                    _ => None,
+                })
+                .unwrap_or(&[]),
+        }
+    }
+
     pub fn apply(&self, level: u32, character: &mut Character) {
         if !character.features.iter().any(|f| f.name == self.name) {
             character.features.push(Feature {
@@ -1478,10 +1497,7 @@ impl RulesRegistry {
                         }
 
                         if let FieldKind::Choice { options, .. } = &field_def.kind {
-                            let def_options = match options {
-                                ChoiceOptions::List(list) => list.as_slice(),
-                                ChoiceOptions::Ref { .. } => &[],
-                            };
+                            let def_options = feat_def.resolve_def_options(options);
                             for opt in field.value.choices_mut() {
                                 if !opt.name.is_empty()
                                     && let Some(def_opt) =
@@ -1616,10 +1632,7 @@ impl RulesRegistry {
                         }
 
                         if let FieldKind::Choice { options, .. } = &field_def.kind {
-                            let def_options = match options {
-                                ChoiceOptions::List(list) => list.as_slice(),
-                                ChoiceOptions::Ref { .. } => &[],
-                            };
+                            let def_options = feat_def.resolve_def_options(options);
                             for opt in field.value.choices_mut() {
                                 if !opt.name.is_empty()
                                     && let Some(def_opt) =
