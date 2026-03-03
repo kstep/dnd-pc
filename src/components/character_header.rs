@@ -432,8 +432,15 @@ pub fn CharacterHeader() -> impl IntoView {
                                             class="class-name"
                                             options=class_options
                                             on_input=move |input, resolved| {
-                                                let name: String = resolved.unwrap_or(input);
-                                                classes.write()[i].class.clone_from(&name);
+                                                let (name, label) = match resolved {
+                                                    Some(name) => (name, Some(input)),
+                                                    None => (input, None),
+                                                };
+                                                {
+                                                    let mut classes = classes.write();
+                                                    classes[i].class.clone_from(&name);
+                                                    classes[i].class_label = label;
+                                                }
                                                 if registry.with_class_entries(|entries| entries.iter().any(|e| e.name == name)) {
                                                     registry.fetch_class(&name);
                                                     if let Some(hit_die) = registry.with_class(&name, |def| def.hit_die) {
@@ -450,11 +457,17 @@ pub fn CharacterHeader() -> impl IntoView {
                                                     class="class-subclass"
                                                     options=subclass_options
                                                     on_input=move |input, resolved| {
+                                                        let mut classes = classes.write();
                                                         if input.is_empty() {
-                                                            classes.write()[i].subclass = None;
+                                                            classes[i].subclass = None;
+                                                            classes[i].subclass_label = None;
                                                         } else {
-                                                            let name: String = resolved.unwrap_or(input);
-                                                            classes.write()[i].subclass = Some(name);
+                                                            let (name, label) = match resolved {
+                                                                Some(name) => (name, Some(input)),
+                                                                None => (input, None),
+                                                            };
+                                                            classes[i].subclass = Some(name);
+                                                            classes[i].subclass_label = label;
                                                         }
                                                     }
                                                 />
