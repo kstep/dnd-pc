@@ -130,6 +130,11 @@
     "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one. Flammable objects in the Cone [Area of Effect] that aren't being worn or carried start burning. Using a Higher-Level Spell Slot: The damage increases by 3d6 for each spell slot level above 1."
   },
   {
+    "name": "Catapult",
+    "level": 1,
+    "description": "You choose one object weighing 1 to 5 pounds within range that isn't being worn or carried. The object flies in a straight line up to 90 feet in a direction you choose before falling to the ground, stopping early if it impacts against a solid surface. If the object would strike a creature, that creature must make a Dexterity saving throw. On a failed save, the object strikes the target and stops moving. When the object strikes something, the object and what it strikes each take 3d8 Bludgeoning damage. Using a Higher-Level Spell Slot: The maximum weight of objects increases by 5 pounds, and the damage increases by 1d8, for each spell slot level above 1."
+  },
+  {
     "name": "Charm Person",
     "level": 1,
     "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you. When the spell ends, the target knows it was Charmed by you. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
