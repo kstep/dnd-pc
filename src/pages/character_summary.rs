@@ -46,8 +46,9 @@ pub fn CharacterSummary() -> impl IntoView {
         <SummaryHeader />
         <div class="summary-page">
 
+            <div class="summary-top-row">
             // === Section: What Can I Do? ===
-            <div class="summary-section">
+            <div class="summary-section summary-section-actions">
                 <h3 class="summary-section-title">{move_tr!("summary-actions")}</h3>
 
                 // -- Weapons (tracks only equipment.weapons) --
@@ -338,7 +339,7 @@ pub fn CharacterSummary() -> impl IntoView {
             </div>
 
             // === Section: Main Stats ===
-            <div class="summary-section">
+            <div class="summary-section summary-section-stats">
                 <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
 
                 // -- HP: [current] / {max+temp} ({max} + [temp]) --
@@ -558,6 +559,7 @@ pub fn CharacterSummary() -> impl IntoView {
                         </div>
                     }.into_any()
                 }}
+            </div>
             </div>
 
             // === Section: Backpack ===
