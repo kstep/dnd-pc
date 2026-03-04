@@ -256,18 +256,22 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                     on_input=move |input, resolved| {
                                                         fname.with_value(|key| {
                                                             fld_name.with_value(|fld| {
-                                                                let cost = resolved.as_ref().and_then(|name| {
-                                                                    let classes = store.identity().classes().read();
-                                                                    let char_fields: Vec<_> = store.feature_data().read()
-                                                                        .get(key)
-                                                                        .map(|e| e.fields.clone())
-                                                                        .unwrap_or_default();
-                                                                    registry
-                                                                        .get_choice_options(&classes, key, fld, &char_fields)
-                                                                        .into_iter()
-                                                                        .find(|o| o.name == *name)
-                                                                        .map(|o| o.cost)
-                                                                });
+                                                                let (cost, opt_label) = resolved
+                                                                    .as_ref()
+                                                                    .map(|name| {
+                                                                        let classes = store.identity().classes().read();
+                                                                        let data = store.feature_data().read();
+                                                                        let char_fields = data.get(key)
+                                                                            .map(|e| e.fields.as_slice())
+                                                                            .unwrap_or(&[]);
+                                                                        registry
+                                                                            .get_choice_options(&classes, key, fld, char_fields)
+                                                                            .into_iter()
+                                                                            .find(|o| o.name == *name)
+                                                                            .map(|o| (o.cost, o.label))
+                                                                            .unzip()
+                                                                    })
+                                                                    .unwrap_or((None, None));
                                                                 store.feature_data().update(|m| {
                                                                     if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
                                                                         && let Some(f) = fields.get_mut(field_idx)
@@ -275,7 +279,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                                         && let Some(opt) = options.get_mut(opt_idx)
                                                                     {
                                                                         opt.name = resolved.unwrap_or(input);
-                                                                        opt.label = None;
+                                                                        opt.label = opt_label.flatten();
                                                                         opt.description.clear();
                                                                         if let Some(cost) = cost {
                                                                             opt.cost = cost;
