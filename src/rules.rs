@@ -1060,7 +1060,7 @@ impl RulesRegistry {
                 && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
                 && let Some(field_def) = feat.fields.get(field_name)
             {
-                return Self::resolve_choice_options(field_def, character_fields);
+                return Self::resolve_choice_options(field_def, character_fields, cl.level);
             }
         }
         Vec::new()
@@ -1069,10 +1069,15 @@ impl RulesRegistry {
     fn resolve_choice_options(
         field_def: &FieldDefinition,
         character_fields: &[FeatureField],
+        class_level: u32,
     ) -> Vec<ChoiceOption> {
         if let FieldKind::Choice { options, .. } = &field_def.kind {
             return match options {
-                ChoiceOptions::List(list) => list.clone(),
+                ChoiceOptions::List(list) => list
+                    .iter()
+                    .filter(|o| o.level <= class_level)
+                    .cloned()
+                    .collect(),
                 ChoiceOptions::Ref { from } => character_fields
                     .iter()
                     .find(|cf| cf.name == *from)
