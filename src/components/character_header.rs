@@ -108,20 +108,25 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
         };
 
         store.update(|character| {
+            // Update spell slots first so feat.apply() can read them for max_level
+            for (pool, slots) in &pool_slots {
+                character.update_spell_slots(*pool, slots.as_deref());
+            }
+
             def.apply_level(level, character);
 
             // Re-apply race features at new total level (unlocks level-gated spells)
             if character.identity.race_applied {
-                let race_name = character.identity.race.clone();
-                registry.with_race(&race_name, |race_def| {
-                    let total_level = character.level();
-                    let source = FeatureSource::Race(race_name.clone());
+                let source = FeatureSource::Race(character.identity.race.clone());
+                let total_level = character.level();
+                registry.with_race(source.name(), |race_def| {
                     for feat in race_def.features.values() {
                         feat.apply(total_level, character, &source);
                     }
                 });
             }
 
+            // Update again (needed for first level when SpellData was just created)
             for (pool, slots) in &pool_slots {
                 character.update_spell_slots(*pool, slots.as_deref());
             }

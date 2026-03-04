@@ -133,6 +133,20 @@ impl Character {
             .unwrap_or(&[])
     }
 
+    pub fn highest_spell_slot_level(&self, pool: SpellSlotPool) -> u32 {
+        self.spell_slots
+            .get(&pool)
+            .and_then(|slots| {
+                slots
+                    .iter()
+                    .enumerate()
+                    .rev()
+                    .find(|(_, slot)| slot.total > 0)
+                    .map(|(i, _)| (i + 1) as u32)
+            })
+            .unwrap_or(1)
+    }
+
     pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
         let caster_classes = self
             .identity
@@ -531,6 +545,12 @@ pub enum FeatureSource {
 }
 
 impl FeatureSource {
+    pub fn name(&self) -> &str {
+        match self {
+            Self::Class(name) | Self::Race(name) | Self::Background(name) => name,
+        }
+    }
+
     pub fn as_class(&self) -> Option<&str> {
         match self {
             Self::Class(name) => Some(name),

@@ -104,8 +104,8 @@ use crate::{
     BASE_URL,
     model::{
         Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureSource,
-        FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, SPELL_SLOT_TABLE, Skill, Spell,
-        SpellData, SpellSlotPool,
+        FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell, SpellData,
+        SpellSlotPool,
     },
     vecset::VecSet,
 };
@@ -443,9 +443,12 @@ impl FeatureDefinition {
         character.languages.extend(self.languages.iter().cloned());
 
         if let Some(spells_def) = &self.spells {
+            // Compute before taking mutable borrow on feature_data
+            let highest_slot_level = character.highest_spell_slot_level(spells_def.pool);
+
             let entry = character.feature_data.entry(self.name.clone()).or_default();
             entry.source = Some(source.clone());
-            let sc = entry.spells.get_or_insert_with(|| SpellData {
+            let spell_data = entry.spells.get_or_insert_with(|| SpellData {
                 casting_ability: spells_def.casting_ability,
                 caster_coef: spells_def.caster_coef,
                 pool: spells_def.pool,
@@ -453,51 +456,40 @@ impl FeatureDefinition {
             });
 
             if let Some(rules) = spells_def.levels.get(level as usize - 1) {
-                // Cantrips known
-                if let Some(n) = rules.cantrips {
-                    let current = sc.cantrips().filter(|s| !s.sticky).count();
-                    for _ in current..(n as usize) {
-                        sc.spells.push(Spell {
+                let (cantrips_current, spells_current) = spell_data
+                    .spells
+                    .iter()
+                    .filter(|s| !s.sticky)
+                    .fold((0usize, 0usize), |(c, s), spell| {
+                        if spell.level == 0 {
+                            (c + 1, s)
+                        } else {
+                            (c, s + 1)
+                        }
+                    });
+
+                spell_data.spells.extend(
+                    (cantrips_current..rules.cantrips.unwrap_or(cantrips_current as u32) as usize)
+                        .map(|_| Spell {
                             level: 0,
                             ..Default::default()
-                        });
-                    }
-                }
-
-                // Known spells
-                if let Some(n) = rules.spells {
-                    let current = sc.spells().filter(|s| !s.sticky).count();
-                    let caster_level = character.caster_level(spells_def.pool) as usize;
-                    let max_level = caster_level
-                        .checked_sub(1)
-                        .and_then(|i| SPELL_SLOT_TABLE.get(i))
-                        .map(|row| row.len() as u32)
-                        .unwrap_or(1);
-                    // Re-borrow sc after the immutable borrow of character.identity above
-                    let sc = character
-                        .feature_data
-                        .get_mut(&self.name)
-                        .and_then(|e| e.spells.as_mut())
-                        .expect("just inserted");
-                    for _ in current..(n as usize) {
-                        sc.spells.push(Spell {
-                            level: max_level,
-                            ..Default::default()
-                        });
-                    }
-                }
+                        })
+                        .chain(
+                            (spells_current
+                                ..rules.spells.unwrap_or(spells_current as u32) as usize)
+                                .map(|_| Spell {
+                                    level: highest_slot_level,
+                                    ..Default::default()
+                                }),
+                        ),
+                );
             }
 
             // Sticky spells from inline list
-            let sc = character
-                .feature_data
-                .get_mut(&self.name)
-                .and_then(|e| e.spells.as_mut())
-                .expect("just inserted");
             if let SpellList::Inline(list) = &spells_def.list {
                 for s in list.iter().filter(|s| s.sticky && s.min_level <= level) {
-                    if !sc.spells.iter().any(|ex| ex.name == s.name) {
-                        sc.spells.push(Spell {
+                    if !spell_data.spells.iter().any(|ex| ex.name == s.name) {
+                        spell_data.spells.push(Spell {
                             name: s.name.clone(),
                             label: s.label.clone(),
                             description: s.description.clone(),
