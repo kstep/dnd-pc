@@ -105,6 +105,9 @@ currency = Валюта
 ## Особенности / Личность / Владения
 feature-name = Название особенности
 btn-add-feature = + Добавить особенность
+source-class = Класс
+source-race = Раса
+source-background = Предыстория
 history = Предыстория
 personality-traits = Черты характера
 ideals = Идеалы

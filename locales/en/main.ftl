@@ -105,6 +105,9 @@ currency = Currency
 ## Features / Personality / Proficiencies
 feature-name = Feature name
 btn-add-feature = + Add Feature
+source-class = Class
+source-race = Race
+source-background = Background
 history = History
 personality-traits = Personality Traits
 ideals = Ideals

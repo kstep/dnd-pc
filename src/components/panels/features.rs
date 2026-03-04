@@ -1,14 +1,17 @@
 use std::collections::HashSet;
 
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
+use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 
 use crate::{
     components::{
         datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
     },
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, RacialTrait},
+    model::{
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
+        RacialTrait,
+    },
     rules::RulesRegistry,
 };
 
@@ -31,14 +34,14 @@ pub fn FeaturesPanel() -> impl IntoView {
             <div class="features-list">
                 {move || {
                     let classes = store.identity().classes().read();
-                    let options: Vec<(String, String, String)> = classes.iter().filter_map(|c| {
+                    let classes_list: Vec<_> = classes.iter().cloned().collect();
+                    let options: Vec<(String, String, String)> = classes_list.iter().filter_map(|c| {
                         registry.with_class(&c.class, |def| {
                             def.features(c.subclass.as_deref())
                                 .map(|f| (f.name.clone(), f.label().to_string(), f.description.clone()))
                                 .collect::<Vec<_>>()
                         })
                     }).flatten().collect();
-                    drop(classes);
                     let options = Signal::stored(options);
                     features
                         .read()
@@ -47,6 +50,32 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
+                            let source_text = store.feature_data().read().get(&feature.name).and_then(|fd| {
+                                fd.source.as_ref().map(|src| {
+                                    let (prefix, label) = match src {
+                                        FeatureSource::Class(class_name) => {
+                                            let label = classes_list.iter()
+                                                .find(|c| c.class == *class_name)
+                                                .map(|c| c.class_label().to_string())
+                                                .unwrap_or_else(|| class_name.clone());
+                                            (tr!("source-class"), label)
+                                        }
+                                        FeatureSource::Race(race_name) => {
+                                            let label = registry.with_race(race_name, |d| {
+                                                d.label.as_deref().unwrap_or(&d.name).to_string()
+                                            }).unwrap_or_else(|| race_name.clone());
+                                            (tr!("source-race"), label)
+                                        }
+                                        FeatureSource::Background(bg_name) => {
+                                            let label = registry.with_background(bg_name, |d| {
+                                                d.label.as_deref().unwrap_or(&d.name).to_string()
+                                            }).unwrap_or_else(|| bg_name.clone());
+                                            (tr!("source-background"), label)
+                                        }
+                                    };
+                                    format!("{prefix}: {label}")
+                                })
+                            });
                             let is_open = Signal::derive(move || expanded.get().contains(&i));
                             view! {
                                 <div class="feature-entry">
@@ -100,6 +129,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         <Icon name="x" size=14 />
                                     </button>
                                     <Show when=move || is_open.get()>
+                                        {source_text.as_ref().map(|s| view! {
+                                            <span class="feature-source">{s.clone()}</span>
+                                        })}
                                         <textarea
                                             class="feature-desc"
                                             placeholder=move_tr!("description")

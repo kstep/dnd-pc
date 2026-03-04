@@ -873,6 +873,13 @@ input[type="checkbox"] {
     min-width: 0;
   }
 
+  .feature-source {
+    grid-column: 1 / -1;
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    padding: 0 var(--size-1);
+  }
+
   .feature-desc {
     @extend .collapsible-desc;
   }
