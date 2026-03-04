@@ -1,24 +1,48 @@
-use std::rc::Rc;
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use gloo_storage::{LocalStorage, Storage};
 use leptos::prelude::*;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::spawn_local;
 
-use crate::model::{Character, CharacterIndex, DamageType};
+use crate::{
+    firebase,
+    model::{Character, CharacterIndex, CharacterSummary, DamageType},
+};
 
 const INDEX_KEY: &str = "dnd_pc_index";
+/// 2 s debounce — balances responsiveness vs. Firestore write-per-second cost.
+const DEBOUNCE_MS: i32 = 2000;
 
 fn character_key(id: &Uuid) -> String {
     format!("dnd_pc_char_{id}")
 }
 
 pub fn load_index() -> CharacterIndex {
-    LocalStorage::get(INDEX_KEY).unwrap_or_default()
+    INDEX_CACHE.with(|cell| {
+        let mut cache = cell.borrow_mut();
+        cache
+            .get_or_insert_with(|| LocalStorage::get(INDEX_KEY).unwrap_or_default())
+            .clone()
+    })
 }
 
 pub fn save_index(index: &CharacterIndex) {
     LocalStorage::set(INDEX_KEY, index).expect("failed to save index");
+    INDEX_CACHE.with(|cell| {
+        *cell.borrow_mut() = Some(index.clone());
+    });
+}
+
+/// Update the index in place without a full load/save round-trip.
+fn update_index(f: impl FnOnce(&mut CharacterIndex)) {
+    INDEX_CACHE.with(|cell| {
+        let mut cache = cell.borrow_mut();
+        let index = cache.get_or_insert_with(|| LocalStorage::get(INDEX_KEY).unwrap_or_default());
+        f(index);
+        LocalStorage::set(INDEX_KEY, &*index).expect("failed to save index");
+    });
 }
 
 /// Migrate legacy string damage_type values to u8 enum representation.
@@ -42,10 +66,11 @@ fn migrate_v1(value: &mut serde_json::Value) {
 
 /// Migrate flat spell_slots array to BTreeMap keyed by pool.
 fn migrate_v2(value: &mut serde_json::Value) {
-    if let Some(slots) = value.get("spell_slots")
-        && slots.is_array()
+    if value
+        .get("spell_slots")
+        .is_some_and(|slots| slots.is_array())
     {
-        let slots = slots.clone();
+        let slots = value["spell_slots"].take();
         value["spell_slots"] = serde_json::json!({ "0": slots });
     }
 }
@@ -63,26 +88,37 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     serde_json::from_value(value).ok()
 }
 
-pub fn save_character(character: &mut Character) {
-    character.touch();
-    LocalStorage::set(character_key(&character.id), &*character).expect("failed to save character");
-
-    let mut index = load_index();
-    let summary = character.summary();
-    if let Some(entry) = index.characters.iter_mut().find(|c| c.id == character.id) {
+fn upsert_index_entry(index: &mut CharacterIndex, summary: CharacterSummary) {
+    if let Some(entry) = index.characters.iter_mut().find(|c| c.id == summary.id) {
         *entry = summary;
     } else {
         index.characters.push(summary);
     }
-    save_index(&index);
+}
+
+pub fn save_character(character: &mut Character) {
+    character.touch();
+    LocalStorage::set(character_key(&character.id), &*character).expect("failed to save character");
+
+    let summary = character.summary();
+    update_index(|index| upsert_index_entry(index, summary));
+
+    // Debounced cloud push
+    schedule_cloud_push(character);
 }
 
 pub fn delete_character(id: &Uuid) {
     LocalStorage::delete(character_key(id));
 
-    let mut index = load_index();
-    index.characters.retain(|c| c.id != *id);
-    save_index(&index);
+    let id = *id;
+    update_index(|index| index.characters.retain(|c| c.id != id));
+
+    // Cloud delete
+    spawn_local(async move {
+        if let Err(error) = delete_from_cloud(&id).await {
+            log::warn!("Cloud delete failed: {error:?}");
+        }
+    });
 }
 
 /// Open a `.json` file picker, read the selected file, and call `on_character`
@@ -96,7 +132,7 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
     input.set_accept(".json");
 
     let input_clone = input.clone();
-    let closure = Closure::<dyn Fn()>::new(move || {
+    let onchange_js = Closure::once_into_js(move || {
         let Some(files) = input_clone.files() else {
             return;
         };
@@ -113,8 +149,7 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
         };
 
         let reader_clone = reader.clone();
-        let on_character = Rc::clone(&on_character);
-        let onload = Closure::<dyn Fn()>::new(move || {
+        let onload_js = Closure::once_into_js(move || {
             let result = match reader_clone.result() {
                 Ok(r) => r,
                 Err(error) => {
@@ -137,16 +172,336 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
             }
         });
 
-        reader.set_onload(Some(onload.as_ref().unchecked_ref()));
-        onload.forget();
+        reader.set_onload(Some(onload_js.unchecked_ref()));
 
         if let Err(error) = reader.read_as_text(&file) {
             log::error!("Failed to start reading file: {error:?}");
         }
     });
 
-    input.set_onchange(Some(closure.as_ref().unchecked_ref()));
-    closure.forget();
+    input.set_onchange(Some(onchange_js.unchecked_ref()));
 
     input.click();
+}
+
+// --------------- Cloud Sync ---------------
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SyncStatus {
+    Disabled,
+    Connecting,
+    Synced,
+    Syncing,
+    Error,
+}
+
+#[derive(Clone, Copy)]
+struct SyncState {
+    status: RwSignal<SyncStatus>,
+    uid: RwSignal<Option<String>>,
+    anon: RwSignal<bool>,
+    last_error: RwSignal<Option<String>>,
+}
+
+impl SyncState {
+    fn set_error(&self, msg: String) {
+        self.last_error.set(Some(msg));
+        self.status.set(SyncStatus::Error);
+    }
+
+    fn set_ok(&self, status: SyncStatus) {
+        self.last_error.set(None);
+        self.status.set(status);
+    }
+}
+
+thread_local! {
+    static SYNC_STATE: RefCell<Option<SyncState>> = const { RefCell::new(None) };
+    /// Maps character UUID to (timer_id, closure JsValue). Storing the JsValue
+    /// prevents the closure from leaking — it is dropped when the timer is
+    /// cancelled or after it fires.
+    static DEBOUNCE_TIMERS: RefCell<HashMap<Uuid, (i32, JsValue)>> = RefCell::new(HashMap::new());
+    /// Cached character index to avoid repeated localStorage round-trips on every
+    /// save. Lazily populated on first access; kept in sync with localStorage.
+    static INDEX_CACHE: RefCell<Option<CharacterIndex>> = const { RefCell::new(None) };
+}
+
+fn get_or_init_sync() -> SyncState {
+    SYNC_STATE.with(|cell| {
+        let mut opt = cell.borrow_mut();
+        *opt.get_or_insert_with(|| SyncState {
+            status: RwSignal::new(SyncStatus::Disabled),
+            uid: RwSignal::new(None),
+            anon: RwSignal::new(false),
+            last_error: RwSignal::new(None),
+        })
+    })
+}
+
+pub fn sync_status() -> ReadSignal<SyncStatus> {
+    get_or_init_sync().status.read_only()
+}
+
+#[allow(dead_code)]
+pub fn sync_uid() -> ReadSignal<Option<String>> {
+    get_or_init_sync().uid.read_only()
+}
+
+pub fn sync_is_anonymous() -> ReadSignal<bool> {
+    get_or_init_sync().anon.read_only()
+}
+
+pub fn sync_last_error() -> ReadSignal<Option<String>> {
+    get_or_init_sync().last_error.read_only()
+}
+
+/// Shared post-sign-in logic: resolve UID, run cloud sync operations, update
+/// status. Returns `Err` only if UID is missing after auth.
+async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
+    state.anon.set(is_anon);
+    match firebase::current_uid() {
+        Some(uid) => {
+            state.uid.set(Some(uid));
+            state.set_ok(SyncStatus::Syncing);
+            let mut last_err: Option<String> = None;
+            match sync_op {
+                SyncOp::PullOnly => {
+                    if let Err(error) = pull_all_from_cloud().await {
+                        log::warn!("Cloud pull failed: {error:?}");
+                        last_err = Some(format!("Pull failed: {error:?}"));
+                    }
+                }
+                SyncOp::PushThenPull => {
+                    if let Err(error) = push_all_to_cloud().await {
+                        log::warn!("Cloud push failed: {error:?}");
+                        last_err = Some(format!("Push failed: {error:?}"));
+                    }
+                    if let Err(error) = pull_all_from_cloud().await {
+                        log::warn!("Cloud pull failed: {error:?}");
+                        last_err = Some(format!("Pull failed: {error:?}"));
+                    }
+                }
+            }
+            match last_err {
+                Some(msg) => state.set_error(msg),
+                None => state.set_ok(SyncStatus::Synced),
+            }
+        }
+        None => {
+            state.uid.set(None);
+            state.set_error("No UID after sign-in".into());
+        }
+    }
+}
+
+enum SyncOp {
+    PullOnly,
+    PushThenPull,
+}
+
+pub fn init_sync() {
+    if !firebase::is_available() {
+        log::info!("Firebase not available, cloud sync disabled");
+        return;
+    }
+
+    let state = get_or_init_sync();
+    state.set_ok(SyncStatus::Connecting);
+
+    spawn_local(async move {
+        // Check if returning from a Google sign-in redirect
+        match firebase::get_redirect_result().await {
+            Ok(result) if !result.is_null() => {
+                // Redirect sign-in completed — user is now Google-authenticated
+                finish_sign_in(state, false, SyncOp::PushThenPull).await;
+                return;
+            }
+            Err(error) => {
+                log::warn!("getRedirectResult failed: {error:?}");
+            }
+            _ => {}
+        }
+
+        // No redirect result — do anonymous sign-in
+        match firebase::sign_in_anonymously().await {
+            Ok(_) => finish_sign_in(state, true, SyncOp::PullOnly).await,
+            Err(error) => {
+                log::warn!("Anonymous sign-in failed: {error:?}");
+                state.set_error(format!("Anonymous sign-in failed: {error:?}"));
+            }
+        }
+    });
+}
+
+pub fn sign_in_with_google() {
+    if !firebase::is_available() {
+        return;
+    }
+    let state = get_or_init_sync();
+    state.set_ok(SyncStatus::Connecting);
+
+    spawn_local(async move {
+        // Try linking first (anonymous → Google), fall back to direct sign-in
+        let result = match firebase::link_with_google().await {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                log::debug!("linkWithGoogle failed, falling back to sign-in: {error:?}");
+                firebase::sign_in_with_google().await
+            }
+        };
+
+        if let Err(error) = result {
+            log::warn!("Google sign-in redirect failed: {error:?}");
+            state.set_error(format!("Google sign-in failed: {error:?}"));
+        }
+        // On success, the page navigates away — result handled by init_sync on reload
+    });
+}
+
+fn schedule_cloud_push(character: &Character) {
+    if !firebase::is_available() {
+        return;
+    }
+    if get_or_init_sync().uid.get_untracked().is_none() {
+        return;
+    }
+
+    let char_id = character.id;
+
+    // Cancel existing debounce timer for this character (drops old closure JsValue)
+    DEBOUNCE_TIMERS.with(|timers| {
+        if let Some((old_timer, _)) = timers.borrow_mut().remove(&char_id) {
+            window().clear_timeout_with_handle(old_timer);
+        }
+    });
+
+    // Defer serialization: read raw JSON from localStorage when the timer fires,
+    // parse directly to serde_json::Value, skipping Character deserialization.
+    let closure_js = Closure::once_into_js(move || {
+        DEBOUNCE_TIMERS.with(|timers| {
+            timers.borrow_mut().remove(&char_id);
+        });
+        let state = get_or_init_sync();
+        spawn_local(async move {
+            let Some(uid) = firebase::current_uid() else {
+                return;
+            };
+            let key = character_key(&char_id);
+            let Ok(Some(raw)) = LocalStorage::raw().get_item(&key) else {
+                return;
+            };
+            let json: serde_json::Value = match serde_json::from_str(&raw) {
+                Ok(value) => value,
+                Err(error) => {
+                    log::warn!("Failed to parse character JSON for cloud: {error}");
+                    return;
+                }
+            };
+            state.set_ok(SyncStatus::Syncing);
+            let char_id_str = char_id.to_string();
+            match firebase::set_character_doc(&uid, &char_id_str, &json).await {
+                Ok(()) => state.set_ok(SyncStatus::Synced),
+                Err(error) => {
+                    log::warn!("Cloud push failed: {error:?}");
+                    state.set_error(format!("Push failed: {error:?}"));
+                }
+            }
+        });
+    });
+
+    match window().set_timeout_with_callback_and_timeout_and_arguments_0(
+        closure_js.unchecked_ref(),
+        DEBOUNCE_MS,
+    ) {
+        Ok(timer_id) => {
+            DEBOUNCE_TIMERS.with(|timers| {
+                timers.borrow_mut().insert(char_id, (timer_id, closure_js));
+            });
+        }
+        Err(error) => log::warn!("set_timeout failed: {error:?}"),
+    }
+}
+
+async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), JsValue> {
+    let json = serde_json::to_value(character)
+        .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
+    firebase::set_character_doc(uid, &character.id.to_string(), &json).await
+}
+
+async fn push_all_to_cloud() -> Result<(), JsValue> {
+    let Some(uid) = firebase::current_uid() else {
+        return Ok(());
+    };
+    let index = load_index();
+    for summary in &index.characters {
+        if let Some(ch) = load_character(&summary.id) {
+            push_to_cloud(&uid, &ch).await?;
+        }
+    }
+    Ok(())
+}
+
+async fn delete_from_cloud(id: &Uuid) -> Result<(), JsValue> {
+    let Some(uid) = firebase::current_uid() else {
+        return Ok(());
+    };
+    firebase::delete_character_doc(&uid, &id.to_string()).await
+}
+
+async fn pull_all_from_cloud() -> Result<(), JsValue> {
+    let Some(uid) = firebase::current_uid() else {
+        return Ok(());
+    };
+    let remote_chars = firebase::get_all_characters(&uid).await?;
+
+    let mut index = load_index();
+    let mut pos_map: HashMap<Uuid, usize> = index
+        .characters
+        .iter()
+        .enumerate()
+        .map(|(i, c)| (c.id, i))
+        .collect();
+    let mut index_dirty = false;
+
+    for remote_value in remote_chars {
+        let remote: Character = match serde_json::from_value(remote_value) {
+            Ok(ch) => ch,
+            Err(error) => {
+                log::warn!("Failed to deserialize remote character: {error}");
+                continue;
+            }
+        };
+
+        let local = load_character(&remote.id);
+        match local {
+            Some(local_ch) if local_ch.updated_at >= remote.updated_at => {
+                // Local is same or newer — push local to cloud
+                if local_ch.updated_at > remote.updated_at
+                    && let Err(error) = push_to_cloud(&uid, &local_ch).await
+                {
+                    log::warn!("Failed to push local-newer character: {error:?}");
+                }
+            }
+            _ => {
+                // Remote is newer or doesn't exist locally — save to localStorage
+                LocalStorage::set(character_key(&remote.id), &remote)
+                    .expect("failed to save pulled character");
+
+                let summary = remote.summary();
+                match pos_map.get(&remote.id) {
+                    Some(&i) => index.characters[i] = summary,
+                    None => {
+                        pos_map.insert(remote.id, index.characters.len());
+                        index.characters.push(summary);
+                    }
+                }
+                index_dirty = true;
+            }
+        }
+    }
+
+    if index_dirty {
+        save_index(&index);
+    }
+    Ok(())
 }

@@ -9,6 +9,7 @@ use leptos_router::{
 
 mod components;
 pub mod constvec;
+mod firebase;
 mod model;
 mod pages;
 pub mod rules;
@@ -28,7 +29,7 @@ static_loader! {
     };
 }
 
-use components::language_switcher::LanguageSwitcher;
+use components::{language_switcher::LanguageSwitcher, sync_indicator::SyncIndicator};
 use pages::{
     character_layout::CharacterLayout,
     character_list::CharacterList,
@@ -93,9 +94,11 @@ pub fn App() -> impl IntoView {
 fn AppInner() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
     provide_context(RulesRegistry::new(i18n));
+    storage::init_sync();
 
     view! {
         <LanguageSwitcher />
+        <SyncIndicator />
         <Router base=option_env!("BASE_URL").unwrap_or_default()>
             <Routes fallback=|| view! { <NotFound /> }>
                 <Route path=path!("/") view=CharacterList />

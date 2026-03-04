@@ -253,3 +253,11 @@ pool-pact = Ячейки пакта
 ## Переключатель языка
 lang-en = EN
 lang-ru = RU
+
+## Облачная синхронизация
+sync-disabled = Офлайн
+sync-connecting = Подключение...
+sync-synced = Синхронизировано
+sync-syncing = Синхронизация...
+sync-error = Ошибка синхронизации
+sync-sign-in-google = Войти через Google

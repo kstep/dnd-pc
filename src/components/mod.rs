@@ -8,4 +8,5 @@ pub mod panel;
 pub mod panels;
 pub mod skill_row;
 pub mod summary_header;
+pub mod sync_indicator;
 pub mod toggle_button;

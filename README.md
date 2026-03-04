@@ -7,7 +7,7 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 ## Features
 
 - Create, edit, and delete multiple characters
-- Auto-save to browser localStorage
+- Auto-save to browser localStorage with optional Firebase cloud sync
 - Ability scores, modifiers, and saving throws
 - Skills with proficiency tracking
 - Combat stats (AC, HP, initiative, speed, hit dice)
@@ -56,6 +56,60 @@ Opens the app at `http://localhost:3000` with hot reload.
 cargo clippy
 cargo +nightly fmt
 ```
+
+## Cloud Sync (Firebase)
+
+Cloud sync is optional. Without Firebase configuration the app works fully offline using localStorage.
+
+To enable cross-device sync:
+
+1. Create a [Firebase project](https://console.firebase.google.com/)
+
+2. **Register a web app:**
+   - In project settings (gear icon > **General**), scroll to **Your apps**
+   - Click the web icon (`</>`) to add a web app
+   - Copy the generated `firebaseConfig` object
+
+3. **Enable Authentication:**
+   - Go to **Authentication** > **Sign-in method**
+   - Enable **Anonymous** provider
+   - Enable **Google** provider
+
+4. **Add authorized domains:**
+   - Go to **Authentication** > **Settings** > **Authorized domains**
+   - Ensure `localhost` is listed (for local development)
+   - Add your deployment domain (e.g. `kstep.github.io`)
+
+5. **Create Firestore database:**
+   - Go to **Firestore Database** > **Create database**
+   - Set security rules:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/characters/{charId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+6. **Add config to the app:**
+   - Paste your Firebase config into `index.html`, replacing the placeholder values:
+
+```js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+```
+
+On startup the app signs in anonymously and pulls characters from Firestore. Edits are pushed automatically with a 2-second debounce. Clicking "Sign in with Google" links the anonymous account for cross-device access.
 
 ## Building & Deployment
 

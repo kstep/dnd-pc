@@ -258,3 +258,11 @@ pool-pact = Pact Slots
 ## Language switcher
 lang-en = EN
 lang-ru = RU
+
+## Cloud sync
+sync-disabled = Offline
+sync-connecting = Connecting...
+sync-synced = Synced
+sync-syncing = Syncing...
+sync-error = Sync error
+sync-sign-in-google = Sign in with Google

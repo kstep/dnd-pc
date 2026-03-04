@@ -21,4 +21,67 @@
 
 <body></body>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import {
+    getAuth,
+    signInAnonymously,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    linkWithRedirect,
+    getRedirectResult,
+    onAuthStateChanged,
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    getDocs,
+    deleteDoc,
+    collection,
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+  // Replace with your Firebase project config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZmoMWsdVZKzJL5Xl_am_j7RmFAD4ehL8",
+    authDomain: "dnd-pc-d6388.firebaseapp.com",
+    projectId: "dnd-pc-d6388",
+    storageBucket: "dnd-pc-d6388.firebasestorage.app",
+    messagingSenderId: "203441079138",
+    appId: "1:203441079138:web:679173901bc4eec176223b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  window.__firebase = {
+    signInAnonymously: () => signInAnonymously(auth),
+    signInWithGoogle: () => signInWithRedirect(auth, googleProvider),
+    linkWithGoogle: () => {
+      const user = auth.currentUser;
+      if (!user) return Promise.reject("No current user");
+      return linkWithRedirect(user, googleProvider);
+    },
+    getRedirectResult: () => getRedirectResult(auth),
+    currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
+    onAuthStateChanged: (cb) =>
+      onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
+    setCharacterDoc: (uid, charId, data) =>
+      setDoc(doc(db, "users", uid, "characters", charId), data),
+    getCharacterDoc: async (uid, charId) => {
+      const snap = await getDoc(doc(db, "users", uid, "characters", charId));
+      return snap.exists() ? snap.data() : null;
+    },
+    getAllCharacters: async (uid) => {
+      const snap = await getDocs(collection(db, "users", uid, "characters"));
+      return snap.docs.map((d) => d.data());
+    },
+    deleteCharacterDoc: (uid, charId) =>
+      deleteDoc(doc(db, "users", uid, "characters", charId)),
+  };
+</script>
+
 </html>

@@ -2295,6 +2295,47 @@ input[type="checkbox"] {
   padding: var(--size-3);
 }
 
+/* --------------------- Sync Indicator ------------------------ */
+.sync-indicator {
+  position: fixed;
+  top: var(--size-2);
+  right: calc(var(--size-2) + 80px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+
+  .sync-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.sync-disabled { background: var(--gray-5); }
+    &.sync-connecting { background: var(--yellow-5); animation: pulse 1s infinite; }
+    &.sync-synced { background: var(--green-5); }
+    &.sync-syncing { background: var(--blue-5); animation: pulse 1s infinite; }
+    &.sync-error { background: var(--red-5); }
+  }
+
+  .sync-google-btn {
+    background: var(--panel-border);
+    color: var(--text-primary);
+    border: 1px solid var(--panel-border);
+    padding: var(--size-1) var(--size-2);
+    border-radius: var(--radius-1);
+    cursor: pointer;
+    font-size: var(--font-size-00);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* --------------------- Not Found ----------------------------- */
 .not-found {
   text-align: center;
