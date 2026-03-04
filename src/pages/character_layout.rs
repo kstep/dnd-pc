@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, nested_router::Outlet, params::Params};
@@ -77,21 +77,19 @@ pub fn CharacterLayout() -> impl IntoView {
                 }
             };
 
-            view! {
+            Either::Left(view! {
                 <Title text=title />
                 <div class="character-sheet">
                     <Outlet />
                 </div>
-            }
-            .into_any()
+            })
         } else {
-            view! {
+            Either::Right(view! {
                 <div class="not-found">
                     <h1>{move_tr!("character-not-found")}</h1>
                     <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
                 </div>
-            }
-            .into_any()
+            })
         }
     }
 }

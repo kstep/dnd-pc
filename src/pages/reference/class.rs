@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
@@ -285,13 +285,13 @@ pub fn ClassReference() -> impl IntoView {
                     <div class="reference-detail">
                         <h1>{if let Some(sc_label) = subclass_label {
                             let class_href = format!("{BASE_URL}/r/class/{name}");
-                            view! {
+                            Either::Left(view! {
                                 <A href=class_href>{class_label}</A>
                                 {" \u{2014} "}
                                 {sc_label}
-                            }.into_any()
+                            })
                         } else {
-                            view! { {class_label} }.into_any()
+                            Either::Right(class_label)
                         }}</h1>
                         <p class="reference-description">{description}</p>
 

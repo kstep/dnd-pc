@@ -1,6 +1,9 @@
 use std::collections::BTreeSet;
 
-use leptos::prelude::*;
+use leptos::{
+    either::{Either, EitherOf3},
+    prelude::*,
+};
 use leptos_fluent::move_tr;
 use leptos_router::{
     components::A,
@@ -77,16 +80,22 @@ fn format_items(items: &[Item]) -> String {
     }
 }
 
-fn format_spell_slots(ch: &Character) -> String {
-    let slots: Vec<String> = ch
-        .all_spell_slots()
-        .filter(|(_, slot)| slot.total > 0)
-        .map(|(level, slot)| format!("L{level}: {}", slot.total))
-        .collect();
-    if slots.is_empty() {
+fn format_spell_slots(ch: &Character, i18n: leptos_fluent::I18n) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    for pool in ch.active_pools() {
+        let slots: Vec<String> = ch
+            .all_spell_slots_for_pool(pool)
+            .filter(|(_, slot)| slot.total > 0)
+            .map(|(level, slot)| format!("L{level}: {}", slot.total))
+            .collect();
+        if !slots.is_empty() {
+            parts.push(format!("{}: {}", i18n.tr(pool.tr_key()), slots.join(", ")));
+        }
+    }
+    if parts.is_empty() {
         "\u{2014}".to_string()
     } else {
-        slots.join(", ")
+        parts.join(" | ")
     }
 }
 
@@ -279,8 +288,8 @@ fn compute_diff(
         &mut rows,
         sec,
         "spell-slots",
-        format_spell_slots(local),
-        format_spell_slots(imported),
+        format_spell_slots(local, i18n),
+        format_spell_slots(imported, i18n),
     );
     {
         let all_keys: BTreeSet<&String> = local
@@ -487,8 +496,7 @@ pub fn restore_stripped_fields(imported: &mut Character, local: &Character) {
     );
 }
 
-pub fn do_import(character: &Character) -> impl IntoView {
-    let mut character = character.clone();
+pub fn do_import(mut character: Character) -> impl IntoView {
     if let Some(existing) = storage::load_character(&character.id) {
         restore_stripped_fields(&mut character, &existing);
     }
@@ -541,7 +549,7 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
             <p>{message}</p>
 
             {if has_diffs {
-                view! {
+                Either::Left(view! {
                     <table class="diff-table">
                         <thead>
                             <tr>
@@ -579,13 +587,11 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
                                 .collect_view()}
                         </tbody>
                     </table>
-                }
-                    .into_any()
+                })
             } else {
-                view! {
+                Either::Right(view! {
                     <p class="diff-no-differences">{move_tr!("diff-no-differences")}</p>
-                }
-                    .into_any()
+                })
             }}
 
             <div class="import-conflict-actions">
@@ -609,38 +615,33 @@ pub fn ImportCharacter() -> impl IntoView {
         .ok()
         .map(|p| p.data);
 
-    match data {
-        Some(data) => match share::decode_character(&data) {
-            Some(character) => {
-                let existing = storage::load_character(&character.id);
-                let has_conflict = existing
-                    .as_ref()
-                    .is_some_and(|existing| existing.updated_at > character.updated_at);
-
-                if has_conflict {
-                    let existing = existing.unwrap();
-                    view! {
-                        <ImportConflict incoming=character existing=existing />
-                    }
-                    .into_any()
-                } else {
-                    do_import(&character).into_any()
-                }
-            }
-            None => view! {
-                <div class="panel">
-                    <h2>{move_tr!("share-error")}</h2>
-                    <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
-                </div>
-            }
-            .into_any(),
-        },
-        None => view! {
+    let error_view = || {
+        view! {
             <div class="panel">
                 <h2>{move_tr!("share-error")}</h2>
                 <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
             </div>
         }
-        .into_any(),
+    };
+
+    let Some(data) = data else {
+        return EitherOf3::C(error_view());
+    };
+    let Some(character) = share::decode_character(&data) else {
+        return EitherOf3::C(error_view());
+    };
+
+    let existing = storage::load_character(&character.id);
+    let has_conflict = existing
+        .as_ref()
+        .is_some_and(|existing| existing.updated_at > character.updated_at);
+
+    if has_conflict {
+        let existing = existing.unwrap();
+        EitherOf3::A(view! {
+            <ImportConflict incoming=character existing=existing />
+        })
+    } else {
+        EitherOf3::B(do_import(character))
     }
 }

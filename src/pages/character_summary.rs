@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -39,23 +39,8 @@ pub fn CharacterSummary() -> impl IntoView {
     let combat = store.combat();
 
     // --- Core computed values with targeted tracking ---
-    let prof_bonus = Memo::new(move |_| {
-        let level = store
-            .identity()
-            .classes()
-            .read()
-            .iter()
-            .map(|class| class.level)
-            .sum::<u32>()
-            .max(1);
-        (level as i32 - 1) / 4 + 2
-    });
-
-    let initiative = Memo::new(move |_| {
-        let dex_score = store.abilities().get().dexterity as i32;
-        let dex_mod = (dex_score - 10).div_euclid(2);
-        dex_mod + combat.initiative_misc_bonus().get()
-    });
+    let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
+    let initiative = Memo::new(move |_| store.read().initiative());
 
     view! {
         <SummaryHeader />
@@ -79,11 +64,11 @@ pub fn CharacterSummary() -> impl IntoView {
                         (name, atk, dmg, dmg_type)
                     }).collect();
                     if rows.is_empty() {
-                        view! {
+                        Either::Left(view! {
                             <p class="summary-empty">{move_tr!("summary-no-weapons")}</p>
-                        }.into_any()
+                        })
                     } else {
-                        view! {
+                        Either::Right(view! {
                             <table class="summary-table">
                                 <thead>
                                     <tr>
@@ -106,7 +91,7 @@ pub fn CharacterSummary() -> impl IntoView {
                                     }).collect_view()}
                                 </tbody>
                             </table>
-                        }.into_any()
+                        })
                     }
                 }}
 
@@ -129,7 +114,9 @@ pub fn CharacterSummary() -> impl IntoView {
                                 .with_feature(&identity, name, |f| f.label().to_string())
                                 .unwrap_or_else(|| name.clone());
 
-                            let spell_slots = store.spell_slots().read();
+                            let spell_slots_map = store.spell_slots().read();
+                            let pool = spell_data.pool;
+                            let pool_slots = spell_slots_map.get(&pool);
                             let all_spells: Vec<_> = spell_data.spells.iter()
                                 .filter(|spell| {
                                     if spell.name.is_empty() {
@@ -145,7 +132,7 @@ pub fn CharacterSummary() -> impl IntoView {
                                     }
                                     (spell.level..=9).any(|sl| {
                                         let idx = (sl - 1) as usize;
-                                        spell_slots.get(idx).is_some_and(|slot| {
+                                        pool_slots.and_then(|slots| slots.get(idx)).is_some_and(|slot| {
                                             slot.total > 0 && slot.used < slot.total
                                         })
                                     })
@@ -162,10 +149,10 @@ pub fn CharacterSummary() -> impl IntoView {
                         .collect();
 
                     if spell_sections.is_empty() {
-                        return ().into_any();
+                        return None;
                     }
 
-                    spell_sections.into_iter().map(|(label, dc, atk, spells)| {
+                    Some(spell_sections.into_iter().map(|(label, dc, atk, spells)| {
                         let atk_str = format_bonus(atk);
                         let expanded = RwSignal::new(HashSet::<usize>::new());
                         view! {
@@ -213,52 +200,73 @@ pub fn CharacterSummary() -> impl IntoView {
                                 </div>
                             </div>
                         }
-                    }).collect_view().into_any()
+                    }).collect_view())
                 }}
 
                 // -- Spell slots (tracks only spell_slots) --
                 {move || {
-                    let spell_slots = store.spell_slots().read();
-                    let slots: Vec<_> = (1..=9u32)
-                        .filter_map(|level| {
-                            let idx = (level - 1) as usize;
-                            let slot = spell_slots.get(idx).copied().unwrap_or_default();
-                            if slot.total > 0 { Some((level, idx, slot)) } else { None }
-                        })
+                    let spell_slots_map = store.spell_slots().read();
+                    let pools: Vec<_> = spell_slots_map.iter()
+                        .filter(|(_, slots)| slots.iter().any(|s| s.total > 0))
+                        .map(|(&pool, _)| pool)
                         .collect();
-                    if slots.is_empty() {
-                        return ().into_any();
+                    if pools.is_empty() {
+                        return None;
                     }
-                    view! {
+                    let multiple_pools = pools.len() > 1;
+                    let i18n = expect_context::<leptos_fluent::I18n>();
+                    Some(view! {
                         <h4 class="summary-subsection-title">{move_tr!("spell-slots")}</h4>
-                        <div class="summary-spell-slots">
-                            {slots.into_iter().map(|(level, idx, slot)| {
-                                let remaining = slot.total.saturating_sub(slot.used);
-                                view! {
-                                    <div class="summary-slot">
-                                        <span class="summary-slot-level">
-                                            {tr!("slot-level", {"level" => level.to_string()})}
-                                        </span>
-                                        <input
-                                            type="number"
-                                            class="short-input"
-                                            min="0"
-                                            prop:max=slot.total.to_string()
-                                            prop:value=slot.used.to_string()
-                                            on:input=move |e| {
-                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                    store.spell_slots().update(|slots| {
-                                                        slots[idx].used = value;
-                                                    });
-                                                }
-                                            }
-                                        />
-                                        <span>"/" {slot.total} " (" {remaining} ")"</span>
-                                    </div>
-                                }
-                            }).collect_view()}
-                        </div>
-                    }.into_any()
+                        {pools.into_iter().map(|pool| {
+                            let pool_header = if multiple_pools {
+                                Some(view! { <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5> })
+                            } else {
+                                None
+                            };
+                            let slots: Vec<_> = (1..=9u32)
+                                .filter_map(|level| {
+                                    let idx = (level - 1) as usize;
+                                    let slot = spell_slots_map.get(&pool)
+                                        .and_then(|s| s.get(idx))
+                                        .copied()
+                                        .unwrap_or_default();
+                                    if slot.total > 0 { Some((level, idx, slot)) } else { None }
+                                })
+                                .collect();
+                            view! {
+                                {pool_header}
+                                <div class="summary-spell-slots">
+                                    {slots.into_iter().map(|(level, idx, slot)| {
+                                        let remaining = slot.total.saturating_sub(slot.used);
+                                        view! {
+                                            <div class="summary-slot">
+                                                <span class="summary-slot-level">
+                                                    {tr!("slot-level", {"level" => level.to_string()})}
+                                                </span>
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    min="0"
+                                                    prop:max=slot.total.to_string()
+                                                    prop:value=slot.used.to_string()
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            store.spell_slots().update(|pools| {
+                                                                if let Some(slots) = pools.get_mut(&pool) {
+                                                                    slots[idx].used = value;
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                />
+                                                <span>"/" {slot.total} " (" {remaining} ")"</span>
+                                            </div>
+                                        }
+                                    }).collect_view()}
+                                </div>
+                            }
+                        }).collect_view()}
+                    })
                 }}
 
                 // -- Feature resources (tracks only feature_data) --
@@ -286,16 +294,16 @@ pub fn CharacterSummary() -> impl IntoView {
                         .collect();
 
                     if resources.is_empty() {
-                        return ().into_any();
+                        return None;
                     }
 
-                    view! {
+                    Some(view! {
                         <h4 class="summary-subsection-title">{move_tr!("summary-resources")}</h4>
                         <div class="summary-spell-slots">
                             {resources.into_iter().map(|(feat_name, field_idx, label, kind)| {
                                 match kind {
                                     ResourceKind::Points { used, max } => {
-                                        view! {
+                                        Either::Left(view! {
                                             <div class="summary-slot">
                                                 <span class="summary-slot-level">{label}</span>
                                                 <input
@@ -322,20 +330,20 @@ pub fn CharacterSummary() -> impl IntoView {
                                                 />
                                                 <span>"/" {max}</span>
                                             </div>
-                                        }.into_any()
+                                        })
                                     }
                                     ResourceKind::Die(val) => {
-                                        view! {
+                                        Either::Right(view! {
                                             <div class="summary-slot">
                                                 <span class="summary-slot-level">{label}</span>
                                                 <span>{val}</span>
                                             </div>
-                                        }.into_any()
+                                        })
                                     }
                                 }
                             }).collect_view()}
                         </div>
-                    }.into_any()
+                    })
                 }}
 
                 // -- Choice fields (read-only for inline lists) --
@@ -364,10 +372,10 @@ pub fn CharacterSummary() -> impl IntoView {
                     drop(identity);
 
                     if choices.is_empty() {
-                        return ().into_any();
+                        return None;
                     }
 
-                    choices.into_iter().map(|(label, options)| {
+                    Some(choices.into_iter().map(|(label, options)| {
                         let expanded = RwSignal::new(HashSet::<usize>::new());
                         view! {
                             <h4 class="summary-subsection-title">{label}</h4>
@@ -401,7 +409,7 @@ pub fn CharacterSummary() -> impl IntoView {
                                 }).collect_view()}
                             </div>
                         }
-                    }).collect_view().into_any()
+                    }).collect_view())
                 }}
 
                 // -- Choice Ref fields (editable, e.g. Infused Items) --
@@ -425,10 +433,10 @@ pub fn CharacterSummary() -> impl IntoView {
                     drop(identity);
 
                     if ref_choices.is_empty() {
-                        return ().into_any();
+                        return None;
                     }
 
-                    ref_choices.into_iter().map(|(feat_name, field_idx, label, field_name, all_fields)| {
+                    Some(ref_choices.into_iter().map(|(feat_name, field_idx, label, field_name, all_fields)| {
                         let fname = StoredValue::new(feat_name);
 
                         let classes = store.identity().classes().read();
@@ -506,7 +514,7 @@ pub fn CharacterSummary() -> impl IntoView {
                                 {option_views}
                             </div>
                         }
-                    }).collect_view().into_any()
+                    }).collect_view())
                 }}
 
                 // -- Languages --
@@ -514,12 +522,12 @@ pub fn CharacterSummary() -> impl IntoView {
                     let languages = store.languages().read();
                     let langs: Vec<_> = languages.iter().filter(|l| !l.is_empty()).cloned().collect();
                     if langs.is_empty() {
-                        return ().into_any();
+                        return None;
                     }
-                    view! {
+                    Some(view! {
                         <h4 class="summary-subsection-title">{move_tr!("summary-languages")}</h4>
                         <p class="summary-languages">{langs.join(", ")}</p>
-                    }.into_any()
+                    })
                 }}
             </div>
 
@@ -729,12 +737,12 @@ pub fn CharacterSummary() -> impl IntoView {
                         .map(|(idx, item)| (idx, item.name.clone(), item.quantity, item.description.clone()))
                         .collect();
                     if items.is_empty() {
-                        view! {
+                        Either::Left(view! {
                             <p class="summary-empty">{move_tr!("summary-no-items")}</p>
-                        }.into_any()
+                        })
                     } else {
                         let expanded = RwSignal::new(HashSet::<usize>::new());
-                        view! {
+                        Either::Right(view! {
                             <div class="summary-spells-list">
                                 {items.into_iter().map(|(idx, name, qty, desc)| {
                                     let is_open = Signal::derive(move || expanded.get().contains(&idx));
@@ -775,7 +783,7 @@ pub fn CharacterSummary() -> impl IntoView {
                                     }
                                 }).collect_view()}
                             </div>
-                        }.into_any()
+                        })
                     }
                 }}
 

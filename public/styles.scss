@@ -1072,6 +1072,12 @@ input[type="checkbox"] {
   }
 }
 
+.pool-header {
+  margin: var(--size-1) 0;
+  font-size: var(--font-size-1);
+  color: var(--text-secondary);
+}
+
 .spell-slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1514,6 +1520,7 @@ input[type="checkbox"] {
     color: var(--panel-header);
     font-size: var(--font-size-2);
     margin: var(--size-2) 0 var(--size-1);
+    max-inline-size: none;
   }
 }
 

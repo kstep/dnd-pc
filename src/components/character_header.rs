@@ -11,7 +11,7 @@ use crate::{
     components::{datalist_input::DatalistInput, icon::Icon},
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-        Translatable,
+        FeatureSource, SpellSlotPool, Translatable,
     },
     rules::RulesRegistry,
     share, storage,
@@ -52,9 +52,9 @@ fn export_character(character: &Character) {
     let anchor: web_sys::HtmlAnchorElement = document.create_element("a").unwrap().unchecked_into();
 
     let filename = if character.identity.name.is_empty() {
-        "character.json".to_string()
+        "character.dnd.json".to_string()
     } else {
-        format!("{}.json", character.identity.name)
+        format!("{}.dnd.json", character.identity.name)
     };
 
     anchor.set_href(&url);
@@ -89,27 +89,42 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
     };
 
     registry.with_class(&class_name, |def| {
-        let slots: Option<Vec<u32>> = def
-            .features(subclass.as_deref())
-            .filter_map(|f| f.spells.as_ref())
-            .find_map(|s| s.levels.get(level as usize - 1))
-            .and_then(|l| l.slots.clone());
+        // Collect per-pool slot overrides for this level
+        let pool_slots: Vec<(SpellSlotPool, Option<Vec<u32>>)> = {
+            let mut seen_pools = std::collections::HashSet::new();
+            let mut result = Vec::new();
+            for feature in def.features(subclass.as_deref()) {
+                if let Some(spells_def) = &feature.spells
+                    && seen_pools.insert(spells_def.pool)
+                {
+                    let slots = spells_def
+                        .levels
+                        .get(level as usize - 1)
+                        .and_then(|level_rules| level_rules.slots.clone());
+                    result.push((spells_def.pool, slots));
+                }
+            }
+            result
+        };
 
-        store.update(|c| {
-            def.apply_level(level, c);
+        store.update(|character| {
+            def.apply_level(level, character);
 
             // Re-apply race features at new total level (unlocks level-gated spells)
-            if c.identity.race_applied {
-                let race_name = c.identity.race.clone();
+            if character.identity.race_applied {
+                let race_name = character.identity.race.clone();
                 registry.with_race(&race_name, |race_def| {
-                    let total_level = c.level();
+                    let total_level = character.level();
+                    let source = FeatureSource::Race(race_name.clone());
                     for feat in race_def.features.values() {
-                        feat.apply(total_level, c);
+                        feat.apply(total_level, character, &source);
                     }
                 });
             }
 
-            c.update_spell_slots(slots.as_deref());
+            for (pool, slots) in &pool_slots {
+                character.update_spell_slots(*pool, slots.as_deref());
+            }
         });
     });
 }
@@ -234,8 +249,8 @@ pub fn CharacterHeader() -> impl IntoView {
                             <div class="race-input-row">
                                 <DatalistInput
                                     value=race_display
-                                    placeholder=tr!("race")
-                                    options=race_options.get()
+                                    placeholder=move_tr!("race")
+                                    options=race_options
                                     ref_href=move || {
                                         let key = store.identity().race().get();
                                         (!key.is_empty()).then(|| format!("{BASE_URL}/r/race/{key}"))
@@ -296,8 +311,8 @@ pub fn CharacterHeader() -> impl IntoView {
                             <div class="race-input-row">
                                 <DatalistInput
                                     value=bg_display
-                                    placeholder=tr!("background")
-                                    options=bg_options.get()
+                                    placeholder=move_tr!("background")
+                                    options=bg_options
                                     ref_href=move || {
                                         let key = store.identity().background().get();
                                         (!key.is_empty()).then(|| format!("{BASE_URL}/r/background/{key}"))
@@ -400,8 +415,6 @@ pub fn CharacterHeader() -> impl IntoView {
                             })
                         });
                     move || {
-                        let class_options = class_options.get();
-
                         classes
                             .read()
                             .iter()
@@ -412,8 +425,6 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let level_val = cl.level.to_string();
                                 let hit_die_val = cl.hit_die_sides.to_string();
                                 let current_level = cl.level;
-                                let class_options = class_options.clone();
-
                                 let class_name = cl.class_label().to_string();
                                 let subclass_name = cl.subclass_label()
                                     .unwrap_or(&subclass_key)
@@ -449,7 +460,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     <div class="class-entry">
                                         <DatalistInput
                                             value=class_name
-                                            placeholder=tr!("class")
+                                            placeholder=move_tr!("class")
                                             class="class-name"
                                             options=class_options
                                             ref_href=move || {
@@ -473,7 +484,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             Some(view! {
                                                 <DatalistInput
                                                     value=subclass_name
-                                                    placeholder=tr!("subclass")
+                                                    placeholder=move_tr!("subclass")
                                                     class="class-subclass"
                                                     options=subclass_options
                                                     ref_href=move || {

@@ -345,6 +345,15 @@ impl Translatable for Proficiency {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+#[repr(u8)]
+pub enum SpellSlotPool {
+    #[default]
+    Arcane = 0,
+    Pact = 1,
+}
+enum_serde_u8!(SpellSlotPool { Arcane, Pact });
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
 #[repr(u8)]
 pub enum ArmorType {
@@ -396,6 +405,15 @@ impl Translatable for DamageType {
             DamageType::Radiant => "damage-radiant",
             DamageType::Slashing => "damage-slashing",
             DamageType::Thunder => "damage-thunder",
+        }
+    }
+}
+
+impl Translatable for SpellSlotPool {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            SpellSlotPool::Arcane => "pool-arcane",
+            SpellSlotPool::Pact => "pool-pact",
         }
     }
 }

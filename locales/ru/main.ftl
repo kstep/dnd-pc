@@ -123,6 +123,7 @@ max = Макс.
 cost = Цена
 btn-add-spell = + Добавить заклинание
 choose-option = Выбрать
+search = Поиск…
 btn-add-option = + Добавить вариант
 
 ## Характеристики
@@ -241,6 +242,10 @@ ref-spell-always-ready = всегда подготовлено
 ref-prerequisites = Мультикласс
 ref-spell-list-link = Список заклинаний
 ref-languages = Языки
+
+## Пулы ячеек заклинаний
+pool-arcane = Магические ячейки
+pool-pact = Ячейки пакта
 
 ## Переключатель языка
 lang-en = EN

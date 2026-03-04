@@ -5,7 +5,7 @@ pub mod sidebar;
 pub mod spell;
 use std::collections::BTreeMap;
 
-use leptos::prelude::*;
+use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
 pub use sidebar::ReferenceSidebar;
@@ -187,15 +187,14 @@ pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldView>>) -> impl IntoVie
 #[component]
 pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
     match spells {
-        FeatureSpells::Link(list_name) => view! {
+        FeatureSpells::Link(list_name) => EitherOf3::A(view! {
             <p class="feature-spell-link">
                 <A href=format!("{BASE_URL}/r/spell/{list_name}")>
                     {move_tr!("ref-spell-list-link")}
                 </A>
             </p>
-        }
-        .into_any(),
-        FeatureSpells::Inline(spells) => view! {
+        }),
+        FeatureSpells::Inline(spells) => EitherOf3::B(view! {
             <div class="feature-spells-inline">
                 {spells.into_iter().map(|spell| {
                     let level_text = if spell.level == 0 {
@@ -223,8 +222,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                     }
                 }).collect_view()}
             </div>
-        }
-        .into_any(),
-        FeatureSpells::None => ().into_any(),
+        }),
+        FeatureSpells::None => EitherOf3::C(()),
     }
 }

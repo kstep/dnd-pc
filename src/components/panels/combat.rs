@@ -253,9 +253,11 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         }
                         // Reset spell slots
-                        store.spell_slots().update(|slots| {
-                            for slot in slots.iter_mut() {
-                                slot.used = 0;
+                        store.spell_slots().update(|pools| {
+                            for slots in pools.values_mut() {
+                                for slot in slots.iter_mut() {
+                                    slot.used = 0;
+                                }
                             }
                         });
                         // Reset feature points (sorcery points, etc.)

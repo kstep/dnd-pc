@@ -21,11 +21,11 @@ pub fn CharacterCard(
                 <h3>{summary.name.clone()}</h3>
                 <p class="card-subtitle">
                     {move_tr!("level-prefix")} " " {summary.level} " "
-                    {if class_empty {
-                        view! { <span>{move_tr!("no-class")}</span> }.into_any()
+                    <span>{if class_empty {
+                        move_tr!("no-class").get()
                     } else {
-                        view! { <span>{class_str.clone()}</span> }.into_any()
-                    }}
+                        class_str.clone()
+                    }}</span>
                 </p>
             </A>
             <button

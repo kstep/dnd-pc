@@ -57,10 +57,10 @@ pub mod tests {
 
     use super::*;
     use crate::{
-        constvec::ConstVec,
         model::{
             Ability, AbilityScores, Alignment, CharacterIdentity, ClassLevel, CombatStats,
-            Equipment, Feature, FeatureData, Personality, Spell, SpellData,
+            Equipment, Feature, FeatureData, FeatureSource, Personality, Spell, SpellData,
+            SpellSlotPool,
         },
         vecset::VecSet,
     };
@@ -79,7 +79,6 @@ pub mod tests {
                     hit_die_sides: 8,
                     hit_dice_used: 0,
                     applied_levels: VecSet::new(),
-                    caster_coef: 1,
                 }],
                 race: "Elf".to_string(),
                 background: "Entertainer".to_string(),
@@ -119,9 +118,12 @@ pub mod tests {
             feature_data: BTreeMap::from([(
                 "Spellcasting (Bard)".to_string(),
                 FeatureData {
+                    source: Some(FeatureSource::Class("Bard".to_string())),
                     fields: Vec::new(),
                     spells: Some(SpellData {
                         casting_ability: Ability::Charisma,
+                        caster_coef: 1,
+                        pool: SpellSlotPool::Arcane,
                         spells: vec![Spell {
                             name: "Vicious Mockery".to_string(),
                             label: None,
@@ -136,11 +138,11 @@ pub mod tests {
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
-            spell_slots: ConstVec::new(),
+            spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
         };
-        ch.update_spell_slots(None);
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
         ch
     }
 

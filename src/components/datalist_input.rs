@@ -1,6 +1,7 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use leptos_router::components::A;
 
 use crate::components::icon::Icon;
@@ -30,7 +31,7 @@ pub fn DatalistInput(
     value: String,
     /// Placeholder text
     #[prop(into)]
-    placeholder: String,
+    placeholder: Signal<String>,
     /// CSS class for the input
     #[prop(into, optional)]
     class: Option<String>,
@@ -42,7 +43,7 @@ pub fn DatalistInput(
     /// `name` is the stable key, `label` is the display text, `description` is
     /// shown below.
     #[prop(into)]
-    options: Vec<(String, String, String)>,
+    options: Signal<Vec<(String, String, String)>>,
     /// Called with `(input_text, resolved_name)` on each input event.
     /// `resolved_name` is `Some(name)` if the input matches an option's label
     /// or name.
@@ -53,7 +54,6 @@ pub fn DatalistInput(
     let show_modal = RwSignal::new(false);
     let search_query = RwSignal::new(String::new());
     let display_value = RwSignal::new(value);
-    let options_stored = StoredValue::new(options);
     let on_input = StoredValue::new(on_input);
 
     let search_ref = NodeRef::<leptos::html::Input>::new();
@@ -68,7 +68,7 @@ pub fn DatalistInput(
 
     let filtered_options = move || {
         let query = search_query.get().to_lowercase();
-        options_stored.with_value(|opts| {
+        options.with(|opts| {
             opts.iter()
                 .filter(|(name, label, description)| {
                     query.is_empty()
@@ -81,33 +81,30 @@ pub fn DatalistInput(
         })
     };
 
-    let modal_title = placeholder.clone();
-
     view! {
-        <div class="datalist-input-wrapper">
+        <div class=format!("datalist-input-wrapper {}", class.unwrap_or_default())>
             <datalist id=format!("datalist-{id}")>
-                {options_stored.with_value(|opts| {
+                {options.with(|opts| {
                     opts.iter().map(|(_, label, description)| {
                         let label = label.clone();
                         let description = description.clone();
-                        if description.is_empty() {
-                            view! { <option value=label /> }.into_any()
-                        } else {
-                            view! { <option value=label>{description}</option> }.into_any()
+                        view! {
+                            <option value=label>
+                                {(!description.is_empty()).then_some(description)}
+                            </option>
                         }
                     }).collect_view()
                 })}
             </datalist>
             <input
                 type="text"
-                class=class.unwrap_or_default()
                 list=format!("datalist-{id}")
-                placeholder=placeholder
+                placeholder=move || placeholder.get()
                 prop:value=move || display_value.get()
                 on:change=move |event| {
                     let input = event_target_value(&event);
                     display_value.set(input.clone());
-                    let resolved = options_stored.with_value(|opts| resolve_name(opts, &input));
+                    let resolved = options.with(|opts| resolve_name(opts, &input));
                     on_input.with_value(|callback| callback(input, resolved));
                 }
             />
@@ -138,7 +135,7 @@ pub fn DatalistInput(
                     on:click=move |event| event.stop_propagation()
                 >
                     <div class="datalist-modal-header">
-                        <span>{modal_title.clone()}</span>
+                        <span>{move || placeholder.get()}</span>
                         <button
                             type="button"
                             class="datalist-modal-close"
@@ -151,7 +148,7 @@ pub fn DatalistInput(
                         node_ref=search_ref
                         type="search"
                         class="datalist-modal-search"
-                        placeholder="Search…"
+                        placeholder=move || move_tr!("search").get()
                         prop:value=move || search_query.get()
                         on:input=move |event| search_query.set(event_target_value(&event))
                     />

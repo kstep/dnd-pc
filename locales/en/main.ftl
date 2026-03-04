@@ -123,6 +123,7 @@ max = Max
 cost = Cost
 btn-add-spell = + Add Spell
 choose-option = Choose option
+search = Search…
 btn-add-option = + Add Option
 
 ## Abilities
@@ -246,6 +247,10 @@ ref-spell-always-ready = always ready
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
 ref-languages = Languages
+
+## Spell slot pools
+pool-arcane = Arcane Slots
+pool-pact = Pact Slots
 
 ## Language switcher
 lang-en = EN

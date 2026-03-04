@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use gloo_storage::{LocalStorage, Storage};
 use leptos::prelude::*;
 use uuid::Uuid;
@@ -38,6 +40,16 @@ fn migrate_v1(value: &mut serde_json::Value) {
     }
 }
 
+/// Migrate flat spell_slots array to BTreeMap keyed by pool.
+fn migrate_v2(value: &mut serde_json::Value) {
+    if let Some(slots) = value.get("spell_slots")
+        && slots.is_array()
+    {
+        let slots = slots.clone();
+        value["spell_slots"] = serde_json::json!({ "0": slots });
+    }
+}
+
 pub fn load_character(id: &Uuid) -> Option<Character> {
     let key = character_key(id);
     if let Ok(ch) = LocalStorage::get::<Character>(&key) {
@@ -47,6 +59,7 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     let raw = LocalStorage::raw().get_item(&key).ok()??;
     let mut value: serde_json::Value = serde_json::from_str(&raw).ok()?;
     migrate_v1(&mut value);
+    migrate_v2(&mut value);
     serde_json::from_value(value).ok()
 }
 
@@ -75,8 +88,6 @@ pub fn delete_character(id: &Uuid) {
 /// Open a `.json` file picker, read the selected file, and call `on_character`
 /// with the parsed [`Character`]. Shows a browser alert and logs on error.
 pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
-    use std::rc::Rc;
-
     let on_character = Rc::new(on_character);
     let input: web_sys::HtmlInputElement =
         document().create_element("input").unwrap().unchecked_into();
@@ -95,8 +106,8 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
 
         let reader = match web_sys::FileReader::new() {
             Ok(r) => r,
-            Err(e) => {
-                log::error!("Failed to create FileReader: {e:?}");
+            Err(error) => {
+                log::error!("Failed to create FileReader: {error:?}");
                 return;
             }
         };
@@ -106,8 +117,8 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
         let onload = Closure::<dyn Fn()>::new(move || {
             let result = match reader_clone.result() {
                 Ok(r) => r,
-                Err(e) => {
-                    log::error!("Failed to read file: {e:?}");
+                Err(error) => {
+                    log::error!("Failed to read file: {error:?}");
                     return;
                 }
             };
@@ -117,10 +128,10 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
             };
             match serde_json::from_str::<Character>(&text) {
                 Ok(character) => on_character(character),
-                Err(e) => {
-                    log::error!("Failed to parse character JSON: {e}");
+                Err(error) => {
+                    log::error!("Failed to parse character JSON: {error}");
                     window()
-                        .alert_with_message(&format!("Invalid character file: {e}"))
+                        .alert_with_message(&format!("Invalid character file: {error}"))
                         .ok();
                 }
             }
@@ -129,8 +140,8 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
         reader.set_onload(Some(onload.as_ref().unchecked_ref()));
         onload.forget();
 
-        if let Err(e) = reader.read_as_text(&file) {
-            log::error!("Failed to start reading file: {e:?}");
+        if let Err(error) = reader.read_as_text(&file) {
+            log::error!("Failed to start reading file: {error:?}");
         }
     });
 

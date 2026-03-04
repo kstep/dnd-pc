@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use leptos::prelude::*;
+use leptos::{either::EitherOf4, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
@@ -21,6 +21,8 @@ pub fn ClassFieldsPanels() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
 
     move || {
+        // Extract feature names + field summaries (skip descriptions — read
+        // lazily when expanded)
         let entries: Vec<_> = store
             .feature_data()
             .read()
@@ -29,11 +31,11 @@ pub fn ClassFieldsPanels() -> impl IntoView {
             .map(|(name, e)| (name.clone(), e.fields.clone()))
             .collect();
 
+        let identity = store.get_untracked().identity.clone();
         entries
             .into_iter()
             .map(|(feature_name, fields)| {
                 // Resolve feature name → label for panel title
-                let identity = store.get_untracked().identity.clone();
                 let title = registry
                     .with_feature(&identity, &feature_name, |f| f.label().to_string())
                     .unwrap_or_else(|| feature_name.clone());
@@ -41,21 +43,42 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                 let desc_expanded = RwSignal::new(HashSet::<usize>::new());
 
-                let all_fields = fields.clone();
                 let field_views = fields
                     .into_iter()
                     .enumerate()
                     .map(|(field_idx, field)| {
-                        let desc = field.description.clone();
                         let is_open =
                             Signal::derive(move || desc_expanded.get().contains(&field_idx));
+
+                        let desc = field.description.clone();
+                        let field_desc_textarea = move || {
+                            view! {
+                                <Show when=move || is_open.get()>
+                                    <textarea
+                                        class="field-desc"
+                                        placeholder=move_tr!("description")
+                                        prop:value=desc.clone()
+                                        on:change=move |e| {
+                                            fname.with_value(|key| {
+                                                store.feature_data().update(|m| {
+                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                    {
+                                                        f.description = event_target_value(&e);
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    />
+                                </Show>
+                            }
+                        };
 
                         match &field.value {
                             FeatureValue::Die(die_str) => {
                                 let label = field.label().to_string();
                                 let die = die_str.clone();
-                                let d = desc.clone();
-                                view! {
+                                EitherOf4::A(view! {
                                     <div class="field-entry">
                                         <ToggleButton
                                             expanded=is_open
@@ -65,33 +88,14 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         />
                                         <span class="field-label">{label}</span>
                                         <span class="field-value">{die}</span>
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="field-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=d.clone()
-                                                on:change=move |e| {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            />
-                                        </Show>
+                                        {field_desc_textarea()}
                                     </div>
-                                }
-                                .into_any()
+                                })
                             }
                             FeatureValue::Bonus(val) => {
                                 let label = field.label().to_string();
                                 let formatted = format_bonus(*val);
-                                let d = desc.clone();
-                                view! {
+                                EitherOf4::B(view! {
                                     <div class="field-entry">
                                         <ToggleButton
                                             expanded=is_open
@@ -101,34 +105,15 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         />
                                         <span class="field-label">{label}</span>
                                         <span class="field-value">{formatted}</span>
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="field-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=d.clone()
-                                                on:change=move |e| {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            />
-                                        </Show>
+                                        {field_desc_textarea()}
                                     </div>
-                                }
-                                .into_any()
+                                })
                             }
                             FeatureValue::Points { used, max } => {
                                 let label = field.label().to_string();
                                 let used_val = used.to_string();
                                 let max_val = max.to_string();
-                                let d = desc.clone();
-                                view! {
+                                EitherOf4::C(view! {
                                     <div class="field-entry field-points">
                                         <ToggleButton
                                             expanded=is_open
@@ -182,64 +167,52 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 }
                                             />
                                         </div>
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="field-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=d.clone()
-                                                on:change=move |e| {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            />
-                                        </Show>
+                                        {field_desc_textarea()}
                                     </div>
-                                }
-                                .into_any()
+                                })
                             }
                             FeatureValue::Choice { options } => {
                                 let label = field.label().to_string();
                                 let field_name = field.name.clone();
 
                                 let classes = store.identity().classes().read();
+                                let feature_data = store.feature_data().read();
                                 let (cost_label, all_options) = fname.with_value(|key| {
                                     let cost_label = registry.get_choice_cost_label(
                                         &classes,
                                         key,
                                         &field_name,
                                     );
+                                    let char_fields = feature_data
+                                        .get(key)
+                                        .map(|e| e.fields.as_slice())
+                                        .unwrap_or(&[]);
                                     let all_options = registry
-                                        .get_choice_options(&classes, key, &field_name, &all_fields);
+                                        .get_choice_options(&classes, key, &field_name, char_fields);
                                     (cost_label, all_options)
                                 });
+                                drop(feature_data);
                                 drop(classes);
 
                                 let opt_expanded = RwSignal::new(HashSet::<usize>::new());
                                 let has_cost = cost_label.is_some();
                                 let fld_name = StoredValue::new(field_name.clone());
+                                let suggestions: Signal<Vec<(String, String, String)>> =
+                                    Signal::stored(all_options
+                                        .iter()
+                                        .map(|o| (o.name.clone(), o.label().to_string(), o.description.clone()))
+                                        .collect());
 
                                 let option_views = options
                                     .iter()
                                     .enumerate()
                                     .map(|(opt_idx, option)| {
                                         let opt_name = option.label().to_string();
-                                        let opt_desc = option.description.clone();
                                         let opt_cost = option.cost.to_string();
+                                        let opt_desc = option.description.clone();
                                         let is_opt_open = Signal::derive(move || {
                                             opt_expanded.get().contains(&opt_idx)
                                         });
-
-                                        let suggestions: Vec<(String, String, String)> = all_options
-                                            .iter()
-                                            .map(|o| (o.name.clone(), o.label().to_string(), o.description.clone()))
-                                            .collect();
 
                                         view! {
                                             <div class="choice-entry">
@@ -251,7 +224,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 />
                                                 <DatalistInput
                                                     value=opt_name
-                                                    placeholder=move_tr!("choose-option").get()
+                                                    placeholder=move_tr!("choose-option")
                                                     options=suggestions
                                                     on_input=move |input, resolved| {
                                                         fname.with_value(|key| {
@@ -356,7 +329,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     })
                                     .collect_view();
 
-                                let d = desc.clone();
+                                // description read lazily below
 
                                 let label_view = if let Some(ref cost_title) = cost_label {
                                     format!("{label} ({cost_title})")
@@ -364,7 +337,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     label
                                 };
 
-                                view! {
+                                EitherOf4::D(view! {
                                     <div class="field-entry field-choice">
                                         <div class="field-header">
                                             <ToggleButton
@@ -375,24 +348,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                             />
                                             <span class="field-label">{label_view}</span>
                                         </div>
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="field-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=d.clone()
-                                                on:change=move |e| {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                            {
-                                                                f.description = event_target_value(&e);
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            />
-                                        </Show>
+                                        {field_desc_textarea()}
                                         <div class="choice-list">
                                             {option_views}
                                             <button
@@ -414,8 +370,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                             </button>
                                         </div>
                                     </div>
-                                }
-                                .into_any()
+                                })
                             }
                         }
                     })

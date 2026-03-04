@@ -77,7 +77,7 @@ pub struct Character {
     #[serde(default)]
     pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
-    pub spell_slots: ConstVec<SpellSlotLevel, 9>,
+    pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
     #[serde(default)]
     pub notes: String,
     #[serde(default)]
@@ -97,43 +97,73 @@ impl Character {
         self.updated_at = now_epoch_secs();
     }
 
-    pub fn caster_level(&self) -> u32 {
+    pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
         self.identity
             .classes
             .iter()
-            .filter(|c| c.caster_coef != 0)
-            .map(|c| 6 / c.caster_coef * c.level)
+            .filter_map(|cl| {
+                let max_coef = self
+                    .feature_data
+                    .values()
+                    .filter_map(|feature_data| {
+                        let spell_data = feature_data.spells.as_ref()?;
+                        (spell_data.pool == pool
+                            && spell_data.caster_coef != 0
+                            && feature_data.source.as_ref()?.as_class() == Some(cl.class.as_str()))
+                        .then_some(spell_data.caster_coef)
+                    })
+                    .max()?;
+                // 6 is LCM(1,2,3) — the valid caster_coef values.
+                // coef is the reciprocal multiplier: full=6, half=3, third=2.
+                // The bitwise `& coef & 1` term rounds up for half casters
+                // (divide by 2, round up) and rounds down for third casters
+                // (divide by 3, round down).
+                let coef = 6 / max_coef;
+                Some(coef * (cl.level + (cl.level & coef & 1)))
+            })
             .sum::<u32>()
             / 6
     }
 
-    fn spell_slots_for_caster_level(&self) -> &'static [u32] {
-        self.caster_level()
+    fn spell_slots_for_caster_level(&self, pool: SpellSlotPool) -> &'static [u32] {
+        self.caster_level(pool)
             .checked_sub(1)
             .and_then(|level| SPELL_SLOT_TABLE.get(level as usize))
             .copied()
             .unwrap_or(&[])
     }
 
-    pub fn update_spell_slots(&mut self, slots: Option<&[u32]>) {
+    pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
         let caster_classes = self
             .identity
             .classes
             .iter()
-            .filter(|c| c.caster_coef != 0)
+            .filter(|cl| {
+                self.feature_data.values().any(|feature_data| {
+                    feature_data.spells.as_ref().is_some_and(|spell_data| {
+                        spell_data.pool == pool && spell_data.caster_coef != 0
+                    }) && feature_data
+                        .source
+                        .as_ref()
+                        .and_then(|source| source.as_class())
+                        == Some(cl.class.as_str())
+                })
+            })
             .count();
 
+        let table_slots = self.spell_slots_for_caster_level(pool);
         let slots: &[u32] = match caster_classes {
             0 => &[],
-            1 => slots
-                .filter(|s| !s.is_empty())
-                .unwrap_or_else(|| self.spell_slots_for_caster_level()),
-            _ => self.spell_slots_for_caster_level(),
+            1 => slots.filter(|s| !s.is_empty()).unwrap_or(table_slots),
+            _ => table_slots,
         };
 
-        for (i, entry) in self.spell_slots.iter_mut().enumerate() {
-            let table_total = slots.get(i).copied().unwrap_or(0);
-            entry.total = entry.total.max(table_total);
+        if !slots.is_empty() {
+            let slot_entry = self.spell_slots.entry(pool).or_default();
+            for (i, entry) in slot_entry.iter_mut().enumerate() {
+                let table_total = slots.get(i).copied().unwrap_or(0);
+                entry.total = table_total;
+            }
         }
     }
 
@@ -189,15 +219,26 @@ impl Character {
         self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
-    pub fn spell_slot(&self, level: u32) -> SpellSlotLevel {
+    pub fn spell_slot(&self, pool: SpellSlotPool, level: u32) -> SpellSlotLevel {
         self.spell_slots
-            .get((level - 1) as usize)
+            .get(&pool)
+            .and_then(|slots| slots.get((level - 1) as usize))
             .copied()
             .unwrap_or_default()
     }
 
-    pub fn all_spell_slots(&self) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
-        (1..=9u32).map(|level| (level, self.spell_slot(level)))
+    pub fn all_spell_slots_for_pool(
+        &self,
+        pool: SpellSlotPool,
+    ) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
+        (1..=9u32).map(move |level| (level, self.spell_slot(pool, level)))
+    }
+
+    pub fn active_pools(&self) -> impl Iterator<Item = SpellSlotPool> + '_ {
+        self.spell_slots
+            .iter()
+            .filter(|(_, slots)| slots.iter().any(|slot| slot.total > 0))
+            .map(|(&pool, _)| pool)
     }
 
     /// Clear all labels and descriptions (blanket clear).
@@ -270,7 +311,7 @@ impl Default for Character {
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
-            spell_slots: ConstVec::new(),
+            spell_slots: BTreeMap::new(),
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
@@ -334,8 +375,6 @@ pub struct ClassLevel {
     pub hit_dice_used: u32,
     #[serde(default)]
     pub applied_levels: VecSet<u32>,
-    #[serde(default)]
-    pub caster_coef: u32,
 }
 
 impl ClassLevel {
@@ -359,7 +398,6 @@ impl Default for ClassLevel {
             hit_die_sides: 8,
             hit_dice_used: 0,
             applied_levels: VecSet::new(),
-            caster_coef: 0,
         }
     }
 }
@@ -485,8 +523,26 @@ impl Feature {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum FeatureSource {
+    Class(String),
+    Race(String),
+    Background(String),
+}
+
+impl FeatureSource {
+    pub fn as_class(&self) -> Option<&str> {
+        match self {
+            Self::Class(name) => Some(name),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct FeatureData {
+    #[serde(default)]
+    pub source: Option<FeatureSource>,
     #[serde(default)]
     pub fields: Vec<FeatureField>,
     #[serde(default)]
@@ -654,6 +710,10 @@ impl std::fmt::Display for Currency {
 pub struct SpellData {
     pub casting_ability: Ability,
     #[serde(default)]
+    pub caster_coef: u32,
+    #[serde(default)]
+    pub pool: SpellSlotPool,
+    #[serde(default)]
     pub spells: Vec<Spell>,
 }
 
@@ -671,6 +731,8 @@ impl Default for SpellData {
     fn default() -> Self {
         Self {
             casting_ability: Ability::Intelligence,
+            caster_coef: 0,
+            pool: SpellSlotPool::default(),
             spells: Vec::new(),
         }
     }
@@ -729,7 +791,7 @@ pub mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::{constvec::ConstVec, vecset::VecSet};
+    use crate::vecset::VecSet;
 
     /// Build a minimal character for testing (avoids Default which calls
     /// js_sys::Date)
@@ -747,7 +809,6 @@ pub mod tests {
                     hit_die_sides: 10,
                     hit_dice_used: 0,
                     applied_levels: VecSet::new(),
-                    caster_coef: 0,
                 }],
                 race: "Human".to_string(),
                 background: "Soldier".to_string(),
@@ -787,10 +848,33 @@ pub mod tests {
             proficiencies: HashSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
-            spell_slots: ConstVec::new(),
+            spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
         }
+    }
+
+    /// Helper: set up a character as a caster by adding SpellData with source
+    fn make_caster(
+        ch: &mut Character,
+        class_name: &str,
+        feature_name: &str,
+        caster_coef: u32,
+        pool: SpellSlotPool,
+    ) {
+        ch.feature_data.insert(
+            feature_name.to_string(),
+            FeatureData {
+                source: Some(FeatureSource::Class(class_name.to_string())),
+                spells: Some(SpellData {
+                    casting_ability: Ability::Intelligence,
+                    caster_coef,
+                    pool,
+                    spells: Vec::new(),
+                }),
+                ..Default::default()
+            },
+        );
     }
 
     // --- level() ---
@@ -948,36 +1032,70 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn caster_level_no_caster() {
         let ch = test_character();
-        assert_eq!(ch.caster_level(), 0);
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 0);
     }
 
     #[wasm_bindgen_test]
     fn caster_level_full_caster() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 1;
-        assert_eq!(ch.caster_level(), 5);
+        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 5);
     }
 
     #[wasm_bindgen_test]
     fn caster_level_half_caster() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 2;
-        // 5 / 2 = 2.5 -> floor = 2
-        assert_eq!(ch.caster_level(), 2);
+        make_caster(&mut ch, "Fighter", "Spellcasting", 2, SpellSlotPool::Arcane);
+        // 5 / 2 = 3 (rounds up for odd levels)
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 3);
     }
 
     #[wasm_bindgen_test]
     fn caster_level_multiclass() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 1; // full caster, level 5
+        make_caster(
+            &mut ch,
+            "Fighter",
+            "Spellcasting (Fighter)",
+            1,
+            SpellSlotPool::Arcane,
+        );
         ch.identity.classes.push(ClassLevel {
             class: "Paladin".to_string(),
             level: 4,
-            caster_coef: 2, // half caster
             ..ClassLevel::default()
         });
+        make_caster(
+            &mut ch,
+            "Paladin",
+            "Spellcasting (Paladin)",
+            2,
+            SpellSlotPool::Arcane,
+        );
         // 5/1 + 4/2 = 5 + 2 = 7
-        assert_eq!(ch.caster_level(), 7);
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 7);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_pact_pool_separate() {
+        let mut ch = test_character();
+        make_caster(
+            &mut ch,
+            "Fighter",
+            "Spellcasting (Fighter)",
+            1,
+            SpellSlotPool::Arcane,
+        );
+        ch.identity.classes.push(ClassLevel {
+            class: "Warlock".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        make_caster(&mut ch, "Warlock", "Pact Magic", 1, SpellSlotPool::Pact);
+        // Arcane pool only sees Fighter
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 5);
+        // Pact pool only sees Warlock
+        assert_eq!(ch.caster_level(SpellSlotPool::Pact), 3);
     }
 
     // --- update_spell_slots() ---
@@ -985,43 +1103,68 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn update_spell_slots_single_full_caster() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 1; // full caster level 5
-        ch.update_spell_slots(None);
+        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
+        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
         // Caster level 5: [4, 3, 2]; trailing zeros trimmed
-        assert_eq!(ch.spell_slots.len(), 3);
-        assert_eq!(ch.spell_slots[0].total, 4);
-        assert_eq!(ch.spell_slots[1].total, 3);
-        assert_eq!(ch.spell_slots[2].total, 2);
+        assert_eq!(slots.len(), 3);
+        assert_eq!(slots[0].total, 4);
+        assert_eq!(slots[1].total, 3);
+        assert_eq!(slots[2].total, 2);
     }
 
     #[wasm_bindgen_test]
     fn update_spell_slots_with_class_override() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 1;
-        ch.update_spell_slots(Some(&[2, 1]));
-        assert_eq!(ch.spell_slots.len(), 2);
-        assert_eq!(ch.spell_slots[0].total, 2);
-        assert_eq!(ch.spell_slots[1].total, 1);
+        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
+        ch.update_spell_slots(SpellSlotPool::Arcane, Some(&[2, 1]));
+        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
+        assert_eq!(slots.len(), 2);
+        assert_eq!(slots[0].total, 2);
+        assert_eq!(slots[1].total, 1);
     }
 
     #[wasm_bindgen_test]
     fn update_spell_slots_no_caster() {
         let mut ch = test_character();
-        ch.update_spell_slots(None);
-        assert!(ch.spell_slots.is_empty());
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
+        assert!(ch.spell_slots.is_empty() || ch.spell_slots[&SpellSlotPool::Arcane].is_empty());
     }
 
     #[wasm_bindgen_test]
-    fn update_spell_slots_never_decreases_user_set_total() {
+    fn update_spell_slots_recalculates_totals() {
         let mut ch = test_character();
-        ch.identity.classes[0].caster_coef = 1; // full caster level 5: [4, 3, 2]
-        ch.update_spell_slots(None); // initialise compact vec to [4,3,2]
-        ch.spell_slots[0].total = 10; // user sets level-1 higher than table
-        ch.update_spell_slots(None);
-        assert_eq!(ch.spell_slots.len(), 3);
-        assert_eq!(ch.spell_slots[0].total, 10); // preserved
-        assert_eq!(ch.spell_slots[1].total, 3); // from table
-        assert_eq!(ch.spell_slots[2].total, 2); // from table
+        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
+        ch.spell_slots.get_mut(&SpellSlotPool::Arcane).unwrap()[0].total = 10;
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
+        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
+        assert_eq!(slots.len(), 3);
+        assert_eq!(slots[0].total, 4); // recalculated from table
+        assert_eq!(slots[1].total, 3); // from table
+        assert_eq!(slots[2].total, 2); // from table
+    }
+
+    #[wasm_bindgen_test]
+    fn update_spell_slots_pact_slots_replaced_on_level_up() {
+        let mut ch = test_character();
+        ch.identity.classes[0] = ClassLevel {
+            class: "Warlock".to_string(),
+            level: 9,
+            ..ClassLevel::default()
+        };
+        make_caster(&mut ch, "Warlock", "Pact Magic", 3, SpellSlotPool::Pact);
+
+        // Level 7: 2 slots at 4th level
+        ch.update_spell_slots(SpellSlotPool::Pact, Some(&[0, 0, 0, 2]));
+        let slots = &ch.spell_slots[&SpellSlotPool::Pact];
+        assert_eq!(slots[3].total, 2);
+
+        // Level 9: 2 slots at 5th level, none at 4th
+        ch.update_spell_slots(SpellSlotPool::Pact, Some(&[0, 0, 0, 0, 2]));
+        let slots = &ch.spell_slots[&SpellSlotPool::Pact];
+        assert_eq!(slots[3].total, 0); // old 4th-level slots cleared
+        assert_eq!(slots[4].total, 2); // new 5th-level slots
     }
 
     // --- class_summary() ---

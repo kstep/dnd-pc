@@ -39,6 +39,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                         })
                     }).flatten().collect();
                     drop(classes);
+                    let options = Signal::stored(options);
                     features
                         .read()
                         .iter()
@@ -47,7 +48,6 @@ pub fn FeaturesPanel() -> impl IntoView {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
                             let is_open = Signal::derive(move || expanded.get().contains(&i));
-                            let options = options.clone();
                             view! {
                                 <div class="feature-entry">
                                     <ToggleButton
@@ -56,7 +56,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     />
                                     <DatalistInput
                                         value=name
-                                        placeholder=move_tr!("feature-name").get()
+                                        placeholder=move_tr!("feature-name")
                                         class="feature-name"
                                         options=options
                                         on_input=move |input, resolved| {
@@ -77,9 +77,11 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                     .unwrap_or_else(|| c.level());
                                                 (level, c.identity.clone())
                                             });
-                                            registry.with_feature(&identity, &name, |feat_def| {
-                                                store.update(|c| feat_def.apply(level, c));
-                                            });
+                                            if registry.with_feature_source(&identity, &name, |feat_def, source| {
+                                                store.update(|c| feat_def.apply(level, c, &source));
+                                            }).is_none() {
+                                                log::warn!("Cannot determine source for feature {name}, registry may not be loaded yet");
+                                            }
                                         }
                                     >
                                         <Icon name="arrow-up" size=14 />

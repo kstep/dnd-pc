@@ -103,8 +103,9 @@ mod named_map {
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureValue,
-        Proficiency, ProficiencyLevel, RacialTrait, SPELL_SLOT_TABLE, Skill, Spell, SpellData,
+        Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureSource,
+        FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, SPELL_SLOT_TABLE, Skill, Spell,
+        SpellData, SpellSlotPool,
     },
     vecset::VecSet,
 };
@@ -241,8 +242,9 @@ impl RaceDefinition {
         }
 
         let total_level = character.level();
+        let source = FeatureSource::Race(self.name.clone());
         for feat in self.features.values() {
-            feat.apply(total_level, character);
+            feat.apply(total_level, character, &source);
         }
 
         character.identity.race_applied = true;
@@ -299,8 +301,9 @@ impl BackgroundDefinition {
                 .or_insert(ProficiencyLevel::Proficient);
         }
 
+        let source = FeatureSource::Background(self.name.clone());
         for feat in self.features.values() {
-            feat.apply(1, character);
+            feat.apply(1, character, &source);
         }
 
         character.identity.background_applied = true;
@@ -428,7 +431,7 @@ impl FeatureDefinition {
         }
     }
 
-    pub fn apply(&self, level: u32, character: &mut Character) {
+    pub fn apply(&self, level: u32, character: &mut Character, source: &FeatureSource) {
         if !character.features.iter().any(|f| f.name == self.name) {
             character.features.push(Feature {
                 name: self.name.clone(),
@@ -441,8 +444,11 @@ impl FeatureDefinition {
 
         if let Some(spells_def) = &self.spells {
             let entry = character.feature_data.entry(self.name.clone()).or_default();
+            entry.source = Some(source.clone());
             let sc = entry.spells.get_or_insert_with(|| SpellData {
                 casting_ability: spells_def.casting_ability,
+                caster_coef: spells_def.caster_coef,
+                pool: spells_def.pool,
                 ..Default::default()
             });
 
@@ -461,7 +467,7 @@ impl FeatureDefinition {
                 // Known spells
                 if let Some(n) = rules.spells {
                     let current = sc.spells().filter(|s| !s.sticky).count();
-                    let caster_level = character.caster_level() as usize;
+                    let caster_level = character.caster_level(spells_def.pool) as usize;
                     let max_level = caster_level
                         .checked_sub(1)
                         .and_then(|i| SPELL_SLOT_TABLE.get(i))
@@ -502,10 +508,18 @@ impl FeatureDefinition {
                     }
                 }
             }
+        } else {
+            // Even without spells, set source on feature_data if it exists
+            if let Some(entry) = character.feature_data.get_mut(&self.name) {
+                entry.source = Some(source.clone());
+            }
         }
 
         if !self.fields.is_empty() {
             let entry = character.feature_data.entry(self.name.clone()).or_default();
+            if entry.source.is_none() {
+                entry.source = Some(source.clone());
+            }
             let fields = &mut entry.fields;
             if fields.is_empty() {
                 *fields = self
@@ -689,6 +703,8 @@ pub struct SpellsDefinition {
     #[serde(default)]
     pub caster_coef: u32,
     #[serde(default)]
+    pub pool: SpellSlotPool,
+    #[serde(default)]
     pub list: SpellList,
     #[serde(default)]
     pub levels: Vec<SpellLevelRules>,
@@ -754,22 +770,7 @@ impl ClassDefinition {
         };
 
         let subclass = class_level.subclass.clone();
-
-        // Set caster_coef from the class's spellcasting feature (if any)
-        let caster_coef = self
-            .features(subclass.as_deref())
-            .filter_map(|f| f.spells.as_ref())
-            .map(|s| s.caster_coef)
-            .max()
-            .unwrap_or(0);
-        if let Some(cl) = character
-            .identity
-            .classes
-            .iter_mut()
-            .find(|c| c.class == self.name)
-        {
-            cl.caster_coef = caster_coef;
-        }
+        let source = FeatureSource::Class(self.name.clone());
 
         for feat in self.features(subclass.as_deref()) {
             let is_new = rules.features.contains(&feat.name);
@@ -781,7 +782,7 @@ impl ClassDefinition {
             }
 
             if is_new || already_has {
-                feat.apply(level, character);
+                feat.apply(level, character, &source);
             }
         }
 
@@ -1026,6 +1027,45 @@ impl RulesRegistry {
             .and_then(|def| def.features.get(feature_name))
         {
             return Some(f(feat));
+        }
+
+        None
+    }
+
+    /// Find a feature and call `f` with both the definition and its source.
+    pub fn with_feature_source<R>(
+        &self,
+        identity: &CharacterIdentity,
+        feature_name: &str,
+        f: impl FnOnce(&FeatureDefinition, FeatureSource) -> R,
+    ) -> Option<R> {
+        let class_cache = self.class_cache.read_untracked();
+        let bg_cache = self.background_cache.read_untracked();
+        let race_cache = self.race_cache.read_untracked();
+
+        for cl in &identity.classes {
+            if let Some(def) = class_cache.get(&cl.class)
+                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
+            {
+                return Some(f(feat, FeatureSource::Class(cl.class.clone())));
+            }
+        }
+
+        if let Some(feat) = bg_cache
+            .get(&identity.background)
+            .and_then(|def| def.features.get(feature_name))
+        {
+            return Some(f(
+                feat,
+                FeatureSource::Background(identity.background.clone()),
+            ));
+        }
+
+        if let Some(feat) = race_cache
+            .get(&identity.race)
+            .and_then(|def| def.features.get(feature_name))
+        {
+            return Some(f(feat, FeatureSource::Race(identity.race.clone())));
         }
 
         None

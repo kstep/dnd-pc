@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::{components::A, hooks::use_navigate};
 
@@ -35,20 +35,19 @@ pub fn CharacterList() -> impl IntoView {
 
     view! {
         {move || {
-            match import_state.get() {
-                Some(character) => {
-                    let existing = storage::load_character(&character.id);
-                    let has_conflict = existing
-                        .as_ref()
-                        .is_some_and(|ex| ex.updated_at > character.updated_at);
-                    if has_conflict {
-                        let existing = existing.unwrap();
-                        view! { <ImportConflict incoming=character existing=existing /> }.into_any()
-                    } else {
-                        do_import(&character).into_any()
-                    }
-                }
-                None => view! {
+            if let Some(character) = import_state.get() {
+                let existing = storage::load_character(&character.id);
+                let has_conflict = existing
+                    .as_ref()
+                    .is_some_and(|ex| ex.updated_at > character.updated_at);
+                return if has_conflict {
+                    let existing = existing.unwrap();
+                    EitherOf3::A(view! { <ImportConflict incoming=character existing=existing /> })
+                } else {
+                    EitherOf3::B(do_import(character))
+                };
+            }
+            EitherOf3::C(view! {
                     <div class="character-list-page">
                         <div class="character-list-header">
                             <h1>{move_tr!("page-characters")}</h1>
@@ -80,9 +79,7 @@ pub fn CharacterList() -> impl IntoView {
                             </nav>
                         </div>
                     </div>
-                }
-                .into_any(),
-            }
+                })
         }}
     }
 }

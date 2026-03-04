@@ -173,6 +173,8 @@
       "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows—its identity unclear—but its boon to you is concrete: the ability to cast spells. See chapter 7 for the rules on spellcasting.",
       "spells": {
         "casting_ability": 5,
+        "caster_coef": 1,
+        "pool": 1,
         "list": {
           "from": "spells/warlock.json"
         },
