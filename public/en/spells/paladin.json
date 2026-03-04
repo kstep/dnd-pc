@@ -5,6 +5,11 @@
     "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
   },
   {
+    "name": "Ceremony",
+    "level": 1,
+    "description": "Casting Time: 1 hour (ritual). Range: Touch. Duration: Instantaneous. You perform a religious ceremony. When you cast the spell, choose one of the following rites: Coming of Age: You touch one creature who is a young adult. For the next 24 hours, whenever the target makes an ability check, it can roll a d4 and add the number rolled to the ability check. A creature can benefit from this rite only once. Atonement: You touch one willing creature whose alignment has changed, and you make a DC 20 Insight check. On a successful check, the creature's alignment reverts to its original alignment. Bless Water: You touch one vial of water and cause it to become holy water. Dedication: You touch one humanoid who wishes to be dedicated to your god's service. For the next 24 hours, whenever the target makes a saving throw, it can roll a d4 and add the number rolled to the save. A creature can benefit from this rite only once. Funeral Rite: You touch one corpse, and for the next 7 days, the target can't become undead by any means short of a wish spell. Wedding: You touch adult humanoids willing to be bonded together in marriage. For the next 7 days, each target gains a +2 bonus to AC while they are within 30 feet of each other. A creature can benefit from this rite again only if widowed."
+  },
+  {
     "name": "Command",
     "level": 1,
     "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn. Choose the command from these options: Approach: The target moves toward you by the shortest and most direct route, ending its turn if it moves within 5 feet of you. Drop: The target drops whatever it is holding and then ends its turn. Flee: The target spends its turn moving away from you by the fastest available means."
@@ -190,6 +195,11 @@
     "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
   },
   {
+    "name": "Spirit Shroud",
+    "level": 3,
+    "description": "Casting Time: Bonus action. Range: Self. Duration: Concentration, up to 1 minute. You call forth spirits of the dead, which flit around you for the spell's duration. The spirits are intangible and invulnerable. Until the spell ends, any attack you make deals 1d8 extra damage when it hits a creature within 10 feet of you. This damage is radiant, necrotic, or cold (your choice when you cast the spell). Any creature that takes this damage can't regain hit points until the start of your next turn. In addition, any creature of your choice that you can see that starts its turn within 10 feet of you has its speed reduced by 10 feet until the start of your next turn. Using a Higher-Level Spell Slot: The damage increases by 1d8 for every two slot levels above 3rd."
+  },
+  {
     "name": "Aura of Life",
     "level": 4,
     "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points."
@@ -208,6 +218,11 @@
     "name": "Death Ward",
     "level": 4,
     "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends. If the spell is still in effect when the target is subjected to an effect that would kill it instantly without dealing damage, that effect is negated against the target, and the spell ends."
+  },
+  {
+    "name": "Find Greater Steed",
+    "level": 4,
+    "description": "Casting Time: 10 minutes. Range: 30 feet. Duration: Instantaneous. You summon a spirit that assumes the form of a loyal, majestic mount. Appearing in an unoccupied space within range, the spirit takes on a form you choose: a griffon, a pegasus, a peryton, a dire wolf, a rhinoceros, or a saber-toothed tiger. The creature has the statistics provided in the Monster Manual for the chosen form, though it is a celestial, a fey, or a fiend (your choice) instead of its normal creature type. Additionally, if it has an Intelligence score of 5 or lower, its Intelligence becomes 6, and it gains the ability to understand one language of your choice that you speak. You control the mount in combat. While the mount is within 1 mile of you, you can communicate with it telepathically. While mounted on it, you can make any spell you cast that targets only you also target the mount. The mount disappears temporarily when it drops to 0 hit points or when you dismiss it as an action. Casting this spell again re-summons the bonded mount, with all its hit points restored and any conditions removed."
   },
   {
     "name": "Locate Creature",
@@ -248,6 +263,11 @@
     "name": "Greater Restoration",
     "level": 5,
     "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+  },
+  {
+    "name": "Holy Weapon",
+    "level": 5,
+    "description": "Casting Time: Bonus action. Range: Touch. Duration: Concentration, up to 1 hour. You imbue a weapon you touch with holy power. Until the spell ends, the weapon emits bright light in a 30-foot radius and dim light for an additional 30 feet. In addition, weapon attacks made with it deal an extra 2d8 radiant damage on a hit. If the weapon is not already a magic weapon, it becomes one for the duration. As a bonus action on your turn, you can dismiss this spell and cause the weapon to emit a burst of radiance. When you do so, each creature of your choice that you can see within 30 feet of the weapon must succeed on a Constitution saving throw or take 4d8 radiant damage and be blinded for 1 minute. On a successful save, the creature takes half as much damage and isn't blinded. At the end of each of its turns, a blinded creature can make a Constitution saving throw, ending the effect on itself on a success."
   },
   {
     "name": "Raise Dead",

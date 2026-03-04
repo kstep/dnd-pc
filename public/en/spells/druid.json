@@ -1,5 +1,15 @@
 [
   {
+    "name": "Control Flames",
+    "level": 0,
+    "description": "Action, 60ft, instantaneous/1 hour. You choose nonmagical flame that you can see within range and that fits within a 5-foot cube, and then choose one of the following effects. Extinguish: You extinguish the fire. Expand: You cause the fire to spread 5 feet in a direction of your choice, provided fuel is present. Diminish: You halve the area of the fire. Change Shape: You reshape the fire within the cube in any manner you choose for up to 1 hour. Simple Image: You cause the fire to create simple images for up to 1 hour. You can have up to 3 non-instantaneous effects active at a time."
+  },
+  {
+    "name": "Create Bonfire",
+    "level": 0,
+    "description": "Action, 60ft, concentration up to 1 minute. You create a bonfire on ground that you can see within range. Until the spell ends, the magic bonfire fills a 5-foot cube. Any creature in the bonfire's space when you cast the spell must succeed on a Dexterity saving throw or take 1d8 fire damage. A creature must also make the saving throw when it enters the bonfire's space for the first time on a turn or ends its turn there. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  },
+  {
     "name": "Druidcraft",
     "level": 0,
     "description": "Whispering to the spirits of nature, you create one of the following effects within range. Weather Sensor: You create a Tiny, harmless sensory effect that predicts what the weather will be at your location for the next 24 hours. The effect might manifest as a golden orb for clear skies, a cloud for rain, falling snowflakes for snow, and so on. This effect persists for 1 round. Bloom: You instantly make a flower blossom, a seed pod open, or a leaf bud bloom."
@@ -10,9 +20,29 @@
     "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]. Doors and shutters being held open by someone or something aren't affected."
   },
   {
+    "name": "Frostbite",
+    "level": 0,
+    "description": "Action, 60ft, instantaneous. You cause numbing frost to form on one creature that you can see within range. The target must make a Constitution saving throw. On a failed save, the target takes 1d6 cold damage, and it has disadvantage on the next weapon attack roll it makes before the end of its next turn. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+  },
+  {
     "name": "Guidance",
     "level": 0,
     "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
+  },
+  {
+    "name": "Gust",
+    "level": 0,
+    "description": "Action, 30ft, instantaneous. You seize the air and compel it to create one of the following effects at a point you can see within range: push one Medium or smaller creature 5 feet away (Strength saving throw to resist); push one unattended object weighing no more than 5 pounds up to 10 feet away; or create a harmless sensory effect using air, such as causing leaves to rustle, wind to slam shutters, or your clothing to ripple in a breeze."
+  },
+  {
+    "name": "Infestation",
+    "level": 0,
+    "description": "Action, 30ft, instantaneous. You cause a cloud of mites, fleas, and other parasites to appear momentarily on one creature you can see within range. The target must succeed on a Constitution saving throw, or it takes 1d6 poison damage and moves 5 feet in a random direction if it can move and its speed is at least 5 feet. Roll a d4 for the direction: 1, north; 2, south; 3, east; or 4, west. This movement doesn't provoke opportunity attacks, and if the direction rolled is blocked, the target doesn't move. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+  },
+  {
+    "name": "Magic Stone",
+    "level": 0,
+    "description": "Bonus action, touch, 1 minute. You touch one to three pebbles and imbue them with magic. You or someone else can make a ranged spell attack with one of the pebbles by throwing it or hurling it with a sling. If thrown, it has a range of 60 feet. If someone else attacks with the pebble, that attacker adds your spellcasting ability modifier, not the attacker's, to the attack roll. On a hit, the target takes bludgeoning damage equal to 1d6 plus your spellcasting ability modifier. Hit or miss, the spell then ends on the stone. If you cast this spell again, the spell ends early on any pebbles still affected by it."
   },
   {
     "name": "Mending",
@@ -25,9 +55,19 @@
     "description": "You point toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear. You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence; 1 foot of stone, metal, or wood; or a thin sheet of lead blocks the spell."
   },
   {
+    "name": "Mold Earth",
+    "level": 0,
+    "description": "Action, 30ft, instantaneous/1 hour. You choose a portion of dirt or stone that fits within a 5-foot cube within range, and choose one of the following effects. Excavate: If the target is loose earth, you excavate it, moving it to an adjacent open space you can see within range. Shape: You cause shapes, colors, or both to appear on the dirt or stone for up to 1 hour. Difficult Terrain: You cause the dirt or stone to become difficult terrain, or undo this effect, for up to 1 hour. You can have no more than two of these non-instantaneous effects active at a time, and you can dismiss one as an action."
+  },
+  {
     "name": "Poison Spray",
     "level": 0,
     "description": "You spray toxic mist at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d12 Poison damage. Cantrip Upgrade: The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12)."
+  },
+  {
+    "name": "Primal Savagery",
+    "level": 0,
+    "description": "Action, self, instantaneous. You channel primal magic to cause your teeth or fingernails to sharpen, ready to deliver a corrosive attack. Make a melee spell attack against one creature within 5 feet of you. On a hit, the target takes 1d10 acid damage. After you make the attack, your teeth or fingernails return to normal. Cantrip Upgrade: The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
   },
   {
     "name": "Produce Flame",
@@ -38,6 +78,11 @@
     "name": "Resistance",
     "level": 0,
     "description": "You touch a willing creature and choose a damage type: Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder. When the creature takes damage of the chosen type before the spell ends, the creature reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn."
+  },
+  {
+    "name": "Shape Water",
+    "level": 0,
+    "description": "Action, 30ft, instantaneous/1 hour. You choose an area of water that fits within a 5-foot cube within range, and choose one of the following effects. Flow: You instantaneously move or otherwise change the flow of the water as you direct, up to 5 feet in any direction. Simple Shapes: You cause the water to form into simple shapes and animate at your direction for up to 1 hour. Color/Opacity: You change the water's color or opacity for up to 1 hour. Freeze: You freeze the water, provided there are no creatures in it, for up to 1 hour. You can have no more than two of these non-instantaneous effects active at a time, and you can dismiss one as an action."
   },
   {
     "name": "Shillelagh",
@@ -65,9 +110,19 @@
     "description": "Each creature in a 5-foot Emanation [Area of Effect] originating from you must succeed on a Constitution saving throw or take 1d6 Thunder damage. The spell's thunderous sound can be heard up to 100 feet away. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
   },
   {
+    "name": "Absorb Elements",
+    "level": 1,
+    "description": "Reaction (when you take acid, cold, fire, lightning, or thunder damage), self, 1 round. The spell captures some of the incoming energy, lessening its effect on you and storing it for your next melee attack. You have resistance to the triggering damage type until the start of your next turn. Also, the first time you hit with a melee attack on your next turn, the target takes an extra 1d6 damage of the triggering type, and the spell ends. Using a Higher-Level Spell Slot: The extra damage increases by 1d6 for each slot level above 1."
+  },
+  {
     "name": "Animal Friendship",
     "level": 1,
     "description": "Target a Beast that you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. If you or one of your allies deals damage to the target, the spells ends. Using a Higher-Level Spell Slot: You can target one additional Beast for each spell slot level above 1."
+  },
+  {
+    "name": "Beast Bond",
+    "level": 1,
+    "description": "Action, touch, concentration up to 10 minutes. You establish a telepathic link with one beast you touch that is friendly to you or charmed by you. The spell fails if the beast's Intelligence score is 4 or higher. Until the spell ends, the link is active while you and the beast are within line of sight of each other. Through the link, the beast can understand your telepathic messages to it, and it can telepathically communicate simple emotions and concepts back to you. While the link is active, the beast gains advantage on attack rolls against any creature within 5 feet of you that you can see."
   },
   {
     "name": "Charm Person",
@@ -93,6 +148,11 @@
     "name": "Detect Poison and Disease",
     "level": 1,
     "description": "For the duration, you sense the location of poisons, poisonous or venomous creatures, and magical contagions within 30 feet of yourself. You sense the kind of poison, creature, or contagion in each case. The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead."
+  },
+  {
+    "name": "Earth Tremor",
+    "level": 1,
+    "description": "Action, 10ft, instantaneous. You cause a tremor in the ground within range. Each creature other than you in that area must make a Dexterity saving throw. On a failed save, the creature takes 1d6 bludgeoning damage and is knocked prone. If the ground in that area is loose earth or stone, it becomes difficult terrain until cleared, with each 5-foot-diameter portion requiring at least 1 minute to clear by hand. Using a Higher-Level Spell Slot: The damage increases by 1d6 for each slot level above 1."
   },
   {
     "name": "Entangle",
@@ -145,6 +205,11 @@
     "description": "You remove poison and rot from nonmagical food and drink in a 5-foot-radius Sphere [Area of Effect] centered on a point within range."
   },
   {
+    "name": "Snare",
+    "level": 1,
+    "description": "1 minute casting, touch, 8 hours. As you cast this spell, you use the rope to create a circle with a 5-foot radius on the ground or the floor. When you finish casting, the rope disappears and the circle becomes a magic trap. The trap is nearly invisible, requiring a successful Intelligence (Arcana) check against your spell save DC to notice. The trap triggers when a Small, Medium, or Large creature moves onto the ground or the floor in the spell's radius. That creature must succeed on a Dexterity saving throw or be magically hoisted into the air, leaving it hanging upside down 3 feet above the ground or the floor. The creature has the Restrained condition until the spell ends. A restrained creature can try to free itself by making a Strength (Athletics) check against your spell save DC."
+  },
+  {
     "name": "Speak with Animals",
     "level": 1,
     "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nearby locations and monsters, including whatever it has perceived within the past day."
@@ -195,6 +260,16 @@
     "description": "For the duration, a willing creature you touch has Darkvision with a range of 150 feet."
   },
   {
+    "name": "Dust Devil",
+    "level": 2,
+    "description": "Action, 60ft, concentration up to 1 minute. Choose an unoccupied 5-foot cube of air that you can see within range. An elemental force that resembles a dust devil appears in the cube and lasts for the spell's duration. Any creature that ends its turn within 5 feet of the dust devil must make a Strength saving throw. On a failed save, the creature takes 1d8 bludgeoning damage and is pushed 10 feet away. On a successful save, the creature takes half as much damage and isn't pushed. As a bonus action, you can move the dust devil up to 30 feet in any direction. If the dust devil moves over sand, dust, loose dirt, or small gravel, it sucks up the material and spews it out in a 10-foot cone, blinding creatures in the area until the end of your next turn unless they succeed on a Constitution saving throw. Using a Higher-Level Spell Slot: The damage increases by 1d8 for each slot level above 2."
+  },
+  {
+    "name": "Earthbind",
+    "level": 2,
+    "description": "Action, 300ft, concentration up to 1 minute. Choose one creature you can see within range. Yellow strips of magical energy loop around the creature. The target must succeed on a Strength saving throw or its flying speed (if any) is reduced to 0 feet for the spell's duration. An airborne creature affected by this spell descends at 60 feet per round until it reaches the ground or the spell ends. A creature that can't fly is unaffected. A grounded creature's movement speed is also reduced by half for the duration."
+  },
+  {
     "name": "Enhance Ability",
     "level": 2,
     "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
@@ -223,6 +298,11 @@
     "name": "Gust of Wind",
     "level": 2,
     "description": "A Line [Area of Effect] of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature in the Line [Area of Effect] must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the Line [Area of Effect]. A creature that ends its turn in the Line [Area of Effect] must make the same save."
+  },
+  {
+    "name": "Healing Spirit",
+    "level": 2,
+    "description": "Bonus action, 60ft, concentration up to 1 minute. You call forth a nature spirit to soothe the wounded. The intangible spirit appears in a space that is a 5-foot cube you can see within range. The spirit looks like a transparent beast or fey (your choice). Until the spell ends, whenever you or a creature you can see moves into the spirit's space for the first time on a turn or starts its turn there, you can cause the spirit to restore 1d6 hit points to that creature (no action required). The spirit can't heal constructs or undead. The spirit can heal a number of times equal to 1 + your spellcasting ability modifier. After healing that number of times, the spirit disappears. Using a Higher-Level Spell Slot: The healing increases by 1d6 for each slot level above 2."
   },
   {
     "name": "Heat Metal",
@@ -265,6 +345,11 @@
     "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
   },
   {
+    "name": "Skywrite",
+    "level": 2,
+    "description": "Ritual, action, sight, concentration up to 1 hour. You cause up to ten words to form in a part of the sky you can see. The words appear to be made of cloud and remain in place for the spell's duration. The words dissipate when the spell ends. A strong wind can disperse the clouds and end the spell early."
+  },
+  {
     "name": "Spike Growth",
     "level": 2,
     "description": "The ground in a 20-foot-radius Sphere [Area of Effect] centered on a point within range sprouts hard spikes and thorns. The area becomes Difficult Terrain for the duration. When a creature moves into or within the area, it takes 2d4 Piercing damage for every 5 feet it travels. The transformation of the ground is camouflaged to look natural."
@@ -273,6 +358,11 @@
     "name": "Summon Beast",
     "level": 2,
     "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water. The creature resembles an animal of your choice that is native to the chosen environment, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
+  },
+  {
+    "name": "Warding Wind",
+    "level": 2,
+    "description": "Action, self, concentration up to 10 minutes. A strong wind (20 miles per hour) blows around you in a 10-foot radius and moves with you, remaining centered on you. The wind lasts for the spell's duration. The wind has the following effects: It deafens you and other creatures in its area. It extinguishes unprotected flames in its area that are torch-sized or smaller. It hedges out vapor, gas, and fog that can be dispersed by strong wind. The area is difficult terrain for creatures other than you. The attack rolls of ranged weapon attacks have disadvantage if the attacks pass in or out of the wind."
   },
   {
     "name": "Wither and Bloom",
@@ -310,9 +400,19 @@
     "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
   },
   {
+    "name": "Erupting Earth",
+    "level": 3,
+    "description": "Action, 120ft, instantaneous. Choose a point you can see on the ground within range. A fountain of churned earth and stone erupts in a 20-foot cube centered on that point. Each creature in that area must make a Dexterity saving throw. A creature takes 3d12 bludgeoning damage on a failed save, or half as much damage on a successful one. Additionally, the ground in that area becomes difficult terrain until cleared. Each 5-foot-square portion of the area requires at least 1 minute to clear by hand. Using a Higher-Level Spell Slot: The damage increases by 1d12 for each slot level above 3."
+  },
+  {
     "name": "Feign Death",
     "level": 3,
     "description": "You touch a willing creature and put it into a cataleptic state that is indistinguishable from death. For the duration, the target appears dead to outward inspection and to spells used to determine the target's status. The target has the Blinded and Incapacitated conditions, and its Speed is 0. The target also has Resistance to all damage except Psychic damage, and it has Immunity to the Poisoned condition."
+  },
+  {
+    "name": "Flame Arrows",
+    "level": 3,
+    "description": "Action, touch, concentration up to 1 hour. You touch a quiver containing arrows or bolts. When a target is hit by a ranged weapon attack using a piece of ammunition drawn from the quiver, the target takes an extra 1d6 fire damage. The spell's magic ends on the piece of ammunition when it hits or misses, and the spell ends when twelve pieces of ammunition have been drawn from the quiver. Using a Higher-Level Spell Slot: The number of pieces of ammunition you can affect with this spell increases by two for each slot level above 3."
   },
   {
     "name": "Meld into Stone",
@@ -353,6 +453,16 @@
     "name": "Syluné's Viper",
     "level": 3,
     "description": "A shimmering, spectral snake encircles your body for the duration. You gain 15 Temporary Hit Points; the spell ends early if you have no Temporary Hit Points left. While the spell is active, you gain the following benefits: Climbing: You gain a Climb Speed equal to your Speed. Venomous Bite: As a Magic action, you can make a ranged spell attack using the snake against one creature within 50 feet. On a hit, the target takes 2d8 Poison damage and must succeed on a Constitution saving throw or have the Poisoned condition until the start of your next turn."
+  },
+  {
+    "name": "Tidal Wave",
+    "level": 3,
+    "description": "Action, 120ft, instantaneous. You conjure up a wave of water that crashes down on an area within range. The area can be up to 30 feet long, up to 10 feet wide, and up to 10 feet tall. Each creature in that area must make a Dexterity saving throw. On a failed save, a creature takes 4d8 bludgeoning damage and is knocked prone. On a successful save, a creature takes half as much damage and isn't knocked prone. The water then spreads out across the ground in the area of the spell, extinguishing unprotected flames, and evaporates immediately after."
+  },
+  {
+    "name": "Wall of Water",
+    "level": 3,
+    "description": "Action, 60ft, concentration up to 10 minutes. You conjure up a wall of water on the ground at a point you can see within range. The wall can be up to 30 feet long, 10 feet high, and 1 foot thick. The wall lasts for the spell's duration. The wall's space is difficult terrain. Any ranged weapon attack that enters the wall's space has disadvantage on the attack roll, and fire damage is halved if the fire effect passes through the wall to reach its target. Spells that deal cold damage that pass through the wall cause the area of the wall they pass through to freeze solid (at least a 5-foot square section is frozen). Each 5-foot square frozen section has AC 5 and 15 hit points."
   },
   {
     "name": "Water Breathing",
@@ -410,6 +520,11 @@
     "description": "One Beast you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success. You have a telepathic link with the Charmed target while the two of you are on the same plane of existence."
   },
   {
+    "name": "Elemental Bane",
+    "level": 4,
+    "description": "Action, 90ft, concentration up to 1 minute. Choose one creature you can see within range, and choose one of the following damage types: acid, cold, fire, lightning, or thunder. The target must succeed on a Constitution saving throw or be affected by the spell for its duration. The first time each turn the affected target takes damage of the chosen type, the target takes an extra 2d6 damage of that type. Moreover, the target loses any resistance to that damage type until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each slot level above 4."
+  },
+  {
     "name": "Fire Shield",
     "level": 4,
     "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose. The warm shield grants you Resistance to Cold damage, and the chill shield grants you Resistance to Fire damage. In addition, whenever a creature within 5 feet of you hits you with a melee attack roll, the shield erupts with flame. The attacker takes 2d8 Fire damage from a warm shield or 2d8 Cold damage from a chill shield."
@@ -433,6 +548,11 @@
     "name": "Grasping Vine",
     "level": 4,
     "description": "You conjure a vine that sprouts from a surface in an unoccupied space that you can see within range. The vine lasts for the duration. Make a melee spell attack against a creature within 30 feet of the vine. On a hit, the target takes 4d8 Bludgeoning damage and is pulled up to 30 feet toward the vine; if the target is Huge or smaller, it has the Grappled condition (escape DC equal to your spell save DC)."
+  },
+  {
+    "name": "Guardian of Nature",
+    "level": 4,
+    "description": "Bonus action, self, concentration up to 1 minute. A nature spirit answers your call and transforms you into a powerful guardian. The transformation lasts until the spell ends. You choose one of the following forms to assume: Primal Beast: Your walking speed increases by 10 feet. You gain darkvision with a range of 120 feet. You make Strength-based attack rolls with advantage. Your melee weapon attacks deal an extra 1d6 force damage on a hit. Great Tree: You gain 10 temporary hit points. You make Constitution saving throws with advantage. You make Dexterity- and Wisdom-based attack rolls with advantage. While you are on the ground, the ground within 15 feet of you is difficult terrain for your enemies."
   },
   {
     "name": "Hallucinatory Terrain",
@@ -475,6 +595,11 @@
     "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save or half as much damage on a successful one."
   },
   {
+    "name": "Watery Sphere",
+    "level": 4,
+    "description": "Action, 90ft, concentration up to 1 minute. You conjure up a sphere of water with a 5-foot radius at a point you can see within range. The sphere can hover but no more than 10 feet off the ground. The sphere remains for the spell's duration. Any creature in the sphere's space must make a Strength saving throw. On a successful save, a creature is ejected from that space to the nearest unoccupied space outside the sphere. On a failed save, a creature is restrained by the sphere and is engulfed by the water. At the end of each of its turns, a restrained target can repeat the saving throw. On a success, the target is no longer restrained, is pushed out of the sphere, and is no longer engulfed. The sphere can restrain up to four Medium or smaller creatures or one Large creature. As an action, you can move the sphere up to 30 feet in a straight line."
+  },
+  {
     "name": "Alustriel's Mooncloak",
     "level": 5,
     "description": "For the duration, moonlight fills a 20-foot Emanation [Area of Effect] originating from you with Dim Light. While in that area, you and your allies have Cover and Resistance to Cold, Lightning, and Radiant damage. While the spell lasts, you can use one of the following options, ending the spell immediately: Liberation: When you fail a saving throw to avoid or end the Frightened, Grappled, or Restrained condition, you can take a Reaction to succeed on the save instead."
@@ -510,6 +635,11 @@
     "description": "Your touch inflicts a magical contagion. The target must succeed on a Constitution saving throw or take 11d8 Necrotic damage and have the Poisoned condition. Also, choose one ability when you cast the spell. While Poisoned, the target has Disadvantage on saving throws made with the chosen ability. The target must repeat the saving throw at the end of each of its turns until it gets three successes or failures. If the target succeeds on three of these saves, the spell ends on the target."
   },
   {
+    "name": "Control Winds",
+    "level": 5,
+    "description": "Action, 300ft, concentration up to 1 hour. You take control of the air in a 100-foot cube that you can see within range. Choose one of the following effects when you cast the spell. The effect lasts for the spell's duration, unless you use your action on a later turn to switch to a different effect. Gusts: A wind picks up within the cube, continually blowing in a horizontal direction you designate. You choose the intensity of the wind: calm, moderate, or strong. If the wind is moderate or strong, ranged weapon attacks that enter or leave the cube or pass through it have disadvantage on their attack rolls. If the wind is strong, any creature moving against the wind must spend 1 extra foot of movement for each foot moved. Downdraft: You cause a steady downward current of air to form in the cube. Creatures that fly in the cube must succeed on a Strength saving throw or be knocked prone. Flying creatures that fail the save fall 500 feet. Updraft: You cause a steady upward current of air to form in the cube. Creatures can use the current to fly up to twice their normal flying speed when moving upward, or can allow the current to carry them upward. Fall damage is halved for creatures in the cube."
+  },
+  {
     "name": "Geas",
     "level": 5,
     "description": "You give a verbal command to a creature that you can see within range, ordering it to carry out some service or refrain from an action or a course of activity as you decide. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target automatically succeeds if it can't understand your command. While Charmed, the creature takes 5d10 Psychic damage if it acts in a manner directly counter to your command."
@@ -523,6 +653,11 @@
     "name": "Insect Plague",
     "level": 5,
     "description": "Swarming locusts fill a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. The Sphere [Area of Effect] remains for the duration, and its area is Lightly Obscured and Difficult Terrain. When the swarm appears, each creature in it makes a Constitution saving throw, taking 4d10 Piercing damage on a failed save or half as much damage on a successful one."
+  },
+  {
+    "name": "Maelstrom",
+    "level": 5,
+    "description": "Action, 120ft, concentration up to 1 minute. A mass of 5-foot-deep water appears and swirls in a 30-foot radius centered on a point you can see within range. The point must be on the ground or in a body of water. Until the spell ends, that area is difficult terrain, and any creature that starts its turn in the area must succeed on a Strength saving throw or take 6d6 bludgeoning damage and be pulled 10 feet toward the center."
   },
   {
     "name": "Mass Cure Wounds",
@@ -550,6 +685,16 @@
     "description": "You imbue yourself with the elemental power of genies. You gain the following benefits until the spell ends: Elemental Immunity: When you cast this spell, choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. You have Resistance to the chosen damage type. Elemental Pulse: When you cast this spell and at the start of each of your subsequent turns, you release a burst of elemental energy in a 15-foot Emanation [Area of Effect] originating from yourself. Each other creature in the Emanation makes a Constitution saving throw, taking 4d6 damage of the chosen type on a failed save, or half as much on a success."
   },
   {
+    "name": "Summon Draconic Spirit",
+    "level": 5,
+    "description": "Action, 60ft, concentration up to 1 hour. You call forth a draconic spirit. It manifests in an unoccupied space that you can see within range. Choose the spirit's type: chromatic, gem, or metallic. The creature disappears when it drops to 0 hit points or when the spell ends. The creature is an ally to you and your companions. In combat, the creature shares your initiative count, but it takes its turn immediately after yours. It obeys your verbal commands (no action required by you). If you don't issue any, it takes the Dodge action and uses its move to avoid danger. The spirit has a breath weapon (15-foot cone, Dexterity saving throw, 2d6 damage of the chosen type on a failed save, half on success). Using a Higher-Level Spell Slot: The creature's breath weapon damage and hit points increase for each slot level above 5th."
+  },
+  {
+    "name": "Transmute Rock",
+    "level": 5,
+    "description": "Action, 120ft, instantaneous. You choose an area of stone or mud up to 40 feet on a side within range and choose one of the following effects. Transmute Rock to Mud: Nonmagical rock of any sort in the area becomes thick, flowing mud. If you cast the spell on a ceiling, the mud falls. Any creature in the area when the rock becomes mud must make a Dexterity saving throw. A creature takes 4d8 bludgeoning damage on a failed save, or half on a successful one. It also sinks into the mud and becomes restrained by it (Strength save at end of each turn to escape). Transmute Mud to Rock: Mud in the area becomes soft stone for the duration. Any creature in the mud when it becomes rock is restrained by the rock. A restrained creature can escape by making a Strength (Athletics) or Dexterity (Acrobatics) check."
+  },
+  {
     "name": "Tree Stride",
     "level": 5,
     "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree. You instantly know the location of all other trees of the same kind within 500 feet and, as part of the move used to enter the tree, can either pass into one of those trees or step out of the tree you're in."
@@ -560,9 +705,24 @@
     "description": "A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with another panel. Alternatively, you can create 10-foot-by-20-foot panels that are only 3 inches thick. If the wall cuts through a creature's space when it appears, the creature is pushed to one side of the wall (you choose which side)."
   },
   {
+    "name": "Wrath of Nature",
+    "level": 5,
+    "description": "Action, 120ft, concentration up to 1 minute. You call out to the spirits of nature to rouse them against your enemies. Choose a point you can see within range. The spirits cause trees, rocks, and grasses in a 60-foot cube centered on that point to become animated until the spell ends. Grasses and Undergrowth: The ground in the area is difficult terrain for your enemies. Trees: At the start of each of your turns, each of your enemies within 10 feet of any tree in the area must succeed on a Dexterity saving throw or take 4d6 slashing damage. Roots and Vines: At the end of each of your turns, one creature of your choice that is on the ground in the area must succeed on a Strength saving throw or become restrained until the spell ends. Rocks: As a bonus action on your turn, you can cause a loose rock in the area to launch at a creature you can see in the area. Make a ranged spell attack against the target. On a hit, the target takes 3d8 nonmagical bludgeoning damage."
+  },
+  {
+    "name": "Bones of the Earth",
+    "level": 6,
+    "description": "Action, 120ft, instantaneous. You cause up to six pillars of rock to burst from places on the ground that you can see within range. Each pillar is a cylinder that has a diameter of 5 feet and a height of up to 30 feet. The ground where a pillar appears must be wide enough for its diameter, and you can target the ground under a creature if that creature is Medium or smaller. Each pillar has AC 5 and 30 hit points. When reduced to 0 hit points, a pillar crumbles into rubble. A creature on top of a pillar when it rises must make a Dexterity saving throw. On a successful save, it can choose to be carried to the top of the pillar or fall off. On a failed save, the creature takes 6d6 bludgeoning damage and is restrained on top of the pillar, unable to move. Using a Higher-Level Spell Slot: You can create two additional pillars for each slot level above 6."
+  },
+  {
     "name": "Conjure Fey",
     "level": 6,
     "description": "You conjure a Medium spirit from the Feywild in an unoccupied space you can see within range. The spirit lasts for the duration, and it looks like a Fey creature of your choice. When the spirit appears, you can make one melee spell attack against a creature within 5 feet of it. On a hit, the target takes 3d12 + your spellcasting ability modifier Psychic damage. On each subsequent turn, you can take a Magic action to teleport the spirit to an unoccupied space within 30 feet of it and make the attack again. The spirit can move through other creatures' spaces, which count as Difficult Terrain. Using a Higher-Level Spell Slot: the damage increases by 2d12 for each slot level above 6."
+  },
+  {
+    "name": "Druid Grove",
+    "level": 6,
+    "description": "10 minute casting, touch, 24 hours. You invoke the spirits of nature to protect an area outdoors or underground. The area can be as large as 90 feet on a side. The spell fails if the area includes any structure built by a non-Druid. Until the spell ends, the protected area is subject to the following effects: The area is warded so that creatures designated by you when you cast the spell cannot enter. Grasping undergrowth and vines sprout from the ground throughout the area. Grove guardians (up to four animated trees) stand watch. The area takes on an eerie appearance and sounds, causing Wisdom saving throws for creatures who enter. Creatures you designated as protected when casting are unaffected by these effects."
   },
   {
     "name": "Elminster's Effulgent Spheres",
@@ -590,9 +750,34 @@
     "description": "You conjure a feast that appears on a surface in an unoccupied 10-foot Cube [Area of Effect] next to you. The feast takes 1 hour to consume and disappears at the end of that time, and the beneficial effects don't set in until this hour is over. Up to twelve creatures can partake of the feast. A creature that partakes gains several benefits, which last for 24 hours. The creature has Resistance to Poison damage, and it has Immunity to the Frightened and Poisoned conditions."
   },
   {
+    "name": "Investiture of Flame",
+    "level": 6,
+    "description": "Action, self, concentration up to 10 minutes. Flames race across your body, shedding bright light in a 30-foot radius and dim light for an additional 30 feet for the spell's duration. The flames don't harm you. Until the spell ends, you gain the following benefits: You are immune to fire damage and have resistance to cold damage. Any creature that moves within 5 feet of you for the first time on a turn or ends its turn there takes 1d10 fire damage. You can take an action to create a line of fire 15 feet long and 5 feet wide. Each creature in the line must make a Dexterity saving throw. A creature takes 4d8 fire damage on a failed save, or half as much on a successful one."
+  },
+  {
+    "name": "Investiture of Ice",
+    "level": 6,
+    "description": "Action, self, concentration up to 10 minutes. Until the spell ends, ice rimes your body, and you gain the following benefits: You are immune to cold damage and have resistance to fire damage. You can move across difficult terrain created by ice or snow without spending extra movement. The ground in a 10-foot radius around you is icy and is difficult terrain for creatures other than you. The radius moves with you. You can use your action to create a 15-foot cone of freezing wind extending from your outstretched hand in a direction you choose. Each creature in the cone must make a Constitution saving throw. A creature takes 4d6 cold damage on a failed save, or half as much on a successful one. A creature that fails its save against this effect has its speed reduced to 0 until the start of your next turn."
+  },
+  {
+    "name": "Investiture of Stone",
+    "level": 6,
+    "description": "Action, self, concentration up to 10 minutes. Until the spell ends, bits of rock spread across your body, and you gain the following benefits: You have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks. You can use your action to create a small earthquake on the ground in a 15-foot radius centered on you. Other creatures on that ground must succeed on a Dexterity saving throw or be knocked prone. You can move across difficult terrain made of earth or stone without spending extra movement. You can move through solid earth or stone as if it was air and without destabilizing it, but you can't end your movement there. If you do so, you are ejected to the nearest unoccupied space, this spell ends, and you are stunned until the end of your next turn."
+  },
+  {
+    "name": "Investiture of Wind",
+    "level": 6,
+    "description": "Action, self, concentration up to 10 minutes. Until the spell ends, wind whirls around you, and you gain the following benefits: Ranged weapon attacks made by you or against you are made with disadvantage. You gain a flying speed of 60 feet. If you are targeted by any effect that requires a Dexterity saving throw, you have advantage on the save. You can use your action to create a 15-foot cube of swirling wind centered on a point you can see within 60 feet of you. Each creature in that area must make a Constitution saving throw. A creature takes 2d10 bludgeoning damage on a failed save, or half as much damage on a successful one. If a Large or smaller creature fails the save, that creature is also pushed up to 10 feet away from the center of the cube."
+  },
+  {
     "name": "Move Earth",
     "level": 6,
     "description": "Choose an area of terrain no larger than 40 feet on a side within range. You can reshape dirt, sand, or clay in the area in any manner you choose for the duration. You can raise or lower the area's elevation, create or fill in a trench, erect or flatten a wall, or form a pillar. The extent of any such changes can't exceed half the area's largest dimension."
+  },
+  {
+    "name": "Primordial Ward",
+    "level": 6,
+    "description": "Action, self, concentration up to 1 minute. You have resistance to acid, cold, fire, lightning, and thunder damage for the spell's duration. When you take damage of one of those types, you can use your reaction to gain immunity to that type of damage, including against the triggering damage. If you do so, the resistances end, and you have the immunity until the end of your next turn, at which time the spell ends."
   },
   {
     "name": "Sunbeam",
@@ -613,6 +798,11 @@
     "name": "Wind Walk",
     "level": 6,
     "description": "You and up to ten willing creatures of your choice within range assume gaseous forms for the duration, appearing as wisps of cloud. While in this cloud form, a target has a Fly Speed of 300 feet and can hover; it has Immunity to the Prone condition; and it has Resistance to Bludgeoning, Piercing, and Slashing damage. The only actions a target can take in this form are the Dash action or a Magic action to begin reverting to its normal form."
+  },
+  {
+    "name": "Draconic Transformation",
+    "level": 7,
+    "description": "Bonus action, self, concentration up to 1 minute. With a roar, you draw on the magic of dragons to transform yourself, taking on draconic features. You gain the following benefits until the spell ends: Blindsight. You have blindsight with a range of 30 feet. Within that range, you can effectively see anything that isn't behind total cover, even if you're blinded or in darkness. Breath Weapon. When you cast this spell, and as a bonus action on subsequent turns for the duration, you can exhale shimmering energy in a 60-foot cone. Each creature in that area must make a Dexterity saving throw. On a failed save, the creature takes 6d8 force damage. On a successful save, it takes half as much damage. Wings. Incorporeal wings sprout from your back, giving you a flying speed of 60 feet."
   },
   {
     "name": "Fire Storm",
@@ -643,6 +833,11 @@
     "name": "Symbol",
     "level": 7,
     "description": "You inscribe a harmful glyph on a surface or within an object that can be closed. If the object moves more than 10 feet from where the spell was cast, the glyph breaks. When triggered, the glyph erupts in a 60-foot-radius Sphere [Area of Effect]. Choose one effect when inscribing: Death (Con save, 10d10 Necrotic damage, half on success), Discord (Con save, 1 min of incoherent bickering on failure), Fear (Wis save, Frightened for 1 min on failure), Hopelessness (Cha save, can't attack or target hostiles for 1 min on failure), Pain (Con save, Incapacitated for 1 min on failure), Sleep (Wis save, Unconscious for 10 min on failure — wakes if damaged), or Stunning (Wis save, Stunned for 1 min on failure). Affected targets can repeat the save at end of each turn to end non-damage effects."
+  },
+  {
+    "name": "Whirlwind",
+    "level": 7,
+    "description": "Action, 300ft, concentration up to 1 minute. A whirlwind howls down to a point that you can see on the ground within range. The whirlwind is a 10-foot-radius, 30-foot-high cylinder centered on that point. Until the spell ends, you can use your action to move the whirlwind up to 30 feet in any direction along the ground. The whirlwind sucks up any Medium or smaller objects that aren't secured to anything and that aren't worn or carried by anyone. A creature must make a Dexterity saving throw the first time on a turn that it enters the whirlwind or that the whirlwind enters its space, including when the whirlwind first appears. A creature takes 10d6 bludgeoning damage on a failed save, or half as much damage on a successful one. In addition, a Large or smaller creature that fails the save must succeed on a Strength saving throw or become restrained in the whirlwind until the spell ends. When a creature starts its turn restrained by the whirlwind, the creature is pulled 5 feet higher inside it, unless the creature is at the top. A restrained creature moves with the whirlwind and falls when the spell ends, unless the creature has some means to stay aloft."
   },
   {
     "name": "Animal Shapes",

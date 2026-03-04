@@ -55,6 +55,11 @@
     "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
   },
   {
+    "name": "Ceremony",
+    "level": 1,
+    "description": "Casting Time: 1 hour (ritual). Range: Touch. Duration: Instantaneous. You perform a religious ceremony. When you cast the spell, choose one of the following rites: Coming of Age: You touch one creature who is a young adult. For the next 24 hours, whenever the target makes an ability check, it can roll a d4 and add the number rolled to the ability check. A creature can benefit from this rite only once. Atonement: You touch one willing creature whose alignment has changed, and you make a DC 20 Insight check. On a successful check, the creature's alignment reverts to its original alignment. Bless Water: You touch one vial of water and cause it to become holy water. Dedication: You touch one humanoid who wishes to be dedicated to your god's service. For the next 24 hours, whenever the target makes a saving throw, it can roll a d4 and add the number rolled to the save. A creature can benefit from this rite only once. Funeral Rite: You touch one corpse, and for the next 7 days, the target can't become undead by any means short of a wish spell. Wedding: You touch adult humanoids willing to be bonded together in marriage. For the next 7 days, each target gains a +2 bonus to AC while they are within 30 feet of each other. A creature can benefit from this rite again only if widowed."
+  },
+  {
     "name": "Command",
     "level": 1,
     "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn. Choose the command from these options: Approach: The target moves toward you by the shortest and most direct route, ending its turn if it moves within 5 feet of you. Drop: The target drops whatever it is holding and then ends its turn. Flee: The target spends its turn moving away from you by the fastest available means."
@@ -285,6 +290,11 @@
     "description": "Silver energy bursts out from you in a 120-foot-long, 5-foot-wide Line [Area of Effect]. Each creature of your choice in the Line [Area of Effect] makes a Strength saving throw. On a failed save, a creature takes 3d10 Force damage and has the Prone condition. On a successful save, a creature takes half as much damage only. Using a Higher-Level Spell Slot: The damage increases by 3d10 for every spell slot level above 3."
   },
   {
+    "name": "Life Transference",
+    "level": 3,
+    "description": "Casting Time: 1 action. Range: 30 feet. Duration: Instantaneous. You sacrifice some of your health to mend another creature's injuries. You take 4d8 necrotic damage, and one creature of your choice that you can see within range regains a number of hit points equal to twice the necrotic damage you take. The damage you take from this spell cannot be reduced or prevented in any way. Using a Higher-Level Spell Slot: The damage increases by 1d8 for each slot level above 3rd."
+  },
+  {
     "name": "Linked Glyphs",
     "level": 3,
     "description": "You inscribe a detection glyph on a surface or within an object, and a linked glyph at another location within range. When the detection glyph is triggered, the linked glyph activates. Choose one of two types: Explosive Runes — the linked glyph erupts in a 20-foot-radius Sphere [Area of Effect]; each creature makes a Dexterity saving throw, taking 5d8 Acid, Cold, Fire, Lightning, or Thunder damage (chosen when created) on a failure, or half on a success. Spell Glyph — you store a prepared spell of level 3 or lower; it is cast from the linked glyph when triggered. Using a Higher-Level Spell Slot: Explosive Runes damage increases by 1d8 for each slot level above 3; Spell Glyph can store a spell up to the slot level used."
@@ -338,6 +348,11 @@
     "name": "Spirit Guardians",
     "level": 3,
     "description": "Protective spirits flit around you in a 15-foot Emanation [Area of Effect] for the duration. When you cast this spell, you can designate creatures to be unaffected by it. Any other creature's Speed is halved in the Emanation, and when the creature enters the Emanation for the first time on a turn or starts its turn there, it must make a Wisdom saving throw, taking 3d8 Radiant or Necrotic damage (your choice when you cast) on a failed save, or half as much damage on a successful one. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 3."
+  },
+  {
+    "name": "Spirit Shroud",
+    "level": 3,
+    "description": "Casting Time: Bonus action. Range: Self. Duration: Concentration, up to 1 minute. You call forth spirits of the dead, which flit around you for the spell's duration. The spirits are intangible and invulnerable. Until the spell ends, any attack you make deals 1d8 extra damage when it hits a creature within 10 feet of you. This damage is radiant, necrotic, or cold (your choice when you cast the spell). Any creature that takes this damage can't regain hit points until the start of your next turn. In addition, any creature of your choice that you can see that starts its turn within 10 feet of you has its speed reduced by 10 feet until the start of your next turn. Using a Higher-Level Spell Slot: The damage increases by 1d8 for every two slot levels above 3rd."
   },
   {
     "name": "Tongues",
@@ -420,6 +435,11 @@
     "description": "Your touch inflicts a magical contagion. The target must succeed on a Constitution saving throw or take 11d8 Necrotic damage and have the Poisoned condition. Also, choose one ability when you cast the spell. While Poisoned, the target has Disadvantage on saving throws made with the chosen ability. The target must repeat the saving throw at the end of each of its turns until it gets three successes or failures. If the target succeeds on three of these saves, the spell ends on the target."
   },
   {
+    "name": "Dawn",
+    "level": 5,
+    "description": "Casting Time: 1 action. Range: 60 feet. Duration: Concentration, up to 1 minute. The light of dawn shines down on a location you specify within range. Until the spell ends, a 30-foot-radius, 40-foot-high cylinder of bright light glimmers there. This light is sunlight. When the cylinder appears, each creature in it must make a Constitution saving throw, taking 4d10 radiant damage on a failed save, or half as much damage on a successful one. A creature must also make this saving throw when it enters the spell's area for the first time on a turn or ends its turn there. On each of your turns after you cast this spell, you can use a bonus action to move the cylinder up to 60 feet. Using a Higher-Level Spell Slot: The damage increases by 1d10 for each slot level above 5th."
+  },
+  {
     "name": "Dispel Evil and Good",
     "level": 5,
     "description": "For the duration, Celestials, Elementals, Fey, Fiends, and Undead have Disadvantage on attack rolls against you. You can end the spell early by using either of the following special functions. Break Enchantment: As a Magic action, you touch a creature that is possessed by or has the Charmed or Frightened condition from one or more creatures of the types above. The target is no longer possessed, Charmed, or Frightened by such creatures."
@@ -443,6 +463,11 @@
     "name": "Hallow",
     "level": 5,
     "description": "You touch a point and infuse an area around it with holy or unholy power. The area can have a radius up to 60 feet, and the spell fails if the radius includes an area already under the effect of Hallow. The affected area has the following effects. Hallowed Ward: Choose any of these creature types: Aberration, Celestial, Elemental, Fey, Fiend, or Undead."
+  },
+  {
+    "name": "Holy Weapon",
+    "level": 5,
+    "description": "Casting Time: Bonus action. Range: Touch. Duration: Concentration, up to 1 hour. You imbue a weapon you touch with holy power. Until the spell ends, the weapon emits bright light in a 30-foot radius and dim light for an additional 30 feet. In addition, weapon attacks made with it deal an extra 2d8 radiant damage on a hit. If the weapon is not already a magic weapon, it becomes one for the duration. As a bonus action on your turn, you can dismiss this spell and cause the weapon to emit a burst of radiance. When you do so, each creature of your choice that you can see within 30 feet of the weapon must succeed on a Constitution saving throw or take 4d8 radiant damage and be blinded for 1 minute. On a successful save, the creature takes half as much damage and isn't blinded. At the end of each of its turns, a blinded creature can make a Constitution saving throw, ending the effect on itself on a success."
   },
   {
     "name": "Insect Plague",
@@ -583,6 +608,11 @@
     "name": "Symbol",
     "level": 7,
     "description": "You inscribe a harmful glyph on a surface or within an object that can be closed. If the object moves more than 10 feet from where the spell was cast, the glyph breaks. When triggered, the glyph erupts in a 60-foot-radius Sphere [Area of Effect]. Choose one effect when inscribing: Death (Con save, 10d10 Necrotic damage, half on success), Discord (Con save, 1 min of incoherent bickering on failure), Fear (Wis save, Frightened for 1 min on failure), Hopelessness (Cha save, can't attack or target hostiles for 1 min on failure), Pain (Con save, Incapacitated for 1 min on failure), Sleep (Wis save, Unconscious for 10 min on failure — wakes if damaged), or Stunning (Wis save, Stunned for 1 min on failure). Affected targets can repeat the save at end of each turn to end non-damage effects."
+  },
+  {
+    "name": "Temple of the Gods",
+    "level": 7,
+    "description": "Casting Time: 1 hour. Range: 120 feet. Duration: 24 hours. You cause a temple to shimmer into existence on ground you can see within range. The temple must fit within an unoccupied cube of space, up to 120 feet on each side. The temple remains until the spell ends. It is dedicated to whatever deity, pantheon, or philosophy is represented by your holy symbol. You choose the temple's architecture. It is furnished and decorated as you choose. The temple is immune to damage. A dispel magic spell cast on the temple ends the spell only if cast with a 7th-level or higher spell slot. You can specify a type of creature that is prevented from entering the temple: celestials, elementals, fey, fiends, or undead. If a creature of the chosen type attempts to enter the temple, that creature must make a Charisma saving throw. On a failed save, it can't enter the temple for 24 hours. Even if the creature makes its save, life-draining forces prey on it while it remains in the temple; whenever it makes an attack roll, an ability check, or a saving throw inside the temple, it must roll a d4 and subtract the number rolled from the d20 roll. In addition, the sensors created by divination spells can't appear inside the temple, and creatures inside can't be targeted by divination spells. Finally, whenever any creature in the temple regains hit points from a spell of 1st level or higher, the creature regains an additional 2d10 hit points. If you cast this spell in the same location every day for a year, the spell lasts until it is dispelled, and the casting time becomes 1 minute."
   },
   {
     "name": "Antimagic Field",

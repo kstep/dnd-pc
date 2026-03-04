@@ -1,5 +1,10 @@
 [
   {
+    "name": "Absorb Elements",
+    "level": 1,
+    "description": "Reaction, self, duration 1 round. Triggered when you take acid, cold, fire, lightning, or thunder damage. You gain resistance to the triggering damage type until the start of your next turn. Also, the first time you hit with a melee attack on your next turn, the target takes an extra 1d6 damage of the triggering type. Using a Higher-Level Spell Slot: The extra damage increases by 1d6 for each slot level above 1st."
+  },
+  {
     "name": "Alarm",
     "level": 1,
     "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is audible or mental: Audible Alarm: The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area."
@@ -8,6 +13,11 @@
     "name": "Animal Friendship",
     "level": 1,
     "description": "Target a Beast that you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. If you or one of your allies deals damage to the target, the spells ends. Using a Higher-Level Spell Slot: You can target one additional Beast for each spell slot level above 1."
+  },
+  {
+    "name": "Beast Bond",
+    "level": 1,
+    "description": "Action, touch, concentration up to 10 minutes. You establish a telepathic link with one Beast you touch that has Intelligence 3 or lower. The beast must be willing. For the duration, the link is active while you and the beast are within line of sight of each other. The beast gains advantage on attack rolls against any creature within 5 feet of you that you can see."
   },
   {
     "name": "Cure Wounds",
@@ -65,9 +75,24 @@
     "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each spell slot level above 1."
   },
   {
+    "name": "Searing Smite",
+    "level": 1,
+    "description": "Bonus action, self, concentration up to 1 minute. The next time you hit a creature with a melee weapon attack during the spell's duration, your weapon flares with white-hot intensity and deals an extra 1d6 fire damage to the target. The target must make a Constitution saving throw. On a failed save, the target ignites in flames and takes 1d6 fire damage at the start of each of its turns. The target can repeat the save at the end of each of its turns, ending the burning on a success. Using a Higher-Level Spell Slot: The initial extra damage increases by 1d6 for each slot level above 1st."
+  },
+  {
+    "name": "Snare",
+    "level": 1,
+    "description": "1 minute casting time, touch, 8 hours. You create a magical trap in a 5-foot-radius area you touch. When a Small, Medium, or Large creature enters the trapped area, the target must make a Dexterity saving throw. On a failed save, the target is magically restrained and hoisted 3 feet into the air, where it hangs until the spell ends or the snare is broken. A creature can use an action to make an Intelligence (Arcana) check against your spell save DC to discern the magical nature of the trap before triggering it."
+  },
+  {
     "name": "Speak with Animals",
     "level": 1,
     "description": "For the duration, you can comprehend and verbally communicate with Beasts, and you can use any of the Influence action's skill options with them. Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nearby locations and monsters, including whatever it has perceived within the past day."
+  },
+  {
+    "name": "Zephyr Strike",
+    "level": 1,
+    "description": "Bonus action, self, concentration up to 1 minute. Your movement doesn't provoke opportunity attacks for the duration. In addition, once before the spell ends, you can give yourself advantage on one weapon attack roll on your turn. That attack deals an extra 1d8 force damage on a hit. Whether you hit or miss, your walking speed increases by 30 feet until the end of that turn."
   },
   {
     "name": "Aid",
@@ -120,6 +145,11 @@
     "description": "A Line [Area of Effect] of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature in the Line [Area of Effect] must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the Line [Area of Effect]. A creature that ends its turn in the Line [Area of Effect] must make the same save."
   },
   {
+    "name": "Healing Spirit",
+    "level": 2,
+    "description": "Bonus action, 60 feet, concentration up to 1 minute. You call forth a nature spirit to soothe the wounded. The intangible spirit appears in a space that is a 5-foot cube you can see within range. The spirit looks like a transparent beast or fey (your choice). Until the spell ends, whenever you or a creature you can see moves into the spirit's space for the first time on a turn or starts its turn there, you can cause the spirit to restore 1d6 hit points to that creature (no action required). The spirit can heal a number of times equal to 1 + your spellcasting ability modifier. After healing that many times, the spirit disappears. Using a Higher-Level Spell Slot: The healing increases by 1d6 for each slot level above 2nd."
+  },
+  {
     "name": "Lesser Restoration",
     "level": 2,
     "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
@@ -165,6 +195,11 @@
     "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water. The creature resembles an animal of your choice that is native to the chosen environment, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
   },
   {
+    "name": "Ashardalon's Stride",
+    "level": 3,
+    "description": "Bonus action, self, concentration up to 1 minute. The billowing flames of a dragon blast from your feet, granting you explosive speed. For the duration, your speed increases by 20 feet and moving doesn't provoke opportunity attacks. When you move within 5 feet of a creature or an object that isn't being worn or carried, it takes 1d6 fire damage from your trail of heat (each creature or object can take this damage only once per turn). Using a Higher-Level Spell Slot: The damage increases by 1d6 and the speed bonus increases by 5 feet for each slot level above 3rd."
+  },
+  {
     "name": "Conjure Animals",
     "level": 3,
     "description": "You conjure nature spirits that appear as a Large pack of spectral, intangible animals in an unoccupied space you can see within range. The pack lasts for the duration, and you choose the spirits' animal form, such as wolves, serpents, or birds. You have Advantage on Strength saving throws while you're within 5 feet of the pack, and when you move on your turn, you can also move the pack up to 30 feet to an unoccupied space you can see."
@@ -188,6 +223,11 @@
     "name": "Elemental Weapon",
     "level": 3,
     "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
+  },
+  {
+    "name": "Flame Arrows",
+    "level": 3,
+    "description": "Action, touch, concentration up to 1 hour. You touch a quiver containing arrows or bolts. When a target is hit by a ranged weapon attack using a piece of ammunition drawn from the quiver, the target takes an extra 1d6 fire damage. The spell's magic ends on a piece of ammunition when it hits or misses, and the spell ends when twelve pieces of ammunition have been drawn from the quiver. Using a Higher-Level Spell Slot: The number of pieces of ammunition you can affect with this spell increases by two for each slot level above 3rd."
   },
   {
     "name": "Lightning Arrow",
@@ -265,6 +305,11 @@
     "description": "You conjure a vine that sprouts from a surface in an unoccupied space that you can see within range. The vine lasts for the duration. Make a melee spell attack against a creature within 30 feet of the vine. On a hit, the target takes 4d8 Bludgeoning damage and is pulled up to 30 feet toward the vine; if the target is Huge or smaller, it has the Grappled condition (escape DC equal to your spell save DC)."
   },
   {
+    "name": "Guardian of Nature",
+    "level": 4,
+    "description": "Bonus action, self, concentration up to 1 minute. A nature spirit answers your call and transforms you into a powerful guardian. The transformation lasts until the spell ends. You choose one of the following forms to assume: Primal Beast: Bestial fur covers your body, your facial features become feral, and you gain the following benefits — your walking speed increases by 10 feet; you gain darkvision with a range of 120 feet if you don't have it; you make Strength-based attack rolls with advantage; your melee weapon attacks deal an extra 1d6 force damage on a hit. Great Tree: Your skin appears barky, leaves sprout from your hair, and you gain the following benefits — you gain 10 temporary hit points; you make Constitution saving throws with advantage; you make Dexterity- and Wisdom-based attack rolls with advantage; while you are on the ground, the ground within 15 feet of you is difficult terrain for your enemies."
+  },
+  {
     "name": "Locate Creature",
     "level": 4,
     "description": "Describe or name a creature that is familiar to you. You sense the direction to the creature's location if that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement. The spell can locate a specific creature known to you or the nearest creature of a specific kind (such as a human or a unicorn) if you have seen such a creature up close—within 30 feet—at least once."
@@ -313,5 +358,10 @@
     "name": "Tree Stride",
     "level": 5,
     "description": "You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree. You instantly know the location of all other trees of the same kind within 500 feet and, as part of the move used to enter the tree, can either pass into one of those trees or step out of the tree you're in."
+  },
+  {
+    "name": "Wrath of Nature",
+    "level": 5,
+    "description": "Action, 120 feet, concentration up to 1 minute. You call out to the spirits of nature to rouse them against your enemies. Choose a point you can see within range. The spirits cause trees, rocks, and grasses in a 60-foot cube centered on that point to become animated until the spell ends. Grasses and Undergrowth: Any area of ground in the cube that is covered by grass or undergrowth is difficult terrain for your enemies. Trees: At the start of each of your turns, each of your enemies within 10 feet of any tree in the cube must succeed on a Dexterity saving throw or take 4d6 slashing damage. Roots and Vines: At the end of each of your turns, one creature of your choice that is on the ground in the cube must succeed on a Strength saving throw or become restrained until the spell ends. A restrained creature can use an action to make a Strength (Athletics) check against your spell save DC, ending the effect on itself on a success. Rocks: As a bonus action, you can cause a loose rock in the cube to launch at a creature you can see in the cube. Make a ranged spell attack against the target. On a hit, the target takes 3d8 nonmagical bludgeoning damage."
   }
 ]

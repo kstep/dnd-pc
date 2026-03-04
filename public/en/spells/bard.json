@@ -120,6 +120,11 @@
     "description": "You cast this spell on an object no more than 1 foot on a side, doubling the object's perceived value by placing an Illusion over it, or halving its perceived value by making it appear worn and worthless. Anyone examining the object can make an Intelligence (Investigation) check against your spell save DC. On a success, the creature recognizes the Illusion."
   },
   {
+    "name": "Earth Tremor",
+    "level": 1,
+    "description": "Action, 10 feet (self), instantaneous. Each creature other than you within 10 feet must make a Dexterity saving throw or take 1d6 bludgeoning damage and be knocked prone. The ground in the area becomes difficult terrain until cleared (1 minute of work per 5-foot square). Higher levels: +1d6 per slot level above 1st."
+  },
+  {
     "name": "Faerie Fire",
     "level": 1,
     "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed Dim Light in a 10-foot radius and can't benefit from the Invisible condition. Attack rolls against an affected creature or object have Advantage if the attacker can see it."
@@ -305,9 +310,19 @@
     "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real. Each time a creature hits you with an attack roll during the spell's duration, roll a d6 for each of your remaining duplicates. If any of the d6s rolls a 3 or higher, one of the duplicates is hit instead of you, and the duplicate is destroyed."
   },
   {
+    "name": "Nathair's Mischief",
+    "level": 2,
+    "description": "Action, 60 feet, concentration up to 1 minute. You fill a 20-foot cube with fey and draconic magic. At the start of each of your turns, roll a d4 to determine the effect: 1 — Blinding Butterflies (Wisdom save or blinded); 2 — Acid Slick (Dexterity save or 1d6 acid damage); 3 — Frightening Laughter (Wisdom save or frightened); 4 — Paralytic Poison (Wisdom save or incapacitated with laughter). As a bonus action, you can move the cube up to 10 feet."
+  },
+  {
     "name": "Phantasmal Force",
     "level": 2,
     "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli."
+  },
+  {
+    "name": "Pyrotechnics",
+    "level": 2,
+    "description": "Action, 60 feet, instantaneous. Choose any nonmagical flame within range. It produces one of two effects: Fireworks — the fire erupts in a dazzling display (10-foot radius, Constitution save or blinded until end of your next turn); or Smoke — thick black smoke spreads from the fire in a 20-foot radius creating heavily obscured area for 1 minute (wind disperses it)."
   },
   {
     "name": "See Invisibility",
@@ -325,14 +340,34 @@
     "description": "For the duration, no sound can be created within or pass through a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range. Any creature or object entirely inside the Sphere [Area of Effect] has Immunity to Thunder damage, and creatures have the Deafened condition while entirely inside it. Casting a spell that includes a Verbal component is impossible there."
   },
   {
+    "name": "Skywrite",
+    "level": 2,
+    "description": "Ritual, action, sight, concentration up to 1 hour. You cause up to ten words to form in a part of the sky you can see. The words appear to be made of clouds and remain in place for the spell's duration. The words dissipate when the spell ends. A strong wind can disperse the clouds and end the spell early."
+  },
+  {
+    "name": "Spray of Cards",
+    "level": 2,
+    "description": "Action, self (15-foot cone), instantaneous. You spray a 15-foot cone of spectral cards. Each creature in the cone must make a Dexterity saving throw, taking 2d10 force damage on a failed save, or half as much damage on a successful one. Higher levels: +1d10 per slot level above 2nd."
+  },
+  {
     "name": "Suggestion",
     "level": 2,
     "description": "You suggest a course of activity—described in no more than 25 words—to one creature you can see within range that can hear and understand you. The suggestion must sound achievable and not involve anything that would obviously deal damage to the target or its allies."
   },
   {
+    "name": "Warding Wind",
+    "level": 2,
+    "description": "Action, self, concentration up to 10 minutes. A strong wind (20 mph) blows around you in a 10-foot radius. The wind moves with you, and is always centered on you. Difficult terrain for all creatures other than you. Ranged weapon attacks into or out of the area have disadvantage. Deafens you and other creatures in the area. Extinguishes unprotected flames and disperses gas or vapor in the area."
+  },
+  {
     "name": "Zone of Truth",
     "level": 2,
     "description": "You create a magical zone that guards against deception in a 15-foot-radius Sphere [Area of Effect] centered on a point within range. Until the spell ends, a creature that enters the spell's area for the first time on a turn or starts its turn there makes a Charisma saving throw. On a failed save, a creature can't speak a deliberate lie while in the radius. You know whether a creature succeeds or fails on this save."
+  },
+  {
+    "name": "Antagonize",
+    "level": 3,
+    "description": "Action, 30 feet, instantaneous. You whisper magical words to a creature, provoking it to attack. The target must make a Wisdom saving throw. On a failed save, the target must use its next action to make a melee attack against a creature of your choice that you can see (moving toward it if necessary). If the target can't reach a valid target, it wastes its action. On a successful save, nothing happens."
   },
   {
     "name": "Bestow Curse",
@@ -345,6 +380,11 @@
     "description": "Thunderous reverberations fill a 10-foot Emanation [Area of Effect] originating from you for the duration. Whenever the Emanation [Area of Effect] enters a creature's space and whenever a creature enters the Emanation [Area of Effect] or ends its turn there, the creature makes a Constitution saving throw. On a failed save, the creature takes 3d6 Thunder damage and has the Deafened condition until the start of your next turn. On a successful save, the creature takes half as much damage only."
   },
   {
+    "name": "Catnap",
+    "level": 3,
+    "description": "Action, 30 feet, 10 minutes. Choose up to three willing creatures within range. Each target falls unconscious for the duration. The spell ends on a target early if it takes damage or someone uses an action to shake it awake. If a target remains unconscious for the full duration, it gains the benefits of a short rest and is no longer unconscious. Higher levels: +1 additional creature per slot level above 3rd."
+  },
+  {
     "name": "Clairvoyance",
     "level": 3,
     "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees). The intangible, invulnerable sensor remains in place for the duration. When you cast the spell, choose seeing or hearing. You can use the chosen sense through the sensor as if you were in its space. As a Bonus Action, you can switch between seeing and hearing."
@@ -353,6 +393,11 @@
     "name": "Dispel Magic",
     "level": 3,
     "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends. Using a Higher-Level Spell Slot: You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
+  },
+  {
+    "name": "Enemies Abound",
+    "level": 3,
+    "description": "Action, 120 feet, concentration up to 1 minute. You reach into the mind of a creature, making it unable to discern friend from foe. The target must make an Intelligence saving throw (immune if Int 3 or lower). On a failed save, until the spell ends, whenever the target chooses a target for an attack, spell, or other harmful effect, it must choose the target at random from among those it can see within range. Each time it takes damage, it can repeat the saving throw."
   },
   {
     "name": "Fast Friends",
@@ -378,6 +423,11 @@
     "name": "Hypnotic Pattern",
     "level": 3,
     "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration. While Charmed, the creature has the Incapacitated condition and a Speed of 0. The spell ends for an affected creature if it takes any damage or if someone else uses an action to shake the creature out of its stupor."
+  },
+  {
+    "name": "Intellect Fortress",
+    "level": 3,
+    "description": "Action, 30 feet, concentration up to 1 hour. For the duration, you or one willing creature you can see within range has resistance to psychic damage and advantage on Intelligence, Wisdom, and Charisma saving throws. Higher levels: +1 additional creature per slot level above 3rd (all targets must be within 30 feet of each other)."
   },
   {
     "name": "Leomund's Tiny Hut",
@@ -510,6 +560,11 @@
     "description": "You attempt to transform a creature that you can see within range into a Beast. The target must succeed on a Wisdom saving throw or shape-shift into Beast form for the duration. That form can be any Beast you choose that has a Challenge Rating equal to or less than the target's (or the target's level if it doesn't have a Challenge Rating)."
   },
   {
+    "name": "Raulothim's Psychic Lance",
+    "level": 4,
+    "description": "Action, 120 feet, instantaneous. You unleash a shimmering lance of psychic power. Name a creature you can see within range, or one you know by name (you don't need to see it). The target takes 7d6 psychic damage and is incapacitated until the start of your next turn. Intelligence saving throw for half damage and no incapacitation. Higher levels: +1d6 per slot level above 4th."
+  },
+  {
     "name": "Alustriel's Mooncloak",
     "level": 5,
     "description": "For the duration, moonlight fills a 20-foot Emanation [Area of Effect] originating from you with Dim Light. While in that area, you and your allies have Cover and Resistance to Cold, Lightning, and Radiant damage. While the spell lasts, you can use one of the following options, ending the spell immediately: Liberation: When you fail a saving throw to avoid or end the Frightened, Grappled, or Restrained condition, you can take a Reaction to succeed on the save instead."
@@ -595,6 +650,11 @@
     "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets. The spell can change the appearance of the targets' bodies and equipment. You can make each creature seem 1 foot shorter or taller and appear heavier or lighter."
   },
   {
+    "name": "Skill Empowerment",
+    "level": 5,
+    "description": "Action, touch, concentration up to 1 hour. Your magic deepens a creature's understanding of its own talent. Touch a willing creature and choose a skill that the creature is proficient in. Until the spell ends, the creature has expertise with that skill (proficiency bonus doubled). The creature must be proficient in the chosen skill for the spell to have any effect."
+  },
+  {
     "name": "Synaptic Static",
     "level": 5,
     "description": "You cause psychic energy to erupt at a point within range. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes an Intelligence saving throw, taking 8d6 Psychic damage on a failed save or half as much damage on a successful one. On a failed save, a target also has muddled thoughts for 1 minute. During that time, it subtracts 1d6 from all its attack rolls and ability checks, as well as any Constitution saving throws to maintain Concentration."
@@ -653,6 +713,11 @@
     "name": "True Seeing",
     "level": 6,
     "description": "For the duration, the willing creature you touch has Truesight with a range of 120 feet."
+  },
+  {
+    "name": "Dream of the Blue Veil",
+    "level": 7,
+    "description": "10 minutes casting, 20 feet, 6 hours. You and up to eight willing creatures within range fall unconscious for the spell's duration. Each sleeper experiences visions of a different world, such as Arvandor or Mechanus. When the spell ends, the dreamers wake and are transported to the world they witnessed. Each creature arrives at a location of the GM's choice. The spell ends early if a target takes damage or is moved."
   },
   {
     "name": "Etherealness",
@@ -750,6 +815,11 @@
     "description": "You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target has Advantage on D20 Test, and other creatures have Disadvantage on attack rolls against it. The spell ends early if you cast it again."
   },
   {
+    "name": "Mass Polymorph",
+    "level": 9,
+    "description": "Action, 120 feet, concentration up to 1 hour. You transform up to ten creatures of your choice that you can see within range. An unwilling target must succeed on a Wisdom saving throw to resist. Each target assumes a beast form of CR equal to or less than the target's CR or level. The target gains the beast's hit points, actions, and statistics but retains its personality, memories, and mental ability scores. A target reverts to its normal form when reduced to 0 hit points or when the spell ends."
+  },
+  {
     "name": "Power Word Heal",
     "level": 9,
     "description": "A wave of healing energy washes over one creature you can see within range. The target regains all its Hit Points. If the creature has the Charmed, Frightened, Paralyzed, Poisoned, or Stunned condition, the condition ends. If the creature has the Prone condition, it can use its Reaction to stand up."
@@ -763,6 +833,11 @@
     "name": "Prismatic Wall",
     "level": 9,
     "description": "A shimmering, multicolored plane of light forms a vertical opaque wall—up to 90 feet long, 30 feet high, and 1 inch thick—centered on a point within range. Alternatively, you shape the wall into a globe up to 30 feet in diameter centered on a point within range. The wall lasts for the duration. If you position the wall in a space occupied by a creature, the spell ends instantly without effect. The wall sheds Bright Light within 100 feet and Dim Light for an additional 100 feet."
+  },
+  {
+    "name": "Psychic Scream",
+    "level": 9,
+    "description": "Action, 90 feet, instantaneous. You unleash the power of your mind to blast the intellect of up to ten creatures you can see within range. Each target must make an Intelligence saving throw or take 14d6 psychic damage and be stunned (repeat save at end of each turn to end the stun). On a successful save, a target takes half damage and isn't stunned. A creature slain by this damage has its head explode."
   },
   {
     "name": "True Polymorph",

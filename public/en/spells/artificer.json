@@ -10,6 +10,11 @@
     "description": "You brandish the weapon used in the spell's casting and make a melee attack with it against one creature within 5 feet of you. On a hit, the target suffers the weapon attack's normal effects and then becomes sheathed in booming energy until the start of your next turn. If the target willingly moves 5 feet or more before then, the target takes 1d8 Thunder damage, and the spell ends. At 5th level, the melee attack deals an extra 1d8 Thunder damage and the moving damage increases to 2d8. At 11th level, 2d8 and 3d8. At 17th level, 3d8 and 4d8."
   },
   {
+    "name": "Create Bonfire",
+    "level": 0,
+    "description": "Action, 60 feet, concentration up to 1 minute. You create a bonfire on ground that you can see within range. Until the spell ends, the bonfire fills a 5-foot cube. Any creature in the bonfire's space when you cast the spell must succeed on a Dexterity saving throw or take 1d8 fire damage. A creature must also make the saving throw when it moves into the bonfire's space for the first time on a turn or ends its turn there. Cantrip Upgrade: The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  },
+  {
     "name": "Dancing Lights",
     "level": 0,
     "description": "You create up to four torch-size lights within range, making them appear as torches, lanterns, or glowing orbs that hover for the duration. Alternatively, you combine the four lights into one glowing Medium form that is vaguely humanlike. Whichever form you choose, each light sheds Dim Light in a 10-foot radius. As a Bonus Action, you can move the lights up to 60 feet to a space within range."
@@ -23,6 +28,11 @@
     "name": "Fire Bolt",
     "level": 0,
     "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell starts burning if it isn't being worn or carried. Cantrip Upgrade: The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
+  },
+  {
+    "name": "Frostbite",
+    "level": 0,
+    "description": "Action, 60 feet, instantaneous. You cause numbing frost to form on one creature that you can see within range. The target must make a Constitution saving throw. On a failed save, the target takes 1d6 cold damage, and it has disadvantage on the next weapon attack roll it makes before the end of its next turn. Cantrip Upgrade: The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
   },
   {
     "name": "Green-Flame Blade",
@@ -48,6 +58,11 @@
     "name": "Mage Hand",
     "level": 0,
     "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. When you cast the spell, you can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial. As a Magic action on your later turns, you can control the hand thus again."
+  },
+  {
+    "name": "Magic Stone",
+    "level": 0,
+    "description": "Bonus action, touch, 1 minute. You touch one to three pebbles and imbue them with magic. You or someone else can make a ranged spell attack with one of the pebbles by throwing it or hurling it with a sling. If thrown, a pebble has a range of 60 feet. On a hit, the target takes bludgeoning damage equal to 1d6 + your spellcasting ability modifier. Whether the attack hits or misses, the spell then ends on the stone. If you cast this spell again, the spell ends on any pebbles still affected by your previous casting."
   },
   {
     "name": "Mending",
@@ -110,19 +125,24 @@
     "description": "Guided by a flash of magical insight, you make one attack with the weapon used in the spell's casting. The attack uses your spellcasting ability for the attack and damage rolls instead of using Strength or Dexterity. If the attack deals damage, it can be Radiant damage or the weapon's normal damage type (your choice). Cantrip Upgrade: Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6)."
   },
   {
+    "name": "Absorb Elements",
+    "level": 1,
+    "description": "Reaction, self, duration 1 round. Triggered when you take acid, cold, fire, lightning, or thunder damage. You gain resistance to the triggering damage type until the start of your next turn. Also, the first time you hit with a melee attack on your next turn, the target takes an extra 1d6 damage of the triggering type. Using a Higher-Level Spell Slot: The extra damage increases by 1d6 for each slot level above 1st."
+  },
+  {
     "name": "Alarm",
     "level": 1,
     "description": "You set an alarm against intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot Cube [Area of Effect]. Until the spell ends, an alarm alerts you whenever a creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is audible or mental: Audible Alarm: The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area."
   },
   {
-    "name": "Cure Wounds",
-    "level": 1,
-    "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
-  },
-  {
     "name": "Catapult",
     "level": 1,
     "description": "You choose one object weighing 1 to 5 pounds within range that isn't being worn or carried. The object flies in a straight line up to 90 feet in a direction you choose before falling to the ground, stopping early if it impacts against a solid surface. If the object would strike a creature, that creature must make a Dexterity saving throw. On a failed save, the object strikes the target and stops moving. When the object strikes something, the object and what it strikes each take 3d8 Bludgeoning damage. Using a Higher-Level Spell Slot: The maximum weight of objects increases by 5 pounds, and the damage increases by 1d8, for each spell slot level above 1."
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. Using a Higher-Level Spell Slot: The healing increases by 2d8 for each spell slot level above 1."
   },
   {
     "name": "Detect Magic",
@@ -183,6 +203,11 @@
     "name": "Sanctuary",
     "level": 1,
     "description": "You ward a creature within range. Until the spell ends, any creature who targets the warded creature with an attack roll or a damaging spell must succeed on a Wisdom saving throw or either choose a new target or lose the attack or spell. This spell doesn't protect the warded creature from areas of effect. The spell ends if the warded creature makes an attack roll, casts a spell, or deals damage."
+  },
+  {
+    "name": "Snare",
+    "level": 1,
+    "description": "1 minute casting time, touch, 8 hours. You create a magical trap in a 5-foot-radius area you touch. When a Small, Medium, or Large creature enters the trapped area, the target must make a Dexterity saving throw. On a failed save, the target is magically restrained and hoisted 3 feet into the air, where it hangs until the spell ends or the snare is broken. A creature can use an action to make an Intelligence (Arcana) check against your spell save DC to discern the magical nature of the trap before triggering it."
   },
   {
     "name": "Tasha's Caustic Brew",
@@ -290,6 +315,11 @@
     "description": "You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage."
   },
   {
+    "name": "Pyrotechnics",
+    "level": 2,
+    "description": "Action, 60 feet, instantaneous. Choose an area of nonmagical flame that you can see and that fits within a 5-foot cube within range. You can extinguish the fire in that area, and you create either fireworks or smoke when you do so. Fireworks: The target explodes with a dazzling display of colors. Each creature within 10 feet of the fire must succeed on a Constitution saving throw or become blinded until the end of your next turn. Smoke: Thick black smoke spreads out from the fire in a 20-foot radius, moving around corners. The area of the smoke is heavily obscured. The smoke persists for 1 minute or until a strong wind disperses it."
+  },
+  {
     "name": "Rope Trick",
     "level": 2,
     "description": "You touch a rope. One end of it hovers upward until the rope hangs perpendicular to the ground or the rope reaches a ceiling. At the rope's upper end, an Invisible 3-foot-by-5-foot portal opens to an extradimensional space that lasts until the spell ends. That space can be reached by climbing the rope, which can be pulled into or dropped out of it. The space can hold up to eight Medium or smaller creatures."
@@ -298,6 +328,11 @@
     "name": "See Invisibility",
     "level": 2,
     "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
+  },
+  {
+    "name": "Skywrite",
+    "level": 2,
+    "description": "Action (ritual), sight, concentration up to 1 hour. You cause up to ten words to form in a part of the sky you can see. The words appear to be made of cloud and remain in place for the spell's duration. The words dissipate when the spell ends. A strong wind can disperse the clouds and end the spell early."
   },
   {
     "name": "Spider Climb",
@@ -315,9 +350,19 @@
     "description": "You conjure a mass of sticky webbing at a point within range. The webs fill a 20-foot Cube [Area of Effect] there for the duration. The webs are Difficult Terrain, and the area within them is Lightly Obscured. If the webs aren't anchored between two solid masses (such as walls or trees) or layered across a floor, wall, or ceiling, the web collapses on itself, and the spell ends at the start of your next turn. Webs layered over a flat surface have a depth of 5 feet."
   },
   {
+    "name": "Ashardalon's Stride",
+    "level": 3,
+    "description": "Bonus action, self, concentration up to 1 minute. The billowing flames of a dragon blast from your feet, granting you explosive speed. For the duration, your speed increases by 20 feet and moving doesn't provoke opportunity attacks. When you move within 5 feet of a creature or an object that isn't being worn or carried, it takes 1d6 fire damage from your trail of heat (each creature or object can take this damage only once per turn). Using a Higher-Level Spell Slot: The damage increases by 1d6 and the speed bonus increases by 5 feet for each slot level above 3rd."
+  },
+  {
     "name": "Blink",
     "level": 3,
     "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane). While on the Ethereal Plane, you can perceive the plane you left, which is cast in shades of gray, but you can't see anything there more than 60 feet away."
+  },
+  {
+    "name": "Catnap",
+    "level": 3,
+    "description": "Action, 30 feet, 10 minutes. You make a calming gesture, and up to three willing creatures of your choice that you can see within range fall unconscious for the spell's duration. The spell ends on a target early if it takes damage or someone uses an action to shake or slap it awake. If a target remains unconscious for the full duration, that target gains the benefit of a short rest, and it can't be affected by this spell again until it finishes a long rest. Using a Higher-Level Spell Slot: You can target one additional willing creature for each slot level above 3rd."
   },
   {
     "name": "Create Food and Water",
@@ -333,6 +378,11 @@
     "name": "Elemental Weapon",
     "level": 3,
     "description": "A nonmagical weapon you touch becomes a magic weapon. Choose one of the following damage types: Acid, Cold, Fire, Lightning, or Thunder. For the duration, the weapon has a +1 bonus to attack rolls and deals an extra 1d4 damage of the chosen type when it hits. Using a Higher-Level Spell Slot: If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4."
+  },
+  {
+    "name": "Flame Arrows",
+    "level": 3,
+    "description": "Action, touch, concentration up to 1 hour. You touch a quiver containing arrows or bolts. When a target is hit by a ranged weapon attack using a piece of ammunition drawn from the quiver, the target takes an extra 1d6 fire damage. The spell's magic ends on a piece of ammunition when it hits or misses, and the spell ends when twelve pieces of ammunition have been drawn from the quiver. Using a Higher-Level Spell Slot: The number of pieces of ammunition you can affect with this spell increases by two for each slot level above 3rd."
   },
   {
     "name": "Fly",
@@ -370,6 +420,11 @@
     "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
   },
   {
+    "name": "Tiny Servant",
+    "level": 3,
+    "description": "1 minute casting time, touch, 8 hours. You touch one Tiny nonmagical object that isn't attached to another object or a surface and isn't being carried by another creature. The target animates and sprouts little arms and legs, becoming a creature under your control until the spell ends or the creature drops to 0 hit points. The tiny servant uses the following statistics: AC 15, HP 10, speed 30 ft., Str 4 (−3), Dex 16 (+3), Con 10 (+0). It can take the Attack action (melee weapon attack: +5 to hit, reach 5 ft., 1d4 + 3 force damage) and can be commanded as a bonus action. Using a Higher-Level Spell Slot: You animate two additional tiny servants for each slot level above 3rd."
+  },
+  {
     "name": "Water Breathing",
     "level": 3,
     "description": "This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration."
@@ -383,6 +438,11 @@
     "name": "Arcane Eye",
     "level": 4,
     "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction. A solid barrier blocks the eye's movement, but the eye can pass through an opening as small as 1 inch in diameter."
+  },
+  {
+    "name": "Elemental Bane",
+    "level": 4,
+    "description": "Action, 90 feet, concentration up to 1 minute. Choose one creature you can see within range, and choose one of the following damage types: acid, cold, fire, lightning, or thunder. The target must succeed on a Constitution saving throw or be affected by the spell for its duration. The first time each turn the affected target takes damage of the chosen type, the target takes an extra 2d6 damage of that type. Moreover, the target loses any resistance to that damage type until the spell ends. Using a Higher-Level Spell Slot: You can target one additional creature for each slot level above 4th. The creatures must be within 30 feet of each other when you target them."
   },
   {
     "name": "Fabricate",
@@ -458,6 +518,16 @@
     "name": "Greater Restoration",
     "level": 5,
     "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+  },
+  {
+    "name": "Skill Empowerment",
+    "level": 5,
+    "description": "Action, touch, concentration up to 1 hour. Your magic deepens a creature's understanding of its own talent. You touch one willing creature and give it expertise in one skill of your choice. The skill must be one that the target is already proficient in and it must be a skill that involves a Strength, Dexterity, Intelligence, Wisdom, or Charisma check. Expertise lets a creature add double its proficiency bonus to ability checks using the chosen skill."
+  },
+  {
+    "name": "Transmute Rock",
+    "level": 5,
+    "description": "Action, 120 feet, instantaneous. You choose an area of stone or mud up to 40 feet on a side within range and choose one of the following effects. Transmute Rock to Mud: Nonmagical rock of any sort in the area becomes thick, flowing mud. If the spell is cast on a ceiling, the mud falls. Any creature in the area when the mud appears must make a Dexterity saving throw. A creature that fails the save sinks into the mud and is restrained. A restrained creature can free itself by using its action to make a Strength check against your spell save DC. On a success, it escapes. Transmute Mud to Rock: Nonmagical mud or quicksand in the area no more than 10 feet deep is transformed into soft stone for the duration. Any creature in the mud when it transforms must make a Dexterity saving throw. On a failed save, a creature becomes restrained by the rock. A restrained creature can free itself if it breaks the rock (AC 15, HP equal to twice your spellcasting level) or by making a Strength check against your spell save DC."
   },
   {
     "name": "Wall of Stone",
