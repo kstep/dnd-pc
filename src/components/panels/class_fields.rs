@@ -260,12 +260,12 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                                     .as_ref()
                                                                     .map(|name| {
                                                                         let classes = store.identity().classes().read();
-                                                                        let char_fields: Vec<_> = store.feature_data().read()
-                                                                            .get(key)
-                                                                            .map(|e| e.fields.clone())
-                                                                            .unwrap_or_default();
+                                                                        let data = store.feature_data().read();
+                                                                        let char_fields = data.get(key)
+                                                                            .map(|e| e.fields.as_slice())
+                                                                            .unwrap_or(&[]);
                                                                         registry
-                                                                            .get_choice_options(&classes, key, fld, &char_fields)
+                                                                            .get_choice_options(&classes, key, fld, char_fields)
                                                                             .into_iter()
                                                                             .find(|o| o.name == *name)
                                                                             .map(|o| (o.cost, o.label))
