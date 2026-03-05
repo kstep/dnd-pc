@@ -84,7 +84,7 @@ pub fn DatalistInput(
     view! {
         <div class=format!("datalist-input-wrapper {}", class.unwrap_or_default())>
             <datalist id=format!("datalist-{id}")>
-                {options.with(|opts| {
+                {move || options.with(|opts| {
                     opts.iter().map(|(_, label, description)| {
                         let label = label.clone();
                         let description = description.clone();
