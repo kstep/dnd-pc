@@ -47,6 +47,8 @@ pub struct CharacterSummary {
     pub level: u32,
     #[serde(default)]
     pub updated_at: u64,
+    #[serde(default)]
+    pub shared: bool,
 }
 
 // --- Main Character ---
@@ -84,6 +86,8 @@ pub struct Character {
     pub notes: String,
     #[serde(default)]
     pub updated_at: u64,
+    #[serde(default)]
+    pub shared: bool,
 }
 
 fn now_epoch_secs() -> u64 {
@@ -311,6 +315,7 @@ impl Character {
             class: self.class_summary(),
             level: self.level(),
             updated_at: self.updated_at,
+            shared: self.shared,
         }
     }
 }
@@ -334,6 +339,7 @@ impl Default for Character {
             racial_traits: Vec::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
+            shared: false,
         }
     }
 }
@@ -874,6 +880,7 @@ pub mod tests {
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
+            shared: false,
         }
     }
 

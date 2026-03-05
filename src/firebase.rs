@@ -204,6 +204,16 @@ pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
     Ok(chars)
 }
 
+pub async fn get_character_doc(uid: &str, char_id: &str) -> Result<Option<Value>, JsValue> {
+    let result = call_async_with_retry("getCharacterDoc", &[uid.into(), char_id.into()]).await?;
+    if result.is_null() || result.is_undefined() {
+        return Ok(None);
+    }
+    serde_wasm_bindgen::from_value::<Value>(result)
+        .map(Some)
+        .map_err(|error| JsValue::from_str(&format!("Deserialization error: {error}")))
+}
+
 pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), JsValue> {
     call_async_with_retry("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
     Ok(())

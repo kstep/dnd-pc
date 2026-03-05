@@ -35,7 +35,7 @@ use pages::{
         layout::CharacterLayout, list::CharacterList, sheet::CharacterSheet,
         summary::CharacterSummary,
     },
-    import_character::ImportCharacter,
+    import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
     reference::{
         background::BackgroundReference, class::ClassReference, race::RaceReference,
@@ -97,6 +97,7 @@ pub fn App() -> impl IntoView {
                     <Route path=path!("") view=CharacterSheet />
                     <Route path=path!("/summary") view=CharacterSummary />
                 </ParentRoute>
+                <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
                 <Route path=path!("/s/:data") view=ImportCharacter />
                 <Route path=path!("/r/class") view=ClassReference />
                 <Route path=path!("/r/class/:name") view=ClassReference />

@@ -141,6 +141,7 @@ pub mod tests {
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
+            shared: false,
         };
         ch.update_spell_slots(SpellSlotPool::Arcane, None);
         ch

@@ -9,6 +9,7 @@ use wasm_bindgen::prelude::*;
 use crate::{
     BASE_URL,
     components::{datalist_input::DatalistInput, icon::Icon},
+    firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
         FeatureSource, SpellSlotPool, Translatable,
@@ -159,12 +160,20 @@ pub fn CharacterHeader() -> impl IntoView {
     let share_copied = RwSignal::new(false);
 
     let on_share = move |_| {
-        let encoded = share::encode_character(&store.get_untracked(), Some(&registry));
+        let character = store.get_untracked();
         let origin = leptos::prelude::window()
             .location()
             .origin()
             .unwrap_or_default();
-        let url = format!("{origin}{BASE_URL}/s/{encoded}");
+
+        let url = if character.shared
+            && let Some(uid) = firebase::current_uid()
+        {
+            format!("{origin}{BASE_URL}/s/{uid}/{}", character.id)
+        } else {
+            let encoded = share::encode_character(&character, Some(&registry));
+            format!("{origin}{BASE_URL}/s/{encoded}")
+        };
 
         let clipboard = leptos::prelude::window().navigator().clipboard();
         let promise = clipboard.write_text(&url);
@@ -585,6 +594,16 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
 
             <div class="header-actions">
+                <label class="share-toggle" title=move_tr!("share-toggle")>
+                    <input
+                        type="checkbox"
+                        prop:checked=move || store.shared().get()
+                        on:change=move |e| {
+                            store.shared().set(event_target_checked(&e));
+                        }
+                    />
+                    <Icon name="globe" size=14 />
+                </label>
                 <button class="btn-add" title=move_tr!("share-link") on:click=on_share>
                     <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=18 />
                 </button>

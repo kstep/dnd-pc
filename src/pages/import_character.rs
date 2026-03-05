@@ -14,7 +14,7 @@ use strum::IntoEnumIterator;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL,
+    BASE_URL, firebase,
     model::{Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable},
     share, storage,
 };
@@ -644,4 +644,74 @@ pub fn ImportCharacter() -> impl IntoView {
     } else {
         EitherOf3::B(do_import(character))
     }
+}
+
+#[derive(Params, Clone, Debug, PartialEq)]
+struct CloudImportParams {
+    user_id: String,
+    char_id: String,
+}
+
+fn import_or_conflict(character: Character) -> impl IntoView {
+    let existing = storage::load_character(&character.id);
+    let has_conflict = existing
+        .as_ref()
+        .is_some_and(|existing| existing.updated_at > character.updated_at);
+
+    if has_conflict {
+        Either::Left(view! {
+            <ImportConflict incoming=character existing=existing.unwrap() />
+        })
+    } else {
+        Either::Right(do_import(character))
+    }
+}
+
+#[component]
+pub fn ImportCloudCharacter() -> impl IntoView {
+    let params = use_params::<CloudImportParams>().get_untracked().ok();
+
+    let not_found_view = move || {
+        view! {
+            <div class="panel">
+                <h2>{move_tr!("share-not-found")}</h2>
+                <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
+            </div>
+        }
+    };
+
+    let Some(params) = params else {
+        return Either::Left(not_found_view());
+    };
+
+    let user_id = params.user_id;
+    let char_id = params.char_id;
+
+    let character = LocalResource::new(move || {
+        let uid = user_id.clone();
+        let cid = char_id.clone();
+        async move {
+            firebase::wait_ready().await;
+            let value = firebase::get_character_doc(&uid, &cid).await.ok()??;
+            let ch = storage::deserialize_character_value(value)?;
+            ch.shared.then_some(ch)
+        }
+    });
+
+    Either::Right(view! {
+        <Suspense fallback=move || view! {
+            <div class="panel">
+                <p>{move_tr!("share-loading")}</p>
+            </div>
+        }>
+            {move || {
+                character.get().map(|result| {
+                    match result {
+                        Some(ch) => Either::Left(import_or_conflict(ch)),
+                        None => Either::Right(not_found_view()),
+                    }
+                })
+            }}
+        </Suspense>
+    })
 }

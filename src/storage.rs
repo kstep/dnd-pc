@@ -95,6 +95,15 @@ fn migrate_v3(value: &mut serde_json::Value) {
     }
 }
 
+/// Deserialize a `serde_json::Value` into a `Character`, applying all
+/// migrations. Used for cloud-fetched data.
+pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
+    migrate_v1(&mut value);
+    migrate_v2(&mut value);
+    migrate_v3(&mut value);
+    serde_json::from_value(value).ok()
+}
+
 pub fn load_character(id: &Uuid) -> Option<Character> {
     let key = character_key(id);
     if let Ok(ch) = LocalStorage::get::<Character>(&key) {
