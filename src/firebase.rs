@@ -1,10 +1,11 @@
 use js_sys::{Array, Object, Promise, Reflect};
 use serde::Serialize;
 use serde_json::Value;
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::{JsCast, prelude::*};
 use wasm_bindgen_futures::JsFuture;
 
-/// Timeout for Firestore operations in ms (setDoc can hang with offline persistence).
+/// Timeout for Firestore operations in ms (setDoc can hang with offline
+/// persistence).
 const FIRESTORE_TIMEOUT_MS: u32 = 10_000;
 
 fn firebase_obj() -> Option<Object> {
@@ -35,6 +36,22 @@ pub async fn wait_ready() -> bool {
     is_available()
 }
 
+/// Call a `window.__firebase` method and return the result as a Promise.
+/// Fails immediately on structural errors (missing object, not a function).
+fn call_to_promise(method: &str, args: &[JsValue]) -> Result<Promise, JsValue> {
+    let fb = firebase_obj().ok_or_else(|| JsValue::from_str("Firebase not available"))?;
+    let func = Reflect::get(&fb, &method.into())?;
+    let func: js_sys::Function = func
+        .dyn_into()
+        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} is not a function")))?;
+    let js_args: Array = args.iter().collect();
+    let result = Reflect::apply(&func, &fb, &js_args)?;
+    result
+        .dyn_into()
+        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))
+}
+
+/// Call a `window.__firebase` method synchronously (non-Promise return value).
 fn call(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
     let fb = firebase_obj().ok_or_else(|| JsValue::from_str("Firebase not available"))?;
     let func = Reflect::get(&fb, &method.into())?;
@@ -45,37 +62,81 @@ fn call(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
     Reflect::apply(&func, &fb, &js_args)
 }
 
+/// Call a `window.__firebase` method and await its Promise (no retry, no
+/// timeout). Used for auth operations that are interactive/non-retriable.
 async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
-    let result = call(method, args)?;
-    let promise: Promise = result
-        .dyn_into()
-        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))?;
+    let promise = call_to_promise(method, args)?;
     JsFuture::from(promise).await
 }
 
-/// Like `call_async` but races against a timeout. Returns `Err` if the timeout
-/// fires first (Firestore can hang indefinitely with offline persistence).
-async fn call_async_with_timeout(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
-    let result = call(method, args)?;
-    let promise: Promise = result
-        .dyn_into()
-        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))?;
-
-    let timeout = Promise::new(&mut |resolve, _| {
+/// Create a JS Promise that resolves after `ms` milliseconds.
+/// The resolved value is `sentinel` (use `JsValue::UNDEFINED` for sleep).
+fn timeout_promise(ms: i32, sentinel: &JsValue) -> Promise {
+    let sentinel = sentinel.clone();
+    Promise::new(&mut move |resolve, _| {
         web_sys::window()
-            .unwrap()
-            .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, FIRESTORE_TIMEOUT_MS as i32)
-            .unwrap();
-    });
+            .expect("no global window")
+            .set_timeout_with_callback_and_timeout_and_arguments_1(&resolve, ms, &sentinel)
+            .expect("setTimeout failed");
+    })
+}
+
+/// Race a JS promise against a timeout. Returns `Err` if the timeout fires
+/// first. Uses a sentinel object (not `undefined`) to distinguish timeout from
+/// a successful resolve that returns `undefined` (e.g. Firestore `setDoc`).
+async fn with_timeout(promise: Promise, label: &str) -> Result<JsValue, JsValue> {
+    let sentinel = Object::new();
+    let sentinel_val: JsValue = sentinel.clone().into();
+    let timeout = timeout_promise(FIRESTORE_TIMEOUT_MS as i32, &sentinel_val);
     let race = Promise::race(&Array::of2(&promise, &timeout));
     let value = JsFuture::from(race).await?;
-    if value.is_undefined() {
+    if value == sentinel_val {
         Err(JsValue::from_str(&format!(
-            "__firebase.{method} timed out after {FIRESTORE_TIMEOUT_MS}ms"
+            "{label} timed out after {FIRESTORE_TIMEOUT_MS}ms"
         )))
     } else {
         Ok(value)
     }
+}
+
+/// Sleep for the given number of milliseconds.
+async fn sleep_ms(ms: u32) {
+    let promise = timeout_promise(ms as i32, &JsValue::UNDEFINED);
+    let _ = JsFuture::from(promise).await;
+}
+
+/// Max retry attempts for Firestore operations.
+const MAX_RETRIES: u32 = 3;
+/// Initial retry delay in ms (doubles each attempt: 2s, 4s, 8s).
+const INITIAL_RETRY_MS: u32 = 2_000;
+
+/// Like `call_async` but with timeout and exponential backoff retry.
+/// Structural errors (missing method, not a Promise) fail immediately.
+/// Only timeouts and Promise rejections are retried.
+async fn call_async_with_retry(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
+    let label = format!("__firebase.{method}");
+    let mut delay = INITIAL_RETRY_MS;
+    let mut last_err = JsValue::UNDEFINED;
+
+    for attempt in 0..=MAX_RETRIES {
+        if attempt > 0 {
+            log::info!("Retrying {label} (attempt {attempt}/{MAX_RETRIES}) after {delay}ms");
+            sleep_ms(delay).await;
+            delay *= 2;
+        }
+
+        // Fail fast on structural errors — these are permanent.
+        let promise = call_to_promise(method, args)?;
+
+        match with_timeout(promise, &label).await {
+            Ok(value) => return Ok(value),
+            Err(error) => {
+                last_err = error;
+            }
+        }
+    }
+
+    Err(last_err)
 }
 
 pub async fn sign_in_anonymously() -> Result<JsValue, JsValue> {
@@ -121,12 +182,12 @@ pub async fn set_character_doc(uid: &str, char_id: &str, data: &Value) -> Result
     let js_data = data
         .serialize(&serializer)
         .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
-    call_async_with_timeout("setCharacterDoc", &[uid.into(), char_id.into(), js_data]).await?;
+    call_async_with_retry("setCharacterDoc", &[uid.into(), char_id.into(), js_data]).await?;
     Ok(())
 }
 
 pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
-    let result = call_async_with_timeout("getAllCharacters", &[uid.into()]).await?;
+    let result = call_async_with_retry("getAllCharacters", &[uid.into()]).await?;
     let array: Array = result
         .dyn_into()
         .map_err(|_| JsValue::from_str("getAllCharacters did not return an array"))?;
@@ -144,6 +205,17 @@ pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
 }
 
 pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), JsValue> {
-    call_async_with_timeout("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
+    call_async_with_retry("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
     Ok(())
+}
+
+/// Extract a human-readable message from a JsValue error.
+pub fn friendly_js_error(js_err: &JsValue) -> String {
+    if let Some(error_obj) = js_err.dyn_ref::<js_sys::Error>() {
+        return error_obj.message().into();
+    }
+    if let Some(text) = js_err.as_string() {
+        return text;
+    }
+    format!("{js_err:?}")
 }

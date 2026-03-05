@@ -201,7 +201,8 @@ struct SyncState {
     uid: RwSignal<Option<String>>,
     anon: RwSignal<bool>,
     last_error: RwSignal<Option<String>>,
-    /// Bumped after cloud pull modifies the character index, so the UI can react.
+    /// Bumped after cloud pull modifies the character index, so the UI can
+    /// react.
     index_version: RwSignal<u32>,
 }
 
@@ -278,19 +279,28 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
                 SyncOp::PullOnly => {
                     if let Err(error) = pull_all_from_cloud().await {
                         log::warn!("Cloud pull failed: {error:?}");
-                        last_err = Some(format!("Pull failed: {error:?}"));
+                        last_err = Some(format!(
+                            "Pull failed: {}",
+                            firebase::friendly_js_error(&error)
+                        ));
                     }
                 }
                 SyncOp::PushThenPull => {
                     log::info!("finish_sign_in: pushing...");
                     if let Err(error) = push_all_to_cloud().await {
                         log::warn!("Cloud push failed: {error:?}");
-                        last_err = Some(format!("Push failed: {error:?}"));
+                        last_err = Some(format!(
+                            "Push failed: {}",
+                            firebase::friendly_js_error(&error)
+                        ));
                     }
                     log::info!("finish_sign_in: pulling...");
                     if let Err(error) = pull_all_from_cloud().await {
                         log::warn!("Cloud pull failed: {error:?}");
-                        last_err = Some(format!("Pull failed: {error:?}"));
+                        last_err = Some(format!(
+                            "Pull failed: {}",
+                            firebase::friendly_js_error(&error)
+                        ));
                     }
                 }
             }
@@ -313,6 +323,18 @@ enum SyncOp {
     PushThenPull,
 }
 
+impl SyncOp {
+    /// Anonymous users only pull (no data to push); authenticated users push
+    /// first then pull to merge.
+    fn for_anon(is_anon: bool) -> Self {
+        if is_anon {
+            Self::PullOnly
+        } else {
+            Self::PushThenPull
+        }
+    }
+}
+
 pub fn init_sync() {
     let state = get_or_init_sync();
     state.set_ok(SyncStatus::Connecting);
@@ -327,12 +349,7 @@ pub fn init_sync() {
         // Wait for auth state to settle (handles redirects, restored sessions, etc.)
         if let Some((uid, is_anon)) = firebase::wait_for_auth().await {
             log::info!("Auth settled: uid={uid}, anon={is_anon}");
-            let op = if is_anon {
-                SyncOp::PullOnly
-            } else {
-                SyncOp::PushThenPull
-            };
-            finish_sign_in(state, is_anon, op).await;
+            finish_sign_in(state, is_anon, SyncOp::for_anon(is_anon)).await;
             return;
         }
 
@@ -342,7 +359,10 @@ pub fn init_sync() {
             Ok(_) => finish_sign_in(state, true, SyncOp::PullOnly).await,
             Err(error) => {
                 log::warn!("Anonymous sign-in failed: {error:?}");
-                state.set_error(format!("Anonymous sign-in failed: {error:?}"));
+                state.set_error(format!(
+                    "Anonymous sign-in failed: {}",
+                    firebase::friendly_js_error(&error)
+                ));
             }
         }
     });
@@ -361,7 +381,10 @@ pub fn sign_in_with_google() {
         Ok(p) => p,
         Err(error) => {
             log::warn!("Google sign-in failed: {error:?}");
-            state.set_error(format!("Google sign-in failed: {error:?}"));
+            state.set_error(format!(
+                "Google sign-in failed: {}",
+                firebase::friendly_js_error(&error)
+            ));
             return;
         }
     };
@@ -371,9 +394,26 @@ pub fn sign_in_with_google() {
             Ok(_) => finish_sign_in(state, false, SyncOp::PushThenPull).await,
             Err(error) => {
                 log::warn!("Google sign-in failed: {error:?}");
-                state.set_error(format!("Google sign-in failed: {error:?}"));
+                state.set_error(format!(
+                    "Google sign-in failed: {}",
+                    firebase::friendly_js_error(&error)
+                ));
             }
         }
+    });
+}
+
+pub fn retry_sync() {
+    let state = get_or_init_sync();
+    if state.uid.get_untracked().is_none() {
+        // No UID — re-run full init
+        init_sync();
+        return;
+    }
+    let is_anon = state.anon.get_untracked();
+    state.set_ok(SyncStatus::Syncing);
+    spawn_local(async move {
+        finish_sign_in(state, is_anon, SyncOp::for_anon(is_anon)).await;
     });
 }
 
@@ -422,7 +462,10 @@ fn schedule_cloud_push(character: &Character) {
                 Ok(()) => state.set_ok(SyncStatus::Synced),
                 Err(error) => {
                     log::warn!("Cloud push failed: {error:?}");
-                    state.set_error(format!("Push failed: {error:?}"));
+                    state.set_error(format!(
+                        "Push failed: {}",
+                        firebase::friendly_js_error(&error)
+                    ));
                 }
             }
         });
@@ -512,8 +555,10 @@ async fn pull_all_from_cloud() -> Result<(), JsValue> {
             }
             _ => {
                 // Remote is newer or doesn't exist locally — save to localStorage
-                LocalStorage::set(character_key(&remote.id), &remote)
-                    .expect("failed to save pulled character");
+                if let Err(error) = LocalStorage::set(character_key(&remote.id), &remote) {
+                    log::warn!("Failed to save pulled character {}: {error}", remote.id);
+                    continue;
+                }
 
                 let summary = remote.summary();
                 match pos_map.get(&remote.id) {

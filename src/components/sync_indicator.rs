@@ -1,7 +1,10 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
-use crate::storage::{self, SyncStatus};
+use crate::{
+    components::icon::Icon,
+    storage::{self, SyncStatus},
+};
 
 #[component]
 pub fn SyncIndicator() -> impl IntoView {
@@ -38,12 +41,22 @@ pub fn SyncIndicator() -> impl IntoView {
             && current_status != SyncStatus::Connecting
     });
 
+    let show_retry_btn = Memo::new(move |_| status.get() == SyncStatus::Error);
+
     let tooltip = move || last_error.get().unwrap_or_default();
 
     view! {
         <div class="sync-indicator" title=tooltip>
             <span class=dot_class></span>
             <span class="sync-text">{status_text}</span>
+            <Show when=move || show_retry_btn.get()>
+                <button
+                    class="sync-retry-btn"
+                    on:click=move |_| storage::retry_sync()
+                >
+                    <Icon name="refresh-cw" size=14 />
+                </button>
+            </Show>
             <Show when=move || show_google_btn.get()>
                 <button
                     class="sync-google-btn"

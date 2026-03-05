@@ -2320,6 +2320,20 @@ input[type="checkbox"] {
     &.sync-error { background: var(--red-5); }
   }
 
+  .sync-retry-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--size-1);
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
   .sync-google-btn {
     background: var(--panel-border);
     color: var(--text-primary);
