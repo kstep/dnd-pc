@@ -31,10 +31,10 @@ static_loader! {
 
 use components::{language_switcher::LanguageSwitcher, sync_indicator::SyncIndicator};
 use pages::{
-    character_layout::CharacterLayout,
-    character_list::CharacterList,
-    character_sheet::CharacterSheet,
-    character_summary::CharacterSummary,
+    character::{
+        layout::CharacterLayout, list::CharacterList, sheet::CharacterSheet,
+        summary::CharacterSummary,
+    },
     import_character::ImportCharacter,
     not_found::NotFound,
     reference::{

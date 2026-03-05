@@ -45,6 +45,8 @@ pub struct CharacterSummary {
     pub name: String,
     pub class: String,
     pub level: u32,
+    #[serde(default)]
+    pub updated_at: u64,
 }
 
 // --- Main Character ---
@@ -308,6 +310,7 @@ impl Character {
             name: self.identity.name.clone(),
             class: self.class_summary(),
             level: self.level(),
+            updated_at: self.updated_at,
         }
     }
 }

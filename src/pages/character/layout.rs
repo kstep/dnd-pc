@@ -61,6 +61,13 @@ pub fn CharacterLayout() -> impl IntoView {
                 }
             });
 
+            // Reload store when cloud sync pulls a newer version.
+            storage::track_cloud_character(
+                store.read_untracked().id,
+                move || store.read_untracked().updated_at,
+                move |fresh| store.set(fresh),
+            );
+
             // Provide context so child components can access the store
             provide_context(store);
 

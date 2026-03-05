@@ -11,9 +11,11 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 - Ability scores, modifiers, and saving throws
 - Skills with proficiency tracking
 - Combat stats (AC, HP, initiative, speed, hit dice)
-- Spellcasting with spell slots and spell lists
+- Spellcasting with multiple spell slot pools (Arcane, Pact) and spell lists
 - Equipment and inventory management
 - Multiclassing support with automatic class feature application
+- Character summary view (read-only overview)
+- Reference pages for classes, races, backgrounds, and spells
 - Share characters via compressed URL
 - JSON import/export
 - Internationalization (English and Russian)
@@ -32,12 +34,11 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 
 ### Prerequisites
 
-- Rust nightly toolchain
+- Rust stable toolchain (nightly only needed for `cargo +nightly fmt`)
 - `wasm32-unknown-unknown` target
 - Trunk
 
 ```sh
-rustup toolchain install nightly --allow-downgrade
 rustup target add wasm32-unknown-unknown
 cargo install trunk
 ```

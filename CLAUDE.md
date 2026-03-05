@@ -22,12 +22,18 @@ Leptos 0.8 CSR (client-side rendered) PWA targeting `wasm32-unknown-unknown`, bu
 
 ### Routing (`src/lib.rs`)
 - `/` — Character list (create, delete, select)
-- `/c/:id` — Character sheet editor (loads by UUID, auto-saves)
+- `/c/:id` — `ParentRoute` → `CharacterLayout` with nested:
+  - `""` → `CharacterSheet` (3-column editor grid)
+  - `"/summary"` → `CharacterSummary` (read-only summary view)
 - `/s/:data` — Import shared character from compressed URL (with conflict detection)
+- `/r/class`, `/r/class/:name`, `/r/class/:name/:subname` → `ClassReference`
+- `/r/race`, `/r/race/:name` → `RaceReference`
+- `/r/background`, `/r/background/:name` → `BackgroundReference`
+- `/r/spell`, `/r/spell/:list` → `SpellReference`
 
 Router uses `option_env!("BASE_URL")` for base path. `lib.rs` also defines `use_theme()` for dark/light mode detection via `window.matchMedia`.
 
-**Component hierarchy:** `App()` → `I18nProvider` → `AppInner()`. `I18nProvider` wraps `AppInner` to ensure i18n is initialized first. `AppInner()` calls `expect_context::<leptos_fluent::I18n>()` and provides `RulesRegistry::new(i18n)` as context.
+**Component hierarchy:** `App()` calls `provide_i18n_context()`, `provide_meta_context()`, provides `RulesRegistry::new(i18n)` as context, calls `storage::init_sync()`, and renders `LanguageSwitcher`, `SyncIndicator`, and `Router`.
 
 **Navigation:** `use_navigate()` from `leptos_router` handles the base URL internally. Always use plain paths like `/c/{id}` — do NOT prepend `{BASE_URL}`. The `BASE_URL` constant is only needed for `<A href=...>` links and manual URL construction (e.g. share links with `window.location.origin`).
 
@@ -36,7 +42,7 @@ Router uses `option_env!("BASE_URL")` for base path. `lib.rs` also defines `use_
 
 **Providing & consuming:**
 ```rust
-// In character_sheet.rs — provides store to all child components
+// In pages/character/layout.rs — provides store to all child components
 let store = Store::new(character);
 provide_context(store);
 
@@ -51,16 +57,28 @@ let store = expect_context::<Store<Character>>();
 - Computed values: `Memo::new(move |_| store.get().initiative())`
 - `Show when=` requires a closure: `move || memo.get()`, not a raw Memo
 
-**Auto-save:** An `Effect::new()` in `character_sheet.rs` calls `store.track()` then `store.update_untracked(storage::save_character)` to save to localStorage on any change.
+**Effects in `character/layout.rs`:**
+1. **Auto-save:** `store.track()` then `store.update_untracked(storage::save_character)` to save to localStorage on any change.
+2. **Description fill:** `store.update(|c| registry.fill_from_registry(c))` to auto-populate empty labels and descriptions from locale-aware JSON definitions.
+3. **Locale change:** Detects language changes and calls `c.clear_all_labels()`, which triggers the fill effect to re-populate from the new locale's data.
+4. **Cloud sync pull:** `storage::track_cloud_character()` reloads the character from localStorage when `sync_index_version` is bumped and the cloud version is newer than the local `updated_at`.
 
-**Description fill:** A second `Effect::new()` calls `store.update(|c| registry.fill_from_registry(c))` to auto-populate empty labels and descriptions from locale-aware JSON definitions.
-
-**Locale change:** A third `Effect::new()` detects language changes and calls `c.clear_all_labels()`, which triggers the fill effect to re-populate from the new locale's data.
+Character pages live in `src/pages/character/` (`layout.rs`, `list.rs`, `sheet.rs`, `summary.rs`).
 
 ### Storage (`src/storage.rs`)
-Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at `dnd_pc_index`, individual characters at `dnd_pc_char_{uuid}`. Saving a character calls `touch()` (sets `updated_at`) and updates the index. Panel open/closed state persisted at `dnd_pc_panel_{class}`.
+Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at `dnd_pc_index`, individual characters at `dnd_pc_char_{uuid}`. `CharacterSummary` includes `updated_at` for cheap timestamp comparison during sync (avoids full character deserialization). Saving a character calls `touch()` (sets `updated_at`) and updates the index. Panel open/closed state persisted at `dnd_pc_panel_{class}`. A `SAVE_IN_FLIGHT` flag lets `track_cloud_character` suppress the auto-save effect when writing cloud-pulled data to the Store, preventing redundant re-push.
 
-**Migration:** `load_character` first tries direct deserialization. On failure, falls back to raw JSON parsing with `migrate_v1()` (converts legacy string `damage_type` values to `DamageType` enum u8 representation), then deserializes the patched value. Add new migrations as `migrate_v2`, etc.
+**Migration:** `load_character` first tries direct deserialization. On failure, falls back to raw JSON parsing with migrations, then deserializes the patched value:
+- `migrate_v1()` — converts legacy string `damage_type` values to `DamageType` enum u8 representation
+- `migrate_v2()` — converts flat `spell_slots` array to `BTreeMap<SpellSlotPool, ...>` keyed by pool
+
+**Cloud sync (`src/firebase.rs`):** Firebase/Firestore integration for cross-device character sync. Firebase JS SDK is loaded from CDN in `index.html` and exposed as `window.__firebase`. Key elements:
+- `SyncStatus` enum: `Disabled`, `Connecting`, `Synced`, `Syncing`, `Error`
+- `init_sync()` — called at app startup; waits for Firebase, then does anonymous auth + pull
+- `sign_in_with_google()` — upgrades anonymous session to persistent Google auth, then full sync
+- `schedule_cloud_push(character)` — debounced (2s) push of a single character to Firestore; reads raw JSON from localStorage to avoid re-serialization
+- `sync_index_version()` — reactive signal bumped after cloud pull modifies the index; `track_cloud_character()` in `character/layout.rs` watches this to reload the store when a newer version arrives
+- `sync_all_with_cloud(push_local_only)` — bidirectional sync: pulls remote characters (saves remote-newer locally, pushes local-newer to cloud); when `push_local_only` is true (authenticated users via `SyncOp::FullSync`), also pushes characters that exist only locally. Uses index `updated_at` for cheap timestamp comparison before loading full characters
 
 ### Character Sharing (`src/share.rs`)
 Pipeline: `Character` → `strip_for_sharing(character, registry)` → `postcard` binary serialize → `brotli` compress (quality 11, lgwin 22) → `base64` URL-safe no-pad encode. Decode reverses the pipeline. Character UUID is preserved for future sync.
@@ -96,19 +114,26 @@ Import page (`src/pages/import_character.rs`) handles conflict detection: if the
 - `fill_from_registry(character)` — fills empty labels and descriptions from locale-aware registry definitions
 - `clear_from_registry(character)` — selectively clears only labels/descriptions that match registry definitions (inverse of fill)
 
-**Level-up:** `ClassDefinition::apply_level(level, character)` applies class features, saving throws, proficiencies, `caster_coef`, and HP. A wrapper `apply_level()` in `character_header.rs` calls it via the store. `FeatureDefinition::apply()` populates `character.feature_data` entries with spells and field values.
+**Level-up:** `ClassDefinition::apply_level(level, character)` applies class features, saving throws, proficiencies, `caster_coef`, and HP. A wrapper `apply_level()` in `character_header.rs` calls it via the store. `FeatureDefinition::apply(level, character, source: &FeatureSource)` populates `character.feature_data` entries with spells and field values.
 
 ### Enums (`src/model/enums.rs`)
-All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact serialization (single byte) while accepting legacy string format on deserialization. Enums implement `Translatable` trait for i18n keys. Key enums: `Ability` (6), `Skill` (18), `Alignment` (9), `ProficiencyLevel` (None/Proficient/Expertise with `multiplier()`, `next()`, `symbol()`), `Proficiency` (6 armor/weapon types), `DamageType` (13 — has `from_name()` parser and `Translatable`), `ArmorType` (Light/Medium/Heavy).
+All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact serialization (single byte) while accepting legacy string format on deserialization. Enums implement `Translatable` trait for i18n keys. Key enums: `Ability` (6), `Skill` (18), `Alignment` (9), `ProficiencyLevel` (None/Proficient/Expertise with `multiplier()`, `next()`, `symbol()`), `Proficiency` (6 armor/weapon types), `DamageType` (13 — has `from_name()` parser and `Translatable`), `ArmorType` (Light/Medium/Heavy), `SpellSlotPool` (Arcane/Pact with `Translatable`).
 
 ### i18n
 Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Language detected from browser, persisted in localStorage. Components use `move_tr!("key")` for reactive translations, `tr!("key")` for non-reactive.
 
 ### Pages (`src/pages/`)
-- `character_list.rs` — list/create/delete characters
-- `character_sheet.rs` — loads character by UUID, creates `Store`, provides context, auto-save + description-fill effects, renders 3-column grid
+- `character/list.rs` — list/create/delete characters
+- `character/layout.rs` — parent route for `/c/:id`, loads character by UUID, creates `Store`, provides context, runs 4 effects (auto-save, fill, locale, cloud sync), renders `<Outlet />`
+- `character/sheet.rs` — renders 3-column grid with header and panels (~37 lines)
+- `character/summary.rs` — read-only summary view at `/c/:id/summary`
 - `import_character.rs` — decodes `/s/:data` share URL, conflict detection with diff table; also handles local JSON file imports
+- `reference/` — class, race, background, spell reference browsers (`class.rs`, `race.rs`, `background.rs`, `spell.rs`, `sidebar.rs`)
 - `not_found.rs` — 404 page
+
+### Components (`src/components/`)
+- Top-level: `character_header`, `character_card`, `summary_header`, `language_switcher`, `sync_indicator`, `datalist_input`, `ability_score_block`, `skill_row`, `toggle_button`, `icon`, `panel`
+- `panels/`: `ability_scores`, `saving_throws`, `skills`, `combat`, `equipment`, `proficiencies`, `spellcasting`, `class_fields`, `features`, `personality`, `notes`
 
 ## Formatting Conventions (rustfmt.toml)
 - Edition 2024 formatting rules
@@ -128,16 +153,16 @@ Data files are locale-specific, organized under `public/{en,ru}/`:
 Each locale directory needs an explicit `<link data-trunk rel="copy-dir" href="public/en" />` (and `public/ru`) in `index.html` to be included in the build output.
 
 ## Utility Types
-- `ConstVec<T, N>` (`src/constvec.rs`): fixed-size vector that trims trailing defaults on serialization for compact payloads. Used for `spell_slots: ConstVec<SpellSlotLevel, 9>`.
+- `ConstVec<T, N>` (`src/constvec.rs`): fixed-size vector that trims trailing defaults on serialization for compact payloads. Used for spell slot levels within each pool.
 - `VecSet<T>` (`src/vecset.rs`): Vec-backed ordered set (maintains insertion order, prevents duplicates). Used for `ClassLevel.applied_levels: VecSet<u32>` and `Character.languages: VecSet<String>`.
 
 ## Model Essentials
-Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). The root `Character` struct derives `Store`, `Clone`, `Serialize`, `Deserialize` (no `PartialEq` or `Debug`). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`, `caster_level()`, `update_spell_slots()`, `class_summary()`, `clear_all_labels()`.
+Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). The root `Character` struct derives `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize` (no `PartialEq`). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`, `caster_level(pool)`, `update_spell_slots(pool, slots)`, `spell_slot(pool, level)`, `all_spell_slots_for_pool(pool)`, `active_pools()`, `class_summary()`, `clear_all_labels()`.
 
 **Label/description pattern:** `Feature`, `Spell`, `RacialTrait`, `FeatureField`, and `FeatureOption` all have an optional `label: Option<String>` field (with `#[serde(default)]` for backward compatibility) and a `.label()` method that returns `label.as_deref().unwrap_or(&name)`. Labels are locale-specific display names filled from the registry; `name` is the stable key. `ClassLevel` has `class_label: Option<String>` and `subclass_label: Option<String>` with corresponding `.class_label()` / `.subclass_label()` methods. `class_summary()` uses these for display. `clear_all_labels()` blanket-clears all labels and descriptions on the character.
 
-**Spellcasting model:** Per-feature spell data lives in `Character.feature_data: BTreeMap<String, FeatureData>` keyed by feature name (e.g. "Spellcasting (Bard)", "Pact Magic", "Infernal Legacy"). Each `FeatureData` has `fields: Vec<FeatureField>` and `spells: Option<SpellData>`. `SpellData` contains `casting_ability: Ability` and `spells: Vec<Spell>`. Spell slots are a unified pool on `Character.spell_slots: ConstVec<SpellSlotLevel, 9>`, rendered once at the top of the spellcasting panel.
+**Spellcasting model:** Per-feature spell data lives in `Character.feature_data: BTreeMap<String, FeatureData>` keyed by feature name (e.g. "Spellcasting (Bard)", "Pact Magic", "Infernal Legacy"). Each `FeatureData` has `source: Option<FeatureSource>`, `fields: Vec<FeatureField>`, and `spells: Option<SpellData>`. `FeatureSource` is an enum: `Class(String)`, `Race(String)`, `Background(String)`. `SpellData` contains `casting_ability: Ability`, `caster_coef: u32`, `pool: SpellSlotPool`, and `spells: Vec<Spell>`. Spell slots are keyed by pool on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>`, rendered per pool in the spellcasting panel.
 
-**Caster level & spell slots:** `ClassLevel.caster_coef: u8` (1=full, 2=half, 3=third) is set during level-up from the class definition. `ClassLevel.applied_levels: VecSet<u32>` tracks which class levels have been applied. `Character::caster_level()` sums `level / caster_coef` across all caster classes. `update_spell_slots()` uses a built-in `SPELL_SLOT_TABLE` (full-caster Wizard progression) for multiclass, or the class-specific JSON slots for single-class. Slot totals are editable for manual adjustment.
+**Caster level & spell slots:** `ClassLevel.caster_coef: u8` (1=full, 2=half, 3=third) is set during level-up from the class definition. `ClassLevel.applied_levels: VecSet<u32>` tracks which class levels have been applied. `Character::caster_level(pool)` sums `level / caster_coef` across caster classes for the given pool. `update_spell_slots(pool, slots)` uses a built-in `SPELL_SLOT_TABLE` (full-caster Wizard progression) for multiclass, or the class-specific JSON slots for single-class. Slot totals are editable for manual adjustment. `active_pools()` returns pools that have any non-empty slots.
 
 **Postcard serialization:** The share pipeline uses `postcard` (positional binary format). `#[serde(flatten)]` and `#[serde(tag = "...")]` are incompatible with postcard. `FeatureField.value` uses the default (externally-tagged) enum representation without flatten, making the `fields` map postcard-compatible and included in shared URLs. Avoid `#[serde(skip_serializing)]` on fields of postcard-serialized structs as it breaks positional alignment. Label fields use `#[serde(default)]` for backward compatibility with older shared URLs.

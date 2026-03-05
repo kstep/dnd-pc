@@ -1,4 +1,8 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::{HashMap, HashSet},
+    rc::Rc,
+};
 
 use gloo_storage::{LocalStorage, Storage};
 use leptos::prelude::*;
@@ -97,6 +101,12 @@ fn upsert_index_entry(index: &mut CharacterIndex, summary: CharacterSummary) {
 }
 
 pub fn save_character(character: &mut Character) {
+    // Save already in flight (cloud-pulled data written to Store) — skip to
+    // avoid bumping updated_at and re-pushing to cloud.
+    if SAVE_IN_FLIGHT.with(|flag| flag.replace(false)) {
+        return;
+    }
+
     character.touch();
     LocalStorage::set(character_key(&character.id), &*character).expect("failed to save character");
 
@@ -227,6 +237,10 @@ thread_local! {
     /// Cached character index to avoid repeated localStorage round-trips on every
     /// save. Lazily populated on first access; kept in sync with localStorage.
     static INDEX_CACHE: RefCell<Option<CharacterIndex>> = const { RefCell::new(None) };
+    /// Set when cloud-pulled data is being written to the Store. The auto-save
+    /// effect will fire but `save_character` skips because the save is already
+    /// handled by the sync pipeline.
+    static SAVE_IN_FLIGHT: Cell<bool> = const { Cell::new(false) };
 }
 
 fn get_or_init_sync() -> SyncState {
@@ -265,6 +279,31 @@ pub fn sync_index_version() -> ReadSignal<u32> {
     get_or_init_sync().index_version.read_only()
 }
 
+/// Set up a reactive effect that reloads a character from localStorage when
+/// cloud sync pulls updates. Calls `on_update` with the fresh data when the
+/// remote version is newer than `current_updated_at()`.
+///
+/// Sets `SAVE_IN_FLIGHT` before calling `on_update` so the auto-save
+/// effect (which fires when the Store is updated) skips the redundant
+/// save and cloud re-push.
+pub fn track_cloud_character(
+    id: Uuid,
+    current_updated_at: impl Fn() -> u64 + 'static,
+    on_update: impl Fn(Character) + 'static,
+) {
+    let index_version = sync_index_version();
+    Effect::new(move |previous: Option<u32>| {
+        if previous.is_some()
+            && let Some(character) = load_character(&id)
+            && character.updated_at > current_updated_at()
+        {
+            SAVE_IN_FLIGHT.with(|flag| flag.set(true));
+            on_update(character);
+        }
+        index_version.get()
+    });
+}
+
 /// Shared post-sign-in logic: resolve UID, run cloud sync operations, update
 /// status. Returns `Err` only if UID is missing after auth.
 async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
@@ -274,36 +313,17 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
             log::info!("finish_sign_in: uid={uid}, op={sync_op:?}");
             state.uid.set(Some(uid));
             state.set_ok(SyncStatus::Syncing);
-            let mut last_err: Option<String> = None;
-            match sync_op {
-                SyncOp::PullOnly => {
-                    if let Err(error) = pull_all_from_cloud().await {
-                        log::warn!("Cloud pull failed: {error:?}");
-                        last_err = Some(format!(
-                            "Pull failed: {}",
-                            firebase::friendly_js_error(&error)
-                        ));
-                    }
+            let push_local_only = matches!(sync_op, SyncOp::FullSync);
+            let last_err = match sync_all_with_cloud(push_local_only).await {
+                Ok(()) => None,
+                Err(error) => {
+                    log::warn!("Cloud sync failed: {error:?}");
+                    Some(format!(
+                        "Sync failed: {}",
+                        firebase::friendly_js_error(&error)
+                    ))
                 }
-                SyncOp::PushThenPull => {
-                    log::info!("finish_sign_in: pushing...");
-                    if let Err(error) = push_all_to_cloud().await {
-                        log::warn!("Cloud push failed: {error:?}");
-                        last_err = Some(format!(
-                            "Push failed: {}",
-                            firebase::friendly_js_error(&error)
-                        ));
-                    }
-                    log::info!("finish_sign_in: pulling...");
-                    if let Err(error) = pull_all_from_cloud().await {
-                        log::warn!("Cloud pull failed: {error:?}");
-                        last_err = Some(format!(
-                            "Pull failed: {}",
-                            firebase::friendly_js_error(&error)
-                        ));
-                    }
-                }
-            }
+            };
             log::info!("finish_sign_in: done");
             match last_err {
                 Some(msg) => state.set_error(msg),
@@ -317,20 +337,21 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum SyncOp {
+    /// Pull remote characters, push local-newer ones (anonymous users).
     PullOnly,
-    PushThenPull,
+    /// Full bidirectional sync: pull remote, push local-newer and local-only
+    /// characters (authenticated users).
+    FullSync,
 }
 
 impl SyncOp {
-    /// Anonymous users only pull (no data to push); authenticated users push
-    /// first then pull to merge.
     fn for_anon(is_anon: bool) -> Self {
         if is_anon {
             Self::PullOnly
         } else {
-            Self::PushThenPull
+            Self::FullSync
         }
     }
 }
@@ -391,7 +412,7 @@ pub fn sign_in_with_google() {
 
     spawn_local(async move {
         match firebase::link_with_google_finish(promise).await {
-            Ok(_) => finish_sign_in(state, false, SyncOp::PushThenPull).await,
+            Ok(_) => finish_sign_in(state, false, SyncOp::FullSync).await,
             Err(error) => {
                 log::warn!("Google sign-in failed: {error:?}");
                 state.set_error(format!(
@@ -490,22 +511,6 @@ async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), JsValue> 
     firebase::set_character_doc(uid, &character.id.to_string(), &json).await
 }
 
-async fn push_all_to_cloud() -> Result<(), JsValue> {
-    let Some(uid) = firebase::current_uid() else {
-        return Ok(());
-    };
-    let index = load_index();
-    log::info!("push_all_to_cloud: {} characters", index.characters.len());
-    for (i, summary) in index.characters.iter().enumerate() {
-        log::info!("push_all_to_cloud: [{i}] pushing {}", summary.id);
-        if let Some(ch) = load_character(&summary.id) {
-            push_to_cloud(&uid, &ch).await?;
-            log::info!("push_all_to_cloud: [{i}] done");
-        }
-    }
-    Ok(())
-}
-
 async fn delete_from_cloud(id: &Uuid) -> Result<(), JsValue> {
     let Some(uid) = firebase::current_uid() else {
         return Ok(());
@@ -513,15 +518,18 @@ async fn delete_from_cloud(id: &Uuid) -> Result<(), JsValue> {
     firebase::delete_character_doc(&uid, &id.to_string()).await
 }
 
-async fn pull_all_from_cloud() -> Result<(), JsValue> {
+/// Bidirectional sync: pull remote characters (saving remote-newer locally,
+/// pushing local-newer to cloud). When `push_local_only` is true, also push
+/// characters that exist only locally (e.g. after linking a Google account).
+async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
     let Some(uid) = firebase::current_uid() else {
-        log::info!("pull_all_from_cloud: no UID, skipping");
+        log::info!("sync_all_with_cloud: no UID, skipping");
         return Ok(());
     };
-    log::info!("pull_all_from_cloud: pulling for uid={uid}");
+    log::info!("sync_all_with_cloud: syncing for uid={uid}");
     let remote_chars = firebase::get_all_characters(&uid).await?;
     log::info!(
-        "pull_all_from_cloud: got {} remote characters",
+        "sync_all_with_cloud: got {} remote characters",
         remote_chars.len()
     );
 
@@ -533,42 +541,65 @@ async fn pull_all_from_cloud() -> Result<(), JsValue> {
         .map(|(i, c)| (c.id, i))
         .collect();
     let mut index_dirty = false;
+    let mut push_failures: u32 = 0;
+    let mut seen_remote: HashSet<Uuid> = HashSet::with_capacity(remote_chars.len());
 
     for remote_value in remote_chars {
         let remote: Character = match serde_json::from_value(remote_value) {
-            Ok(ch) => ch,
+            Ok(character) => character,
             Err(error) => {
                 log::warn!("Failed to deserialize remote character: {error}");
                 continue;
             }
         };
+        seen_remote.insert(remote.id);
 
-        let local = load_character(&remote.id);
-        match local {
-            Some(local_ch) if local_ch.updated_at >= remote.updated_at => {
-                // Local is same or newer — push local to cloud
-                if local_ch.updated_at > remote.updated_at
-                    && let Err(error) = push_to_cloud(&uid, &local_ch).await
-                {
-                    log::warn!("Failed to push local-newer character: {error:?}");
+        // Check local timestamp from the index (already in memory) to avoid
+        // unnecessary full Character deserialization from localStorage.
+        let local_updated_at = pos_map
+            .get(&remote.id)
+            .map(|&position| index.characters[position].updated_at)
+            .unwrap_or(0);
+
+        if local_updated_at >= remote.updated_at {
+            // Local is same or newer — push local to cloud if strictly newer
+            if local_updated_at > remote.updated_at
+                && let Some(local_character) = load_character(&remote.id)
+                && let Err(error) = push_to_cloud(&uid, &local_character).await
+            {
+                log::warn!("Failed to push local-newer character: {error:?}");
+                push_failures += 1;
+            }
+        } else {
+            // Remote is newer or doesn't exist locally — save to localStorage
+            if let Err(error) = LocalStorage::set(character_key(&remote.id), &remote) {
+                log::warn!("Failed to save pulled character {}: {error}", remote.id);
+                continue;
+            }
+
+            let summary = remote.summary();
+            match pos_map.get(&remote.id) {
+                Some(&position) => index.characters[position] = summary,
+                None => {
+                    pos_map.insert(remote.id, index.characters.len());
+                    index.characters.push(summary);
                 }
             }
-            _ => {
-                // Remote is newer or doesn't exist locally — save to localStorage
-                if let Err(error) = LocalStorage::set(character_key(&remote.id), &remote) {
-                    log::warn!("Failed to save pulled character {}: {error}", remote.id);
-                    continue;
-                }
+            index_dirty = true;
+        }
+    }
 
-                let summary = remote.summary();
-                match pos_map.get(&remote.id) {
-                    Some(&i) => index.characters[i] = summary,
-                    None => {
-                        pos_map.insert(remote.id, index.characters.len());
-                        index.characters.push(summary);
-                    }
+    // Push local-only characters (not seen in remote) to cloud.
+    if push_local_only {
+        for summary in &index.characters {
+            if !seen_remote.contains(&summary.id)
+                && let Some(character) = load_character(&summary.id)
+            {
+                log::info!("sync_all_with_cloud: pushing local-only {}", summary.id);
+                if let Err(error) = push_to_cloud(&uid, &character).await {
+                    log::warn!("Failed to push local-only character: {error:?}");
+                    push_failures += 1;
                 }
-                index_dirty = true;
             }
         }
     }
@@ -577,5 +608,12 @@ async fn pull_all_from_cloud() -> Result<(), JsValue> {
         save_index(&index);
         get_or_init_sync().index_version.update(|v| *v += 1);
     }
-    Ok(())
+
+    if push_failures > 0 {
+        Err(JsValue::from_str(&format!(
+            "Failed to push {push_failures} character(s)"
+        )))
+    } else {
+        Ok(())
+    }
 }
