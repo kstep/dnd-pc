@@ -6,7 +6,11 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{summary_header::SummaryHeader, toggle_button::ToggleButton},
+    components::{
+        summary_header::SummaryHeader,
+        summary_list::{SummaryList, SummaryListItem},
+        toggle_button::ToggleButton,
+    },
     model::{
         Ability, Character, CharacterIdentity, CharacterIdentityStoreFields, CharacterStoreFields,
         CombatStatsStoreFields, EquipmentStoreFields, FeatureValue, ProficiencyLevel, Skill,
@@ -69,9 +73,9 @@ pub fn CharacterSummary() -> impl IntoView {
                         })
                     } else {
                         Either::Right(view! {
-                            <h4>{move_tr!("weapons")}</h4>
-                            <div class="summary-spells-list">
-                                {rows.into_iter().map(|(name, atk, dmg, dtype)| {
+                            <div class="summary-section">
+                                <h4>{move_tr!("weapons")}</h4>
+                                <SummaryList items={rows.into_iter().map(|(name, atk, dmg, dtype)| {
                                     let name_atk = if atk != 0 {
                                         format!("{name} {atk:+}")
                                     } else {
@@ -82,15 +86,14 @@ pub fn CharacterSummary() -> impl IntoView {
                                     } else {
                                         format!("{dtype} {dmg}")
                                     };
-                                    view! {
-                                        <div class="summary-spell-entry">
-                                            <div class="summary-spell-row">
-                                                <span class="summary-spell-name">{name_atk}</span>
-                                                <span class="summary-spell-level-label">{damage_info}</span>
-                                            </div>
-                                        </div>
+                                    SummaryListItem {
+                                        name: name_atk,
+                                        description: String::new(),
+                                        badge: Some(view! {
+                                            <span class="summary-list-badge">{damage_info}</span>
+                                        }.into_any()),
                                     }
-                                }).collect_view()}
+                                }).collect::<Vec<_>>()} />
                             </div>
                         })
                     }
@@ -155,9 +158,8 @@ pub fn CharacterSummary() -> impl IntoView {
 
                     Some(spell_sections.into_iter().map(|(label, dc, atk, spells)| {
                         let atk_str = format_bonus(atk);
-                        let expanded = RwSignal::new(HashSet::<usize>::new());
                         view! {
-                            <div class="summary-spell-section">
+                            <div class="summary-section">
                                 <h4>{label}</h4>
                                 <div class="summary-spell-stats">
                                     <span class="summary-spell-stat">
@@ -167,38 +169,20 @@ pub fn CharacterSummary() -> impl IntoView {
                                         {move_tr!("spell-attack")} ": " <strong>{atk_str}</strong>
                                     </span>
                                 </div>
-                                <div class="summary-spells-list">
-                                    {spells.into_iter().enumerate().map(|(i, (name, level, desc))| {
-                                        let is_open = Signal::derive(move || expanded.get().contains(&i));
-                                        let has_desc = !desc.is_empty();
-                                        let level_str = if level == 0 {
-                                            tr!("summary-cantrips").to_string()
-                                        } else {
-                                            tr!("slot-level", {"level" => level.to_string()}).to_string()
-                                        };
-                                        view! {
-                                            <div class="summary-spell-entry">
-                                                <div class="summary-spell-row">
-                                                    {if has_desc {
-                                                        Some(view! {
-                                                            <ToggleButton
-                                                                expanded=is_open
-                                                                on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                                            />
-                                                        })
-                                                    } else {
-                                                        None
-                                                    }}
-                                                    <span class="summary-spell-name">{name}</span>
-                                                    <span class="summary-spell-level-label">{level_str}</span>
-                                                </div>
-                                                <Show when=move || is_open.get() && has_desc>
-                                                    <p class="summary-spell-desc">{desc.clone()}</p>
-                                                </Show>
-                                            </div>
-                                        }
-                                    }).collect_view()}
-                                </div>
+                                <SummaryList items={spells.into_iter().map(|(name, level, description)| {
+                                    let level_str = if level == 0 {
+                                        tr!("summary-cantrips").to_string()
+                                    } else {
+                                        tr!("slot-level", {"level" => level.to_string()}).to_string()
+                                    };
+                                    SummaryListItem {
+                                        name,
+                                        description,
+                                        badge: Some(view! {
+                                            <span class="summary-list-badge">{level_str}</span>
+                                        }.into_any()),
+                                    }
+                                }).collect::<Vec<_>>()} />
                             </div>
                         }
                     }).collect_view())
@@ -377,38 +361,17 @@ pub fn CharacterSummary() -> impl IntoView {
                     }
 
                     Some(choices.into_iter().map(|(label, options)| {
-                        let expanded = RwSignal::new(HashSet::<usize>::new());
                         view! {
                             <h4 class="summary-subsection-title">{label}</h4>
-                            <div class="summary-spells-list">
-                                {options.into_iter().enumerate().map(|(i, (name, cost, desc))| {
-                                    let is_open = Signal::derive(move || expanded.get().contains(&i));
-                                    let has_desc = !desc.is_empty();
-                                    view! {
-                                        <div class="summary-spell-entry">
-                                            <div class="summary-spell-row">
-                                                {if has_desc {
-                                                    Some(view! {
-                                                        <ToggleButton
-                                                            expanded=is_open
-                                                            on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                                        />
-                                                    })
-                                                } else {
-                                                    None
-                                                }}
-                                                <span class="summary-spell-name">{name}</span>
-                                                {(cost > 0).then(|| view! {
-                                                    <span class="summary-choice-cost">{cost}</span>
-                                                })}
-                                            </div>
-                                            <Show when=move || is_open.get() && has_desc>
-                                                <p class="summary-spell-desc">{desc.clone()}</p>
-                                            </Show>
-                                        </div>
-                                    }
-                                }).collect_view()}
-                            </div>
+                            <SummaryList items={options.into_iter().map(|(name, cost, description)| {
+                                SummaryListItem {
+                                    name,
+                                    description,
+                                    badge: (cost > 0).then(|| view! {
+                                        <span class="summary-choice-cost">{cost}</span>
+                                    }.into_any()),
+                                }
+                            }).collect::<Vec<_>>()} />
                         }
                     }).collect_view())
                 }}
@@ -744,18 +707,18 @@ pub fn CharacterSummary() -> impl IntoView {
                     } else {
                         let expanded = RwSignal::new(HashSet::<usize>::new());
                         Either::Right(view! {
-                            <div class="summary-spells-list">
+                            <div class="summary-list">
                                 {items.into_iter().map(|(idx, name, qty, desc)| {
                                     let is_open = Signal::derive(move || expanded.get().contains(&idx));
                                     view! {
-                                        <div class="summary-spell-entry">
-                                            <div class="summary-spell-row">
+                                        <div class="summary-list-entry">
+                                            <div class="summary-list-row">
                                                 <ToggleButton
                                                     expanded=is_open
                                                     on_toggle=move || expanded.update(|set| { if !set.remove(&idx) { set.insert(idx); } })
                                                 />
-                                                <span class="summary-spell-name">{name}</span>
-                                                <span class="summary-spell-level-label">
+                                                <span class="summary-list-name">{name}</span>
+                                                <span class="summary-list-badge">
                                                     "\u{00d7}"
                                                     <input
                                                         type="number"

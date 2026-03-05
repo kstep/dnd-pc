@@ -326,7 +326,7 @@
             {
               "name": "Heightened Spell",
               "description": "When you cast a spell that forces a creature to make a saving throw to resist its effects, you can spend 3 Sorcery Points to give one target of the spell Disadvantage on its first saving throw made against the spell.",
-              "cost": 2
+              "cost": 3
             },
             {
               "name": "Quickened Spell",
@@ -346,7 +346,7 @@
             {
               "name": "Seeking Spell",
               "description": "When you cast a spell that requires you to make an attack roll, you can spend 2 Sorcery Points to reroll the attack roll. You must use the new roll.",
-              "cost": 1
+              "cost": 2
             },
             {
               "name": "Transmuted Spell",

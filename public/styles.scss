@@ -841,6 +841,11 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
 }
 
 .collapsible-desc {
@@ -1525,7 +1530,7 @@ input[type="checkbox"] {
   }
 }
 
-.summary-spell-section {
+.summary-section {
   margin-bottom: var(--size-3);
   width: 100%;
 
@@ -1545,31 +1550,26 @@ input[type="checkbox"] {
   color: var(--text-secondary);
 }
 
-.summary-spells-list {
+.summary-list {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.summary-spell-entry {
+.summary-list-entry {
   border-bottom: 1px solid var(--panel-border);
   padding: var(--size-1) 0;
   width: 100%;
   min-width: 0;
 }
 
-.summary-spell-row {
+.summary-list-row {
   display: flex;
   align-items: center;
   gap: var(--size-2);
-  padding-left: calc(28px + var(--size-2));
-
-  > .btn-toggle-desc {
-    margin-left: calc(-28px - var(--size-2));
-  }
 }
 
-.summary-spell-name {
+.summary-list-name {
   flex: 1;
   font-size: var(--font-size-1);
 }
@@ -1584,13 +1584,13 @@ input[type="checkbox"] {
   }
 }
 
-.summary-spell-level-label {
+.summary-list-badge {
   color: var(--text-secondary);
   font-size: var(--font-size-0);
   white-space: nowrap;
 }
 
-.summary-spell-desc {
+.summary-list-desc {
   margin: var(--size-1) 0 0;
   padding-left: var(--size-3);
   white-space: pre-line;
