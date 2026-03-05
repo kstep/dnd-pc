@@ -73,8 +73,8 @@ pub fn CharacterSummary() -> impl IntoView {
                         })
                     } else {
                         Either::Right(view! {
-                            <div class="summary-section">
-                                <h4>{move_tr!("weapons")}</h4>
+                            <div class="summary-subsection">
+                                <h4 class="summary-subsection-title">{move_tr!("weapons")}</h4>
                                 <SummaryList items={rows.into_iter().map(|(name, atk, dmg, dtype)| {
                                     let name_atk = if atk != 0 {
                                         format!("{name} {atk:+}")
@@ -159,8 +159,8 @@ pub fn CharacterSummary() -> impl IntoView {
                     Some(spell_sections.into_iter().map(|(label, dc, atk, spells)| {
                         let atk_str = format_bonus(atk);
                         view! {
-                            <div class="summary-section">
-                                <h4>{label}</h4>
+                            <div class="summary-subsection">
+                                <h4 class="summary-subsection-title">{label}</h4>
                                 <div class="summary-spell-stats">
                                     <span class="summary-spell-stat">
                                         {move_tr!("spell-save-dc")} ": " <strong>{dc}</strong>
