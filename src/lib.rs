@@ -73,9 +73,13 @@ fn use_theme() -> ReadSignal<&'static str> {
 
 #[component]
 pub fn App() -> impl IntoView {
+    provide_i18n_context();
     provide_meta_context();
 
     let theme = use_theme();
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    provide_context(RulesRegistry::new(i18n));
+    storage::init_sync();
 
     view! {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() />
@@ -84,19 +88,6 @@ pub fn App() -> impl IntoView {
         <Link rel="manifest" href=format!("{BASE_URL}/manifest.json") />
         <Link rel="apple-touch-icon" href=format!("{BASE_URL}/icons/icon-192.png") />
 
-        <I18nProvider>
-            <AppInner />
-        </I18nProvider>
-    }
-}
-
-#[component]
-fn AppInner() -> impl IntoView {
-    let i18n = expect_context::<leptos_fluent::I18n>();
-    provide_context(RulesRegistry::new(i18n));
-    storage::init_sync();
-
-    view! {
         <LanguageSwitcher />
         <SyncIndicator />
         <Router base=option_env!("BASE_URL").unwrap_or_default()>
@@ -121,10 +112,8 @@ fn AppInner() -> impl IntoView {
     }
 }
 
-#[component]
-fn I18nProvider(children: Children) -> impl IntoView {
+fn provide_i18n_context() {
     leptos_fluent! {
-        children: children(),
         translations: [TRANSLATIONS],
         locales: "./locales",
         default_language: "en",
@@ -132,5 +121,5 @@ fn I18nProvider(children: Children) -> impl IntoView {
         initial_language_from_local_storage: true,
         initial_language_from_navigator: true,
         sync_html_tag_lang: true,
-    }
+    };
 }

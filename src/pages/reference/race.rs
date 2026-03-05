@@ -170,7 +170,7 @@ pub fn RaceReference() -> impl IntoView {
     };
 
     view! {
-        <Title text=move_tr!("ref-races") />
+        <Title text=Signal::derive(move || i18n.tr("ref-races")) />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>

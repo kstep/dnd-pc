@@ -144,7 +144,7 @@ pub fn BackgroundReference() -> impl IntoView {
     };
 
     view! {
-        <Title text=move_tr!("ref-backgrounds") />
+        <Title text=Signal::derive(move || i18n.tr("ref-backgrounds")) />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>

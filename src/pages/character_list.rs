@@ -13,6 +13,7 @@ use crate::{
 
 #[component]
 pub fn CharacterList() -> impl IntoView {
+    let i18n = expect_context::<leptos_fluent::I18n>();
     let (characters, set_characters) = signal(storage::load_index().characters);
     let import_state = RwSignal::new(None::<Character>);
 
@@ -44,7 +45,7 @@ pub fn CharacterList() -> impl IntoView {
     };
 
     view! {
-        <Title text=move_tr!("page-characters") />
+        <Title text=Signal::derive(move || i18n.tr("page-characters")) />
         {move || {
             if let Some(character) = import_state.get() {
                 let existing = storage::load_character(&character.id);

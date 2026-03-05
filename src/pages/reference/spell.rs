@@ -13,6 +13,7 @@ struct SpellRefParams {
 
 #[component]
 pub fn SpellReference() -> impl IntoView {
+    let i18n = expect_context::<leptos_fluent::I18n>();
     let registry = expect_context::<RulesRegistry>();
     let params = use_params::<SpellRefParams>();
 
@@ -142,7 +143,7 @@ pub fn SpellReference() -> impl IntoView {
     };
 
     view! {
-        <Title text=move_tr!("ref-spells") />
+        <Title text=Signal::derive(move || i18n.tr("ref-spells")) />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
