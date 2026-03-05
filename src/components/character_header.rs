@@ -602,7 +602,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             store.shared().set(event_target_checked(&e));
                         }
                     />
-                    <Icon name="globe" size=14 />
+                    <Icon name="globe" size=18 />
                 </label>
                 <button class="btn-add" title=move_tr!("share-link") on:click=on_share>
                     <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=18 />

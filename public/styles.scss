@@ -585,6 +585,31 @@ input[type="checkbox"] {
   margin-bottom: var(--size-2);
 }
 
+.share-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: var(--size-1) var(--size-3);
+  font-size: var(--font-size-1);
+  line-height: 1;
+  margin-top: var(--size-1);
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  &:has(input:checked) {
+    color: var(--accent);
+    outline-color: var(--accent);
+  }
+}
+
 .inspiration-toggle {
   background: none;
   border: 1px solid var(--panel-border);
