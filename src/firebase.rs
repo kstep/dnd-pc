@@ -14,6 +14,24 @@ pub fn is_available() -> bool {
     firebase_obj().is_some()
 }
 
+/// Wait for the Firebase JS module to initialize.
+/// Returns `true` if Firebase became available, `false` if not configured.
+pub async fn wait_ready() -> bool {
+    let window = match web_sys::window() {
+        Some(w) => w,
+        None => return false,
+    };
+    let promise = match Reflect::get(&window, &"__firebaseReady".into()) {
+        Ok(val) => match val.dyn_into::<Promise>() {
+            Ok(p) => p,
+            Err(_) => return false,
+        },
+        Err(_) => return false,
+    };
+    let _ = JsFuture::from(promise).await;
+    is_available()
+}
+
 fn call(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
     let fb = firebase_obj().ok_or_else(|| JsValue::from_str("Firebase not available"))?;
     let func = Reflect::get(&fb, &method.into())?;

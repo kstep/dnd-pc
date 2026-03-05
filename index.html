@@ -21,6 +21,11 @@
 
 <body></body>
 
+<script>
+  // Resolved by the module script below once Firebase is ready.
+  // WASM awaits this promise before calling any Firebase APIs.
+  window.__firebaseReady = new Promise(r => { window.__firebaseResolve = r; });
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
   import {
@@ -82,6 +87,7 @@
     deleteCharacterDoc: (uid, charId) =>
       deleteDoc(doc(db, "users", uid, "characters", charId)),
   };
+  window.__firebaseResolve();
 </script>
 
 </html>

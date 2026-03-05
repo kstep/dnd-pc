@@ -300,15 +300,16 @@ enum SyncOp {
 }
 
 pub fn init_sync() {
-    if !firebase::is_available() {
-        log::info!("Firebase not available, cloud sync disabled");
-        return;
-    }
-
     let state = get_or_init_sync();
     state.set_ok(SyncStatus::Connecting);
 
     spawn_local(async move {
+        if !firebase::wait_ready().await {
+            log::info!("Firebase not available, cloud sync disabled");
+            state.status.set(SyncStatus::Disabled);
+            return;
+        }
+
         // Check if returning from a Google sign-in redirect
         match firebase::get_redirect_result().await {
             Ok(result) if !result.is_null() => {
