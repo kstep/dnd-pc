@@ -270,6 +270,7 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
     state.anon.set(is_anon);
     match firebase::current_uid() {
         Some(uid) => {
+            log::info!("finish_sign_in: uid={uid}, op={sync_op:?}");
             state.uid.set(Some(uid));
             state.set_ok(SyncStatus::Syncing);
             let mut last_err: Option<String> = None;
@@ -281,16 +282,19 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
                     }
                 }
                 SyncOp::PushThenPull => {
+                    log::info!("finish_sign_in: pushing...");
                     if let Err(error) = push_all_to_cloud().await {
                         log::warn!("Cloud push failed: {error:?}");
                         last_err = Some(format!("Push failed: {error:?}"));
                     }
+                    log::info!("finish_sign_in: pulling...");
                     if let Err(error) = pull_all_from_cloud().await {
                         log::warn!("Cloud pull failed: {error:?}");
                         last_err = Some(format!("Pull failed: {error:?}"));
                     }
                 }
             }
+            log::info!("finish_sign_in: done");
             match last_err {
                 Some(msg) => state.set_error(msg),
                 None => state.set_ok(SyncStatus::Synced),
@@ -303,6 +307,7 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
     }
 }
 
+#[derive(Debug)]
 enum SyncOp {
     PullOnly,
     PushThenPull,
@@ -447,9 +452,12 @@ async fn push_all_to_cloud() -> Result<(), JsValue> {
         return Ok(());
     };
     let index = load_index();
-    for summary in &index.characters {
+    log::info!("push_all_to_cloud: {} characters", index.characters.len());
+    for (i, summary) in index.characters.iter().enumerate() {
+        log::info!("push_all_to_cloud: [{i}] pushing {}", summary.id);
         if let Some(ch) = load_character(&summary.id) {
             push_to_cloud(&uid, &ch).await?;
+            log::info!("push_all_to_cloud: [{i}] done");
         }
     }
     Ok(())

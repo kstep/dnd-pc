@@ -4,6 +4,9 @@ use serde_json::Value;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
+/// Timeout for Firestore operations in ms (setDoc can hang with offline persistence).
+const FIRESTORE_TIMEOUT_MS: u32 = 10_000;
+
 fn firebase_obj() -> Option<Object> {
     let window = web_sys::window()?;
     let val = Reflect::get(&window, &"__firebase".into()).ok()?;
@@ -50,6 +53,31 @@ async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> 
     JsFuture::from(promise).await
 }
 
+/// Like `call_async` but races against a timeout. Returns `Err` if the timeout
+/// fires first (Firestore can hang indefinitely with offline persistence).
+async fn call_async_with_timeout(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
+    let result = call(method, args)?;
+    let promise: Promise = result
+        .dyn_into()
+        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))?;
+
+    let timeout = Promise::new(&mut |resolve, _| {
+        web_sys::window()
+            .unwrap()
+            .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, FIRESTORE_TIMEOUT_MS as i32)
+            .unwrap();
+    });
+    let race = Promise::race(&Array::of2(&promise, &timeout));
+    let value = JsFuture::from(race).await?;
+    if value.is_undefined() {
+        Err(JsValue::from_str(&format!(
+            "__firebase.{method} timed out after {FIRESTORE_TIMEOUT_MS}ms"
+        )))
+    } else {
+        Ok(value)
+    }
+}
+
 pub async fn sign_in_anonymously() -> Result<JsValue, JsValue> {
     call_async("signInAnonymously", &[]).await
 }
@@ -93,12 +121,12 @@ pub async fn set_character_doc(uid: &str, char_id: &str, data: &Value) -> Result
     let js_data = data
         .serialize(&serializer)
         .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
-    call_async("setCharacterDoc", &[uid.into(), char_id.into(), js_data]).await?;
+    call_async_with_timeout("setCharacterDoc", &[uid.into(), char_id.into(), js_data]).await?;
     Ok(())
 }
 
 pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
-    let result = call_async("getAllCharacters", &[uid.into()]).await?;
+    let result = call_async_with_timeout("getAllCharacters", &[uid.into()]).await?;
     let array: Array = result
         .dyn_into()
         .map_err(|_| JsValue::from_str("getAllCharacters did not return an array"))?;
@@ -116,6 +144,6 @@ pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
 }
 
 pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), JsValue> {
-    call_async("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
+    call_async_with_timeout("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
     Ok(())
 }
