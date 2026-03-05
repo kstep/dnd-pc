@@ -71,8 +71,11 @@
         try {
           return await linkWithPopup(user, googleProvider);
         } catch (error) {
-          if (error.code === "auth/credential-already-in-use" && error.credential) {
-            return signInWithCredential(auth, error.credential);
+          if (error.code === "auth/credential-already-in-use") {
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            if (credential) {
+              return signInWithCredential(auth, credential);
+            }
           }
           throw error;
         }
