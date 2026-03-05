@@ -1,5 +1,6 @@
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
+use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_navigate};
 
 use crate::{
@@ -34,6 +35,7 @@ pub fn CharacterList() -> impl IntoView {
     };
 
     view! {
+        <Title text=move_tr!("page-characters") />
         {move || {
             if let Some(character) = import_state.get() {
                 let existing = storage::load_character(&character.id);

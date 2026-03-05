@@ -142,6 +142,7 @@ pub fn SpellReference() -> impl IntoView {
     };
 
     view! {
+        <Title text=move_tr!("ref-spells") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
