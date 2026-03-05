@@ -32,9 +32,9 @@
     getAuth,
     signInAnonymously,
     GoogleAuthProvider,
-    signInWithRedirect,
-    linkWithRedirect,
-    getRedirectResult,
+    signInWithPopup,
+    signInWithCredential,
+    linkWithPopup,
     onAuthStateChanged,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
   import {
@@ -64,15 +64,30 @@
 
   window.__firebase = {
     signInAnonymously: () => signInAnonymously(auth),
-    signInWithGoogle: () => signInWithRedirect(auth, googleProvider),
-    linkWithGoogle: () => {
+    linkWithGoogle: async () => {
       const user = auth.currentUser;
-      if (!user) return Promise.reject("No current user");
-      return linkWithRedirect(user, googleProvider);
+      if (user) {
+        try {
+          return await linkWithPopup(user, googleProvider);
+        } catch (error) {
+          if (error.code === "auth/credential-already-in-use" && error.credential) {
+            return signInWithCredential(auth, error.credential);
+          }
+          throw error;
+        }
+      }
+      // No current user — sign in directly
+      return signInWithPopup(auth, googleProvider);
     },
-    getRedirectResult: () => getRedirectResult(auth),
     currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
-    isAnonymous: () => (auth.currentUser ? auth.currentUser.isAnonymous : null),
+    // Resolves once auth state is settled (including pending redirects).
+    // Returns { uid, isAnonymous } or null if no user.
+    waitForAuth: () => new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        unsubscribe();
+        resolve(user ? { uid: user.uid, isAnonymous: user.isAnonymous } : null);
+      });
+    }),
     onAuthStateChanged: (cb) =>
       onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
     setCharacterDoc: (uid, charId, data) =>

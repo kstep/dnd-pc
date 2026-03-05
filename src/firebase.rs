@@ -54,30 +54,42 @@ pub async fn sign_in_anonymously() -> Result<JsValue, JsValue> {
     call_async("signInAnonymously", &[]).await
 }
 
-pub async fn sign_in_with_google() -> Result<JsValue, JsValue> {
-    call_async("signInWithGoogle", &[]).await
+/// Call linkWithGoogle synchronously (opens popup in user gesture context),
+/// returning a Promise to await for the result.
+pub fn link_with_google_start() -> Result<Promise, JsValue> {
+    let result = call("linkWithGoogle", &[])?;
+    result
+        .dyn_into::<Promise>()
+        .map_err(|_| JsValue::from_str("linkWithGoogle did not return a Promise"))
 }
 
-pub async fn link_with_google() -> Result<JsValue, JsValue> {
-    call_async("linkWithGoogle", &[]).await
-}
-
-/// Check for a pending redirect result (returns `null` if none).
-pub async fn get_redirect_result() -> Result<JsValue, JsValue> {
-    call_async("getRedirectResult", &[]).await
+pub async fn link_with_google_finish(promise: Promise) -> Result<JsValue, JsValue> {
+    JsFuture::from(promise).await
 }
 
 pub fn current_uid() -> Option<String> {
     call("currentUid", &[]).ok()?.as_string()
 }
 
-/// Returns `Some(true)` if anonymous, `Some(false)` if authenticated, `None` if no user.
-pub fn is_anonymous() -> Option<bool> {
-    call("isAnonymous", &[]).ok()?.as_bool()
+/// Wait for Firebase auth state to settle (including pending redirects).
+/// Returns `(uid, is_anonymous)` or `None` if no user.
+pub async fn wait_for_auth() -> Option<(String, bool)> {
+    let result = call_async("waitForAuth", &[]).await.ok()?;
+    if result.is_null() || result.is_undefined() {
+        return None;
+    }
+    let uid = Reflect::get(&result, &"uid".into()).ok()?.as_string()?;
+    let is_anon = Reflect::get(&result, &"isAnonymous".into())
+        .ok()?
+        .as_bool()
+        .unwrap_or(true);
+    Some((uid, is_anon))
 }
 
 pub async fn set_character_doc(uid: &str, char_id: &str, data: &Value) -> Result<(), JsValue> {
-    let serializer = serde_wasm_bindgen::Serializer::new().serialize_maps_as_objects(true);
+    let serializer = serde_wasm_bindgen::Serializer::new()
+        .serialize_maps_as_objects(true)
+        .serialize_missing_as_null(true);
     let js_data = data
         .serialize(&serializer)
         .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;

@@ -310,27 +310,20 @@ pub fn init_sync() {
             return;
         }
 
-        // Check if returning from a Google sign-in redirect
-        match firebase::get_redirect_result().await {
-            Ok(result) if !result.is_null() => {
-                // Redirect sign-in completed — user is now Google-authenticated
-                finish_sign_in(state, false, SyncOp::PushThenPull).await;
-                return;
-            }
-            Err(error) => {
-                log::warn!("getRedirectResult failed: {error:?}");
-            }
-            _ => {}
-        }
-
-        // Check if a session already exists (e.g. Google user restored from IndexedDB)
-        if firebase::current_uid().is_some() {
-            let is_anon = firebase::is_anonymous().unwrap_or(true);
-            finish_sign_in(state, is_anon, SyncOp::PullOnly).await;
+        // Wait for auth state to settle (handles redirects, restored sessions, etc.)
+        if let Some((uid, is_anon)) = firebase::wait_for_auth().await {
+            log::info!("Auth settled: uid={uid}, anon={is_anon}");
+            let op = if is_anon {
+                SyncOp::PullOnly
+            } else {
+                SyncOp::PushThenPull
+            };
+            finish_sign_in(state, is_anon, op).await;
             return;
         }
 
         // No existing session — do anonymous sign-in
+        log::info!("No existing session, signing in anonymously");
         match firebase::sign_in_anonymously().await {
             Ok(_) => finish_sign_in(state, true, SyncOp::PullOnly).await,
             Err(error) => {
@@ -348,21 +341,25 @@ pub fn sign_in_with_google() {
     let state = get_or_init_sync();
     state.set_ok(SyncStatus::Connecting);
 
-    spawn_local(async move {
-        // Try linking first (anonymous → Google), fall back to direct sign-in
-        let result = match firebase::link_with_google().await {
-            Ok(value) => Ok(value),
-            Err(error) => {
-                log::debug!("linkWithGoogle failed, falling back to sign-in: {error:?}");
-                firebase::sign_in_with_google().await
-            }
-        };
-
-        if let Err(error) = result {
-            log::warn!("Google sign-in redirect failed: {error:?}");
+    // Open popup synchronously to preserve user gesture context.
+    // Browsers block popups that aren't triggered by a direct user click.
+    let promise = match firebase::link_with_google_start() {
+        Ok(p) => p,
+        Err(error) => {
+            log::warn!("Google sign-in failed: {error:?}");
             state.set_error(format!("Google sign-in failed: {error:?}"));
+            return;
         }
-        // On success, the page navigates away — result handled by init_sync on reload
+    };
+
+    spawn_local(async move {
+        match firebase::link_with_google_finish(promise).await {
+            Ok(_) => finish_sign_in(state, false, SyncOp::PushThenPull).await,
+            Err(error) => {
+                log::warn!("Google sign-in failed: {error:?}");
+                state.set_error(format!("Google sign-in failed: {error:?}"));
+            }
+        }
     });
 }
 

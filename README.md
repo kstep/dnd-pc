@@ -95,13 +95,7 @@ service cloud.firestore {
 }
 ```
 
-6. **Deploy Firebase Hosting** (required for Google sign-in redirect):
-   - Install Firebase CLI: `npm install -g firebase-tools`
-   - Run `npx firebase login` and `npx firebase init hosting` (select your project, defaults are fine)
-   - Run `npx firebase deploy --only hosting`
-   - This enables the `/__/firebase/init.json` endpoint on your `authDomain` that the redirect auth flow needs
-
-7. **Add config to the app:**
+6. **Add config to the app:**
    - Paste your Firebase config into `index.html`, replacing the placeholder values:
 
 ```js
