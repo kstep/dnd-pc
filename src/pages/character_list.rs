@@ -16,6 +16,15 @@ pub fn CharacterList() -> impl IntoView {
     let (characters, set_characters) = signal(storage::load_index().characters);
     let import_state = RwSignal::new(None::<Character>);
 
+    // Re-read index when cloud pull updates it.
+    let index_version = storage::sync_index_version();
+    Effect::new(move |prev: Option<u32>| {
+        if prev.is_some() {
+            set_characters.set(storage::load_index().characters);
+        }
+        index_version.get()
+    });
+
     let create_character = move |_| {
         let mut character = Character::new();
         storage::save_character(&mut character);

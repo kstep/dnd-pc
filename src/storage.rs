@@ -201,6 +201,8 @@ struct SyncState {
     uid: RwSignal<Option<String>>,
     anon: RwSignal<bool>,
     last_error: RwSignal<Option<String>>,
+    /// Bumped after cloud pull modifies the character index, so the UI can react.
+    index_version: RwSignal<u32>,
 }
 
 impl SyncState {
@@ -234,6 +236,7 @@ fn get_or_init_sync() -> SyncState {
             uid: RwSignal::new(None),
             anon: RwSignal::new(false),
             last_error: RwSignal::new(None),
+            index_version: RwSignal::new(0),
         })
     })
 }
@@ -253,6 +256,12 @@ pub fn sync_is_anonymous() -> ReadSignal<bool> {
 
 pub fn sync_last_error() -> ReadSignal<Option<String>> {
     get_or_init_sync().last_error.read_only()
+}
+
+/// Reactive signal bumped whenever cloud pull updates the character index.
+/// Components can track this to refresh their view of the index.
+pub fn sync_index_version() -> ReadSignal<u32> {
+    get_or_init_sync().index_version.read_only()
 }
 
 /// Shared post-sign-in logic: resolve UID, run cloud sync operations, update
@@ -455,9 +464,15 @@ async fn delete_from_cloud(id: &Uuid) -> Result<(), JsValue> {
 
 async fn pull_all_from_cloud() -> Result<(), JsValue> {
     let Some(uid) = firebase::current_uid() else {
+        log::info!("pull_all_from_cloud: no UID, skipping");
         return Ok(());
     };
+    log::info!("pull_all_from_cloud: pulling for uid={uid}");
     let remote_chars = firebase::get_all_characters(&uid).await?;
+    log::info!(
+        "pull_all_from_cloud: got {} remote characters",
+        remote_chars.len()
+    );
 
     let mut index = load_index();
     let mut pos_map: HashMap<Uuid, usize> = index
@@ -507,6 +522,7 @@ async fn pull_all_from_cloud() -> Result<(), JsValue> {
 
     if index_dirty {
         save_index(&index);
+        get_or_init_sync().index_version.update(|v| *v += 1);
     }
     Ok(())
 }
