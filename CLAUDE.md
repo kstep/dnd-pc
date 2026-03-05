@@ -25,6 +25,7 @@ Leptos 0.8 CSR (client-side rendered) PWA targeting `wasm32-unknown-unknown`, bu
 - `/c/:id` — `ParentRoute` → `CharacterLayout` with nested:
   - `""` → `CharacterSheet` (3-column editor grid)
   - `"/summary"` → `CharacterSummary` (read-only summary view)
+- `/s/:user_id/:char_id` — Import shared character from Firestore (UUID-based sharing)
 - `/s/:data` — Import shared character from compressed URL (with conflict detection)
 - `/r/class`, `/r/class/:name`, `/r/class/:name/:subname` → `ClassReference`
 - `/r/race`, `/r/race/:name` → `RaceReference`
@@ -71,6 +72,9 @@ Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at
 **Migration:** `load_character` first tries direct deserialization. On failure, falls back to raw JSON parsing with migrations, then deserializes the patched value:
 - `migrate_v1()` — converts legacy string `damage_type` values to `DamageType` enum u8 representation
 - `migrate_v2()` — converts flat `spell_slots` array to `BTreeMap<SpellSlotPool, ...>` keyed by pool
+- `migrate_v3()` — converts string `Weapon.attack_bonus` to `i32`
+
+`deserialize_character_value(value: Value) -> Option<Character>` applies all migrations to a `serde_json::Value` and deserializes. Used for cloud-fetched data (both sync and UUID-based sharing imports).
 
 **Cloud sync (`src/firebase.rs`):** Firebase/Firestore integration for cross-device character sync. Firebase JS SDK is loaded from CDN in `index.html` and exposed as `window.__firebase`. Key elements:
 - `SyncStatus` enum: `Disabled`, `Connecting`, `Synced`, `Syncing`, `Error`
@@ -79,13 +83,17 @@ Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at
 - `schedule_cloud_push(character)` — debounced (2s) push of a single character to Firestore; reads raw JSON from localStorage to avoid re-serialization
 - `sync_index_version()` — reactive signal bumped after cloud pull modifies the index; `track_cloud_character()` in `character/layout.rs` watches this to reload the store when a newer version arrives
 - `sync_all_with_cloud(push_local_only)` — bidirectional sync: pulls remote characters (saves remote-newer locally, pushes local-newer to cloud); when `push_local_only` is true (authenticated users via `SyncOp::FullSync`), also pushes characters that exist only locally. Uses index `updated_at` for cheap timestamp comparison before loading full characters
+- `get_character_doc(uid, char_id)` — fetches a single character document from Firestore by owner UID and character UUID. Used for UUID-based public sharing
 
-### Character Sharing (`src/share.rs`)
-Pipeline: `Character` → `strip_for_sharing(character, registry)` → `postcard` binary serialize → `brotli` compress (quality 11, lgwin 22) → `base64` URL-safe no-pad encode. Decode reverses the pipeline. Character UUID is preserved for future sync.
+### Character Sharing (`src/share.rs`, `src/pages/import_character.rs`)
+
+**Two sharing modes:**
+1. **Firestore UUID sharing** — when `character.shared == true` and the user is authenticated, generates a short URL `/s/{uid}/{char_id}`. The `ImportCloudCharacter` component fetches the character via `firebase::get_character_doc()`, deserializes it with `storage::deserialize_character_value()` (which applies all migrations), and verifies `shared == true` before allowing import. Firestore security rules allow public read access when the document's `shared` field is `true`.
+2. **Compressed URL sharing** — fallback when not authenticated or `shared` is false. Pipeline: `Character` → `strip_for_sharing(character, registry)` → `postcard` binary serialize → `brotli` compress (quality 11, lgwin 22) → `base64` URL-safe no-pad encode → `/s/{encoded_data}`. Decode reverses the pipeline. Character UUID is preserved for future sync.
 
 `strip_for_sharing` takes `registry: Option<&RulesRegistry>`. If registry is available, calls `registry.clear_from_registry()` (selectively clears only registry-matched labels/descriptions for minimal payload). Fallback: calls `character.clear_all_labels()` (blanket clear). `encode_character` also takes `registry: Option<&RulesRegistry>`.
 
-Import page (`src/pages/import_character.rs`) handles conflict detection: if the imported character's UUID already exists locally and the local copy is newer, shows a diff table instead of auto-importing.
+Import page (`src/pages/import_character.rs`) handles both import types: `ImportCharacter` for compressed URLs, `ImportCloudCharacter` for Firestore UUID imports. Both support conflict detection: if the imported character's UUID already exists locally and the local copy is newer, shows a diff table (`ImportConflict`) instead of auto-importing.
 
 ### Rules Registry (`src/rules.rs`)
 `RulesRegistry` is provided as context at the App root. `RulesRegistry::new(i18n)` takes `leptos_fluent::I18n` to enable locale-aware data fetching. Class, race, and background definitions (JSON in `public/{locale}/classes/`, `public/{locale}/races/`, `public/{locale}/backgrounds/`) are lazily fetched via `LocalResource` and cached in `RwSignal<HashMap>` per type. Spell lists (JSON in `public/{locale}/spells/`) are also lazily fetched and cached in a separate `spell_list_cache`. Caches automatically clear when the locale changes.
@@ -127,12 +135,12 @@ Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Lan
 - `character/layout.rs` — parent route for `/c/:id`, loads character by UUID, creates `Store`, provides context, runs 4 effects (auto-save, fill, locale, cloud sync), renders `<Outlet />`
 - `character/sheet.rs` — renders 3-column grid with header and panels (~37 lines)
 - `character/summary.rs` — read-only summary view at `/c/:id/summary`
-- `import_character.rs` — decodes `/s/:data` share URL, conflict detection with diff table; also handles local JSON file imports
+- `import_character.rs` — handles both share URL types: `ImportCharacter` decodes compressed `/s/:data` URLs, `ImportCloudCharacter` fetches Firestore `/s/:user_id/:char_id` URLs; both use `ImportConflict` for diff table when local copy is newer
 - `reference/` — class, race, background, spell reference browsers (`class.rs`, `race.rs`, `background.rs`, `spell.rs`, `sidebar.rs`)
 - `not_found.rs` — 404 page
 
 ### Components (`src/components/`)
-- Top-level: `character_header`, `character_card`, `summary_header`, `language_switcher`, `sync_indicator`, `datalist_input`, `ability_score_block`, `skill_row`, `toggle_button`, `icon`, `panel`
+- Top-level: `character_header`, `character_card`, `summary_header`, `summary_list`, `language_switcher`, `sync_indicator`, `datalist_input`, `ability_score_block`, `skill_row`, `toggle_button`, `icon`, `panel`
 - `panels/`: `ability_scores`, `saving_throws`, `skills`, `combat`, `equipment`, `proficiencies`, `spellcasting`, `class_fields`, `features`, `personality`, `notes`
 
 ## Formatting Conventions (rustfmt.toml)
@@ -157,7 +165,7 @@ Each locale directory needs an explicit `<link data-trunk rel="copy-dir" href="p
 - `VecSet<T>` (`src/vecset.rs`): Vec-backed ordered set (maintains insertion order, prevents duplicates). Used for `ClassLevel.applied_levels: VecSet<u32>` and `Character.languages: VecSet<String>`.
 
 ## Model Essentials
-Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). The root `Character` struct derives `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize` (no `PartialEq`). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`, `caster_level(pool)`, `update_spell_slots(pool, slots)`, `spell_slot(pool, level)`, `all_spell_slots_for_pool(pool)`, `active_pools()`, `class_summary()`, `clear_all_labels()`.
+Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). The root `Character` struct derives `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize` (no `PartialEq`). Key computed methods live on `Character`: `level()`, `proficiency_bonus()`, `ability_modifier()`, `skill_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`, `caster_level(pool)`, `update_spell_slots(pool, slots)`, `spell_slot(pool, level)`, `all_spell_slots_for_pool(pool)`, `active_pools()`, `class_summary()`, `clear_all_labels()`. Both `Character` and `CharacterSummary` have a `shared: bool` field (`#[serde(default)]`) that enables public Firestore sharing when `true`.
 
 **Label/description pattern:** `Feature`, `Spell`, `RacialTrait`, `FeatureField`, and `FeatureOption` all have an optional `label: Option<String>` field (with `#[serde(default)]` for backward compatibility) and a `.label()` method that returns `label.as_deref().unwrap_or(&name)`. Labels are locale-specific display names filled from the registry; `name` is the stable key. `ClassLevel` has `class_label: Option<String>` and `subclass_label: Option<String>` with corresponding `.class_label()` / `.subclass_label()` methods. `class_summary()` uses these for display. `clear_all_labels()` blanket-clears all labels and descriptions on the character.
 
