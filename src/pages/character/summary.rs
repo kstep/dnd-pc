@@ -524,9 +524,8 @@ pub fn CharacterSummary() -> impl IntoView {
                                     class="summary-hp-temp-input"
                                     prop:value=move || combat.hp_temp().get().to_string()
                                     on:input=move |e| {
-                                        if let Ok(value) = event_target_value(&e).parse::<i32>() {
-                                            combat.hp_temp().set(value);
-                                        }
+                                        let value = event_target_value(&e).parse::<i32>().unwrap_or_default();
+                                        combat.hp_temp().set(value);
                                     }
                                 />
                                 ")"
