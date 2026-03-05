@@ -72,10 +72,9 @@
           return await linkWithPopup(user, googleProvider);
         } catch (error) {
           if (error.code === "auth/credential-already-in-use") {
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            if (credential) {
-              return signInWithCredential(auth, credential);
-            }
+            // Google account already linked to another user — sign into that
+            // existing account directly (which has the original UID + data).
+            return await signInWithPopup(auth, googleProvider);
           }
           throw error;
         }
