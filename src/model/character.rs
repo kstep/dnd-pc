@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
+use indexmap::IndexMap;
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -36,7 +37,34 @@ pub const SPELL_SLOT_TABLE: &[&[u32]] = &[
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CharacterIndex {
-    pub characters: Vec<CharacterSummary>,
+    #[serde(with = "index_map_as_vec")]
+    pub characters: IndexMap<Uuid, CharacterSummary>,
+}
+
+/// Serialize an `IndexMap<Uuid, CharacterSummary>` as a JSON array (vec)
+/// and deserialize back, preserving insertion order and O(1) lookup by id.
+mod index_map_as_vec {
+    use serde::ser::SerializeSeq;
+
+    use super::*;
+
+    pub fn serialize<S: serde::Serializer>(
+        map: &IndexMap<Uuid, CharacterSummary>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        let mut seq = serializer.serialize_seq(Some(map.len()))?;
+        for summary in map.values() {
+            seq.serialize_element(summary)?;
+        }
+        seq.end()
+    }
+
+    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<IndexMap<Uuid, CharacterSummary>, D::Error> {
+        let vec = Vec::<CharacterSummary>::deserialize(deserializer)?;
+        Ok(vec.into_iter().map(|s| (s.id, s)).collect())
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

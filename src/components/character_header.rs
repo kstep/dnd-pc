@@ -1,3 +1,5 @@
+use std::{cell::RefCell, collections::HashSet, rc::Rc};
+
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use leptos_router::{components::A, hooks::use_navigate};
@@ -8,7 +10,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     BASE_URL,
-    components::{datalist_input::DatalistInput, icon::Icon},
+    components::{datalist_input::DatalistInput, entity_field::EntityField, icon::Icon},
     firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
@@ -92,7 +94,7 @@ fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: us
     registry.with_class(&class_name, |def| {
         // Collect per-pool slot overrides for this level
         let pool_slots: Vec<(SpellSlotPool, Option<Vec<u32>>)> = {
-            let mut seen_pools = std::collections::HashSet::new();
+            let mut seen_pools = HashSet::new();
             let mut result = Vec::new();
             for feature in def.features(subclass.as_deref()) {
                 if let Some(spells_def) = &feature.spells
@@ -181,18 +183,26 @@ pub fn CharacterHeader() -> impl IntoView {
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
             share_copied.set(true);
         });
-        let cb = Closure::once_into_js(move || share_copied.set(false));
+        // Store the closure so it's freed after the timeout fires (avoids
+        // the Closure::once_into_js memory leak).
+        let handle = Rc::new(RefCell::new(None::<Closure<dyn FnMut()>>));
+        let handle_clone = handle.clone();
+        let cb = Closure::once(move || {
+            share_copied.set(false);
+            drop(handle_clone); // drops the last Rc → frees the Closure
+        });
         let _ = leptos::prelude::window().set_timeout_with_callback_and_timeout_and_arguments_0(
             cb.as_ref().unchecked_ref(),
             2_000,
         );
+        *handle.borrow_mut() = Some(cb);
     };
 
     let on_copy = move |_| {
-        let mut character = store.get();
+        let mut character = store.get_untracked();
         character.id = Uuid::new_v4();
         character.identity.name = format!("{} (Copy)", character.identity.name);
-        storage::save_character(&mut character);
+        storage::save_and_sync_character(&mut character);
         let id = character.id;
         let navigate = use_navigate();
         navigate(&format!("/c/{id}"), Default::default());
@@ -242,127 +252,55 @@ pub fn CharacterHeader() -> impl IntoView {
                 </div>
                 <div class="header-field race-field">
                     <label>{move_tr!("race")}</label>
-                    {move || {
-                        let race_name = store.identity().race().get();
-                        let race_applied = store.identity().race_applied().get();
-
-                        let race_display = race_options
-                            .read()
-                            .iter()
-                            .find(|(name, _, _)| *name == race_name)
-                            .map(|(_, label, _)| label.clone())
-                            .unwrap_or_else(|| race_name.clone());
-
-                        if !race_name.is_empty() {
-                            registry.fetch_race(&race_name);
+                    <EntityField
+                        name=move || store.identity().race().get()
+                        applied=move || store.identity().race_applied().get()
+                        options=race_options
+                        ref_prefix="race"
+                        apply_title=tr!("btn-apply-race")
+                        placeholder=move_tr!("race")
+                        on_input=move |name: String| {
+                            let old = store.identity().race().get_untracked();
+                            store.identity().race().set(name.clone());
+                            if name != old {
+                                store.identity().race_applied().set(false);
+                            }
+                            registry.fetch_race(&name);
                         }
-
-                        let show_apply = registry.has_race(&race_name) && !race_applied;
-
-                        view! {
-                            <div class="race-input-row">
-                                <DatalistInput
-                                    value=race_display
-                                    placeholder=move_tr!("race")
-                                    options=race_options
-                                    ref_href=move || {
-                                        let key = store.identity().race().get();
-                                        (!key.is_empty()).then(|| format!("{BASE_URL}/r/race/{key}"))
-                                    }
-                                    on_input=move |input, resolved| {
-                                        let name: String = resolved.unwrap_or(input);
-                                        let old = store.identity().race().get_untracked();
-                                        store.identity().race().set(name.clone());
-                                        if name != old {
-                                            store.identity().race_applied().set(false);
-                                        }
-                                        registry.fetch_race(&name);
-                                    }
-                                />
-                                {if show_apply {
-                                    let title = tr!("btn-apply-race");
-                                    Some(view! {
-                                        <button
-                                            class="btn-apply-level"
-                                            title=title
-                                            on:click=move |_| {
-                                                let race_name = store.identity().race().get_untracked();
-                                                registry.with_race(&race_name, |def| {
-                                                    store.update(|c| def.apply(c));
-                                                });
-                                            }
-                                        >
-                                            <Icon name="arrow-up" size=14 />
-                                        </button>
-                                    })
-                                } else {
-                                    None
-                                }}
-                            </div>
+                        fetch=move |name: &str| registry.fetch_race(name)
+                        has=move |name: &str| registry.has_race(name)
+                        apply=move |name: &str| {
+                            registry.with_race(name, |def| {
+                                store.update(|c| def.apply(c));
+                            });
                         }
-                    }}
+                    />
                 </div>
                 <div class="header-field background-field">
                     <label>{move_tr!("background")}</label>
-                    {move || {
-                        let bg_name = store.identity().background().get();
-                        let bg_applied = store.identity().background_applied().get();
-
-                        let bg_display = bg_options
-                            .read()
-                            .iter()
-                            .find(|(name, _, _)| *name == bg_name)
-                            .map(|(_, label, _)| label.clone())
-                            .unwrap_or_else(|| bg_name.clone());
-
-                        if !bg_name.is_empty() {
-                            registry.fetch_background(&bg_name);
+                    <EntityField
+                        name=move || store.identity().background().get()
+                        applied=move || store.identity().background_applied().get()
+                        options=bg_options
+                        ref_prefix="background"
+                        apply_title=tr!("btn-apply-background")
+                        placeholder=move_tr!("background")
+                        on_input=move |name: String| {
+                            let old = store.identity().background().get_untracked();
+                            store.identity().background().set(name.clone());
+                            if name != old {
+                                store.identity().background_applied().set(false);
+                            }
+                            registry.fetch_background(&name);
                         }
-
-                        let show_apply = registry.has_background(&bg_name) && !bg_applied;
-
-                        view! {
-                            <div class="race-input-row">
-                                <DatalistInput
-                                    value=bg_display
-                                    placeholder=move_tr!("background")
-                                    options=bg_options
-                                    ref_href=move || {
-                                        let key = store.identity().background().get();
-                                        (!key.is_empty()).then(|| format!("{BASE_URL}/r/background/{key}"))
-                                    }
-                                    on_input=move |input, resolved| {
-                                        let name: String = resolved.unwrap_or(input);
-                                        let old = store.identity().background().get_untracked();
-                                        store.identity().background().set(name.clone());
-                                        if name != old {
-                                            store.identity().background_applied().set(false);
-                                        }
-                                        registry.fetch_background(&name);
-                                    }
-                                />
-                                {if show_apply {
-                                    let title = tr!("btn-apply-background");
-                                    Some(view! {
-                                        <button
-                                            class="btn-apply-level"
-                                            title=title
-                                            on:click=move |_| {
-                                                let bg_name = store.identity().background().get_untracked();
-                                                registry.with_background(&bg_name, |def| {
-                                                    store.update(|c| def.apply(c));
-                                                });
-                                            }
-                                        >
-                                            <Icon name="arrow-up" size=14 />
-                                        </button>
-                                    })
-                                } else {
-                                    None
-                                }}
-                            </div>
+                        fetch=move |name: &str| registry.fetch_background(name)
+                        has=move |name: &str| registry.has_background(name)
+                        apply=move |name: &str| {
+                            registry.with_background(name, |def| {
+                                store.update(|c| def.apply(c));
+                            });
                         }
-                    }}
+                    />
                 </div>
                 <div class="header-field">
                     <label>{move_tr!("alignment")}</label>

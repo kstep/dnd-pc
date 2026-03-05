@@ -1,9 +1,6 @@
 use std::collections::BTreeSet;
 
-use leptos::{
-    either::{Either, EitherOf3},
-    prelude::*,
-};
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::{
     components::A,
@@ -496,11 +493,11 @@ pub fn restore_stripped_fields(imported: &mut Character, local: &Character) {
     );
 }
 
-pub fn do_import(mut character: Character) -> impl IntoView {
+fn do_import(mut character: Character) -> impl IntoView {
     if let Some(existing) = storage::load_character(&character.id) {
         restore_stripped_fields(&mut character, &existing);
     }
-    storage::save_character(&mut character);
+    storage::save_and_sync_character(&mut character);
     let id = character.id;
 
     let navigate = use_navigate();
@@ -519,7 +516,7 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
 
     let save_character = move |character: &mut Character| {
         restore_stripped_fields(character, &existing.read_value());
-        storage::save_character(character);
+        storage::save_and_sync_character(character);
         let navigate = use_navigate();
         navigate(&format!("/c/{}", character.id), Default::default());
     };
@@ -625,25 +622,13 @@ pub fn ImportCharacter() -> impl IntoView {
     };
 
     let Some(data) = data else {
-        return EitherOf3::C(error_view());
+        return Either::Right(error_view());
     };
     let Some(character) = share::decode_character(&data) else {
-        return EitherOf3::C(error_view());
+        return Either::Right(error_view());
     };
 
-    let existing = storage::load_character(&character.id);
-    let has_conflict = existing
-        .as_ref()
-        .is_some_and(|existing| existing.updated_at > character.updated_at);
-
-    if has_conflict {
-        let existing = existing.unwrap();
-        EitherOf3::A(view! {
-            <ImportConflict incoming=character existing=existing />
-        })
-    } else {
-        EitherOf3::B(do_import(character))
-    }
+    Either::Left(import_or_conflict(character))
 }
 
 #[derive(Params, Clone, Debug, PartialEq)]
@@ -652,7 +637,7 @@ struct CloudImportParams {
     char_id: String,
 }
 
-fn import_or_conflict(character: Character) -> impl IntoView {
+pub fn import_or_conflict(character: Character) -> impl IntoView {
     let existing = storage::load_character(&character.id);
     let has_conflict = existing
         .as_ref()

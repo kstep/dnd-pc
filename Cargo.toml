@@ -32,6 +32,7 @@ web-sys = { version = "0.3", features = [
     "FileReader", "File", "FileList", "BlobPropertyBag",
     "Location", "Clipboard", "MediaQueryList", "EventTarget",
 ] }
+indexmap = "2.13.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"

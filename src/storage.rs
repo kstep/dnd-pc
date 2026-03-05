@@ -1,11 +1,12 @@
 use std::{
-    cell::{Cell, RefCell},
+    cell::RefCell,
     collections::{HashMap, HashSet},
     rc::Rc,
 };
 
 use gloo_storage::{LocalStorage, Storage};
 use leptos::prelude::*;
+use reactive_stores::Store;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
@@ -119,27 +120,22 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
 }
 
 fn upsert_index_entry(index: &mut CharacterIndex, summary: CharacterSummary) {
-    if let Some(entry) = index.characters.iter_mut().find(|c| c.id == summary.id) {
-        *entry = summary;
-    } else {
-        index.characters.push(summary);
-    }
+    index.characters.insert(summary.id, summary);
 }
 
-pub fn save_character(character: &mut Character) {
-    // Save already in flight (cloud-pulled data written to Store) — skip to
-    // avoid bumping updated_at and re-pushing to cloud.
-    if SAVE_IN_FLIGHT.with(|flag| flag.replace(false)) {
-        return;
-    }
-
-    character.touch();
-    LocalStorage::set(character_key(&character.id), &*character).expect("failed to save character");
-
+/// Pure save: write character to localStorage and update index.
+/// Does NOT touch `updated_at` or push to cloud.
+pub fn save_character(character: &Character) {
+    LocalStorage::set(character_key(&character.id), character).expect("failed to save character");
     let summary = character.summary();
     update_index(|index| upsert_index_entry(index, summary));
+}
 
-    // Debounced cloud push
+/// Touch, save to localStorage, and schedule a debounced cloud push.
+/// Used by non-reactive callers (import, copy, create).
+pub fn save_and_sync_character(character: &mut Character) {
+    character.touch();
+    save_character(character);
     schedule_cloud_push(character);
 }
 
@@ -147,7 +143,9 @@ pub fn delete_character(id: &Uuid) {
     LocalStorage::delete(character_key(id));
 
     let id = *id;
-    update_index(|index| index.characters.retain(|c| c.id != id));
+    update_index(|index| {
+        index.characters.shift_remove(&id);
+    });
 
     let Some(uid) = firebase::current_uid() else {
         return;
@@ -244,6 +242,10 @@ struct SyncState {
     /// Bumped after cloud pull modifies the character index, so the UI can
     /// react.
     index_version: RwSignal<u32>,
+    /// Set to `true` once the initial cloud sync completes (success or
+    /// failure). Before this, auto-save skips `touch()` to preserve
+    /// timestamps for accurate conflict resolution.
+    sync_done: RwSignal<bool>,
 }
 
 impl SyncState {
@@ -267,10 +269,6 @@ thread_local! {
     /// Cached character index to avoid repeated localStorage round-trips on every
     /// save. Lazily populated on first access; kept in sync with localStorage.
     static INDEX_CACHE: RefCell<Option<CharacterIndex>> = const { RefCell::new(None) };
-    /// Set when cloud-pulled data is being written to the Store. The auto-save
-    /// effect will fire but `save_character` skips because the save is already
-    /// handled by the sync pipeline.
-    static SAVE_IN_FLIGHT: Cell<bool> = const { Cell::new(false) };
 }
 
 fn get_or_init_sync() -> SyncState {
@@ -282,17 +280,13 @@ fn get_or_init_sync() -> SyncState {
             anon: RwSignal::new(false),
             last_error: RwSignal::new(None),
             index_version: RwSignal::new(0),
+            sync_done: RwSignal::new(false),
         })
     })
 }
 
 pub fn sync_status() -> ReadSignal<SyncStatus> {
     get_or_init_sync().status.read_only()
-}
-
-#[allow(dead_code)]
-pub fn sync_uid() -> ReadSignal<Option<String>> {
-    get_or_init_sync().uid.read_only()
 }
 
 pub fn sync_is_anonymous() -> ReadSignal<bool> {
@@ -309,26 +303,63 @@ pub fn sync_index_version() -> ReadSignal<u32> {
     get_or_init_sync().index_version.read_only()
 }
 
-/// Set up a reactive effect that reloads a character from localStorage when
-/// cloud sync pulls updates. Calls `on_update` with the fresh data when the
-/// remote version is newer than `current_updated_at()`.
-///
-/// Sets `SAVE_IN_FLIGHT` before calling `on_update` so the auto-save
-/// effect (which fires when the Store is updated) skips the redundant
-/// save and cloud re-push.
-pub fn track_cloud_character(
-    id: Uuid,
-    current_updated_at: impl Fn() -> u64 + 'static,
-    on_update: impl Fn(Character) + 'static,
-) {
+/// Reactive signal that becomes `true` once the initial cloud sync completes
+/// (success, failure, or disabled). Before this, auto-save preserves existing
+/// timestamps so sync can compare them accurately.
+pub fn initial_sync_done() -> ReadSignal<bool> {
+    get_or_init_sync().sync_done.read_only()
+}
+
+/// Set up auto-save and cloud sync pull for a character store.
+/// Replaces the manual auto-save effect + `track_cloud_character` in layout.
+pub fn setup_auto_save(store: Store<Character>) {
+    let sync_done = initial_sync_done();
+    let cloud_updating = RwSignal::new(false);
+
+    // Auto-save effect
+    Effect::new(move || {
+        store.track();
+        // Skip save when the store was just updated from a cloud pull.
+        // Reset the flag here (not in the pull effect) so it works
+        // regardless of whether Leptos flushes effects synchronously.
+        if cloud_updating.get_untracked() {
+            cloud_updating.update_untracked(|v| *v = false);
+            return;
+        }
+        if sync_done.get() {
+            // After initial sync: touch + save + cloud push
+            store.update_untracked(|c| {
+                c.touch();
+                save_character(c);
+                schedule_cloud_push(c);
+            });
+        } else {
+            // Before initial sync: save only (preserve timestamp)
+            save_character(&store.read_untracked());
+        }
+    });
+
+    // Cloud sync pull: reload store when remote is newer.
+    // Check the index timestamp first (cached in memory) to avoid full
+    // Character deserialization when a different character was updated.
     let index_version = sync_index_version();
     Effect::new(move |previous: Option<u32>| {
-        if previous.is_some()
-            && let Some(character) = load_character(&id)
-            && character.updated_at > current_updated_at()
-        {
-            SAVE_IN_FLIGHT.with(|flag| flag.set(true));
-            on_update(character);
+        let (id, local_at) = {
+            let character = store.read_untracked();
+            (character.id, character.updated_at)
+        };
+        if previous.is_some() {
+            let index_at = load_index()
+                .characters
+                .get(&id)
+                .map(|c| c.updated_at)
+                .unwrap_or(0);
+            if index_at > local_at
+                && let Some(character) = load_character(&id)
+            {
+                cloud_updating.update_untracked(|v| *v = true);
+                store.set(character);
+            }
         }
         index_version.get()
     });
@@ -394,6 +425,7 @@ pub fn init_sync() {
         if !firebase::wait_ready().await {
             log::info!("Firebase not available, cloud sync disabled");
             state.status.set(SyncStatus::Disabled);
+            state.sync_done.set(true);
             return;
         }
 
@@ -401,6 +433,7 @@ pub fn init_sync() {
         if let Some((uid, is_anon)) = firebase::wait_for_auth().await {
             log::info!("Auth settled: uid={uid}, anon={is_anon}");
             finish_sign_in(state, is_anon, SyncOp::for_anon(is_anon)).await;
+            state.sync_done.set(true);
             return;
         }
 
@@ -416,6 +449,7 @@ pub fn init_sync() {
                 ));
             }
         }
+        state.sync_done.set(true);
     });
 }
 
@@ -477,6 +511,8 @@ fn schedule_cloud_push(character: &Character) {
     }
 
     let char_id = character.id;
+    let char_key = character_key(&char_id);
+    let char_id_str = char_id.to_string();
 
     // Cancel existing debounce timer for this character (drops old closure JsValue)
     DEBOUNCE_TIMERS.with(|timers| {
@@ -496,8 +532,7 @@ fn schedule_cloud_push(character: &Character) {
             let Some(uid) = firebase::current_uid() else {
                 return;
             };
-            let key = character_key(&char_id);
-            let Ok(Some(raw)) = LocalStorage::raw().get_item(&key) else {
+            let Ok(Some(raw)) = LocalStorage::raw().get_item(&char_key) else {
                 return;
             };
             let json: serde_json::Value = match serde_json::from_str(&raw) {
@@ -508,7 +543,6 @@ fn schedule_cloud_push(character: &Character) {
                 }
             };
             state.set_ok(SyncStatus::Syncing);
-            let char_id_str = char_id.to_string();
             match firebase::set_character_doc(&uid, &char_id_str, &json).await {
                 Ok(()) => state.set_ok(SyncStatus::Synced),
                 Err(error) => {
@@ -561,12 +595,6 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
     );
 
     let mut index = load_index();
-    let mut pos_map: HashMap<Uuid, usize> = index
-        .characters
-        .iter()
-        .enumerate()
-        .map(|(i, c)| (c.id, i))
-        .collect();
     let mut index_dirty = false;
     let mut push_failures: u32 = 0;
     let mut seen_remote: HashSet<Uuid> = HashSet::with_capacity(remote_chars.len());
@@ -583,9 +611,10 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
 
         // Check local timestamp from the index (already in memory) to avoid
         // unnecessary full Character deserialization from localStorage.
-        let local_updated_at = pos_map
+        let local_updated_at = index
+            .characters
             .get(&remote.id)
-            .map(|&position| index.characters[position].updated_at)
+            .map(|c| c.updated_at)
             .unwrap_or(0);
 
         if local_updated_at >= remote.updated_at {
@@ -605,20 +634,14 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
             }
 
             let summary = remote.summary();
-            match pos_map.get(&remote.id) {
-                Some(&position) => index.characters[position] = summary,
-                None => {
-                    pos_map.insert(remote.id, index.characters.len());
-                    index.characters.push(summary);
-                }
-            }
+            index.characters.insert(summary.id, summary);
             index_dirty = true;
         }
     }
 
     // Push local-only characters (not seen in remote) to cloud.
     if push_local_only {
-        for summary in &index.characters {
+        for summary in index.characters.values() {
             if !seen_remote.contains(&summary.id)
                 && let Some(character) = load_character(&summary.id)
             {

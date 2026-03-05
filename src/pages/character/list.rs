@@ -1,43 +1,40 @@
-use leptos::{either::EitherOf3, prelude::*};
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_navigate};
 
 use crate::{
-    BASE_URL,
-    components::character_card::CharacterCard,
-    model::Character,
-    pages::import_character::{ImportConflict, do_import},
-    storage,
+    BASE_URL, components::character_card::CharacterCard, model::Character,
+    pages::import_character::import_or_conflict, storage,
 };
 
 #[component]
 pub fn CharacterList() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
-    let (characters, set_characters) = signal(storage::load_index().characters);
+    let (characters, set_characters) = signal(storage::load_index());
     let import_state = RwSignal::new(None::<Character>);
 
     // Re-read index when cloud pull updates it.
     let index_version = storage::sync_index_version();
     Effect::new(move |prev: Option<u32>| {
         if prev.is_some() {
-            set_characters.set(storage::load_index().characters);
+            set_characters.set(storage::load_index());
         }
         index_version.get()
     });
 
     let create_character = move |_| {
         let mut character = Character::new();
-        storage::save_character(&mut character);
+        storage::save_and_sync_character(&mut character);
         let id = character.id;
-        set_characters.set(storage::load_index().characters);
+        set_characters.set(storage::load_index());
         let navigate = use_navigate();
         navigate(&format!("/c/{id}"), Default::default());
     };
 
     let delete_character = move |id: uuid::Uuid| {
         storage::delete_character(&id);
-        set_characters.set(storage::load_index().characters);
+        set_characters.set(storage::load_index());
     };
 
     let load_from_file = move |_| {
@@ -48,18 +45,9 @@ pub fn CharacterList() -> impl IntoView {
         <Title text=Signal::derive(move || i18n.tr("page-characters")) />
         {move || {
             if let Some(character) = import_state.get() {
-                let existing = storage::load_character(&character.id);
-                let has_conflict = existing
-                    .as_ref()
-                    .is_some_and(|ex| ex.updated_at > character.updated_at);
-                return if has_conflict {
-                    let existing = existing.unwrap();
-                    EitherOf3::A(view! { <ImportConflict incoming=character existing=existing /> })
-                } else {
-                    EitherOf3::B(do_import(character))
-                };
+                return Either::Left(import_or_conflict(character));
             }
-            EitherOf3::C(view! {
+            Either::Right(view! {
                     <div class="character-list-page">
                         <div class="character-list-header">
                             <h1>{move_tr!("page-characters")}</h1>
@@ -74,7 +62,7 @@ pub fn CharacterList() -> impl IntoView {
                         </div>
                         <div class="character-list">
                             <For
-                                each=move || characters.get()
+                                each=move || characters.get().characters.into_values()
                                 key=|c| c.id
                                 let:character
                             >
