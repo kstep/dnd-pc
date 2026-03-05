@@ -323,7 +323,14 @@ pub fn init_sync() {
             _ => {}
         }
 
-        // No redirect result — do anonymous sign-in
+        // Check if a session already exists (e.g. Google user restored from IndexedDB)
+        if firebase::current_uid().is_some() {
+            let is_anon = firebase::is_anonymous().unwrap_or(true);
+            finish_sign_in(state, is_anon, SyncOp::PullOnly).await;
+            return;
+        }
+
+        // No existing session — do anonymous sign-in
         match firebase::sign_in_anonymously().await {
             Ok(_) => finish_sign_in(state, true, SyncOp::PullOnly).await,
             Err(error) => {

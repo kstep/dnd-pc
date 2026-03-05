@@ -72,6 +72,7 @@
     },
     getRedirectResult: () => getRedirectResult(auth),
     currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
+    isAnonymous: () => (auth.currentUser ? auth.currentUser.isAnonymous : null),
     onAuthStateChanged: (cb) =>
       onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
     setCharacterDoc: (uid, charId, data) =>

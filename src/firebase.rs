@@ -71,6 +71,11 @@ pub fn current_uid() -> Option<String> {
     call("currentUid", &[]).ok()?.as_string()
 }
 
+/// Returns `Some(true)` if anonymous, `Some(false)` if authenticated, `None` if no user.
+pub fn is_anonymous() -> Option<bool> {
+    call("isAnonymous", &[]).ok()?.as_bool()
+}
+
 pub async fn set_character_doc(uid: &str, char_id: &str, data: &Value) -> Result<(), JsValue> {
     let serializer = serde_wasm_bindgen::Serializer::new().serialize_maps_as_objects(true);
     let js_data = data
