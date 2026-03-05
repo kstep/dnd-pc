@@ -56,7 +56,7 @@ pub fn CharacterSummary() -> impl IntoView {
                     let weapons = store.equipment().weapons().read();
                     let rows: Vec<_> = weapons.iter().filter(|w| !w.name.is_empty()).map(|w| {
                         let name = w.name.clone();
-                        let atk = w.attack_bonus.clone();
+                        let atk = w.attack_bonus;
                         let dmg = w.damage.clone();
                         let dmg_type = w.damage_type.map(|dt| {
                             i18n.tr(dt.tr_key()).to_string()
@@ -69,28 +69,29 @@ pub fn CharacterSummary() -> impl IntoView {
                         })
                     } else {
                         Either::Right(view! {
-                            <table class="summary-table">
-                                <thead>
-                                    <tr>
-                                        <th>{move_tr!("name")}</th>
-                                        <th>{move_tr!("atk-bonus")}</th>
-                                        <th>{move_tr!("damage")}</th>
-                                        <th>{move_tr!("type")}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {rows.into_iter().map(|(name, atk, dmg, dtype)| {
-                                        view! {
-                                            <tr>
-                                                <td>{name}</td>
-                                                <td>{atk}</td>
-                                                <td>{dmg}</td>
-                                                <td>{dtype}</td>
-                                            </tr>
-                                        }
-                                    }).collect_view()}
-                                </tbody>
-                            </table>
+                            <h4>{move_tr!("weapons")}</h4>
+                            <div class="summary-spells-list">
+                                {rows.into_iter().map(|(name, atk, dmg, dtype)| {
+                                    let name_atk = if atk != 0 {
+                                        format!("{name} {atk:+}")
+                                    } else {
+                                        name
+                                    };
+                                    let damage_info = if dtype.is_empty() {
+                                        dmg
+                                    } else {
+                                        format!("{dtype} {dmg}")
+                                    };
+                                    view! {
+                                        <div class="summary-spell-entry">
+                                            <div class="summary-spell-row">
+                                                <span class="summary-spell-name">{name_atk}</span>
+                                                <span class="summary-spell-level-label">{damage_info}</span>
+                                            </div>
+                                        </div>
+                                    }
+                                }).collect_view()}
+                            </div>
                         })
                     }
                 }}

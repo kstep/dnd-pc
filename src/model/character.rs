@@ -663,7 +663,7 @@ pub struct Weapon {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
-    pub attack_bonus: String,
+    pub attack_bonus: i32,
     #[serde(default)]
     pub damage: String,
     #[serde(default)]

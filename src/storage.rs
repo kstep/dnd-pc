@@ -79,6 +79,22 @@ fn migrate_v2(value: &mut serde_json::Value) {
     }
 }
 
+/// Migrate string attack_bonus to i32.
+fn migrate_v3(value: &mut serde_json::Value) {
+    if let Some(weapons) = value
+        .get_mut("equipment")
+        .and_then(|e| e.get_mut("weapons"))
+        .and_then(|w| w.as_array_mut())
+    {
+        for weapon in weapons {
+            if let Some(s) = weapon.get("attack_bonus").and_then(|v| v.as_str()) {
+                let parsed: i32 = s.parse().unwrap_or(0);
+                weapon["attack_bonus"] = serde_json::Value::Number(parsed.into());
+            }
+        }
+    }
+}
+
 pub fn load_character(id: &Uuid) -> Option<Character> {
     let key = character_key(id);
     if let Ok(ch) = LocalStorage::get::<Character>(&key) {
@@ -89,6 +105,7 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     let mut value: serde_json::Value = serde_json::from_str(&raw).ok()?;
     migrate_v1(&mut value);
     migrate_v2(&mut value);
+    migrate_v3(&mut value);
     serde_json::from_value(value).ok()
 }
 
@@ -123,9 +140,13 @@ pub fn delete_character(id: &Uuid) {
     let id = *id;
     update_index(|index| index.characters.retain(|c| c.id != id));
 
+    let Some(uid) = firebase::current_uid() else {
+        return;
+    };
+
     // Cloud delete
     spawn_local(async move {
-        if let Err(error) = delete_from_cloud(&id).await {
+        if let Err(error) = delete_from_cloud(&uid, &id).await {
             log::warn!("Cloud delete failed: {error:?}");
         }
     });
@@ -511,11 +532,8 @@ async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), JsValue> 
     firebase::set_character_doc(uid, &character.id.to_string(), &json).await
 }
 
-async fn delete_from_cloud(id: &Uuid) -> Result<(), JsValue> {
-    let Some(uid) = firebase::current_uid() else {
-        return Ok(());
-    };
-    firebase::delete_character_doc(&uid, &id.to_string()).await
+async fn delete_from_cloud(uid: &str, id: &Uuid) -> Result<(), JsValue> {
+    firebase::delete_character_doc(uid, &id.to_string()).await
 }
 
 /// Bidirectional sync: pull remote characters (saving remote-newer locally,

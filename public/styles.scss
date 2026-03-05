@@ -1562,6 +1562,11 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: var(--size-2);
+  padding-left: calc(28px + var(--size-2));
+
+  > .btn-toggle-desc {
+    margin-left: calc(-28px - var(--size-2));
+  }
 }
 
 .summary-spell-name {

@@ -47,7 +47,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                         .enumerate()
                         .map(|(i, weapon)| {
                             let name = weapon.name.clone();
-                            let atk = weapon.attack_bonus.clone();
+                            let atk = weapon.attack_bonus.to_string();
                             let dmg = weapon.damage.clone();
                             let dmg_type = weapon.damage_type.map(|dt| dt as u8);
                             view! {
@@ -61,12 +61,12 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         }
                                     />
                                     <input
-                                        type="text"
+                                        type="number"
                                         placeholder=move_tr!("atk-bonus")
                                         class="short-input"
                                         prop:value=atk
                                         on:input=move |e| {
-                                            weapons.write()[i].attack_bonus = event_target_value(&e);
+                                            weapons.write()[i].attack_bonus = event_target_value(&e).parse().unwrap_or(0);
                                         }
                                     />
                                     <input
