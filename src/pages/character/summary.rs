@@ -504,31 +504,22 @@ pub fn CharacterSummary() -> impl IntoView {
                     <div class="summary-stat-box summary-hp-box">
                         <label>{move_tr!("hp")}</label>
                         <div class="summary-hp-value">
-                            <input
-                                type="number"
-                                class="summary-stat-input"
-                                prop:value=move || combat.hp_current().get().to_string()
-                                on:input=move |e| {
-                                    if let Ok(value) = event_target_value(&e).parse::<i32>() {
-                                        combat.hp_current().set(value);
-                                    }
-                                }
-                            />
+                            {move || combat.hp_current().get()}
                             <span class="summary-hp-max">
-                                "/ " {move || combat.hp_max().get() + combat.hp_temp().get()}
+                                "/ " {move || combat.hp_max().get()} {move || {
+                                    let temp = combat.hp_temp().get();
+                                    if temp != 0 {
+                                        format!(" ({temp})")
+                                    } else {
+                                        String::new()
+                                    }
+                                }}
                             </span>
                             <span class="summary-hp-detail">
-                                "(" {move || combat.hp_max().get()} " + "
                                 <input
                                     type="number"
                                     class="summary-hp-temp-input"
-                                    prop:value=move || combat.hp_temp().get().to_string()
-                                    on:input=move |e| {
-                                        let value = event_target_value(&e).parse::<i32>().unwrap_or_default();
-                                        combat.hp_temp().set(value);
-                                    }
                                 />
-                                ")"
                             </span>
                         </div>
                     </div>

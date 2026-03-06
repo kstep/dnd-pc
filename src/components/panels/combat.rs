@@ -73,7 +73,7 @@ pub fn CombatPanel() -> impl IntoView {
                             type="number"
                             prop:value=move || combat.hp_current().get().to_string()
                             on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<i32>() {
+                                if let Ok(value) = event_target_value(&e).parse() {
                                     combat.hp_current().set(value);
                                 }
                             }
@@ -85,7 +85,7 @@ pub fn CombatPanel() -> impl IntoView {
                             type="number"
                             prop:value=move || combat.hp_max().get().to_string()
                             on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<i32>() {
+                                if let Ok(value) = event_target_value(&e).parse() {
                                     combat.hp_max().set(value);
                                 }
                             }
@@ -97,7 +97,7 @@ pub fn CombatPanel() -> impl IntoView {
                             type="number"
                             prop:value=move || combat.hp_temp().get().to_string()
                             on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<i32>() {
+                                if let Ok(value) = event_target_value(&e).parse() {
                                     combat.hp_temp().set(value);
                                 }
                             }
@@ -154,9 +154,7 @@ pub fn CombatPanel() -> impl IntoView {
                                             let con_mod = store.read_untracked().ability_modifier(Ability::Constitution);
                                             let roll = (js_sys::Math::random() * sides as f64).floor() as i32 + 1;
                                             let heal = (roll + con_mod).max(1);
-                                            let hp = combat.hp_current().get();
-                                            let max_hp = combat.hp_max().get();
-                                            combat.hp_current().set((hp + heal).min(max_hp));
+                                            store.update(|ch| ch.heal(heal as u32));
                                             classes.write()[i].hit_dice_used += 1;
                                         }
                                     >

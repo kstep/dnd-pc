@@ -326,12 +326,7 @@ impl Character {
             .classes
             .iter()
             .filter(|c| !c.class.is_empty())
-            .map(|c| match c.subclass_label() {
-                Some(sc) if !sc.is_empty() => {
-                    format!("{} ({sc}) {}", c.class_label(), c.level)
-                }
-                _ => format!("{} {}", c.class_label(), c.level),
-            })
+            .map(ToString::to_string)
             .collect::<Vec<_>>()
             .join(" / ")
     }
@@ -345,6 +340,34 @@ impl Character {
             updated_at: self.updated_at,
             shared: self.shared,
         }
+    }
+
+    pub fn damange(&mut self, amount: u32) {
+        if amount == 0 {
+            return;
+        }
+
+        let amount = if self.combat.hp_temp > 0 {
+            let temp_absorb = self.combat.hp_temp.min(amount);
+            self.combat.hp_temp -= temp_absorb;
+            amount - temp_absorb
+        } else {
+            amount
+        };
+
+        self.combat.hp_current = self.combat.hp_current.saturating_sub(amount);
+    }
+
+    pub fn heal(&mut self, amount: u32) {
+        if amount == 0 {
+            return;
+        }
+
+        self.combat.hp_current = (self.combat.hp_current + amount).min(self.combat.hp_max);
+    }
+
+    pub fn temp_hp(&mut self, amount: u32) {
+        self.combat.hp_temp = amount;
     }
 }
 
@@ -438,6 +461,16 @@ impl ClassLevel {
     }
 }
 
+impl std::fmt::Display for ClassLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(subclass) = self.subclass_label() {
+            write!(f, "{} ({}) {}", self.class_label(), subclass, self.level)
+        } else {
+            write!(f, "{} {}", self.class_label(), self.level)
+        }
+    }
+}
+
 impl Default for ClassLevel {
     fn default() -> Self {
         Self {
@@ -513,11 +546,11 @@ pub struct CombatStats {
     #[serde(default)]
     pub speed: u32,
     #[serde(default)]
-    pub hp_max: i32,
+    pub hp_max: u32,
     #[serde(default)]
-    pub hp_current: i32,
+    pub hp_current: u32,
     #[serde(default)]
-    pub hp_temp: i32,
+    pub hp_temp: u32,
     #[serde(default)]
     pub death_save_successes: u8,
     #[serde(default)]

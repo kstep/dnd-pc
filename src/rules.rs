@@ -786,7 +786,7 @@ impl ClassDefinition {
             (self.hit_die as i32) / 2 + 1 + con_mod
         };
 
-        character.combat.hp_max += hp_gain;
+        character.combat.hp_max += hp_gain as u32;
         character.combat.hp_current = character.combat.hp_max;
     }
 }
