@@ -229,8 +229,7 @@ impl Character {
     }
 
     pub fn ability_modifier(&self, ability: Ability) -> i32 {
-        let score = self.abilities.get(ability) as i32;
-        (score - 10).div_euclid(2)
+        self.abilities.modifier(ability)
     }
 
     pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
@@ -523,6 +522,11 @@ impl AbilityScores {
             Ability::Wisdom => self.wisdom = value,
             Ability::Charisma => self.charisma = value,
         }
+    }
+
+    pub fn modifier(&self, ability: Ability) -> i32 {
+        let score = self.get(ability) as i32;
+        (score - 10).div_euclid(2)
     }
 }
 
