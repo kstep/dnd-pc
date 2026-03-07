@@ -7,20 +7,26 @@ use crate::model::{Character, CharacterStoreFields};
 #[component]
 pub fn LanguagesBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
-    let langs = store
-        .languages()
-        .read()
-        .iter()
-        .filter(|lang| !lang.is_empty())
-        .cloned()
-        .collect::<Vec<_>>();
+    let languages = store.languages();
+    let langs = move || {
+        languages
+            .read()
+            .iter()
+            .filter(|lang| !lang.is_empty())
+            .cloned()
+            .collect::<Vec<_>>()
+    };
 
-    if langs.is_empty() {
-        return None;
+    move || {
+        let langs = langs();
+
+        if langs.is_empty() {
+            None
+        } else {
+            Some(view! {
+                <h4 class="summary-subsection-title">{move_tr!("summary-languages")}</h4>
+                <p class="summary-languages">{langs.join(", ")}</p>
+            })
+        }
     }
-
-    Some(view! {
-        <h4 class="summary-subsection-title">{move_tr!("summary-languages")}</h4>
-        <p class="summary-languages">{langs.join(", ")}</p>
-    })
 }

@@ -340,34 +340,6 @@ impl Character {
             shared: self.shared,
         }
     }
-
-    pub fn damange(&mut self, amount: u32) {
-        if amount == 0 {
-            return;
-        }
-
-        let amount = if self.combat.hp_temp > 0 {
-            let temp_absorb = self.combat.hp_temp.min(amount);
-            self.combat.hp_temp -= temp_absorb;
-            amount - temp_absorb
-        } else {
-            amount
-        };
-
-        self.combat.hp_current = self.combat.hp_current.saturating_sub(amount);
-    }
-
-    pub fn heal(&mut self, amount: u32) {
-        if amount == 0 {
-            return;
-        }
-
-        self.combat.hp_current = (self.combat.hp_current + amount).min(self.combat.hp_max);
-    }
-
-    pub fn temp_hp(&mut self, amount: u32) {
-        self.combat.hp_temp = amount;
-    }
 }
 
 impl Default for Character {
@@ -581,6 +553,36 @@ impl Default for CombatStats {
     }
 }
 
+impl CombatStats {
+    pub fn damage(&mut self, amount: u32) {
+        if amount == 0 {
+            return;
+        }
+
+        let amount = if self.hp_temp > 0 {
+            let temp_absorb = self.hp_temp.min(amount);
+            self.hp_temp -= temp_absorb;
+            amount - temp_absorb
+        } else {
+            amount
+        };
+
+        self.hp_current = self.hp_current.saturating_sub(amount);
+    }
+
+    pub fn heal(&mut self, amount: u32) {
+        if amount == 0 {
+            return;
+        }
+
+        self.hp_current = (self.hp_current + amount).min(self.hp_max);
+    }
+
+    pub fn temp_hp(&mut self, amount: u32) {
+        self.hp_temp = amount;
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Personality {
     #[serde(default)]
@@ -675,6 +677,13 @@ impl Default for FeatureValue {
 }
 
 impl FeatureValue {
+    pub fn available_points(&self) -> Option<u32> {
+        match self {
+            FeatureValue::Points { used, max } => Some(max.saturating_sub(*used)),
+            _ => None,
+        }
+    }
+
     pub fn choices(&self) -> &[FeatureOption] {
         match self {
             FeatureValue::Choice { options } => options,
@@ -838,6 +847,20 @@ pub struct SpellSlotLevel {
     pub total: u32,
     #[serde(default)]
     pub used: u32,
+}
+
+impl SpellSlotLevel {
+    pub fn available(&self) -> u32 {
+        self.total.saturating_sub(self.used)
+    }
+
+    pub fn is_available(&self) -> bool {
+        self.available() > 0
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.available() == 0
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

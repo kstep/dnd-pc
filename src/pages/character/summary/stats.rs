@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{html::Input, prelude::*};
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -16,186 +16,217 @@ pub fn StatsBlock() -> impl IntoView {
     let combat = store.combat();
     let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
     let initiative = Memo::new(move |_| store.read().initiative());
+    let damage_input = NodeRef::<Input>::new();
+    let damage_value = move || {
+        damage_input
+            .read()
+            .as_ref()
+            .and_then(|input| input.value().parse::<u32>().ok())
+            .unwrap_or_default()
+    };
 
-    view! {
-        <div class="summary-section summary-section-stats">
-            <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
+    move || {
+        view! {
+            <div class="summary-section summary-section-stats">
+                <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
 
-            // -- HP --
-            <div class="summary-core-stats">
-                <div class="summary-stat-box summary-hp-box">
-                    <label>{move_tr!("hp")}</label>
-                    <div class="summary-hp-value">
-                        {move || combat.hp_current().get()}
-                        <span class="summary-hp-max">
-                            "/ " {move || combat.hp_max().get()} {move || {
-                                let temp = combat.hp_temp().get();
-                                if temp != 0 {
-                                    format!(" ({temp})")
-                                } else {
-                                    String::new()
+                // -- HP --
+                <div class="summary-core-stats">
+                    <div class="summary-stat-box summary-damage-box">
+                        <label>{move_tr!("damage")}</label>
+                        <div class="summary-damage-value">
+                            <input type="number" class="summary-damage-input" node_ref=damage_input />
+                            <button class="apply-damage-btn" title="Damage"
+                                on:click=move |_| {
+                                    let damage = damage_value();
+                                    if damage > 0 {
+                                        combat.update(|c| c.damage(damage));
+                                    }
                                 }
+                            >"-"</button>
+                            <button class="apply-damage-btn" title="Heal"
+                                on:click=move |_| {
+                                    let heal = damage_value();
+                                    if heal > 0 {
+                                        combat.update(|c| c.heal(heal));
+                                    }
+                                }
+                            >"+"</button>
+                            <button class="apply-damage-btn" title="Temp HP"
+                                on:click=move |_| {
+                                    let temp_hp = damage_value();
+                                    if temp_hp > 0 {
+                                        combat.update(|c| c.temp_hp(temp_hp));
+                                    }
+                                }
+                            >"T"</button>
+                        </div>
+                    </div>
+                    <div class="summary-stat-box summary-hp-box">
+                        <label>{move_tr!("hp")}</label>
+                        <div class="summary-hp-value">
+                            {move || combat.hp_current().get()}
+                            {move || {
+                                let temp = combat.hp_temp().get();
+                                (temp != 0).then(|| format!(" ({temp})"))
                             }}
-                        </span>
-                        <span class="summary-hp-detail">
-                            <input
-                                type="number"
-                                class="summary-hp-temp-input"
-                            />
-                        </span>
+                            <span class="summary-hp-max">
+                                "/ " {move || combat.hp_max().get()}
+                            </span>
+                        </div>
+                    </div>
+                    // -- Inspiration toggle --
+                    <div class="summary-stat-box summary-inspiration-box">
+                        <label>{move_tr!("inspiration")}</label>
+                        <button
+                            class="inspiration-toggle"
+                            class:active=move || combat.inspiration().get()
+                            on:click=move |_| {
+                                combat.inspiration().update(|v| *v = !*v);
+                            }
+                        >
+                            {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
+                        </button>
                     </div>
                 </div>
-                // -- Inspiration toggle --
-                <div class="summary-stat-box summary-inspiration-box">
-                    <label>{move_tr!("inspiration")}</label>
-                    <button
-                        class="inspiration-toggle"
-                        class:active=move || combat.inspiration().get()
-                        on:click=move |_| {
-                            combat.inspiration().update(|v| *v = !*v);
+
+                // -- Death saves (shown when HP == 0) --
+                <Show when=move || combat.hp_current().get() == 0>
+                    <div class="summary-death-saves">
+                        <div class="death-save-row">
+                            <span>{move_tr!("successes")}</span>
+                            <div class="death-save-boxes">
+                                {(0u8..3)
+                                    .map(|i| {
+                                        let checked = move || combat.death_save_successes().get() > i;
+                                        view! {
+                                            <button
+                                                class="death-save-box"
+                                                class:filled=checked
+                                                on:click=move |_| {
+                                                    let current = combat.death_save_successes().get();
+                                                    if current > i {
+                                                        combat.death_save_successes().set(i);
+                                                    } else {
+                                                        combat.death_save_successes().set(i + 1);
+                                                    }
+                                                }
+                                            >
+                                                {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
+                                            </button>
+                                        }
+                                    })
+                                    .collect_view()}
+                            </div>
+                        </div>
+                        <div class="death-save-row">
+                            <span>{move_tr!("failures")}</span>
+                            <div class="death-save-boxes">
+                                {(0u8..3)
+                                    .map(|i| {
+                                        let checked = move || combat.death_save_failures().get() > i;
+                                        view! {
+                                            <button
+                                                class="death-save-box"
+                                                class:filled=checked
+                                                on:click=move |_| {
+                                                    let current = combat.death_save_failures().get();
+                                                    if current > i {
+                                                        combat.death_save_failures().set(i);
+                                                    } else {
+                                                        combat.death_save_failures().set(i + 1);
+                                                    }
+                                                }
+                                            >
+                                                {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
+                                            </button>
+                                        }
+                                    })
+                                    .collect_view()}
+                            </div>
+                        </div>
+                    </div>
+                </Show>
+
+                // -- Core stats: AC, Initiative, Speed --
+                <div class="summary-core-stats">
+                    <div class="summary-stat-box">
+                        <label>{move_tr!("armor-class")}</label>
+                        <span>{move || combat.armor_class().get()}</span>
+                    </div>
+                    <div class="summary-stat-box">
+                        <label>{move_tr!("initiative")}</label>
+                        <span>{move || format_bonus(initiative.get())}</span>
+                    </div>
+                    <div class="summary-stat-box">
+                        <label>{move_tr!("speed")}</label>
+                        <span>{move || combat.speed().get()}</span>
+                    </div>
+                </div>
+
+                // -- Ability modifiers --
+                <h4 class="summary-subsection-title">{move_tr!("summary-ability-mods")}</h4>
+                <div class="summary-abilities-grid">
+                    {Ability::iter().map(|ability| {
+                        let tr_key = ability.tr_abbr_key();
+                        let label = Signal::derive(move || i18n.tr(tr_key));
+                        view! {
+                            <div class="summary-ability">
+                                <span class="summary-ability-label">{label}</span>
+                                <span class="summary-ability-mod">{move || {
+                                    let score = store.abilities().get().get(ability) as i32;
+                                    format_bonus((score - 10).div_euclid(2))
+                                }}</span>
+                            </div>
                         }
-                    >
-                        {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
-                    </button>
+                    }).collect_view()}
+                </div>
+
+                // -- Saving throws --
+                <h4 class="summary-subsection-title">{move_tr!("summary-saving-throws")}</h4>
+                <div class="summary-saves-grid">
+                    {Ability::iter().map(|ability| {
+                        let tr_key = ability.tr_abbr_key();
+                        let label = Signal::derive(move || i18n.tr(tr_key));
+                        let proficient = move || store.saving_throws().read().contains(&ability);
+                        view! {
+                            <div class="summary-save" class:proficient=proficient>
+                                <span class="summary-save-label">{label}</span>
+                                <span class="summary-save-value">{move || {
+                                    let score = store.abilities().get().get(ability) as i32;
+                                    let modifier = (score - 10).div_euclid(2);
+                                    let bonus = modifier + if store.saving_throws().read().contains(&ability) { prof_bonus.get() } else { 0 };
+                                    format_bonus(bonus)
+                                }}</span>
+                            </div>
+                        }
+                    }).collect_view()}
+                </div>
+
+                // -- Skills --
+                <h4 class="summary-subsection-title">{move_tr!("panel-skills")}</h4>
+                <div class="summary-saves-grid">
+                    {Skill::iter().map(|skill| {
+                        let tr_key = skill.tr_key();
+                        let label = Signal::derive(move || i18n.tr(tr_key));
+                        let prof_level = move || {
+                            store.skills().read().get(&skill).copied().unwrap_or(ProficiencyLevel::None)
+                        };
+                        let proficient = move || prof_level() != ProficiencyLevel::None;
+                        view! {
+                            <div class="summary-save" class:proficient=proficient>
+                                <span class="summary-save-label">{label}</span>
+                                <span class="summary-save-value">{move || {
+                                    let score = store.abilities().get().get(skill.ability()) as i32;
+                                    let modifier = (score - 10).div_euclid(2);
+                                    let bonus = modifier + prof_level().multiplier() * prof_bonus.get();
+                                    format_bonus(bonus)
+                                }}</span>
+                            </div>
+                        }
+                    }).collect_view()}
                 </div>
             </div>
-
-            // -- Death saves (shown when HP == 0) --
-            <Show when=move || combat.hp_current().get() == 0>
-                <div class="summary-death-saves">
-                    <div class="death-save-row">
-                        <span>{move_tr!("successes")}</span>
-                        <div class="death-save-boxes">
-                            {(0u8..3)
-                                .map(|i| {
-                                    let checked = move || combat.death_save_successes().get() > i;
-                                    view! {
-                                        <button
-                                            class="death-save-box"
-                                            class:filled=checked
-                                            on:click=move |_| {
-                                                let current = combat.death_save_successes().get();
-                                                if current > i {
-                                                    combat.death_save_successes().set(i);
-                                                } else {
-                                                    combat.death_save_successes().set(i + 1);
-                                                }
-                                            }
-                                        >
-                                            {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
-                                        </button>
-                                    }
-                                })
-                                .collect_view()}
-                        </div>
-                    </div>
-                    <div class="death-save-row">
-                        <span>{move_tr!("failures")}</span>
-                        <div class="death-save-boxes">
-                            {(0u8..3)
-                                .map(|i| {
-                                    let checked = move || combat.death_save_failures().get() > i;
-                                    view! {
-                                        <button
-                                            class="death-save-box"
-                                            class:filled=checked
-                                            on:click=move |_| {
-                                                let current = combat.death_save_failures().get();
-                                                if current > i {
-                                                    combat.death_save_failures().set(i);
-                                                } else {
-                                                    combat.death_save_failures().set(i + 1);
-                                                }
-                                            }
-                                        >
-                                            {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
-                                        </button>
-                                    }
-                                })
-                                .collect_view()}
-                        </div>
-                    </div>
-                </div>
-            </Show>
-
-            // -- Core stats: AC, Initiative, Speed --
-            <div class="summary-core-stats">
-                <div class="summary-stat-box">
-                    <label>{move_tr!("armor-class")}</label>
-                    <span>{move || combat.armor_class().get()}</span>
-                </div>
-                <div class="summary-stat-box">
-                    <label>{move_tr!("initiative")}</label>
-                    <span>{move || format_bonus(initiative.get())}</span>
-                </div>
-                <div class="summary-stat-box">
-                    <label>{move_tr!("speed")}</label>
-                    <span>{move || combat.speed().get()}</span>
-                </div>
-            </div>
-
-            // -- Ability modifiers --
-            <h4 class="summary-subsection-title">{move_tr!("summary-ability-mods")}</h4>
-            <div class="summary-abilities-grid">
-                {Ability::iter().map(|ability| {
-                    let tr_key = ability.tr_abbr_key();
-                    let label = Signal::derive(move || i18n.tr(tr_key));
-                    view! {
-                        <div class="summary-ability">
-                            <span class="summary-ability-label">{label}</span>
-                            <span class="summary-ability-mod">{move || {
-                                let score = store.abilities().get().get(ability) as i32;
-                                format_bonus((score - 10).div_euclid(2))
-                            }}</span>
-                        </div>
-                    }
-                }).collect_view()}
-            </div>
-
-            // -- Saving throws --
-            <h4 class="summary-subsection-title">{move_tr!("summary-saving-throws")}</h4>
-            <div class="summary-saves-grid">
-                {Ability::iter().map(|ability| {
-                    let tr_key = ability.tr_abbr_key();
-                    let label = Signal::derive(move || i18n.tr(tr_key));
-                    let proficient = move || store.saving_throws().read().contains(&ability);
-                    view! {
-                        <div class="summary-save" class:proficient=proficient>
-                            <span class="summary-save-label">{label}</span>
-                            <span class="summary-save-value">{move || {
-                                let score = store.abilities().get().get(ability) as i32;
-                                let modifier = (score - 10).div_euclid(2);
-                                let bonus = modifier + if store.saving_throws().read().contains(&ability) { prof_bonus.get() } else { 0 };
-                                format_bonus(bonus)
-                            }}</span>
-                        </div>
-                    }
-                }).collect_view()}
-            </div>
-
-            // -- Skills --
-            <h4 class="summary-subsection-title">{move_tr!("panel-skills")}</h4>
-            <div class="summary-saves-grid">
-                {Skill::iter().map(|skill| {
-                    let tr_key = skill.tr_key();
-                    let label = Signal::derive(move || i18n.tr(tr_key));
-                    let prof_level = move || {
-                        store.skills().read().get(&skill).copied().unwrap_or(ProficiencyLevel::None)
-                    };
-                    let proficient = move || prof_level() != ProficiencyLevel::None;
-                    view! {
-                        <div class="summary-save" class:proficient=proficient>
-                            <span class="summary-save-label">{label}</span>
-                            <span class="summary-save-value">{move || {
-                                let score = store.abilities().get().get(skill.ability()) as i32;
-                                let modifier = (score - 10).div_euclid(2);
-                                let bonus = modifier + prof_level().multiplier() * prof_bonus.get();
-                                format_bonus(bonus)
-                            }}</span>
-                        </div>
-                    }
-                }).collect_view()}
-            </div>
-        </div>
+        }
     }
 }

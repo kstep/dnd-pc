@@ -154,7 +154,7 @@ pub fn CombatPanel() -> impl IntoView {
                                             let con_mod = store.read_untracked().ability_modifier(Ability::Constitution);
                                             let roll = (js_sys::Math::random() * sides as f64).floor() as i32 + 1;
                                             let heal = (roll + con_mod).max(1);
-                                            store.update(|ch| ch.heal(heal as u32));
+                                            store.combat().update(|ch| ch.heal(heal as u32));
                                             classes.write()[i].hit_dice_used += 1;
                                         }
                                     >

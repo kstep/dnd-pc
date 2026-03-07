@@ -1,5 +1,4 @@
 mod backpack;
-mod choice_refs;
 mod choices;
 mod languages;
 mod resources;
@@ -9,7 +8,6 @@ mod stats;
 mod weapons;
 
 use backpack::BackpackBlock;
-use choice_refs::ChoiceRefsBlock;
 use choices::ChoicesBlock;
 use languages::LanguagesBlock;
 use leptos::prelude::*;
@@ -37,7 +35,6 @@ pub fn CharacterSummary() -> impl IntoView {
                 <SpellSlotsBlock />
                 <ResourcesBlock />
                 <ChoicesBlock />
-                <ChoiceRefsBlock />
                 <LanguagesBlock />
             </div>
 
