@@ -58,7 +58,7 @@ pub fn BackpackBlock() -> impl IntoView {
             // -- Add item --
             <div class="summary-list-entry">
                 <div class="summary-list-row">
-                    <button class="apply-damage-btn apply-damage-btn--success"
+                    <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("add-item")
                         on:click=move |_| {
                             let Some(name_el) = name_input.get() else { return };
                             let name = name_el.value();

@@ -107,6 +107,7 @@ btn-add-item = + Add Item
 currency = Currency
 spend = Spend
 gain = Gain
+add-item = Add item
 
 ## Features / Personality / Proficiencies
 feature-name = Feature name
