@@ -38,14 +38,14 @@ pub fn BackpackBlock() -> impl IntoView {
                 <div class="summary-currency-controls">
                     <input type="text" inputmode="decimal" class="summary-currency-input" node_ref=money_input />
                     <span class="summary-currency-unit">"gp"</span>
-                    <button class="apply-damage-btn apply-damage-btn--danger" title=move_tr!("spend")
+                    <button class="btn-icon btn-icon--danger" title=move_tr!("spend")
                         on:click=move |_| {
                             if let Some(amount) = money_value() {
                                 equipment.currency().update(|c| { c.spend(amount); });
                             }
                         }
                     ><Icon name="circle-minus" size=14 /></button>
-                    <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("gain")
+                    <button class="btn-icon btn-icon--success" title=move_tr!("gain")
                         on:click=move |_| {
                             if let Some(amount) = money_value() {
                                 equipment.currency().update(|c| c.gain(amount));
@@ -58,7 +58,7 @@ pub fn BackpackBlock() -> impl IntoView {
             // -- Add item --
             <div class="summary-list-entry">
                 <div class="summary-list-row">
-                    <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("add-item")
+                    <button class="btn-icon btn-icon--success" title=move_tr!("add-item")
                         on:click=move |_| {
                             let Some(name_el) = name_input.get() else { return };
                             let Some(qty_el) = qty_input.get() else { return };

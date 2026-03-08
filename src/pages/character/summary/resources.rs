@@ -2,12 +2,40 @@ use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
-use crate::model::{Character, CharacterStoreFields, FeatureValue};
+use crate::{
+    components::resource_slot::ResourceSlot,
+    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureValue},
+};
 
 #[component]
 pub fn ResourcesBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let feature_data = store.feature_data();
+    let classes = store.identity().classes();
+
+    let hit_dice = move || {
+        classes
+            .read()
+            .iter()
+            .enumerate()
+            .filter(|(_, cl)| cl.level > 0)
+            .map(|(i, cl)| {
+                let label = format!("{} d{}", cl.class_label(), cl.hit_die_sides);
+                let max = cl.level;
+                let used = cl.hit_dice_used;
+                view! {
+                    <ResourceSlot
+                        label=label
+                        max=max
+                        used=used
+                        on_change=move |value| {
+                            classes.write()[i].hit_dice_used = value;
+                        }
+                    />
+                }
+            })
+            .collect::<Vec<_>>()
+    };
 
     let resources = move || {
         feature_data
@@ -26,41 +54,47 @@ pub fn ResourcesBlock() -> impl IntoView {
                             let feat_name = feat_name.clone();
 
                             Some(Either::Left(view! {
-                                <div class="summary-slot">
-                                    <span class="summary-slot-level">{label}</span>
-                                    <input
-                                        type="number"
-                                        class="short-input"
-                                        min="0"
-                                        prop:max=max.to_string()
-                                        prop:value=used.to_string()
-                                        on:input={
-                                            move |event| {
-                                                if let Ok(value) = event_target_value(&event).parse() {
-                                                    feature_data.update(|map| {
-                                                        if let Some(entry) = map.get_mut(&feat_name)
-                                                            && let Some(field) = entry.fields.get_mut(field_idx)
-                                                            && let FeatureValue::Points { used, .. } = &mut field.value
-                                                        {
-                                                            *used = value;
-                                                        }
-                                                    });
-                                                }
+                                <ResourceSlot
+                                    label=label
+                                    max=max
+                                    used=used
+                                    on_change=move |value| {
+                                        feature_data.update(|map| {
+                                            if let Some(entry) = map.get_mut(&feat_name)
+                                                && let Some(field) = entry.fields.get_mut(field_idx)
+                                                && let FeatureValue::Points { used, .. } = &mut field.value
+                                            {
+                                                *used = value;
                                             }
-                                        }
-                                    />
-                                    <span>"/" {max}</span>
-                                </div>
+                                        });
+                                    }
+                                />
                             }))
-                        },
-                        FeatureValue::Die(value) if !value.is_empty() => Some(
-                            Either::Right(view! {
-                                <div class="summary-slot">
-                                    <span class="summary-slot-level">{field.label().to_string()}</span>
-                                    <span>{value.clone()}</span>
-                                </div>
-                            })
-                        ),
+                        }
+                        FeatureValue::Die { die, used } if die.amount > 0 => {
+                            let used = *used;
+                            let max = die.amount;
+                            let label = format!("{} ({})", field.label(), die);
+                            let feat_name = feat_name.clone();
+
+                            Some(Either::Right(view! {
+                                <ResourceSlot
+                                    label=label
+                                    max=max
+                                    used=used
+                                    on_change=move |value| {
+                                        feature_data.update(|map| {
+                                            if let Some(entry) = map.get_mut(&feat_name)
+                                                && let Some(field) = entry.fields.get_mut(field_idx)
+                                                && let FeatureValue::Die { used, .. } = &mut field.value
+                                            {
+                                                *used = value;
+                                            }
+                                        });
+                                    }
+                                />
+                            }))
+                        }
                         _ => None,
                     })
             })
@@ -68,14 +102,16 @@ pub fn ResourcesBlock() -> impl IntoView {
     };
 
     move || {
+        let hit_dice = hit_dice();
         let resources = resources();
 
-        if resources.is_empty() {
+        if hit_dice.is_empty() && resources.is_empty() {
             None
         } else {
             Some(view! {
                 <h4 class="summary-subsection-title">{move_tr!("summary-resources")}</h4>
                 <div class="summary-spell-slots">
+                    {hit_dice}
                     {resources}
                 </div>
             })

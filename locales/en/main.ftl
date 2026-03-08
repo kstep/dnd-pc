@@ -128,6 +128,7 @@ racial-traits = Racial Traits
 trait-name = Trait name
 btn-add-racial-trait = + Add Racial Trait
 used = Used
+spend = Spend
 total = Total
 max = Max
 cost = Cost

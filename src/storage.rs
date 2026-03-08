@@ -96,12 +96,34 @@ fn migrate_v3(value: &mut serde_json::Value) {
     }
 }
 
+/// Migrate FeatureValue::Die from string to { die, used } struct.
+fn migrate_v4(value: &mut serde_json::Value) {
+    if let Some(feature_data) = value
+        .get_mut("feature_data")
+        .and_then(|v| v.as_object_mut())
+    {
+        for entry in feature_data.values_mut() {
+            if let Some(fields) = entry.get_mut("fields").and_then(|v| v.as_array_mut()) {
+                for field in fields {
+                    if let Some(die_str) = field.get("value").and_then(|v| v.get("Die"))
+                        && let Some(s) = die_str.as_str()
+                    {
+                        let s = s.to_string();
+                        field["value"] = serde_json::json!({ "Die": { "die": s, "used": 0 } });
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
     migrate_v1(&mut value);
     migrate_v2(&mut value);
     migrate_v3(&mut value);
+    migrate_v4(&mut value);
     serde_json::from_value(value).ok()
 }
 
@@ -116,6 +138,7 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     migrate_v1(&mut value);
     migrate_v2(&mut value);
     migrate_v3(&mut value);
+    migrate_v4(&mut value);
     serde_json::from_value(value).ok()
 }
 
