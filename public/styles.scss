@@ -1625,6 +1625,14 @@ input[type="checkbox"] {
   max-inline-size: none;
 }
 
+input.summary-list-name {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  padding: var(--size-1);
+}
+
 .summary-qty-input {
   width: 4em;
   text-align: center;

@@ -6,7 +6,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{icon::Icon, toggle_button::ToggleButton},
-    model::{Character, CharacterStoreFields, EquipmentStoreFields, Money},
+    model::{Character, CharacterStoreFields, EquipmentStoreFields, Item, Money},
 };
 
 #[component]
@@ -14,6 +14,10 @@ pub fn BackpackBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let equipment = store.equipment();
     let money_input: NodeRef<html::Input> = NodeRef::new();
+
+    let name_input: NodeRef<html::Input> = NodeRef::new();
+    let qty_input: NodeRef<html::Input> = NodeRef::new();
+    let desc_input: NodeRef<html::Textarea> = NodeRef::new();
 
     let money_value = move || {
         money_input.read().as_ref().and_then(|input| {
@@ -49,6 +53,43 @@ pub fn BackpackBlock() -> impl IntoView {
                         }
                     ><Icon name="circle-plus" size=14 /></button>
                 </div>
+            </div>
+
+            // -- Add item --
+            <div class="summary-list-entry">
+                <div class="summary-list-row">
+                    <button class="apply-damage-btn apply-damage-btn--success"
+                        on:click=move |_| {
+                            let Some(name_el) = name_input.get() else { return };
+                            let name = name_el.value();
+                            if name.trim().is_empty() { return; }
+
+                            let qty_el = qty_input.get();
+                            let qty: u32 = qty_el.as_ref()
+                                .map(|el| el.value().parse().unwrap_or(1))
+                                .unwrap_or(1);
+                            if qty == 0 { return; }
+
+                            let desc = desc_input.get().map(|el| el.value()).unwrap_or_default();
+
+                            equipment.items().write().push(Item {
+                                name,
+                                quantity: qty,
+                                description: desc,
+                            });
+
+                            name_el.set_value("");
+                            if let Some(el) = qty_el { el.set_value("1"); }
+                            if let Some(el) = desc_input.get() { el.set_value(""); }
+                        }
+                    ><Icon name="circle-plus" size=14 /></button>
+                    <input type="text" class="summary-list-name" placeholder=move_tr!("item-name") node_ref=name_input />
+                    <span class="summary-list-badge">
+                        "\u{00d7}"
+                        <input type="number" class="summary-qty-input" min="0" value="1" node_ref=qty_input />
+                    </span>
+                </div>
+                <textarea class="summary-item-desc" placeholder=move_tr!("description") node_ref=desc_input />
             </div>
 
             {move || {

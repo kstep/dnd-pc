@@ -781,7 +781,7 @@ pub struct Currency {
 }
 
 impl Currency {
-    pub fn to_money(&self) -> Money {
+    pub fn as_money(&self) -> Money {
         Money::from_cp(
             self.cp
                 + self.sp * Money::CP_PER_SP
@@ -801,7 +801,7 @@ impl Currency {
     }
 
     pub fn spend(&mut self, mut amount: Money) -> bool {
-        if amount > self.to_money() {
+        if amount > self.as_money() {
             return false;
         }
 
