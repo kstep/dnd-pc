@@ -1618,7 +1618,7 @@ input[type="checkbox"] {
 
 .summary-list-desc {
   margin: var(--size-1) 0 0;
-  padding-left: var(--size-3);
+  padding-left: calc(28px + var(--size-2));
   white-space: pre-line;
   overflow-wrap: break-word;
   font-size: var(--font-size-1);
@@ -1638,8 +1638,8 @@ input[type="checkbox"] {
 
 .summary-item-desc {
   margin: var(--size-1) 0 0;
-  margin-left: var(--size-4);
-  width: calc(100% - var(--size-4));
+  margin-left: calc(28px + var(--size-2));
+  width: calc(100% - 28px - var(--size-2));
   min-height: 3em;
   font-size: var(--font-size-1);
   font-family: inherit;
@@ -1690,15 +1690,72 @@ input[type="checkbox"] {
 .summary-hp-box {
   grid-column: span 2;
 
+  .summary-hp-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--size-1);
+  }
+
+  .summary-hp-damage {
+    display: flex;
+    align-items: center;
+    gap: var(--size-1);
+    padding-right: var(--size-1);
+    border-right: 1px solid var(--panel-border);
+  }
+
+  .summary-damage-input {
+    width: 3em;
+    text-align: center;
+    font-size: var(--font-size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    padding: 0 var(--size-1);
+  }
+
+  .apply-damage-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: var(--font-size-1);
+    line-height: 1;
+
+    &--danger {
+      color: var(--danger);
+    }
+
+    &--success {
+      color: var(--success);
+    }
+
+    &:hover {
+      background: var(--surface-3);
+    }
+  }
+
   .summary-hp-value {
     display: flex;
     align-items: center;
     gap: var(--size-1);
+    font-size: var(--font-size-3);
+    font-weight: 700;
   }
 
   .summary-hp-max {
-    font-size: var(--font-size-3);
-    font-weight: 700;
+    font-size: var(--font-size-1);
+    font-weight: 400;
   }
 
   .summary-hp-detail {
@@ -1812,6 +1869,9 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: var(--size-2);
+  padding-bottom: var(--size-2);
+  margin-bottom: var(--size-2);
+  border-bottom: 1px solid var(--panel-border);
 
   label {
     font-weight: 600;
