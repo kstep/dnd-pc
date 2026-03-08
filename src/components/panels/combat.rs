@@ -6,7 +6,7 @@ use crate::{
     components::{icon::Icon, panel::Panel},
     model::{
         Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        CombatStatsStoreFields, FeatureValue, format_bonus,
+        CombatStatsStoreFields, format_bonus,
     },
 };
 
@@ -228,8 +228,7 @@ pub fn CombatPanel() -> impl IntoView {
                 <button
                     class="btn-rest"
                     on:click=move |_| {
-                        combat.death_save_successes().set(0);
-                        combat.death_save_failures().set(0);
+                        store.update(|ch| ch.short_rest());
                     }
                 >
                     {move_tr!("short-rest")}
@@ -237,37 +236,7 @@ pub fn CombatPanel() -> impl IntoView {
                 <button
                     class="btn-rest"
                     on:click=move |_| {
-                        // Restore HP
-                        combat.hp_current().set(combat.hp_max().get());
-                        // Reset death saves
-                        combat.death_save_successes().set(0);
-                        combat.death_save_failures().set(0);
-                        // Regain half spent hit dice per class
-                        {
-                            let mut writer = classes.write();
-                            for class in writer.iter_mut() {
-                                let regain = (class.level / 2).max(1).min(class.hit_dice_used);
-                                class.hit_dice_used -= regain;
-                            }
-                        }
-                        // Reset spell slots
-                        store.spell_slots().update(|pools| {
-                            for slots in pools.values_mut() {
-                                for slot in slots.iter_mut() {
-                                    slot.used = 0;
-                                }
-                            }
-                        });
-                        // Reset feature points (sorcery points, etc.)
-                        store.feature_data().update(|map| {
-                            for entry in map.values_mut() {
-                                for field in entry.fields.iter_mut() {
-                                    if let FeatureValue::Points { used, .. } = &mut field.value {
-                                        *used = 0;
-                                    }
-                                }
-                            }
-                        });
+                        store.update(|ch| ch.long_rest());
                     }
                 >
                     {move_tr!("long-rest")}

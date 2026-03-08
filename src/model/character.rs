@@ -127,6 +127,46 @@ impl Character {
         Self::default()
     }
 
+    pub fn long_rest(&mut self) {
+        self.combat.hp_current = self.combat.hp_max;
+        self.combat.hp_temp = 0;
+        self.combat.death_save_successes = 0;
+        self.combat.death_save_failures = 0;
+
+        for cl in &mut self.identity.classes {
+            // restore half of hit dice, rounded down
+            let hit_dice_available = cl.level - cl.hit_dice_used;
+            cl.hit_dice_used = cl.hit_dice_used.saturating_sub(hit_dice_available / 2);
+        }
+
+        for slots in self.spell_slots.values_mut() {
+            for slot in slots.iter_mut() {
+                slot.used = 0;
+            }
+        }
+
+        for feature_data in self.feature_data.values_mut() {
+            for field in &mut feature_data.fields {
+                if let FeatureValue::Points { used, .. } = &mut field.value {
+                    *used = 0;
+                }
+            }
+        }
+    }
+
+    pub fn short_rest(&mut self) {
+        self.combat.death_save_failures = 0;
+        self.combat.death_save_successes = 0;
+
+        for (&pool, slots) in &mut self.spell_slots {
+            if pool.restore_on_short_rest() {
+                for slot in slots.iter_mut() {
+                    slot.used = 0;
+                }
+            }
+        }
+    }
+
     pub fn touch(&mut self) {
         self.updated_at = now_epoch_secs();
     }

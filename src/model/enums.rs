@@ -354,6 +354,12 @@ pub enum SpellSlotPool {
 }
 enum_serde_u8!(SpellSlotPool { Arcane, Pact });
 
+impl SpellSlotPool {
+    pub fn restore_on_short_rest(&self) -> bool {
+        matches!(self, SpellSlotPool::Pact)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
 #[repr(u8)]
 pub enum ArmorType {
