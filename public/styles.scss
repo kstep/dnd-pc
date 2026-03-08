@@ -1568,6 +1568,32 @@ input[type="checkbox"] {
   }
 }
 
+.summary-section-actions {
+  position: relative;
+}
+
+.summary-rest-actions {
+  position: absolute;
+  top: var(--size-3);
+  right: var(--size-3);
+  display: flex;
+  gap: var(--size-1);
+}
+
+.summary-rest-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--success);
+  color: white;
+  cursor: pointer;
+}
+
 .summary-spell-stats {
   display: flex;
   gap: var(--size-4);
