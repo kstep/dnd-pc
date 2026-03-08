@@ -35,7 +35,7 @@ impl Money {
         }
 
         let fraction_gp = fraction_gp_str.parse::<u32>().ok()?;
-        let fraction_gp = if fraction_gp < 10 {
+        let fraction_gp = if fraction_gp_str.len() == 1 {
             // "0.5" should be treated as "0.50"
             fraction_gp * 10
         } else {
@@ -246,6 +246,8 @@ mod tests {
         assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_gp_cp(10, 50)));
         // "0.01" = 1cp
         assert_eq!(Money::from_gp_str("0.01"), Some(Money::from_cp(1)));
+        // "0.05" = 5cp (leading zero must not be lost)
+        assert_eq!(Money::from_gp_str("0.05"), Some(Money::from_cp(5)));
         // "0.99" = 99cp
         assert_eq!(Money::from_gp_str("0.99"), Some(Money::from_cp(99)));
     }
