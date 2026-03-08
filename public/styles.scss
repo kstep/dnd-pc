@@ -1687,6 +1687,34 @@ input[type="checkbox"] {
 
 }
 
+.apply-damage-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: var(--font-size-1);
+  line-height: 1;
+
+  &--danger {
+    color: var(--danger);
+  }
+
+  &--success {
+    color: var(--success);
+  }
+
+  &:hover {
+    background: var(--surface-3);
+  }
+}
+
 .summary-hp-box {
   grid-column: span 2;
 
@@ -1722,35 +1750,7 @@ input[type="checkbox"] {
     padding: 0 var(--size-1);
   }
 
-  .apply-damage-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: none;
-    cursor: pointer;
-    color: var(--text-primary);
-    font-size: var(--font-size-1);
-    line-height: 1;
-
-    &--danger {
-      color: var(--danger);
-    }
-
-    &--success {
-      color: var(--success);
-    }
-
-    &:hover {
-      background: var(--surface-3);
-    }
-  }
-
-  .summary-hp-value {
+.summary-hp-value {
     display: flex;
     align-items: center;
     gap: var(--size-1);
@@ -1877,6 +1877,7 @@ input[type="checkbox"] {
   padding-bottom: var(--size-2);
   margin-bottom: var(--size-2);
   border-bottom: 1px solid var(--panel-border);
+  flex-wrap: wrap;
 
   label {
     font-weight: 600;
@@ -1886,6 +1887,30 @@ input[type="checkbox"] {
   span {
     font-size: var(--font-size-2);
     font-weight: 700;
+  }
+
+  .summary-currency-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--size-1);
+    margin-left: auto;
+  }
+
+  .summary-currency-unit {
+    font-size: var(--font-size-1);
+    font-weight: normal;
+    color: var(--text-secondary);
+  }
+
+  .summary-currency-input {
+    width: 4em;
+    text-align: center;
+    font-size: var(--font-size-1);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    padding: 0 var(--size-1);
   }
 }
 

@@ -30,6 +30,10 @@ impl Money {
             fraction_gp_str
         };
 
+        if fraction_gp_str.is_empty() {
+            return Some(Self::from_gp(whole_gp));
+        }
+
         let fraction_gp = fraction_gp_str.parse::<u32>().ok()?;
         let fraction_gp = if fraction_gp < 10 {
             // "0.5" should be treated as "0.50"
@@ -176,5 +180,132 @@ impl Sub for Money {
 impl SubAssign for Money {
     fn sub_assign(&mut self, rhs: Self) {
         self.cp -= rhs.cp;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_cp_constructors() {
+        assert_eq!(Money::from_cp(1).whole_cp(), 1);
+        assert_eq!(Money::from_sp(1).whole_cp(), 10);
+        assert_eq!(Money::from_ep(1).whole_cp(), 50);
+        assert_eq!(Money::from_gp(1).whole_cp(), 100);
+        assert_eq!(Money::from_pp(1).whole_cp(), 1000);
+    }
+
+    #[test]
+    fn from_gp_cp() {
+        assert_eq!(Money::from_gp_cp(2, 50).whole_cp(), 250);
+        assert_eq!(Money::from_gp_cp(0, 0).whole_cp(), 0);
+    }
+
+    #[test]
+    fn as_coins_roundtrip() {
+        let money = Money::from_cp(1234);
+        let (pp, gp, ep, sp, cp) = money.as_coins();
+        assert_eq!(pp, 1);
+        assert_eq!(gp, 2);
+        assert_eq!(ep, 0);
+        assert_eq!(sp, 3);
+        assert_eq!(cp, 4);
+    }
+
+    #[test]
+    fn as_coins_exact_denominations() {
+        assert_eq!(Money::from_pp(3).as_coins(), (3, 0, 0, 0, 0));
+        assert_eq!(Money::from_gp(5).as_coins(), (0, 5, 0, 0, 0));
+        assert_eq!(Money::from_ep(2).as_coins(), (0, 0, 2, 0, 0));
+        assert_eq!(Money::from_sp(7).as_coins(), (0, 0, 0, 7, 0));
+        assert_eq!(Money::from_cp(9).as_coins(), (0, 0, 0, 0, 9));
+    }
+
+    #[test]
+    fn whole_accessors() {
+        let money = Money::from_cp(1550);
+        assert_eq!(money.whole_pp(), 1);
+        assert_eq!(money.whole_gp(), 15);
+        assert_eq!(money.whole_ep(), 31);
+        assert_eq!(money.whole_sp(), 155);
+        assert_eq!(money.whole_cp(), 1550);
+    }
+
+    #[test]
+    fn from_gp_str_whole() {
+        assert_eq!(Money::from_gp_str("10"), Some(Money::from_gp(10)));
+        assert_eq!(Money::from_gp_str("0"), Some(Money::default()));
+    }
+
+    #[test]
+    fn from_gp_str_decimal() {
+        // "10.50" = 10gp 50cp
+        assert_eq!(Money::from_gp_str("10.50"), Some(Money::from_gp_cp(10, 50)));
+        // "10.5" = 10gp 50cp (single digit treated as tens)
+        assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_gp_cp(10, 50)));
+        // "0.01" = 1cp
+        assert_eq!(Money::from_gp_str("0.01"), Some(Money::from_cp(1)));
+        // "0.99" = 99cp
+        assert_eq!(Money::from_gp_str("0.99"), Some(Money::from_cp(99)));
+    }
+
+    #[test]
+    fn from_gp_str_truncates_fraction() {
+        // More than 2 decimal digits: truncated to 2
+        assert_eq!(Money::from_gp_str("1.999"), Some(Money::from_gp_cp(1, 99)));
+    }
+
+    #[test]
+    fn from_gp_str_whitespace() {
+        assert_eq!(Money::from_gp_str("  5  "), Some(Money::from_gp(5)));
+        assert_eq!(Money::from_gp_str(""), Some(Money::default()));
+        assert_eq!(Money::from_gp_str("  "), Some(Money::default()));
+    }
+
+    #[test]
+    fn from_gp_str_invalid() {
+        assert_eq!(Money::from_gp_str("abc"), None);
+        assert_eq!(Money::from_gp_str("1.ab"), None);
+        assert_eq!(Money::from_gp_str("-5"), None);
+    }
+
+    #[test]
+    fn display_mixed() {
+        assert_eq!(Money::from_cp(1234).to_string(), "1pp 2gp 3sp 4cp");
+        assert_eq!(Money::from_gp(5).to_string(), "5gp");
+        assert_eq!(Money::from_cp(0).to_string(), "");
+        assert_eq!(Money::from_cp(3).to_string(), "3cp");
+        assert_eq!(Money::from_cp(1050).to_string(), "1pp 5sp");
+    }
+
+    #[test]
+    fn add_and_sub() {
+        let a = Money::from_gp(5);
+        let b = Money::from_gp(3);
+        assert_eq!(a + b, Money::from_gp(8));
+        assert_eq!(a - b, Money::from_gp(2));
+    }
+
+    #[test]
+    fn add_assign_and_sub_assign() {
+        let mut m = Money::from_gp(10);
+        m += Money::from_gp(5);
+        assert_eq!(m, Money::from_gp(15));
+        m -= Money::from_gp(3);
+        assert_eq!(m, Money::from_gp(12));
+    }
+
+    #[test]
+    fn ordering() {
+        assert!(Money::from_gp(5) > Money::from_gp(3));
+        assert!(Money::from_cp(99) < Money::from_gp(1));
+        assert_eq!(Money::from_sp(10), Money::from_gp(1));
+    }
+
+    #[test]
+    fn default_is_zero() {
+        assert_eq!(Money::default().whole_cp(), 0);
+        assert_eq!(Money::default().as_coins(), (0, 0, 0, 0, 0));
     }
 }

@@ -1,18 +1,27 @@
 use std::collections::HashSet;
 
-use leptos::{either::Either, prelude::*};
+use leptos::{either::Either, html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::toggle_button::ToggleButton,
-    model::{Character, CharacterStoreFields, EquipmentStoreFields},
+    components::{icon::Icon, toggle_button::ToggleButton},
+    model::{Character, CharacterStoreFields, EquipmentStoreFields, Money},
 };
 
 #[component]
 pub fn BackpackBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let equipment = store.equipment();
+    let money_input: NodeRef<html::Input> = NodeRef::new();
+
+    let money_value = move || {
+        money_input.read().as_ref().and_then(|input| {
+            let value = Money::from_gp_str(&input.value())?;
+            input.set_value("");
+            Some(value)
+        })
+    };
 
     view! {
         <div class="summary-section">
@@ -22,6 +31,24 @@ pub fn BackpackBlock() -> impl IntoView {
             <div class="summary-currency">
                 <label>{move_tr!("currency")}</label>
                 <span>{move || equipment.currency().read().to_string()}</span>
+                <div class="summary-currency-controls">
+                    <input type="text" inputmode="decimal" class="summary-currency-input" node_ref=money_input />
+                    <span class="summary-currency-unit">"gp"</span>
+                    <button class="apply-damage-btn apply-damage-btn--danger" title=move_tr!("spend")
+                        on:click=move |_| {
+                            if let Some(amount) = money_value() {
+                                equipment.currency().update(|c| { c.spend(amount); });
+                            }
+                        }
+                    ><Icon name="circle-minus" size=14 /></button>
+                    <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("gain")
+                        on:click=move |_| {
+                            if let Some(amount) = money_value() {
+                                equipment.currency().update(|c| c.gain(amount));
+                            }
+                        }
+                    ><Icon name="circle-plus" size=14 /></button>
+                </div>
             </div>
 
             {move || {

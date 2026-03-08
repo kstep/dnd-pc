@@ -105,6 +105,8 @@ qty = Qty
 description = Description
 btn-add-item = + Add Item
 currency = Currency
+spend = Spend
+gain = Gain
 
 ## Features / Personality / Proficiencies
 feature-name = Feature name
