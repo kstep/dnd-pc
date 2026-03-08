@@ -1713,3 +1713,124 @@ impl RulesRegistry {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    // Auto-generated map: relative path → file contents for every
+    // non-manifest JSON file under `public/`.
+    include!(concat!(env!("OUT_DIR"), "/public_json_files.rs"));
+
+    /// Verify that every indented line in `content` uses spaces (not tabs)
+    /// and that the number of leading spaces is a multiple of 2.
+    fn check_indentation(path: &str, content: &str) {
+        for (line_no, line) in content.lines().enumerate() {
+            let leading: &str = &line[..line.len() - line.trim_start().len()];
+            assert!(
+                leading.chars().all(|c| c == ' '),
+                "{path}: line {}: leading whitespace contains a non-space character",
+                line_no + 1
+            );
+            assert_eq!(
+                leading.len() % 2,
+                0,
+                "{path}: line {}: has {} leading space(s) — not a multiple of 2",
+                line_no + 1,
+                leading.len()
+            );
+        }
+    }
+
+    // ---------- index.json ----------
+
+    #[wasm_bindgen_test]
+    fn json_index_valid() {
+        let files = public_json_files();
+        let content = files.get("index.json").expect("index.json must exist in public/");
+        check_indentation("index.json", content);
+        let _: Index = serde_json::from_str(content).expect("index.json must be valid");
+    }
+
+    // ---------- classes ----------
+
+    #[wasm_bindgen_test]
+    fn json_classes_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
+
+        for entry in &index.classes {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("class file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<ClassDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
+
+    // ---------- races ----------
+
+    #[wasm_bindgen_test]
+    fn json_races_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
+
+        for entry in &index.races {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("race file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<RaceDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
+
+    // ---------- backgrounds ----------
+
+    #[wasm_bindgen_test]
+    fn json_backgrounds_valid() {
+        let files = public_json_files();
+        let index: Index = serde_json::from_str(
+            files.get("index.json").expect("index.json must exist"),
+        )
+        .expect("index.json must be valid");
+
+        for entry in &index.backgrounds {
+            let content = files
+                .get(entry.url.as_str())
+                .unwrap_or_else(|| panic!("background file not found: {}", entry.url));
+            check_indentation(&entry.url, content);
+            serde_json::from_str::<BackgroundDefinition>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {}: {e}", entry.url));
+        }
+    }
+
+    // ---------- spell lists ----------
+    // Spell list files live in `public/spells/` and are referenced from within
+    // class / race / background definitions.  We discover them by scanning the
+    // build-time map rather than hard-coding names.
+
+    #[wasm_bindgen_test]
+    fn json_spell_lists_valid() {
+        let files = public_json_files();
+        let mut paths: Vec<&str> =
+            files.keys().copied().filter(|k| k.starts_with("spells/")).collect();
+        paths.sort();
+        assert!(!paths.is_empty(), "no spell-list files found under public/spells/");
+        for path in paths {
+            let content = files[path];
+            check_indentation(path, content);
+            serde_json::from_str::<Vec<SpellDefinition>>(content)
+                .unwrap_or_else(|e| panic!("failed to parse {path}: {e}"));
+        }
+    }
+}
