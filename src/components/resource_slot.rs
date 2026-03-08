@@ -23,7 +23,7 @@ pub fn ResourceSlot(
                 min="0"
                 prop:max=max_str
                 prop:value=used_str
-                on:input=move |event| {
+                on:change=move |event| {
                     if let Ok(value) = event_target_value(&event).parse::<u32>() {
                         on_change.with_value(|f| f(value.min(max)));
                     }
