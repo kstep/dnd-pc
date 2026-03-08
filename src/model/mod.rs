@@ -1,8 +1,10 @@
 mod character;
 mod enums;
+mod money;
 
 pub use character::*;
 pub use enums::*;
+pub use money::*;
 
 /// Format an integer as a signed bonus string (e.g. `+3`, `-1`).
 pub fn format_bonus(value: i32) -> String {

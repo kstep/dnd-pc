@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
-use crate::{constvec::ConstVec, vecset::VecSet};
+use crate::{constvec::ConstVec, model::Money, vecset::VecSet};
 
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
@@ -778,6 +778,51 @@ pub struct Currency {
     pub gp: u32,
     #[serde(default)]
     pub pp: u32,
+}
+
+impl Currency {
+    pub fn to_money(&self) -> Money {
+        Money::from_cp(
+            self.cp
+                + self.sp * Money::CP_PER_SP
+                + self.ep * Money::CP_PER_EP
+                + self.gp * Money::CP_PER_GP
+                + self.pp * Money::CP_PER_PP,
+        )
+    }
+
+    pub fn gain(&mut self, amount: Money) {
+        let (gain_pp, gain_gp, gain_ep, gain_sp, gain_cp) = amount.as_coins();
+        self.cp += gain_cp;
+        self.sp += gain_sp;
+        self.ep += gain_ep;
+        self.gp += gain_gp;
+        self.pp += gain_pp;
+    }
+
+    pub fn spend(&mut self, mut amount: Money) -> bool {
+        if amount > self.to_money() {
+            return false;
+        }
+
+        macro_rules! spend_coin {
+            ($coin:ident, $amount_left:ident, $get_coin:ident, $to_money:ident) => {
+                let spend = $amount_left.$get_coin().min(self.$coin);
+                if spend > 0 {
+                    self.$coin -= spend;
+                    $amount_left -= Money::$to_money(spend);
+                }
+            };
+        }
+
+        spend_coin!(pp, amount, whole_pp, from_pp);
+        spend_coin!(gp, amount, whole_gp, from_gp);
+        spend_coin!(ep, amount, whole_ep, from_ep);
+        spend_coin!(sp, amount, whole_sp, from_sp);
+        spend_coin!(cp, amount, whole_cp, from_cp);
+
+        true
+    }
 }
 
 impl std::fmt::Display for Currency {
