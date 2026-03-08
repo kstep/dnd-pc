@@ -7,6 +7,7 @@ pub mod icon;
 pub mod language_switcher;
 pub mod panel;
 pub mod panels;
+pub mod resource_slot;
 pub mod skill_row;
 pub mod summary_header;
 pub mod summary_list;

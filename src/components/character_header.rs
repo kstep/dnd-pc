@@ -467,7 +467,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             class="class-hit-die"
                                             prop:value=hit_die_val
                                             on:change=move |e| {
-                                                if let Ok(value) = event_target_value(&e).parse::<u16>() {
+                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                     classes.write()[i].hit_die_sides = value;
                                                 }
                                             }

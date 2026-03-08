@@ -44,7 +44,7 @@ pub fn StatsBlock() -> impl IntoView {
                         <div class="summary-hp-controls">
                             <div class="summary-hp-damage">
                                 <input type="number" min="0" class="summary-damage-input" node_ref=damage_input />
-                                <button class="apply-damage-btn apply-damage-btn--danger" title=move_tr!("damage")
+                                <button class="btn-icon btn-icon--danger" title=move_tr!("damage")
                                     on:click=move |_| {
                                         let damage = damage_value();
                                         if damage > 0 {
@@ -52,7 +52,7 @@ pub fn StatsBlock() -> impl IntoView {
                                         }
                                     }
                                 ><Icon name="swords" size=14 /></button>
-                                <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("heal")
+                                <button class="btn-icon btn-icon--success" title=move_tr!("heal")
                                     on:click=move |_| {
                                         let heal = damage_value();
                                         if heal > 0 {

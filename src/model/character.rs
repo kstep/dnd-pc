@@ -1,4 +1,8 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    fmt,
+    str::FromStr,
+};
 
 use indexmap::IndexMap;
 use reactive_stores::Store;
@@ -7,6 +11,45 @@ use uuid::Uuid;
 
 use super::enums::*;
 use crate::{constvec::ConstVec, model::Money, vecset::VecSet};
+
+// --- Die type ---
+
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct Die {
+    pub amount: u32,
+    pub sides: u32,
+}
+
+impl fmt::Display for Die {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}d{}", self.amount, self.sides)
+    }
+}
+
+impl FromStr for Die {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (amount, sides) = s.split_once('d').ok_or("expected {amount}d{sides}")?;
+        Ok(Die {
+            amount: amount.parse().map_err(|_| "invalid amount")?,
+            sides: sides.parse().map_err(|_| "invalid sides")?,
+        })
+    }
+}
+
+impl Serialize for Die {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for Die {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        s.parse().map_err(serde::de::Error::custom)
+    }
+}
 
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
@@ -147,8 +190,11 @@ impl Character {
 
         for feature_data in self.feature_data.values_mut() {
             for field in &mut feature_data.fields {
-                if let FeatureValue::Points { used, .. } = &mut field.value {
-                    *used = 0;
+                match &mut field.value {
+                    FeatureValue::Points { used, .. } | FeatureValue::Die { used, .. } => {
+                        *used = 0;
+                    }
+                    _ => {}
                 }
             }
         }
@@ -455,7 +501,7 @@ pub struct ClassLevel {
     #[serde(default)]
     pub level: u32,
     #[serde(default)]
-    pub hit_die_sides: u16,
+    pub hit_die_sides: u32,
     #[serde(default)]
     pub hit_dice_used: u32,
     #[serde(default)]
@@ -702,7 +748,7 @@ impl FeatureField {
 pub enum FeatureValue {
     Points { used: u32, max: u32 },
     Choice { options: Vec<FeatureOption> },
-    Die(String),
+    Die { die: Die, used: u32 },
     Bonus(i32),
 }
 
@@ -716,6 +762,7 @@ impl FeatureValue {
     pub fn available_points(&self) -> Option<u32> {
         match self {
             FeatureValue::Points { used, max } => Some(max.saturating_sub(*used)),
+            FeatureValue::Die { die, used } => Some(die.amount.saturating_sub(*used)),
             _ => None,
         }
     }
@@ -1432,30 +1479,64 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_exact_denomination() {
-        let mut c = Currency { gp: 10, sp: 5, ..Default::default() };
+        let mut c = Currency {
+            gp: 10,
+            sp: 5,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_sp(5)));
-        assert_eq!(c, Currency { gp: 10, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                gp: 10,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_breaks_higher_coin() {
         // 10 gp 0 sp — spend 5 sp should exchange 1 gp → 10 sp, leaving 9 gp 5 sp
-        let mut c = Currency { gp: 10, ..Default::default() };
+        let mut c = Currency {
+            gp: 10,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_sp(5)));
-        assert_eq!(c, Currency { gp: 9, sp: 5, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                gp: 9,
+                sp: 5,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_insufficient_returns_false() {
-        let mut c = Currency { gp: 1, ..Default::default() };
+        let mut c = Currency {
+            gp: 1,
+            ..Default::default()
+        };
         assert!(!c.spend(Money::from_gp(2)));
         // Currency unchanged
-        assert_eq!(c, Currency { gp: 1, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                gp: 1,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_exact_total() {
-        let mut c = Currency { gp: 1, sp: 5, cp: 3, ..Default::default() };
+        let mut c = Currency {
+            gp: 1,
+            sp: 5,
+            cp: 3,
+            ..Default::default()
+        };
         let total = c.as_money();
         assert!(c.spend(total));
         assert_eq!(c, Currency::default());
@@ -1464,72 +1545,161 @@ pub mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_cp_from_sp() {
         // 0 cp, 1 sp → spend 5 cp → break 1 sp, return 5 cp change
-        let mut c = Currency { sp: 1, ..Default::default() };
+        let mut c = Currency {
+            sp: 1,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_cp(5)));
-        assert_eq!(c, Currency { cp: 5, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                cp: 5,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_cp_exact() {
         // Spend CP when CP is available
-        let mut c = Currency { cp: 10, ..Default::default() };
+        let mut c = Currency {
+            cp: 10,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_cp(7)));
-        assert_eq!(c, Currency { cp: 3, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                cp: 3,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_sp_from_ep() {
         // 1 ep 0 sp → spend 3 sp (30 cp) → break 1 ep, return 2 sp change
-        let mut c = Currency { ep: 1, ..Default::default() };
+        let mut c = Currency {
+            ep: 1,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_sp(3)));
-        assert_eq!(c, Currency { sp: 2, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                sp: 2,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_ep_exact() {
         // 2 ep → spend 1 ep → 1 ep (exact match, no break needed)
-        let mut c = Currency { ep: 2, sp: 3, ..Default::default() };
+        let mut c = Currency {
+            ep: 2,
+            sp: 3,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_ep(1)));
-        assert_eq!(c, Currency { ep: 1, sp: 3, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                ep: 1,
+                sp: 3,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_cp_from_gp() {
         // 1 gp → spend 7 cp → break 1 gp, return 9 sp 3 cp change (no EP)
-        let mut c = Currency { gp: 1, ..Default::default() };
+        let mut c = Currency {
+            gp: 1,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_cp(7)));
-        assert_eq!(c, Currency { sp: 9, cp: 3, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                sp: 9,
+                cp: 3,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_sp_from_pp_no_ep_in_change() {
         // 1 pp → spend 3 sp (30 cp) → break 1 pp, return 9 gp 7 sp (no EP)
-        let mut c = Currency { pp: 1, ..Default::default() };
+        let mut c = Currency {
+            pp: 1,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_sp(3)));
-        assert_eq!(c, Currency { gp: 9, sp: 7, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                gp: 9,
+                sp: 7,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_partial_then_break() {
-        // 2 gp 3 sp → spend 15 sp (150 cp) → spend 1 gp + 3 sp, break 1 gp for 8 sp change
-        let mut c = Currency { gp: 2, sp: 3, ..Default::default() };
+        // 2 gp 3 sp → spend 15 sp (150 cp) → spend 1 gp + 3 sp, break 1 gp for 8 sp
+        // change
+        let mut c = Currency {
+            gp: 2,
+            sp: 3,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_sp(15)));
-        assert_eq!(c, Currency { sp: 8, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                sp: 8,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_pp_exact() {
         // 2 pp → spend 1 pp → 1 pp
-        let mut c = Currency { pp: 2, ..Default::default() };
+        let mut c = Currency {
+            pp: 2,
+            ..Default::default()
+        };
         assert!(c.spend(Money::from_pp(1)));
-        assert_eq!(c, Currency { pp: 1, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                pp: 1,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_zero() {
         // Spending 0 always succeeds and leaves currency unchanged
-        let mut c = Currency { gp: 5, sp: 3, ..Default::default() };
+        let mut c = Currency {
+            gp: 5,
+            sp: 3,
+            ..Default::default()
+        };
         assert!(c.spend(Money::default()));
-        assert_eq!(c, Currency { gp: 5, sp: 3, ..Default::default() });
+        assert_eq!(
+            c,
+            Currency {
+                gp: 5,
+                sp: 3,
+                ..Default::default()
+            }
+        );
     }
 }

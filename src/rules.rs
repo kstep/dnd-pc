@@ -103,9 +103,9 @@ mod named_map {
 use crate::{
     BASE_URL,
     model::{
-        Ability, Character, CharacterIdentity, ClassLevel, Feature, FeatureField, FeatureSource,
-        FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell, SpellData,
-        SpellSlotPool,
+        Ability, Character, CharacterIdentity, ClassLevel, Die, Feature, FeatureField,
+        FeatureSource, FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell,
+        SpellData, SpellSlotPool,
     },
     vecset::VecSet,
 };
@@ -316,7 +316,7 @@ pub struct ClassDefinition {
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
-    pub hit_die: u16,
+    pub hit_die: u32,
     #[serde(default)]
     pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
@@ -528,8 +528,8 @@ impl FeatureDefinition {
                 for field in fields.iter_mut() {
                     if let Some(def) = self.fields.get(&field.name) {
                         match (&def.kind, &mut field.value) {
-                            (FieldKind::Die { levels }, FeatureValue::Die(d)) => {
-                                *d = get_for_level(levels, level);
+                            (FieldKind::Die { levels }, FeatureValue::Die { die, .. }) => {
+                                *die = get_for_level(levels, level);
                             }
                             (
                                 FieldKind::Choice { levels, .. },
@@ -608,7 +608,7 @@ pub enum FieldKind {
     },
     Die {
         #[serde(default, deserialize_with = "u32_key_map::deserialize")]
-        levels: BTreeMap<u32, String>,
+        levels: BTreeMap<u32, Die>,
     },
     Bonus {
         #[serde(default, deserialize_with = "u32_key_map::deserialize")]
@@ -619,7 +619,10 @@ pub enum FieldKind {
 impl FieldKind {
     pub fn to_value(&self, level: u32) -> FeatureValue {
         match self {
-            FieldKind::Die { levels } => FeatureValue::Die(get_for_level(levels, level)),
+            FieldKind::Die { levels } => FeatureValue::Die {
+                die: get_for_level(levels, level),
+                used: 0,
+            },
             FieldKind::Choice { levels, .. } => FeatureValue::Choice {
                 options: vec![Default::default(); get_for_level(levels, level) as usize],
             },

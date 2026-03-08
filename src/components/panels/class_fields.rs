@@ -75,19 +75,46 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                         };
 
                         match &field.value {
-                            FeatureValue::Die(die_str) => {
+                            FeatureValue::Die { die, used } => {
                                 let label = field.label().to_string();
-                                let die = die_str.clone();
+                                let die_label = die.to_string();
+                                let used_val = used.to_string();
+                                let max = die.amount;
+                                let max_val = max.to_string();
                                 EitherOf4::A(view! {
-                                    <div class="field-entry">
+                                    <div class="field-entry field-points">
                                         <ToggleButton
                                             expanded=is_open
                                             on_toggle=move || desc_expanded.update(|set| {
                                                 if !set.remove(&field_idx) { set.insert(field_idx); }
                                             })
                                         />
-                                        <span class="field-label">{label}</span>
-                                        <span class="field-value">{die}</span>
+                                        <span class="field-label">{label}" "{die_label}</span>
+                                        <div class="points-inputs">
+                                            <input
+                                                type="number"
+                                                class="short-input"
+                                                min="0"
+                                                prop:max=max_val
+                                                placeholder=move_tr!("used")
+                                                prop:value=used_val
+                                                on:input=move |e| {
+                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                        fname.with_value(|key| {
+                                                            store.feature_data().update(|m| {
+                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                    && let Some(f) = fields.get_mut(field_idx)
+                                                                    && let FeatureValue::Die { used, .. } = &mut f.value
+                                                                {
+                                                                    *used = value.min(max);
+                                                                }
+                                                            });
+                                                        });
+                                                    }
+                                                }
+                                            />
+                                            <span>"/" {max}</span>
+                                        </div>
                                         {field_desc_textarea()}
                                     </div>
                                 })

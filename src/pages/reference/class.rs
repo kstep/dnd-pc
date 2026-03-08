@@ -8,7 +8,7 @@ use super::{
 };
 use crate::{
     BASE_URL,
-    model::{Translatable, format_bonus},
+    model::{Die, Translatable, format_bonus},
     rules::{FieldKind, RulesRegistry, SpellList, get_for_level},
 };
 
@@ -178,11 +178,11 @@ pub fn ClassReference() -> impl IntoView {
                                     }
                                 }
                                 FieldKind::Die { levels } => {
-                                    let v: String = get_for_level(levels, level);
-                                    if v.is_empty() {
+                                    let v: Die = get_for_level(levels, level);
+                                    if v.amount == 0 {
                                         "\u{2014}".into()
                                     } else {
-                                        v
+                                        v.to_string()
                                     }
                                 }
                                 FieldKind::Choice { levels, .. } => {

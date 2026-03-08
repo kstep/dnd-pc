@@ -128,6 +128,7 @@ racial-traits = Расовые черты
 trait-name = Название черты
 btn-add-racial-trait = + Добавить расовую черту
 used = Исп.
+spend = Потратить
 total = Всего
 max = Макс.
 cost = Цена
