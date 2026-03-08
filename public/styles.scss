@@ -1626,6 +1626,7 @@ input[type="checkbox"] {
 }
 
 input.summary-list-name {
+  min-width: 0;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
   background: var(--input-bg);

@@ -61,26 +61,29 @@ pub fn BackpackBlock() -> impl IntoView {
                     <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("add-item")
                         on:click=move |_| {
                             let Some(name_el) = name_input.get() else { return };
-                            let name = name_el.value();
-                            if name.trim().is_empty() { return; }
+                            let Some(qty_el) = qty_input.get() else { return };
+                            let Some(desc_input) = desc_input.get() else { return };
 
-                            let qty_el = qty_input.get();
-                            let qty: u32 = qty_el.as_ref()
-                                .map(|el| el.value().parse().unwrap_or(1))
+                            let name = name_el.value().trim().to_string();
+                            if name.is_empty() { return; }
+
+                            let quantity: u32 = qty_el
+                                .value()
+                                .parse()
                                 .unwrap_or(1);
-                            if qty == 0 { return; }
+                            if quantity == 0 { return; }
 
-                            let desc = desc_input.get().map(|el| el.value()).unwrap_or_default();
+                            let description = desc_input.value().trim().to_string();
 
                             equipment.items().write().push(Item {
                                 name,
-                                quantity: qty,
-                                description: desc,
+                                quantity,
+                                description,
                             });
 
                             name_el.set_value("");
-                            if let Some(el) = qty_el { el.set_value("1"); }
-                            if let Some(el) = desc_input.get() { el.set_value(""); }
+                            qty_el.set_value("1");
+                            desc_input.set_value("");
                         }
                     ><Icon name="circle-plus" size=14 /></button>
                     <input type="text" class="summary-list-name" placeholder=move_tr!("item-name") node_ref=name_input />

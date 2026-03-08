@@ -257,7 +257,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         applied=move || store.identity().race_applied().get()
                         options=race_options
                         ref_prefix="race"
-                        apply_title=tr!("btn-apply-race")
+                        apply_title=move_tr!("btn-apply-race")
                         placeholder=move_tr!("race")
                         on_input=move |name: String| {
                             let old = store.identity().race().get_untracked();
@@ -283,7 +283,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         applied=move || store.identity().background_applied().get()
                         options=bg_options
                         ref_prefix="background"
-                        apply_title=tr!("btn-apply-background")
+                        apply_title=move_tr!("btn-apply-background")
                         placeholder=move_tr!("background")
                         on_input=move |name: String| {
                             let old = store.identity().background().get_untracked();
