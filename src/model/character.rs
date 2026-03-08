@@ -577,10 +577,6 @@ impl CombatStats {
 
         self.hp_current = (self.hp_current + amount).min(self.hp_max);
     }
-
-    pub fn temp_hp(&mut self, amount: u32) {
-        self.hp_temp = amount;
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

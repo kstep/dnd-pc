@@ -90,6 +90,7 @@ weapons = Weapons
 name = Name
 atk-bonus = Atk Bonus
 damage = Damage
+heal = Heal
 type = Type
 btn-add-weapon = + Add Weapon
 armor = Armor

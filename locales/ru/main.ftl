@@ -90,6 +90,7 @@ weapons = Оружие
 name = Название
 atk-bonus = Бонус атаки
 damage = Урон
+heal = Лечение
 type = Тип
 btn-add-weapon = + Добавить оружие
 armor = Доспехи

@@ -18,6 +18,12 @@ pub fn BackpackBlock() -> impl IntoView {
         <div class="summary-section">
             <h3 class="summary-section-title">{move_tr!("summary-backpack")}</h3>
 
+            // -- Currency --
+            <div class="summary-currency">
+                <label>{move_tr!("currency")}</label>
+                <span>{move || equipment.currency().read().to_string()}</span>
+            </div>
+
             {move || {
                 let items = equipment.items().read().iter()
                     .enumerate()
@@ -75,11 +81,6 @@ pub fn BackpackBlock() -> impl IntoView {
                 }
             }}
 
-            // -- Currency --
-            <div class="summary-currency">
-                <label>{move_tr!("currency")}</label>
-                <span>{move || equipment.currency().read().to_string()}</span>
-            </div>
         </div>
     }
 }

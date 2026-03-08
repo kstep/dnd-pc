@@ -3,9 +3,12 @@ use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
-use crate::model::{
-    Ability, Character, CharacterStoreFields, CombatStatsStoreFields, ProficiencyLevel, Skill,
-    Translatable, format_bonus,
+use crate::{
+    components::icon::Icon,
+    model::{
+        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, ProficiencyLevel, Skill,
+        Translatable, format_bonus,
+    },
 };
 
 #[component]
@@ -21,7 +24,11 @@ pub fn StatsBlock() -> impl IntoView {
         damage_input
             .read()
             .as_ref()
-            .and_then(|input| input.value().parse::<u32>().ok())
+            .and_then(|input| {
+                let value = input.value().parse::<u32>().ok()?;
+                input.set_value("");
+                Some(value)
+            })
             .unwrap_or_default()
     };
 
@@ -32,47 +39,42 @@ pub fn StatsBlock() -> impl IntoView {
 
                 // -- HP --
                 <div class="summary-core-stats">
-                    <div class="summary-stat-box summary-damage-box">
-                        <label>{move_tr!("damage")}</label>
-                        <div class="summary-damage-value">
-                            <input type="number" class="summary-damage-input" node_ref=damage_input />
-                            <button class="apply-damage-btn" title="Damage"
-                                on:click=move |_| {
-                                    let damage = damage_value();
-                                    if damage > 0 {
-                                        combat.update(|c| c.damage(damage));
-                                    }
-                                }
-                            >"-"</button>
-                            <button class="apply-damage-btn" title="Heal"
-                                on:click=move |_| {
-                                    let heal = damage_value();
-                                    if heal > 0 {
-                                        combat.update(|c| c.heal(heal));
-                                    }
-                                }
-                            >"+"</button>
-                            <button class="apply-damage-btn" title="Temp HP"
-                                on:click=move |_| {
-                                    let temp_hp = damage_value();
-                                    if temp_hp > 0 {
-                                        combat.update(|c| c.temp_hp(temp_hp));
-                                    }
-                                }
-                            >"T"</button>
-                        </div>
-                    </div>
                     <div class="summary-stat-box summary-hp-box">
                         <label>{move_tr!("hp")}</label>
-                        <div class="summary-hp-value">
-                            {move || combat.hp_current().get()}
-                            {move || {
-                                let temp = combat.hp_temp().get();
-                                (temp != 0).then(|| format!(" ({temp})"))
-                            }}
-                            <span class="summary-hp-max">
-                                "/ " {move || combat.hp_max().get()}
-                            </span>
+                        <div class="summary-hp-controls">
+                            <div class="summary-hp-damage">
+                                <input type="number" min="0" class="summary-damage-input" node_ref=damage_input />
+                                <button class="apply-damage-btn apply-damage-btn--danger" title=move_tr!("damage")
+                                    on:click=move |_| {
+                                        let damage = damage_value();
+                                        if damage > 0 {
+                                            combat.update(|c| c.damage(damage));
+                                        }
+                                    }
+                                ><Icon name="swords" size=14 /></button>
+                                <button class="apply-damage-btn apply-damage-btn--success" title=move_tr!("heal")
+                                    on:click=move |_| {
+                                        let heal = damage_value();
+                                        if heal > 0 {
+                                            combat.update(|c| c.heal(heal));
+                                        }
+                                    }
+                                ><Icon name="heart-plus" size=14 /></button>
+                            </div>
+                            <div class="summary-hp-value">
+                                {move || combat.hp_current().get()}
+                                " ("
+                                <input type="number" min="0" class="summary-hp-temp-input" prop:value=move || combat.hp_temp().get()
+                                    on:change=move |event| {
+                                        let value = event_target_value(&event).parse().unwrap_or_default();
+                                        combat.hp_temp().set(value);
+                                    }
+                                />
+                                ")"
+                                <span class="summary-hp-max">
+                                    "/ " {move || combat.hp_max().get()}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     // -- Inspiration toggle --
