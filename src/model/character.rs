@@ -840,26 +840,54 @@ impl Currency {
         self.pp += gain_pp;
     }
 
-    pub fn spend(&mut self, mut amount: Money) -> bool {
+    pub fn spend(&mut self, amount: Money) -> bool {
         if amount > self.as_money() {
             return false;
         }
 
+        let mut remaining_cp = amount.whole_cp();
+
         macro_rules! spend_coin {
-            ($coin:ident, $amount_left:ident, $get_coin:ident, $to_money:ident) => {
-                let spend = $amount_left.$get_coin().min(self.$coin);
-                if spend > 0 {
-                    self.$coin -= spend;
-                    $amount_left -= Money::$to_money(spend);
+            ($coin:ident, $cp_per:expr) => {
+                if remaining_cp > 0 {
+                    let can_spend = (remaining_cp / $cp_per).min(self.$coin);
+                    self.$coin -= can_spend;
+                    remaining_cp -= can_spend * $cp_per;
                 }
             };
         }
 
-        spend_coin!(pp, amount, whole_pp, from_pp);
-        spend_coin!(gp, amount, whole_gp, from_gp);
-        spend_coin!(ep, amount, whole_ep, from_ep);
-        spend_coin!(sp, amount, whole_sp, from_sp);
-        spend_coin!(cp, amount, whole_cp, from_cp);
+        spend_coin!(pp, Money::CP_PER_PP);
+        spend_coin!(gp, Money::CP_PER_GP);
+        spend_coin!(ep, Money::CP_PER_EP);
+        spend_coin!(sp, Money::CP_PER_SP);
+        spend_coin!(cp, 1u32);
+
+        // If there's still a remainder, break the smallest available coin that
+        // covers it and give change back in GP/SP/CP (no EP to keep it clean).
+        // The three guards: still something to spend, coin is in wallet, coin
+        // covers the remainder (one coin is enough since the greedy pass already
+        // consumed all coins whose denomination divides evenly into remaining_cp).
+        if remaining_cp > 0 {
+            macro_rules! break_coin {
+                ($coin:ident, $cp_per:expr) => {
+                    if remaining_cp > 0 && self.$coin > 0 && $cp_per >= remaining_cp {
+                        self.$coin -= 1;
+                        let mut change = $cp_per - remaining_cp;
+                        self.gp += change / Money::CP_PER_GP;
+                        change %= Money::CP_PER_GP;
+                        self.sp += change / Money::CP_PER_SP;
+                        self.cp += change % Money::CP_PER_SP;
+                        remaining_cp = 0;
+                    }
+                };
+            }
+
+            break_coin!(sp, Money::CP_PER_SP);
+            break_coin!(ep, Money::CP_PER_EP);
+            break_coin!(gp, Money::CP_PER_GP);
+            break_coin!(pp, Money::CP_PER_PP);
+        }
 
         true
     }
@@ -1398,5 +1426,110 @@ pub mod tests {
         ch.identity.classes.push(ClassLevel::default());
         // Default ClassLevel has empty class name, should be skipped
         assert_eq!(ch.class_summary(), "Fighter 5");
+    }
+
+    // --- Currency::spend() ---
+
+    #[wasm_bindgen_test]
+    fn currency_spend_exact_denomination() {
+        let mut c = Currency { gp: 10, sp: 5, ..Default::default() };
+        assert!(c.spend(Money::from_sp(5)));
+        assert_eq!(c, Currency { gp: 10, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_breaks_higher_coin() {
+        // 10 gp 0 sp — spend 5 sp should exchange 1 gp → 10 sp, leaving 9 gp 5 sp
+        let mut c = Currency { gp: 10, ..Default::default() };
+        assert!(c.spend(Money::from_sp(5)));
+        assert_eq!(c, Currency { gp: 9, sp: 5, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_insufficient_returns_false() {
+        let mut c = Currency { gp: 1, ..Default::default() };
+        assert!(!c.spend(Money::from_gp(2)));
+        // Currency unchanged
+        assert_eq!(c, Currency { gp: 1, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_exact_total() {
+        let mut c = Currency { gp: 1, sp: 5, cp: 3, ..Default::default() };
+        let total = c.as_money();
+        assert!(c.spend(total));
+        assert_eq!(c, Currency::default());
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_cp_from_sp() {
+        // 0 cp, 1 sp → spend 5 cp → break 1 sp, return 5 cp change
+        let mut c = Currency { sp: 1, ..Default::default() };
+        assert!(c.spend(Money::from_cp(5)));
+        assert_eq!(c, Currency { cp: 5, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_cp_exact() {
+        // Spend CP when CP is available
+        let mut c = Currency { cp: 10, ..Default::default() };
+        assert!(c.spend(Money::from_cp(7)));
+        assert_eq!(c, Currency { cp: 3, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_sp_from_ep() {
+        // 1 ep 0 sp → spend 3 sp (30 cp) → break 1 ep, return 2 sp change
+        let mut c = Currency { ep: 1, ..Default::default() };
+        assert!(c.spend(Money::from_sp(3)));
+        assert_eq!(c, Currency { sp: 2, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_ep_exact() {
+        // 2 ep → spend 1 ep → 1 ep (exact match, no break needed)
+        let mut c = Currency { ep: 2, sp: 3, ..Default::default() };
+        assert!(c.spend(Money::from_ep(1)));
+        assert_eq!(c, Currency { ep: 1, sp: 3, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_cp_from_gp() {
+        // 1 gp → spend 7 cp → break 1 gp, return 9 sp 3 cp change (no EP)
+        let mut c = Currency { gp: 1, ..Default::default() };
+        assert!(c.spend(Money::from_cp(7)));
+        assert_eq!(c, Currency { sp: 9, cp: 3, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_sp_from_pp_no_ep_in_change() {
+        // 1 pp → spend 3 sp (30 cp) → break 1 pp, return 9 gp 7 sp (no EP)
+        let mut c = Currency { pp: 1, ..Default::default() };
+        assert!(c.spend(Money::from_sp(3)));
+        assert_eq!(c, Currency { gp: 9, sp: 7, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_partial_then_break() {
+        // 2 gp 3 sp → spend 15 sp (150 cp) → spend 1 gp + 3 sp, break 1 gp for 8 sp change
+        let mut c = Currency { gp: 2, sp: 3, ..Default::default() };
+        assert!(c.spend(Money::from_sp(15)));
+        assert_eq!(c, Currency { sp: 8, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_pp_exact() {
+        // 2 pp → spend 1 pp → 1 pp
+        let mut c = Currency { pp: 2, ..Default::default() };
+        assert!(c.spend(Money::from_pp(1)));
+        assert_eq!(c, Currency { pp: 1, ..Default::default() });
+    }
+
+    #[wasm_bindgen_test]
+    fn currency_spend_zero() {
+        // Spending 0 always succeeds and leaves currency unchanged
+        let mut c = Currency { gp: 5, sp: 3, ..Default::default() };
+        assert!(c.spend(Money::default()));
+        assert_eq!(c, Currency { gp: 5, sp: 3, ..Default::default() });
     }
 }
