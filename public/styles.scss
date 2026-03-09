@@ -1910,6 +1910,11 @@ input.summary-list-name {
   font-weight: 700;
 }
 
+.summary-slot-max {
+  font-size: var(--font-size-1);
+  color: var(--text-secondary);
+}
+
 .summary-slot-level {
   font-weight: 600;
   font-size: var(--font-size-1);
