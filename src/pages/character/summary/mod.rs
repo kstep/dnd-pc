@@ -14,7 +14,6 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use resources::ResourcesBlock;
-use spell_slots::SpellSlotsBlock;
 use spells::SpellsBlock;
 use stats::StatsBlock;
 use weapons::WeaponsBlock;
@@ -57,7 +56,6 @@ pub fn CharacterSummary() -> impl IntoView {
             // === Right column: Stats + Resources ===
             <div class="summary-right-column">
                 <ResourcesBlock />
-                <SpellSlotsBlock />
                 <StatsBlock />
             </div>
             </div>

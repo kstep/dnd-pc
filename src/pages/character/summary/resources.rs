@@ -2,6 +2,7 @@ use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
+use super::spell_slots::SpellSlotsBlock;
 use crate::{
     components::resource_slot::ResourceSlot,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureValue},
@@ -123,20 +124,12 @@ pub fn ResourcesBlock() -> impl IntoView {
         }
     };
 
-    move || {
-        let hit_dice = hit_dice();
-        let resources = resources();
-
-        if hit_dice.is_none() && resources.is_none() {
-            None
-        } else {
-            Some(view! {
-                <div class="summary-section summary-section-resources">
-                    <h3 class="summary-section-title">{move_tr!("summary-resources")}</h3>
-                    {hit_dice}
-                    {resources}
-                </div>
-            })
-        }
+    view! {
+        <div class="summary-section summary-section-resources">
+            <h3 class="summary-section-title">{move_tr!("summary-resources")}</h3>
+            <SpellSlotsBlock />
+            {hit_dice}
+            {resources}
+        </div>
     }
 }
