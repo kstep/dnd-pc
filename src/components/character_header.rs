@@ -162,24 +162,27 @@ pub fn CharacterHeader() -> impl IntoView {
     let share_copied = RwSignal::new(false);
 
     let on_share = move |_| {
-        let character = store.get_untracked();
-        let origin = leptos::prelude::window()
-            .location()
-            .origin()
-            .unwrap_or_default();
-
-        let url = if character.shared
-            && let Some(uid) = firebase::current_uid()
-        {
-            format!("{origin}{BASE_URL}/s/{uid}/{}", character.id)
-        } else {
-            let encoded = share::encode_character(&character, Some(&registry));
-            format!("{origin}{BASE_URL}/s/{encoded}")
-        };
-
-        let clipboard = leptos::prelude::window().navigator().clipboard();
-        let promise = clipboard.write_text(&url);
         wasm_bindgen_futures::spawn_local(async move {
+            let character = store.get_untracked();
+            let origin = leptos::prelude::window()
+                .location()
+                .origin()
+                .unwrap_or_default();
+
+            let url = if character.shared
+                && let Some(uid) = firebase::current_uid()
+            {
+                format!("{origin}{BASE_URL}/s/{uid}/{}", character.id)
+            } else {
+                let Some(encoded) = share::encode_character(&character, Some(&registry)).await
+                else {
+                    return;
+                };
+                format!("{origin}{BASE_URL}/s/{encoded}")
+            };
+
+            let clipboard = leptos::prelude::window().navigator().clipboard();
+            let promise = clipboard.write_text(&url);
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
             share_copied.set(true);
         });

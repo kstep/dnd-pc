@@ -612,7 +612,7 @@ pub fn ImportCharacter() -> impl IntoView {
         .ok()
         .map(|p| p.data);
 
-    let error_view = || {
+    let error_view = move || {
         view! {
             <div class="panel">
                 <h2>{move_tr!("share-error")}</h2>
@@ -622,13 +622,30 @@ pub fn ImportCharacter() -> impl IntoView {
     };
 
     let Some(data) = data else {
-        return Either::Right(error_view());
-    };
-    let Some(character) = share::decode_character(&data) else {
-        return Either::Right(error_view());
+        return Either::Left(error_view());
     };
 
-    Either::Left(import_or_conflict(character))
+    let character = LocalResource::new(move || {
+        let data = data.clone();
+        async move { share::decode_character(&data).await }
+    });
+
+    Either::Right(view! {
+        <Suspense fallback=move || view! {
+            <div class="panel">
+                <p>{move_tr!("share-loading")}</p>
+            </div>
+        }>
+            {move || {
+                character.get().map(|result| {
+                    match result {
+                        Some(ch) => Either::Left(import_or_conflict(ch)),
+                        None => Either::Right(error_view()),
+                    }
+                })
+            }}
+        </Suspense>
+    })
 }
 
 #[derive(Params, Clone, Debug, PartialEq)]

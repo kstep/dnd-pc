@@ -1,6 +1,7 @@
-use std::io::{Read, Write};
-
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use js_sys::Uint8Array;
+use wasm_bindgen::{JsCast, JsValue, prelude::*};
+use wasm_bindgen_futures::JsFuture;
 
 use crate::{model::Character, rules::RulesRegistry};
 
@@ -19,31 +20,86 @@ fn strip_for_sharing(character: &Character, registry: Option<&RulesRegistry>) ->
     character
 }
 
-pub fn encode_character(character: &Character, registry: Option<&RulesRegistry>) -> String {
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_name = CompressionStream)]
+    type JsCompressionStream;
+
+    #[wasm_bindgen(constructor, js_class = "CompressionStream")]
+    fn new(format: &str) -> JsCompressionStream;
+
+    #[wasm_bindgen(method, getter)]
+    fn readable(this: &JsCompressionStream) -> web_sys::ReadableStream;
+
+    #[wasm_bindgen(method, getter)]
+    fn writable(this: &JsCompressionStream) -> web_sys::WritableStream;
+
+    #[wasm_bindgen(js_name = DecompressionStream)]
+    type JsDecompressionStream;
+
+    #[wasm_bindgen(constructor, js_class = "DecompressionStream")]
+    fn new(format: &str) -> JsDecompressionStream;
+
+    #[wasm_bindgen(method, getter)]
+    fn readable(this: &JsDecompressionStream) -> web_sys::ReadableStream;
+
+    #[wasm_bindgen(method, getter)]
+    fn writable(this: &JsDecompressionStream) -> web_sys::WritableStream;
+}
+
+async fn pipe_through_stream(
+    data: &[u8],
+    transform: &JsValue,
+) -> Result<Vec<u8>, JsValue> {
+    // Create a Response from the input data to get a ReadableStream
+    let js_data = Uint8Array::from(data);
+    let input_response = web_sys::Response::new_with_opt_buffer_source(Some(&js_data))?;
+    let input_stream = input_response.body().ok_or("no body")?;
+
+    // Pipe through the compression/decompression transform
+    let output_stream =
+        input_stream.pipe_through(transform.unchecked_ref::<web_sys::ReadableWritablePair>());
+
+    // Read the result via another Response
+    let output_response =
+        web_sys::Response::new_with_opt_readable_stream(Some(&output_stream))?;
+    let buf = JsFuture::from(output_response.array_buffer()?).await?;
+    let array = Uint8Array::new(&buf);
+    Ok(array.to_vec())
+}
+
+async fn compress(data: &[u8]) -> Result<Vec<u8>, JsValue> {
+    let cs = JsCompressionStream::new("deflate-raw");
+    pipe_through_stream(data, cs.as_ref()).await
+}
+
+async fn decompress(data: &[u8]) -> Result<Vec<u8>, JsValue> {
+    let ds = JsDecompressionStream::new("deflate-raw");
+    pipe_through_stream(data, ds.as_ref()).await
+}
+
+pub async fn encode_character(
+    character: &Character,
+    registry: Option<&RulesRegistry>,
+) -> Option<String> {
     let character = strip_for_sharing(character, registry);
-    let bytes = postcard::to_allocvec(&character).expect("failed to serialize character");
-    let mut compressed = Vec::new();
-    {
-        let mut encoder = brotli::CompressorWriter::new(&mut compressed, 4096, 11, 22);
-        encoder.write_all(&bytes).expect("failed to compress");
-    }
+    let bytes = postcard::to_allocvec(&character).ok()?;
+    let compressed = compress(&bytes).await.ok()?;
     let encoded = URL_SAFE_NO_PAD.encode(&compressed);
 
     log::info!(
-        "share character: bytes={}, compressed={}, encoded={}, value={encoded}",
+        "share character: bytes={}, compressed={}, encoded={}",
         bytes.len(),
         compressed.len(),
         encoded.len()
     );
 
-    encoded
+    Some(encoded)
 }
 
-pub fn decode_character(data: &str) -> Option<Character> {
+pub async fn decode_character(data: &str) -> Option<Character> {
     let compressed = URL_SAFE_NO_PAD.decode(data).ok()?;
-    let mut decoder = brotli::Decompressor::new(&compressed[..], 4096);
-    let mut bytes = Vec::new();
-    decoder.read_to_end(&mut bytes).ok()?;
+    let bytes = decompress(&compressed).await.ok()?;
     let ch: Character = postcard::from_bytes(&bytes).ok()?;
     Some(ch)
 }
@@ -148,10 +204,10 @@ pub mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn encode_decode_roundtrip() {
+    async fn encode_decode_roundtrip() {
         let ch = test_character();
-        let encoded = encode_character(&ch, None);
-        let decoded = decode_character(&encoded).expect("decode failed");
+        let encoded = encode_character(&ch, None).await.expect("encode failed");
+        let decoded = decode_character(&encoded).await.expect("decode failed");
 
         // Core identity preserved
         assert_eq!(decoded.id, ch.id);
@@ -206,9 +262,9 @@ pub mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn decode_garbage_returns_none() {
-        assert!(decode_character("not-valid-data!!!").is_none());
-        assert!(decode_character("").is_none());
-        assert!(decode_character("AAAA").is_none());
+    async fn decode_garbage_returns_none() {
+        assert!(decode_character("not-valid-data!!!").await.is_none());
+        assert!(decode_character("").await.is_none());
+        assert!(decode_character("AAAA").await.is_none());
     }
 }
