@@ -1905,6 +1905,10 @@ input.summary-list-name {
   padding: var(--size-1) var(--size-2);
 }
 
+.summary-slot-value {
+  font-size: var(--font-size-3);
+}
+
 .summary-slot-level {
   font-weight: 600;
   font-size: var(--font-size-1);
