@@ -56,9 +56,9 @@ pub fn CharacterSummary() -> impl IntoView {
 
             // === Right column: Stats + Resources ===
             <div class="summary-right-column">
-                <StatsBlock />
                 <ResourcesBlock />
                 <SpellSlotsBlock />
+                <StatsBlock />
             </div>
             </div>
 
