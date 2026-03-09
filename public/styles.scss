@@ -1632,10 +1632,11 @@ input[type="checkbox"] {
 .summary-choice-cost {
   color: var(--text-secondary);
   font-size: var(--font-size-0);
+  font-variant: small-caps;
   white-space: nowrap;
 
-  &::before {
-    content: "⬡ ";
+  &::after {
+    content: " " var(--points-symbol, "⬡");
   }
 }
 

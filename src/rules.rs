@@ -1165,6 +1165,51 @@ impl RulesRegistry {
         None
     }
 
+    /// Find the `short` name of a `Points` field by searching across all
+    /// class, background, and race features for a field with the given name.
+    pub fn get_points_short(
+        &self,
+        identity: &CharacterIdentity,
+        field_name: &str,
+    ) -> Option<String> {
+        let class_cache = self.class_cache.read_untracked();
+        for cl in &identity.classes {
+            if let Some(def) = class_cache.get(&cl.class) {
+                for feat in def.features(cl.subclass.as_deref()) {
+                    if let Some(fd) = feat.fields.get(field_name)
+                        && let FieldKind::Points { short: Some(s), .. } = &fd.kind
+                    {
+                        return Some(s.clone());
+                    }
+                }
+            }
+        }
+
+        let bg_cache = self.background_cache.read_untracked();
+        if let Some(bg) = bg_cache.get(&identity.background) {
+            for feat in bg.features.values() {
+                if let Some(fd) = feat.fields.get(field_name)
+                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
+                {
+                    return Some(s.clone());
+                }
+            }
+        }
+
+        let race_cache = self.race_cache.read_untracked();
+        if let Some(race) = race_cache.get(&identity.race) {
+            for feat in race.features.values() {
+                if let Some(fd) = feat.fields.get(field_name)
+                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
+                {
+                    return Some(s.clone());
+                }
+            }
+        }
+
+        None
+    }
+
     pub fn fetch_class(&self, name: &str) {
         let url = {
             let guard = self.class_index.read_untracked();

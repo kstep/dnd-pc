@@ -31,7 +31,8 @@ pub fn ChoicesBlock() -> impl IntoView {
         features
             .iter()
             .filter_map(|(feat_name, entry)| {
-                let fields = registry.with_feature(&identity.read(), feat_name, |feat| {
+                let id = identity.read();
+                let fields = registry.with_feature(&id, feat_name, |feat| {
                     feat.fields
                         .iter()
                         .filter_map(|(name, def)| {
@@ -51,13 +52,14 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 .copied()
                                 .unwrap_or_default();
 
-                            Some((name.clone(), (points, from)))
+                            Some((name.clone(), (points, from, cost.clone())))
                         })
                         .collect::<HashMap<_, _>>()
                 })?;
 
                 Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
-                    let (points, from) = fields.get(&field.name)?;
+                    let (points, from, cost) = fields.get(&field.name)?;
+                    let short = cost.as_deref().and_then(|c| registry.get_points_short(&id, c));
 
                     let FeatureValue::Choice { options } = &field.value else {
                         return None;
@@ -83,8 +85,9 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 return None;
                             }
 
+                            let style = short.as_ref().map(|s| format!("--points-symbol: '{s}'"));
                             Some(view! {
-                                <div class="summary-subsection">
+                                <div class="summary-subsection" style=style>
                                     <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
                                     <SummaryList items=selected />
                                 </div>
