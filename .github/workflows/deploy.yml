@@ -54,6 +54,13 @@ jobs:
         env:
           BASE_URL: /dnd-pc
 
+      - name: Optimize WASM with wasm-opt
+        run: |
+          curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_123/binaryen-version_123-x86_64-linux.tar.gz | tar xz
+          for f in dist/*.wasm; do
+            binaryen-version_123/bin/wasm-opt --all-features -Oz "$f" -o "$f.opt" && mv "$f.opt" "$f"
+          done
+
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html
 
