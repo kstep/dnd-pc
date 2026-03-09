@@ -1751,6 +1751,12 @@ input.summary-list-name {
   &:hover {
     background: var(--surface-3);
   }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 .summary-hp-box {
