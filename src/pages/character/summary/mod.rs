@@ -51,13 +51,15 @@ pub fn CharacterSummary() -> impl IntoView {
                 <WeaponsBlock />
                 <SpellsBlock />
                 <SpellSlotsBlock />
-                <ResourcesBlock />
                 <ChoicesBlock />
                 <LanguagesBlock />
             </div>
 
-            // === Section: Main Stats ===
-            <StatsBlock />
+            // === Right column: Stats + Resources ===
+            <div class="summary-right-column">
+                <StatsBlock />
+                <ResourcesBlock />
+            </div>
             </div>
 
             // === Section: Backpack ===

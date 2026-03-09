@@ -131,8 +131,11 @@ pub fn ResourcesBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                {hit_dice}
-                {resources}
+                <div class="summary-section summary-section-resources">
+                    <h3 class="summary-section-title">{move_tr!("summary-resources")}</h3>
+                    {hit_dice}
+                    {resources}
+                </div>
             })
         }
     }
