@@ -16,7 +16,8 @@ pub fn ResourceSlot(
     view! {
         <div class="summary-slot">
             <span class="summary-slot-level">{label}</span>
-            <span class="summary-slot-value">{remaining} " / " {max}</span>
+            <span class="summary-slot-value">{remaining}</span>
+            <span class="summary-slot-max">" / " {max}</span>
             <button
                 class="btn-icon"
                 title=move_tr!("spend")
