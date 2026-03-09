@@ -1759,6 +1759,16 @@ input.summary-list-name {
   }
 }
 
+.btn-container {
+  display: contents;
+}
+
+:has(input:invalid) > .btn-icon,
+:has(input:invalid) > .btn-container > .btn-icon {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 .summary-hp-box {
   grid-column: span 2;
 
@@ -1781,6 +1791,7 @@ input.summary-list-name {
       padding-right: var(--size-1);
       border-right: 1px solid var(--panel-border);
     }
+
   }
 
   .summary-damage-input {
@@ -1789,7 +1800,7 @@ input.summary-list-name {
     font-size: var(--font-size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
-    background: var(--panel-bg);
+    background: var(--input-bg);
     color: var(--text-primary);
     padding: 0 var(--size-1);
   }
@@ -1821,7 +1832,7 @@ input.summary-list-name {
     font-size: var(--font-size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
-    background: var(--panel-bg);
+    background: var(--input-bg);
     color: var(--text-primary);
     padding: 0 var(--size-1);
   }
@@ -1834,7 +1845,7 @@ input.summary-list-name {
   font-weight: 700;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
-  background: var(--panel-bg);
+  background: var(--input-bg);
   color: var(--text-primary);
   padding: 0 var(--size-1);
 }
@@ -1952,7 +1963,7 @@ input.summary-list-name {
     font-size: var(--font-size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
-    background: var(--panel-bg);
+    background: var(--input-bg);
     color: var(--text-primary);
     padding: 0 var(--size-1);
   }

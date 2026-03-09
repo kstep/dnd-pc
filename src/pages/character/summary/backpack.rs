@@ -36,22 +36,24 @@ pub fn BackpackBlock() -> impl IntoView {
                 <label>{move_tr!("currency")}</label>
                 <span>{move || equipment.currency().read().to_string()}</span>
                 <div class="summary-currency-controls">
-                    <input type="text" inputmode="decimal" class="summary-currency-input" node_ref=money_input />
+                    <input type="text" required inputmode="decimal" class="summary-currency-input" node_ref=money_input />
                     <span class="summary-currency-unit">"gp"</span>
-                    <button class="btn-icon btn-icon--danger" title=move_tr!("spend")
-                        on:click=move |_| {
-                            if let Some(amount) = money_value() {
-                                equipment.currency().update(|c| { c.spend(amount); });
+                    <div class="btn-container">
+                        <button class="btn-icon btn-icon--danger" title=move_tr!("spend")
+                            on:click=move |_| {
+                                if let Some(amount) = money_value() {
+                                    equipment.currency().update(|c| { c.spend(amount); });
+                                }
                             }
-                        }
-                    ><Icon name="circle-minus" size=14 /></button>
-                    <button class="btn-icon btn-icon--success" title=move_tr!("gain")
-                        on:click=move |_| {
-                            if let Some(amount) = money_value() {
-                                equipment.currency().update(|c| c.gain(amount));
+                        ><Icon name="circle-minus" size=14 /></button>
+                        <button class="btn-icon btn-icon--success" title=move_tr!("gain")
+                            on:click=move |_| {
+                                if let Some(amount) = money_value() {
+                                    equipment.currency().update(|c| c.gain(amount));
+                                }
                             }
-                        }
-                    ><Icon name="circle-plus" size=14 /></button>
+                        ><Icon name="circle-plus" size=14 /></button>
+                    </div>
                 </div>
             </div>
 
@@ -86,10 +88,10 @@ pub fn BackpackBlock() -> impl IntoView {
                             desc_input.set_value("");
                         }
                     ><Icon name="circle-plus" size=14 /></button>
-                    <input type="text" class="summary-list-name" placeholder=move_tr!("item-name") node_ref=name_input />
+                    <input type="text" required class="summary-list-name" placeholder=move_tr!("item-name") node_ref=name_input />
                     <span class="summary-list-badge">
                         "\u{00d7}"
-                        <input type="number" class="summary-qty-input" min="0" value="1" node_ref=qty_input />
+                        <input type="number" class="summary-qty-input" min="1" required value="1" node_ref=qty_input />
                     </span>
                 </div>
                 <textarea class="summary-item-desc" placeholder=move_tr!("description") node_ref=desc_input />

@@ -43,23 +43,25 @@ pub fn StatsBlock() -> impl IntoView {
                         <label>{move_tr!("hp")}</label>
                         <div class="summary-hp-controls">
                             <div class="summary-hp-damage">
-                                <input type="number" min="0" class="summary-damage-input" node_ref=damage_input />
-                                <button class="btn-icon btn-icon--danger" title=move_tr!("damage")
-                                    on:click=move |_| {
-                                        let damage = damage_value();
-                                        if damage > 0 {
-                                            combat.update(|c| c.damage(damage));
+                                <input type="number" min="1" required class="summary-damage-input" node_ref=damage_input />
+                                <div class="btn-container">
+                                    <button class="btn-icon btn-icon--danger" title=move_tr!("damage")
+                                        on:click=move |_| {
+                                            let damage = damage_value();
+                                            if damage > 0 {
+                                                combat.update(|c| c.damage(damage));
+                                            }
                                         }
-                                    }
-                                ><Icon name="swords" size=14 /></button>
-                                <button class="btn-icon btn-icon--success" title=move_tr!("heal")
-                                    on:click=move |_| {
-                                        let heal = damage_value();
-                                        if heal > 0 {
-                                            combat.update(|c| c.heal(heal));
+                                    ><Icon name="swords" size=14 /></button>
+                                    <button class="btn-icon btn-icon--success" title=move_tr!("heal")
+                                        on:click=move |_| {
+                                            let heal = damage_value();
+                                            if heal > 0 {
+                                                combat.update(|c| c.heal(heal));
+                                            }
                                         }
-                                    }
-                                ><Icon name="heart-plus" size=14 /></button>
+                                    ><Icon name="heart-plus" size=14 /></button>
+                                </div>
                             </div>
                             <div class="summary-hp-value">
                                 {move || combat.hp_current().get()}
