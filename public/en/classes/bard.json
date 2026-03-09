@@ -13,7 +13,7 @@
   "features": [
     {
       "name": "Bardic Inspiration",
-      "description": "You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6. Using Bardic Inspiration: As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time."
+      "description": "You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6. Using Bardic Inspiration: As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time. The creature can use the die within the next hour when the creature fails a D20 Test, adding the number rolled to the d20, potentially turning the failure into a success. The Bardic Inspiration die is lost if not used before the hour ends. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
     },
     {
       "name": "Spellcasting (Bard)",
@@ -56,7 +56,7 @@
           },
           {
             "cantrips": 3,
-            "spells": 8,
+            "spells": 9,
             "slots": [
               4,
               3,
@@ -65,21 +65,11 @@
           },
           {
             "cantrips": 3,
-            "spells": 9,
-            "slots": [
-              4,
-              3,
-              3
-            ]
-          },
-          {
-            "cantrips": 3,
             "spells": 10,
             "slots": [
               4,
               3,
-              3,
-              1
+              3
             ]
           },
           {
@@ -89,7 +79,7 @@
               4,
               3,
               3,
-              2
+              1
             ]
           },
           {
@@ -99,13 +89,23 @@
               4,
               3,
               3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
               3,
               1
             ]
           },
           {
             "cantrips": 4,
-            "spells": 14,
+            "spells": 15,
             "slots": [
               4,
               3,
@@ -116,19 +116,7 @@
           },
           {
             "cantrips": 4,
-            "spells": 15,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1
-            ]
-          },
-          {
-            "cantrips": 4,
-            "spells": 15,
+            "spells": 16,
             "slots": [
               4,
               3,
@@ -141,6 +129,31 @@
           {
             "cantrips": 4,
             "spells": 16,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 17,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 17,
             "slots": [
               4,
               3,
@@ -161,12 +174,13 @@
               3,
               2,
               1,
+              1,
               1
             ]
           },
           {
             "cantrips": 4,
-            "spells": 19,
+            "spells": 18,
             "slots": [
               4,
               3,
@@ -187,6 +201,7 @@
               3,
               3,
               2,
+              1,
               1,
               1,
               1
@@ -200,21 +215,6 @@
               3,
               3,
               3,
-              2,
-              1,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 4,
-            "spells": 22,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
               3,
               1,
               1,
@@ -224,7 +224,7 @@
           },
           {
             "cantrips": 4,
-            "spells": 22,
+            "spells": 21,
             "slots": [
               4,
               3,
@@ -271,7 +271,7 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Bard levels 8, 12, and 16.",
+      "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify.",
       "stackable": true
     },
     {
@@ -416,7 +416,7 @@
         },
         {
           "name": "Cutting Words",
-          "description": "You learn to use your wit to supernaturally distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of yourself makes a damage roll or succeeds on an ability check or attack roll, you can take a Reaction to expend one use of your Bardic Inspiration; roll your Bardic Inspiration die, and subtract the number rolled from the cre..."
+          "description": "You learn to use your wit to supernaturally distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of yourself makes a damage roll or succeeds on an ability check or attack roll, you can take a Reaction to expend one use of your Bardic Inspiration; roll your Bardic Inspiration die, and subtract the number rolled from the creature's roll, reducing the damage or potentially turning the success into a failure."
         },
         {
           "name": "Magical Discoveries",
@@ -460,7 +460,7 @@
         },
         {
           "name": "Combat Inspiration",
-          "description": "You can use your wit to turn the tide of battle. A creature that has a Bardic Inspiration die from you can use it for one of the following effects. Defense: When the creature is hit by an attack roll, that creature can use its Reaction to roll the Bardic Inspiration die and add the number rolled to its AC against that attack, potentially causing the attack to miss."
+          "description": "You can use your wit to turn the tide of battle. A creature that has a Bardic Inspiration die from you can use it for one of the following effects. Defense: When the creature is hit by an attack roll, that creature can use its Reaction to roll the Bardic Inspiration die and add the number rolled to its AC against that attack, potentially causing the attack to miss. Offense: Immediately after you hit a target with an attack roll, you can expend the Bardic Inspiration die and add the number rolled to the attack's damage."
         },
         {
           "name": "Martial Training",
@@ -508,7 +508,7 @@
         },
         {
           "name": "Beguiling Magic",
-          "description": "You always have the Charm Person and Mirror Image spells prepared. In addition, immediately after you cast an Enchantment or Illusion spell using a spell slot, you can cause a creature you can see within 60 feet of yourself to make a Wisdom saving throw against your spell save DC. On a failed save, the target has the Charmed or Frightened condition (your choice) for 1 minute.",
+          "description": "You always have the Charm Person and Mirror Image spells prepared. In addition, immediately after you cast an Enchantment or Illusion spell using a spell slot, you can cause a creature you can see within 60 feet of yourself to make a Wisdom saving throw against your spell save DC. On a failed save, the target has the Charmed or Frightened condition (your choice) for 1 minute. The target repeats the save at the end of each of its turns, ending the effect on itself on a success. Once you use this benefit, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending one use of your Bardic Inspiration (no action required).",
           "spells": {
             "casting_ability": 5,
             "list": [
@@ -516,13 +516,6 @@
                 "name": "Charm Person",
                 "level": 1,
                 "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Command",
-                "level": 1,
-                "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn.",
                 "sticky": true,
                 "min_level": 3
               },
@@ -538,11 +531,11 @@
         },
         {
           "name": "Mantle of Inspiration",
-          "description": "You can weave fey magic into a song or dance to fill others with vigor. As a Bonus Action, you can expend a use of Bardic Inspiration, rolling a Bardic Inspiration die. When you do so, choose a number of other creatures within 60 feet of yourself, up to a number equal to your Charisma modifier (minimum of one creature)."
+          "description": "You can weave fey magic into a song or dance to fill others with vigor. As a Bonus Action, you can expend a use of Bardic Inspiration, rolling a Bardic Inspiration die. When you do so, choose a number of other creatures within 60 feet of yourself, up to a number equal to your Charisma modifier (minimum of one creature). Each of those creatures gains Temporary Hit Points equal to two times the number rolled on the Bardic Inspiration die and can use its Reaction to move up to its Speed without provoking Opportunity Attacks."
         },
         {
           "name": "Mantle of Majesty",
-          "description": "You always have the Command spell prepared. As a Bonus Action, you cast Command without expending a spell slot, and you take on an unearthly appearance for 1 minute or until your Concentration ends. During this time, you can cast Command as a Bonus Action without expending a spell slot."
+          "description": "You always have the Command spell prepared. As a Bonus Action, you cast Command without expending a spell slot, and you take on an unearthly appearance for 1 minute or until your Concentration ends. During this time, you can cast Command as a Bonus Action without expending a spell slot. Once you use this feature, you can't use it again until you finish a Long Rest, unless you expend a spell slot of level 3 or higher to restore your use of it (no action required)."
         },
         {
           "name": "Unbreakable Majesty",
@@ -594,23 +587,23 @@
         },
         {
           "name": "Blade Flourish",
-          "description": "At 3rd level, you learn to perform impressive displays of martial prowess and speed. Whenever you take the Attack action on your turn, your walking speed increases by 10 feet until the end of the turn, and if a weapon attack that you make as part of this action hits a creature, you can use one of the following Blade Flourish options of your choice."
+          "description": "You learn to perform impressive displays of martial prowess and speed. Whenever you take the Attack action on your turn, your walking speed increases by 10 feet until the end of the turn, and if a weapon attack that you make as part of this action hits a creature, you can use one of the following Blade Flourish options of your choice."
         },
         {
           "name": "Bonus Proficiencies",
-          "description": "When you join the College of Swords at 3rd level, you gain proficiency with medium armor and the scimitar. If you're proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells."
+          "description": "You gain proficiency with medium armor and the scimitar. If you're proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells."
         },
         {
           "name": "Fighting Style",
-          "description": "At 3rd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if something in the game lets you choose again."
+          "description": "You adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if something in the game lets you choose again."
         },
         {
           "name": "Extra Attack",
-          "description": "Starting at 6th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn."
         },
         {
           "name": "Master's Flourish",
-          "description": "Starting at 14th level, whenever you use a Blade Flourish option, you can roll a d6 and use it instead of expending a Bardic Inspiration die."
+          "description": "Whenever you use a Blade Flourish option, you can roll a d6 and use it instead of expending a Bardic Inspiration die."
         }
       ],
       "levels": {
@@ -650,19 +643,19 @@
         },
         {
           "name": "Psychic Blades",
-          "description": "When you join the College of Whispers at 3rd level, you gain the ability to make your weapon attacks magically toxic to a creature's mind. When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an extra 2d6 psychic damage to that target. You can do so only once per round on your turn."
+          "description": "You gain the ability to make your weapon attacks magically toxic to a creature's mind. When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an extra 2d6 psychic damage to that target. You can do so only once per round on your turn."
         },
         {
           "name": "Words of Terror",
-          "description": "At 3rd level, you learn to infuse innocent-seeming words with an insidious magic that can inspire terror. If you speak to a humanoid alone for at least 1 minute, you can attempt to seed paranoia in its mind. At the end of the conversation, the target must succeed on a Wisdom saving throw against your spell save DC or be frightened of you or another creature of your choice."
+          "description": "You learn to infuse innocent-seeming words with an insidious magic that can inspire terror. If you speak to a humanoid alone for at least 1 minute, you can attempt to seed paranoia in its mind. At the end of the conversation, the target must succeed on a Wisdom saving throw against your spell save DC or be frightened of you or another creature of your choice."
         },
         {
           "name": "Mantle of Whispers",
-          "description": "At 6th level, you gain the ability to adopt a humanoid's persona. When a humanoid dies within 30 feet of you, you can magically capture its shadow using your reaction. You retain this shadow until you use it or you finish a long rest. You can use the shadow as an action. When you do so, it vanishes, magically transforming into a disguise that appears on you."
+          "description": "You gain the ability to adopt a humanoid's persona. When a humanoid dies within 30 feet of you, you can magically capture its shadow using your reaction. You retain this shadow until you use it or you finish a long rest. You can use the shadow as an action. When you do so, it vanishes, magically transforming into a disguise that appears on you."
         },
         {
           "name": "Shadow Lore",
-          "description": "At 14th level, you gain the ability to weave dark magic into your words and tap into a creature's deepest fears. As an action, you magically whisper a phrase that only one creature of your choice within 30 feet of you can hear. The target must make a Wisdom saving throw against your spell save DC. It automatically succeeds if it doesn't share a language with you or if it can't hear you."
+          "description": "You gain the ability to weave dark magic into your words and tap into a creature's deepest fears. As an action, you magically whisper a phrase that only one creature of your choice within 30 feet of you can hear. The target must make a Wisdom saving throw against your spell save DC. It automatically succeeds if it doesn't share a language with you or if it can't hear you."
         }
       ],
       "levels": {
@@ -698,19 +691,19 @@
         },
         {
           "name": "Mote of Potential",
-          "description": "3rd-level College of Creation feature Whenever you give a creature a Bardic Inspiration die, you can utter a note from the Song of Creation to create a Tiny mote of potential, which orbits within 5 feet of that creature. The mote is intangible and invulnerable, and it lasts until the Bardic Inspiration die is lost."
+          "description": "Whenever you give a creature a Bardic Inspiration die, you can utter a note from the Song of Creation to create a Tiny mote of potential, which orbits within 5 feet of that creature. The mote is intangible and invulnerable, and it lasts until the Bardic Inspiration die is lost."
         },
         {
           "name": "Performance of Creation",
-          "description": "3rd-level College of Creation feature As an action, you can channel the magic of the Song of Creation to create one nonmagical item of your choice in an unoccupied space within 10 feet of you. The item must appear on a surface or in a liquid that can support it. The gp value of the item can't be more than 20 times your bard level, and the item must be Medium or smaller."
+          "description": "As an action, you can channel the magic of the Song of Creation to create one nonmagical item of your choice in an unoccupied space within 10 feet of you. The item must appear on a surface or in a liquid that can support it. The gp value of the item can't be more than 20 times your bard level, and the item must be Medium or smaller."
         },
         {
           "name": "Animating Performance",
-          "description": "6th-level College of Creation feature As an action, you can animate one Large or smaller nonmagical item within 30 feet of you that isn't being worn or carried. The animate item uses the Dancing Item stat block, which uses your proficiency bonus (PB). The item is friendly to you and your companions and obeys your commands."
+          "description": "As an action, you can animate one Large or smaller nonmagical item within 30 feet of you that isn't being worn or carried. The animate item uses the Dancing Item stat block, which uses your proficiency bonus (PB). The item is friendly to you and your companions and obeys your commands."
         },
         {
           "name": "Creative Crescendo",
-          "description": "14th-level College of Creation feature When you use your Performance of Creation feature, you can create more than one item at once. The number of items equals your Charisma modifier (minimum of two items). If you create an item that would exceed that number, you choose which of the previously created items disappears."
+          "description": "When you use your Performance of Creation feature, you can create more than one item at once. The number of items equals your Charisma modifier (minimum of two items). If you create an item that would exceed that number, you choose which of the previously created items disappears."
         }
       ],
       "levels": {
@@ -746,23 +739,23 @@
         },
         {
           "name": "Silver Tongue",
-          "description": "3rd-level College of Eloquence feature You are a master at saying the right thing at the right time. When you make a Charisma (Persuasion) or Charisma (Deception) check, you can treat a d20 roll of 9 or lower as a 10."
+          "description": "You are a master at saying the right thing at the right time. When you make a Charisma (Persuasion) or Charisma (Deception) check, you can treat a d20 roll of 9 or lower as a 10."
         },
         {
           "name": "Unsettling Words",
-          "description": "3rd-level College of Eloquence feature You can spin words laced with magic that unsettle a creature and cause it to doubt itself. As a bonus action, you can expend one use of your Bardic Inspiration and choose one creature you can see within 60 feet of you. Roll the Bardic Inspiration die."
+          "description": "You can spin words laced with magic that unsettle a creature and cause it to doubt itself. As a bonus action, you can expend one use of your Bardic Inspiration and choose one creature you can see within 60 feet of you. Roll the Bardic Inspiration die."
         },
         {
           "name": "Unfailing Inspiration",
-          "description": "6th-level College of Eloquence feature Your inspiring words are so persuasive that others feel driven to succeed. When a creature adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll fails, the creature can keep the Bardic Inspiration die."
+          "description": "Your inspiring words are so persuasive that others feel driven to succeed. When a creature adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll fails, the creature can keep the Bardic Inspiration die."
         },
         {
           "name": "Universal Speech",
-          "description": "6th-level College of Eloquence feature You have gained the ability to make your speech intelligible to any creature. As an action, choose one or more creatures within 60 feet of you, up to a number equal to your Charisma modifier (minimum of one creature). The chosen creatures can magically understand you, regardless of the language you speak, for 1 hour."
+          "description": "You have gained the ability to make your speech intelligible to any creature. As an action, choose one or more creatures within 60 feet of you, up to a number equal to your Charisma modifier (minimum of one creature). The chosen creatures can magically understand you, regardless of the language you speak, for 1 hour."
         },
         {
           "name": "Infectious Inspiration",
-          "description": "14th-level College of Eloquence feature When you successfully inspire someone, the power of your eloquence can now spread to someone else. When a creature within 60 feet of you adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll succeeds, you can use your reaction to encourage a different creature (other than yourself) that can hear you withi..."
+          "description": "When you successfully inspire someone, the power of your eloquence can now spread to someone else. When a creature within 60 feet of you adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll succeeds, you can use your reaction to encourage a different creature (other than yourself) that can hear you within 60 feet of you, giving it a Bardic Inspiration die without expending any of your Bardic Inspiration uses. You can use this reaction a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a long rest."
         }
       ],
       "levels": {
@@ -799,23 +792,23 @@
         },
         {
           "name": "Guiding Whispers",
-          "description": "3rd-level College of Spirits feature You can reach out to spirits to guide you and others. You learn the guidance cantrip, which doesn't count against the number of bard cantrips you know. For you, it has a range of 60 feet when you cast it."
+          "description": "You can reach out to spirits to guide you and others. You learn the guidance cantrip, which doesn't count against the number of bard cantrips you know. For you, it has a range of 60 feet when you cast it."
         },
         {
           "name": "Spiritual Focus",
-          "description": "3rd-level College of Spirits feature You employ tools that aid you in channeling spirits, be they historical figures or fictional archetypes. You can use the following objects as a spellcasting focus for your bard spells: a candle, crystal ball, skull, spirit board, or tarokka deck."
+          "description": "You employ tools that aid you in channeling spirits, be they historical figures or fictional archetypes. You can use the following objects as a spellcasting focus for your bard spells: a candle, crystal ball, skull, spirit board, or tarokka deck."
         },
         {
           "name": "Tales from Beyond",
-          "description": "3rd-level College of Spirits feature You reach out to spirits who tell their tales through you. While you are holding your Spiritual Focus, you can use a bonus action to expend one use of your Bardic Inspiration and roll on the Spirit Tales table using your Bardic Inspiration die to determine the tale the spirits direct you to tell."
+          "description": "You reach out to spirits who tell their tales through you. While you are holding your Spiritual Focus, you can use a bonus action to expend one use of your Bardic Inspiration and roll on the Spirit Tales table using your Bardic Inspiration die to determine the tale the spirits direct you to tell."
         },
         {
           "name": "Spirit Session",
-          "description": "6th-level College of Spirits feature Spirits provide you with supernatural insights. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of willing creatures equal to your proficiency bonus (including yourself)."
+          "description": "Spirits provide you with supernatural insights. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of willing creatures equal to your proficiency bonus (including yourself)."
         },
         {
           "name": "Mystical Connection",
-          "description": "14th-level College of Spirits feature You now have the ability to nudge the spirits of Tales from Beyond toward certain tales. Whenever you roll on the Spirit Tales table, you can roll the die twice and choose which of the two effects to bestow. If you roll the same number on both dice, you can ignore the number and choose any effect on the table."
+          "description": "You now have the ability to nudge the spirits of Tales from Beyond toward certain tales. Whenever you roll on the Spirit Tales table, you can roll the die twice and choose which of the two effects to bestow. If you roll the same number on both dice, you can ignore the number and choose any effect on the table."
         }
       ],
       "levels": {
@@ -880,7 +873,7 @@
         },
         {
           "name": "Leading Evasion",
-          "description": "When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw and only half damage if you fail. If any creatures within 5 feet of you are making the same Dexterity saving throw, you can share this benefit with them for that save."
+          "description": "When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw and only half damage if you fail. If any creatures within 5 feet of you are making the same Dexterity saving throw, you can share this benefit with them for that save. You can't use this feature if you have the Incapacitated condition."
         }
       ],
       "levels": {

@@ -208,7 +208,7 @@
     },
     {
       "name": "Tinker's Magic",
-      "description": "You know the Mending cantrip. As a Magic action while holding Tinker's Tools, you can create one item in an unoccupied space within 5 feet of yourself, choosing the item from the following list: Ball Bearings Basket Bedroll Bell Blanket Block and Tackle Glass Bottle Bucket Caltrops Candle Crowbar Flask Grappling Hook Hunting Trap Jug Lamp Manacles Net Oil Paper Parchment Pole Pouch Rope Sack Sh...",
+      "description": "You know the Mending cantrip. As a Magic action while holding Tinker's Tools, you can create one item in an unoccupied space within 5 feet of yourself, choosing the item from the following list: Ball Bearings, Basket, Bedroll, Bell, Blanket, Block and Tackle, Glass Bottle, Bucket, Caltrops, Candle, Crowbar, Flask, Grappling Hook, Hunting Trap, Jug, Lamp, Manacles, Net, Oil, Paper, Parchment, Pole, Pouch, Rope, Sack, Shovel, String, Tinderbox, Torch, Vial. The item vanishes after 1 hour or when you use this feature again.",
       "spells": {
         "casting_ability": 3,
         "list": [
@@ -700,7 +700,7 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Artificer levels 8, 12, and 16.",
+      "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify.",
       "stackable": true
     },
     {

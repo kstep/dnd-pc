@@ -17,7 +17,7 @@
   "features": [
     {
       "name": "Lay on Hands",
-      "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level."
+      "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level. As a Bonus Action, you can touch a creature (or touch yourself) and draw power from your pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool. Alternatively, you can expend 5 Hit Points from the pool to remove the Poisoned condition from the creature; this use of Lay on Hands doesn't restore Hit Points to the creature."
     },
     {
       "name": "Spellcasting (Paladin)",
@@ -215,12 +215,12 @@
     },
     {
       "name": "Channel Divinity",
-      "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice.",
+      "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11 (three uses). The DC for Channel Divinity saving throws equals your spell save DC.",
       "stackable": true
     },
     {
       "name": "Divine Sense",
-      "description": "As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type."
+      "description": "As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell."
     },
     {
       "name": "Paladin Subclass",
@@ -228,7 +228,7 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Paladin levels 8, 12, and 16.",
+      "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify.",
       "stackable": true
     },
     {
@@ -250,7 +250,7 @@
     },
     {
       "name": "Abjure Foes",
-      "description": "As a Magic action, you can expend one use of this class's Channel Divinity to overwhelm foes with awe. As you present your Holy Symbol or weapon, you can target a number of creatures equal to your Charisma modifier (minimum of one creature) that you can see within 60 feet of yourself."
+      "description": "As a Magic action, you can expend one use of this class's Channel Divinity to overwhelm foes with awe. As you present your Holy Symbol or weapon, you can target a number of creatures equal to your Charisma modifier (minimum of one creature) that you can see within 60 feet of yourself. Each target must succeed on a Wisdom saving throw or have the Frightened condition for 1 minute or until it takes any damage. While Frightened in this way, a target can only do one of the following on its turns: move, take an action, or take a Bonus Action."
     },
     {
       "name": "Aura of Courage",
@@ -468,7 +468,7 @@
         },
         {
           "name": "Sacred Weapon",
-          "description": "When you take the Attack action, you can expend one use of your Channel Divinity to imbue one Melee weapon that you are holding with positive energy. For 10 minutes or until you use this feature again, you add your Charisma modifier to attack rolls you make with that weapon (minimum bonus of +1), and each time you hit with it, you cause it to deal its normal damage type or Radiant damage."
+          "description": "When you take the Attack action, you can expend one use of your Channel Divinity to imbue one Melee weapon that you are holding with positive energy. For 10 minutes or until you use this feature again, you add your Charisma modifier to attack rolls you make with that weapon (minimum bonus of +1), and each time you hit with it, you cause it to deal its normal damage type or Radiant damage. The weapon also emits Bright Light in a 20-foot radius and Dim Light 20 feet beyond that. You can end this effect early (no action required). This effect also ends if you drop the weapon or die."
         },
         {
           "name": "Aura of Devotion",
@@ -476,11 +476,11 @@
         },
         {
           "name": "Smite of Protection",
-          "description": "Your magical smite now radiates protective energy. Whenever you cast Divine Smite, you and your allies have Cover while in your Aura of Protection. The aura has this benefit until the start of your next turn."
+          "description": "Your magical smite now radiates protective energy. Whenever you cast Divine Smite, you and your allies have Half Cover while in your Aura of Protection. The aura has this benefit until the start of your next turn."
         },
         {
           "name": "Holy Nimbus",
-          "description": "As a Bonus Action, you can imbue your Aura of Protection with holy power, granting the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required)."
+          "description": "As a Bonus Action, you can imbue your Aura of Protection with holy power, granting the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Holy Ward. You have Advantage on saving throws against effects created by Fiends and Undead. Radiant Damage. Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus. Sunlight. The aura is filled with Bright Light that is sunlight."
         }
       ],
       "levels": {
@@ -514,7 +514,7 @@
     },
     {
       "name": "Oath of the Ancients",
-      "description": "As a Magic action, you can expend one use of your Channel Divinity to conjure spectral vines around nearby creatures. Each creature of your choice that you can see within 15 feet of yourself must succeed on a Strength saving throw or have the Restrained condition for 1 minute.",
+      "description": "The Oath of the Ancients is as old as the first elves and the rituals of druids. Paladins who swear this oath cast their lot with the side of light in the cosmic struggle against darkness.",
       "features": [
         {
           "name": "Nature's Wrath",
@@ -554,7 +554,7 @@
               {
                 "name": "Moonbeam",
                 "level": 2,
-                "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Until the spell ends, Dim Light fills the Cylinder [Area of Effect], and you can take a Magic action on later turns to move the Cylinder [Area of Effect] up to 60...",
+                "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high Cylinder centered on a point within range. Until the spell ends, Dim Light fills the Cylinder, and you can take a Magic action on later turns to move the Cylinder up to 60 feet. When the Cylinder appears, each creature in it makes a Constitution saving throw. On a failed save, a creature takes 2d10 Radiant damage, and if the creature is shape-shifted (as a result of the Polymorph spell, for example), it reverts to its true form and can't shape-shift until it leaves the Cylinder. On a successful save, a creature takes half as much damage only. A creature also makes this save when the spell's area moves into its space and when it enters the spell's area or ends its turn there. A creature makes this save only once per turn. Using a Higher-Level Spell Slot. The damage increases by 1d10 for each spell slot level above 2.",
                 "sticky": true,
                 "min_level": 5
               },
@@ -609,11 +609,11 @@
         },
         {
           "name": "Undying Sentinel",
-          "description": "When you are reduced to 0 Hit Points and not killed outright, you can drop to 1 Hit Points instead, and you regain a number of Hit Points equal to three times your Paladin level. Once you use this feature, you can't do so again until you finish a Long Rest. Additionally, you can't be aged magically, and you cease visibly aging."
+          "description": "When you are reduced to 0 Hit Points and not killed outright, you can drop to 1 Hit Point instead, and you regain a number of Hit Points equal to three times your Paladin level. Once you use this feature, you can't do so again until you finish a Long Rest. Additionally, you can't be aged magically, and you cease visibly aging."
         },
         {
           "name": "Elder Champion",
-          "description": "As a Bonus Action, you can imbue your Aura of Protection with primal power, granting the benefits below for 1 minute or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required)."
+          "description": "As a Bonus Action, you can imbue your Aura of Protection with primal power, granting the benefits below for 1 minute or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Diminish Defiance. Enemies in your Aura of Protection have Disadvantage on saving throws against your spells and Channel Divinity options. Regeneration. You regain 10 Hit Points at the start of each of your turns. Swift Spells. Whenever you cast a spell that has a casting time of an action, you can cast it using a Bonus Action instead."
         }
       ],
       "levels": {
@@ -647,11 +647,11 @@
     },
     {
       "name": "Oath of Vengeance",
-      "description": "Punish Evildoers at Any Cost The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the...",
+      "description": "Punish Evildoers at Any Cost. The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside—at times like these, paladins arise and swear an Oath of Vengeance to set right what has gone wrong. The tenets of the Oath of Vengeance are: Show the wicked no mercy. Fight injustice and its causes. Aid those harmed by injustice.",
       "features": [
         {
           "name": "Oath of Vengeance",
-          "description": "Punish Evildoers at Any Cost The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside—at times like these, paladins arise and swear an Oath of Vengeance to set right what has..."
+          "description": "Punish Evildoers at Any Cost. The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside—at times like these, paladins arise and swear an Oath of Vengeance to set right what has gone wrong. The tenets of the Oath of Vengeance are: Show the wicked no mercy. Fight injustice and its causes. Aid those harmed by injustice."
         },
         {
           "name": "Oath of Vengeance Spells",
@@ -734,11 +734,11 @@
         },
         {
           "name": "Vow of Enmity",
-          "description": "When you take the Attack action, you can expend one use of your Channel Divinity to utter a vow of enmity against a creature you can see within 30 feet of yourself. You have Advantage on attack rolls against the creature for 1 minute or until you use this feature again."
+          "description": "When you take the Attack action, you can expend one use of your Channel Divinity to utter a vow of enmity against a creature you can see within 30 feet of yourself. You have Advantage on attack rolls against the creature for 1 minute or until you use this feature again. If the creature drops to 0 Hit Points before the vow ends, you can transfer the vow to a different creature within 30 feet of yourself (no action required)."
         },
         {
           "name": "Relentless Avenger",
-          "description": "Your supernatural focus helps you close off a foe's retreat. When you hit a creature with an Opportunity Attack, you can reduce the creature's Speed to 0 until the end of the current turn. You can then move up to half your Speed as part of the same Reaction. This movement doesn't provoke Opportunity Attack."
+          "description": "Your supernatural focus helps you close off a foe's retreat. When you hit a creature with an Opportunity Attack, you can reduce the creature's Speed to 0 until the end of the current turn. You can then move up to half your Speed as part of the same Reaction. This movement doesn't provoke Opportunity Attacks."
         },
         {
           "name": "Soul of Vengeance",
@@ -746,7 +746,7 @@
         },
         {
           "name": "Avenging Angel",
-          "description": "As a Bonus Action, you gain the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Flight: You sprout spectral wings on your back, have a Fly Speed of 60 feet, and can hover."
+          "description": "As a Bonus Action, you gain the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Flight: You sprout spectral wings on your back, have a Fly Speed of 60 feet, and can hover. Frightful Aura. Whenever an enemy starts its turn in your Aura of Protection, that creature must succeed on a Wisdom saving throw or have the Frightened condition for 1 minute or until it takes any damage. Attack rolls against the Frightened creature have Advantage."
         }
       ],
       "levels": {
@@ -804,15 +804,15 @@
         },
         {
           "name": "Aura of Hate",
-          "description": "Starting at 7th level, the paladin, as well any fiends and undead within 10 feet of the paladin, gains a bonus to melee weapon damage rolls equal to the paladin's Charisma modifier (minimum of +1). A creature can benefit from this feature from only one paladin at a time. At 18th level, the range of this aura increases to 30 feet."
+          "description": "The paladin, as well any fiends and undead within 10 feet of the paladin, gains a bonus to melee weapon damage rolls equal to the paladin's Charisma modifier (minimum of +1). A creature can benefit from this feature from only one paladin at a time. At 18th level, the range of this aura increases to 30 feet."
         },
         {
           "name": "Supernatural Resistance",
-          "description": "At 15th level, the paladin gains resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons."
+          "description": "The paladin gains resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons."
         },
         {
           "name": "Dread Lord",
-          "description": "At 20th level, the paladin can, as an action, surround himself or herself with an aura of gloom that lasts for 1 minute. The aura reduces any bright light in a 30-foot radius around the paladin to dim light. Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage."
+          "description": "The paladin can, as an action, surround himself or herself with an aura of gloom that lasts for 1 minute. The aura reduces any bright light in a 30-foot radius around the paladin to dim light. Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage."
         }
       ],
       "levels": {
@@ -860,7 +860,7 @@
         },
         {
           "name": "Channel Divinity",
-          "description": "When you take this oath at 3rd level, you gain the following two Channel Divinity options."
+          "description": "You gain the following two Channel Divinity options."
         },
         {
           "name": "Oath Spells",
@@ -876,15 +876,15 @@
         },
         {
           "name": "Divine Allegiance",
-          "description": "Starting at 7th level, when a creature within 5 feet of you takes damage, you can use your reaction to magically substitute your own health for that of the target creature, causing that creature not to take the damage. Instead, you take the damage. This damage to you can't be reduced or prevented in any way."
+          "description": "When a creature within 5 feet of you takes damage, you can use your reaction to magically substitute your own health for that of the target creature, causing that creature not to take the damage. Instead, you take the damage. This damage to you can't be reduced or prevented in any way."
         },
         {
           "name": "Unyielding Spirit",
-          "description": "Starting at 15th level, you have advantage on saving throws to avoid becoming paralyzed or stunned."
+          "description": "You have advantage on saving throws to avoid becoming paralyzed or stunned."
         },
         {
           "name": "Exalted Champion",
-          "description": "At 20th level, your presence on the field of battle is an inspiration to those dedicated to your cause. You can use your action to gain the following benefits for 1 hour: You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons. Your allies have advantage on death saving throws while within 30 feet of you."
+          "description": "Your presence on the field of battle is an inspiration to those dedicated to your cause. You can use your action to gain the following benefits for 1 hour: You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons. Your allies have advantage on death saving throws while within 30 feet of you."
         }
       ],
       "levels": {
@@ -929,7 +929,7 @@
         },
         {
           "name": "Channel Divinity",
-          "description": "When you take this oath at 3rd level, you gain the following two Channel Divinity options."
+          "description": "You gain the following two Channel Divinity options."
         },
         {
           "name": "Conquering Presence",
@@ -949,15 +949,15 @@
         },
         {
           "name": "Aura of Conquest",
-          "description": "Starting at 7th level, you constantly emanate a menacing aura while you're not incapacitated. The aura extends 10 feet from you in every direction, but not through Cover. If a creature is frightened of you, its speed is reduced to 0 while in the aura, and that creature takes psychic damage equal to half your paladin level if it starts its turn there."
+          "description": "You constantly emanate a menacing aura while you're not incapacitated. The aura extends 10 feet from you in every direction, but not through Cover. If a creature is frightened of you, its speed is reduced to 0 while in the aura, and that creature takes psychic damage equal to half your paladin level if it starts its turn there."
         },
         {
           "name": "Scornful Rebuke",
-          "description": "Starting at 15th level, those who dare to strike you are psychically punished for their audacity. Whenever a creature hits you with an attack, that creature takes psychic damage equal to your Charisma modifier (minimum of 1) if you're not incapacitated."
+          "description": "Those who dare to strike you are psychically punished for their audacity. Whenever a creature hits you with an attack, that creature takes psychic damage equal to your Charisma modifier (minimum of 1) if you're not incapacitated."
         },
         {
           "name": "Invincible Conqueror",
-          "description": "At 20th level, you gain the ability to harness extraordinary martial prowess. As an action, you can magically become an avatar of conquest, gaining the following benefits for 1 minute: You have resistance to all damage. When you take the Attack action on your turn, you can make one additional attack as part of that action."
+          "description": "You gain the ability to harness extraordinary martial prowess. As an action, you can magically become an avatar of conquest, gaining the following benefits for 1 minute: You have resistance to all damage. When you take the Attack action on your turn, you can make one additional attack as part of that action."
         }
       ],
       "levels": {
@@ -1002,7 +1002,7 @@
         },
         {
           "name": "Channel Divinity",
-          "description": "When you take this oath at 3rd level, you gain the following two Channel Divinity options."
+          "description": "You gain the following two Channel Divinity options."
         },
         {
           "name": "Emissary of Peace",
@@ -1022,15 +1022,15 @@
         },
         {
           "name": "Aura of the Guardian",
-          "description": "Starting at 7th level, you can shield others from harm at the cost of your own health. When a creature within 10 feet of you takes damage, you can use your reaction to magically take that damage, instead of that creature taking it. This feature doesn't transfer any other effects that might accompany the damage, and this damage can't be reduced in any way."
+          "description": "You can shield others from harm at the cost of your own health. When a creature within 10 feet of you takes damage, you can use your reaction to magically take that damage, instead of that creature taking it. This feature doesn't transfer any other effects that might accompany the damage, and this damage can't be reduced in any way."
         },
         {
           "name": "Protective Spirit",
-          "description": "Starting at 15th level, a holy presence mends your wounds in battle. You regain hit points equal to 1d6 + half your paladin level if you end your turn in combat with fewer than half of your hit points remaining and you aren't incapacitated."
+          "description": "A holy presence mends your wounds in battle. You regain hit points equal to 1d6 + half your paladin level if you end your turn in combat with fewer than half of your hit points remaining and you aren't incapacitated."
         },
         {
           "name": "Emissary of Redemption",
-          "description": "At 20th level, you become an avatar of peace, which gives you two benefits: You have resistance to all damage dealt by other creatures (their attacks, spells, and other effects). Whenever a creature hits you with an attack, it takes radiant damage equal to half the damage you take from the attack."
+          "description": "You become an avatar of peace, which gives you two benefits: You have resistance to all damage dealt by other creatures (their attacks, spells, and other effects). Whenever a creature hits you with an attack, it takes radiant damage equal to half the damage you take from the attack."
         }
       ],
       "levels": {
@@ -1067,7 +1067,7 @@
     },
     {
       "name": "Oath of Glory",
-      "description": "Immediately after you cast Divine Smite, you can expend one use of your Channel Divinity and distribute Temporary Hit Points to creatures of your choice within 30 feet of yourself, which can include you.",
+      "description": "Paladins who take the Oath of Glory believe they and their companions are destined to achieve glory through deeds of heroism. They train diligently and encourage their companions so they're all ready when destiny calls.",
       "features": [
         {
           "name": "Inspiring Smite",
@@ -1166,11 +1166,11 @@
         },
         {
           "name": "Glorious Defense",
-          "description": "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can take a Reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1)."
+          "description": "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can take a Reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack still misses, you can make one attack with a weapon against the attacker as part of this Reaction, provided the attacker is within your weapon's range. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
         },
         {
           "name": "Living Legend",
-          "description": "You can empower yourself with the legends—whether true or exaggerated—of your great deeds. As a Bonus Action, you gain the benefits below for 10 minutes. Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required)."
+          "description": "You can empower yourself with the legends—whether true or exaggerated—of your great deeds. As a Bonus Action, you gain the benefits below for 10 minutes. Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Charismatic. You have Advantage on all Charisma checks. Saving Throw Reroll. If you fail a saving throw, you can use your Reaction to reroll it. You must use the new roll. Unerring Strike. Once per turn when you miss with a weapon attack, you can cause that attack to hit instead."
         }
       ],
       "levels": {
@@ -1213,11 +1213,11 @@
         },
         {
           "name": "Channel Divinity",
-          "description": "3rd-level Oath of the Watchers feature You gain the following Channel Divinity options. See the Sacred Oath class feature for how Channel Divinity works."
+          "description": "You gain the following Channel Divinity options. See the Sacred Oath class feature for how Channel Divinity works."
         },
         {
           "name": "Oath Spells",
-          "description": "3rd-level Oath of the Watchers feature You gain oath spells at the paladin levels listed in the Oath of the Watchers table. See the Sacred Oath class feature for how oath spells work."
+          "description": "You gain oath spells at the paladin levels listed in the Oath of the Watchers table. See the Sacred Oath class feature for how oath spells work."
         },
         {
           "name": "Tenets of the Watchers",
@@ -1233,15 +1233,15 @@
         },
         {
           "name": "Aura of the Sentinel",
-          "description": "7th-level Oath of the Watchers feature You emit an aura of alertness while you aren't incapacitated. When you and any creatures of your choice within 10 feet of you roll initiative, you all gain a bonus to initiative equal to your proficiency bonus. At 18th level, the range of this aura increases to 30 feet."
+          "description": "You emit an aura of alertness while you aren't incapacitated. When you and any creatures of your choice within 10 feet of you roll initiative, you all gain a bonus to initiative equal to your proficiency bonus. At 18th level, the range of this aura increases to 30 feet."
         },
         {
           "name": "Vigilant Rebuke",
-          "description": "15th-level Oath of the Watchers feature You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw."
+          "description": "You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw."
         },
         {
           "name": "Mortal Bulwark",
-          "description": "20th-level Oath of the Watchers feature You manifest a spark of divine power in defense of the mortal realms. As a bonus action, you gain the following benefits for 1 minute: You gain truesight with a range of 120 feet. You have advantage on attack rolls against aberrations, celestials, elementals, fey, and fiends."
+          "description": "You manifest a spark of divine power in defense of the mortal realms. As a bonus action, you gain the following benefits for 1 minute: You gain truesight with a range of 120 feet. You have advantage on attack rolls against aberrations, celestials, elementals, fey, and fiends."
         }
       ],
       "levels": {
