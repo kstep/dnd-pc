@@ -50,7 +50,6 @@ pub fn CharacterSummary() -> impl IntoView {
                 </div>
                 <WeaponsBlock />
                 <SpellsBlock />
-                <SpellSlotsBlock />
                 <ChoicesBlock />
                 <LanguagesBlock />
             </div>
@@ -59,6 +58,7 @@ pub fn CharacterSummary() -> impl IntoView {
             <div class="summary-right-column">
                 <StatsBlock />
                 <ResourcesBlock />
+                <SpellSlotsBlock />
             </div>
             </div>
 
