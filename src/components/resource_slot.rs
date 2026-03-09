@@ -10,27 +10,13 @@ pub fn ResourceSlot(
     used: u32,
     on_change: impl Fn(u32) + 'static + Send + Sync,
 ) -> impl IntoView {
-    let max_str = max.to_string();
-    let used_str = used.to_string();
     let remaining = max.saturating_sub(used);
     let all_used = used >= max;
     let on_change = StoredValue::new(on_change);
     view! {
         <div class="summary-slot">
             <span class="summary-slot-level">{label}</span>
-            <input
-                type="number"
-                class="short-input"
-                min="0"
-                prop:max=max_str
-                prop:value=used_str
-                on:change=move |event| {
-                    if let Ok(value) = event_target_value(&event).parse::<u32>() {
-                        on_change.with_value(|f| f(value.min(max)));
-                    }
-                }
-            />
-            <span>"/" {max} " (" {remaining} ")"</span>
+            <span><strong>{remaining}</strong> " / " {max}</span>
             <button
                 class="btn-icon"
                 title=move_tr!("spend")
