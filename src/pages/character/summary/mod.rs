@@ -2,7 +2,6 @@ mod backpack;
 mod choices;
 mod languages;
 mod resources;
-mod spell_slots;
 mod spells;
 mod stats;
 mod weapons;

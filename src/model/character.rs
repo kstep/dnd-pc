@@ -177,9 +177,7 @@ impl Character {
         self.combat.death_save_failures = 0;
 
         for cl in &mut self.identity.classes {
-            // restore half of hit dice, rounded down
-            let hit_dice_available = cl.level - cl.hit_dice_used;
-            cl.hit_dice_used = cl.hit_dice_used.saturating_sub(hit_dice_available / 2);
+            cl.hit_dice_used = 0;
         }
 
         for slots in self.spell_slots.values_mut() {
