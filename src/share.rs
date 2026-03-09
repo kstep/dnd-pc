@@ -69,13 +69,13 @@ async fn pipe_through_stream(
 }
 
 async fn compress(data: &[u8]) -> Result<Vec<u8>, JsValue> {
-    let cs = JsCompressionStream::new("deflate-raw");
-    pipe_through_stream(data, cs.as_ref()).await
+    let compressor = JsCompressionStream::new("deflate-raw");
+    pipe_through_stream(data, compressor.as_ref()).await
 }
 
 async fn decompress(data: &[u8]) -> Result<Vec<u8>, JsValue> {
-    let ds = JsDecompressionStream::new("deflate-raw");
-    pipe_through_stream(data, ds.as_ref()).await
+    let decompressor = JsDecompressionStream::new("deflate-raw");
+    pipe_through_stream(data, decompressor.as_ref()).await
 }
 
 pub async fn encode_character(
@@ -100,8 +100,8 @@ pub async fn encode_character(
 pub async fn decode_character(data: &str) -> Option<Character> {
     let compressed = URL_SAFE_NO_PAD.decode(data).ok()?;
     let bytes = decompress(&compressed).await.ok()?;
-    let ch: Character = postcard::from_bytes(&bytes).ok()?;
-    Some(ch)
+    let character: Character = postcard::from_bytes(&bytes).ok()?;
+    Some(character)
 }
 
 #[cfg(test)]
