@@ -12,6 +12,7 @@ pub fn ResourceSlot(
 ) -> impl IntoView {
     let max_str = max.to_string();
     let used_str = used.to_string();
+    let remaining = max.saturating_sub(used);
     let all_used = used >= max;
     let on_change = StoredValue::new(on_change);
     view! {
@@ -29,7 +30,7 @@ pub fn ResourceSlot(
                     }
                 }
             />
-            <span>"/" {max}</span>
+            <span>"/" {max} " (" {remaining} ")"</span>
             <button
                 class="btn-icon"
                 title=move_tr!("spend")
@@ -40,7 +41,7 @@ pub fn ResourceSlot(
                     }
                 }
             >
-                <Icon name="minus" size=14 />
+                <Icon name="wand" size=14 />
             </button>
         </div>
     }

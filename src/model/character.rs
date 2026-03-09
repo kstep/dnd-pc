@@ -887,6 +887,7 @@ impl Currency {
         self.pp += gain_pp;
     }
 
+    #[allow(unused_assignments)]
     pub fn spend(&mut self, amount: Money) -> bool {
         if amount > self.as_money() {
             return false;

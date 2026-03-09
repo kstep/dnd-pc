@@ -14,7 +14,7 @@ pub fn ResourcesBlock() -> impl IntoView {
     let classes = store.identity().classes();
 
     let hit_dice = move || {
-        classes
+        let dice = classes
             .read()
             .iter()
             .enumerate()
@@ -34,11 +34,22 @@ pub fn ResourcesBlock() -> impl IntoView {
                     />
                 }
             })
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+
+        if dice.is_empty() {
+            None
+        } else {
+            Some(view! {
+                <h4 class="summary-subsection-title">{move_tr!("hit-dice")}</h4>
+                <div class="summary-spell-slots">
+                    {dice}
+                </div>
+            })
+        }
     };
 
     let resources = move || {
-        feature_data
+        let res = feature_data
             .read()
             .iter()
             .flat_map(|(feat_name, entry)| {
@@ -98,22 +109,30 @@ pub fn ResourcesBlock() -> impl IntoView {
                         _ => None,
                     })
             })
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+
+        if res.is_empty() {
+            None
+        } else {
+            Some(view! {
+                <h4 class="summary-subsection-title">{move_tr!("summary-resources")}</h4>
+                <div class="summary-spell-slots">
+                    {res}
+                </div>
+            })
+        }
     };
 
     move || {
         let hit_dice = hit_dice();
         let resources = resources();
 
-        if hit_dice.is_empty() && resources.is_empty() {
+        if hit_dice.is_none() && resources.is_none() {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("summary-resources")}</h4>
-                <div class="summary-spell-slots">
-                    {hit_dice}
-                    {resources}
-                </div>
+                {hit_dice}
+                {resources}
             })
         }
     }
