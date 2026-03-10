@@ -42,7 +42,7 @@ impl Money {
             fraction_gp
         };
 
-        Some(Self::from_cp(whole_gp * Self::CP_PER_GP + fraction_gp))
+        Some(Self::from_gp_cp(whole_gp, fraction_gp))
     }
 
     pub fn from_cp(cp: u32) -> Self {
@@ -52,6 +52,12 @@ impl Money {
     pub fn from_gp(gp: u32) -> Self {
         Self {
             cp: gp * Self::CP_PER_GP,
+        }
+    }
+
+    pub fn from_gp_cp(gp: u32, cp: u32) -> Self {
+        Self {
+            cp: gp * Self::CP_PER_GP + cp,
         }
     }
 
@@ -148,6 +154,12 @@ mod tests {
     }
 
     #[test]
+    fn from_gp_cp() {
+        assert_eq!(Money::from_gp_cp(2, 50).whole_cp(), 250);
+        assert_eq!(Money::from_gp_cp(0, 0).whole_cp(), 0);
+    }
+
+    #[test]
     fn as_gp_sp_cp_roundtrip() {
         let money = Money::from_cp(1234);
         let (gp, sp, cp) = money.as_gp_sp_cp();
@@ -171,10 +183,10 @@ mod tests {
 
     #[test]
     fn from_gp_str_decimal() {
-        // "10.50" = 10gp 50cp = 1050cp
-        assert_eq!(Money::from_gp_str("10.50"), Some(Money::from_cp(1050)));
+        // "10.50" = 10gp 50cp
+        assert_eq!(Money::from_gp_str("10.50"), Some(Money::from_gp_cp(10, 50)));
         // "10.5" = 10gp 50cp (single digit treated as tens)
-        assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_cp(1050)));
+        assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_gp_cp(10, 50)));
         // "0.01" = 1cp
         assert_eq!(Money::from_gp_str("0.01"), Some(Money::from_cp(1)));
         // "0.05" = 5cp (leading zero must not be lost)
@@ -186,7 +198,7 @@ mod tests {
     #[test]
     fn from_gp_str_truncates_fraction() {
         // More than 2 decimal digits: truncated to 2
-        assert_eq!(Money::from_gp_str("1.999"), Some(Money::from_cp(199)));
+        assert_eq!(Money::from_gp_str("1.999"), Some(Money::from_gp_cp(1, 99)));
     }
 
     #[test]
