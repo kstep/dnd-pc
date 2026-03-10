@@ -49,27 +49,9 @@ impl Money {
         Self { cp }
     }
 
-    pub fn from_sp(sp: u32) -> Self {
-        Self {
-            cp: sp * Self::CP_PER_SP,
-        }
-    }
-
-    pub fn from_ep(ep: u32) -> Self {
-        Self {
-            cp: ep * Self::CP_PER_EP,
-        }
-    }
-
     pub fn from_gp(gp: u32) -> Self {
         Self {
             cp: gp * Self::CP_PER_GP,
-        }
-    }
-
-    pub fn from_pp(pp: u32) -> Self {
-        Self {
-            cp: pp * Self::CP_PER_PP,
         }
     }
 
@@ -79,45 +61,23 @@ impl Money {
         }
     }
 
-    // pp, gp, ep, sp, cp
-    pub fn as_coins(&self) -> (u32, u32, u32, u32, u32) {
+    // gp, sp, cp
+    pub fn as_gp_sp_cp(&self) -> (u32, u32, u32) {
         let mut remaining_cp = self.cp;
-
-        let pp = remaining_cp / Self::CP_PER_PP;
-        remaining_cp %= Self::CP_PER_PP;
 
         let gp = remaining_cp / Self::CP_PER_GP;
         remaining_cp %= Self::CP_PER_GP;
-
-        let ep = remaining_cp / Self::CP_PER_EP;
-        remaining_cp %= Self::CP_PER_EP;
 
         let sp = remaining_cp / Self::CP_PER_SP;
         remaining_cp %= Self::CP_PER_SP;
 
         let cp = remaining_cp;
 
-        (pp, gp, ep, sp, cp)
+        (gp, sp, cp)
     }
 
     pub fn whole_cp(&self) -> u32 {
         self.cp
-    }
-
-    pub fn whole_sp(&self) -> u32 {
-        self.cp / Self::CP_PER_SP
-    }
-
-    pub fn whole_ep(&self) -> u32 {
-        self.cp / Self::CP_PER_EP
-    }
-
-    pub fn whole_gp(&self) -> u32 {
-        self.cp / Self::CP_PER_GP
-    }
-
-    pub fn whole_pp(&self) -> u32 {
-        self.cp / Self::CP_PER_PP
     }
 }
 
@@ -188,12 +148,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn from_cp_constructors() {
+    fn from_constructors() {
         assert_eq!(Money::from_cp(1).whole_cp(), 1);
-        assert_eq!(Money::from_sp(1).whole_cp(), 10);
-        assert_eq!(Money::from_ep(1).whole_cp(), 50);
         assert_eq!(Money::from_gp(1).whole_cp(), 100);
-        assert_eq!(Money::from_pp(1).whole_cp(), 1000);
     }
 
     #[test]
@@ -203,33 +160,19 @@ mod tests {
     }
 
     #[test]
-    fn as_coins_roundtrip() {
+    fn as_gp_sp_cp_roundtrip() {
         let money = Money::from_cp(1234);
-        let (pp, gp, ep, sp, cp) = money.as_coins();
-        assert_eq!(pp, 1);
-        assert_eq!(gp, 2);
-        assert_eq!(ep, 0);
+        let (gp, sp, cp) = money.as_gp_sp_cp();
+        assert_eq!(gp, 12);
         assert_eq!(sp, 3);
         assert_eq!(cp, 4);
     }
 
     #[test]
-    fn as_coins_exact_denominations() {
-        assert_eq!(Money::from_pp(3).as_coins(), (3, 0, 0, 0, 0));
-        assert_eq!(Money::from_gp(5).as_coins(), (0, 5, 0, 0, 0));
-        assert_eq!(Money::from_ep(2).as_coins(), (0, 0, 2, 0, 0));
-        assert_eq!(Money::from_sp(7).as_coins(), (0, 0, 0, 7, 0));
-        assert_eq!(Money::from_cp(9).as_coins(), (0, 0, 0, 0, 9));
-    }
-
-    #[test]
-    fn whole_accessors() {
-        let money = Money::from_cp(1550);
-        assert_eq!(money.whole_pp(), 1);
-        assert_eq!(money.whole_gp(), 15);
-        assert_eq!(money.whole_ep(), 31);
-        assert_eq!(money.whole_sp(), 155);
-        assert_eq!(money.whole_cp(), 1550);
+    fn as_gp_sp_cp_exact_denominations() {
+        assert_eq!(Money::from_gp(5).as_gp_sp_cp(), (5, 0, 0));
+        assert_eq!(Money::from_cp(70).as_gp_sp_cp(), (0, 7, 0));
+        assert_eq!(Money::from_cp(9).as_gp_sp_cp(), (0, 0, 9));
     }
 
     #[test]
@@ -302,12 +245,12 @@ mod tests {
     fn ordering() {
         assert!(Money::from_gp(5) > Money::from_gp(3));
         assert!(Money::from_cp(99) < Money::from_gp(1));
-        assert_eq!(Money::from_sp(10), Money::from_gp(1));
+        assert_eq!(Money::from_cp(100), Money::from_gp(1));
     }
 
     #[test]
     fn default_is_zero() {
         assert_eq!(Money::default().whole_cp(), 0);
-        assert_eq!(Money::default().as_coins(), (0, 0, 0, 0, 0));
+        assert_eq!(Money::default().as_gp_sp_cp(), (0, 0, 0));
     }
 }
