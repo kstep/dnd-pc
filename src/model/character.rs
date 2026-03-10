@@ -1510,7 +1510,7 @@ pub mod tests {
             sp: 5,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_sp(5)));
+        assert!(c.spend(Money::from_cp(50))); // 5 sp
         assert_eq!(
             c,
             Currency {
@@ -1527,7 +1527,7 @@ pub mod tests {
             gp: 10,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_sp(5)));
+        assert!(c.spend(Money::from_cp(50))); // 5 sp
         assert_eq!(
             c,
             Currency {
@@ -1609,7 +1609,7 @@ pub mod tests {
             ep: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_sp(3)));
+        assert!(c.spend(Money::from_cp(30))); // 3 sp
         assert_eq!(
             c,
             Currency {
@@ -1621,13 +1621,13 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_ep_exact() {
-        // 2 ep → spend 1 ep → 1 ep (exact match, no break needed)
+        // 2 ep → spend 1 ep (50 cp) → 1 ep (exact match, no break needed)
         let mut c = Currency {
             ep: 2,
             sp: 3,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_ep(1)));
+        assert!(c.spend(Money::from_cp(50))); // 1 ep
         assert_eq!(
             c,
             Currency {
@@ -1663,7 +1663,7 @@ pub mod tests {
             pp: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_sp(3)));
+        assert!(c.spend(Money::from_cp(30))); // 3 sp
         assert_eq!(
             c,
             Currency {
@@ -1683,7 +1683,7 @@ pub mod tests {
             sp: 3,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_sp(15)));
+        assert!(c.spend(Money::from_cp(150))); // 15 sp
         assert_eq!(
             c,
             Currency {
@@ -1695,12 +1695,12 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_pp_exact() {
-        // 2 pp → spend 1 pp → 1 pp
+        // 2 pp → spend 1 pp (1000 cp) → 1 pp
         let mut c = Currency {
             pp: 2,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_pp(1)));
+        assert!(c.spend(Money::from_cp(1000))); // 1 pp
         assert_eq!(
             c,
             Currency {

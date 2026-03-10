@@ -42,40 +42,16 @@ impl Money {
             fraction_gp
         };
 
-        Some(Self::from_gp_cp(whole_gp, fraction_gp))
+        Some(Self::from_cp(whole_gp * Self::CP_PER_GP + fraction_gp))
     }
 
     pub fn from_cp(cp: u32) -> Self {
         Self { cp }
     }
 
-    pub fn from_sp(sp: u32) -> Self {
-        Self {
-            cp: sp * Self::CP_PER_SP,
-        }
-    }
-
-    pub fn from_ep(ep: u32) -> Self {
-        Self {
-            cp: ep * Self::CP_PER_EP,
-        }
-    }
-
     pub fn from_gp(gp: u32) -> Self {
         Self {
             cp: gp * Self::CP_PER_GP,
-        }
-    }
-
-    pub fn from_pp(pp: u32) -> Self {
-        Self {
-            cp: pp * Self::CP_PER_PP,
-        }
-    }
-
-    pub fn from_gp_cp(gp: u32, cp: u32) -> Self {
-        Self {
-            cp: gp * Self::CP_PER_GP + cp,
         }
     }
 
@@ -96,22 +72,6 @@ impl Money {
 
     pub fn whole_cp(&self) -> u32 {
         self.cp
-    }
-
-    pub fn whole_sp(&self) -> u32 {
-        self.cp / Self::CP_PER_SP
-    }
-
-    pub fn whole_ep(&self) -> u32 {
-        self.cp / Self::CP_PER_EP
-    }
-
-    pub fn whole_gp(&self) -> u32 {
-        self.cp / Self::CP_PER_GP
-    }
-
-    pub fn whole_pp(&self) -> u32 {
-        self.cp / Self::CP_PER_PP
     }
 }
 
@@ -182,18 +142,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn from_cp_constructors() {
+    fn from_constructors() {
         assert_eq!(Money::from_cp(1).whole_cp(), 1);
-        assert_eq!(Money::from_sp(1).whole_cp(), 10);
-        assert_eq!(Money::from_ep(1).whole_cp(), 50);
         assert_eq!(Money::from_gp(1).whole_cp(), 100);
-        assert_eq!(Money::from_pp(1).whole_cp(), 1000);
-    }
-
-    #[test]
-    fn from_gp_cp() {
-        assert_eq!(Money::from_gp_cp(2, 50).whole_cp(), 250);
-        assert_eq!(Money::from_gp_cp(0, 0).whole_cp(), 0);
     }
 
     #[test]
@@ -207,21 +158,9 @@ mod tests {
 
     #[test]
     fn as_gp_sp_cp_exact_denominations() {
-        assert_eq!(Money::from_pp(3).as_gp_sp_cp(), (30, 0, 0));
         assert_eq!(Money::from_gp(5).as_gp_sp_cp(), (5, 0, 0));
-        assert_eq!(Money::from_ep(2).as_gp_sp_cp(), (1, 0, 0));
-        assert_eq!(Money::from_sp(7).as_gp_sp_cp(), (0, 7, 0));
+        assert_eq!(Money::from_cp(70).as_gp_sp_cp(), (0, 7, 0));
         assert_eq!(Money::from_cp(9).as_gp_sp_cp(), (0, 0, 9));
-    }
-
-    #[test]
-    fn whole_accessors() {
-        let money = Money::from_cp(1550);
-        assert_eq!(money.whole_pp(), 1);
-        assert_eq!(money.whole_gp(), 15);
-        assert_eq!(money.whole_ep(), 31);
-        assert_eq!(money.whole_sp(), 155);
-        assert_eq!(money.whole_cp(), 1550);
     }
 
     #[test]
@@ -232,10 +171,10 @@ mod tests {
 
     #[test]
     fn from_gp_str_decimal() {
-        // "10.50" = 10gp 50cp
-        assert_eq!(Money::from_gp_str("10.50"), Some(Money::from_gp_cp(10, 50)));
+        // "10.50" = 10gp 50cp = 1050cp
+        assert_eq!(Money::from_gp_str("10.50"), Some(Money::from_cp(1050)));
         // "10.5" = 10gp 50cp (single digit treated as tens)
-        assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_gp_cp(10, 50)));
+        assert_eq!(Money::from_gp_str("10.5"), Some(Money::from_cp(1050)));
         // "0.01" = 1cp
         assert_eq!(Money::from_gp_str("0.01"), Some(Money::from_cp(1)));
         // "0.05" = 5cp (leading zero must not be lost)
@@ -247,7 +186,7 @@ mod tests {
     #[test]
     fn from_gp_str_truncates_fraction() {
         // More than 2 decimal digits: truncated to 2
-        assert_eq!(Money::from_gp_str("1.999"), Some(Money::from_gp_cp(1, 99)));
+        assert_eq!(Money::from_gp_str("1.999"), Some(Money::from_cp(199)));
     }
 
     #[test]
@@ -294,7 +233,7 @@ mod tests {
     fn ordering() {
         assert!(Money::from_gp(5) > Money::from_gp(3));
         assert!(Money::from_cp(99) < Money::from_gp(1));
-        assert_eq!(Money::from_sp(10), Money::from_gp(1));
+        assert_eq!(Money::from_cp(100), Money::from_gp(1));
     }
 
     #[test]
