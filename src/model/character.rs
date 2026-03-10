@@ -884,12 +884,10 @@ impl Currency {
     }
 
     pub fn gain(&mut self, amount: Money) {
-        let (gain_pp, gain_gp, gain_ep, gain_sp, gain_cp) = amount.as_coins();
+        let (gain_gp, gain_sp, gain_cp) = amount.as_gp_sp_cp();
         self.cp += gain_cp;
         self.sp += gain_sp;
-        self.ep += gain_ep;
         self.gp += gain_gp;
-        self.pp += gain_pp;
     }
 
     #[allow(unused_assignments)]

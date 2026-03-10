@@ -79,25 +79,19 @@ impl Money {
         }
     }
 
-    // pp, gp, ep, sp, cp
-    pub fn as_coins(&self) -> (u32, u32, u32, u32, u32) {
+    // gp, sp, cp
+    pub fn as_gp_sp_cp(&self) -> (u32, u32, u32) {
         let mut remaining_cp = self.cp;
-
-        let pp = remaining_cp / Self::CP_PER_PP;
-        remaining_cp %= Self::CP_PER_PP;
 
         let gp = remaining_cp / Self::CP_PER_GP;
         remaining_cp %= Self::CP_PER_GP;
-
-        let ep = remaining_cp / Self::CP_PER_EP;
-        remaining_cp %= Self::CP_PER_EP;
 
         let sp = remaining_cp / Self::CP_PER_SP;
         remaining_cp %= Self::CP_PER_SP;
 
         let cp = remaining_cp;
 
-        (pp, gp, ep, sp, cp)
+        (gp, sp, cp)
     }
 
     pub fn whole_cp(&self) -> u32 {
@@ -203,23 +197,21 @@ mod tests {
     }
 
     #[test]
-    fn as_coins_roundtrip() {
+    fn as_gp_sp_cp_roundtrip() {
         let money = Money::from_cp(1234);
-        let (pp, gp, ep, sp, cp) = money.as_coins();
-        assert_eq!(pp, 1);
-        assert_eq!(gp, 2);
-        assert_eq!(ep, 0);
+        let (gp, sp, cp) = money.as_gp_sp_cp();
+        assert_eq!(gp, 12);
         assert_eq!(sp, 3);
         assert_eq!(cp, 4);
     }
 
     #[test]
-    fn as_coins_exact_denominations() {
-        assert_eq!(Money::from_pp(3).as_coins(), (3, 0, 0, 0, 0));
-        assert_eq!(Money::from_gp(5).as_coins(), (0, 5, 0, 0, 0));
-        assert_eq!(Money::from_ep(2).as_coins(), (0, 0, 2, 0, 0));
-        assert_eq!(Money::from_sp(7).as_coins(), (0, 0, 0, 7, 0));
-        assert_eq!(Money::from_cp(9).as_coins(), (0, 0, 0, 0, 9));
+    fn as_gp_sp_cp_exact_denominations() {
+        assert_eq!(Money::from_pp(3).as_gp_sp_cp(), (30, 0, 0));
+        assert_eq!(Money::from_gp(5).as_gp_sp_cp(), (5, 0, 0));
+        assert_eq!(Money::from_ep(2).as_gp_sp_cp(), (1, 0, 0));
+        assert_eq!(Money::from_sp(7).as_gp_sp_cp(), (0, 7, 0));
+        assert_eq!(Money::from_cp(9).as_gp_sp_cp(), (0, 0, 9));
     }
 
     #[test]
@@ -308,6 +300,6 @@ mod tests {
     #[test]
     fn default_is_zero() {
         assert_eq!(Money::default().whole_cp(), 0);
-        assert_eq!(Money::default().as_coins(), (0, 0, 0, 0, 0));
+        assert_eq!(Money::default().as_gp_sp_cp(), (0, 0, 0));
     }
 }
