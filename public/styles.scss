@@ -1908,6 +1908,18 @@ input.summary-list-name {
 .summary-slot-value {
   font-size: var(--font-size-3);
   font-weight: 700;
+  width: 3ch;
+  text-align: center;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--surface-1);
+  padding: 0;
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 .summary-slot-max {

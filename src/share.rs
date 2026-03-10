@@ -47,10 +47,7 @@ extern "C" {
     fn writable(this: &JsDecompressionStream) -> web_sys::WritableStream;
 }
 
-async fn pipe_through_stream(
-    data: &[u8],
-    transform: &JsValue,
-) -> Result<Vec<u8>, JsValue> {
+async fn pipe_through_stream(data: &[u8], transform: &JsValue) -> Result<Vec<u8>, JsValue> {
     // Create a Response from the input data to get a ReadableStream
     let js_data = Uint8Array::from(data);
     let input_response = web_sys::Response::new_with_opt_buffer_source(Some(&js_data))?;
@@ -61,8 +58,7 @@ async fn pipe_through_stream(
         input_stream.pipe_through(transform.unchecked_ref::<web_sys::ReadableWritablePair>());
 
     // Read the result via another Response
-    let output_response =
-        web_sys::Response::new_with_opt_readable_stream(Some(&output_stream))?;
+    let output_response = web_sys::Response::new_with_opt_readable_stream(Some(&output_stream))?;
     let buf = JsFuture::from(output_response.array_buffer()?).await?;
     let array = Uint8Array::new(&buf);
     Ok(array.to_vec())

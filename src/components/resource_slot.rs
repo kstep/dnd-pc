@@ -10,21 +10,36 @@ pub fn ResourceSlot(
     used: u32,
     on_change: impl Fn(u32) + 'static + Send + Sync,
 ) -> impl IntoView {
-    let remaining = max.saturating_sub(used);
-    let all_used = used >= max;
+    let remaining = RwSignal::new(max.saturating_sub(used));
     let on_change = StoredValue::new(on_change);
+    let set_remaining = move |new_remaining: u32| {
+        let clamped = new_remaining.min(max);
+        remaining.set(clamped);
+        on_change.with_value(|f| f(max - clamped));
+    };
     view! {
         <div class="summary-slot">
             <span class="summary-slot-level">{label}</span>
-            <span class="summary-slot-value">{remaining}</span>
+            <input
+                type="number"
+                min=0
+                max=max
+                prop:value=move || remaining.get()
+                class="summary-slot-value"
+                on:change=move |event| {
+                    let value = event_target_value(&event).parse().unwrap_or(remaining.get());
+                    set_remaining(value);
+                }
+            />
             <span class="summary-slot-max">" / " {max}</span>
             <button
                 class="btn-icon"
                 title=move_tr!("spend")
-                disabled=all_used
+                disabled=move || remaining.get() == 0
                 on:click=move |_| {
-                    if used < max {
-                        on_change.with_value(|f| f(used + 1));
+                    let current = remaining.get();
+                    if current > 0 {
+                        set_remaining(current - 1);
                     }
                 }
             >
