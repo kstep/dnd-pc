@@ -1,18 +1,45 @@
-use leptos::prelude::*;
+use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
 
 use crate::components::icon::Icon;
 
-/// A cast option in the picker.
-/// - `id`: 0 = free use, 1-9 = spell slot level, 100+ = points cost
-/// - `label`: display text (e.g. "🎁", "3", "4 SP")
-/// - `sublabel`: optional subscript (e.g. remaining count)
-/// - `highlight`: whether to accent this option (e.g. natural spell level)
-pub struct CastOption {
-    pub id: u32,
-    pub label: String,
-    pub sublabel: Option<String>,
-    pub highlight: bool,
+/// A cast option in the spell picker.
+#[derive(Clone)]
+pub enum CastOption {
+    /// Free use (racial/feature innate cast). Shows gift icon.
+    FreeUse { available: u32, max: u32 },
+    /// Spend points (e.g. sorcery points). Shows cost with suffix like "4 SP".
+    PointsCost { cost: u32, suffix: String },
+    /// Use a spell slot. Shows level number with remaining count.
+    SpellSlot {
+        level: u32,
+        remaining: u32,
+        natural: bool,
+    },
+}
+
+impl CastOption {
+    fn is_natural(&self) -> bool {
+        matches!(self, CastOption::SpellSlot { natural: true, .. })
+    }
+
+    fn view(self) -> impl IntoView {
+        match self {
+            CastOption::FreeUse { available, max } => EitherOf3::A(view! {
+                <Icon name="gift" size=14 />
+                <sub class="slot-remaining">{available}"/"{max}</sub>
+            }),
+            CastOption::PointsCost { cost, suffix } => EitherOf3::B(view! {
+                {cost}" "{suffix}
+            }),
+            CastOption::SpellSlot {
+                level, remaining, ..
+            } => EitherOf3::C(view! {
+                {level}
+                <sub class="slot-remaining">{remaining}</sub>
+            }),
+        }
+    }
 }
 
 #[component]
@@ -21,8 +48,8 @@ pub fn CastButton(
     /// Cast options to show in picker. If exactly 1, auto-casts on click.
     #[prop(optional)]
     options: Vec<CastOption>,
-    /// Callback when a cast option is picked. Receives the option id.
-    on_cast: Callback<u32>,
+    /// Callback when a cast option is picked. Receives the option discriminant.
+    on_cast: Callback<CastOption>,
 ) -> impl IntoView {
     let picker_open = RwSignal::new(false);
     let option_count = options.len();
@@ -32,12 +59,15 @@ pub fn CastButton(
     let on_click = move |_| {
         if option_count <= 1 {
             // 0 options = direct cast (simple button), 1 option = auto-pick
-            let id = if option_count == 1 {
-                options.with_value(|opts| opts[0].id)
+            let opt = if option_count == 1 {
+                options.with_value(|opts| opts[0].clone())
             } else {
-                0
+                CastOption::FreeUse {
+                    available: 0,
+                    max: 0,
+                }
             };
-            on_cast.with_value(|callback| callback.run(id));
+            on_cast.with_value(|callback| callback.run(opt));
         } else {
             picker_open.update(|open| *open = !*open);
         }
@@ -59,23 +89,19 @@ pub fn CastButton(
                         <div class="cast-slot-picker">
                             {options.with_value(|opts| {
                                 opts.iter().map(|opt| {
-                                    let id = opt.id;
-                                    let highlight = opt.highlight;
-                                    let label = opt.label.clone();
-                                    let sublabel = opt.sublabel.clone();
+                                    let highlight = opt.is_natural();
+                                    let opt_clone = opt.clone();
+                                    let opt_view = opt.clone().view();
                                     view! {
                                         <button
                                             class="cast-slot-pill"
                                             class:natural-level=highlight
                                             on:click=move |_| {
-                                                on_cast.with_value(|callback| callback.run(id));
+                                                on_cast.with_value(|callback| callback.run(opt_clone.clone()));
                                                 picker_open.set(false);
                                             }
                                         >
-                                            {label.clone()}
-                                            {sublabel.clone().map(|s| view! {
-                                                <sub class="slot-remaining">{s}</sub>
-                                            })}
+                                            {opt_view}
                                         </button>
                                     }
                                 }).collect_view()

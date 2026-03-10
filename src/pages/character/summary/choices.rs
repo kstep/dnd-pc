@@ -5,7 +5,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        cast_button::CastButton,
+        cast_button::{CastButton, CastOption},
         summary_list::{SummaryList, SummaryListItem},
     },
     model::{Character, CharacterStoreFields, FeatureOption, FeatureValue},
@@ -86,7 +86,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 {cost_field.map(|cfn| view! {
                                                     <CastButton
                                                         disabled=!can_cast
-                                                        on_cast=Callback::new(move |_: u32| {
+                                                        on_cast=Callback::new(move |_: CastOption| {
                                                             cfn.with_value(|cost_name| {
                                                                 feature_data.update(|map| {
                                                                     for entry in map.values_mut() {

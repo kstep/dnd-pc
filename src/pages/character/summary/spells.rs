@@ -112,19 +112,15 @@ pub fn SpellsBlock() -> impl IntoView {
 
                         // Build cast options: free use, points cost, slot levels
                         let spell_cost = spell.cost;
-                        const FREE_USE_ID: u32 = 0;
-                        const POINTS_COST_ID: u32 = 100;
 
                         let mut cast_options: Vec<CastOption> = Vec::new();
 
                         // Free use option
                         if can_free_cast {
                             let fu = spell.free_uses.as_ref().unwrap();
-                            cast_options.push(CastOption {
-                                id: FREE_USE_ID,
-                                label: "\u{1F381}".into(), // 🎁
-                                sublabel: Some(format!("{}/{}", fu.available(), fu.max)),
-                                highlight: false,
+                            cast_options.push(CastOption::FreeUse {
+                                available: fu.available(),
+                                max: fu.max,
                             });
                         }
 
@@ -138,11 +134,9 @@ pub fn SpellsBlock() -> impl IntoView {
                                         .is_some_and(|avail| avail >= spell_cost)
                             });
                             if can_afford {
-                                cast_options.push(CastOption {
-                                    id: POINTS_COST_ID,
-                                    label: format!("{spell_cost} {cost_short}"),
-                                    sublabel: None,
-                                    highlight: false,
+                                cast_options.push(CastOption::PointsCost {
+                                    cost: spell_cost,
+                                    suffix: cost_short.clone(),
                                 });
                             }
                         }
@@ -156,11 +150,10 @@ pub fn SpellsBlock() -> impl IntoView {
                                     .map(|slot| slot.available())
                                     .unwrap_or(0);
                                 if remaining > 0 {
-                                    cast_options.push(CastOption {
-                                        id: sl,
-                                        label: sl.to_string(),
-                                        sublabel: Some(remaining.to_string()),
-                                        highlight: sl == spell.level,
+                                    cast_options.push(CastOption::SpellSlot {
+                                        level: sl,
+                                        remaining,
+                                        natural: sl == spell.level,
                                     });
                                 }
                             }
@@ -171,9 +164,9 @@ pub fn SpellsBlock() -> impl IntoView {
                             view! {
                                 <CastButton
                                     options=cast_options
-                                    on_cast=Callback::new(move |id: u32| {
-                                        match id {
-                                            FREE_USE_ID => {
+                                    on_cast=Callback::new(move |opt: CastOption| {
+                                        match opt {
+                                            CastOption::FreeUse { .. } => {
                                                 fname.with_value(|key| {
                                                     feature_data.update(|map| {
                                                         if let Some(spell) = map.get_mut(key)
@@ -189,7 +182,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     });
                                                 });
                                             }
-                                            POINTS_COST_ID => {
+                                            CastOption::PointsCost { .. } => {
                                                 fname.with_value(|key| {
                                                     cost_field_name.with_value(|cost_name| {
                                                         feature_data.update(|map| {
@@ -203,7 +196,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     });
                                                 });
                                             }
-                                            slot_level => {
+                                            CastOption::SpellSlot { level: slot_level, .. } => {
                                                 spell_slots.update(|pools| {
                                                     if let Some(slots) = pools.get_mut(&pool) {
                                                         let idx = (slot_level - 1) as usize;
