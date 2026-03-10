@@ -83,6 +83,7 @@ spell-attack = Атака заклинанием
 spell-slots = Ячейки заклинаний
 spells = Заклинания
 spell-name = Название заклинания
+free-uses = Своб. исп.
 sorcery-points = Очки чародейства
 
 ## Панель снаряжения
@@ -106,6 +107,7 @@ description = Описание
 btn-add-item = + Добавить предмет
 currency = Валюта
 spend = Потратить
+cast = Сотворить
 gain = Получить
 add-item = Добавить предмет
 

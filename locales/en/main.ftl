@@ -83,6 +83,7 @@ spell-attack = Spell Attack
 spell-slots = Spell Slots
 spells = Spells
 spell-name = Spell name
+free-uses = Free Uses
 sorcery-points = Sorcery Points
 
 ## Equipment panel
@@ -106,6 +107,7 @@ description = Description
 btn-add-item = + Add Item
 currency = Currency
 spend = Spend
+cast = Cast
 gain = Gain
 add-item = Add item
 

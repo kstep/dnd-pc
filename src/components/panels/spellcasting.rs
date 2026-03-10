@@ -32,6 +32,23 @@ fn FeatureSpellcastingSection(
             .with_feature(&identity, &feature_name, |f| f.label().to_string())
             .unwrap_or_else(|| feature_name.clone())
     };
+    // Resolve cost field short suffix (e.g. "SP" for Sorcery Points)
+    let cost_short: String = {
+        let identity = store.get_untracked().identity.clone();
+        registry
+            .with_feature(&identity, &feature_name, |feat| {
+                let cost_field_name = feat.spells.as_ref()?.cost.as_deref()?;
+                let field_def = feat.fields.get(cost_field_name)?;
+                match &field_def.kind {
+                    crate::rules::FieldKind::Points { short, .. } => short.clone(),
+                    _ => None,
+                }
+            })
+            .flatten()
+            .unwrap_or_default()
+    };
+    let has_cost_field = !cost_short.is_empty();
+    let cost_short = StoredValue::new(cost_short);
     let fname = StoredValue::new(feature_name);
 
     let casting_ability = Memo::new(move |_| {
@@ -151,6 +168,7 @@ fn FeatureSpellcastingSection(
                             let spell_level = spell.level.to_string();
                             let spell_prepared = spell.prepared;
                             let spell_sticky = spell.sticky;
+                            let has_free_uses = spell.free_uses.is_some();
                             let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
                             let options = spell_suggestions[spell.level.min(9) as usize];
                             view! {
@@ -210,7 +228,7 @@ fn FeatureSpellcastingSection(
                                         max="9"
                                         placeholder="Lv"
                                         prop:value=spell_level
-                                        on:input=move |e| {
+                                        on:change=move |e| {
                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                 fname.with_value(|key| {
                                                     store.feature_data().update(|map| {
@@ -243,6 +261,104 @@ fn FeatureSpellcastingSection(
                                         </button>
                                     </Show>
                                     <Show when=move || is_open.get()>
+                                        <Show when=move || has_free_uses || has_cost_field>
+                                            <div class="spell-cost-row">
+                                                <Show when=move || has_free_uses>
+                                                    <span class="spell-field-group">
+                                                    <span class="spell-free-uses-label">{move_tr!("free-uses")}</span>
+                                                    <input
+                                                        type="number"
+                                                        class="short-input"
+                                                        min="0"
+                                                        prop:value=move || fname.with_value(|key| {
+                                                            store.feature_data().read()
+                                                                .get(key)
+                                                                .and_then(|e| e.spells.as_ref())
+                                                                .and_then(|sc| sc.spells.get(i))
+                                                                .and_then(|s| s.free_uses.as_ref())
+                                                                .map(|fu| fu.used.to_string())
+                                                                .unwrap_or_default()
+                                                        })
+                                                        on:change=move |e| {
+                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                fname.with_value(|key| {
+                                                                    store.feature_data().update(|map| {
+                                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                                            && let Some(spell) = sc.spells.get_mut(i)
+                                                                            && let Some(fu) = &mut spell.free_uses
+                                                                        {
+                                                                            fu.used = value;
+                                                                        }
+                                                                    });
+                                                                });
+                                                            }
+                                                        }
+                                                    />
+                                                    <span>"/"</span>
+                                                    <input
+                                                        type="number"
+                                                        class="short-input"
+                                                        min="0"
+                                                        prop:value=move || fname.with_value(|key| {
+                                                            store.feature_data().read()
+                                                                .get(key)
+                                                                .and_then(|e| e.spells.as_ref())
+                                                                .and_then(|sc| sc.spells.get(i))
+                                                                .and_then(|s| s.free_uses.as_ref())
+                                                                .map(|fu| fu.max.to_string())
+                                                                .unwrap_or_default()
+                                                        })
+                                                        on:change=move |e| {
+                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                fname.with_value(|key| {
+                                                                    store.feature_data().update(|map| {
+                                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                                            && let Some(spell) = sc.spells.get_mut(i)
+                                                                            && let Some(fu) = &mut spell.free_uses
+                                                                        {
+                                                                            fu.max = value;
+                                                                        }
+                                                                    });
+                                                                });
+                                                            }
+                                                        }
+                                                    />
+                                                    </span>
+                                                </Show>
+                                                <span class="spell-field-group">
+                                                <span class="spell-cost-label">{move_tr!("cost")}</span>
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    min="0"
+                                                    prop:value=move || fname.with_value(|key| {
+                                                        store.feature_data().read()
+                                                            .get(key)
+                                                            .and_then(|e| e.spells.as_ref())
+                                                            .and_then(|sc| sc.spells.get(i))
+                                                            .map(|s| s.cost.to_string())
+                                                            .unwrap_or_default()
+                                                    })
+                                                    on:change=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            fname.with_value(|key| {
+                                                                store.feature_data().update(|map| {
+                                                                    if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
+                                                                        && let Some(spell) = sc.spells.get_mut(i)
+                                                                    {
+                                                                        spell.cost = value;
+                                                                    }
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+                                                />
+                                                <Show when=move || has_cost_field>
+                                                    <span class="spell-cost-suffix">{cost_short.get_value()}</span>
+                                                </Show>
+                                                </span>
+                                            </div>
+                                        </Show>
                                         <textarea
                                             class="spell-desc"
                                             placeholder=move_tr!("description")
@@ -374,7 +490,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         min="0"
                                                         placeholder=move_tr!("used")
                                                         prop:value=slot.used.to_string()
-                                                        on:input=move |e| {
+                                                        on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                                 store.spell_slots().update(|pools| {
                                                                     if let Some(slots) = pools.get_mut(&pool) {
@@ -391,7 +507,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         min="0"
                                                         placeholder=move_tr!("total")
                                                         prop:value=slot.total.to_string()
-                                                        on:input=move |e| {
+                                                        on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                                 store.spell_slots().update(|pools| {
                                                                     if let Some(slots) = pools.get_mut(&pool) {

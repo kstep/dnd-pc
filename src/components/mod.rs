@@ -1,4 +1,5 @@
 pub mod ability_score_block;
+pub mod cast_button;
 pub mod character_card;
 pub mod character_header;
 pub mod datalist_input;
