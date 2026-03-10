@@ -219,13 +219,9 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         });
 
-                        let has_extra =
-                            has_free_uses || show_cost || can_cast;
                         let badge = view! {
                             <span class="summary-spell-badge">
-                                <span class="summary-spell-level"
-                                    class:has-extra=has_extra
-                                >{level_str}</span>
+                                <span class="summary-spell-level">{level_str}</span>
                                 {free_uses_badge}
                                 {cost_badge}
                                 {cast_button}

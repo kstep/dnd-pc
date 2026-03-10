@@ -1684,7 +1684,7 @@ input[type="checkbox"] {
   }
 }
 
-.summary-spell-level.has-extra {
+.summary-spell-level:nth-last-child(n + 3) {
   padding-right: var(--size-1);
   border-right: 1px solid var(--panel-border);
 }
