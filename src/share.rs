@@ -183,6 +183,8 @@ pub mod tests {
                             prepared: true,
                             description: "Unleash a string of insults...".to_string(),
                             sticky: false,
+                            cost: 0,
+                            free_uses: None,
                         }],
                     }),
                 },

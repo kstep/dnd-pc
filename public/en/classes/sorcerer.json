@@ -1092,6 +1092,7 @@
           "name": "Psionic Spells",
           "description": "When you reach a Sorcerer level specified in the Psionic Spells table, you thereafter always have the listed spells prepared.",
           "spells": {
+            "cost": "Sorcery Points",
             "casting_ability": 5,
             "list": [
               {
@@ -1104,70 +1105,80 @@
                 "level": 1,
                 "description": "Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10-foot Emanation [Area of Effect] originating from you makes a Strength saving throw. On a failed save, a target takes 2d6 Necrotic damage and can't take Reactions until the start of its next turn.",
                 "sticky": true,
-                "min_level": 3
+                "min_level": 3,
+                "cost": 1
               },
               {
                 "name": "Dissonant Whispers",
                 "level": 1,
                 "description": "One creature of your choice that you can see within range hears a discordant melody in its mind. The target makes a Wisdom saving throw. On a failed save, it takes 3d6 Psychic damage and must immediately use its Reaction, if available, to move as far away from you as it can, using the safest route.",
                 "sticky": true,
-                "min_level": 3
+                "min_level": 3,
+                "cost": 1
               },
               {
                 "name": "Calm Emotions",
                 "level": 2,
                 "description": "Each Humanoid in a 20-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Charisma saving throw or be affected by one of the following effects (choose for each creature): The creature has Immunity to the Charmed and Frightened conditions until the spell ends, suppressing any existing such effect. Alternatively, you make the target Indifferent about creatures of your choice that it is hostile toward. This indifference ends if the target takes damage or witnesses its allies being harmed.",
                 "sticky": true,
-                "min_level": 3
+                "min_level": 3,
+                "cost": 2
               },
               {
                 "name": "Detect Thoughts",
                 "level": 2,
                 "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic.",
                 "sticky": true,
-                "min_level": 3
+                "min_level": 3,
+                "cost": 2
               },
               {
                 "name": "Hunger of Hadar",
                 "level": 3,
                 "description": "You open a gateway to the Far Realm, a region infested with unspeakable horrors. A 20-foot-radius Sphere [Area of Effect] of Darkness appears, centered on a point within range and lasting for the duration.",
                 "sticky": true,
-                "min_level": 5
+                "min_level": 5,
+                "cost": 3
               },
               {
                 "name": "Sending",
                 "level": 3,
                 "description": "You send a short message of 25 words or fewer to a creature you have met or a creature described to you by someone who has met it. The target hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately.",
                 "sticky": true,
-                "min_level": 5
+                "min_level": 5,
+                "cost": 3
               },
               {
                 "name": "Evard's Black Tentacles",
                 "level": 4,
                 "description": "Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in that area into Difficult Terrain. Each creature in that area makes a Strength saving throw.",
                 "sticky": true,
-                "min_level": 7
+                "min_level": 7,
+                "cost": 4
               },
               {
                 "name": "Summon Aberration",
                 "level": 4,
                 "description": "You call forth an aberrant spirit. It manifests in an unoccupied space that you can see within range and uses the Aberrant Spirit stat block. When you cast the spell, choose Beholderkin, Mind Flayer, or Slaad.",
                 "sticky": true,
-                "min_level": 7
+                "min_level": 7,
+                "cost": 4
               },
               {
                 "name": "Rary's Telepathic Bond",
                 "level": 5,
                 "description": "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures that can't communicate in any languages aren't affected by this spell.",
                 "sticky": true,
-                "min_level": 9
+                "min_level": 9,
+                "cost": 5
               },
               {
                 "name": "Telekinesis",
                 "level": 5,
                 "description": "You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell and as a Magic action on your later turns before the spell ends, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below.",
                 "sticky": true,
-                "min_level": 9
+                "min_level": 9,
+                "cost": 5
               }
             ]
           }

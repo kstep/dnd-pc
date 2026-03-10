@@ -104,8 +104,8 @@ use crate::{
     BASE_URL,
     model::{
         Ability, Character, CharacterIdentity, ClassLevel, Die, Feature, FeatureField,
-        FeatureSource, FeatureValue, Proficiency, ProficiencyLevel, RacialTrait, Skill, Spell,
-        SpellData, SpellSlotPool,
+        FeatureSource, FeatureValue, FreeUses, Proficiency, ProficiencyLevel, RacialTrait, Skill,
+        Spell, SpellData, SpellSlotPool,
     },
     vecset::VecSet,
 };
@@ -412,6 +412,18 @@ impl FeatureDefinition {
         self.label.as_deref().unwrap_or(&self.name)
     }
 
+    /// Returns `(cost_field_name, short_suffix)` if this feature has a
+    /// spells cost backed by a Points field (e.g. Sorcery Points → "SP").
+    pub fn cost_info(&self) -> Option<(&str, &str)> {
+        let cost_name = self.spells.as_ref()?.cost.as_deref()?;
+        let field_def = self.fields.get(cost_name)?;
+        let short = match &field_def.kind {
+            FieldKind::Points { short, .. } => short.as_deref()?,
+            _ => return None,
+        };
+        Some((cost_name, short))
+    }
+
     /// Resolve `ChoiceOptions` to definition options, following `Ref` links
     /// within this feature's fields.
     fn resolve_def_options<'a>(&'a self, options: &'a ChoiceOptions) -> &'a [ChoiceOption] {
@@ -485,10 +497,28 @@ impl FeatureDefinition {
                 );
             }
 
+            // Resolve FreeUses max from FreeUses field definition
+            let free_uses_max = self
+                .fields
+                .values()
+                .find_map(|f| match &f.kind {
+                    FieldKind::FreeUses { levels } => Some(get_for_level(levels, level)),
+                    _ => None,
+                })
+                .unwrap_or_default();
+
             // Sticky spells from inline list
             if let SpellList::Inline(list) = &spells_def.list {
                 for s in list.iter().filter(|s| s.sticky && s.min_level <= level) {
                     if !spell_data.spells.iter().any(|ex| ex.name == s.name) {
+                        let free_uses = if s.cost > 0 && free_uses_max > 0 {
+                            Some(FreeUses {
+                                used: 0,
+                                max: free_uses_max,
+                            })
+                        } else {
+                            None
+                        };
                         spell_data.spells.push(Spell {
                             name: s.name.clone(),
                             label: s.label.clone(),
@@ -496,7 +526,25 @@ impl FeatureDefinition {
                             level: s.level,
                             prepared: true,
                             sticky: true,
+                            cost: s.cost,
+                            free_uses,
                         });
+                    }
+                }
+            }
+
+            // Update free_uses.max on existing spells (level-up)
+            if free_uses_max > 0 {
+                for spell in &mut spell_data.spells {
+                    if spell.cost > 0 {
+                        if let Some(fu) = &mut spell.free_uses {
+                            fu.max = free_uses_max;
+                        } else {
+                            spell.free_uses = Some(FreeUses {
+                                used: 0,
+                                max: free_uses_max,
+                            });
+                        }
                     }
                 }
             }
@@ -517,6 +565,7 @@ impl FeatureDefinition {
                 *fields = self
                     .fields
                     .values()
+                    .filter(|f| !matches!(f.kind, FieldKind::FreeUses { .. }))
                     .map(|f| FeatureField {
                         name: f.name.clone(),
                         label: f.label.clone(),
@@ -614,6 +663,10 @@ pub enum FieldKind {
         #[serde(default, deserialize_with = "u32_key_map::deserialize")]
         levels: BTreeMap<u32, i32>,
     },
+    FreeUses {
+        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        levels: BTreeMap<u32, u32>,
+    },
 }
 
 impl FieldKind {
@@ -631,6 +684,9 @@ impl FieldKind {
                 max: get_for_level(levels, level),
                 used: 0,
             },
+            FieldKind::FreeUses { .. } => {
+                unreachable!("FreeUses fields are not converted to FeatureValue")
+            }
         }
     }
 }
@@ -678,6 +734,8 @@ pub struct SpellDefinition {
     pub sticky: bool,
     #[serde(default)]
     pub min_level: u32,
+    #[serde(default)]
+    pub cost: u32,
 }
 
 impl SpellDefinition {
@@ -703,6 +761,8 @@ pub struct SpellsDefinition {
     pub list: SpellList,
     #[serde(default)]
     pub levels: Vec<SpellLevelRules>,
+    #[serde(default)]
+    pub cost: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -1563,6 +1623,7 @@ impl RulesRegistry {
 
         // Feature data entries: fields, choices, spells
         let spell_list_cache = self.spell_list_cache.read();
+        let char_level = character.level();
 
         for (key, entry) in &mut character.feature_data {
             let Some(feat_def) = find_feat(key) else {
@@ -1602,10 +1663,16 @@ impl RulesRegistry {
                 }
             }
 
-            // Spell labels and descriptions (only if empty)
+            // Spell labels, descriptions, cost, and free_uses (only if empty)
             if let Some(spells_def) = &feat_def.spells
                 && let Some(spell_data) = &mut entry.spells
             {
+                // Resolve FreeUses max from FreeUses field definition
+                let free_uses_max = feat_def.fields.values().find_map(|f| match &f.kind {
+                    FieldKind::FreeUses { levels } => Some(get_for_level(levels, char_level)),
+                    _ => None,
+                });
+
                 for spell in &mut spell_data.spells {
                     if !spell.name.is_empty() {
                         let spell_defs: &[SpellDefinition] = match &spells_def.list {
@@ -1620,6 +1687,18 @@ impl RulesRegistry {
                             }
                             if spell.description.is_empty() && !def.description.is_empty() {
                                 spell.description = def.description.clone();
+                            }
+                            spell.cost = def.cost;
+                            if let Some(max) = free_uses_max
+                                && def.cost > 0
+                                && max > 0
+                            {
+                                match &mut spell.free_uses {
+                                    Some(fu) => fu.max = max,
+                                    None => {
+                                        spell.free_uses = Some(FreeUses { used: 0, max });
+                                    }
+                                }
                             }
                         }
                     }
@@ -1756,6 +1835,8 @@ impl RulesRegistry {
                             }
                         }
                     }
+                    spell.cost = 0;
+                    spell.free_uses = None;
                 }
             }
         }

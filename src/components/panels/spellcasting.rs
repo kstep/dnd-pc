@@ -10,11 +10,56 @@ use crate::{
         datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
     },
     model::{
-        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellSlotPool,
-        Translatable, format_bonus,
+        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellData,
+        SpellSlotPool, Translatable, format_bonus,
     },
     rules::RulesRegistry,
 };
+
+fn update_spells(
+    fname: StoredValue<String>,
+    store: Store<Character>,
+    f: impl FnOnce(&mut SpellData),
+) {
+    fname.with_value(|key| {
+        store.feature_data().update(|map| {
+            if let Some(sc) = map.get_mut(key).and_then(|entry| entry.spells.as_mut()) {
+                f(sc);
+            }
+        });
+    });
+}
+
+fn update_spell(
+    fname: StoredValue<String>,
+    store: Store<Character>,
+    index: usize,
+    f: impl FnOnce(&mut Spell),
+) {
+    update_spells(fname, store, |sc| {
+        if let Some(spell) = sc.spells.get_mut(index) {
+            f(spell);
+        }
+    });
+}
+
+fn read_spell<T: Default>(
+    fname: StoredValue<String>,
+    store: Store<Character>,
+    index: usize,
+    f: impl FnOnce(&Spell) -> T,
+) -> T {
+    fname.with_value(|key| {
+        store
+            .feature_data()
+            .read()
+            .get(key)
+            .and_then(|entry| entry.spells.as_ref())
+            .and_then(|sc| sc.spells.get(index))
+            .map(f)
+            .unwrap_or_default()
+    })
+}
 
 #[component]
 fn FeatureSpellcastingSection(
@@ -37,12 +82,7 @@ fn FeatureSpellcastingSection(
         let identity = store.get_untracked().identity.clone();
         registry
             .with_feature(&identity, &feature_name, |feat| {
-                let cost_field_name = feat.spells.as_ref()?.cost.as_deref()?;
-                let field_def = feat.fields.get(cost_field_name)?;
-                match &field_def.kind {
-                    crate::rules::FieldKind::Points { short, .. } => short.clone(),
-                    _ => None,
-                }
+                feat.cost_info().map(|(_, short)| short.to_string())
             })
             .flatten()
             .unwrap_or_default()
@@ -90,13 +130,7 @@ fn FeatureSpellcastingSection(
                         on:change=move |e| {
                             let value = event_target_value(&e);
                             if let Ok(ability) = serde_json::from_str::<Ability>(&value) {
-                                fname.with_value(|key| {
-                                    store.feature_data().update(|map| {
-                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
-                                            sc.casting_ability = ability;
-                                        }
-                                    });
-                                });
+                                update_spells(fname, store, |sc| sc.casting_ability = ability);
                             }
                         }
                     >
@@ -134,18 +168,14 @@ fn FeatureSpellcastingSection(
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        fname.with_value(|key| {
-                            store.feature_data().update(|map| {
-                                if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
-                                    sc.spells.sort_by(|a, b| {
-                                        b.sticky
-                                            .cmp(&a.sticky)
-                                            .then_with(|| a.level.cmp(&b.level))
-                                            .then_with(|| {
-                                                a.name.to_lowercase().cmp(&b.name.to_lowercase())
-                                            })
-                                    });
-                                }
+                        update_spells(fname, store, |sc| {
+                            sc.spells.sort_by(|a, b| {
+                                b.sticky
+                                    .cmp(&a.sticky)
+                                    .then_with(|| a.level.cmp(&b.level))
+                                    .then_with(|| {
+                                        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+                                    })
                             });
                         });
                     }
@@ -184,14 +214,8 @@ fn FeatureSpellcastingSection(
                                             prop:disabled=spell_sticky
                                             on:change=move |_| {
                                                 if !spell_sticky {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|map| {
-                                                            if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                                && let Some(spell) = sc.spells.get_mut(i)
-                                                            {
-                                                                spell.prepared = !spell.prepared;
-                                                            }
-                                                        });
+                                                    update_spell(fname, store, i, |spell| {
+                                                        spell.prepared = !spell.prepared;
                                                     });
                                                 }
                                             }
@@ -203,21 +227,15 @@ fn FeatureSpellcastingSection(
                                         class="spell-name"
                                         options=options
                                         on_input=move |input, resolved| {
-                                            fname.with_value(|key| {
-                                                store.feature_data().update(|map| {
-                                                    if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                        && let Some(spell) = sc.spells.get_mut(i)
-                                                    {
-                                                        if let Some(name) = resolved {
-                                                            spell.name = name;
-                                                            spell.label = Some(input);
-                                                        } else {
-                                                            spell.name = input;
-                                                            spell.label = None;
-                                                        }
-                                                        spell.description.clear();
-                                                    }
-                                                });
+                                            update_spell(fname, store, i, |spell| {
+                                                if let Some(name) = resolved {
+                                                    spell.name = name;
+                                                    spell.label = Some(input);
+                                                } else {
+                                                    spell.name = input;
+                                                    spell.label = None;
+                                                }
+                                                spell.description.clear();
                                             });
                                         }
                                     />
@@ -230,15 +248,7 @@ fn FeatureSpellcastingSection(
                                         prop:value=spell_level
                                         on:change=move |e| {
                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                fname.with_value(|key| {
-                                                    store.feature_data().update(|map| {
-                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                            && let Some(spell) = sc.spells.get_mut(i)
-                                                        {
-                                                            spell.level = value;
-                                                        }
-                                                    });
-                                                });
+                                                update_spell(fname, store, i, |spell| spell.level = value);
                                             }
                                         }
                                     />
@@ -246,14 +256,10 @@ fn FeatureSpellcastingSection(
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| {
-                                                fname.with_value(|key| {
-                                                    store.feature_data().update(|map| {
-                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                            && i < sc.spells.len()
-                                                        {
-                                                            sc.spells.remove(i);
-                                                        }
-                                                    });
+                                                update_spells(fname, store, |sc| {
+                                                    if i < sc.spells.len() {
+                                                        sc.spells.remove(i);
+                                                    }
                                                 });
                                             }
                                         >
@@ -270,26 +276,15 @@ fn FeatureSpellcastingSection(
                                                         type="number"
                                                         class="short-input"
                                                         min="0"
-                                                        prop:value=move || fname.with_value(|key| {
-                                                            store.feature_data().read()
-                                                                .get(key)
-                                                                .and_then(|e| e.spells.as_ref())
-                                                                .and_then(|sc| sc.spells.get(i))
-                                                                .and_then(|s| s.free_uses.as_ref())
-                                                                .map(|fu| fu.used.to_string())
-                                                                .unwrap_or_default()
+                                                        prop:value=move || read_spell(fname, store, i, |spell| {
+                                                            spell.free_uses.as_ref().map(|fu| fu.used.to_string()).unwrap_or_default()
                                                         })
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                fname.with_value(|key| {
-                                                                    store.feature_data().update(|map| {
-                                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                                            && let Some(spell) = sc.spells.get_mut(i)
-                                                                            && let Some(fu) = &mut spell.free_uses
-                                                                        {
-                                                                            fu.used = value;
-                                                                        }
-                                                                    });
+                                                                update_spell(fname, store, i, |spell| {
+                                                                    if let Some(fu) = &mut spell.free_uses {
+                                                                        fu.used = value;
+                                                                    }
                                                                 });
                                                             }
                                                         }
@@ -299,26 +294,15 @@ fn FeatureSpellcastingSection(
                                                         type="number"
                                                         class="short-input"
                                                         min="0"
-                                                        prop:value=move || fname.with_value(|key| {
-                                                            store.feature_data().read()
-                                                                .get(key)
-                                                                .and_then(|e| e.spells.as_ref())
-                                                                .and_then(|sc| sc.spells.get(i))
-                                                                .and_then(|s| s.free_uses.as_ref())
-                                                                .map(|fu| fu.max.to_string())
-                                                                .unwrap_or_default()
+                                                        prop:value=move || read_spell(fname, store, i, |spell| {
+                                                            spell.free_uses.as_ref().map(|fu| fu.max.to_string()).unwrap_or_default()
                                                         })
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                fname.with_value(|key| {
-                                                                    store.feature_data().update(|map| {
-                                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                                            && let Some(spell) = sc.spells.get_mut(i)
-                                                                            && let Some(fu) = &mut spell.free_uses
-                                                                        {
-                                                                            fu.max = value;
-                                                                        }
-                                                                    });
+                                                                update_spell(fname, store, i, |spell| {
+                                                                    if let Some(fu) = &mut spell.free_uses {
+                                                                        fu.max = value;
+                                                                    }
                                                                 });
                                                             }
                                                         }
@@ -331,25 +315,10 @@ fn FeatureSpellcastingSection(
                                                     type="number"
                                                     class="short-input"
                                                     min="0"
-                                                    prop:value=move || fname.with_value(|key| {
-                                                        store.feature_data().read()
-                                                            .get(key)
-                                                            .and_then(|e| e.spells.as_ref())
-                                                            .and_then(|sc| sc.spells.get(i))
-                                                            .map(|s| s.cost.to_string())
-                                                            .unwrap_or_default()
-                                                    })
+                                                    prop:value=move || read_spell(fname, store, i, |spell| spell.cost.to_string())
                                                     on:change=move |e| {
                                                         if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                            fname.with_value(|key| {
-                                                                store.feature_data().update(|map| {
-                                                                    if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                                        && let Some(spell) = sc.spells.get_mut(i)
-                                                                    {
-                                                                        spell.cost = value;
-                                                                    }
-                                                                });
-                                                            });
+                                                            update_spell(fname, store, i, |spell| spell.cost = value);
                                                         }
                                                     }
                                                 />
@@ -362,24 +331,10 @@ fn FeatureSpellcastingSection(
                                         <textarea
                                             class="spell-desc"
                                             placeholder=move_tr!("description")
-                                            prop:value=fname.with_value(|key| {
-                                                store.feature_data().read()
-                                                    .get(key)
-                                                    .and_then(|e| e.spells.as_ref())
-                                                    .and_then(|sc| sc.spells.get(i))
-                                                    .map(|s| s.description.clone())
-                                                    .unwrap_or_default()
-                                            })
+                                            prop:value=move || read_spell(fname, store, i, |spell| spell.description.clone())
                                             on:change=move |e| {
-                                                fname.with_value(|key| {
-                                                    store.feature_data().update(|map| {
-                                                        if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut())
-                                                            && let Some(spell) = sc.spells.get_mut(i)
-                                                        {
-                                                            spell.description = event_target_value(&e);
-                                                        }
-                                                    });
-                                                });
+                                                let value = event_target_value(&e);
+                                                update_spell(fname, store, i, |spell| spell.description = value);
                                             }
                                         />
                                     </Show>
@@ -392,13 +347,7 @@ fn FeatureSpellcastingSection(
             <button
                 class="btn-add"
                 on:click=move |_| {
-                    fname.with_value(|key| {
-                        store.feature_data().update(|map| {
-                            if let Some(sc) = map.get_mut(key).and_then(|e| e.spells.as_mut()) {
-                                sc.spells.push(Spell::default());
-                            }
-                        });
-                    });
+                    update_spells(fname, store, |sc| sc.spells.push(Spell::default()));
                 }
             >
                 {move_tr!("btn-add-spell")}
@@ -537,8 +486,6 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                 .as_ref()
                                 .map(|sc| (name.clone(), sc.casting_ability))
                         })
-                        .collect::<Vec<_>>()
-                        .into_iter()
                         .map(|(feature_name, default_ability)| {
                             view! {
                                 <FeatureSpellcastingSection feature_name=feature_name default_ability=default_ability />

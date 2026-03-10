@@ -22,6 +22,7 @@
       "name": "Abyssal Legacy",
       "description": "You know the Thaumaturgy and Poison Spray cantrips. At 3rd level you can cast Ray of Sickness once per long rest. At 5th level you can cast Hold Person once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
       "spells": {
+        "cost": "Free Uses",
         "casting_ability": 5,
         "list": [
           {
@@ -41,17 +42,29 @@
             "level": 1,
             "description": "A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack. On a hit, the target takes 2d8 poison damage and must make a CON save or be Poisoned until the end of your next turn. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 3
+            "min_level": 3,
+            "cost": 1
           },
           {
             "name": "Hold Person",
             "level": 2,
             "description": "Choose a humanoid that you can see within range. The target must succeed on a WIS save or be Paralyzed for the duration. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 5
+            "min_level": 5,
+            "cost": 1
           }
         ]
-      }
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
     }
   ]
 }

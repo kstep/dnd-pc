@@ -462,6 +462,7 @@
   "levels": [
     {
       "features": [
+        "Eldritch Invocation Options",
         "Eldritch Invocations",
         "Pact Magic"
       ]

@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        cast_button::CastButton,
+        cast_button::{CastButton, CastOption},
         summary_list::{SummaryList, SummaryListItem},
     },
     model::{Character, CharacterStoreFields, FeatureValue, SpellSlotLevel, format_bonus},
@@ -15,14 +15,11 @@ use crate::{
 pub fn SpellsBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
-    let abilities = store.abilities();
     let identity = store.identity();
     let spell_slots = store.spell_slots();
     let feature_data = store.feature_data();
 
     move || {
-        let prof_bonus = store.read().proficiency_bonus();
-
         feature_data
             .read()
             .iter()
@@ -30,27 +27,20 @@ pub fn SpellsBlock() -> impl IntoView {
                 let spell_data = entry.spells.as_ref()?;
                 let ability = spell_data.casting_ability;
 
-                let ability_mod = abilities.read().modifier(ability);
-                let save_dc = 8 + prof_bonus + ability_mod;
-                let atk_bonus = prof_bonus + ability_mod;
+                let character = store.read();
+                let save_dc = character.spell_save_dc(ability);
+                let atk_bonus = character.spell_attack_bonus(ability);
 
-                let feature_label = registry
-                    .with_feature(&identity.read(), name, |f| f.label().to_string())
-                    .unwrap_or_else(|| name.clone());
-
-                // Resolve cost field name and short suffix (e.g. "Sorcery Points" / "SP")
-                let (cost_field_name, cost_short) = registry
+                let (feature_label, cost_field_name, cost_short) = registry
                     .with_feature(&identity.read(), name, |feat| {
-                        let cost_field_name = feat.spells.as_ref()?.cost.clone()?;
-                        let field_def = feat.fields.get(&cost_field_name)?;
-                        let short = match &field_def.kind {
-                            crate::rules::FieldKind::Points { short, .. } => short.clone()?,
-                            _ => return None,
-                        };
-                        Some((cost_field_name, short))
+                        let label = feat.label().to_string();
+                        let (cost_name, cost_short) = feat
+                            .cost_info()
+                            .map(|(name, short)| (name.to_string(), short.to_string()))
+                            .unwrap_or_default();
+                        (label, cost_name, cost_short)
                     })
-                    .flatten()
-                    .unwrap_or_default();
+                    .unwrap_or_else(|| (name.clone(), String::new(), String::new()));
                 let has_cost_field = !cost_short.is_empty();
                 let cost_field_name = StoredValue::new(cost_field_name);
 
@@ -120,85 +110,110 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         });
 
-                        // Check if points cost can be paid
+                        // Build cast options: free use, points cost, slot levels
                         let spell_cost = spell.cost;
-                        let can_points_cast = has_cost_field
-                            && spell_cost > 0
-                            && entry.fields.iter().any(|f| {
-                                cost_field_name.with_value(|cfn| f.name == *cfn)
-                                    && f.value
+                        const FREE_USE_ID: u32 = 0;
+                        const POINTS_COST_ID: u32 = 100;
+
+                        let mut cast_options: Vec<CastOption> = Vec::new();
+
+                        // Free use option
+                        if can_free_cast {
+                            let fu = spell.free_uses.as_ref().unwrap();
+                            cast_options.push(CastOption {
+                                id: FREE_USE_ID,
+                                label: "\u{1F381}".into(), // 🎁
+                                sublabel: Some(format!("{}/{}", fu.available(), fu.max)),
+                                highlight: false,
+                            });
+                        }
+
+                        // Points cost option
+                        if has_cost_field && spell_cost > 0 {
+                            let can_afford = entry.fields.iter().any(|field| {
+                                cost_field_name.with_value(|cost_name| field.name == *cost_name)
+                                    && field
+                                        .value
                                         .available_points()
                                         .is_some_and(|avail| avail >= spell_cost)
                             });
+                            if can_afford {
+                                cast_options.push(CastOption {
+                                    id: POINTS_COST_ID,
+                                    label: format!("{spell_cost} {cost_short}"),
+                                    sublabel: None,
+                                    highlight: false,
+                                });
+                            }
+                        }
 
-                        // Available spell slots for leveled spells
-                        let available_slots: Vec<(u32, u32)> = if spell.level > 0 {
-                            (spell.level..=9)
-                                .filter_map(|sl| {
-                                    let idx = (sl - 1) as usize;
-                                    let remaining = pool_slots
-                                        .and_then(|slots| slots.get(idx))
-                                        .map(|s| s.available())
-                                        .unwrap_or(0);
-                                    (remaining > 0).then_some((sl, remaining))
-                                })
-                                .collect()
-                        } else {
-                            Vec::new()
-                        };
-                        let has_slot_cast = !available_slots.is_empty();
+                        // Slot level options
+                        if spell.level > 0 {
+                            for sl in spell.level..=9 {
+                                let idx = (sl - 1) as usize;
+                                let remaining = pool_slots
+                                    .and_then(|slots| slots.get(idx))
+                                    .map(|slot| slot.available())
+                                    .unwrap_or(0);
+                                if remaining > 0 {
+                                    cast_options.push(CastOption {
+                                        id: sl,
+                                        label: sl.to_string(),
+                                        sublabel: Some(remaining.to_string()),
+                                        highlight: sl == spell.level,
+                                    });
+                                }
+                            }
+                        }
 
-                        // Single unified cast button, priority:
-                        // 1. free uses available → spend free uses directly
-                        // 2. points cost payable → spend points directly
-                        // 3. spell slots available → show slot picker
-                        let can_cast_directly = can_free_cast || can_points_cast;
-                        let can_cast = can_cast_directly || has_slot_cast;
+                        let can_cast = !cast_options.is_empty();
                         let cast_button = (spell.level > 0 && can_cast).then(|| {
-                            let spell_level = spell.level;
                             view! {
                                 <CastButton
-                                    disabled=!can_cast
-                                    slots=if can_cast_directly { Vec::new() } else { available_slots }
-                                    spell_level=spell_level
-                                    on_cast=move || {
-                                        fname.with_value(|key| {
-                                            feature_data.update(|map| {
-                                                if let Some(entry) = map.get_mut(key) {
-                                                    // Try free uses first
-                                                    if let Some(spell) = entry.spells.as_mut()
-                                                        .and_then(|sc| sc.spells.get_mut(spell_idx))
-                                                        && let Some(fu) = &mut spell.free_uses
-                                                        && fu.available() >= spell.cost.max(1)
-                                                    {
-                                                        fu.used = fu
-                                                            .used
-                                                            .saturating_add(spell.cost.max(1))
-                                                            .min(fu.max);
-                                                        return;
-                                                    }
-                                                    // Then try points cost
-                                                    cost_field_name.with_value(|cfn| {
-                                                        if !cfn.is_empty()
-                                                            && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cfn)
-                                                            && let FeatureValue::Points { used, max } = &mut field.value
+                                    options=cast_options
+                                    on_cast=Callback::new(move |id: u32| {
+                                        match id {
+                                            FREE_USE_ID => {
+                                                fname.with_value(|key| {
+                                                    feature_data.update(|map| {
+                                                        if let Some(spell) = map.get_mut(key)
+                                                            .and_then(|e| e.spells.as_mut())
+                                                            .and_then(|sc| sc.spells.get_mut(spell_idx))
+                                                            && let Some(fu) = &mut spell.free_uses
                                                         {
-                                                            *used = (*used + spell_cost).min(*max);
+                                                            fu.used = fu
+                                                                .used
+                                                                .saturating_add(spell.cost.max(1))
+                                                                .min(fu.max);
                                                         }
                                                     });
-                                                }
-                                            });
-                                        });
-                                    }
-                                    on_slot_cast=Callback::new(move |level: u32| {
-                                        spell_slots.update(|pools| {
-                                            if let Some(slots) = pools.get_mut(&pool) {
-                                                let idx = (level - 1) as usize;
-                                                if let Some(slot) = slots.get_mut(idx) {
-                                                    slot.used = slot.used.saturating_add(1).min(slot.total);
-                                                }
+                                                });
                                             }
-                                        });
+                                            POINTS_COST_ID => {
+                                                fname.with_value(|key| {
+                                                    cost_field_name.with_value(|cost_name| {
+                                                        feature_data.update(|map| {
+                                                            if let Some(entry) = map.get_mut(key)
+                                                                && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                && let FeatureValue::Points { used, max } = &mut field.value
+                                                            {
+                                                                *used = (*used + spell_cost).min(*max);
+                                                            }
+                                                        });
+                                                    });
+                                                });
+                                            }
+                                            slot_level => {
+                                                spell_slots.update(|pools| {
+                                                    if let Some(slots) = pools.get_mut(&pool) {
+                                                        let idx = (slot_level - 1) as usize;
+                                                        if let Some(slot) = slots.get_mut(idx) {
+                                                            slot.used = slot.used.saturating_add(1).min(slot.total);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
                                     })
                                 />
                             }

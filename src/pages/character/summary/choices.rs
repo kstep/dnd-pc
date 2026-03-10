@@ -4,7 +4,10 @@ use leptos::{either::Either, prelude::*};
 use reactive_stores::Store;
 
 use crate::{
-    components::summary_list::{SummaryList, SummaryListItem},
+    components::{
+        cast_button::CastButton,
+        summary_list::{SummaryList, SummaryListItem},
+    },
     model::{Character, CharacterStoreFields, FeatureOption, FeatureValue},
     rules::{ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -60,6 +63,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                 Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
                     let (points, from, cost) = fields.get(&field.name)?;
                     let short = cost.as_deref().and_then(|c| registry.get_points_short(&id, c));
+                    let cost_field = cost.as_ref().map(|c| StoredValue::new(c.clone()));
 
                     let FeatureValue::Choice { options } = &field.value else {
                         return None;
@@ -70,15 +74,38 @@ pub fn ChoicesBlock() -> impl IntoView {
                             let selected = options
                                 .iter()
                                 .filter(|opt| opt.cost <= *points)
-                                .map(|opt| SummaryListItem {
-                                    name: opt.label().to_string(),
-                                    description: opt.description.clone(),
-                                    badge: (opt.cost > 0).then(|| {
-                                        view! {
-                                            <span class="summary-choice-cost">{opt.cost}</span>
-                                        }
-                                        .into_any()
-                                    }),
+                                .map(|opt| {
+                                    let opt_cost = opt.cost;
+                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= *points;
+                                    SummaryListItem {
+                                        name: opt.label().to_string(),
+                                        description: opt.description.clone(),
+                                        badge: (opt.cost > 0).then(|| {
+                                            view! {
+                                                <span class="summary-choice-cost">{opt.cost}</span>
+                                                {cost_field.map(|cfn| view! {
+                                                    <CastButton
+                                                        disabled=!can_cast
+                                                        on_cast=Callback::new(move |_: u32| {
+                                                            cfn.with_value(|cost_name| {
+                                                                feature_data.update(|map| {
+                                                                    for entry in map.values_mut() {
+                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                            && let FeatureValue::Points { used, max } = &mut field.value
+                                                                        {
+                                                                            *used = (*used + opt_cost).min(*max);
+                                                                            return;
+                                                                        }
+                                                                    }
+                                                                });
+                                                            });
+                                                        })
+                                                    />
+                                                })}
+                                            }
+                                            .into_any()
+                                        }),
+                                    }
                                 })
                                 .collect::<Vec<_>>();
                             if selected.is_empty() {

@@ -30,6 +30,7 @@
       "name": "Elven Lineage",
       "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
       "spells": {
+        "cost": "Free Uses",
         "casting_ability": 5,
         "list": [
           {
@@ -43,17 +44,29 @@
             "level": 1,
             "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 3
+            "min_level": 3,
+            "cost": 1
           },
           {
             "name": "Pass without Trace",
             "level": 2,
             "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 5
+            "min_level": 5,
+            "cost": 1
           }
         ]
-      }
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
     }
   ]
 }

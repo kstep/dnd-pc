@@ -201,6 +201,14 @@ pub fn ClassReference() -> impl IntoView {
                                         "\u{2014}".into()
                                     }
                                 }
+                                FieldKind::FreeUses { levels } => {
+                                    let v: u32 = get_for_level(levels, level);
+                                    if v > 0 {
+                                        v.to_string()
+                                    } else {
+                                        "\u{2014}".into()
+                                    }
+                                }
                             })
                             .collect();
 

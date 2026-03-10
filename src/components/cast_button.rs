@@ -3,41 +3,44 @@ use leptos_fluent::move_tr;
 
 use crate::components::icon::Icon;
 
+/// A cast option in the picker.
+/// - `id`: 0 = free use, 1-9 = spell slot level, 100+ = points cost
+/// - `label`: display text (e.g. "🎁", "3", "4 SP")
+/// - `sublabel`: optional subscript (e.g. remaining count)
+/// - `highlight`: whether to accent this option (e.g. natural spell level)
+pub struct CastOption {
+    pub id: u32,
+    pub label: String,
+    pub sublabel: Option<String>,
+    pub highlight: bool,
+}
+
 #[component]
 pub fn CastButton(
     #[prop(default = false)] disabled: bool,
-    on_cast: impl Fn() + 'static + Send + Sync,
-    /// Available spell slots: (level, remaining_count). Empty = no picker.
+    /// Cast options to show in picker. If exactly 1, auto-casts on click.
     #[prop(optional)]
-    slots: Vec<(u32, u32)>,
-    /// Spell's natural level — highlighted in picker.
-    #[prop(default = 0)]
-    spell_level: u32,
-    /// Callback when a slot level is picked. Receives chosen level (1-9).
-    #[prop(optional)]
-    on_slot_cast: Option<Callback<u32>>,
+    options: Vec<CastOption>,
+    /// Callback when a cast option is picked. Receives the option id.
+    on_cast: Callback<u32>,
 ) -> impl IntoView {
-    let has_slots = !slots.is_empty() && on_slot_cast.is_some();
     let picker_open = RwSignal::new(false);
-    let slots = StoredValue::new(slots);
-    let on_slot_cast = StoredValue::new(on_slot_cast);
+    let option_count = options.len();
+    let options = StoredValue::new(options);
+    let on_cast = StoredValue::new(on_cast);
 
     let on_click = move |_| {
-        if !has_slots {
-            on_cast();
-            return;
-        }
-        slots.with_value(|s| {
-            if s.len() == 1 {
-                on_slot_cast.with_value(|cb| {
-                    if let Some(cb) = cb {
-                        cb.run(s[0].0);
-                    }
-                });
+        if option_count <= 1 {
+            // 0 options = direct cast (simple button), 1 option = auto-pick
+            let id = if option_count == 1 {
+                options.with_value(|opts| opts[0].id)
             } else {
-                picker_open.update(|v| *v = !*v);
-            }
-        });
+                0
+            };
+            on_cast.with_value(|callback| callback.run(id));
+        } else {
+            picker_open.update(|open| *open = !*open);
+        }
     };
 
     view! {
@@ -50,27 +53,29 @@ pub fn CastButton(
             >
                 <Icon name="wand" size=14 />
             </button>
-            {has_slots.then(move || {
+            {(option_count > 1).then(move || {
                 view! {
                     <Show when=move || picker_open.get()>
                         <div class="cast-slot-picker">
-                            {slots.with_value(|s| {
-                                s.iter().map(|&(level, remaining)| {
+                            {options.with_value(|opts| {
+                                opts.iter().map(|opt| {
+                                    let id = opt.id;
+                                    let highlight = opt.highlight;
+                                    let label = opt.label.clone();
+                                    let sublabel = opt.sublabel.clone();
                                     view! {
                                         <button
                                             class="cast-slot-pill"
-                                            class:natural-level=level == spell_level
+                                            class:natural-level=highlight
                                             on:click=move |_| {
-                                                on_slot_cast.with_value(|cb| {
-                                                    if let Some(cb) = cb {
-                                                        cb.run(level);
-                                                    }
-                                                });
+                                                on_cast.with_value(|callback| callback.run(id));
                                                 picker_open.set(false);
                                             }
                                         >
-                                            {level}
-                                            <sub class="slot-remaining">{remaining}</sub>
+                                            {label.clone()}
+                                            {sublabel.clone().map(|s| view! {
+                                                <sub class="slot-remaining">{s}</sub>
+                                            })}
                                         </button>
                                     }
                                 }).collect_view()
@@ -79,7 +84,7 @@ pub fn CastButton(
                                 class="btn-icon"
                                 on:click=move |_| picker_open.set(false)
                             >
-                                "✕"
+                                <Icon name="x" size=14 />
                             </button>
                         </div>
                     </Show>

@@ -195,6 +195,13 @@ impl Character {
                     _ => {}
                 }
             }
+            if let Some(spell_data) = &mut feature_data.spells {
+                for spell in &mut spell_data.spells {
+                    if let Some(fu) = &mut spell.free_uses {
+                        fu.used = 0;
+                    }
+                }
+            }
         }
     }
 
@@ -1018,6 +1025,24 @@ impl SpellSlotLevel {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct FreeUses {
+    #[serde(default)]
+    pub used: u32,
+    #[serde(default)]
+    pub max: u32,
+}
+
+impl FreeUses {
+    pub fn available(&self) -> u32 {
+        self.max.saturating_sub(self.used)
+    }
+
+    pub fn is_available(&self) -> bool {
+        self.available() > 0
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Spell {
     #[serde(default)]
@@ -1032,6 +1057,10 @@ pub struct Spell {
     pub description: String,
     #[serde(default)]
     pub sticky: bool,
+    #[serde(default)]
+    pub cost: u32,
+    #[serde(default)]
+    pub free_uses: Option<FreeUses>,
 }
 
 impl Spell {

@@ -22,6 +22,7 @@
       "name": "Chthonic Legacy",
       "description": "You know the Thaumaturgy and Chill Touch cantrips. At 3rd level you can cast False Life once per long rest. At 5th level you can cast Ray of Enfeeblement once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
       "spells": {
+        "cost": "Free Uses",
         "casting_ability": 5,
         "list": [
           {
@@ -41,17 +42,29 @@
             "level": 1,
             "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 3
+            "min_level": 3,
+            "cost": 1
           },
           {
             "name": "Ray of Enfeeblement",
             "level": 2,
             "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 5
+            "min_level": 5,
+            "cost": 1
           }
         ]
-      }
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
     }
   ]
 }

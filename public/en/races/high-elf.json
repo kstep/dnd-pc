@@ -30,6 +30,7 @@
       "name": "Elven Lineage",
       "description": "You know the Prestidigitation cantrip (replaceable with another Wizard cantrip after each Long Rest). At 3rd level you can cast Detect Magic once per long rest. At 5th level you can cast Misty Step once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
       "spells": {
+        "cost": "Free Uses",
         "casting_ability": 5,
         "list": [
           {
@@ -43,17 +44,29 @@
             "level": 1,
             "description": "For the duration, you sense the presence of magic within 30 feet of you. The spell can penetrate most barriers. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 3
+            "min_level": 3,
+            "cost": 1
           },
           {
             "name": "Misty Step",
             "level": 2,
             "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see. Once per Long Rest (racial).",
             "sticky": true,
-            "min_level": 5
+            "min_level": 5,
+            "cost": 1
           }
         ]
-      }
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
     }
   ]
 }
