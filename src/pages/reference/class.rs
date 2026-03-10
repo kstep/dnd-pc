@@ -91,9 +91,10 @@ pub fn ClassReference() -> impl IntoView {
                     .collect::<Vec<_>>()
                     .join(", ");
 
-                // Find spellcasting feature
-                let spell_feat =
-                    def.features(subname.as_deref()).find(|f| f.spells.is_some());
+                // Find spellcasting feature (the one with spell slot levels, not just a spell list)
+                let spell_feat = def
+                    .features(subname.as_deref())
+                    .find(|f| f.spells.as_ref().is_some_and(|s| !s.levels.is_empty()));
                 let spells_def = spell_feat.and_then(|f| f.spells.as_ref());
                 let has_spells = spells_def.is_some();
                 let spell_list_name = spells_def.and_then(|sd| match &sd.list {
