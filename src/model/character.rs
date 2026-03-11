@@ -21,6 +21,8 @@ pub enum Attribute {
     Level,
     Ac,
     Speed,
+    ClassLevel,
+    CasterLevel,
 }
 
 impl FromStr for Attribute {
@@ -40,6 +42,8 @@ impl FromStr for Attribute {
             "LEVEL" => Ok(Self::Level),
             "AC" => Ok(Self::Ac),
             "SPEED" => Ok(Self::Speed),
+            "CLASS_LEVEL" => Ok(Self::ClassLevel),
+            "CASTER_LEVEL" => Ok(Self::CasterLevel),
             _ => Err("unknown attribute"),
         }
     }
@@ -60,6 +64,8 @@ impl fmt::Display for Attribute {
             Self::Level => "LEVEL",
             Self::Ac => "AC",
             Self::Speed => "SPEED",
+            Self::ClassLevel => "CLASS_LEVEL",
+            Self::CasterLevel => "CASTER_LEVEL",
         })
     }
 }
@@ -542,6 +548,8 @@ impl expr::Context<Attribute> for Character {
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
+            Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
+            Attribute::ClassLevel => Err(expr::Error::unexpected_token(var)),
         }
     }
 }
