@@ -28,7 +28,7 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 - SCSS with [Open Props](https://open-props.style/) design tokens
 - [leptos-fluent](https://github.com/mondeja/leptos-fluent) — i18n via Fluent
 - `gloo-storage` — localStorage persistence
-- `postcard` + `brotli` + `base64` — character sharing pipeline
+- `postcard` + `deflate-raw` + `base64` — character sharing pipeline
 
 ## Getting Started
 
@@ -56,6 +56,54 @@ Opens the app at `http://localhost:3000` with hot reload.
 ```sh
 cargo clippy
 cargo +nightly fmt
+```
+
+### Testing
+
+```sh
+WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown
+```
+
+Tests run in headless Chrome via `wasm-bindgen-test`. The `WASM_BINDGEN_USE_BROWSER=1` env var is required to use a real browser environment.
+
+## Project Structure
+
+```
+src/
+├── lib.rs              # App entry, routing, theme detection
+├── model/              # Data model (Character, enums, money)
+├── rules/              # Game rules engine
+│   ├── registry.rs     # RulesRegistry — context-provided rules fetcher
+│   ├── cache.rs        # FetchCache<T> — generic async fetch cache
+│   ├── index.rs        # Index entry types for classes, races, etc.
+│   ├── class.rs        # ClassDefinition, SubclassDefinition
+│   ├── race.rs         # RaceDefinition, RaceTrait
+│   ├── background.rs   # BackgroundDefinition
+│   ├── feature.rs      # FeatureDefinition, FieldKind, ChoiceOptions
+│   ├── spells.rs       # SpellsDefinition, SpellList, SpellDefinition
+│   └── utils.rs        # get_for_level(), fetch_json()
+├── components/         # Reusable UI components
+│   ├── panels/         # Character sheet editor panels
+│   └── summary/        # Summary view block components
+├── pages/              # Route pages
+│   ├── character/      # Character editor, summary, list
+│   └── reference/      # Class/race/background/spell reference
+├── storage.rs          # localStorage CRUD with migrations
+├── firebase.rs         # Firebase/Firestore cloud sync
+├── share.rs            # Character sharing (compressed URL + Firestore)
+├── expr.rs             # Expression evaluator for feature assignments
+├── demap.rs            # Custom serde deserializers
+├── constvec.rs         # Fixed-size vector for compact serialization
+└── vecset.rs           # Vec-backed ordered set
+public/
+├── {en,ru}/            # Locale-specific JSON data files
+│   ├── classes/        # Class definitions
+│   ├── races/          # Race definitions
+│   ├── backgrounds/    # Background definitions
+│   ├── spells/         # Spell lists
+│   └── index.json      # Available classes, races, backgrounds
+├── styles.scss         # Main stylesheet
+└── manifest.json       # PWA manifest
 ```
 
 ## Cloud Sync (Firebase)

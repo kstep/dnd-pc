@@ -861,7 +861,10 @@
         },
         {
           "name": "Unarmored Defense",
-          "description": "Your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
+          "description": "Your base Armor Class equals 10 plus your Dexterity and Charisma modifiers.",
+          "assign": [
+            { "expr": "AC = max(AC, 10 + DEX + CHA)", "when": "OnFeatureAdd" }
+          ]
         },
         {
           "name": "Inspiring Movement",

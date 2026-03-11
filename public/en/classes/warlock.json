@@ -776,7 +776,11 @@
         },
         {
           "name": "Celestial Resilience",
-          "description": "You gain temporary hit points whenever you finish a short or long rest. These temporary hit points equal your warlock level + your Charisma modifier. Additionally, choose up to five creatures you can see at the end of the rest. Those creatures each gain temporary hit points equal to half your warlock level + your Charisma modifier."
+          "description": "You gain temporary hit points whenever you finish a short or long rest. These temporary hit points equal your warlock level + your Charisma modifier. Additionally, choose up to five creatures you can see at the end of the rest. Those creatures each gain temporary hit points equal to half your warlock level + your Charisma modifier.",
+          "assign": [
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnShortRest" },
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnLongRest" }
+          ]
         },
         {
           "name": "Searing Vengeance",
@@ -1326,7 +1330,11 @@
         },
         {
           "name": "Celestial Resilience",
-          "description": "You gain Temporary Hit Points whenever you use your Magical Cunning feature or finish a Short Rest or Long Rest. These Temporary Hit Points equal your Warlock level plus your Charisma modifier. Additionally, choose up to five creatures you can see when you gain the points. Those creatures each gain Temporary Hit Points equal to half your Warlock level plus your Charisma modifier."
+          "description": "You gain Temporary Hit Points whenever you use your Magical Cunning feature or finish a Short Rest or Long Rest. These Temporary Hit Points equal your Warlock level plus your Charisma modifier. Additionally, choose up to five creatures you can see when you gain the points. Those creatures each gain Temporary Hit Points equal to half your Warlock level plus your Charisma modifier.",
+          "assign": [
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnShortRest" },
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnLongRest" }
+          ]
         },
         {
           "name": "Searing Vengeance",

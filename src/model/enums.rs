@@ -51,7 +51,9 @@ macro_rules! enum_serde_u8 {
     };
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, PartialOrd, Ord
+)]
 #[repr(u8)]
 pub enum Ability {
     Strength,
@@ -70,7 +72,9 @@ enum_serde_u8!(Ability {
     Charisma
 });
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, EnumString)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, EnumString, PartialOrd, Ord
+)]
 #[repr(u8)]
 pub enum Skill {
     Acrobatics,

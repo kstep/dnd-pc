@@ -8,11 +8,13 @@ use crate::{
         Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
         CombatStatsStoreFields, format_bonus,
     },
+    rules::RulesRegistry,
 };
 
 #[component]
 pub fn CombatPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
 
     let combat = store.combat();
     let classes = store.identity().classes();
@@ -228,7 +230,7 @@ pub fn CombatPanel() -> impl IntoView {
                 <button
                     class="btn-rest"
                     on:click=move |_| {
-                        store.update(|ch| ch.short_rest());
+                        store.update(|ch| registry.short_rest(ch));
                     }
                 >
                     {move_tr!("short-rest")}
@@ -236,7 +238,7 @@ pub fn CombatPanel() -> impl IntoView {
                 <button
                     class="btn-rest"
                     on:click=move |_| {
-                        store.update(|ch| ch.long_rest());
+                        store.update(|ch| registry.long_rest(ch));
                     }
                 >
                     {move_tr!("long-rest")}

@@ -498,7 +498,12 @@
         },
         {
           "name": "Draconic Resilience",
-          "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class. Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren't wearing armor, your AC equals 13 + your Dexterity modifier."
+          "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class. Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren't wearing armor, your AC equals 13 + your Dexterity modifier.",
+          "assign": [
+            { "expr": "AC = max(AC, 10 + DEX + CHA)", "when": "OnFeatureAdd" },
+            { "expr": "MAX_HP = MAX_HP + 1", "when": "OnFeatureAdd" },
+            { "expr": "MAX_HP = MAX_HP + 1", "when": "OnLevelUp" }
+          ]
         },
         {
           "name": "Dragon Ancestor",
@@ -1459,7 +1464,7 @@
           "description": "The magic in your body manifests physical traits of your draconic gift. Your Hit Points maximum increases by 3, and it increases by 1 whenever you gain another Sorcerer level. Parts of you are also covered by dragon-like scales. While you aren't wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers.",
           "assign": [
             {
-              "expr": "AC = 10 + DEX + CHA",
+              "expr": "AC = max(AC, 10 + DEX + CHA)",
               "when": "OnFeatureAdd"
             },
             {

@@ -26,8 +26,7 @@ pub fn SummaryHeader() -> impl IntoView {
         registry
             .with_race_entries(|entries| {
                 entries
-                    .iter()
-                    .find(|e| e.name == race_name)
+                    .get(race_name.as_str())
                     .map(|e| e.label().to_string())
             })
             .unwrap_or(race_name)

@@ -1,0 +1,108 @@
+use std::collections::BTreeMap;
+
+use serde::Deserialize;
+
+use crate::{
+    demap::{self, Named},
+    model::Ability,
+};
+
+#[derive(Debug, Clone, Deserialize)]
+pub(super) struct Index {
+    #[serde(deserialize_with = "demap::named_map")]
+    pub classes: BTreeMap<Box<str>, ClassIndexEntry>,
+    #[serde(default, deserialize_with = "demap::named_map")]
+    pub races: BTreeMap<Box<str>, RaceIndexEntry>,
+    #[serde(default, deserialize_with = "demap::named_map")]
+    pub backgrounds: BTreeMap<Box<str>, BackgroundIndexEntry>,
+    #[serde(default, deserialize_with = "demap::named_map")]
+    pub spells: BTreeMap<Box<str>, SpellIndexEntry>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ClassIndexEntry {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub url: String,
+    #[serde(default)]
+    pub description: String,
+    #[serde(default)]
+    pub prerequisites: Vec<Ability>,
+}
+
+impl Named for ClassIndexEntry {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl ClassIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RaceIndexEntry {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub url: String,
+    #[serde(default)]
+    pub description: String,
+}
+
+impl Named for RaceIndexEntry {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl RaceIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BackgroundIndexEntry {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub url: String,
+    #[serde(default)]
+    pub description: String,
+}
+
+impl Named for BackgroundIndexEntry {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl BackgroundIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SpellIndexEntry {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub url: String,
+}
+
+impl Named for SpellIndexEntry {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl SpellIndexEntry {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}

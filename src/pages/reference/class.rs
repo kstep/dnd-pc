@@ -3,13 +3,11 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{
-    FeatureChoicesView, FeatureSpells, FeatureSpellsView, ReferenceSidebar, feature_choices,
-};
+use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     model::{Die, Translatable, format_bonus},
-    rules::{FieldKind, RulesRegistry, SpellList, get_for_level},
+    rules::{DefinitionStore, FieldKind, RulesRegistry, get_for_level},
 };
 
 #[derive(Params, Clone, Debug, PartialEq)]
@@ -30,7 +28,7 @@ pub fn ClassReference() -> impl IntoView {
     Effect::new(move || {
         let name = class_name();
         if !name.is_empty() {
-            registry.fetch_class_tracked(&name);
+            registry.classes().fetch_tracked(&name);
         }
     });
 
@@ -51,8 +49,7 @@ pub fn ClassReference() -> impl IntoView {
 
         let prerequisites = registry.with_class_entries(|entries| {
             entries
-                .iter()
-                .find(|e| e.name == name)
+                .get(name.as_str())
                 .map(|e| {
                     e.prerequisites
                         .iter()
@@ -64,7 +61,7 @@ pub fn ClassReference() -> impl IntoView {
         });
 
         registry
-            .with_class_tracked(&name, |def| {
+            .classes().with_tracked(&name, |def| {
                 let subclass_def =
                     subname.as_deref().and_then(|sn| def.subclasses.get(sn));
 
@@ -97,13 +94,8 @@ pub fn ClassReference() -> impl IntoView {
                     .find(|f| f.spells.as_ref().is_some_and(|s| !s.levels.is_empty()));
                 let spells_def = spell_feat.and_then(|f| f.spells.as_ref());
                 let has_spells = spells_def.is_some();
-                let spell_list_name = spells_def.and_then(|sd| match &sd.list {
-                    SpellList::Ref { from } => from
-                        .strip_prefix("spells/")
-                        .and_then(|s| s.strip_suffix(".json"))
-                        .map(|s| s.to_string()),
-                    _ => None,
-                });
+                let spell_list_name =
+                    spells_def.and_then(|sd| sd.list.ref_name().map(|s| s.to_string()));
                 let max_spell_level = spells_def
                     .map(|sd| {
                         sd.levels
@@ -225,47 +217,10 @@ pub fn ClassReference() -> impl IntoView {
                     })
                     .collect();
 
-                let class_features: Vec<_> = def
-                    .features
-                    .values()
-                    .map(|feat| {
-                        let spells = FeatureSpells::from_spell_list(
-                            feat.spells.as_ref().map(|spells_def| &spells_def.list),
-                        );
-                        let choices = feature_choices(&feat.fields);
-                        let langs = feat.languages.join(", ");
-                        (
-                            feat.name.clone(),
-                            feat.label().to_string(),
-                            feat.description.clone(),
-                            langs,
-                            spells,
-                            choices,
-                        )
-                    })
-                    .collect();
+                let class_features = collect_feature_views(def.features.values());
 
-                let subclass_features: Vec<_> = subclass_def
-                    .map(|sc| {
-                        sc.features
-                            .values()
-                            .map(|feat| {
-                                let spells = FeatureSpells::from_spell_list(
-                                    feat.spells.as_ref().map(|spells_def| &spells_def.list),
-                                );
-                                let choices = feature_choices(&feat.fields);
-                                let langs = feat.languages.join(", ");
-                                (
-                                    feat.name.clone(),
-                                    feat.label().to_string(),
-                                    feat.description.clone(),
-                                    langs,
-                                    spells,
-                                    choices,
-                                )
-                            })
-                            .collect()
-                    })
+                let subclass_features = subclass_def
+                    .map(|sc| collect_feature_views(sc.features.values()))
                     .unwrap_or_default();
 
                 let subclass_list: Vec<(String, String, String)> = if subclass_def.is_none() {
@@ -393,51 +348,9 @@ pub fn ClassReference() -> impl IntoView {
                         </div>
 
                         <h2>{move_tr!("ref-features")}</h2>
-                        <div class="reference-features">
-                            {class_features
-                                .into_iter()
-                                .map(|(feat_name, label, desc, langs, spells, choices)| {
-                                    let anchor_id = format!("feat-{feat_name}");
-                                    view! {
-                                        <div class="reference-feature" id=anchor_id>
-                                            <h3>{label}</h3>
-                                            <p>{desc}</p>
-                                            {(!langs.is_empty()).then(|| view! {
-                                                <p class="feature-languages">
-                                                    {move_tr!("ref-languages")}{": "}{langs}
-                                                </p>
-                                            })}
-                                            <FeatureSpellsView spells=spells />
-                                            <FeatureChoicesView choices=choices />
-                                        </div>
-                                    }
-                                })
-                                .collect_view()}
-                        </div>
+                        <ReferenceFeaturesView features=class_features anchors=true />
 
-                        {(!subclass_features.is_empty()).then(|| view! {
-                            <div class="reference-features">
-                                {subclass_features
-                                    .into_iter()
-                                    .map(|(feat_name, label, desc, langs, spells, choices)| {
-                                        let anchor_id = format!("feat-{feat_name}");
-                                        view! {
-                                            <div class="reference-feature" id=anchor_id>
-                                                <h3>{label}</h3>
-                                                <p>{desc}</p>
-                                                {(!langs.is_empty()).then(|| view! {
-                                                    <p class="feature-languages">
-                                                        {move_tr!("ref-languages")}{": "}{langs}
-                                                    </p>
-                                                })}
-                                                <FeatureSpellsView spells=spells />
-                                                <FeatureChoicesView choices=choices />
-                                            </div>
-                                        }
-                                    })
-                                    .collect_view()}
-                            </div>
-                        })}
+                        <ReferenceFeaturesView features=subclass_features anchors=true />
 
                         {if subclass_list.is_empty() {
                             None
@@ -473,7 +386,7 @@ pub fn ClassReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     {move || registry.with_class_entries(|entries| {
-                        entries.iter().map(|entry| {
+                        entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {

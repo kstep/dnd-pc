@@ -1382,7 +1382,10 @@
         },
         {
           "name": "Genie's Splendor",
-          "description": "When you aren't wearing any armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers. You can use a Shield and still gain this benefit. You also gain proficiency in one of the following skills of your choice: Acrobatics, Intimidation, Performance, or Persuasion."
+          "description": "When you aren't wearing any armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers. You can use a Shield and still gain this benefit. You also gain proficiency in one of the following skills of your choice: Acrobatics, Intimidation, Performance, or Persuasion.",
+          "assign": [
+            { "expr": "AC = max(AC, 10 + DEX + CHA)", "when": "OnFeatureAdd" }
+          ]
         },
         {
           "name": "Marid's Surge",

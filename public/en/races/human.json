@@ -5,7 +5,10 @@
   "traits": [
     {
       "name": "Resourceful",
-      "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+      "description": "You gain Heroic Inspiration whenever you finish a Long Rest.",
+      "assign": [
+        {"expr": "INSPIRATION = 1", "when": "OnLongRest"}
+      ]
     },
     {
       "name": "Skillful",

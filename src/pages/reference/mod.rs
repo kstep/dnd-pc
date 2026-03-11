@@ -12,7 +12,7 @@ pub use sidebar::ReferenceSidebar;
 
 use crate::{
     BASE_URL,
-    rules::{ChoiceOptions, FieldDefinition, FieldKind, SpellList},
+    rules::{ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
 };
 
 pub struct InlineSpell {
@@ -32,16 +32,13 @@ pub enum FeatureSpells {
 impl FeatureSpells {
     pub fn from_spell_list(list: Option<&SpellList>) -> Self {
         match list {
-            Some(SpellList::Ref { from }) => {
-                let list_name = from
-                    .strip_prefix("spells/")
-                    .and_then(|s| s.strip_suffix(".json"))
-                    .unwrap_or(from);
+            Some(spell_list @ SpellList::Ref { from }) => {
+                let list_name = spell_list.ref_name().unwrap_or(from);
                 Self::Link(list_name.to_string())
             }
             Some(SpellList::Inline(spells)) if !spells.is_empty() => Self::Inline(
                 spells
-                    .iter()
+                    .values()
                     .map(|s| InlineSpell {
                         label: s.label().to_string(),
                         level: s.level,
@@ -70,7 +67,9 @@ pub struct ChoiceFieldView {
     pub options: Vec<InlineChoiceOption>,
 }
 
-pub fn feature_choices(fields: &BTreeMap<String, FieldDefinition>) -> Option<Vec<ChoiceFieldView>> {
+pub fn feature_choices(
+    fields: &BTreeMap<Box<str>, FieldDefinition>,
+) -> Option<Vec<ChoiceFieldView>> {
     let values: Vec<_> = fields
         .values()
         .filter_map(|fd| {
@@ -106,6 +105,69 @@ pub fn feature_choices(fields: &BTreeMap<String, FieldDefinition>) -> Option<Vec
     } else {
         Some(values)
     }
+}
+
+/// Pre-collected data for rendering a feature in reference pages.
+pub struct FeatureViewData {
+    pub name: String,
+    pub label: String,
+    pub description: String,
+    pub languages: String,
+    pub spells: FeatureSpells,
+    pub choices: Option<Vec<ChoiceFieldView>>,
+}
+
+/// Collect feature view data from an iterator of `FeatureDefinition`
+/// references.
+pub fn collect_feature_views<'a>(
+    features: impl Iterator<Item = &'a FeatureDefinition>,
+) -> Vec<FeatureViewData> {
+    features
+        .map(|feat| FeatureViewData {
+            name: feat.name.clone(),
+            label: feat.label().to_string(),
+            description: feat.description.clone(),
+            languages: feat.languages.join(", "),
+            spells: FeatureSpells::from_spell_list(
+                feat.spells.as_ref().map(|spells_def| &spells_def.list),
+            ),
+            choices: feature_choices(&feat.fields),
+        })
+        .collect()
+}
+
+/// Render a list of reference features.
+#[component]
+pub fn ReferenceFeaturesView(
+    features: Vec<FeatureViewData>,
+    #[prop(optional)] anchors: bool,
+) -> impl IntoView {
+    if features.is_empty() {
+        return None;
+    }
+    Some(view! {
+        <div class="reference-features">
+            {features
+                .into_iter()
+                .map(|feat| {
+                    let id = anchors.then(|| format!("feat-{}", feat.name));
+                    view! {
+                        <div class="reference-feature" id=id>
+                            <h3>{feat.label}</h3>
+                            <p>{feat.description}</p>
+                            {(!feat.languages.is_empty()).then(|| view! {
+                                <p class="feature-languages">
+                                    {move_tr!("ref-languages")}{": "}{feat.languages}
+                                </p>
+                            })}
+                            <FeatureSpellsView spells=feat.spells />
+                            <FeatureChoicesView choices=feat.choices />
+                        </div>
+                    }
+                })
+                .collect_view()}
+        </div>
+    })
 }
 
 #[component]

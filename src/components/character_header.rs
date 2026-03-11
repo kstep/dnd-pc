@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
@@ -14,9 +14,9 @@ use crate::{
     firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-        FeatureSource, SpellSlotPool, Translatable,
+        Translatable,
     },
-    rules::RulesRegistry,
+    rules::{DefinitionStore, RulesRegistry},
     share, storage,
 };
 
@@ -83,57 +83,8 @@ fn import_character(store: Store<Character>) {
 }
 
 fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
-    let (class_name, subclass) = {
-        let classes = store.identity().classes().read();
-        let Some(class) = classes.get(class_index) else {
-            return;
-        };
-        (class.class.clone(), class.subclass.clone())
-    };
-
-    registry.with_class(&class_name, |def| {
-        // Collect per-pool slot overrides for this level
-        let pool_slots: Vec<(SpellSlotPool, Option<Vec<u32>>)> = {
-            let mut seen_pools = HashSet::new();
-            let mut result = Vec::new();
-            for feature in def.features(subclass.as_deref()) {
-                if let Some(spells_def) = &feature.spells
-                    && seen_pools.insert(spells_def.pool)
-                {
-                    let slots = spells_def
-                        .levels
-                        .get(level as usize - 1)
-                        .and_then(|level_rules| level_rules.slots.clone());
-                    result.push((spells_def.pool, slots));
-                }
-            }
-            result
-        };
-
-        store.update(|character| {
-            // Update spell slots first so feat.apply() can read them for max_level
-            for (pool, slots) in &pool_slots {
-                character.update_spell_slots(*pool, slots.as_deref());
-            }
-
-            def.apply_level(level, character);
-
-            // Re-apply race features at new total level (unlocks level-gated spells)
-            if character.identity.race_applied {
-                let source = FeatureSource::Race(character.identity.race.clone());
-                let total_level = character.level();
-                registry.with_race(source.name(), |race_def| {
-                    for feat in race_def.features.values() {
-                        feat.apply(total_level, character, &source);
-                    }
-                });
-            }
-
-            // Update again (needed for first level when SpellData was just created)
-            for (pool, slots) in &pool_slots {
-                character.update_spell_slots(*pool, slots.as_deref());
-            }
-        });
+    store.update(|character| {
+        registry.apply_class_level(character, class_index, level);
     });
 }
 
@@ -225,7 +176,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let race_options = Memo::new(move |_| {
         registry.with_race_entries(|entries| {
             entries
-                .iter()
+                .values()
                 .map(|e| (e.name.clone(), e.label().to_string(), e.description.clone()))
                 .collect::<Vec<_>>()
         })
@@ -234,7 +185,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let bg_options = Memo::new(move |_| {
         registry.with_background_entries(|entries| {
             entries
-                .iter()
+                .values()
                 .map(|e| (e.name.clone(), e.label().to_string(), e.description.clone()))
                 .collect::<Vec<_>>()
         })
@@ -268,12 +219,12 @@ pub fn CharacterHeader() -> impl IntoView {
                             if name != old {
                                 store.identity().race_applied().set(false);
                             }
-                            registry.fetch_race(&name);
+                            registry.races().fetch(&name);
                         }
-                        fetch=move |name: &str| registry.fetch_race(name)
-                        has=move |name: &str| registry.has_race(name)
+                        fetch=move |name: &str| registry.races().fetch(name)
+                        has=move |name: &str| registry.races().has(name)
                         apply=move |name: &str| {
-                            registry.with_race(name, |def| {
+                            registry.races().with(name, |def| {
                                 store.update(|c| def.apply(c));
                             });
                         }
@@ -294,12 +245,12 @@ pub fn CharacterHeader() -> impl IntoView {
                             if name != old {
                                 store.identity().background_applied().set(false);
                             }
-                            registry.fetch_background(&name);
+                            registry.backgrounds().fetch(&name);
                         }
-                        fetch=move |name: &str| registry.fetch_background(name)
-                        has=move |name: &str| registry.has_background(name)
+                        fetch=move |name: &str| registry.backgrounds().fetch(name)
+                        has=move |name: &str| registry.backgrounds().has(name)
                         apply=move |name: &str| {
-                            registry.with_background(name, |def| {
+                            registry.backgrounds().with(name, |def| {
                                 store.update(|c| def.apply(c));
                             });
                         }
@@ -362,7 +313,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         let class_options = Memo::new(move |_| {
                             let abilities = store.abilities().get();
                             registry.with_class_entries(|entries| {
-                                entries.iter().filter(|entry| {
+                                entries.values().filter(|entry| {
                                     entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
                                 }).map(|entry| {
                                     (entry.name.clone(), entry.label().to_string(), entry.description.clone())
@@ -387,10 +338,10 @@ pub fn CharacterHeader() -> impl IntoView {
 
                                 // Trigger lazy fetch if definition not yet loaded
                                 if !class_key.is_empty() {
-                                    registry.fetch_class(&class_key);
+                                    registry.classes().fetch(&class_key);
                                 }
 
-                                let class_loaded = registry.has_class(&class_key);
+                                let class_loaded = registry.classes().has(&class_key);
 
                                 let next_unapplied: Option<u32> = if class_loaded {
                                     (1..=current_level)
@@ -399,7 +350,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     None
                                 };
 
-                                let subclass_options: Vec<(String, String, String)> = registry.with_class(&class_key, |def| {
+                                let subclass_options: Vec<(String, String, String)> = registry.classes().with(&class_key, |def| {
                                     def.subclasses
                                         .values()
                                         .filter(|sc| sc.min_level() <= current_level)
@@ -423,7 +374,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             }
                                             on_input=move |input, resolved| {
                                                 let (name, label) = split_resolved(input, resolved);
-                                                let hit_die = registry.with_class(&name, |def| def.hit_die);
+                                                let hit_die = registry.classes().with(&name, |def| def.hit_die);
                                                 {
                                                     let mut classes = classes.write();
                                                     classes[i].class.clone_from(&name);
@@ -432,7 +383,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                                         classes[i].hit_die_sides = hd;
                                                     }
                                                 }
-                                                registry.fetch_class(&name);
+                                                registry.classes().fetch(&name);
                                             }
                                         />
                                         {if has_subclasses {
@@ -486,7 +437,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             min="1"
                                             max="20"
                                             prop:value=level_val
-                                            on:input=move |e| {
+                                            on:change=move |e| {
                                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                     classes.write()[i].level = value.clamp(1, 20);
                                                 }

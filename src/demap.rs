@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Deserializer, de};
+use indexmap::IndexMap;
+use serde::{Deserialize, Deserializer, de, ser::SerializeSeq};
+use uuid::Uuid;
 
 /// Trait for types that have a `name` field, used by `named_map`.
 pub trait Named {
@@ -8,8 +10,8 @@ pub trait Named {
 }
 
 /// Deserialize a JSON array `[{"name": "Foo", ...}, ...]` into a
-/// `BTreeMap<String, T>` keyed by each element's `name()`.
-pub fn named_map<'de, D, T>(deserializer: D) -> Result<BTreeMap<String, T>, D::Error>
+/// `BTreeMap<Box<str>, T>` keyed by each element's `name()`.
+pub fn named_map<'de, D, T>(deserializer: D) -> Result<BTreeMap<Box<str>, T>, D::Error>
 where
     D: Deserializer<'de>,
     T: Deserialize<'de> + Named,
@@ -18,7 +20,7 @@ where
     Ok(vec
         .into_iter()
         .map(|item| {
-            let key = item.name().to_string();
+            let key: Box<str> = item.name().into();
             (key, item)
         })
         .collect())
@@ -26,7 +28,6 @@ where
 
 /// Deserialize a `BTreeMap<u32, V>` accepting both numeric keys (binary
 /// formats) and stringified numbers (JSON).
-
 pub fn u32_key_map<'de, D, V>(deserializer: D) -> Result<BTreeMap<u32, V>, D::Error>
 where
     D: Deserializer<'de>,
@@ -59,10 +60,10 @@ where
 struct FlexU32(u32);
 
 impl<'de> Deserialize<'de> for FlexU32 {
-    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        struct V;
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct FlexU32Visitor;
 
-        impl<'de> de::Visitor<'de> for V {
+        impl<'de> de::Visitor<'de> for FlexU32Visitor {
             type Value = FlexU32;
 
             fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -82,6 +83,40 @@ impl<'de> Deserialize<'de> for FlexU32 {
             }
         }
 
-        d.deserialize_any(V)
+        deserializer.deserialize_any(FlexU32Visitor)
+    }
+}
+
+/// Trait for types keyed by `Uuid`, used by `index_map_as_vec`.
+pub trait Keyed {
+    fn key(&self) -> Uuid;
+}
+
+/// Serialize an `IndexMap<Uuid, T>` as a JSON array and deserialize back,
+/// preserving insertion order and O(1) lookup by key.
+///
+/// Requires `T: Keyed` so the key can be recovered on deserialization.
+pub mod index_map_as_vec {
+    use super::*;
+
+    pub fn serialize<S, T>(map: &IndexMap<Uuid, T>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+        T: serde::Serialize,
+    {
+        let mut seq = serializer.serialize_seq(Some(map.len()))?;
+        for value in map.values() {
+            seq.serialize_element(value)?;
+        }
+        seq.end()
+    }
+
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<IndexMap<Uuid, T>, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+        T: Deserialize<'de> + Keyed,
+    {
+        let vec = Vec::<T>::deserialize(deserializer)?;
+        Ok(vec.into_iter().map(|item| (item.key(), item)).collect())
     }
 }

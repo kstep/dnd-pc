@@ -1,10 +1,15 @@
+use std::collections::BTreeMap;
+
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
 use super::ReferenceSidebar;
-use crate::{BASE_URL, rules::RulesRegistry};
+use crate::{
+    BASE_URL,
+    rules::{RulesRegistry, SpellList},
+};
 
 #[derive(Params, Clone, Debug, PartialEq)]
 struct SpellRefParams {
@@ -22,7 +27,7 @@ pub fn SpellReference() -> impl IntoView {
     Effect::new(move || {
         let name = list_name();
         if !name.is_empty() {
-            let path = format!("spells/{name}.json");
+            let path = SpellList::ref_path(&name);
             registry.fetch_spell_list_tracked(&path);
         }
     });
@@ -41,14 +46,13 @@ pub fn SpellReference() -> impl IntoView {
             .into_any();
         }
 
-        let path = format!("spells/{name}.json");
+        let path = SpellList::ref_path(&name);
 
         registry
             .with_spell_list_tracked(&path, |spells| {
                 let title = registry.with_spell_entries(|entries| {
                     entries
-                        .iter()
-                        .find(|e| e.name == name)
+                        .get(name.as_str())
                         .map(|e| e.label().to_string())
                         .unwrap_or_else(|| name.clone())
                 });
@@ -65,26 +69,24 @@ pub fn SpellReference() -> impl IntoView {
                     level: u32,
                     spells: Vec<SpellEntry>,
                 }
-                let mut by_level: Vec<SpellGroup> = Vec::new();
-                for spell in spells {
-                    let level = spell.level;
-                    let entry = SpellEntry {
-                        name: spell.name.clone(),
-                        label: spell.label().to_string(),
-                        description: spell.description.clone(),
-                        min_level: spell.min_level,
-                        sticky: spell.sticky,
-                    };
-                    if let Some(group) = by_level.iter_mut().find(|g| g.level == level) {
-                        group.spells.push(entry);
-                    } else {
-                        by_level.push(SpellGroup {
-                            level,
-                            spells: vec![entry],
+                let mut by_level_map: BTreeMap<u32, Vec<SpellEntry>> =
+                    BTreeMap::new();
+                for spell in spells.values() {
+                    by_level_map
+                        .entry(spell.level)
+                        .or_default()
+                        .push(SpellEntry {
+                            name: spell.name.clone(),
+                            label: spell.label().to_string(),
+                            description: spell.description.clone(),
+                            min_level: spell.min_level,
+                            sticky: spell.sticky,
                         });
-                    }
                 }
-                by_level.sort_by_key(|g| g.level);
+                let by_level: Vec<SpellGroup> = by_level_map
+                    .into_iter()
+                    .map(|(level, spells)| SpellGroup { level, spells })
+                    .collect();
 
                 let title_for_heading = title.clone();
                 view! {
@@ -148,7 +150,7 @@ pub fn SpellReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     {move || registry.with_spell_entries(|entries| {
-                        entries.iter().map(|entry| {
+                        entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {

@@ -1,117 +1,24 @@
-use std::{
-    collections::{BTreeMap, HashMap, HashSet},
-    fmt,
-    str::FromStr,
-};
+use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::enums::*;
-use crate::{constvec::ConstVec, expr, model::Money, vecset::VecSet};
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize)]
-pub enum Attribute {
-    Modifier(Ability),
-    MaxHp,
-    Hp,
-    TempHp,
-    Level,
-    Ac,
-    Speed,
-    ClassLevel,
-    CasterLevel,
-}
-
-impl FromStr for Attribute {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "STR" => Ok(Self::Modifier(Ability::Strength)),
-            "DEX" => Ok(Self::Modifier(Ability::Dexterity)),
-            "CON" => Ok(Self::Modifier(Ability::Constitution)),
-            "INT" => Ok(Self::Modifier(Ability::Intelligence)),
-            "WIS" => Ok(Self::Modifier(Ability::Wisdom)),
-            "CHA" => Ok(Self::Modifier(Ability::Charisma)),
-            "MAX_HP" => Ok(Self::MaxHp),
-            "HP" => Ok(Self::Hp),
-            "TEMP_HP" => Ok(Self::TempHp),
-            "LEVEL" => Ok(Self::Level),
-            "AC" => Ok(Self::Ac),
-            "SPEED" => Ok(Self::Speed),
-            "CLASS_LEVEL" => Ok(Self::ClassLevel),
-            "CASTER_LEVEL" => Ok(Self::CasterLevel),
-            _ => Err("unknown attribute"),
-        }
-    }
-}
-
-impl fmt::Display for Attribute {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(match self {
-            Self::Modifier(Ability::Strength) => "STR",
-            Self::Modifier(Ability::Dexterity) => "DEX",
-            Self::Modifier(Ability::Constitution) => "CON",
-            Self::Modifier(Ability::Intelligence) => "INT",
-            Self::Modifier(Ability::Wisdom) => "WIS",
-            Self::Modifier(Ability::Charisma) => "CHA",
-            Self::MaxHp => "MAX_HP",
-            Self::Hp => "HP",
-            Self::TempHp => "TEMP_HP",
-            Self::Level => "LEVEL",
-            Self::Ac => "AC",
-            Self::Speed => "SPEED",
-            Self::ClassLevel => "CLASS_LEVEL",
-            Self::CasterLevel => "CASTER_LEVEL",
-        })
-    }
-}
-
-// --- Die type ---
-
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct Die {
-    pub amount: u32,
-    pub sides: u32,
-}
-
-impl fmt::Display for Die {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}d{}", self.amount, self.sides)
-    }
-}
-
-impl FromStr for Die {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (amount, sides) = s.split_once('d').ok_or("expected {amount}d{sides}")?;
-        Ok(Die {
-            amount: amount.parse().map_err(|_| "invalid amount")?,
-            sides: sides.parse().map_err(|_| "invalid sides")?,
-        })
-    }
-}
-
-impl Serialize for Die {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for Die {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let s = String::deserialize(deserializer)?;
-        s.parse().map_err(serde::de::Error::custom)
-    }
-}
+use crate::{
+    constvec::ConstVec,
+    demap::{self, Keyed},
+    expr,
+    model::{
+        AbilityScores, Attribute, CharacterIdentity, CombatStats, Equipment, Feature, FeatureData,
+        FeatureValue, Personality, RacialTrait, SpellSlotLevel, enums::*,
+    },
+    vecset::VecSet,
+};
 
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
-pub const SPELL_SLOT_TABLE: &[&[u32]] = &[
+const SPELL_SLOT_TABLE: &[&[u32]] = &[
     &[2],                         // caster level 1
     &[3],                         // 2
     &[4, 2],                      // 3
@@ -138,34 +45,8 @@ pub const SPELL_SLOT_TABLE: &[&[u32]] = &[
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CharacterIndex {
-    #[serde(with = "index_map_as_vec")]
+    #[serde(with = "demap::index_map_as_vec")]
     pub characters: IndexMap<Uuid, CharacterSummary>,
-}
-
-/// Serialize an `IndexMap<Uuid, CharacterSummary>` as a JSON array (vec)
-/// and deserialize back, preserving insertion order and O(1) lookup by id.
-mod index_map_as_vec {
-    use serde::ser::SerializeSeq;
-
-    use super::*;
-
-    pub fn serialize<S: serde::Serializer>(
-        map: &IndexMap<Uuid, CharacterSummary>,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
-        let mut seq = serializer.serialize_seq(Some(map.len()))?;
-        for summary in map.values() {
-            seq.serialize_element(summary)?;
-        }
-        seq.end()
-    }
-
-    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<IndexMap<Uuid, CharacterSummary>, D::Error> {
-        let vec = Vec::<CharacterSummary>::deserialize(deserializer)?;
-        Ok(vec.into_iter().map(|s| (s.id, s)).collect())
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -180,6 +61,12 @@ pub struct CharacterSummary {
     pub shared: bool,
 }
 
+impl Keyed for CharacterSummary {
+    fn key(&self) -> Uuid {
+        self.id
+    }
+}
+
 // --- Main Character ---
 
 #[derive(Debug, Clone, Serialize, Deserialize, Store)]
@@ -190,9 +77,9 @@ pub struct Character {
     #[serde(default)]
     pub abilities: AbilityScores,
     #[serde(default)]
-    pub saving_throws: HashSet<Ability>,
+    pub saving_throws: VecSet<Ability>,
     #[serde(default)]
-    pub skills: HashMap<Skill, ProficiencyLevel>,
+    pub skills: BTreeMap<Skill, ProficiencyLevel>,
     #[serde(default)]
     pub combat: CombatStats,
     #[serde(default)]
@@ -204,7 +91,7 @@ pub struct Character {
     #[serde(default)]
     pub feature_data: BTreeMap<String, FeatureData>,
     #[serde(default)]
-    pub proficiencies: HashSet<Proficiency>,
+    pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
@@ -280,32 +167,39 @@ impl Character {
         self.updated_at = now_epoch_secs();
     }
 
-    pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
-        self.identity
-            .classes
-            .iter()
-            .filter_map(|cl| {
-                let max_coef = self
-                    .feature_data
-                    .values()
-                    .filter_map(|feature_data| {
-                        let spell_data = feature_data.spells.as_ref()?;
-                        (spell_data.pool == pool
-                            && spell_data.caster_coef != 0
-                            && feature_data.source.as_ref()?.as_class() == Some(cl.class.as_str()))
-                        .then_some(spell_data.caster_coef)
-                    })
-                    .max()?;
+    /// Returns (caster_level, caster_class_count) for the given pool in a
+    /// single pass.
+    fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
+        let mut caster_level_sixths = 0u32;
+        let mut caster_classes = 0u32;
+        for cl in &self.identity.classes {
+            let max_coef = self
+                .feature_data
+                .values()
+                .filter_map(|feature_data| {
+                    let spell_data = feature_data.spells.as_ref()?;
+                    (spell_data.pool == pool
+                        && spell_data.caster_coef != 0
+                        && feature_data.source.as_ref()?.as_class() == Some(cl.class.as_str()))
+                    .then_some(spell_data.caster_coef)
+                })
+                .max();
+            if let Some(max_coef) = max_coef {
+                caster_classes += 1;
                 // 6 is LCM(1,2,3) — the valid caster_coef values.
                 // coef is the reciprocal multiplier: full=6, half=3, third=2.
                 // The bitwise `& coef & 1` term rounds up for half casters
                 // (divide by 2, round up) and rounds down for third casters
                 // (divide by 3, round down).
                 let coef = 6 / max_coef;
-                Some(coef * (cl.level + (cl.level & coef & 1)))
-            })
-            .sum::<u32>()
-            / 6
+                caster_level_sixths += coef * (cl.level + (cl.level & coef & 1));
+            }
+        }
+        (caster_level_sixths / 6, caster_classes)
+    }
+
+    pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
+        self.caster_info(pool).0
     }
 
     fn spell_slots_for_caster_level(&self, pool: SpellSlotPool) -> &'static [u32] {
@@ -316,37 +210,8 @@ impl Character {
             .unwrap_or(&[])
     }
 
-    pub fn highest_spell_slot_level(&self, pool: SpellSlotPool) -> u32 {
-        self.spell_slots
-            .get(&pool)
-            .and_then(|slots| {
-                slots
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find(|(_, slot)| slot.total > 0)
-                    .map(|(i, _)| (i + 1) as u32)
-            })
-            .unwrap_or(1)
-    }
-
     pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
-        let caster_classes = self
-            .identity
-            .classes
-            .iter()
-            .filter(|cl| {
-                self.feature_data.values().any(|feature_data| {
-                    feature_data.spells.as_ref().is_some_and(|spell_data| {
-                        spell_data.pool == pool && spell_data.caster_coef != 0
-                    }) && feature_data
-                        .source
-                        .as_ref()
-                        .and_then(|source| source.as_class())
-                        == Some(cl.class.as_str())
-                })
-            })
-            .count();
+        let (_, caster_classes) = self.caster_info(pool);
 
         let table_slots = self.spell_slots_for_caster_level(pool);
         let slots: &[u32] = match caster_classes {
@@ -497,15 +362,15 @@ impl Default for Character {
             id: Uuid::new_v4(),
             identity: CharacterIdentity::default(),
             abilities: AbilityScores::default(),
-            saving_throws: HashSet::new(),
-            skills: HashMap::new(),
+            saving_throws: VecSet::new(),
+            skills: BTreeMap::new(),
             combat: CombatStats::default(),
             personality: Personality::default(),
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
-            proficiencies: HashSet::new(),
+            proficiencies: VecSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
             notes: String::new(),
@@ -533,6 +398,9 @@ impl expr::Context<Attribute> for Character {
             Attribute::Speed => {
                 self.combat.speed = value as u32;
             }
+            Attribute::Inspiration => {
+                self.combat.inspiration = value != 0;
+            }
             other => return Err(expr::Error::read_only_field(other)),
         }
 
@@ -546,648 +414,59 @@ impl expr::Context<Attribute> for Character {
             Attribute::Hp => Ok(self.combat.hp_current as i32),
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),
             Attribute::Level => Ok(self.level() as i32),
-            Attribute::Ac => Ok(self.combat.armor_class as i32),
+            Attribute::Ac => Ok(self.combat.armor_class),
             Attribute::Speed => Ok(self.combat.speed as i32),
             Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
-            Attribute::ClassLevel => Err(expr::Error::unexpected_token(var)),
+            Attribute::Inspiration => Ok(self.combat.inspiration as i32),
+            other => Err(expr::Error::unsupported_var(other)),
         }
     }
 }
 
-// --- Sub-structs ---
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct CharacterIdentity {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub classes: Vec<ClassLevel>,
-    #[serde(default)]
-    pub race: String,
-    #[serde(default)]
-    pub background: String,
-    pub alignment: Alignment,
-    #[serde(default)]
-    pub experience_points: u32,
-    #[serde(default)]
-    pub race_applied: bool,
-    #[serde(default)]
-    pub background_applied: bool,
+pub struct Context<'a> {
+    pub character: &'a mut Character,
+    pub class_level: i32,
+    pub caster_level: i32,
+    pub caster_modifier: i32,
 }
 
-impl Default for CharacterIdentity {
-    fn default() -> Self {
+impl<'a> From<&'a mut Character> for Context<'a> {
+    fn from(character: &'a mut Character) -> Self {
         Self {
-            name: "New Character".to_string(),
-            classes: vec![ClassLevel::default()],
-            race: String::new(),
-            background: String::new(),
-            alignment: Alignment::TrueNeutral,
-            experience_points: 0,
-            race_applied: false,
-            background_applied: false,
+            character,
+            class_level: 0,
+            caster_level: 0,
+            caster_modifier: 0,
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct ClassLevel {
-    #[serde(default)]
-    pub class: String,
-    #[serde(default)]
-    pub class_label: Option<String>,
-    #[serde(default)]
-    pub subclass: Option<String>,
-    #[serde(default)]
-    pub subclass_label: Option<String>,
-    #[serde(default)]
-    pub level: u32,
-    #[serde(default)]
-    pub hit_die_sides: u32,
-    #[serde(default)]
-    pub hit_dice_used: u32,
-    #[serde(default)]
-    pub applied_levels: VecSet<u32>,
-}
-
-impl ClassLevel {
-    pub fn class_label(&self) -> &str {
-        self.class_label.as_deref().unwrap_or(&self.class)
+impl expr::Context<Attribute> for Context<'_> {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        self.character.assign(var, value)
     }
 
-    pub fn subclass_label(&self) -> Option<&str> {
-        self.subclass_label.as_deref().or(self.subclass.as_deref())
-    }
-}
-
-impl std::fmt::Display for ClassLevel {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(subclass) = self.subclass_label() {
-            write!(f, "{} ({}) {}", self.class_label(), subclass, self.level)
-        } else {
-            write!(f, "{} {}", self.class_label(), self.level)
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::ClassLevel => Ok(self.class_level),
+            Attribute::CasterLevel => Ok(self.caster_level),
+            Attribute::CasterModifier => Ok(self.caster_modifier),
+            _ => self.character.resolve(var),
         }
-    }
-}
-
-impl Default for ClassLevel {
-    fn default() -> Self {
-        Self {
-            class: String::new(),
-            class_label: None,
-            subclass: None,
-            subclass_label: None,
-            level: 1,
-            hit_die_sides: 8,
-            hit_dice_used: 0,
-            applied_levels: VecSet::new(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
-pub struct AbilityScores {
-    #[serde(default)]
-    pub strength: u32,
-    #[serde(default)]
-    pub dexterity: u32,
-    #[serde(default)]
-    pub constitution: u32,
-    #[serde(default)]
-    pub intelligence: u32,
-    #[serde(default)]
-    pub wisdom: u32,
-    #[serde(default)]
-    pub charisma: u32,
-}
-
-impl AbilityScores {
-    pub fn get(&self, ability: Ability) -> u32 {
-        match ability {
-            Ability::Strength => self.strength,
-            Ability::Dexterity => self.dexterity,
-            Ability::Constitution => self.constitution,
-            Ability::Intelligence => self.intelligence,
-            Ability::Wisdom => self.wisdom,
-            Ability::Charisma => self.charisma,
-        }
-    }
-
-    pub fn set(&mut self, ability: Ability, value: u32) {
-        match ability {
-            Ability::Strength => self.strength = value,
-            Ability::Dexterity => self.dexterity = value,
-            Ability::Constitution => self.constitution = value,
-            Ability::Intelligence => self.intelligence = value,
-            Ability::Wisdom => self.wisdom = value,
-            Ability::Charisma => self.charisma = value,
-        }
-    }
-
-    pub fn modifier(&self, ability: Ability) -> i32 {
-        let score = self.get(ability) as i32;
-        (score - 10).div_euclid(2)
-    }
-}
-
-impl Default for AbilityScores {
-    fn default() -> Self {
-        Self {
-            strength: 10,
-            dexterity: 10,
-            constitution: 10,
-            intelligence: 10,
-            wisdom: 10,
-            charisma: 10,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
-pub struct CombatStats {
-    #[serde(default)]
-    pub armor_class: i32,
-    #[serde(default)]
-    pub speed: u32,
-    #[serde(default)]
-    pub hp_max: u32,
-    #[serde(default)]
-    pub hp_current: u32,
-    #[serde(default)]
-    pub hp_temp: u32,
-    #[serde(default)]
-    pub death_save_successes: u8,
-    #[serde(default)]
-    pub death_save_failures: u8,
-    #[serde(default)]
-    pub initiative_misc_bonus: i32,
-    #[serde(default)]
-    pub inspiration: bool,
-}
-
-impl Default for CombatStats {
-    fn default() -> Self {
-        Self {
-            armor_class: 10,
-            speed: 30,
-            hp_max: 0,
-            hp_current: 0,
-            hp_temp: 0,
-            death_save_successes: 0,
-            death_save_failures: 0,
-            initiative_misc_bonus: 0,
-            inspiration: false,
-        }
-    }
-}
-
-impl CombatStats {
-    pub fn damage(&mut self, amount: u32) {
-        if amount == 0 {
-            return;
-        }
-
-        let amount = if self.hp_temp > 0 {
-            let temp_absorb = self.hp_temp.min(amount);
-            self.hp_temp -= temp_absorb;
-            amount - temp_absorb
-        } else {
-            amount
-        };
-
-        self.hp_current = self.hp_current.saturating_sub(amount);
-    }
-
-    pub fn heal(&mut self, amount: u32) {
-        if amount == 0 {
-            return;
-        }
-
-        self.hp_current = (self.hp_current + amount).min(self.hp_max);
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Personality {
-    #[serde(default)]
-    pub history: String,
-    #[serde(default)]
-    pub personality_traits: String,
-    #[serde(default)]
-    pub ideals: String,
-    #[serde(default)]
-    pub bonds: String,
-    #[serde(default)]
-    pub flaws: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Feature {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-}
-
-impl Feature {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum FeatureSource {
-    Class(String),
-    Race(String),
-    Background(String),
-}
-
-impl FeatureSource {
-    pub fn name(&self) -> &str {
-        match self {
-            Self::Class(name) | Self::Race(name) | Self::Background(name) => name,
-        }
-    }
-
-    pub fn as_class(&self) -> Option<&str> {
-        match self {
-            Self::Class(name) => Some(name),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct FeatureData {
-    #[serde(default)]
-    pub source: Option<FeatureSource>,
-    #[serde(default)]
-    pub fields: Vec<FeatureField>,
-    #[serde(default)]
-    pub spells: Option<SpellData>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct FeatureField {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
-    pub value: FeatureValue,
-}
-
-impl FeatureField {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub enum FeatureValue {
-    Points { used: u32, max: u32 },
-    Choice { options: Vec<FeatureOption> },
-    Die { die: Die, used: u32 },
-    Bonus(i32),
-}
-
-impl Default for FeatureValue {
-    fn default() -> Self {
-        FeatureValue::Points { used: 0, max: 0 }
-    }
-}
-
-impl FeatureValue {
-    pub fn available_points(&self) -> Option<u32> {
-        match self {
-            FeatureValue::Points { used, max } => Some(max.saturating_sub(*used)),
-            FeatureValue::Die { die, used } => Some(die.amount.saturating_sub(*used)),
-            _ => None,
-        }
-    }
-
-    pub fn choices(&self) -> &[FeatureOption] {
-        match self {
-            FeatureValue::Choice { options } => options,
-            _ => &[],
-        }
-    }
-
-    pub fn choices_mut(&mut self) -> &mut [FeatureOption] {
-        match self {
-            FeatureValue::Choice { options } => options,
-            _ => &mut [],
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct FeatureOption {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
-    pub cost: u32,
-}
-
-impl FeatureOption {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Equipment {
-    #[serde(default)]
-    pub weapons: Vec<Weapon>,
-    #[serde(default)]
-    pub armors: Vec<Armor>,
-    #[serde(default)]
-    pub items: Vec<Item>,
-    #[serde(default)]
-    pub currency: Currency,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Armor {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub base_ac: u32,
-    #[serde(default)]
-    pub armor_type: ArmorType,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Weapon {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub attack_bonus: i32,
-    #[serde(default)]
-    pub damage: String,
-    #[serde(default)]
-    pub damage_type: Option<DamageType>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Item {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub quantity: u32,
-    #[serde(default)]
-    pub description: String,
-}
-
-impl std::fmt::Display for Item {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name)?;
-        if self.quantity > 1 {
-            write!(f, " \u{00d7}{}", self.quantity)?;
-        }
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Currency {
-    #[serde(default)]
-    pub cp: u32,
-    #[serde(default)]
-    pub sp: u32,
-    #[serde(default)]
-    pub ep: u32,
-    #[serde(default)]
-    pub gp: u32,
-    #[serde(default)]
-    pub pp: u32,
-}
-
-impl Currency {
-    pub fn as_money(&self) -> Money {
-        Money::from_cp(
-            self.cp
-                + self.sp * Money::CP_PER_SP
-                + self.ep * Money::CP_PER_EP
-                + self.gp * Money::CP_PER_GP
-                + self.pp * Money::CP_PER_PP,
-        )
-    }
-
-    pub fn gain(&mut self, amount: Money) {
-        let (gain_gp, gain_sp, gain_cp) = amount.as_gp_sp_cp();
-        self.cp += gain_cp;
-        self.sp += gain_sp;
-        self.gp += gain_gp;
-    }
-
-    #[allow(unused_assignments)]
-    pub fn spend(&mut self, amount: Money) -> bool {
-        if amount > self.as_money() {
-            return false;
-        }
-
-        let mut remaining_cp = amount.whole_cp();
-
-        macro_rules! spend_coin {
-            ($coin:ident, $cp_per:expr) => {
-                if remaining_cp > 0 {
-                    let can_spend = (remaining_cp / $cp_per).min(self.$coin);
-                    self.$coin -= can_spend;
-                    remaining_cp -= can_spend * $cp_per;
-                }
-            };
-        }
-
-        spend_coin!(pp, Money::CP_PER_PP);
-        spend_coin!(gp, Money::CP_PER_GP);
-        spend_coin!(ep, Money::CP_PER_EP);
-        spend_coin!(sp, Money::CP_PER_SP);
-        spend_coin!(cp, 1u32);
-
-        // If there's still a remainder, break the smallest available coin that
-        // covers it and give change back in GP/SP/CP (no EP to keep it clean).
-        // The three guards: still something to spend, coin is in wallet, coin
-        // covers the remainder (one coin is enough since the greedy pass already
-        // consumed all coins whose denomination divides evenly into remaining_cp).
-        if remaining_cp > 0 {
-            macro_rules! break_coin {
-                ($coin:ident, $cp_per:expr) => {
-                    if remaining_cp > 0 && self.$coin > 0 && $cp_per >= remaining_cp {
-                        self.$coin -= 1;
-                        let mut change = $cp_per - remaining_cp;
-                        self.gp += change / Money::CP_PER_GP;
-                        change %= Money::CP_PER_GP;
-                        self.sp += change / Money::CP_PER_SP;
-                        self.cp += change % Money::CP_PER_SP;
-                        remaining_cp = 0;
-                    }
-                };
-            }
-
-            break_coin!(sp, Money::CP_PER_SP);
-            break_coin!(ep, Money::CP_PER_EP);
-            break_coin!(gp, Money::CP_PER_GP);
-            break_coin!(pp, Money::CP_PER_PP);
-        }
-
-        true
-    }
-}
-
-impl std::fmt::Display for Currency {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut first = true;
-        for (amount, label) in [
-            (self.pp, "pp"),
-            (self.gp, "gp"),
-            (self.ep, "ep"),
-            (self.sp, "sp"),
-            (self.cp, "cp"),
-        ] {
-            if amount > 0 {
-                if !first {
-                    f.write_str(" ")?;
-                }
-                write!(f, "{amount}{label}")?;
-                first = false;
-            }
-        }
-        if first {
-            f.write_str("\u{2014}")?;
-        }
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct SpellData {
-    pub casting_ability: Ability,
-    #[serde(default)]
-    pub caster_coef: u32,
-    #[serde(default)]
-    pub pool: SpellSlotPool,
-    #[serde(default)]
-    pub spells: Vec<Spell>,
-}
-
-impl SpellData {
-    pub fn cantrips(&self) -> impl Iterator<Item = &Spell> {
-        self.spells.iter().filter(|s| s.level == 0)
-    }
-
-    pub fn spells(&self) -> impl Iterator<Item = &Spell> {
-        self.spells.iter().filter(|s| s.level > 0)
-    }
-}
-
-impl Default for SpellData {
-    fn default() -> Self {
-        Self {
-            casting_ability: Ability::Intelligence,
-            caster_coef: 0,
-            pool: SpellSlotPool::default(),
-            spells: Vec::new(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct SpellSlotLevel {
-    #[serde(default)]
-    pub total: u32,
-    #[serde(default)]
-    pub used: u32,
-}
-
-impl SpellSlotLevel {
-    pub fn available(&self) -> u32 {
-        self.total.saturating_sub(self.used)
-    }
-
-    pub fn is_available(&self) -> bool {
-        self.available() > 0
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.available() == 0
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
-pub struct FreeUses {
-    #[serde(default)]
-    pub used: u32,
-    #[serde(default)]
-    pub max: u32,
-}
-
-impl FreeUses {
-    pub fn available(&self) -> u32 {
-        self.max.saturating_sub(self.used)
-    }
-
-    pub fn is_available(&self) -> bool {
-        self.available() > 0
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Spell {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub level: u32,
-    #[serde(default)]
-    pub prepared: bool,
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
-    pub sticky: bool,
-    #[serde(default)]
-    pub cost: u32,
-    #[serde(default)]
-    pub free_uses: Option<FreeUses>,
-}
-
-impl Spell {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct RacialTrait {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-}
-
-impl RacialTrait {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
     }
 }
 
 #[cfg(test)]
 pub mod tests {
-    use std::collections::{BTreeMap, HashMap, HashSet};
+    use std::collections::BTreeMap;
 
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::vecset::VecSet;
+    use crate::{
+        model::{ClassLevel, Currency, FeatureSource, Money, SpellData},
+        vecset::VecSet,
+    };
 
     /// Build a minimal character for testing (avoids Default which calls
     /// js_sys::Date)
@@ -1221,8 +500,10 @@ pub mod tests {
                 wisdom: 8,
                 charisma: 13,
             },
-            saving_throws: HashSet::from([Ability::Strength, Ability::Constitution]),
-            skills: HashMap::from([
+            saving_throws: [Ability::Strength, Ability::Constitution]
+                .into_iter()
+                .collect(),
+            skills: BTreeMap::from([
                 (Skill::Athletics, ProficiencyLevel::Proficient),
                 (Skill::Perception, ProficiencyLevel::Expertise),
             ]),
@@ -1241,7 +522,7 @@ pub mod tests {
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
-            proficiencies: HashSet::new(),
+            proficiencies: VecSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
             spell_slots: BTreeMap::new(),

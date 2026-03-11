@@ -22,19 +22,24 @@ pub enum Error {
     DivisionByZero,
     ReadOnlyField(Box<str>),
     AssignAtEval(Box<str>),
+    UnsupportedVar(Box<str>),
 }
 
 impl Error {
+    pub fn unsupported_var<T: fmt::Display>(var: T) -> Self {
+        Self::UnsupportedVar(format!("{var}").into_boxed_str())
+    }
+
     pub fn unexpected_token<T: fmt::Debug>(token: T) -> Self {
         Self::UnexpectedToken(format!("{token:?}").into_boxed_str())
     }
 
-    pub fn read_only_field<T: fmt::Debug>(var: T) -> Self {
-        Self::ReadOnlyField(format!("{var:?}").into_boxed_str())
+    pub fn read_only_field<T: fmt::Display>(var: T) -> Self {
+        Self::ReadOnlyField(format!("{var}").into_boxed_str())
     }
 
-    pub fn assign_at_eval<T: fmt::Debug>(var: T) -> Self {
-        Self::AssignAtEval(format!("{var:?}").into_boxed_str())
+    pub fn assign_at_eval<T: fmt::Display>(var: T) -> Self {
+        Self::AssignAtEval(format!("{var}").into_boxed_str())
     }
 }
 
@@ -48,6 +53,7 @@ impl fmt::Display for Error {
             Error::EmptyExpression => write!(f, "empty expression"),
             Error::DivisionByZero => write!(f, "division by zero"),
             Error::ReadOnlyField(var) => write!(f, "cannot assign to read-only field: {var}"),
+            Error::UnsupportedVar(var) => write!(f, "unsupported variable: {var}"),
             Error::AssignAtEval(var) => {
                 write!(f, "cannot assign to field during evaluation: {var}")
             }
@@ -108,7 +114,7 @@ impl Stack {
     }
 }
 
-impl<Var: Copy + fmt::Debug> Expr<Var> {
+impl<Var: Copy + fmt::Display> Expr<Var> {
     pub fn apply(&self, ctx: &mut impl Context<Var>) -> Result<i32, Error> {
         let mut stack = Stack::new();
         for &op in &self.ops {
@@ -435,7 +441,7 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                 Ok(())
             }
             Some(Token::Ident(name)) => {
-                if let Some(var) = name.parse().ok() {
+                if let Ok(var) = name.parse() {
                     ops.push(Op::PushVar(var));
                     return Ok(());
                 }
@@ -479,20 +485,20 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
 
     // assignment = IDENT '=' expr | expr
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
-        if let Some(&Token::Ident(name)) = self.peek() {
-            if let Ok(var) = name.parse::<Var>() {
-                // Speculatively consume ident, check for '='
+        if let Some(&Token::Ident(name)) = self.peek()
+            && let Ok(var) = name.parse::<Var>()
+        {
+            // Speculatively consume ident, check for '='
+            self.next()?;
+            if self.peek() == Some(&Token::Eq) {
                 self.next()?;
-                if self.peek() == Some(&Token::Eq) {
-                    self.next()?;
-                    self.parse_expr(ops)?;
-                    ops.push(Op::Assign(var));
-                    return Ok(());
-                }
-                // Not an assignment, push the var and continue as expr
-                ops.push(Op::PushVar(var));
-                return self.parse_expr_tail(ops);
+                self.parse_expr(ops)?;
+                ops.push(Op::Assign(var));
+                return Ok(());
             }
+            // Not an assignment, push the var and continue as expr
+            ops.push(Op::PushVar(var));
+            return self.parse_expr_tail(ops);
         }
         self.parse_expr(ops)
     }
@@ -744,6 +750,7 @@ mod tests {
     type Expr = super::Expr<Var>;
 
     struct Character {
+        #[allow(dead_code)]
         abilities: AbilityScores,
         ac: i32,
     }

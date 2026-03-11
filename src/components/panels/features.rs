@@ -12,7 +12,7 @@ use crate::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
         RacialTrait,
     },
-    rules::RulesRegistry,
+    rules::{DefinitionStore, RulesRegistry},
 };
 
 #[component]
@@ -29,20 +29,34 @@ pub fn FeaturesPanel() -> impl IntoView {
         features.write().push(Feature::default());
     };
 
+    let feature_options = Memo::new(move |_| {
+        let classes = store.identity().classes().read();
+        classes
+            .iter()
+            .filter_map(|cl| {
+                registry.classes().with(&cl.class, |def| {
+                    def.features(cl.subclass.as_deref())
+                        .map(|feat| {
+                            (
+                                feat.name.clone(),
+                                feat.label().to_string(),
+                                feat.description.clone(),
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                })
+            })
+            .flatten()
+            .collect::<Vec<_>>()
+    });
+
     view! {
         <Panel title=move_tr!("panel-features") class="features-panel">
             <div class="features-list">
                 {move || {
-                    let classes = store.identity().classes().read();
-                    let classes_list: Vec<_> = classes.iter().cloned().collect();
-                    let options: Vec<(String, String, String)> = classes_list.iter().filter_map(|c| {
-                        registry.with_class(&c.class, |def| {
-                            def.features(c.subclass.as_deref())
-                                .map(|f| (f.name.clone(), f.label().to_string(), f.description.clone()))
-                                .collect::<Vec<_>>()
-                        })
-                    }).flatten().collect();
-                    let options = Signal::stored(options);
+                    let classes_list = store.identity().classes().read();
+                    let feature_data = store.feature_data().read();
+                    let options = feature_options;
                     features
                         .read()
                         .iter()
@@ -50,7 +64,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
-                            let source_text = store.feature_data().read().get(&feature.name).and_then(|fd| {
+                            let source_text = feature_data.get(&feature.name).and_then(|fd| {
                                 fd.source.as_ref().map(|src| {
                                     let (prefix, label) = match src {
                                         FeatureSource::Class(class_name) => {
@@ -61,13 +75,13 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             (tr!("source-class"), label)
                                         }
                                         FeatureSource::Race(race_name) => {
-                                            let label = registry.with_race(race_name, |d| {
+                                            let label = registry.races().with(race_name, |d| {
                                                 d.label.as_deref().unwrap_or(&d.name).to_string()
                                             }).unwrap_or_else(|| race_name.clone());
                                             (tr!("source-race"), label)
                                         }
                                         FeatureSource::Background(bg_name) => {
-                                            let label = registry.with_background(bg_name, |d| {
+                                            let label = registry.backgrounds().with(bg_name, |d| {
                                                 d.label.as_deref().unwrap_or(&d.name).to_string()
                                             }).unwrap_or_else(|| bg_name.clone());
                                             (tr!("source-background"), label)

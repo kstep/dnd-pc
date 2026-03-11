@@ -102,7 +102,7 @@ pub async fn decode_character(data: &str) -> Option<Character> {
 
 #[cfg(test)]
 pub mod tests {
-    use std::collections::{BTreeMap, HashMap, HashSet};
+    use std::collections::BTreeMap;
 
     use uuid::Uuid;
     use wasm_bindgen_test::*;
@@ -147,8 +147,10 @@ pub mod tests {
                 wisdom: 13,
                 charisma: 16,
             },
-            saving_throws: HashSet::from([Ability::Dexterity, Ability::Charisma]),
-            skills: HashMap::new(),
+            saving_throws: [Ability::Dexterity, Ability::Charisma]
+                .into_iter()
+                .collect(),
+            skills: BTreeMap::new(),
             combat: CombatStats {
                 armor_class: 13,
                 speed: 30,
@@ -189,7 +191,7 @@ pub mod tests {
                     }),
                 },
             )]),
-            proficiencies: HashSet::new(),
+            proficiencies: VecSet::new(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
             spell_slots: BTreeMap::new(),

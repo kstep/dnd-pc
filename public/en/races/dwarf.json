@@ -13,7 +13,11 @@
     },
     {
       "name": "Dwarven Toughness",
-      "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+      "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
+      "assign": [
+        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnFeatureAdd" },
+        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnLevelUp" }
+      ]
     },
     {
       "name": "Languages",

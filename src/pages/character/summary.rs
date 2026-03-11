@@ -1,30 +1,24 @@
-mod backpack;
-mod choices;
-mod languages;
-mod resources;
-mod spells;
-mod stats;
-mod weapons;
-
-use backpack::BackpackBlock;
-use choices::ChoicesBlock;
-use languages::LanguagesBlock;
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
-use resources::ResourcesBlock;
-use spells::SpellsBlock;
-use stats::StatsBlock;
-use weapons::WeaponsBlock;
 
 use crate::{
-    components::{icon::Icon, summary_header::SummaryHeader},
+    components::{
+        icon::Icon,
+        summary::{
+            BackpackBlock, ChoicesBlock, LanguagesBlock, ResourcesBlock, SpellsBlock, StatsBlock,
+            WeaponsBlock,
+        },
+        summary_header::SummaryHeader,
+    },
     model::Character,
+    rules::RulesRegistry,
 };
 
 #[component]
 pub fn CharacterSummary() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
 
     view! {
         <SummaryHeader />
@@ -36,12 +30,12 @@ pub fn CharacterSummary() -> impl IntoView {
                 <h3 class="summary-section-title">{move_tr!("summary-actions")}</h3>
                 <div class="summary-rest-actions">
                     <button class="summary-rest-btn" title=move_tr!("short-rest")
-                        on:click=move |_| { store.update(|ch| ch.short_rest()); }
+                        on:click=move |_| store.update(|ch| registry.short_rest(ch))
                     >
                         <Icon name="coffee" size=14 />
                     </button>
                     <button class="summary-rest-btn" title=move_tr!("long-rest")
-                        on:click=move |_| { store.update(|ch| ch.long_rest()); }
+                        on:click=move |_| store.update(|ch| registry.long_rest(ch))
                     >
                         <Icon name="moon" size=14 />
                     </button>

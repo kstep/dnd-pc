@@ -70,23 +70,17 @@ fn FeatureSpellcastingSection(
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    // Resolve feature name → label for display title
-    let panel_title = {
-        let identity = store.get_untracked().identity.clone();
-        registry
-            .with_feature(&identity, &feature_name, |f| f.label().to_string())
-            .unwrap_or_else(|| feature_name.clone())
-    };
-    // Resolve cost field short suffix (e.g. "SP" for Sorcery Points)
-    let cost_short: String = {
-        let identity = store.get_untracked().identity.clone();
-        registry
-            .with_feature(&identity, &feature_name, |feat| {
-                feat.cost_info().map(|(_, short)| short.to_string())
-            })
-            .flatten()
-            .unwrap_or_default()
-    };
+    // Resolve feature name → label and cost suffix for display
+    let identity = store.get_untracked().identity.clone();
+    let panel_title = registry
+        .with_feature(&identity, &feature_name, |f| f.label().to_string())
+        .unwrap_or_else(|| feature_name.clone());
+    let cost_short: String = registry
+        .with_feature(&identity, &feature_name, |feat| {
+            feat.cost_info().map(|(_, short)| short.to_string())
+        })
+        .flatten()
+        .unwrap_or_default();
     let has_cost_field = !cost_short.is_empty();
     let cost_short = StoredValue::new(cost_short);
     let fname = StoredValue::new(feature_name);
@@ -174,7 +168,7 @@ fn FeatureSpellcastingSection(
                                     .cmp(&a.sticky)
                                     .then_with(|| a.level.cmp(&b.level))
                                     .then_with(|| {
-                                        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+                                        a.name.cmp(&b.name)
                                     })
                             });
                         });
@@ -367,7 +361,7 @@ fn resolve_feature_spell_list(
             let spells_def = feat.spells.as_ref()?;
             Some(registry.with_spell_list(&spells_def.list, |spells| {
                 let mut by_level: [Vec<(String, String, String)>; 10] = Default::default();
-                for spell in spells {
+                for spell in spells.values() {
                     if let Some(bucket) = by_level.get_mut(spell.level as usize) {
                         bucket.push((
                             spell.name.clone(),

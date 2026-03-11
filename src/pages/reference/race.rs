@@ -3,13 +3,11 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{
-    FeatureChoicesView, FeatureSpells, FeatureSpellsView, ReferenceSidebar, feature_choices,
-};
+use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     model::{Translatable, format_bonus},
-    rules::RulesRegistry,
+    rules::{DefinitionStore, RulesRegistry},
 };
 
 #[derive(Params, Clone, Debug, PartialEq)]
@@ -28,7 +26,7 @@ pub fn RaceReference() -> impl IntoView {
     Effect::new(move || {
         let name = race_name();
         if !name.is_empty() {
-            registry.fetch_race_tracked(&name);
+            registry.races().fetch_tracked(&name);
         }
     });
 
@@ -47,7 +45,8 @@ pub fn RaceReference() -> impl IntoView {
         }
 
         registry
-            .with_race_tracked(&name, |def| {
+            .races()
+            .with_tracked(&name, |def| {
                 let title = def.label().to_string();
                 let description = def.description.clone();
 
@@ -78,24 +77,7 @@ pub fn RaceReference() -> impl IntoView {
                     })
                     .collect();
 
-                let features: Vec<_> = def
-                    .features
-                    .values()
-                    .map(|feat| {
-                        let spells = FeatureSpells::from_spell_list(
-                            feat.spells.as_ref().map(|spells_def| &spells_def.list),
-                        );
-                        let choices = feature_choices(&feat.fields);
-                        let langs = feat.languages.join(", ");
-                        (
-                            feat.label().to_string(),
-                            feat.description.clone(),
-                            langs,
-                            spells,
-                            choices,
-                        )
-                    })
-                    .collect();
+                let features = collect_feature_views(def.features.values());
 
                 view! {
                     <Title text=title.clone() />
@@ -139,26 +121,7 @@ pub fn RaceReference() -> impl IntoView {
 
                         {(!features.is_empty()).then(|| view! {
                             <h2>{move_tr!("ref-features")}</h2>
-                            <div class="reference-features">
-                                {features
-                                    .into_iter()
-                                    .map(|(label, desc, langs, spells, choices)| {
-                                        view! {
-                                            <div class="reference-feature">
-                                                <h3>{label}</h3>
-                                                <p>{desc}</p>
-                                                {(!langs.is_empty()).then(|| view! {
-                                                    <p class="feature-languages">
-                                                        {move_tr!("ref-languages")}{": "}{langs}
-                                                    </p>
-                                                })}
-                                                <FeatureSpellsView spells=spells />
-                                                <FeatureChoicesView choices=choices />
-                                            </div>
-                                        }
-                                    })
-                                    .collect_view()}
-                            </div>
+                            <ReferenceFeaturesView features />
                         })}
                     </div>
                 }
@@ -175,7 +138,7 @@ pub fn RaceReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     {move || registry.with_race_entries(|entries| {
-                        entries.iter().map(|entry| {
+                        entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {

@@ -10,6 +10,7 @@ pub mod panel;
 pub mod panels;
 pub mod resource_slot;
 pub mod skill_row;
+pub mod summary;
 pub mod summary_header;
 pub mod summary_list;
 pub mod sync_indicator;

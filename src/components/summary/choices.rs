@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use leptos::{either::Either, prelude::*};
 use reactive_stores::Store;
@@ -29,7 +29,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                     Some((field.name.as_str(), field.value.available_points()?))
                 })
             })
-            .collect::<HashMap<_, _>>();
+            .collect::<BTreeMap<_, _>>();
 
         features
             .iter()
@@ -55,15 +55,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 .copied()
                                 .unwrap_or_default();
 
-                            Some((name.clone(), (points, from, cost.clone())))
+                            Some((name.to_string(), (points, from, cost.clone())))
                         })
-                        .collect::<HashMap<_, _>>()
+                        .collect::<BTreeMap<_, _>>()
                 })?;
 
+                let feat_name = feat_name.clone();
                 Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
                     let (points, from, cost) = fields.get(&field.name)?;
                     let short = cost.as_deref().and_then(|c| registry.get_points_short(&id, c));
                     let cost_field = cost.as_ref().map(|c| StoredValue::new(c.clone()));
+                    let feat_name = feat_name.clone();
 
                     let FeatureValue::Choice { options } = &field.value else {
                         return None;
@@ -86,20 +88,20 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 {cost_field.map(|cfn| view! {
                                                     <CastButton
                                                         disabled=!can_cast
-                                                        on_cast=Callback::new(move |_: CastOption| {
+                                                        on_cast={
+                                                            let feat_name = feat_name.clone();
+                                                            Callback::new(move |_: CastOption| {
                                                             cfn.with_value(|cost_name| {
                                                                 feature_data.update(|map| {
-                                                                    for entry in map.values_mut() {
-                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                            && let FeatureValue::Points { used, max } = &mut field.value
-                                                                        {
-                                                                            *used = (*used + opt_cost).min(*max);
-                                                                            return;
-                                                                        }
+                                                                    if let Some(entry) = map.get_mut(&feat_name)
+                                                                        && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                        && let FeatureValue::Points { used, max } = &mut field.value
+                                                                    {
+                                                                        *used = (*used + opt_cost).min(*max);
                                                                     }
                                                                 });
                                                             });
-                                                        })
+                                                        })}
                                                     />
                                                 })}
                                             }
