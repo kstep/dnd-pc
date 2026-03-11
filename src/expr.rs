@@ -567,6 +567,136 @@ pub enum Op<Var> {
     Assign(Var),
 }
 
+impl<Var: fmt::Display> fmt::Display for Expr<Var> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        struct Frag {
+            text: String,
+            prec: u8, // 0=assign, 1=add/sub, 2=mul/div, 3=atom
+        }
+
+        let mut stack: Vec<Frag> = Vec::new();
+
+        for op in &self.ops {
+            match op {
+                Op::PushConst(n) => {
+                    let text = if *n < 0 {
+                        format!("({n})")
+                    } else {
+                        n.to_string()
+                    };
+                    stack.push(Frag { text, prec: 3 });
+                }
+                Op::PushVar(var) => {
+                    stack.push(Frag {
+                        text: var.to_string(),
+                        prec: 3,
+                    });
+                }
+                Op::Add | Op::Sub => {
+                    let b = stack.pop().unwrap();
+                    let a = stack.pop().unwrap();
+                    let sym = if matches!(op, Op::Add) { "+" } else { "-" };
+                    let left = if a.prec < 1 {
+                        format!("({})", a.text)
+                    } else {
+                        a.text
+                    };
+                    let right = if b.prec < 1 || (matches!(op, Op::Sub) && b.prec <= 1) {
+                        format!("({})", b.text)
+                    } else {
+                        b.text
+                    };
+                    stack.push(Frag {
+                        text: format!("{left} {sym} {right}"),
+                        prec: 1,
+                    });
+                }
+                Op::Mul | Op::DivFloor | Op::DivCeil => {
+                    let b = stack.pop().unwrap();
+                    let a = stack.pop().unwrap();
+                    let sym = match op {
+                        Op::Mul => "*",
+                        Op::DivFloor => "/",
+                        Op::DivCeil => "\\",
+                        _ => unreachable!(),
+                    };
+                    let left = if a.prec < 2 {
+                        format!("({})", a.text)
+                    } else {
+                        a.text
+                    };
+                    let right = if b.prec < 2
+                        || (matches!(op, Op::DivFloor | Op::DivCeil) && b.prec <= 2)
+                    {
+                        format!("({})", b.text)
+                    } else {
+                        b.text
+                    };
+                    stack.push(Frag {
+                        text: format!("{left} {sym} {right}"),
+                        prec: 2,
+                    });
+                }
+                Op::Min => {
+                    let b = stack.pop().unwrap();
+                    let a = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("min({}, {})", a.text, b.text),
+                        prec: 3,
+                    });
+                }
+                Op::Max => {
+                    let b = stack.pop().unwrap();
+                    let a = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("max({}, {})", a.text, b.text),
+                        prec: 3,
+                    });
+                }
+                Op::Roll => {
+                    let sides = stack.pop().unwrap();
+                    let count = stack.pop().unwrap();
+                    let text = if count.text == "1" {
+                        format!("d{}", sides.text)
+                    } else {
+                        format!("{}d{}", count.text, sides.text)
+                    };
+                    stack.push(Frag { text, prec: 3 });
+                }
+                Op::Sum => {
+                    // Follows Roll; roll fragment is already on stack
+                }
+                Op::KeepMax(n) => {
+                    let roll = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("{}kh{n}", roll.text),
+                        prec: 3,
+                    });
+                }
+                Op::KeepMin(n) => {
+                    let roll = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("{}kl{n}", roll.text),
+                        prec: 3,
+                    });
+                }
+                Op::Assign(var) => {
+                    let val = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("{var} = {}", val.text),
+                        prec: 0,
+                    });
+                }
+            }
+        }
+
+        if let Some(top) = stack.pop() {
+            f.write_str(&top.text)
+        } else {
+            Ok(())
+        }
+    }
+}
 #[cfg(test)]
 mod tests {
     use wasm_bindgen_test::*;
@@ -578,6 +708,20 @@ mod tests {
     enum Var {
         Modifier(Ability),
         Ac,
+    }
+
+    impl fmt::Display for Var {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            match self {
+                Var::Modifier(Ability::Strength) => write!(f, "STR"),
+                Var::Modifier(Ability::Dexterity) => write!(f, "DEX"),
+                Var::Modifier(Ability::Constitution) => write!(f, "CON"),
+                Var::Modifier(Ability::Intelligence) => write!(f, "INT"),
+                Var::Modifier(Ability::Wisdom) => write!(f, "WIS"),
+                Var::Modifier(Ability::Charisma) => write!(f, "CHA"),
+                Var::Ac => write!(f, "AC"),
+            }
+        }
     }
 
     impl FromStr for Var {
@@ -634,6 +778,18 @@ mod tests {
                 Var::Ac => Ok(self.ac),
             }
         }
+    }
+
+    #[wasm_bindgen_test]
+    fn display_expr() {
+        let expr: Expr = "10 + CHA + DEX".parse().unwrap();
+        assert_eq!(expr.to_string(), "10 + CHA + DEX");
+
+        let expr: Expr = "2 * (3 + 4)".parse().unwrap();
+        assert_eq!(expr.to_string(), "2 * (3 + 4)");
+
+        let expr: Expr = "2d6kh1 + 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "2d6kh1 + 3");
     }
 
     #[wasm_bindgen_test]

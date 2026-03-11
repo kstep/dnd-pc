@@ -45,6 +45,25 @@ impl FromStr for Attribute {
     }
 }
 
+impl fmt::Display for Attribute {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(match self {
+            Self::Modifier(Ability::Strength) => "STR",
+            Self::Modifier(Ability::Dexterity) => "DEX",
+            Self::Modifier(Ability::Constitution) => "CON",
+            Self::Modifier(Ability::Intelligence) => "INT",
+            Self::Modifier(Ability::Wisdom) => "WIS",
+            Self::Modifier(Ability::Charisma) => "CHA",
+            Self::MaxHp => "MAX_HP",
+            Self::Hp => "HP",
+            Self::TempHp => "TEMP_HP",
+            Self::Level => "LEVEL",
+            Self::Ac => "AC",
+            Self::Speed => "SPEED",
+        })
+    }
+}
+
 // --- Die type ---
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
