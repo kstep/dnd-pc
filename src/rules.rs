@@ -3,107 +3,12 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use leptos::prelude::*;
 use serde::Deserialize;
 
-/// Deserialize a `BTreeMap<u32, V>` accepting both numeric keys (binary
-/// formats) and stringified numbers (JSON).
-mod u32_key_map {
-    use std::collections::BTreeMap;
-
-    use serde::{Deserialize, Deserializer, de};
-
-    pub fn deserialize<'de, D, V>(deserializer: D) -> Result<BTreeMap<u32, V>, D::Error>
-    where
-        D: Deserializer<'de>,
-        V: Deserialize<'de>,
-    {
-        struct Visitor<V>(std::marker::PhantomData<V>);
-
-        impl<'de, V: Deserialize<'de>> de::Visitor<'de> for Visitor<V> {
-            type Value = BTreeMap<u32, V>;
-
-            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                f.write_str("a map with u32 keys (numeric or stringified)")
-            }
-
-            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-            where
-                A: de::MapAccess<'de>,
-            {
-                let mut result = BTreeMap::new();
-                while let Some((key, value)) = map.next_entry::<FlexU32, V>()? {
-                    result.insert(key.0, value);
-                }
-                Ok(result)
-            }
-        }
-
-        deserializer.deserialize_map(Visitor(std::marker::PhantomData))
-    }
-
-    struct FlexU32(u32);
-
-    impl<'de> Deserialize<'de> for FlexU32 {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct V;
-
-            impl<'de> de::Visitor<'de> for V {
-                type Value = FlexU32;
-
-                fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                    f.write_str("u32 or stringified u32")
-                }
-
-                fn visit_u32<E: de::Error>(self, v: u32) -> Result<FlexU32, E> {
-                    Ok(FlexU32(v))
-                }
-
-                fn visit_u64<E: de::Error>(self, v: u64) -> Result<FlexU32, E> {
-                    u32::try_from(v).map(FlexU32).map_err(de::Error::custom)
-                }
-
-                fn visit_str<E: de::Error>(self, v: &str) -> Result<FlexU32, E> {
-                    v.parse().map(FlexU32).map_err(de::Error::custom)
-                }
-            }
-
-            d.deserialize_any(V)
-        }
-    }
-}
-
-/// Trait for types that have a `name` field, used by `named_map`.
-trait Named {
-    fn name(&self) -> &str;
-}
-
-/// Deserialize a JSON array `[{"name": "Foo", ...}, ...]` into a
-/// `BTreeMap<String, T>` keyed by each element's `name()`.
-mod named_map {
-    use std::collections::BTreeMap;
-
-    use serde::{Deserialize, Deserializer};
-
-    use super::Named;
-
-    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<BTreeMap<String, T>, D::Error>
-    where
-        D: Deserializer<'de>,
-        T: Deserialize<'de> + Named,
-    {
-        let vec = Vec::<T>::deserialize(deserializer)?;
-        Ok(vec
-            .into_iter()
-            .map(|item| {
-                let key = item.name().to_string();
-                (key, item)
-            })
-            .collect())
-    }
-}
-
 use crate::{
     BASE_URL,
+    demap::{self, Named},
+    expr::Expr,
     model::{
-        Ability, Character, CharacterIdentity, ClassLevel, Die, Feature, FeatureField,
+        Ability, Attribute, Character, CharacterIdentity, ClassLevel, Die, Feature, FeatureField,
         FeatureSource, FeatureValue, FreeUses, Proficiency, ProficiencyLevel, RacialTrait, Skill,
         Spell, SpellData, SpellSlotPool,
     },
@@ -209,9 +114,9 @@ pub struct RaceDefinition {
     pub speed: u32,
     #[serde(default)]
     pub ability_modifiers: Vec<AbilityModifier>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub traits: BTreeMap<String, RaceTrait>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<String, FeatureDefinition>,
 }
 
@@ -277,7 +182,7 @@ pub struct BackgroundDefinition {
     pub ability_modifiers: Vec<AbilityModifier>,
     #[serde(default)]
     pub proficiencies: VecSet<Skill>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<String, FeatureDefinition>,
 }
 
@@ -321,11 +226,11 @@ pub struct ClassDefinition {
     pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
     pub saving_throws: VecSet<Ability>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<String, FeatureDefinition>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub subclasses: BTreeMap<String, SubclassDefinition>,
 }
 
@@ -357,9 +262,9 @@ pub struct SubclassDefinition {
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<String, FeatureDefinition>,
-    #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::u32_key_map")]
     pub levels: BTreeMap<u32, SubclassLevelRules>,
 }
 
@@ -397,8 +302,25 @@ pub struct FeatureDefinition {
     #[serde(default)]
     pub stackable: bool,
     pub spells: Option<SpellsDefinition>,
-    #[serde(default, deserialize_with = "named_map::deserialize")]
+    #[serde(default, deserialize_with = "demap::named_map")]
     pub fields: BTreeMap<String, FieldDefinition>,
+    #[serde(default)]
+    pub assign: Option<Vec<Assignment>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Assignment {
+    pub expr: Expr<Attribute>,
+    pub when: WhenCondition,
+}
+
+#[derive(Debug, Copy, Clone, Deserialize, PartialEq, Eq)]
+pub enum WhenCondition {
+    Always,
+    OnFeatureAdd,
+    OnLevelUp,
+    OnLongRest,
+    OnShortRest,
 }
 
 impl Named for FeatureDefinition {
@@ -443,13 +365,50 @@ impl FeatureDefinition {
         }
     }
 
+    pub fn assign(&self, character: &mut Character, when: WhenCondition) {
+        log::info!(
+            "Checking assignments for feature '{}', when condition: {:?}",
+            self.name,
+            when,
+        );
+
+        let Some(assign) = &self.assign else { return };
+
+        assign.iter().filter(|a| a.when == when).for_each(|a| {
+            log::info!(
+                "Applying assignment for feature '{}': {:?} (when: {:?})",
+                self.name,
+                a.expr,
+                a.when,
+            );
+            match a.expr.apply(character) {
+                Ok(value) => {
+                    log::info!(
+                        "Result of assignment expression for feature '{}': {value:?}",
+                        self.name,
+                    );
+                }
+                Err(error) => {
+                    log::error!(
+                        "Failed to apply assignment for feature '{}': {error:?}",
+                        self.name,
+                    );
+                }
+            }
+        });
+    }
+
     pub fn apply(&self, level: u32, character: &mut Character, source: &FeatureSource) {
-        if !character.features.iter().any(|f| f.name == self.name) {
+        if character.features.iter().any(|f| f.name == self.name) {
+            self.assign(character, WhenCondition::OnLevelUp);
+        } else {
             character.features.push(Feature {
                 name: self.name.clone(),
                 label: self.label.clone(),
                 description: self.description.clone(),
             });
+
+            self.assign(character, WhenCondition::OnFeatureAdd);
         }
 
         character.languages.extend(self.languages.iter().cloned());
@@ -644,7 +603,7 @@ pub enum FieldKind {
     Points {
         #[serde(default)]
         short: Option<String>,
-        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        #[serde(default, deserialize_with = "demap::u32_key_map")]
         levels: BTreeMap<u32, u32>,
     },
     Choice {
@@ -652,19 +611,19 @@ pub enum FieldKind {
         options: ChoiceOptions,
         #[serde(default)]
         cost: Option<String>,
-        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        #[serde(default, deserialize_with = "demap::u32_key_map")]
         levels: BTreeMap<u32, u32>,
     },
     Die {
-        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        #[serde(default, deserialize_with = "demap::u32_key_map")]
         levels: BTreeMap<u32, Die>,
     },
     Bonus {
-        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        #[serde(default, deserialize_with = "demap::u32_key_map")]
         levels: BTreeMap<u32, i32>,
     },
     FreeUses {
-        #[serde(default, deserialize_with = "u32_key_map::deserialize")]
+        #[serde(default, deserialize_with = "demap::u32_key_map")]
         levels: BTreeMap<u32, u32>,
     },
 }
@@ -827,8 +786,14 @@ impl ClassDefinition {
         let subclass = class_level.subclass.clone();
         let source = FeatureSource::Class(self.name.clone());
 
+        let subclass_rules = subclass
+            .as_deref()
+            .and_then(|sc| self.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
         for feat in self.features(subclass.as_deref()) {
-            let is_new = rules.features.contains(&feat.name);
+            let is_new = rules.features.contains(&feat.name)
+                || subclass_rules.is_some_and(|r| r.features.contains(&feat.name));
             let already_has = character.features.iter().any(|f| f.name == feat.name);
 
             // Skip non-stackable features that would be granted again from another source

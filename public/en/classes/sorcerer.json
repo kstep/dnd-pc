@@ -1456,7 +1456,21 @@
         },
         {
           "name": "Draconic Resilience",
-          "description": "The magic in your body manifests physical traits of your draconic gift. Your Hit Points maximum increases by 3, and it increases by 1 whenever you gain another Sorcerer level. Parts of you are also covered by dragon-like scales. While you aren't wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
+          "description": "The magic in your body manifests physical traits of your draconic gift. Your Hit Points maximum increases by 3, and it increases by 1 whenever you gain another Sorcerer level. Parts of you are also covered by dragon-like scales. While you aren't wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers.",
+          "assign": [
+            {
+              "expr": "AC = 10 + DEX + CHA",
+              "when": "OnFeatureAdd"
+            },
+            {
+              "expr": "MAX_HP = 3 + MAX_HP",
+              "when": "OnFeatureAdd"
+            },
+            {
+              "expr": "MAX_HP = 1 + MAX_HP",
+              "when": "OnLevelUp"
+            }
+          ]
         },
         {
           "name": "Elemental Affinity",

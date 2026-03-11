@@ -9,6 +9,8 @@ use leptos_router::{
 
 mod components;
 pub mod constvec;
+mod demap;
+mod expr;
 mod firebase;
 mod model;
 mod pages;

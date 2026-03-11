@@ -7,6 +7,7 @@ edition = "2024"
 leptos = { version = "0.8", features = ["csr"] }
 leptos_meta = { version = "0.8" }
 leptos_router = { version = "0.8" }
+getrandom = { version = "0.4.1", features = ["wasm_js"] }
 console_log = "1"
 log = "0.4"
 console_error_panic_hook = "0.1"
@@ -26,12 +27,26 @@ wasm-bindgen-futures = "0.4"
 base64 = "0.22"
 serde-wasm-bindgen = "0.6"
 web-sys = { version = "0.3", features = [
-    "ServiceWorkerContainer", "Navigator", "Window",
-    "Blob", "Url", "HtmlAnchorElement", "HtmlInputElement",
-    "FileReader", "File", "FileList", "BlobPropertyBag",
-    "Location", "Clipboard", "MediaQueryList", "EventTarget",
-    "ReadableStream", "WritableStream", "WritableStreamDefaultWriter",
-    "ReadableWritablePair", "Response",
+    "ServiceWorkerContainer",
+    "Navigator",
+    "Window",
+    "Blob",
+    "Url",
+    "HtmlAnchorElement",
+    "HtmlInputElement",
+    "FileReader",
+    "File",
+    "FileList",
+    "BlobPropertyBag",
+    "Location",
+    "Clipboard",
+    "MediaQueryList",
+    "EventTarget",
+    "ReadableStream",
+    "WritableStream",
+    "WritableStreamDefaultWriter",
+    "ReadableWritablePair",
+    "Response",
 ] }
 indexmap = "2.13.0"
 

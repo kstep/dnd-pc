@@ -10,7 +10,40 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::enums::*;
-use crate::{constvec::ConstVec, model::Money, vecset::VecSet};
+use crate::{constvec::ConstVec, expr, model::Money, vecset::VecSet};
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize)]
+pub enum Attribute {
+    Modifier(Ability),
+    MaxHp,
+    Hp,
+    TempHp,
+    Level,
+    Ac,
+    Speed,
+}
+
+impl FromStr for Attribute {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "STR" => Ok(Self::Modifier(Ability::Strength)),
+            "DEX" => Ok(Self::Modifier(Ability::Dexterity)),
+            "CON" => Ok(Self::Modifier(Ability::Constitution)),
+            "INT" => Ok(Self::Modifier(Ability::Intelligence)),
+            "WIS" => Ok(Self::Modifier(Ability::Wisdom)),
+            "CHA" => Ok(Self::Modifier(Ability::Charisma)),
+            "MAX_HP" => Ok(Self::MaxHp),
+            "HP" => Ok(Self::Hp),
+            "TEMP_HP" => Ok(Self::TempHp),
+            "LEVEL" => Ok(Self::Level),
+            "AC" => Ok(Self::Ac),
+            "SPEED" => Ok(Self::Speed),
+            _ => Err("unknown attribute"),
+        }
+    }
+}
 
 // --- Die type ---
 
@@ -453,6 +486,43 @@ impl Default for Character {
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
+        }
+    }
+}
+
+impl expr::Context<Attribute> for Character {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        match var {
+            Attribute::MaxHp => {
+                self.combat.hp_max = value as u32;
+            }
+            Attribute::Hp => {
+                self.combat.hp_current = value as u32;
+            }
+            Attribute::TempHp => {
+                self.combat.hp_temp = value as u32;
+            }
+            Attribute::Ac => {
+                self.combat.armor_class = value;
+            }
+            Attribute::Speed => {
+                self.combat.speed = value as u32;
+            }
+            other => return Err(expr::Error::read_only_field(other)),
+        }
+
+        Ok(())
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Modifier(ability) => Ok(self.abilities.modifier(ability)),
+            Attribute::MaxHp => Ok(self.combat.hp_max as i32),
+            Attribute::Hp => Ok(self.combat.hp_current as i32),
+            Attribute::TempHp => Ok(self.combat.hp_temp as i32),
+            Attribute::Level => Ok(self.level() as i32),
+            Attribute::Ac => Ok(self.combat.armor_class as i32),
+            Attribute::Speed => Ok(self.combat.speed as i32),
         }
     }
 }
