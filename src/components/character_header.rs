@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
@@ -14,7 +14,7 @@ use crate::{
     firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
-        FeatureSource, SpellSlotPool, Translatable,
+        Translatable,
     },
     rules::RulesRegistry,
     share, storage,
@@ -82,57 +82,18 @@ fn import_character(store: Store<Character>) {
     });
 }
 
-fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
-    let (class_name, subclass) = {
+fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize) {
+    let class_name = {
         let classes = store.identity().classes().read();
         let Some(class) = classes.get(class_index) else {
             return;
         };
-        (class.class.clone(), class.subclass.clone())
+        class.class.clone()
     };
 
     registry.with_class(&class_name, |def| {
-        // Collect per-pool slot overrides for this level
-        let pool_slots: Vec<(SpellSlotPool, Option<Vec<u32>>)> = {
-            let mut seen_pools = HashSet::new();
-            let mut result = Vec::new();
-            for feature in def.features(subclass.as_deref()) {
-                if let Some(spells_def) = &feature.spells
-                    && seen_pools.insert(spells_def.pool)
-                {
-                    let slots = spells_def
-                        .levels
-                        .get(level as usize - 1)
-                        .and_then(|level_rules| level_rules.slots.clone());
-                    result.push((spells_def.pool, slots));
-                }
-            }
-            result
-        };
-
         store.update(|character| {
-            // Update spell slots first so feat.apply() can read them for max_level
-            for (pool, slots) in &pool_slots {
-                character.update_spell_slots(*pool, slots.as_deref());
-            }
-
-            def.apply_level(level, character);
-
-            // Re-apply race features at new total level (unlocks level-gated spells)
-            if character.identity.race_applied {
-                let source = FeatureSource::Race(character.identity.race.clone());
-                let total_level = character.level();
-                registry.with_race(source.name(), |race_def| {
-                    for feat in race_def.features.values() {
-                        feat.apply(total_level, character, &source);
-                    }
-                });
-            }
-
-            // Update again (needed for first level when SpellData was just created)
-            for (pool, slots) in &pool_slots {
-                character.update_spell_slots(*pool, slots.as_deref());
-            }
+            def.apply_level(character, &registry);
         });
     });
 }
@@ -512,7 +473,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                                         class="btn-apply-level"
                                                         title=title
                                                         on:click=move |_| {
-                                                            apply_level(store, registry, i, lvl);
+                                                            apply_level(store, registry, i);
                                                         }
                                                     >
                                                         <Icon name="arrow-up" size=14 />

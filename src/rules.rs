@@ -754,7 +754,84 @@ pub struct ClassLevelRules {
 }
 
 impl ClassDefinition {
-    pub fn apply_level(&self, level: u32, character: &mut Character) {
+    /// Apply all unapplied levels (1..=class_level) in order.
+    ///
+    /// This is the single entry point for level-up. For each unapplied level it:
+    /// 1. Updates spell slots (so features can read highest slot level)
+    /// 2. Applies class features, saving throws, proficiencies, HP
+    /// 3. Re-applies race features (unlocks level-gated racial spells)
+    /// 4. Updates spell slots again (needed when SpellData was just created)
+    pub fn apply_level(&self, character: &mut Character, registry: &RulesRegistry) {
+        let Some(class_level) = character
+            .identity
+            .classes
+            .iter()
+            .find(|c| c.class == self.name)
+        else {
+            return;
+        };
+
+        let current_level = class_level.level;
+        let unapplied: Vec<u32> = (1..=current_level)
+            .filter(|lvl| !class_level.applied_levels.contains(lvl))
+            .collect();
+
+        if unapplied.is_empty() {
+            return;
+        }
+
+        let subclass = class_level.subclass.clone();
+
+        for level in unapplied {
+            // Collect per-pool slot overrides for this level
+            let pool_slots: Vec<_> = {
+                let mut seen_pools = HashSet::new();
+                self.features(subclass.as_deref())
+                    .filter_map(|feature| {
+                        let spells_def = feature.spells.as_ref()?;
+                        seen_pools.insert(spells_def.pool).then(|| {
+                            let slots = spells_def
+                                .levels
+                                .get(level as usize - 1)
+                                .and_then(|lr| lr.slots.clone());
+                            (spells_def.pool, slots)
+                        })
+                    })
+                    .collect()
+            };
+
+            // Update spell slots before applying features (so feat.apply()
+            // can read highest_spell_slot_level)
+            for (pool, slots) in &pool_slots {
+                character.update_spell_slots(*pool, slots.as_deref());
+            }
+
+            self.apply_single_level(level, character);
+
+            // Re-apply race features at new total level (unlocks level-gated
+            // racial spells)
+            if character.identity.race_applied {
+                let race_name = character.identity.race.clone();
+                let source = FeatureSource::Race(race_name.clone());
+                let total_level = character.level();
+                registry.with_race(&race_name, |race_def| {
+                    for feat in race_def.features.values() {
+                        feat.apply(total_level, character, &source);
+                    }
+                });
+            }
+
+            // Update spell slots again (needed for first level when SpellData
+            // was just created by apply_single_level)
+            for (pool, slots) in &pool_slots {
+                character.update_spell_slots(*pool, slots.as_deref());
+            }
+        }
+    }
+
+    /// Apply a single class level's effects. Called by `apply_level` for each
+    /// unapplied level in sequence.
+    fn apply_single_level(&self, level: u32, character: &mut Character) {
         let Some(class_level) = character
             .identity
             .classes
