@@ -123,7 +123,7 @@ fn FeatureSpellcastingSection(
                     <select
                         on:change=move |e| {
                             let value = event_target_value(&e);
-                            if let Ok(ability) = serde_json::from_str::<Ability>(&value) {
+                            if let Some(ability) = Ability::from_u8_str(&value) {
                                 update_spells(fname, store, |sc| sc.casting_ability = ability);
                             }
                         }

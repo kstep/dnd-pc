@@ -261,7 +261,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     <select
                         on:change=move |e| {
                             let value = event_target_value(&e);
-                            if let Ok(alignment) = serde_json::from_str::<Alignment>(&value) {
+                            if let Some(alignment) = Alignment::from_u8_str(&value) {
                                 store.identity().alignment().set(alignment);
                             }
                         }

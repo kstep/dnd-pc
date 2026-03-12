@@ -230,6 +230,38 @@ impl FieldDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }
+
+    pub fn resolve_choice_options(
+        &self,
+        character_fields: &[FeatureField],
+        class_level: u32,
+    ) -> Vec<ChoiceOption> {
+        let FieldKind::Choice { options, .. } = &self.kind else {
+            return Vec::new();
+        };
+
+        match options {
+            ChoiceOptions::List(list) => list
+                .iter()
+                .filter(|o| o.level <= class_level)
+                .cloned()
+                .collect(),
+            ChoiceOptions::Ref { from } => character_fields
+                .iter()
+                .find(|cf| cf.name == *from)
+                .into_iter()
+                .flat_map(|cf| cf.value.choices())
+                .filter(|o| !o.name.is_empty())
+                .map(|o| ChoiceOption {
+                    name: o.name.clone(),
+                    label: o.label.clone(),
+                    description: o.description.clone(),
+                    cost: o.cost,
+                    level: 0,
+                })
+                .collect(),
+        }
+    }
 }
 
 impl Named for FieldDefinition {
@@ -272,19 +304,19 @@ pub enum FieldKind {
 impl FieldKind {
     pub fn to_value(&self, level: u32) -> FeatureValue {
         match self {
-            FieldKind::Die { levels } => FeatureValue::Die {
+            Self::Die { levels } => FeatureValue::Die {
                 die: get_for_level(levels, level),
                 used: 0,
             },
-            FieldKind::Choice { levels, .. } => FeatureValue::Choice {
+            Self::Choice { levels, .. } => FeatureValue::Choice {
                 options: vec![Default::default(); get_for_level(levels, level) as usize],
             },
-            FieldKind::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
-            FieldKind::Points { levels, .. } => FeatureValue::Points {
+            Self::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
+            Self::Points { levels, .. } => FeatureValue::Points {
                 used: 0,
                 max: get_for_level(levels, level),
             },
-            FieldKind::FreeUses { .. } => {
+            Self::FreeUses { .. } => {
                 unreachable!("FreeUses fields are not converted to FeatureValue")
             }
         }

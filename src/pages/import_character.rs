@@ -600,7 +600,7 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
     }
 }
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct ImportParams {
     data: String,
 }
@@ -648,7 +648,7 @@ pub fn ImportCharacter() -> impl IntoView {
     })
 }
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct CloudImportParams {
     user_id: String,
     char_id: String,

@@ -12,7 +12,7 @@ use crate::{
     storage,
 };
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct CharacterParams {
     id: Uuid,
 }

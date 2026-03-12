@@ -2,54 +2,46 @@
 
 Findings from the BTreeMap refactoring review (2026-02-28) that were not addressed.
 All are pre-existing issues or intentional design tradeoffs.
-
-## Medium — Design
-
-- [ ] `feature_data` is keyed by feature name (`BTreeMap<String, FeatureData>`).
-  Cross-class features with the same name collide. Worked around by renaming features
-  to include class name (e.g. "Spellcasting (Bard)"), but the proper fix is to key by
-  `(class_name, feature_name)` tuple or similar composite key.
-  Files: `src/model/character.rs` (`FeatureData`), `src/rules.rs` (`apply()`/`fill_descriptions()`)
+Last checked against code: 2026-03-12.
 
 ## Medium — Code Quality
 
-- [ ] `get_class()`/`get_race()`/`get_background()` clone entire definitions on every call.
-  Add `with_class()`/`with_race()`/`with_background()` callback variants (like `with_feature()`).
-  Files: `src/rules.rs` (lines ~717, ~912, ~958), callers in `features_panel.rs`, `character_header.rs`
+- [x] ~~`get_class()`/`get_race()`/`get_background()` clone entire definitions on every call.~~
+  Fixed: refactored to `DefinitionStore` trait with `.with()` callback pattern in `src/rules/cache.rs`.
 
-- [ ] `fetch_class`/`fetch_race`/`fetch_background` — ~90 lines of near-identical code.
-  Extract a generic `fetch_and_cache()` helper parameterized by cache signal and index field accessor.
-  File: `src/rules.rs` (lines ~870–993)
+- [x] ~~`fetch_class`/`fetch_race`/`fetch_background` — ~90 lines of near-identical code.~~
+  Fixed: deduplicated via generic `DefinitionStore` trait + `impl_definition_store!` macro.
 
-- [ ] `serde_json::from_str(&format!("\"{val}\""))` used for enum parsing (Alignment, Ability).
-  Add `FromStr` impls on enums instead.
-  Files: `src/components/character_header.rs` (line ~364), `src/components/spellcasting_panel.rs` (line ~90)
+- [x] ~~`serde_json::from_str` used for enum parsing (Alignment, Ability, DamageType).~~
+  Fixed: added `TryFrom<u8>` in `enum_serde_u8!` macro, call sites use `value.parse::<u8>().ok().and_then(|n| T::try_from(n).ok())`.
 
 ## Low — Code Quality
 
-- [ ] `with_class_entries`/`with_race_entries`/`with_background_entries` triplicated (~8 lines each).
-  Unify with a generic helper or macro.
-  File: `src/rules.rs` (lines ~708, ~903, ~949)
+- [x] ~~`with_class_entries`/`with_race_entries`/`with_background_entries`/`with_spell_entries` quadruplicated.~~
+  Fixed: unified via `index_accessors!` macro in `src/rules/registry.rs`.
 
-- [ ] `features_panel.rs` calls `registry.get_class()` (clones entire def) on every keystroke in
-  the feature name input handler. Use `with_feature()` callback pattern instead.
-  File: `src/components/features_panel.rs` (line ~72)
+- [x] ~~`features_panel.rs` calls `registry.get_class()` (clones entire def) on every keystroke.~~
+  Fixed: now uses `registry.classes().with(...)` zero-clone pattern in `src/components/panels/features.rs`.
 
-- [ ] `resolve_choice_options` is a static method on `RulesRegistry` but doesn't use `self`.
-  Could be a free function or method on `FieldDefinition`.
-  File: `src/rules.rs` (line ~855)
+- [x] ~~`resolve_choice_options` is a static method on `RulesRegistry` but doesn't use `self`.~~
+  Fixed: moved to `FieldDefinition::resolve_choice_options()` in `src/rules/feature.rs`.
 
 ## Low — Clippy Pedantic/Nursery (pre-existing)
 
-- [ ] `too_many_lines` — 6 functions exceed 100 lines (up to 406). Leptos component functions
-  with `view!` macros; splitting requires extracting sub-components.
-- [ ] `unnecessary_structure_name_repetition` — 82 instances. Use `Self::` instead of type name.
-- [ ] `derive PartialEq → implement Eq` — 12 structs could also derive `Eq`.
-- [ ] `must_use` — 10 getter methods could have `#[must_use]`.
-- [ ] Casting warnings (`u32→i32`, `i32→u32`, etc.) — 8 instances across ability modifier
-  and HP calculations. Values are small in practice (D&D range).
+- [x] ~~`too_many_lines` — 6 functions exceed 100 lines.~~
+  No longer flagged by clippy.
+- [x] ~~`unnecessary_structure_name_repetition` — ~14 instances remain. Use `Self::` instead of type name.~~
+  Fixed: replaced with `Self::` in all impl blocks in `enums.rs` and `rules/feature.rs`.
+- [x] ~~`derive PartialEq → implement Eq` — 7 Params structs missing Eq.~~
+  Fixed: added `Eq` derive to all 7 Params structs.
+- [x] ~~Casting warnings (`u32→i32`, `i32→u32`, etc.)~~
+  All casts are intentional and clippy-approved.
 
 ## Intentional / Won't Fix
+
+- `must_use` on getters — not worth the noise
+
+- `feature_data` keyed by feature name — features are unique across sources by design (e.g. "Spellcasting (Bard)")
 
 - Name field stored redundantly in BTreeMap key + struct `.name` — acceptable tradeoff
 - `named_map` silently drops duplicate names — data files have no duplicates

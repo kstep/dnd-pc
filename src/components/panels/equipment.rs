@@ -85,7 +85,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             weapons.write()[i].damage_type = if value.is_empty() {
                                                 None
                                             } else {
-                                                serde_json::from_str::<DamageType>(&value).ok()
+                                                DamageType::from_u8_str(&value)
                                             };
                                         }
                                     >

@@ -52,6 +52,25 @@ fn update_index(f: impl FnOnce(&mut CharacterIndex)) {
 
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut serde_json::Value) {
+    fn damage_type_from_name(s: &str) -> Option<DamageType> {
+        match s.to_ascii_lowercase().as_str() {
+            "acid" => Some(DamageType::Acid),
+            "bludgeoning" => Some(DamageType::Bludgeoning),
+            "cold" => Some(DamageType::Cold),
+            "fire" => Some(DamageType::Fire),
+            "force" => Some(DamageType::Force),
+            "lightning" => Some(DamageType::Lightning),
+            "necrotic" => Some(DamageType::Necrotic),
+            "piercing" => Some(DamageType::Piercing),
+            "poison" => Some(DamageType::Poison),
+            "psychic" => Some(DamageType::Psychic),
+            "radiant" => Some(DamageType::Radiant),
+            "slashing" => Some(DamageType::Slashing),
+            "thunder" => Some(DamageType::Thunder),
+            _ => None,
+        }
+    }
+
     if let Some(weapons) = value
         .get_mut("equipment")
         .and_then(|e| e.get_mut("weapons"))
@@ -59,7 +78,7 @@ fn migrate_v1(value: &mut serde_json::Value) {
     {
         for weapon in weapons {
             if let Some(dt) = weapon.get("damage_type").and_then(|v| v.as_str()) {
-                let new_val = match DamageType::from_name(dt) {
+                let new_val = match damage_type_from_name(dt) {
                     Some(d) => serde_json::Value::Number((d as u8).into()),
                     None => serde_json::Value::Null,
                 };

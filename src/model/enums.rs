@@ -12,6 +12,23 @@ pub trait Translatable {
 /// a `#[repr(u8)]` enum.
 macro_rules! enum_serde_u8 {
     ($name:ident { $($variant:ident),+ $(,)? }) => {
+        impl TryFrom<u8> for $name {
+            type Error = u8;
+
+            fn try_from(n: u8) -> Result<Self, Self::Error> {
+                $(if n == Self::$variant as u8 {
+                    return Ok(Self::$variant);
+                })+
+                Err(n)
+            }
+        }
+
+        impl $name {
+            pub fn from_u8_str(s: &str) -> Option<Self> {
+                s.parse::<u8>().ok().and_then(|n| Self::try_from(n).ok())
+            }
+        }
+
         impl Serialize for $name {
             fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
                 s.serialize_u8(*self as u8)
@@ -29,20 +46,20 @@ macro_rules! enum_serde_u8 {
                     }
 
                     fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<$name, E> {
-                        $(if v == $name::$variant as u64 {
-                            return Ok($name::$variant);
-                        })+
-                        Err(E::invalid_value(serde::de::Unexpected::Unsigned(v), &self))
+                        let Ok(n) = u8::try_from(v) else {
+                            return Err(E::invalid_value(serde::de::Unexpected::Unsigned(v), &self));
+                        };
+                        $name::try_from(n)
+                            .map_err(|_| E::invalid_value(serde::de::Unexpected::Unsigned(v), &self))
                     }
 
                     fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<$name, E> {
-                        if let Ok(n) = v.parse::<u64>() {
-                            return self.visit_u64(n);
-                        }
-                        match v {
-                            $(stringify!($variant) => Ok($name::$variant),)+
-                            _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &self)),
-                        }
+                        $name::from_u8_str(v)
+                            .or_else(|| match v {
+                                $(stringify!($variant) => Some($name::$variant),)+
+                                _ => None,
+                            })
+                            .ok_or_else(|| E::invalid_value(serde::de::Unexpected::Str(v), &self))
                     }
                 }
                 d.deserialize_u8(Vis)
@@ -122,19 +139,17 @@ enum_serde_u8!(Skill {
 impl Skill {
     pub fn ability(self) -> Ability {
         match self {
-            Skill::Athletics => Ability::Strength,
-            Skill::Acrobatics | Skill::SleightOfHand | Skill::Stealth => Ability::Dexterity,
-            Skill::Arcana
-            | Skill::History
-            | Skill::Investigation
-            | Skill::Nature
-            | Skill::Religion => Ability::Intelligence,
-            Skill::AnimalHandling
-            | Skill::Insight
-            | Skill::Medicine
-            | Skill::Perception
-            | Skill::Survival => Ability::Wisdom,
-            Skill::Deception | Skill::Intimidation | Skill::Performance | Skill::Persuasion => {
+            Self::Athletics => Ability::Strength,
+            Self::Acrobatics | Self::SleightOfHand | Self::Stealth => Ability::Dexterity,
+            Self::Arcana | Self::History | Self::Investigation | Self::Nature | Self::Religion => {
+                Ability::Intelligence
+            }
+            Self::AnimalHandling
+            | Self::Insight
+            | Self::Medicine
+            | Self::Perception
+            | Self::Survival => Ability::Wisdom,
+            Self::Deception | Self::Intimidation | Self::Performance | Self::Persuasion => {
                 Ability::Charisma
             }
         }
@@ -191,25 +206,25 @@ enum_serde_u8!(ProficiencyLevel {
 impl ProficiencyLevel {
     pub fn multiplier(self) -> i32 {
         match self {
-            ProficiencyLevel::None => 0,
-            ProficiencyLevel::Proficient => 1,
-            ProficiencyLevel::Expertise => 2,
+            Self::None => 0,
+            Self::Proficient => 1,
+            Self::Expertise => 2,
         }
     }
 
     pub fn next(self) -> Self {
         match self {
-            ProficiencyLevel::None => ProficiencyLevel::Proficient,
-            ProficiencyLevel::Proficient => ProficiencyLevel::Expertise,
-            ProficiencyLevel::Expertise => ProficiencyLevel::None,
+            Self::None => Self::Proficient,
+            Self::Proficient => Self::Expertise,
+            Self::Expertise => Self::None,
         }
     }
 
     pub fn symbol(self) -> &'static str {
         match self {
-            ProficiencyLevel::None => "\u{25CB}",       // empty circle
-            ProficiencyLevel::Proficient => "\u{25CF}", // filled circle
-            ProficiencyLevel::Expertise => "\u{25C9}",  // fisheye (double)
+            Self::None => "\u{25CB}",       // empty circle
+            Self::Proficient => "\u{25CF}", // filled circle
+            Self::Expertise => "\u{25C9}",  // fisheye (double)
         }
     }
 }
@@ -274,23 +289,23 @@ enum_serde_u8!(DamageType {
 impl Translatable for Ability {
     fn tr_key(&self) -> &'static str {
         match self {
-            Ability::Strength => "ability-strength",
-            Ability::Dexterity => "ability-dexterity",
-            Ability::Constitution => "ability-constitution",
-            Ability::Intelligence => "ability-intelligence",
-            Ability::Wisdom => "ability-wisdom",
-            Ability::Charisma => "ability-charisma",
+            Self::Strength => "ability-strength",
+            Self::Dexterity => "ability-dexterity",
+            Self::Constitution => "ability-constitution",
+            Self::Intelligence => "ability-intelligence",
+            Self::Wisdom => "ability-wisdom",
+            Self::Charisma => "ability-charisma",
         }
     }
 
     fn tr_abbr_key(&self) -> &'static str {
         match self {
-            Ability::Strength => "ability-str",
-            Ability::Dexterity => "ability-dex",
-            Ability::Constitution => "ability-con",
-            Ability::Intelligence => "ability-int",
-            Ability::Wisdom => "ability-wis",
-            Ability::Charisma => "ability-cha",
+            Self::Strength => "ability-str",
+            Self::Dexterity => "ability-dex",
+            Self::Constitution => "ability-con",
+            Self::Intelligence => "ability-int",
+            Self::Wisdom => "ability-wis",
+            Self::Charisma => "ability-cha",
         }
     }
 }
@@ -298,24 +313,24 @@ impl Translatable for Ability {
 impl Translatable for Skill {
     fn tr_key(&self) -> &'static str {
         match self {
-            Skill::Acrobatics => "skill-acrobatics",
-            Skill::AnimalHandling => "skill-animal-handling",
-            Skill::Arcana => "skill-arcana",
-            Skill::Athletics => "skill-athletics",
-            Skill::Deception => "skill-deception",
-            Skill::History => "skill-history",
-            Skill::Insight => "skill-insight",
-            Skill::Intimidation => "skill-intimidation",
-            Skill::Investigation => "skill-investigation",
-            Skill::Medicine => "skill-medicine",
-            Skill::Nature => "skill-nature",
-            Skill::Perception => "skill-perception",
-            Skill::Performance => "skill-performance",
-            Skill::Persuasion => "skill-persuasion",
-            Skill::Religion => "skill-religion",
-            Skill::SleightOfHand => "skill-sleight-of-hand",
-            Skill::Stealth => "skill-stealth",
-            Skill::Survival => "skill-survival",
+            Self::Acrobatics => "skill-acrobatics",
+            Self::AnimalHandling => "skill-animal-handling",
+            Self::Arcana => "skill-arcana",
+            Self::Athletics => "skill-athletics",
+            Self::Deception => "skill-deception",
+            Self::History => "skill-history",
+            Self::Insight => "skill-insight",
+            Self::Intimidation => "skill-intimidation",
+            Self::Investigation => "skill-investigation",
+            Self::Medicine => "skill-medicine",
+            Self::Nature => "skill-nature",
+            Self::Perception => "skill-perception",
+            Self::Performance => "skill-performance",
+            Self::Persuasion => "skill-persuasion",
+            Self::Religion => "skill-religion",
+            Self::SleightOfHand => "skill-sleight-of-hand",
+            Self::Stealth => "skill-stealth",
+            Self::Survival => "skill-survival",
         }
     }
 }
@@ -323,15 +338,15 @@ impl Translatable for Skill {
 impl Translatable for Alignment {
     fn tr_key(&self) -> &'static str {
         match self {
-            Alignment::LawfulGood => "alignment-lawful-good",
-            Alignment::NeutralGood => "alignment-neutral-good",
-            Alignment::ChaoticGood => "alignment-chaotic-good",
-            Alignment::LawfulNeutral => "alignment-lawful-neutral",
-            Alignment::TrueNeutral => "alignment-true-neutral",
-            Alignment::ChaoticNeutral => "alignment-chaotic-neutral",
-            Alignment::LawfulEvil => "alignment-lawful-evil",
-            Alignment::NeutralEvil => "alignment-neutral-evil",
-            Alignment::ChaoticEvil => "alignment-chaotic-evil",
+            Self::LawfulGood => "alignment-lawful-good",
+            Self::NeutralGood => "alignment-neutral-good",
+            Self::ChaoticGood => "alignment-chaotic-good",
+            Self::LawfulNeutral => "alignment-lawful-neutral",
+            Self::TrueNeutral => "alignment-true-neutral",
+            Self::ChaoticNeutral => "alignment-chaotic-neutral",
+            Self::LawfulEvil => "alignment-lawful-evil",
+            Self::NeutralEvil => "alignment-neutral-evil",
+            Self::ChaoticEvil => "alignment-chaotic-evil",
         }
     }
 }
@@ -339,12 +354,12 @@ impl Translatable for Alignment {
 impl Translatable for Proficiency {
     fn tr_key(&self) -> &'static str {
         match self {
-            Proficiency::LightArmor => "prof-light-armor",
-            Proficiency::MediumArmor => "prof-medium-armor",
-            Proficiency::HeavyArmor => "prof-heavy-armor",
-            Proficiency::Shields => "prof-shields",
-            Proficiency::SimpleWeapons => "prof-simple-weapons",
-            Proficiency::MartialWeapons => "prof-martial-weapons",
+            Self::LightArmor => "prof-light-armor",
+            Self::MediumArmor => "prof-medium-armor",
+            Self::HeavyArmor => "prof-heavy-armor",
+            Self::Shields => "prof-shields",
+            Self::SimpleWeapons => "prof-simple-weapons",
+            Self::MartialWeapons => "prof-martial-weapons",
         }
     }
 }
@@ -360,7 +375,7 @@ enum_serde_u8!(SpellSlotPool { Arcane, Pact });
 
 impl SpellSlotPool {
     pub fn restore_on_short_rest(&self) -> bool {
-        matches!(self, SpellSlotPool::Pact)
+        matches!(self, Self::Pact)
     }
 }
 
@@ -378,43 +393,22 @@ enum_serde_u8!(ArmorType {
     Heavy
 });
 
-impl DamageType {
-    pub fn from_name(s: &str) -> Option<Self> {
-        match s.to_ascii_lowercase().as_str() {
-            "acid" => Some(DamageType::Acid),
-            "bludgeoning" => Some(DamageType::Bludgeoning),
-            "cold" => Some(DamageType::Cold),
-            "fire" => Some(DamageType::Fire),
-            "force" => Some(DamageType::Force),
-            "lightning" => Some(DamageType::Lightning),
-            "necrotic" => Some(DamageType::Necrotic),
-            "piercing" => Some(DamageType::Piercing),
-            "poison" => Some(DamageType::Poison),
-            "psychic" => Some(DamageType::Psychic),
-            "radiant" => Some(DamageType::Radiant),
-            "slashing" => Some(DamageType::Slashing),
-            "thunder" => Some(DamageType::Thunder),
-            _ => None,
-        }
-    }
-}
-
 impl Translatable for DamageType {
     fn tr_key(&self) -> &'static str {
         match self {
-            DamageType::Acid => "damage-acid",
-            DamageType::Bludgeoning => "damage-bludgeoning",
-            DamageType::Cold => "damage-cold",
-            DamageType::Fire => "damage-fire",
-            DamageType::Force => "damage-force",
-            DamageType::Lightning => "damage-lightning",
-            DamageType::Necrotic => "damage-necrotic",
-            DamageType::Piercing => "damage-piercing",
-            DamageType::Poison => "damage-poison",
-            DamageType::Psychic => "damage-psychic",
-            DamageType::Radiant => "damage-radiant",
-            DamageType::Slashing => "damage-slashing",
-            DamageType::Thunder => "damage-thunder",
+            Self::Acid => "damage-acid",
+            Self::Bludgeoning => "damage-bludgeoning",
+            Self::Cold => "damage-cold",
+            Self::Fire => "damage-fire",
+            Self::Force => "damage-force",
+            Self::Lightning => "damage-lightning",
+            Self::Necrotic => "damage-necrotic",
+            Self::Piercing => "damage-piercing",
+            Self::Poison => "damage-poison",
+            Self::Psychic => "damage-psychic",
+            Self::Radiant => "damage-radiant",
+            Self::Slashing => "damage-slashing",
+            Self::Thunder => "damage-thunder",
         }
     }
 }
@@ -422,8 +416,8 @@ impl Translatable for DamageType {
 impl Translatable for SpellSlotPool {
     fn tr_key(&self) -> &'static str {
         match self {
-            SpellSlotPool::Arcane => "pool-arcane",
-            SpellSlotPool::Pact => "pool-pact",
+            Self::Arcane => "pool-arcane",
+            Self::Pact => "pool-pact",
         }
     }
 }
@@ -431,9 +425,9 @@ impl Translatable for SpellSlotPool {
 impl Translatable for ArmorType {
     fn tr_key(&self) -> &'static str {
         match self {
-            ArmorType::Light => "armor-type-light",
-            ArmorType::Medium => "armor-type-medium",
-            ArmorType::Heavy => "armor-type-heavy",
+            Self::Light => "armor-type-light",
+            Self::Medium => "armor-type-medium",
+            Self::Heavy => "armor-type-heavy",
         }
     }
 }

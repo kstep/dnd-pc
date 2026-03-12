@@ -6,7 +6,7 @@ use super::{
     background::BackgroundDefinition,
     cache::{DefinitionStore, FetchCache},
     class::ClassDefinition,
-    feature::{ChoiceOption, ChoiceOptions, FeatureDefinition, FieldKind},
+    feature::{ChoiceOption, FeatureDefinition, FieldKind},
     index::{BackgroundIndexEntry, ClassIndexEntry, Index, RaceIndexEntry, SpellIndexEntry},
     labels,
     race::RaceDefinition,
@@ -73,6 +73,24 @@ impl_definition_store!(
     "background definition"
 );
 
+macro_rules! index_accessors {
+    ($($method:ident, $label_method:ident, $field:ident, $entry:ty);+ $(;)?) => {
+        $(
+            pub fn $method<R>(
+                &self,
+                f: impl FnOnce(&BTreeMap<Box<str>, $entry>) -> R,
+            ) -> R {
+                static EMPTY: BTreeMap<Box<str>, $entry> = BTreeMap::new();
+                self.with_index_field(|idx| &idx.$field, &EMPTY, f)
+            }
+
+            pub fn $label_method(&self, name: &str) -> String {
+                self.$method(|e| label_by_name(e, name))
+            }
+        )+
+    };
+}
+
 // ---- RulesRegistry ----
 
 #[derive(Clone, Copy)]
@@ -86,6 +104,15 @@ pub struct RulesRegistry {
 }
 
 impl RulesRegistry {
+    // ---- Index-based methods (stay on RulesRegistry) ----
+
+    index_accessors! {
+        with_class_entries,      class_label_by_name,      classes,      ClassIndexEntry;
+        with_race_entries,       race_label_by_name,       races,        RaceIndexEntry;
+        with_background_entries, background_label_by_name,  backgrounds,  BackgroundIndexEntry;
+        with_spell_entries,      spell_label_by_name,       spells,       SpellIndexEntry;
+    }
+
     pub fn new(i18n: leptos_fluent::I18n) -> Self {
         let locale = Signal::derive(move || i18n.language.get().id.to_string());
 
@@ -180,52 +207,6 @@ impl RulesRegistry {
 
     pub fn track_spell_cache(&self) {
         self.spell_list_cache.track();
-    }
-
-    // ---- Index-based methods (stay on RulesRegistry) ----
-
-    pub fn with_class_entries<R>(
-        &self,
-        f: impl FnOnce(&BTreeMap<Box<str>, ClassIndexEntry>) -> R,
-    ) -> R {
-        self.with_index_field(|idx| &idx.classes, &EMPTY_CLASS_INDEX, f)
-    }
-
-    pub fn class_label_by_name(&self, name: &str) -> String {
-        self.with_class_entries(|e| label_by_name(e, name))
-    }
-
-    pub fn with_race_entries<R>(
-        &self,
-        f: impl FnOnce(&BTreeMap<Box<str>, RaceIndexEntry>) -> R,
-    ) -> R {
-        self.with_index_field(|idx| &idx.races, &EMPTY_RACE_INDEX, f)
-    }
-
-    pub fn race_label_by_name(&self, name: &str) -> String {
-        self.with_race_entries(|e| label_by_name(e, name))
-    }
-
-    pub fn with_background_entries<R>(
-        &self,
-        f: impl FnOnce(&BTreeMap<Box<str>, BackgroundIndexEntry>) -> R,
-    ) -> R {
-        self.with_index_field(|idx| &idx.backgrounds, &EMPTY_BG_INDEX, f)
-    }
-
-    pub fn background_label_by_name(&self, name: &str) -> String {
-        self.with_background_entries(|e| label_by_name(e, name))
-    }
-
-    pub fn with_spell_entries<R>(
-        &self,
-        f: impl FnOnce(&BTreeMap<Box<str>, SpellIndexEntry>) -> R,
-    ) -> R {
-        self.with_index_field(|idx| &idx.spells, &EMPTY_SPELL_INDEX, f)
-    }
-
-    pub fn spell_label_by_name(&self, name: &str) -> String {
-        self.with_spell_entries(|e| label_by_name(e, name))
     }
 
     // ---- Spells ----
@@ -335,39 +316,8 @@ impl RulesRegistry {
                 && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
                 && let Some(field_def) = feat.fields.get(field_name)
             {
-                return Self::resolve_choice_options(field_def, character_fields, cl.level);
+                return field_def.resolve_choice_options(character_fields, cl.level);
             }
-        }
-        Vec::new()
-    }
-
-    fn resolve_choice_options(
-        field_def: &super::feature::FieldDefinition,
-        character_fields: &[FeatureField],
-        class_level: u32,
-    ) -> Vec<ChoiceOption> {
-        if let FieldKind::Choice { options, .. } = &field_def.kind {
-            return match options {
-                ChoiceOptions::List(list) => list
-                    .iter()
-                    .filter(|o| o.level <= class_level)
-                    .cloned()
-                    .collect(),
-                ChoiceOptions::Ref { from } => character_fields
-                    .iter()
-                    .find(|cf| cf.name == *from)
-                    .into_iter()
-                    .flat_map(|cf| cf.value.choices())
-                    .filter(|o| !o.name.is_empty())
-                    .map(|o| ChoiceOption {
-                        name: o.name.clone(),
-                        label: o.label.clone(),
-                        description: o.description.clone(),
-                        cost: o.cost,
-                        level: 0,
-                    })
-                    .collect(),
-            };
         }
         Vec::new()
     }
@@ -604,8 +554,4 @@ fn label_by_name<T: HasLabel>(entries: &BTreeMap<Box<str>, T>, name: &str) -> St
 }
 
 // Empty maps for when index isn't loaded yet
-static EMPTY_CLASS_INDEX: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
-static EMPTY_RACE_INDEX: BTreeMap<Box<str>, RaceIndexEntry> = BTreeMap::new();
-static EMPTY_BG_INDEX: BTreeMap<Box<str>, BackgroundIndexEntry> = BTreeMap::new();
-static EMPTY_SPELL_INDEX: BTreeMap<Box<str>, SpellIndexEntry> = BTreeMap::new();
 static EMPTY_SPELL_MAP: BTreeMap<Box<str>, SpellDefinition> = BTreeMap::new();

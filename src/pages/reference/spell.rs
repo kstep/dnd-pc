@@ -11,7 +11,7 @@ use crate::{
     rules::{RulesRegistry, SpellList},
 };
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct SpellRefParams {
     list: Option<String>,
 }

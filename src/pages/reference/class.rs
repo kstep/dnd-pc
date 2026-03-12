@@ -10,7 +10,7 @@ use crate::{
     rules::{DefinitionStore, FieldKind, RulesRegistry, get_for_level},
 };
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct ClassRefParams {
     name: Option<String>,
     subname: Option<String>,

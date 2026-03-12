@@ -10,7 +10,7 @@ use crate::{
     rules::{DefinitionStore, RulesRegistry},
 };
 
-#[derive(Params, Clone, Debug, PartialEq)]
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct BackgroundRefParams {
     name: Option<String>,
 }
