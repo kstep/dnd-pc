@@ -2456,8 +2456,12 @@ input.summary-list-name {
 }
 
 .reference-feature {
+  &:target {
+    background: var(--panel-bg);
+  }
+
   &:target h3 {
-    text-decoration: underline;
+    border-bottom: 1px solid var(--accent);
   }
 
   h3 {
