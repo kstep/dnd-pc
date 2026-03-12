@@ -71,16 +71,30 @@ Tests run in headless Chrome via `wasm-bindgen-test`. The `WASM_BINDGEN_USE_BROW
 ```
 src/
 ├── lib.rs              # App entry, routing, theme detection
-├── model/              # Data model (Character, enums, money)
+├── model/              # Data model (split into focused files)
+│   ├── character.rs    # Character, CharacterIndex, CharacterSummary
+│   ├── identity.rs     # CharacterIdentity, ClassLevel
+│   ├── ability.rs      # AbilityScores
+│   ├── attribute.rs    # Attribute enum for expressions
+│   ├── feature.rs      # Feature, FeatureData, FeatureField, FeatureValue
+│   ├── combat.rs       # CombatStats, SpellSlotLevel, FreeUses
+│   ├── equipment.rs    # Equipment, Weapon, Item, Armor
+│   ├── spell.rs        # Spell, SpellData, SpellSlotPool
+│   ├── die.rs          # Die struct
+│   ├── money.rs        # Money, Currency
+│   └── enums.rs        # Ability, Skill, Alignment, etc.
 ├── rules/              # Game rules engine
 │   ├── registry.rs     # RulesRegistry — context-provided rules fetcher
-│   ├── cache.rs        # FetchCache<T> — generic async fetch cache
+│   ├── apply.rs        # Level-up, rest mechanics, assignment evaluation
+│   ├── resolve.rs      # Cross-cache feature lookup
+│   ├── labels.rs       # Fill/clear label synchronization
+│   ├── cache.rs        # FetchCache<T>, DefinitionStore trait
 │   ├── index.rs        # Index entry types for classes, races, etc.
 │   ├── class.rs        # ClassDefinition, SubclassDefinition
 │   ├── race.rs         # RaceDefinition, RaceTrait
 │   ├── background.rs   # BackgroundDefinition
 │   ├── feature.rs      # FeatureDefinition, FieldKind, ChoiceOptions
-│   ├── spells.rs       # SpellsDefinition, SpellList, SpellDefinition
+│   ├── spells.rs       # SpellsDefinition, SpellList, SpellMap
 │   └── utils.rs        # get_for_level(), fetch_json()
 ├── components/         # Reusable UI components
 │   ├── panels/         # Character sheet editor panels
