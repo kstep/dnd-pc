@@ -2456,6 +2456,10 @@ input.summary-list-name {
 }
 
 .reference-feature {
+  &:target h3 {
+    text-decoration: underline;
+  }
+
   h3 {
     margin: 0 0 var(--size-1);
     font-size: var(--font-size-2);
