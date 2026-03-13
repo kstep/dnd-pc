@@ -848,8 +848,8 @@
           "label": "Небесная стойкость",
           "description": "Вы получаете временные хиты при окончании короткого или продолжительного отдыха. Временные хиты равны уровню колдуна + модификатор Харизмы. Кроме того, выберите до пяти видимых вами существ — каждое получает временные хиты, равные половине уровня колдуна + модификатор Харизмы.",
           "assign": [
-            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnShortRest" },
-            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnLongRest" }
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)", "when": "OnShortRest" },
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)", "when": "OnLongRest" }
           ]
         },
         {
@@ -1468,8 +1468,8 @@
           "label": "Небесная стойкость",
           "description": "Вы получаете временные хиты при окончании короткого или продолжительного отдыха. Временные хиты равны уровню колдуна + модификатор Харизмы. Кроме того, выберите до пяти видимых вами существ — каждое получает временные хиты, равные половине уровня колдуна + модификатор Харизмы.",
           "assign": [
-            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnShortRest" },
-            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA)", "when": "OnLongRest" }
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)", "when": "OnShortRest" },
+            { "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)", "when": "OnLongRest" }
           ]
         },
         {

@@ -45,7 +45,7 @@
       "name": "Unarmored Defense",
       "description": "While you aren't wearing any armor, your base Armor Class equals 10 plus your Dexterity and Constitution modifiers. You can use a Shield and still gain this benefit.",
       "assign": [
-        { "expr": "AC = max(AC, 10 + DEX + CON)", "when": "OnFeatureAdd" }
+        { "expr": "AC = max(AC, 10 + DEX.MOD + CON.MOD)", "when": "OnFeatureAdd" }
       ]
     },
     {

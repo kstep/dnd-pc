@@ -36,7 +36,7 @@
       "label": "Защита без доспехов",
       "description": "Пока вы не носите доспехи и не используете Щит, ваш базовый Класс Доспеха равен 10 + ваш модификатор Ловкости + ваш модификатор Мудрости.",
       "assign": [
-        { "expr": "AC = max(AC, 10 + DEX + WIS)", "when": "OnFeatureAdd" }
+        { "expr": "AC = max(AC, 10 + DEX.MOD + WIS.MOD)", "when": "OnFeatureAdd" }
       ]
     },
     {

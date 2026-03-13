@@ -409,7 +409,10 @@ impl expr::Context<Attribute> for Character {
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
+            Attribute::Ability(ability) => Ok(self.abilities.get(ability) as i32),
             Attribute::Modifier(ability) => Ok(self.abilities.modifier(ability)),
+            Attribute::SavingThrow(ability) => Ok(self.saving_throw_bonus(ability)),
+            Attribute::Skill(skill) => Ok(self.skill_bonus(skill)),
             Attribute::MaxHp => Ok(self.combat.hp_max as i32),
             Attribute::Hp => Ok(self.combat.hp_current as i32),
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),
@@ -417,6 +420,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::Ac => Ok(self.combat.armor_class),
             Attribute::Speed => Ok(self.combat.speed as i32),
             Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
+            Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
             other => Err(expr::Error::unsupported_var(other)),
         }
