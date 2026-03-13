@@ -5,10 +5,11 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{icon::Icon, toggle_button::ToggleButton},
+    components::{datalist_input::DatalistInput, icon::Icon, toggle_button::ToggleButton},
     effective::EffectiveCharacter,
     expr::Expr,
     model::{ActiveEffect, Attribute, Character},
+    rules::RulesRegistry,
 };
 
 fn parse_expr(input: &str) -> Result<Option<Expr<Attribute>>, ()> {
@@ -25,10 +26,20 @@ pub fn EffectsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
     let effects = eff.effects();
+    let registry = expect_context::<RulesRegistry>();
 
-    let name_input: NodeRef<html::Input> = NodeRef::new();
+    let effect_name = RwSignal::new(String::new());
+    let effect_desc = RwSignal::new(String::new());
     let expr_input: NodeRef<html::Input> = NodeRef::new();
-    let desc_input: NodeRef<html::Textarea> = NodeRef::new();
+
+    let effect_options = Signal::derive(move || {
+        registry.with_effects_index(|index| {
+            index
+                .values()
+                .map(|eff| (eff.name.clone(), eff.name.clone(), eff.description.clone()))
+                .collect::<Vec<_>>()
+        })
+    });
 
     view! {
         <div class="summary-section summary-section-effects">
@@ -40,18 +51,16 @@ pub fn EffectsBlock() -> impl IntoView {
                     <button class="btn-icon btn-icon--success"
                         title=move_tr!("effect-add")
                         on:click=move |_| {
-                            let Some(name_el) = name_input.get() else { return };
                             let Some(expr_el) = expr_input.get() else { return };
-                            let Some(desc_el) = desc_input.get() else { return };
 
-                            let name = name_el.value().trim().to_string();
+                            let name = effect_name.get_untracked().trim().to_string();
                             if name.is_empty() { return; }
 
                             let Ok(expr) = parse_expr(&expr_el.value()) else {
                                 return;
                             };
 
-                            let description = desc_el.value().trim().to_string();
+                            let description = effect_desc.get_untracked();
 
                             effects.update(|e| e.add(ActiveEffect {
                                 name,
@@ -60,15 +69,34 @@ pub fn EffectsBlock() -> impl IntoView {
                                 enabled: true,
                             }, &store.read()));
 
-                            name_el.set_value("");
+                            effect_name.set(String::new());
+                            effect_desc.set(String::new());
                             expr_el.set_value("");
-                            desc_el.set_value("");
                         }
                     ><Icon name="circle-plus" size=14 /></button>
-                    <input type="text" class="summary-list-name" placeholder=move_tr!("effect-name") node_ref=name_input />
+                    <DatalistInput
+                        value=effect_name.get_untracked()
+                        placeholder=move_tr!("effect-name")
+                        class="summary-list-name"
+                        options=effect_options
+                        on_input=move |input, resolved| {
+                            effect_name.set(input);
+                            if let Some(name) = resolved {
+                                registry.with_effects_index(|index| {
+                                    if let Some(eff) = index.get(name.as_str()) {
+                                        if let Some(ref expr) = eff.expr
+                                            && let Some(el) = expr_input.get()
+                                        {
+                                            el.set_value(&format!("{expr}"));
+                                        }
+                                        effect_desc.set(eff.description.clone());
+                                    }
+                                });
+                            }
+                        }
+                    />
                 </div>
                 <input type="text" class="summary-list-name summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
-                <textarea class="summary-item-desc" placeholder=move_tr!("description") node_ref=desc_input />
             </div>
 
             // -- Effect list --
