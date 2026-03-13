@@ -1,9 +1,9 @@
 [
   { "name": "Shield of Faith", "description": "+2 AC (concentration, 10 min)", "expr": "AC += 2" },
-  { "name": "Warding Bond: AC", "description": "+1 AC (concentration)", "expr": "AC += 1" },
+  { "name": "Warding Bond", "description": "+1 AC and +1 to all saving throws (concentration)", "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1" },
   { "name": "Ceremony: Wedding", "description": "+2 AC for 7 days (two creatures)", "expr": "AC += 2" },
   { "name": "Agile Parry", "description": "+2 AC while holding kensei weapon (until next turn)", "expr": "AC += 2" },
-  { "name": "Arcane Deflection: AC", "description": "+2 AC (reaction, single attack)", "expr": "AC += 2" },
+  { "name": "Arcane Deflection", "description": "+2 AC (reaction, single attack) and +4 to all saves (reaction, single save)", "expr": "AC += 2; STR.SAVE += 4; DEX.SAVE += 4; CON.SAVE += 4; INT.SAVE += 4; WIS.SAVE += 4; CHA.SAVE += 4" },
   { "name": "Soul of the Forge", "description": "+1 AC while wearing heavy armor", "expr": "AC += 1" },
   { "name": "Bladesong", "description": "+INT AC, +10 speed, advantage on Acrobatics (1 min)", "expr": "AC += INT.MOD; SPEED += 10" },
   { "name": "Mage Armor", "description": "Base AC becomes 13 + DEX (8 hours, no armor)", "expr": "AC = max(AC, 13 + DEX.MOD)" },
@@ -34,8 +34,6 @@
   { "name": "Haste", "description": "Double speed, +2 AC, advantage on DEX saves, extra action (concentration, 1 min)", "expr": "SPEED *= 2; AC += 2" },
   { "name": "Steady Aim", "description": "Speed becomes 0, advantage on next attack (bonus action, Rogue)", "expr": "SPEED = 0" },
 
-  { "name": "Warding Bond: Saves", "description": "+1 to all saving throws (concentration)", "expr": "STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1" },
-  { "name": "Arcane Deflection: Save", "description": "+4 to one saving throw (reaction, single save). Apply to relevant save only", "expr": "STR.SAVE += 4; DEX.SAVE += 4; CON.SAVE += 4; INT.SAVE += 4; WIS.SAVE += 4; CHA.SAVE += 4" },
   { "name": "Bless", "description": "+1d4 to attack rolls and saving throws (concentration, 1 min). Dice bonus — apply result manually" },
 
   { "name": "Pass without Trace", "description": "+10 to Stealth checks (concentration, 1 hour)", "expr": "SKILL.STEA += 10" },
@@ -70,5 +68,25 @@
   { "name": "Form of Dread", "description": "Immune to frightened, temp HP = 1d10 + warlock level (bonus action, 1 min)" },
 
   { "name": "Enhance Ability", "description": "Advantage on one ability's checks (concentration, 1 hour)" },
-  { "name": "Guidance", "description": "+1d4 to one ability check (cantrip, concentration). Dice bonus — apply result manually" }
+  { "name": "Guidance", "description": "+1d4 to one ability check (cantrip, concentration). Dice bonus — apply result manually" },
+
+  { "name": "Grappled", "description": "Speed is 0, can't benefit from speed bonuses", "expr": "SPEED = 0" },
+  { "name": "Restrained", "description": "Speed is 0, disadvantage on attacks and DEX saves, attacks against have advantage", "expr": "SPEED = 0" },
+  { "name": "Paralyzed", "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage, melee hits are crits", "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20" },
+  { "name": "Stunned", "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage", "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20" },
+  { "name": "Petrified", "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, resistance to all damage", "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20" },
+  { "name": "Unconscious", "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage, melee hits are crits", "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20" },
+  { "name": "Prone", "description": "Disadvantage on attacks, melee attacks have advantage, ranged have disadvantage. Half movement to stand" },
+  { "name": "Blinded", "description": "Can't see, auto-fail checks requiring sight, attacks have disadvantage, attacks against have advantage" },
+  { "name": "Charmed", "description": "Can't attack the charmer, charmer has advantage on social checks" },
+  { "name": "Deafened", "description": "Can't hear, auto-fail checks requiring hearing" },
+  { "name": "Frightened", "description": "Disadvantage on ability checks and attacks while source of fear is in line of sight" },
+  { "name": "Incapacitated", "description": "Can't take actions or reactions" },
+  { "name": "Invisible", "description": "Attacks have advantage, attacks against have disadvantage" },
+  { "name": "Poisoned", "description": "Disadvantage on attack rolls and ability checks" },
+  { "name": "Exhaustion 1", "description": "Disadvantage on ability checks" },
+  { "name": "Exhaustion 2", "description": "Disadvantage on ability checks, speed halved", "expr": "SPEED /= 2" },
+  { "name": "Exhaustion 3", "description": "Disadvantage on ability checks, attacks, and saves, speed halved", "expr": "SPEED /= 2" },
+  { "name": "Exhaustion 4", "description": "Disadvantage on ability checks, attacks, and saves, speed and max HP halved", "expr": "SPEED /= 2; MAX_HP /= 2" },
+  { "name": "Exhaustion 5", "description": "Disadvantage on ability checks, attacks, and saves, speed 0, max HP halved", "expr": "SPEED = 0; MAX_HP /= 2" }
 ]

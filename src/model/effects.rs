@@ -12,11 +12,19 @@ use crate::{
 pub struct ActiveEffect {
     pub name: String,
     #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub expr: Option<Expr<Attribute>>,
     #[serde(default)]
     pub enabled: bool,
+}
+
+impl ActiveEffect {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
 }
 
 impl demap::Named for ActiveEffect {
@@ -113,6 +121,12 @@ impl ActiveEffects {
                 log::error!("Effect expression error: {error}");
             }
         }
+    }
+
+    /// Remove and return an override value (for consumable attributes like
+    /// TempHp that must be written back to the character store).
+    pub fn take_override(&mut self, attr: Attribute) -> Option<i32> {
+        self.overrides.remove(&attr)
     }
 
     /// Effective value: override if set, otherwise base from character.

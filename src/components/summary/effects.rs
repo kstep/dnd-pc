@@ -28,7 +28,8 @@ pub fn EffectsBlock() -> impl IntoView {
     let effects = eff.effects();
     let registry = expect_context::<RulesRegistry>();
 
-    let effect_name = RwSignal::new(String::new());
+    let effect_label = RwSignal::new(String::new());
+    let effect_key = RwSignal::new(Option::<String>::None);
     let effect_desc = RwSignal::new(String::new());
     let expr_input: NodeRef<html::Input> = NodeRef::new();
 
@@ -36,7 +37,13 @@ pub fn EffectsBlock() -> impl IntoView {
         registry.with_effects_index(|index| {
             index
                 .values()
-                .map(|eff| (eff.name.clone(), eff.name.clone(), eff.description.clone()))
+                .map(|eff| {
+                    (
+                        eff.name.clone(),
+                        eff.label().to_owned(),
+                        eff.description.clone(),
+                    )
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -53,34 +60,43 @@ pub fn EffectsBlock() -> impl IntoView {
                         on:click=move |_| {
                             let Some(expr_el) = expr_input.get() else { return };
 
-                            let name = effect_name.get_untracked().trim().to_string();
-                            if name.is_empty() { return; }
+                            let label_text = effect_label.get_untracked();
+                            let label_text = label_text.trim();
+                            if label_text.is_empty() { return; }
 
                             let Ok(expr) = parse_expr(&expr_el.value()) else {
                                 return;
+                            };
+
+                            let (name, label) = match effect_key.get_untracked() {
+                                Some(key) => (key, Some(label_text.to_owned())),
+                                None => (label_text.to_owned(), None),
                             };
 
                             let description = effect_desc.get_untracked();
 
                             effects.update(|e| e.add(ActiveEffect {
                                 name,
+                                label,
                                 description,
                                 expr,
                                 enabled: true,
                             }, &store.read()));
 
-                            effect_name.set(String::new());
+                            effect_label.set(String::new());
+                            effect_key.set(None);
                             effect_desc.set(String::new());
                             expr_el.set_value("");
                         }
                     ><Icon name="circle-plus" size=14 /></button>
                     <DatalistInput
-                        value=effect_name.get_untracked()
+                        value=effect_label.get_untracked()
                         placeholder=move_tr!("effect-name")
                         class="summary-list-name"
                         options=effect_options
                         on_input=move |input, resolved| {
-                            effect_name.set(input);
+                            effect_label.set(input);
+                            effect_key.set(resolved.clone());
                             if let Some(name) = resolved {
                                 registry.with_effects_index(|index| {
                                     if let Some(eff) = index.get(name.as_str()) {
@@ -111,7 +127,7 @@ pub fn EffectsBlock() -> impl IntoView {
                 Some(view! {
                     <div class="summary-list">
                         {effect_list.iter().enumerate().map(|(i, effect)| {
-                            let name = effect.name.clone();
+                            let name = effect.label().to_owned();
                             let expr_str = effect.expr.as_ref().map(|expr| format!("{expr}")).unwrap_or_default();
                             let description = effect.description.clone();
                             let enabled = effect.enabled;
@@ -137,11 +153,18 @@ pub fn EffectsBlock() -> impl IntoView {
                                             on:change=move |ev| {
                                                 let new_name = event_target_value(&ev).trim().to_string();
                                                 if new_name.is_empty() { return; }
-                                                effects.update(|e| e.update_field(i, |eff| eff.name = new_name));
+                                                effects.update(|e| e.update_field(i, |eff| {
+                                                    if eff.label.is_some() {
+                                                        eff.label = Some(new_name);
+                                                    } else {
+                                                        eff.name = new_name;
+                                                    }
+                                                }));
                                             }
                                         />
                                         <button
                                             class="btn-icon btn-icon--danger"
+                                            title=move_tr!("effect-remove")
                                             on:click=move |_| { effects.update(|e| { e.remove(i, &store.read()); }); }
                                         >
                                             <Icon name="circle-minus" size=14 />

@@ -8,7 +8,10 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     effective::EffectiveCharacter,
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{
+        Attribute, Character, CharacterIdentityStoreFields, CharacterStoreFields,
+        CombatStatsStoreFields,
+    },
     rules::RulesRegistry,
     storage,
 };
@@ -54,10 +57,20 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     let effects = RwSignal::new(initial_effects);
     provide_context(EffectiveCharacter::new(store, effects));
 
-    // Recompute effects when character changes.
+    // Recompute effects when character changes; propagate consumable
+    // overrides (like TempHp) back to the store so they can be spent.
     Effect::new(move || {
         let character = store.read();
-        effects.update(|e| e.recompute(&character));
+        let temp_hp = effects.try_update(|e| {
+            e.recompute(&character);
+            e.take_override(Attribute::TempHp)
+        });
+        if let Some(Some(value)) = temp_hp {
+            store
+                .combat()
+                .hp_temp()
+                .update_untracked(|hp| *hp = value as u32);
+        }
     });
 
     // Auto-save effects when they change.

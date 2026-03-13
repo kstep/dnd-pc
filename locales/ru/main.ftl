@@ -226,6 +226,7 @@ summary-saving-throws = Спасброски
 summary-languages = Понятные языки
 summary-effects = Активные эффекты
 effect-add = Добавить эффект
+effect-remove = Удалить эффект
 effect-name = Название эффекта
 effect-expr = Выражение (опционально)
 

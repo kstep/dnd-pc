@@ -226,6 +226,7 @@ summary-saving-throws = Saving Throws
 summary-languages = Comprehensible Languages
 summary-effects = Active Effects
 effect-add = Add Effect
+effect-remove = Remove Effect
 effect-name = Effect name
 effect-expr = Expression (optional)
 
