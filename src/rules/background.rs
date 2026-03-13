@@ -33,18 +33,14 @@ impl BackgroundDefinition {
             character.identity.background_applied = true;
 
             for am in &self.ability_modifiers {
-                let current = character.abilities.get(am.ability) as i32;
-                character
-                    .abilities
-                    .set(am.ability, (current + am.modifier).max(1) as u32);
+                character.modify_ability(am.ability, am.modifier);
             }
 
-            for &skill in &self.proficiencies {
-                character
-                    .skills
-                    .entry(skill)
-                    .or_insert(ProficiencyLevel::Proficient);
-            }
+            character.update_skill_proficiencies(|skills| {
+                for &skill in &self.proficiencies {
+                    skills.entry(skill).or_insert(ProficiencyLevel::Proficient);
+                }
+            });
         }
 
         let source = FeatureSource::Background(self.name.clone());

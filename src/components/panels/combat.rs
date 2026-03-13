@@ -29,9 +29,9 @@ pub fn CombatPanel() -> impl IntoView {
                     <label>{move_tr!("armor-class")}</label>
                     <input
                         type="number"
-                        prop:value=move || combat.armor_class().get().to_string()
+                        prop:value=move || store.read().armor_class()
                         on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<i32>() {
+                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                 combat.armor_class().set(value);
                             }
                         }

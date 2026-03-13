@@ -83,10 +83,7 @@ impl RaceDefinition {
             }
 
             for am in &self.ability_modifiers {
-                let current = character.abilities.get(am.ability) as i32;
-                character
-                    .abilities
-                    .set(am.ability, (current + am.modifier).max(1) as u32);
+                character.modify_ability(am.ability, am.modifier);
             }
 
             for racial_trait in self.traits.values() {

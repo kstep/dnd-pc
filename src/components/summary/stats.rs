@@ -6,8 +6,8 @@ use strum::IntoEnumIterator;
 use crate::{
     components::icon::Icon,
     model::{
-        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, ProficiencyLevel, Skill,
-        Translatable, format_bonus,
+        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, Skill, Translatable,
+        format_bonus,
     },
 };
 
@@ -17,7 +17,6 @@ pub fn StatsBlock() -> impl IntoView {
     let i18n = expect_context::<I18n>();
 
     let combat = store.combat();
-    let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
     let initiative = Memo::new(move |_| store.read().initiative());
     let damage_input = NodeRef::<Input>::new();
     let damage_value = move || {
@@ -178,8 +177,8 @@ pub fn StatsBlock() -> impl IntoView {
                             <div class="summary-ability">
                                 <span class="summary-ability-label">{label}</span>
                                 <span class="summary-ability-mod">{move || {
-                                    let score = store.abilities().get().get(ability) as i32;
-                                    format_bonus((score - 10).div_euclid(2))
+                                    let modifier = store.read().ability_modifier(ability);
+                                    format_bonus(modifier)
                                 }}</span>
                             </div>
                         }
@@ -192,14 +191,11 @@ pub fn StatsBlock() -> impl IntoView {
                     {Ability::iter().map(|ability| {
                         let tr_key = ability.tr_abbr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
-                        let proficient = move || store.saving_throws().read().contains(&ability);
                         view! {
-                            <div class="summary-save" class:proficient=proficient>
+                            <div class="summary-save" class:proficient=move || store.read().proficient_with(ability)>
                                 <span class="summary-save-label">{label}</span>
                                 <span class="summary-save-value">{move || {
-                                    let score = store.abilities().get().get(ability) as i32;
-                                    let modifier = (score - 10).div_euclid(2);
-                                    let bonus = modifier + if store.saving_throws().read().contains(&ability) { prof_bonus.get() } else { 0 };
+                                    let bonus = store.read().saving_throw_bonus(ability);
                                     format_bonus(bonus)
                                 }}</span>
                             </div>
@@ -213,17 +209,12 @@ pub fn StatsBlock() -> impl IntoView {
                     {Skill::iter().map(|skill| {
                         let tr_key = skill.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
-                        let prof_level = move || {
-                            store.skills().read().get(&skill).copied().unwrap_or(ProficiencyLevel::None)
-                        };
-                        let proficient = move || prof_level() != ProficiencyLevel::None;
+                        let proficient = move || store.read().skill_proficiency(skill).is_proficient();
                         view! {
                             <div class="summary-save" class:proficient=proficient>
                                 <span class="summary-save-label">{label}</span>
                                 <span class="summary-save-value">{move || {
-                                    let score = store.abilities().get().get(skill.ability()) as i32;
-                                    let modifier = (score - 10).div_euclid(2);
-                                    let bonus = modifier + prof_level().multiplier() * prof_bonus.get();
+                                    let bonus = store.read().saving_throw_bonus(skill.ability());
                                     format_bonus(bonus)
                                 }}</span>
                             </div>

@@ -93,11 +93,13 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                             Callback::new(move |_: CastOption| {
                                                             cfn.with_value(|cost_name| {
                                                                 feature_data.update(|map| {
-                                                                    if let Some(entry) = map.get_mut(&feat_name)
-                                                                        && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                        && let FeatureValue::Points { used, max } = &mut field.value
-                                                                    {
-                                                                        *used = (*used + opt_cost).min(*max);
+                                                                    for entry in map.values_mut() {
+                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                            && let FeatureValue::Points { used, max } = &mut field.value
+                                                                        {
+                                                                            *used = (*used + opt_cost).min(*max);
+                                                                            break;
+                                                                        }
                                                                     }
                                                                 });
                                                             });

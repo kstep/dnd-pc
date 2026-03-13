@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
     #[serde(default)]
-    pub armor_class: i32,
+    pub armor_class: u32,
     #[serde(default)]
     pub speed: u32,
     #[serde(default)]

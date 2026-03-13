@@ -204,6 +204,10 @@ enum_serde_u8!(ProficiencyLevel {
 });
 
 impl ProficiencyLevel {
+    pub fn is_proficient(self) -> bool {
+        self != Self::None
+    }
+
     pub fn multiplier(self) -> i32 {
         match self {
             Self::None => 0,

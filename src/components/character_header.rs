@@ -510,8 +510,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         let msg = tr!("confirm-reset");
                         let window = leptos::prelude::window();
                         if window.confirm_with_message(&msg).unwrap_or(false) {
-                            let id = store.read_untracked().id;
-                            store.set(Character { id, ..Default::default() });
+                            store.update(|c| c.reset());
                         }
                     }
                 >

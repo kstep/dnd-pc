@@ -5,12 +5,18 @@ use wasm_bindgen_futures::JsFuture;
 
 use crate::{model::Character, rules::RulesRegistry};
 
+impl Character {
+    fn strip_for_sharing(&mut self) {
+        self.combat.death_save_successes = 0;
+        self.combat.death_save_failures = 0;
+        self.combat.hp_temp = 0;
+    }
+}
+
 fn strip_for_sharing(character: &Character, registry: Option<&RulesRegistry>) -> Character {
     let mut character = character.clone();
 
-    character.combat.death_save_successes = 0;
-    character.combat.death_save_failures = 0;
-    character.combat.hp_temp = 0;
+    character.strip_for_sharing();
     if let Some(registry) = registry {
         registry.clear_from_registry(&mut character);
     } else {
@@ -102,110 +108,14 @@ pub async fn decode_character(data: &str) -> Option<Character> {
 
 #[cfg(test)]
 pub mod tests {
-    use std::collections::BTreeMap;
-
-    use uuid::Uuid;
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::{
-        model::{
-            Ability, AbilityScores, Alignment, CharacterIdentity, ClassLevel, CombatStats,
-            Equipment, Feature, FeatureData, FeatureSource, Personality, Spell, SpellData,
-            SpellSlotPool,
-        },
-        vecset::VecSet,
-    };
-
-    fn test_character() -> Character {
-        let mut ch = Character {
-            id: Uuid::nil(),
-            identity: CharacterIdentity {
-                name: "Share Test".to_string(),
-                classes: vec![ClassLevel {
-                    class: "Bard".to_string(),
-                    class_label: None,
-                    subclass: None,
-                    subclass_label: None,
-                    level: 3,
-                    hit_die_sides: 8,
-                    hit_dice_used: 0,
-                    applied_levels: VecSet::new(),
-                }],
-                race: "Elf".to_string(),
-                background: "Entertainer".to_string(),
-                alignment: Alignment::ChaoticGood,
-                experience_points: 900,
-                race_applied: true,
-                background_applied: true,
-            },
-            abilities: AbilityScores {
-                strength: 8,
-                dexterity: 14,
-                constitution: 12,
-                intelligence: 10,
-                wisdom: 13,
-                charisma: 16,
-            },
-            saving_throws: [Ability::Dexterity, Ability::Charisma]
-                .into_iter()
-                .collect(),
-            skills: BTreeMap::new(),
-            combat: CombatStats {
-                armor_class: 13,
-                speed: 30,
-                hp_max: 24,
-                hp_current: 20,
-                hp_temp: 5,
-                death_save_successes: 2,
-                death_save_failures: 1,
-                initiative_misc_bonus: 0,
-                inspiration: false,
-            },
-            personality: Personality::default(),
-            features: vec![Feature {
-                name: "Bardic Inspiration".to_string(),
-                label: None,
-                description: "Use a bonus action...".to_string(),
-            }],
-            equipment: Equipment::default(),
-            feature_data: BTreeMap::from([(
-                "Spellcasting (Bard)".to_string(),
-                FeatureData {
-                    source: Some(FeatureSource::Class("Bard".to_string())),
-                    fields: Vec::new(),
-                    spells: Some(SpellData {
-                        casting_ability: Ability::Charisma,
-                        caster_coef: 1,
-                        pool: SpellSlotPool::Arcane,
-                        spells: vec![Spell {
-                            name: "Vicious Mockery".to_string(),
-                            label: None,
-                            level: 0,
-                            prepared: true,
-                            description: "Unleash a string of insults...".to_string(),
-                            sticky: false,
-                            cost: 0,
-                            free_uses: None,
-                        }],
-                    }),
-                },
-            )]),
-            proficiencies: VecSet::new(),
-            languages: VecSet::new(),
-            racial_traits: Vec::new(),
-            spell_slots: BTreeMap::new(),
-            notes: String::new(),
-            updated_at: 0,
-            shared: false,
-        };
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
-        ch
-    }
+    use crate::model::Ability;
 
     #[wasm_bindgen_test]
     async fn encode_decode_roundtrip() {
-        let ch = test_character();
+        let ch = Character::test_character();
         let encoded = encode_character(&ch, None).await.expect("encode failed");
         let decoded = decode_character(&encoded).await.expect("decode failed");
 
@@ -214,7 +124,7 @@ pub mod tests {
         assert_eq!(decoded.identity.name, "Share Test");
         assert_eq!(decoded.identity.classes[0].class, "Bard");
         assert_eq!(decoded.identity.classes[0].level, 3);
-        assert_eq!(decoded.abilities.charisma, 16);
+        assert_eq!(decoded.ability_score(Ability::Charisma), 16);
 
         // Stripped fields should be zeroed
         assert_eq!(decoded.combat.death_save_successes, 0);
@@ -227,7 +137,7 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn strip_zeros_death_saves_and_hp_temp() {
-        let ch = test_character();
+        let ch = Character::test_character();
         let stripped = strip_for_sharing(&ch, None);
 
         assert_eq!(stripped.combat.death_save_successes, 0);
@@ -241,7 +151,7 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn strip_clears_descriptions() {
-        let ch = test_character();
+        let ch = Character::test_character();
         let stripped = strip_for_sharing(&ch, None);
 
         // Feature descriptions cleared

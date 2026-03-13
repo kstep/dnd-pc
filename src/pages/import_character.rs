@@ -12,7 +12,7 @@ use uuid::Uuid;
 
 use crate::{
     BASE_URL, firebase,
-    model::{Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable},
+    model::{Ability, Character, Item, Proficiency, Skill, Translatable},
     share, storage,
 };
 
@@ -107,315 +107,305 @@ fn group_diff_rows(rows: Vec<DiffRow>) -> Vec<(&'static str, Vec<DiffRow>)> {
     sections
 }
 
-fn compute_diff(
-    local: &Character,
-    imported: &Character,
-    i18n: leptos_fluent::I18n,
-) -> Vec<DiffRow> {
-    let mut rows = Vec::new();
+impl Character {
+    fn diff(&self, imported: &Character, i18n: leptos_fluent::I18n) -> Vec<DiffRow> {
+        let mut rows = Vec::new();
 
-    // --- Identity ---
-    let sec = "diff-section-identity";
-    push_if_diff(
-        &mut rows,
-        sec,
-        "character-name",
-        local.identity.name.clone(),
-        imported.identity.name.clone(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "race",
-        local.identity.race.clone(),
-        imported.identity.race.clone(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "background",
-        local.identity.background.clone(),
-        imported.identity.background.clone(),
-    );
-    if local.identity.alignment != imported.identity.alignment {
-        rows.push(DiffRow {
-            section: sec,
-            label: "alignment",
-            local: i18n.tr(local.identity.alignment.tr_key()),
-            imported: i18n.tr(imported.identity.alignment.tr_key()),
-        });
-    }
-    push_if_diff(
-        &mut rows,
-        sec,
-        "xp",
-        local.identity.experience_points.to_string(),
-        imported.identity.experience_points.to_string(),
-    );
-    let local_classes = local.class_summary();
-    let imported_classes = imported.class_summary();
-    if local_classes != imported_classes {
-        rows.push(DiffRow {
-            section: sec,
-            label: "classes",
-            local: local_classes,
-            imported: imported_classes,
-        });
-    }
-
-    // --- Ability Scores ---
-    let sec = "panel-ability-scores";
-    for ability in Ability::iter() {
-        let local_score = local.abilities.get(ability);
-        let imported_score = imported.abilities.get(ability);
-        if local_score != imported_score {
+        // --- Identity ---
+        let sec = "diff-section-identity";
+        push_if_diff(
+            &mut rows,
+            sec,
+            "character-name",
+            self.identity.name.clone(),
+            imported.identity.name.clone(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "race",
+            self.identity.race.clone(),
+            imported.identity.race.clone(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "background",
+            self.identity.background.clone(),
+            imported.identity.background.clone(),
+        );
+        if self.identity.alignment != imported.identity.alignment {
             rows.push(DiffRow {
                 section: sec,
-                label: ability.tr_key(),
-                local: local_score.to_string(),
-                imported: imported_score.to_string(),
+                label: "alignment",
+                local: i18n.tr(self.identity.alignment.tr_key()),
+                imported: i18n.tr(imported.identity.alignment.tr_key()),
             });
         }
-    }
-
-    // --- Combat (skip death saves & temp HP — stripped during sharing) ---
-    let sec = "panel-combat";
-    push_if_diff(
-        &mut rows,
-        sec,
-        "armor-class",
-        local.combat.armor_class.to_string(),
-        imported.combat.armor_class.to_string(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "speed",
-        local.combat.speed.to_string(),
-        imported.combat.speed.to_string(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "hp-max",
-        local.combat.hp_max.to_string(),
-        imported.combat.hp_max.to_string(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "current-hp",
-        local.combat.hp_current.to_string(),
-        imported.combat.hp_current.to_string(),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "initiative",
-        local.combat.initiative_misc_bonus.to_string(),
-        imported.combat.initiative_misc_bonus.to_string(),
-    );
-
-    // --- Saving Throws ---
-    let sec = "panel-saving-throws";
-    for ability in Ability::iter() {
-        let local_has = local.saving_throws.contains(&ability);
-        let imported_has = imported.saving_throws.contains(&ability);
-        if local_has != imported_has {
+        push_if_diff(
+            &mut rows,
+            sec,
+            "xp",
+            self.identity.experience_points.to_string(),
+            imported.identity.experience_points.to_string(),
+        );
+        let local_classes = self.class_summary();
+        let imported_classes = imported.class_summary();
+        if local_classes != imported_classes {
             rows.push(DiffRow {
                 section: sec,
-                label: ability.tr_abbr_key(),
-                local: (if local_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
-                imported: (if imported_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
+                label: "classes",
+                local: local_classes,
+                imported: imported_classes,
             });
         }
-    }
 
-    // --- Skills ---
-    let sec = "panel-skills";
-    for skill in Skill::iter() {
-        let local_level = local
-            .skills
-            .get(&skill)
-            .copied()
-            .unwrap_or(ProficiencyLevel::None);
-        let imported_level = imported
-            .skills
-            .get(&skill)
-            .copied()
-            .unwrap_or(ProficiencyLevel::None);
-        if local_level != imported_level {
+        // --- Ability Scores ---
+        let sec = "panel-ability-scores";
+        for ability in Ability::iter() {
+            let local_score = self.ability_score(ability);
+            let imported_score = imported.ability_score(ability);
+            if local_score != imported_score {
+                rows.push(DiffRow {
+                    section: sec,
+                    label: ability.tr_key(),
+                    local: local_score.to_string(),
+                    imported: imported_score.to_string(),
+                });
+            }
+        }
+
+        // --- Combat (skip death saves & temp HP — stripped during sharing) ---
+        let sec = "panel-combat";
+        push_if_diff(
+            &mut rows,
+            sec,
+            "armor-class",
+            self.armor_class().to_string(),
+            imported.armor_class().to_string(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "speed",
+            self.speed().to_string(),
+            imported.speed().to_string(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "hp-max",
+            self.hp_max().to_string(),
+            imported.hp_max().to_string(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "current-hp",
+            self.hp_current().to_string(),
+            imported.hp_current().to_string(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "initiative",
+            self.initiative().to_string(),
+            imported.initiative().to_string(),
+        );
+
+        // --- Saving Throws ---
+        let sec = "panel-saving-throws";
+        for ability in Ability::iter() {
+            let local_has = self.proficient_with(ability);
+            let imported_has = imported.proficient_with(ability);
+            if local_has != imported_has {
+                rows.push(DiffRow {
+                    section: sec,
+                    label: ability.tr_abbr_key(),
+                    local: (if local_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
+                    imported: (if imported_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
+                });
+            }
+        }
+
+        // --- Skills ---
+        let sec = "panel-skills";
+        for skill in Skill::iter() {
+            let local_level = self.skill_proficiency(skill);
+            let imported_level = imported.skill_proficiency(skill);
+            if local_level != imported_level {
+                rows.push(DiffRow {
+                    section: sec,
+                    label: skill.tr_key(),
+                    local: local_level.symbol().to_string(),
+                    imported: imported_level.symbol().to_string(),
+                });
+            }
+        }
+
+        // --- Features (names only, descriptions stripped during sharing) ---
+        let sec = "panel-features";
+        let local_val = format_names(&self.features(), |f| &f.name);
+        let imported_val = format_names(&imported.features(), |f| &f.name);
+        push_if_diff(&mut rows, sec, "panel-features", local_val, imported_val);
+
+        // --- Equipment ---
+        let sec = "panel-equipment";
+        let local_val = format_names(&self.equipment.weapons, |w| &w.name);
+        let imported_val = format_names(&imported.equipment.weapons, |w| &w.name);
+        push_if_diff(&mut rows, sec, "weapons", local_val, imported_val);
+
+        let local_val = format_items(&self.equipment.items);
+        let imported_val = format_items(&imported.equipment.items);
+        push_if_diff(&mut rows, sec, "items", local_val, imported_val);
+
+        if self.equipment.currency != imported.equipment.currency {
             rows.push(DiffRow {
                 section: sec,
-                label: skill.tr_key(),
-                local: local_level.symbol().to_string(),
-                imported: imported_level.symbol().to_string(),
+                label: "currency",
+                local: self.equipment.currency.to_string(),
+                imported: imported.equipment.currency.to_string(),
             });
         }
-    }
 
-    // --- Features (names only, descriptions stripped during sharing) ---
-    let sec = "panel-features";
-    let local_val = format_names(&local.features, |f| &f.name);
-    let imported_val = format_names(&imported.features, |f| &f.name);
-    push_if_diff(&mut rows, sec, "panel-features", local_val, imported_val);
-
-    // --- Equipment ---
-    let sec = "panel-equipment";
-    let local_val = format_names(&local.equipment.weapons, |w| &w.name);
-    let imported_val = format_names(&imported.equipment.weapons, |w| &w.name);
-    push_if_diff(&mut rows, sec, "weapons", local_val, imported_val);
-
-    let local_val = format_items(&local.equipment.items);
-    let imported_val = format_items(&imported.equipment.items);
-    push_if_diff(&mut rows, sec, "items", local_val, imported_val);
-
-    if local.equipment.currency != imported.equipment.currency {
-        rows.push(DiffRow {
-            section: sec,
-            label: "currency",
-            local: local.equipment.currency.to_string(),
-            imported: imported.equipment.currency.to_string(),
-        });
-    }
-
-    // --- Spellcasting ---
-    let sec = "panel-spellcasting";
-    push_if_diff(
-        &mut rows,
-        sec,
-        "spell-slots",
-        format_spell_slots(local, i18n),
-        format_spell_slots(imported, i18n),
-    );
-    {
-        let all_keys: BTreeSet<&String> = local
-            .feature_data
-            .keys()
-            .chain(imported.feature_data.keys())
-            .collect();
-        for key in all_keys {
-            let local_sc = local.feature_data.get(key).and_then(|e| e.spells.as_ref());
-            let imported_sc = imported
+        // --- Spellcasting ---
+        let sec = "panel-spellcasting";
+        push_if_diff(
+            &mut rows,
+            sec,
+            "spell-slots",
+            format_spell_slots(self, i18n),
+            format_spell_slots(imported, i18n),
+        );
+        {
+            let all_keys: BTreeSet<&String> = self
                 .feature_data
-                .get(key)
-                .and_then(|e| e.spells.as_ref());
-            match (local_sc, imported_sc) {
-                (Some(local_sc), Some(imported_sc)) => {
-                    if local_sc.casting_ability != imported_sc.casting_ability {
+                .keys()
+                .chain(imported.feature_data.keys())
+                .collect();
+            for key in all_keys {
+                let local_sc = self.feature_data.get(key).and_then(|e| e.spells.as_ref());
+                let imported_sc = imported
+                    .feature_data
+                    .get(key)
+                    .and_then(|e| e.spells.as_ref());
+                match (local_sc, imported_sc) {
+                    (Some(local_sc), Some(imported_sc)) => {
+                        if local_sc.casting_ability != imported_sc.casting_ability {
+                            rows.push(DiffRow {
+                                section: sec,
+                                label: "casting-ability",
+                                local: i18n.tr(local_sc.casting_ability.tr_key()),
+                                imported: i18n.tr(imported_sc.casting_ability.tr_key()),
+                            });
+                        }
+                        let local_val = format_names(&local_sc.spells, |spell| &spell.name);
+                        let imported_val = format_names(&imported_sc.spells, |spell| &spell.name);
+                        push_if_diff(&mut rows, sec, "spells", local_val, imported_val);
+                    }
+                    (Some(local_sc), None) => {
                         rows.push(DiffRow {
                             section: sec,
-                            label: "casting-ability",
+                            label: "enable-spellcasting",
                             local: i18n.tr(local_sc.casting_ability.tr_key()),
+                            imported: "\u{2014}".to_string(),
+                        });
+                    }
+                    (None, Some(imported_sc)) => {
+                        rows.push(DiffRow {
+                            section: sec,
+                            label: "enable-spellcasting",
+                            local: "\u{2014}".to_string(),
                             imported: i18n.tr(imported_sc.casting_ability.tr_key()),
                         });
                     }
-                    let local_val = format_names(&local_sc.spells, |spell| &spell.name);
-                    let imported_val = format_names(&imported_sc.spells, |spell| &spell.name);
-                    push_if_diff(&mut rows, sec, "spells", local_val, imported_val);
+                    (None, None) => {}
                 }
-                (Some(local_sc), None) => {
-                    rows.push(DiffRow {
-                        section: sec,
-                        label: "enable-spellcasting",
-                        local: i18n.tr(local_sc.casting_ability.tr_key()),
-                        imported: "\u{2014}".to_string(),
-                    });
-                }
-                (None, Some(imported_sc)) => {
-                    rows.push(DiffRow {
-                        section: sec,
-                        label: "enable-spellcasting",
-                        local: "\u{2014}".to_string(),
-                        imported: i18n.tr(imported_sc.casting_ability.tr_key()),
-                    });
-                }
-                (None, None) => {}
             }
         }
-    }
 
-    // --- Proficiencies & Languages ---
-    let sec = "panel-proficiencies";
-    for prof in Proficiency::iter() {
-        let local_has = local.proficiencies.contains(&prof);
-        let imported_has = imported.proficiencies.contains(&prof);
-        if local_has != imported_has {
-            rows.push(DiffRow {
-                section: sec,
-                label: prof.tr_key(),
-                local: (if local_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
-                imported: (if imported_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
-            });
+        // --- Proficiencies & Languages ---
+        let sec = "panel-proficiencies";
+        for prof in Proficiency::iter() {
+            let local_has = self.proficiencies.contains(&prof);
+            let imported_has = imported.proficiencies.contains(&prof);
+            if local_has != imported_has {
+                rows.push(DiffRow {
+                    section: sec,
+                    label: prof.tr_key(),
+                    local: (if local_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
+                    imported: (if imported_has { "\u{25CF}" } else { "\u{25CB}" }).to_string(),
+                });
+            }
         }
+        let local_val = if self.languages.is_empty() {
+            "\u{2014}".to_string()
+        } else {
+            self.languages.join(", ")
+        };
+        let imported_val = if imported.languages.is_empty() {
+            "\u{2014}".to_string()
+        } else {
+            imported.languages.join(", ")
+        };
+        push_if_diff(&mut rows, sec, "languages", local_val, imported_val);
+
+        // --- Personality ---
+        let sec = "panel-personality";
+        push_if_diff(
+            &mut rows,
+            sec,
+            "history",
+            truncate(&self.personality.history, 50),
+            truncate(&imported.personality.history, 50),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "personality-traits",
+            truncate(&self.personality.personality_traits, 50),
+            truncate(&imported.personality.personality_traits, 50),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "ideals",
+            truncate(&self.personality.ideals, 50),
+            truncate(&imported.personality.ideals, 50),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "bonds",
+            truncate(&self.personality.bonds, 50),
+            truncate(&imported.personality.bonds, 50),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "flaws",
+            truncate(&self.personality.flaws, 50),
+            truncate(&imported.personality.flaws, 50),
+        );
+
+        // --- Racial Traits (names only, descriptions stripped during sharing) ---
+        let sec = "racial-traits";
+        let local_val = format_names(&self.racial_traits, |t| &t.name);
+        let imported_val = format_names(&imported.racial_traits, |t| &t.name);
+        push_if_diff(&mut rows, sec, "racial-traits", local_val, imported_val);
+
+        // --- Notes ---
+        let sec = "panel-notes";
+        push_if_diff(
+            &mut rows,
+            sec,
+            "panel-notes",
+            truncate(&self.notes, 50),
+            truncate(&imported.notes, 50),
+        );
+
+        rows
     }
-    let local_val = if local.languages.is_empty() {
-        "\u{2014}".to_string()
-    } else {
-        local.languages.join(", ")
-    };
-    let imported_val = if imported.languages.is_empty() {
-        "\u{2014}".to_string()
-    } else {
-        imported.languages.join(", ")
-    };
-    push_if_diff(&mut rows, sec, "languages", local_val, imported_val);
-
-    // --- Personality ---
-    let sec = "panel-personality";
-    push_if_diff(
-        &mut rows,
-        sec,
-        "history",
-        truncate(&local.personality.history, 50),
-        truncate(&imported.personality.history, 50),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "personality-traits",
-        truncate(&local.personality.personality_traits, 50),
-        truncate(&imported.personality.personality_traits, 50),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "ideals",
-        truncate(&local.personality.ideals, 50),
-        truncate(&imported.personality.ideals, 50),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "bonds",
-        truncate(&local.personality.bonds, 50),
-        truncate(&imported.personality.bonds, 50),
-    );
-    push_if_diff(
-        &mut rows,
-        sec,
-        "flaws",
-        truncate(&local.personality.flaws, 50),
-        truncate(&imported.personality.flaws, 50),
-    );
-
-    // --- Racial Traits (names only, descriptions stripped during sharing) ---
-    let sec = "racial-traits";
-    let local_val = format_names(&local.racial_traits, |t| &t.name);
-    let imported_val = format_names(&imported.racial_traits, |t| &t.name);
-    push_if_diff(&mut rows, sec, "racial-traits", local_val, imported_val);
-
-    // --- Notes ---
-    let sec = "panel-notes";
-    push_if_diff(
-        &mut rows,
-        sec,
-        "panel-notes",
-        truncate(&local.notes, 50),
-        truncate(&imported.notes, 50),
-    );
-
-    rows
 }
 
 // --- Restore stripped descriptions ---
@@ -436,66 +426,68 @@ fn restore_description_by_name<T>(
     }
 }
 
-pub fn restore_stripped_fields(imported: &mut Character, local: &Character) {
-    // Restore temp combat state zeroed by strip_for_sharing
-    imported.combat.death_save_successes = local.combat.death_save_successes;
-    imported.combat.death_save_failures = local.combat.death_save_failures;
-    imported.combat.hp_temp = local.combat.hp_temp;
+impl Character {
+    pub fn restore_stripped_fields(&mut self, local: &Character) {
+        // Restore temp combat state zeroed by strip_for_sharing
+        self.combat.death_save_successes = local.combat.death_save_successes;
+        self.combat.death_save_failures = local.combat.death_save_failures;
+        self.combat.hp_temp = local.combat.hp_temp;
 
-    // Restore descriptions stripped for sharing
-    restore_description_by_name(
-        &mut imported.features,
-        &local.features,
-        |f| &f.name,
-        |f| &mut f.description,
-        |f| &f.description,
-    );
+        // Restore descriptions stripped for sharing
+        restore_description_by_name(
+            &mut self.features,
+            &local.features,
+            |f| &f.name,
+            |f| &mut f.description,
+            |f| &f.description,
+        );
 
-    for (feature, entry) in &mut imported.feature_data {
-        let local_fields = local
-            .feature_data
-            .get(feature)
-            .map(|e| e.fields.as_slice())
-            .unwrap_or(&[]);
+        for (feature, entry) in &mut self.feature_data {
+            let local_fields = local
+                .feature_data
+                .get(feature)
+                .map(|e| e.fields.as_slice())
+                .unwrap_or(&[]);
 
-        for (field, local_field) in entry.fields.iter_mut().zip(local_fields.iter()) {
-            field.description = local_field.description.clone();
+            for (field, local_field) in entry.fields.iter_mut().zip(local_fields.iter()) {
+                field.description = local_field.description.clone();
 
-            restore_description_by_name(
-                field.value.choices_mut(),
-                local_field.value.choices(),
-                |c| &c.name,
-                |c| &mut c.description,
-                |c| &c.description,
-            );
+                restore_description_by_name(
+                    field.value.choices_mut(),
+                    local_field.value.choices(),
+                    |c| &c.name,
+                    |c| &mut c.description,
+                    |c| &c.description,
+                );
+            }
+
+            if let (Some(imp_sc), Some(loc_entry)) =
+                (&mut entry.spells, local.feature_data.get(feature))
+                && let Some(loc_sc) = &loc_entry.spells
+            {
+                restore_description_by_name(
+                    &mut imp_sc.spells,
+                    &loc_sc.spells,
+                    |s| &s.name,
+                    |s| &mut s.description,
+                    |s| &s.description,
+                );
+            }
         }
 
-        if let (Some(imp_sc), Some(loc_entry)) =
-            (&mut entry.spells, local.feature_data.get(feature))
-            && let Some(loc_sc) = &loc_entry.spells
-        {
-            restore_description_by_name(
-                &mut imp_sc.spells,
-                &loc_sc.spells,
-                |s| &s.name,
-                |s| &mut s.description,
-                |s| &s.description,
-            );
-        }
+        restore_description_by_name(
+            &mut self.racial_traits,
+            &local.racial_traits,
+            |t| &t.name,
+            |t| &mut t.description,
+            |t| &t.description,
+        );
     }
-
-    restore_description_by_name(
-        &mut imported.racial_traits,
-        &local.racial_traits,
-        |t| &t.name,
-        |t| &mut t.description,
-        |t| &t.description,
-    );
 }
 
 fn do_import(mut character: Character) -> impl IntoView {
     if let Some(existing) = storage::load_character(&character.id) {
-        restore_stripped_fields(&mut character, &existing);
+        character.restore_stripped_fields(&existing);
     }
     storage::save_and_sync_character(&mut character);
     let id = character.id;
@@ -515,7 +507,7 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let save_character = move |character: &mut Character| {
-        restore_stripped_fields(character, &existing.read_value());
+        character.restore_stripped_fields(&existing.read_value());
         storage::save_and_sync_character(character);
         let navigate = use_navigate();
         navigate(&format!("/c/{}", character.id), Default::default());
@@ -536,7 +528,7 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
     let name = existing.read_value().identity.name.clone();
     let message = move_tr!("import-conflict-message", { "name" => name.clone() });
 
-    let diff_rows = untrack(|| compute_diff(&existing.read_value(), &incoming.read_value(), i18n));
+    let diff_rows = untrack(|| existing.read_value().diff(&incoming.read_value(), i18n));
     let sections = group_diff_rows(diff_rows);
     let has_diffs = !sections.is_empty();
 

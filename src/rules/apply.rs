@@ -96,12 +96,12 @@ impl RulesRegistry {
         class_level.hit_die_sides = def.hit_die;
 
         // Apply saving throws and proficiencies
-        character
-            .saving_throws
-            .extend(def.saving_throws.iter().copied());
-        character
-            .proficiencies
-            .extend(def.proficiencies.iter().copied());
+        character.update_saving_throw_proficiencies(|saving_throws| {
+            saving_throws.extend(def.saving_throws.iter().copied());
+        });
+        character.update_proficiencies(|proficiencies| {
+            proficiencies.extend(def.proficiencies.iter().cloned());
+        });
 
         // Apply class features: create SpellData, update slots, apply features
         let rules = def.levels.get(level as usize - 1);
@@ -131,11 +131,8 @@ impl RulesRegistry {
         } else {
             (def.hit_die as i32) / 2 + 1 + con_mod
         };
-        character.combat.hp_max = character
-            .combat
-            .hp_max
-            .saturating_add_signed(hp_gain.max(1));
-        character.combat.hp_current = character.combat.hp_max;
+
+        character.gain_hp_max(hp_gain);
 
         // Re-apply race and background features at new total level
         // (unlocks level-gated spells, e.g. Tiefling's Infernal Legacy)

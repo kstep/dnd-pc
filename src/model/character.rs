@@ -75,11 +75,11 @@ pub struct Character {
     #[serde(default)]
     pub identity: CharacterIdentity,
     #[serde(default)]
-    pub abilities: AbilityScores,
+    abilities: AbilityScores,
     #[serde(default)]
-    pub saving_throws: VecSet<Ability>,
+    saving_throws: VecSet<Ability>,
     #[serde(default)]
-    pub skills: BTreeMap<Skill, ProficiencyLevel>,
+    skills: BTreeMap<Skill, ProficiencyLevel>,
     #[serde(default)]
     pub combat: CombatStats,
     #[serde(default)]
@@ -113,6 +113,14 @@ fn now_epoch_secs() -> u64 {
 impl Character {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn reset(&mut self) {
+        let id = self.id;
+        *self = Self {
+            id,
+            ..Default::default()
+        };
     }
 
     pub fn long_rest(&mut self) {
@@ -165,6 +173,43 @@ impl Character {
 
     pub fn touch(&mut self) {
         self.updated_at = now_epoch_secs();
+    }
+
+    pub fn ability_score(&self, ability: Ability) -> u32 {
+        self.abilities.get(ability)
+    }
+
+    pub fn modify_ability(&mut self, ability: Ability, delta: i32) {
+        let current = self.abilities.get(ability) as i32;
+        self.abilities.set(ability, (current + delta).max(1) as u32);
+    }
+
+    pub fn features(&self) -> &[Feature] {
+        &self.features
+    }
+
+    pub fn speed(&self) -> u32 {
+        self.combat.speed
+    }
+
+    pub fn hp_max(&self) -> u32 {
+        self.combat.hp_max
+    }
+
+    pub fn gain_hp_max(&mut self, amount: i32) {
+        self.combat.hp_max = self.combat.hp_max.saturating_add_signed(amount);
+    }
+
+    pub fn hp_current(&self) -> u32 {
+        self.combat.hp_current
+    }
+
+    pub fn hp_temp(&self) -> u32 {
+        self.combat.hp_temp
+    }
+
+    pub fn armor_class(&self) -> u32 {
+        self.combat.armor_class
     }
 
     /// Returns (caster_level, caster_class_count) for the given pool in a
@@ -246,9 +291,28 @@ impl Character {
         self.abilities.modifier(ability)
     }
 
+    pub fn proficient_with(&self, ability: Ability) -> bool {
+        self.saving_throws.contains(&ability)
+    }
+
+    pub fn update_saving_throw_proficiencies(&mut self, f: impl FnOnce(&mut VecSet<Ability>)) {
+        f(&mut self.saving_throws);
+    }
+
+    pub fn update_skill_proficiencies(
+        &mut self,
+        f: impl FnOnce(&mut BTreeMap<Skill, ProficiencyLevel>),
+    ) {
+        f(&mut self.skills);
+    }
+
+    pub fn update_proficiencies(&mut self, f: impl FnOnce(&mut VecSet<Proficiency>)) {
+        f(&mut self.proficiencies);
+    }
+
     pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
         let modifier = self.ability_modifier(ability);
-        let proficient = self.saving_throws.contains(&ability);
+        let proficient = self.proficient_with(ability);
         modifier
             + if proficient {
                 self.proficiency_bonus()
@@ -396,7 +460,7 @@ impl expr::Context<Attribute> for Character {
                 self.combat.hp_temp = value as u32;
             }
             Attribute::Ac => {
-                self.combat.armor_class = value;
+                self.combat.armor_class = value as u32;
             }
             Attribute::Speed => {
                 self.combat.speed = value as u32;
@@ -420,7 +484,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::Hp => Ok(self.combat.hp_current as i32),
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),
             Attribute::Level => Ok(self.level() as i32),
-            Attribute::Ac => Ok(self.combat.armor_class),
+            Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
             Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
@@ -460,6 +524,97 @@ impl expr::Context<Attribute> for Context<'_> {
             Attribute::CasterModifier => Ok(self.caster_modifier),
             _ => self.character.resolve(var),
         }
+    }
+}
+
+#[cfg(test)]
+impl Character {
+    pub fn test_character() -> Character {
+        use crate::model::{ClassLevel, FeatureSource, Spell, SpellData};
+
+        let mut ch = Character {
+            id: Uuid::nil(),
+            identity: CharacterIdentity {
+                name: "Share Test".to_string(),
+                classes: vec![ClassLevel {
+                    class: "Bard".to_string(),
+                    class_label: None,
+                    subclass: None,
+                    subclass_label: None,
+                    level: 3,
+                    hit_die_sides: 8,
+                    hit_dice_used: 0,
+                    applied_levels: VecSet::new(),
+                }],
+                race: "Elf".to_string(),
+                background: "Entertainer".to_string(),
+                alignment: Alignment::ChaoticGood,
+                experience_points: 900,
+                race_applied: true,
+                background_applied: true,
+            },
+            abilities: AbilityScores {
+                strength: 8,
+                dexterity: 14,
+                constitution: 12,
+                intelligence: 10,
+                wisdom: 13,
+                charisma: 16,
+            },
+            saving_throws: [Ability::Dexterity, Ability::Charisma]
+                .into_iter()
+                .collect(),
+            skills: BTreeMap::new(),
+            combat: CombatStats {
+                armor_class: 13,
+                speed: 30,
+                hp_max: 24,
+                hp_current: 20,
+                hp_temp: 5,
+                death_save_successes: 2,
+                death_save_failures: 1,
+                initiative_misc_bonus: 0,
+                inspiration: false,
+            },
+            personality: Personality::default(),
+            features: vec![Feature {
+                name: "Bardic Inspiration".to_string(),
+                label: None,
+                description: "Use a bonus action...".to_string(),
+            }],
+            equipment: Equipment::default(),
+            feature_data: BTreeMap::from([(
+                "Spellcasting (Bard)".to_string(),
+                FeatureData {
+                    source: Some(FeatureSource::Class("Bard".to_string())),
+                    fields: Vec::new(),
+                    spells: Some(SpellData {
+                        casting_ability: Ability::Charisma,
+                        caster_coef: 1,
+                        pool: SpellSlotPool::Arcane,
+                        spells: vec![Spell {
+                            name: "Vicious Mockery".to_string(),
+                            label: None,
+                            level: 0,
+                            prepared: true,
+                            description: "Unleash a string of insults...".to_string(),
+                            sticky: false,
+                            cost: 0,
+                            free_uses: None,
+                        }],
+                    }),
+                },
+            )]),
+            proficiencies: VecSet::new(),
+            languages: VecSet::new(),
+            racial_traits: Vec::new(),
+            spell_slots: BTreeMap::new(),
+            notes: String::new(),
+            updated_at: 0,
+            shared: false,
+        };
+        ch.update_spell_slots(SpellSlotPool::Arcane, None);
+        ch
     }
 }
 
