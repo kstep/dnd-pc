@@ -14,7 +14,14 @@ pub(super) enum Token<'a> {
     Kl,
     Dh,
     Dl,
+    Percent,
     Eq,
+    PlusEq,
+    MinusEq,
+    StarEq,
+    SlashEq,
+    BackslashEq,
+    PercentEq,
     LParen,
     RParen,
     Comma,
@@ -66,7 +73,23 @@ impl<'a> Iterator for Tokenizer<'a> {
                     _ => Token::Ident(ident),
                 }))
             }
-            b'+' | b'-' | b'*' | b'/' | b'\\' | b'(' | b')' | b',' | b'=' | b';' => {
+            b'+' | b'-' | b'*' | b'/' | b'\\' | b'%' | b'(' | b')' | b',' | b'=' | b';' => {
+                let second = self.rest.as_bytes().get(1).copied();
+                if second == Some(b'=') {
+                    let tok = match first {
+                        b'+' => Some(Token::PlusEq),
+                        b'-' => Some(Token::MinusEq),
+                        b'*' => Some(Token::StarEq),
+                        b'/' => Some(Token::SlashEq),
+                        b'\\' => Some(Token::BackslashEq),
+                        b'%' => Some(Token::PercentEq),
+                        _ => None,
+                    };
+                    if let Some(tok) = tok {
+                        self.rest = &self.rest[2..];
+                        return Some(Ok(tok));
+                    }
+                }
                 self.rest = &self.rest[1..];
                 Some(Ok(match first {
                     b'+' => Token::Plus,
@@ -74,6 +97,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                     b'*' => Token::Star,
                     b'/' => Token::Slash,
                     b'\\' => Token::Backslash,
+                    b'%' => Token::Percent,
                     b'=' => Token::Eq,
                     b'(' => Token::LParen,
                     b')' => Token::RParen,

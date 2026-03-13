@@ -11,7 +11,7 @@ pub(super) struct Parser<'a, Var> {
     _var: PhantomData<Var>,
 }
 
-impl<'a, Var: FromStr> From<Tokenizer<'a>> for Parser<'a, Var> {
+impl<'a, Var: FromStr + Copy> From<Tokenizer<'a>> for Parser<'a, Var> {
     fn from(tokens: Tokenizer<'a>) -> Self {
         Self {
             tokens: tokens.peekable(),
@@ -20,7 +20,7 @@ impl<'a, Var: FromStr> From<Tokenizer<'a>> for Parser<'a, Var> {
     }
 }
 
-impl<'a, Var: FromStr> Parser<'a, Var> {
+impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     pub fn new(expr: &'a str) -> Self {
         Self::from(Tokenizer::new(expr))
     }
@@ -107,6 +107,11 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                     self.parse_unary(ops)?;
                     ops.push(Op::DivCeil);
                 }
+                Some(Token::Percent) => {
+                    self.next()?;
+                    self.parse_unary(ops)?;
+                    ops.push(Op::Mod);
+                }
                 _ => break,
             }
         }
@@ -117,10 +122,16 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
     fn parse_unary(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
         if self.peek() == Some(&Token::Minus) {
             self.next()?;
-            self.parse_unary(ops)?;
-            ops.push(Op::PushConst(-1));
-            ops.push(Op::Mul);
-            Ok(())
+            if let Some(&Token::Num(n)) = self.peek() {
+                self.next()?;
+                ops.push(Op::PushConst(-n));
+                Ok(())
+            } else {
+                self.parse_unary(ops)?;
+                ops.push(Op::PushConst(-1));
+                ops.push(Op::Mul);
+                Ok(())
+            }
         } else {
             self.parse_dice(ops)
         }
@@ -156,6 +167,8 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                 if let Some(&Token::Num(n)) = self.peek() {
                     self.next()?;
                     ops.push(Op::KeepMax(n as u32));
+                } else {
+                    ops.push(Op::Sum);
                 }
             }
             Some(Token::Kl) => {
@@ -163,6 +176,8 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                 if let Some(&Token::Num(n)) = self.peek() {
                     self.next()?;
                     ops.push(Op::KeepMin(n as u32));
+                } else {
+                    ops.push(Op::Sum);
                 }
             }
             Some(Token::Dh) => {
@@ -170,6 +185,8 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                 if let Some(&Token::Num(n)) = self.peek() {
                     self.next()?;
                     ops.push(Op::DropMax(n as u32));
+                } else {
+                    ops.push(Op::Sum);
                 }
             }
             Some(Token::Dl) => {
@@ -177,6 +194,8 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                 if let Some(&Token::Num(n)) = self.peek() {
                     self.next()?;
                     ops.push(Op::DropMin(n as u32));
+                } else {
+                    ops.push(Op::Sum);
                 }
             }
             _ => ops.push(Op::Sum),
@@ -234,17 +253,35 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
         Ok(())
     }
 
-    // assignment = IDENT '=' expr | expr
+    fn compound_op(token: &Token) -> Option<Op<Var>> {
+        match token {
+            Token::PlusEq => Some(Op::Add),
+            Token::MinusEq => Some(Op::Sub),
+            Token::StarEq => Some(Op::Mul),
+            Token::SlashEq => Some(Op::DivFloor),
+            Token::BackslashEq => Some(Op::DivCeil),
+            Token::PercentEq => Some(Op::Mod),
+            _ => None,
+        }
+    }
+
+    // assignment = IDENT '=' expr | IDENT op= expr | expr
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
         loop {
             if let Some(&Token::Ident(name)) = self.peek()
                 && let Ok(var) = name.parse::<Var>()
             {
-                // Speculatively consume ident, check for '='
+                // Speculatively consume ident, check for '=' or compound
                 self.next()?;
                 if self.peek() == Some(&Token::Eq) {
                     self.next()?;
                     self.parse_expr(ops)?;
+                    ops.push(Op::Assign(var));
+                } else if let Some(arith_op) = self.peek().and_then(Self::compound_op) {
+                    self.next()?;
+                    ops.push(Op::PushVar(var));
+                    self.parse_expr(ops)?;
+                    ops.push(arith_op);
                     ops.push(Op::Assign(var));
                 } else {
                     // Not an assignment, push the var and continue as expr

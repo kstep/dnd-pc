@@ -129,7 +129,16 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
             if b == 0 {
                 return Err(Error::DivisionByZero);
             }
-            stack.push((a + b - 1).div_euclid(b));
+            let d = a.div_euclid(b);
+            let r = a.rem_euclid(b);
+            stack.push(if r != 0 { d + 1 } else { d });
+        }
+        Op::Mod => {
+            let (a, b) = stack.pop2()?;
+            if b == 0 {
+                return Err(Error::DivisionByZero);
+            }
+            stack.push(a.rem_euclid(b));
         }
         Op::Min => {
             let (a, b) = stack.pop2()?;
@@ -252,6 +261,7 @@ impl<Var: Copy + fmt::Display> Interpreter<Var> for Formatter {
             Op::Mul => self.binary_op("*", 2, false)?,
             Op::DivFloor => self.binary_op("/", 2, true)?,
             Op::DivCeil => self.binary_op("\\", 2, true)?,
+            Op::Mod => self.binary_op("%", 2, true)?,
             Op::Min => self.binary_func("min")?,
             Op::Max => self.binary_func("max")?,
             Op::Roll => {

@@ -47,7 +47,7 @@ impl<Var: Copy + fmt::Display> Expr<Var> {
     }
 }
 
-impl<Var: FromStr> FromStr for Expr<Var> {
+impl<Var: FromStr + Copy> FromStr for Expr<Var> {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -55,11 +55,11 @@ impl<Var: FromStr> FromStr for Expr<Var> {
     }
 }
 
-impl<'de, Var: FromStr + Deserialize<'de>> Deserialize<'de> for Expr<Var> {
+impl<'de, Var: FromStr + Copy + Deserialize<'de>> Deserialize<'de> for Expr<Var> {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         struct ExprVisitor<Var>(PhantomData<Var>);
 
-        impl<'de, Var: FromStr + Deserialize<'de>> de::Visitor<'de> for ExprVisitor<Var> {
+        impl<'de, Var: FromStr + Copy + Deserialize<'de>> de::Visitor<'de> for ExprVisitor<Var> {
             type Value = Expr<Var>;
 
             fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -107,6 +107,7 @@ pub enum Op<Var> {
     DropMin(u32),
     Sum,
     Assign(Var),
+    Mod, // %
 }
 
 impl<Var: Copy + fmt::Display> fmt::Display for Expr<Var> {
@@ -183,8 +184,14 @@ mod tests {
     }
 
     impl Context<Var> for Character {
-        fn assign(&mut self, _var: Var, _value: i32) -> Result<(), Error> {
-            unimplemented!()
+        fn assign(&mut self, var: Var, value: i32) -> Result<(), Error> {
+            match var {
+                Var::Ac => {
+                    self.ac = value;
+                    Ok(())
+                }
+                _ => unimplemented!(),
+            }
         }
 
         fn resolve(&self, var: Var) -> Result<i32, Error> {
@@ -320,5 +327,59 @@ mod tests {
         assert_eq!("INT".parse::<Expr>().unwrap().eval(&ch).unwrap(), -1);
         assert_eq!("WIS".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
         assert_eq!("CHA".parse::<Expr>().unwrap().eval(&ch).unwrap(), 4);
+    }
+
+    #[wasm_bindgen_test]
+    fn modulo() {
+        let ch = test_character();
+
+        let expr: Expr = "10 % 3".parse().unwrap();
+        assert_eq!(expr.eval(&ch).unwrap(), 1);
+
+        let expr: Expr = "7 % 2 + 1".parse().unwrap();
+        assert_eq!(expr.eval(&ch).unwrap(), 2);
+
+        // Precedence: % binds like * and /
+        let expr: Expr = "2 + 10 % 3".parse().unwrap();
+        assert_eq!(expr.eval(&ch).unwrap(), 3);
+
+        let expr: Expr = "10 % 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "10 % 3");
+    }
+
+    #[wasm_bindgen_test]
+    fn compound_assignment() {
+        let mut ch = test_character();
+
+        // AC starts at 15
+        let expr: Expr = "AC += 5".parse().unwrap();
+        assert_eq!(expr.apply(&mut ch).unwrap(), 20);
+        assert_eq!(ch.ac, 20);
+
+        // Desugars to same ops as expanded form
+        let compound: Expr = "AC -= 3".parse().unwrap();
+        let expanded: Expr = "AC = AC - 3".parse().unwrap();
+        assert_eq!(compound.0, expanded.0);
+
+        // All compound operators
+        ch.ac = 10;
+        let expr: Expr = "AC *= 2".parse().unwrap();
+        assert_eq!(expr.apply(&mut ch).unwrap(), 20);
+
+        ch.ac = 20;
+        let expr: Expr = "AC /= 3".parse().unwrap();
+        assert_eq!(expr.apply(&mut ch).unwrap(), 6);
+
+        ch.ac = 20;
+        let expr: Expr = "AC \\= 3".parse().unwrap();
+        assert_eq!(expr.apply(&mut ch).unwrap(), 7);
+
+        ch.ac = 17;
+        let expr: Expr = "AC %= 5".parse().unwrap();
+        assert_eq!(expr.apply(&mut ch).unwrap(), 2);
+
+        // Display: compound shows as expanded
+        let expr: Expr = "AC += 5".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = AC + 5");
     }
 }
