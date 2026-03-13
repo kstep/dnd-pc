@@ -200,6 +200,20 @@ impl<Var: Copy + fmt::Display> Expr<Var> {
                     vals[..n as usize].iter().sum()
                 })?;
             }
+            Op::DropMax(n) => {
+                let count = stack.pop()? as usize;
+                stack.pop_n_reduce(count, |vals| {
+                    vals.sort_unstable_by(|a, b| b.cmp(a));
+                    vals[n as usize..].iter().sum()
+                })?;
+            }
+            Op::DropMin(n) => {
+                let count = stack.pop()? as usize;
+                stack.pop_n_reduce(count, |vals| {
+                    vals.sort_unstable();
+                    vals[n as usize..].iter().sum()
+                })?;
+            }
             Op::Sum => {
                 let count = stack.pop()? as usize;
                 stack.pop_n_reduce(count, |vals| vals.iter().sum())?;
@@ -224,10 +238,13 @@ enum Token<'a> {
     D,
     Kh,
     Kl,
+    Dh,
+    Dl,
     Eq,
     LParen,
     RParen,
     Comma,
+    Semicolon,
 }
 
 struct Tokenizer<'a> {
@@ -262,7 +279,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                 let len = self
                     .rest
                     .bytes()
-                    .take_while(|b| b.is_ascii_alphabetic() || *b == b'_')
+                    .take_while(|b| b.is_ascii_alphabetic() || *b == b'_' || *b == b'.')
                     .count();
                 let (ident, rest) = self.rest.split_at(len);
                 self.rest = rest;
@@ -270,10 +287,12 @@ impl<'a> Iterator for Tokenizer<'a> {
                     "d" => Token::D,
                     "kh" => Token::Kh,
                     "kl" => Token::Kl,
+                    "dh" => Token::Dh,
+                    "dl" => Token::Dl,
                     _ => Token::Ident(ident),
                 }))
             }
-            b'+' | b'-' | b'*' | b'/' | b'\\' | b'(' | b')' | b',' | b'=' => {
+            b'+' | b'-' | b'*' | b'/' | b'\\' | b'(' | b')' | b',' | b'=' | b';' => {
                 self.rest = &self.rest[1..];
                 Some(Ok(match first {
                     b'+' => Token::Plus,
@@ -285,6 +304,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                     b'(' => Token::LParen,
                     b')' => Token::RParen,
                     b',' => Token::Comma,
+                    b';' => Token::Semicolon,
                     _ => unreachable!(),
                 }))
             }
@@ -428,6 +448,20 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
                     ops.push(Op::KeepMin(n as u32));
                 }
             }
+            Some(Token::Dh) => {
+                self.next()?;
+                if let Some(&Token::Num(n)) = self.peek() {
+                    self.next()?;
+                    ops.push(Op::DropMax(n as u32));
+                }
+            }
+            Some(Token::Dl) => {
+                self.next()?;
+                if let Some(&Token::Num(n)) = self.peek() {
+                    self.next()?;
+                    ops.push(Op::DropMin(n as u32));
+                }
+            }
             _ => ops.push(Op::Sum),
         }
         Ok(())
@@ -485,22 +519,36 @@ impl<'a, Var: FromStr> Parser<'a, Var> {
 
     // assignment = IDENT '=' expr | expr
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
-        if let Some(&Token::Ident(name)) = self.peek()
-            && let Ok(var) = name.parse::<Var>()
-        {
-            // Speculatively consume ident, check for '='
-            self.next()?;
-            if self.peek() == Some(&Token::Eq) {
+        loop {
+            if let Some(&Token::Ident(name)) = self.peek()
+                && let Ok(var) = name.parse::<Var>()
+            {
+                // Speculatively consume ident, check for '='
                 self.next()?;
+                if self.peek() == Some(&Token::Eq) {
+                    self.next()?;
+                    self.parse_expr(ops)?;
+                    ops.push(Op::Assign(var));
+                } else {
+                    // Not an assignment, push the var and continue as expr
+                    ops.push(Op::PushVar(var));
+                    self.parse_expr_tail(ops)?;
+                }
+            } else {
+                // Not an assignment, parse as expr
                 self.parse_expr(ops)?;
-                ops.push(Op::Assign(var));
-                return Ok(());
             }
-            // Not an assignment, push the var and continue as expr
-            ops.push(Op::PushVar(var));
-            return self.parse_expr_tail(ops);
+
+            if let Some(&Token::Semicolon) = self.peek() {
+                self.next()?;
+                // Continue parsing another assignment/expression
+                continue;
+            }
+
+            break;
         }
-        self.parse_expr(ops)
+
+        Ok(())
     }
 }
 
@@ -569,6 +617,8 @@ pub enum Op<Var> {
     Roll,         // 2d20 -> 2 20 Roll Sum
     KeepMax(u32), // 2d20kh1 -> 2 20 Roll KeepMax(1)
     KeepMin(u32),
+    DropMax(u32),
+    DropMin(u32),
     Sum,
     Assign(Var),
 }
@@ -686,6 +736,20 @@ impl<Var: fmt::Display> fmt::Display for Expr<Var> {
                         prec: 3,
                     });
                 }
+                Op::DropMax(n) => {
+                    let roll = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("{}dh{n}", roll.text),
+                        prec: 3,
+                    });
+                }
+                Op::DropMin(n) => {
+                    let roll = stack.pop().unwrap();
+                    stack.push(Frag {
+                        text: format!("{}dl{n}", roll.text),
+                        prec: 3,
+                    });
+                }
                 Op::Assign(var) => {
                     let val = stack.pop().unwrap();
                     stack.push(Frag {
@@ -696,11 +760,15 @@ impl<Var: fmt::Display> fmt::Display for Expr<Var> {
             }
         }
 
-        if let Some(top) = stack.pop() {
-            f.write_str(&top.text)
-        } else {
-            Ok(())
+        let mut first = true;
+        for frag in stack {
+            if !first {
+                f.write_str("; ")?;
+            }
+            first = false;
+            f.write_str(&frag.text)?;
         }
+        Ok(())
     }
 }
 #[cfg(test)]
@@ -797,6 +865,9 @@ mod tests {
 
         let expr: Expr = "2d6kh1 + 3".parse().unwrap();
         assert_eq!(expr.to_string(), "2d6kh1 + 3");
+
+        let expr: Expr = "AC + 5; AC - 5; (AC - 5) * 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC + 5; AC - 5; (AC - 5) * 2");
     }
 
     #[wasm_bindgen_test]
@@ -818,6 +889,32 @@ mod tests {
 
         let value = expr.eval(&ch).unwrap();
         assert_eq!(value, 16);
+    }
+
+    #[wasm_bindgen_test]
+    fn expr_sequence() {
+        let ch = test_character();
+
+        let expr: Expr = "AC + 5; AC - 5; (AC - 5) * 2".parse().unwrap();
+        assert_eq!(
+            expr.ops,
+            vec![
+                Op::PushVar(Var::Ac),
+                Op::PushConst(5),
+                Op::Add,
+                Op::PushVar(Var::Ac),
+                Op::PushConst(5),
+                Op::Sub,
+                Op::PushVar(Var::Ac),
+                Op::PushConst(5),
+                Op::Sub,
+                Op::PushConst(2),
+                Op::Mul,
+            ]
+        );
+
+        let value = expr.eval(&ch).unwrap();
+        assert_eq!(value, 20);
     }
 
     #[wasm_bindgen_test]
