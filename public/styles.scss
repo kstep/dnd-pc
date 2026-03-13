@@ -92,6 +92,7 @@ input[type="checkbox"] {
   width: 0.9em;
   height: 0.9em;
   align-self: center;
+  vertical-align: middle;
   margin: 0;
 }
 
@@ -1623,6 +1624,10 @@ input[type="checkbox"] {
   margin-bottom: var(--size-2);
   font-size: var(--font-size-1);
   color: var(--text-secondary);
+}
+
+.summary-list-entry.disabled {
+  opacity: 0.5;
 }
 
 .summary-list {

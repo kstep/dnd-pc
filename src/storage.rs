@@ -13,7 +13,7 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     firebase,
-    model::{Character, CharacterIndex, CharacterSummary, DamageType},
+    model::{ActiveEffects, Character, CharacterIndex, CharacterSummary, DamageType},
 };
 
 const INDEX_KEY: &str = "dnd_pc_index";
@@ -22,6 +22,18 @@ const DEBOUNCE_MS: i32 = 2000;
 
 fn character_key(id: &Uuid) -> String {
     format!("dnd_pc_char_{id}")
+}
+
+fn effects_key(id: &Uuid) -> String {
+    format!("dnd_pc_effects_{id}")
+}
+
+pub fn load_effects(id: &Uuid) -> ActiveEffects {
+    LocalStorage::get(effects_key(id)).unwrap_or_default()
+}
+
+pub fn save_effects(id: &Uuid, effects: &ActiveEffects) {
+    LocalStorage::set(effects_key(id), effects).expect("failed to save effects");
 }
 
 pub fn load_index() -> CharacterIndex {

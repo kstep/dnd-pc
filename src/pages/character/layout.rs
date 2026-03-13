@@ -7,6 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     BASE_URL,
+    effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
     storage,
@@ -45,6 +46,25 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     // Provide context first so child components can access the store.
     provide_context(store);
+
+    // Load and provide active effects (separate from character, not synced).
+    let char_id = store.read_untracked().id;
+    let mut initial_effects = storage::load_effects(&char_id);
+    initial_effects.recompute(&store.read_untracked());
+    let effects = RwSignal::new(initial_effects);
+    provide_context(EffectiveCharacter::new(store, effects));
+
+    // Recompute effects when character changes.
+    Effect::new(move || {
+        let character = store.read();
+        effects.update(|e| e.recompute(&character));
+    });
+
+    // Auto-save effects when they change.
+    Effect::new(move || {
+        let eff = effects.read();
+        storage::save_effects(&char_id, &eff);
+    });
 
     // Auto-save + cloud sync pull (touch gated on initial sync).
     storage::setup_auto_save(store);

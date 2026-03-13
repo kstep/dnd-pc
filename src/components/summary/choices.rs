@@ -88,9 +88,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 {cost_field.map(|cfn| view! {
                                                     <CastButton
                                                         disabled=!can_cast
-                                                        on_cast={
-                                                            let feat_name = feat_name.clone();
-                                                            Callback::new(move |_: CastOption| {
+                                                        on_cast={Callback::new(move |_: CastOption| {
                                                             cfn.with_value(|cost_name| {
                                                                 feature_data.update(|map| {
                                                                     for entry in map.values_mut() {

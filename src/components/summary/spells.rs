@@ -7,6 +7,7 @@ use crate::{
         cast_button::{CastButton, CastOption},
         summary_list::{SummaryList, SummaryListItem},
     },
+    effective::EffectiveCharacter,
     model::{Character, CharacterStoreFields, FeatureValue, SpellSlotLevel, format_bonus},
     rules::RulesRegistry,
 };
@@ -15,6 +16,7 @@ use crate::{
 pub fn SpellsBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<EffectiveCharacter>();
     let identity = store.identity();
     let spell_slots = store.spell_slots();
     let feature_data = store.feature_data();
@@ -27,9 +29,8 @@ pub fn SpellsBlock() -> impl IntoView {
                 let spell_data = entry.spells.as_ref()?;
                 let ability = spell_data.casting_ability;
 
-                let character = store.read();
-                let save_dc = character.spell_save_dc(ability);
-                let atk_bonus = character.spell_attack_bonus(ability);
+                let save_dc = eff.spell_save_dc(ability);
+                let atk_bonus = eff.spell_attack_bonus(ability);
 
                 let (feature_label, cost_field_name, cost_short) = registry
                     .with_feature(&identity.read(), name, |feat| {

@@ -224,6 +224,10 @@ summary-no-items = No items
 summary-ability-mods = Ability Modifiers
 summary-saving-throws = Saving Throws
 summary-languages = Comprehensible Languages
+summary-effects = Active Effects
+effect-add = Add Effect
+effect-name = Effect name
+effect-expr = Expression (optional)
 
 ## Reference pages
 ref-reference = Reference

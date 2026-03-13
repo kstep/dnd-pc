@@ -5,6 +5,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::icon::Icon,
+    effective::EffectiveCharacter,
     model::{
         Ability, Character, CharacterStoreFields, CombatStatsStoreFields, Skill, Translatable,
         format_bonus,
@@ -14,10 +15,10 @@ use crate::{
 #[component]
 pub fn StatsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
 
     let combat = store.combat();
-    let initiative = Memo::new(move |_| store.read().initiative());
     let damage_input = NodeRef::<Input>::new();
     let damage_value = move || {
         damage_input
@@ -155,15 +156,15 @@ pub fn StatsBlock() -> impl IntoView {
                 <div class="summary-core-stats">
                     <div class="summary-stat-box">
                         <label>{move_tr!("armor-class")}</label>
-                        <span>{move || combat.armor_class().get()}</span>
+                        <span>{move || eff.armor_class()}</span>
                     </div>
                     <div class="summary-stat-box">
                         <label>{move_tr!("initiative")}</label>
-                        <span>{move || format_bonus(initiative.get())}</span>
+                        <span>{move || format_bonus(eff.initiative())}</span>
                     </div>
                     <div class="summary-stat-box">
                         <label>{move_tr!("speed")}</label>
-                        <span>{move || combat.speed().get()}</span>
+                        <span>{move || eff.speed()}</span>
                     </div>
                 </div>
 
@@ -176,10 +177,7 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-ability">
                                 <span class="summary-ability-label">{label}</span>
-                                <span class="summary-ability-mod">{move || {
-                                    let modifier = store.read().ability_modifier(ability);
-                                    format_bonus(modifier)
-                                }}</span>
+                                <span class="summary-ability-mod">{move || format_bonus(eff.ability_modifier(ability))}</span>
                             </div>
                         }
                     }).collect_view()}
@@ -194,10 +192,7 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-save" class:proficient=move || store.read().proficient_with(ability)>
                                 <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">{move || {
-                                    let bonus = store.read().saving_throw_bonus(ability);
-                                    format_bonus(bonus)
-                                }}</span>
+                                <span class="summary-save-value">{move || format_bonus(eff.saving_throw_bonus(ability))}</span>
                             </div>
                         }
                     }).collect_view()}
@@ -213,10 +208,7 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-save" class:proficient=proficient>
                                 <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">{move || {
-                                    let bonus = store.read().saving_throw_bonus(skill.ability());
-                                    format_bonus(bonus)
-                                }}</span>
+                                <span class="summary-save-value">{move || format_bonus(eff.skill_bonus(skill))}</span>
                             </div>
                         }
                     }).collect_view()}

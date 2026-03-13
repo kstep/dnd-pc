@@ -224,6 +224,10 @@ summary-no-items = Нет предметов
 summary-ability-mods = Модификаторы характеристик
 summary-saving-throws = Спасброски
 summary-languages = Понятные языки
+summary-effects = Активные эффекты
+effect-add = Добавить эффект
+effect-name = Название эффекта
+effect-expr = Выражение (опционально)
 
 ## Справочные страницы
 ref-reference = Справочник

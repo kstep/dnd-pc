@@ -245,8 +245,8 @@ impl Character {
 
         // --- Features (names only, descriptions stripped during sharing) ---
         let sec = "panel-features";
-        let local_val = format_names(&self.features(), |f| &f.name);
-        let imported_val = format_names(&imported.features(), |f| &f.name);
+        let local_val = format_names(self.features(), |f| &f.name);
+        let imported_val = format_names(imported.features(), |f| &f.name);
         push_if_diff(&mut rows, sec, "panel-features", local_val, imported_val);
 
         // --- Equipment ---

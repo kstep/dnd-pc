@@ -4,83 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     expr::{self, Context, Expr},
-    model::{Ability, Attribute, Character, Skill},
+    model::{Attribute, Character},
 };
-
-pub struct EffectiveCharacter<'a> {
-    character: &'a Character,
-    effects: &'a mut ActiveEffects,
-}
-
-impl<'a> EffectiveCharacter<'a> {
-    pub fn new(character: &'a Character, effects: &'a mut ActiveEffects) -> Self {
-        Self { character, effects }
-    }
-
-    pub fn character(&self) -> &Character {
-        self.character
-    }
-
-    fn get(&self, attr: Attribute) -> i32 {
-        self.effects.resolve(self.character, attr)
-    }
-
-    pub fn ability_score(&self, ability: Ability) -> i32 {
-        self.get(Attribute::Ability(ability))
-    }
-
-    pub fn ability_modifier(&self, ability: Ability) -> i32 {
-        self.get(Attribute::Modifier(ability))
-    }
-
-    pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
-        self.get(Attribute::SavingThrow(ability))
-    }
-
-    pub fn skill_bonus(&self, skill: Skill) -> i32 {
-        self.get(Attribute::Skill(skill))
-    }
-
-    pub fn proficiency_bonus(&self) -> i32 {
-        self.get(Attribute::ProfBonus)
-    }
-
-    pub fn armor_class(&self) -> i32 {
-        self.get(Attribute::Ac)
-    }
-
-    pub fn speed(&self) -> i32 {
-        self.get(Attribute::Speed)
-    }
-
-    pub fn hp_max(&self) -> i32 {
-        self.get(Attribute::MaxHp)
-    }
-
-    pub fn initiative(&self) -> i32 {
-        self.character.combat.initiative_misc_bonus as i32
-            + self.ability_modifier(Ability::Dexterity)
-    }
-
-    pub fn spell_save_dc(&self, ability: Ability) -> i32 {
-        8 + self.proficiency_bonus() + self.ability_modifier(ability)
-    }
-
-    pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
-        self.proficiency_bonus() + self.ability_modifier(ability)
-    }
-}
-
-impl Context<Attribute> for EffectiveCharacter<'_> {
-    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-        self.effects.overrides.insert(var, value);
-        Ok(())
-    }
-
-    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        Ok(self.effects.resolve(self.character, var))
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActiveEffect {
@@ -119,6 +44,13 @@ impl ActiveEffects {
         effect
     }
 
+    /// Update a single field of an effect without recomputing (no expression change).
+    pub fn update_field(&mut self, index: usize, f: impl FnOnce(&mut ActiveEffect)) {
+        if let Some(effect) = self.effects.get_mut(index) {
+            f(effect);
+        }
+    }
+
     pub fn toggle(&mut self, index: usize, character: &Character) {
         if let Some(effect) = self.effects.get_mut(index) {
             effect.enabled = !effect.enabled;
@@ -138,17 +70,31 @@ impl ActiveEffects {
             .filter_map(|e| e.expr.clone())
             .collect();
 
-        let mut ctx = EffectiveCharacter::new(character, self);
+        // Mutable wrapper used only here for expression evaluation.
+        struct Ctx<'a> {
+            character: &'a Character,
+            effects: &'a mut ActiveEffects,
+        }
+        impl Context<Attribute> for Ctx<'_> {
+            fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+                self.effects.overrides.insert(var, value);
+                Ok(())
+            }
+
+            fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+                Ok(self.effects.resolve(self.character, var))
+            }
+        }
+
+        let mut ctx = Ctx {
+            character,
+            effects: self,
+        };
         for expr in &exprs {
             if let Err(err) = expr.apply(&mut ctx) {
                 log::error!("Effect expression error: {err}");
             }
         }
-    }
-
-    /// Whether any enabled effect modifies this attribute.
-    pub fn has_override(&self, attr: Attribute) -> bool {
-        self.overrides.contains_key(&attr)
     }
 
     /// Effective value: override if set, otherwise base from character.
@@ -159,11 +105,4 @@ impl ActiveEffects {
         character.resolve(attr).unwrap_or(0)
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.effects.is_empty()
-    }
-
-    pub fn len(&self) -> usize {
-        self.effects.len()
-    }
 }

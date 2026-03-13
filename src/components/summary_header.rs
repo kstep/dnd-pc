@@ -5,6 +5,7 @@ use reactive_stores::Store;
 
 use crate::{
     BASE_URL,
+    effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
 };
@@ -12,6 +13,7 @@ use crate::{
 #[component]
 pub fn SummaryHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<EffectiveCharacter>();
     let registry = expect_context::<RulesRegistry>();
 
     let char_id = store.read_untracked().id;
@@ -34,7 +36,7 @@ pub fn SummaryHeader() -> impl IntoView {
 
     let class_summary = Memo::new(move |_| store.read().class_summary());
     let total_level = Memo::new(move |_| store.read().level());
-    let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
+    let prof_bonus = Memo::new(move |_| eff.proficiency_bonus());
 
     view! {
         <div class="panel summary-header">
