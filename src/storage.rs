@@ -33,7 +33,9 @@ pub fn load_effects(id: &Uuid) -> ActiveEffects {
 }
 
 pub fn save_effects(id: &Uuid, effects: &ActiveEffects) {
-    LocalStorage::set(effects_key(id), effects).expect("failed to save effects");
+    if let Err(error) = LocalStorage::set(effects_key(id), effects) {
+        log::error!("Failed to save effects: {error}");
+    }
 }
 
 pub fn load_index() -> CharacterIndex {
@@ -165,12 +167,8 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     }
     // Fallback: migrate legacy format
     let raw = LocalStorage::raw().get_item(&key).ok()??;
-    let mut value: serde_json::Value = serde_json::from_str(&raw).ok()?;
-    migrate_v1(&mut value);
-    migrate_v2(&mut value);
-    migrate_v3(&mut value);
-    migrate_v4(&mut value);
-    serde_json::from_value(value).ok()
+    let value: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    deserialize_character_value(value)
 }
 
 fn upsert_index_entry(index: &mut CharacterIndex, summary: CharacterSummary) {

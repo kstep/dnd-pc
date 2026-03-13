@@ -49,7 +49,7 @@ impl EffectiveCharacter {
     }
 
     pub fn initiative(&self) -> i32 {
-        self.store.read().combat.initiative_misc_bonus + self.ability_modifier(Ability::Dexterity)
+        self.get(Attribute::Initiative)
     }
 
     pub fn spell_save_dc(&self, ability: Ability) -> i32 {

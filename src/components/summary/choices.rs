@@ -31,10 +31,10 @@ pub fn ChoicesBlock() -> impl IntoView {
             })
             .collect::<BTreeMap<_, _>>();
 
+        let id = identity.read();
         features
             .iter()
             .filter_map(|(feat_name, entry)| {
-                let id = identity.read();
                 let fields = registry.with_feature(&id, feat_name, |feat| {
                     feat.fields
                         .iter()
@@ -61,9 +61,10 @@ pub fn ChoicesBlock() -> impl IntoView {
                 })?;
 
                 let feat_name = feat_name.clone();
+                let id = &id;
                 Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
                     let (points, from, cost) = fields.get(&field.name)?;
-                    let short = cost.as_deref().and_then(|c| registry.get_points_short(&id, c));
+                    let short = cost.as_deref().and_then(|c| registry.get_points_short(id, c));
                     let cost_field = cost.as_ref().map(|c| StoredValue::new(c.clone()));
                     let feat_name = feat_name.clone();
 
@@ -127,37 +128,38 @@ pub fn ChoicesBlock() -> impl IntoView {
                             let FeatureValue::Choice { options: from_options } = &from_field.value else {
                                 return None;
                             };
-                            let from_options = from_options.clone();
-                            let feat_name = feat_name.to_string();
+                            let from_options = StoredValue::new(from_options.clone());
+                            let feat_name = StoredValue::new(feat_name.to_string());
 
                             let choice_entry_factory = move |(index, current): (usize, &FeatureOption)| {
-                                let current = current.clone();
-                                let feat_name = feat_name.clone();
-                                let from_options = from_options.clone();
+                                let current_name = current.name.clone();
                                 view! {
                                     <div class="choice-entry">
                                         <select on:change={move |event| {
                                             let value = event_target_value(&event);
-                                            let Some(selected_option) = from_options.iter().find(|opt| opt.name == value) else {
-                                                return;
-                                            };
-
-                                            feature_data.update(|features| {
-                                                if let Some(entry) = features.get_mut(&feat_name)
-                                                    && let Some(field) = entry.fields.get_mut(field_index)
-                                                    && let FeatureValue::Choice { options } = &mut field.value
-                                                    && let Some(option) = options.get_mut(index)
-                                                {
-                                                    option.clone_from(selected_option);
-                                                }
+                                            from_options.with_value(|opts| {
+                                                let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
+                                                    return;
+                                                };
+                                                feat_name.with_value(|name| {
+                                                    feature_data.update(|features| {
+                                                        if let Some(entry) = features.get_mut(name)
+                                                            && let Some(field) = entry.fields.get_mut(field_index)
+                                                            && let FeatureValue::Choice { options } = &mut field.value
+                                                            && let Some(option) = options.get_mut(index)
+                                                        {
+                                                            option.clone_from(selected_option);
+                                                        }
+                                                    });
+                                                });
                                             });
                                         }}>
                                             <option value="">""</option>
-                                            {from_options.iter().map(|opt| {
+                                            {from_options.with_value(|opts| opts.iter().map(|opt| {
                                                 view! {
-                                                    <option value=opt.name.clone() selected={opt.name == current.name}>{opt.label().to_string()}</option>
+                                                    <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
                                                 }
-                                            }).collect_view()}
+                                            }).collect_view())}
                                         </select>
                                     </div>
                                 }

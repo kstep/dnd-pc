@@ -32,10 +32,12 @@ impl ActiveEffects {
         &self.effects
     }
 
-    pub fn add(&mut self, mut effect: ActiveEffect, character: &Character) {
-        effect.enabled = true;
+    pub fn add(&mut self, effect: ActiveEffect, character: &Character) {
+        let needs_recompute = effect.enabled && effect.expr.is_some();
         self.effects.push(effect);
-        self.recompute(character);
+        if needs_recompute {
+            self.recompute(character);
+        }
     }
 
     pub fn remove(&mut self, index: usize, character: &Character) -> ActiveEffect {
@@ -92,8 +94,8 @@ impl ActiveEffects {
             effects: self,
         };
         for expr in &exprs {
-            if let Err(err) = expr.apply(&mut ctx) {
-                log::error!("Effect expression error: {err}");
+            if let Err(error) = expr.apply(&mut ctx) {
+                log::error!("Effect expression error: {error}");
             }
         }
     }

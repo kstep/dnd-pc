@@ -7,8 +7,18 @@ use reactive_stores::Store;
 use crate::{
     components::{icon::Icon, toggle_button::ToggleButton},
     effective::EffectiveCharacter,
-    model::{ActiveEffect, Character},
+    expr::Expr,
+    model::{ActiveEffect, Attribute, Character},
 };
+
+fn parse_expr(input: &str) -> Result<Option<Expr<Attribute>>, ()> {
+    if input.trim().is_empty() {
+        return Ok(None);
+    }
+    input.parse().map(Some).map_err(|error| {
+        log::error!("Invalid expression: {error}");
+    })
+}
 
 #[component]
 pub fn EffectsBlock() -> impl IntoView {
@@ -28,6 +38,7 @@ pub fn EffectsBlock() -> impl IntoView {
             <div class="summary-list-entry">
                 <div class="summary-list-row">
                     <button class="btn-icon btn-icon--success"
+                        title=move_tr!("effect-add")
                         on:click=move |_| {
                             let Some(name_el) = name_input.get() else { return };
                             let Some(expr_el) = expr_input.get() else { return };
@@ -36,17 +47,8 @@ pub fn EffectsBlock() -> impl IntoView {
                             let name = name_el.value().trim().to_string();
                             if name.is_empty() { return; }
 
-                            let expr_str = expr_el.value();
-                            let expr = if expr_str.trim().is_empty() {
-                                None
-                            } else {
-                                match expr_str.parse() {
-                                    Ok(e) => Some(e),
-                                    Err(err) => {
-                                        log::error!("Invalid expression: {err}");
-                                        return;
-                                    }
-                                }
+                            let Ok(expr) = parse_expr(&expr_el.value()) else {
+                                return;
                             };
 
                             let description = desc_el.value().trim().to_string();
@@ -70,18 +72,19 @@ pub fn EffectsBlock() -> impl IntoView {
             </div>
 
             // -- Effect list --
-            {move || {
+            {
+                let expanded = RwSignal::new(HashSet::<usize>::new());
+                move || {
                 let effects_data = effects.read();
                 let effect_list = effects_data.effects();
                 if effect_list.is_empty() {
                     return None;
                 }
-                let expanded = RwSignal::new(HashSet::<usize>::new());
                 Some(view! {
                     <div class="summary-list">
                         {effect_list.iter().enumerate().map(|(i, effect)| {
                             let name = effect.name.clone();
-                            let expr_str = effect.expr.as_ref().map(|e| format!("{e}")).unwrap_or_default();
+                            let expr_str = effect.expr.as_ref().map(|expr| format!("{expr}")).unwrap_or_default();
                             let description = effect.description.clone();
                             let enabled = effect.enabled;
                             let is_open = Signal::derive(move || expanded.get().contains(&i));
@@ -114,21 +117,12 @@ pub fn EffectsBlock() -> impl IntoView {
                                             class="summary-list-name"
                                             prop:value=expr_str
                                             on:change=move |ev| {
-                                                let val = event_target_value(&ev);
-                                                let expr = if val.trim().is_empty() {
-                                                    None
-                                                } else {
-                                                    match val.parse() {
-                                                        Ok(e) => Some(e),
-                                                        Err(err) => {
-                                                            log::error!("Invalid expression: {err}");
-                                                            return;
-                                                        }
-                                                    }
+                                                let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
+                                                    return;
                                                 };
-                                                effects.update(|e| {
-                                                    e.update_field(i, |eff| eff.expr = expr);
-                                                    e.recompute(&store.read());
+                                                effects.update(|effects| {
+                                                    effects.update_field(i, |eff| eff.expr = expr);
+                                                    effects.recompute(&store.read());
                                                 });
                                             }
                                         />

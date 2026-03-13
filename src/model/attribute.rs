@@ -30,6 +30,7 @@ pub enum Attribute {
     CasterLevel,
     CasterModifier,
     ProfBonus,
+    Initiative,
     Inspiration,
 }
 
@@ -127,6 +128,7 @@ impl FromStr for Attribute {
             "CASTER_LEVEL" => Ok(Self::CasterLevel),
             "CASTER_MODIFIER" => Ok(Self::CasterModifier),
             "PROF_BONUS" => Ok(Self::ProfBonus),
+            "INITIATIVE" => Ok(Self::Initiative),
             "INSPIRATION" => Ok(Self::Inspiration),
             _ => Err("unknown attribute"),
         }
@@ -150,6 +152,7 @@ impl fmt::Display for Attribute {
             Self::CasterLevel => f.write_str("CASTER_LEVEL"),
             Self::CasterModifier => f.write_str("CASTER_MODIFIER"),
             Self::ProfBonus => f.write_str("PROF_BONUS"),
+            Self::Initiative => f.write_str("INITIATIVE"),
             Self::Inspiration => f.write_str("INSPIRATION"),
         }
     }

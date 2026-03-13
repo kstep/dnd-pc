@@ -22,6 +22,7 @@ pub fn SpellsBlock() -> impl IntoView {
     let feature_data = store.feature_data();
 
     move || {
+        let id = identity.read();
         feature_data
             .read()
             .iter()
@@ -33,7 +34,7 @@ pub fn SpellsBlock() -> impl IntoView {
                 let atk_bonus = eff.spell_attack_bonus(ability);
 
                 let (feature_label, cost_field_name, cost_short) = registry
-                    .with_feature(&identity.read(), name, |feat| {
+                    .with_feature(&id, name, |feat| {
                         let label = feat.label().to_string();
                         let (cost_name, cost_short) = feat
                             .cost_info()

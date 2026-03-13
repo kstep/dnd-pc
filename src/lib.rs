@@ -67,9 +67,8 @@ fn use_theme() -> ReadSignal<&'static str> {
             move || theme.set(if mql.matches() { "dark" } else { "light" })
         });
         let _ = mql.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref());
-        // Leak the closure to keep the event listener alive for the entire app
-        // lifetime.
-        closure.forget();
+        // Keep the closure alive for the entire app lifetime without leaking.
+        closure.into_js_value();
     }
     theme.read_only()
 }
