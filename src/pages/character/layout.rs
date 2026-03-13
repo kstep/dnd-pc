@@ -57,26 +57,24 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     let effects = RwSignal::new(initial_effects);
     provide_context(EffectiveCharacter::new(store, effects));
 
-    // Recompute effects when character changes; propagate consumable
-    // overrides (like Hp, TempHp) back to the store so they can be spent.
+    // Recompute effects when character or effects change; propagate
+    // consumable overrides (Hp, TempHp) back to the store so they can
+    // be spent. Uses update_untracked to avoid re-triggering this effect.
     Effect::new(move || {
         let character = store.read();
-        let overrides = effects.try_update(|e| {
-            e.recompute(&character);
-            [
-                e.take_override(Attribute::Hp),
-                e.take_override(Attribute::TempHp),
-            ]
-        });
-        if let Some([hp, temp_hp]) = overrides {
+        effects.track();
+        effects.update_untracked(|eff| {
+            eff.recompute(&character);
             let combat = store.combat();
-            if let Some(value) = hp {
-                combat.hp_current().update_untracked(|v| *v = value as u32);
+            if let Some(value) = eff.take_override(Attribute::Hp) {
+                combat
+                    .hp_current()
+                    .update_untracked(|hp| *hp = value as u32);
             }
-            if let Some(value) = temp_hp {
-                combat.hp_temp().update_untracked(|v| *v = value as u32);
+            if let Some(value) = eff.take_override(Attribute::TempHp) {
+                combat.hp_temp().update_untracked(|hp| *hp = value as u32);
             }
-        }
+        });
     });
 
     // Auto-save effects when they change.

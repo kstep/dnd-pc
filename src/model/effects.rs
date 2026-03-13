@@ -55,6 +55,12 @@ impl ActiveEffects {
         &self.effects
     }
 
+    /// Remove and return an override value (for consumable attributes like
+    /// TempHp that must be written back to the character store).
+    pub fn take_override(&mut self, attr: Attribute) -> Option<i32> {
+        self.overrides.remove(&attr)
+    }
+
     pub fn add(&mut self, effect: ActiveEffect, character: &Character) {
         let needs_recompute = effect.enabled && effect.expr.is_some();
         self.effects.push(effect);
@@ -121,12 +127,6 @@ impl ActiveEffects {
                 log::error!("Effect expression error: {error}");
             }
         }
-    }
-
-    /// Remove and return an override value (for consumable attributes like
-    /// TempHp that must be written back to the character store).
-    pub fn take_override(&mut self, attr: Attribute) -> Option<i32> {
-        self.overrides.remove(&attr)
     }
 
     /// Effective value: override if set, otherwise base from character.
