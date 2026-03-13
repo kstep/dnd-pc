@@ -13,6 +13,7 @@ use uuid::Uuid;
 use crate::{
     BASE_URL, firebase,
     model::{Ability, Character, Item, Proficiency, ProficiencyLevel, Skill, Translatable},
+    rules::RulesRegistry,
     share, storage,
 };
 
@@ -494,6 +495,11 @@ pub fn restore_stripped_fields(imported: &mut Character, local: &Character) {
 }
 
 fn do_import(mut character: Character) -> impl IntoView {
+    // Clear registry-standard labels/descriptions (preserving custom ones) so
+    // CharacterLayout's fill_from_registry Effect re-fills them from the
+    // current locale.
+    let registry = expect_context::<RulesRegistry>();
+    registry.clear_from_registry(&mut character);
     if let Some(existing) = storage::load_character(&character.id) {
         restore_stripped_fields(&mut character, &existing);
     }
@@ -513,8 +519,13 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
     let incoming = StoredValue::new(incoming);
     let existing = StoredValue::new(existing);
     let i18n = expect_context::<leptos_fluent::I18n>();
+    let registry = expect_context::<RulesRegistry>();
 
     let save_character = move |character: &mut Character| {
+        // Clear registry-standard labels/descriptions (preserving custom ones)
+        // so CharacterLayout's fill_from_registry Effect re-fills them from
+        // the current locale.
+        registry.clear_from_registry(character);
         restore_stripped_fields(character, &existing.read_value());
         storage::save_and_sync_character(character);
         let navigate = use_navigate();
