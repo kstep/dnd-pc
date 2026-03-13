@@ -257,14 +257,17 @@ impl Character {
             }
     }
 
+    pub fn skill_proficiency(&self, skill: Skill) -> ProficiencyLevel {
+        self.skills
+            .get(&skill)
+            .copied()
+            .unwrap_or(ProficiencyLevel::None)
+    }
+
     pub fn skill_bonus(&self, skill: Skill) -> i32 {
         let ability = skill.ability();
         let modifier = self.ability_modifier(ability);
-        let prof_level = self
-            .skills
-            .get(&skill)
-            .copied()
-            .unwrap_or(ProficiencyLevel::None);
+        let prof_level = self.skill_proficiency(skill);
         modifier + prof_level.multiplier() * self.proficiency_bonus()
     }
 
