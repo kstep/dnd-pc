@@ -1723,6 +1723,12 @@ input.summary-list-name {
   padding: var(--size-1);
 }
 
+input.summary-item-expr {
+  margin: var(--size-1) 0 0;
+  margin-left: calc(28px + var(--size-2));
+  width: calc(100% - 28px - var(--size-2));
+}
+
 .summary-item-desc {
   margin: var(--size-1) 0 0;
   margin-left: calc(28px + var(--size-2));

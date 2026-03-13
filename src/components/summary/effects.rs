@@ -66,8 +66,8 @@ pub fn EffectsBlock() -> impl IntoView {
                         }
                     ><Icon name="circle-plus" size=14 /></button>
                     <input type="text" class="summary-list-name" placeholder=move_tr!("effect-name") node_ref=name_input />
-                    <input type="text" class="summary-list-name" placeholder=move_tr!("effect-expr") node_ref=expr_input />
                 </div>
+                <input type="text" class="summary-list-name summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
                 <textarea class="summary-item-desc" placeholder=move_tr!("description") node_ref=desc_input />
             </div>
 
@@ -112,10 +112,19 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 effects.update(|e| e.update_field(i, |eff| eff.name = new_name));
                                             }
                                         />
+                                        <button
+                                            class="btn-icon btn-icon--danger"
+                                            on:click=move |_| { effects.update(|e| { e.remove(i, &store.read()); }); }
+                                        >
+                                            <Icon name="circle-minus" size=14 />
+                                        </button>
+                                    </div>
+                                    <Show when=move || is_open.get()>
                                         <input
                                             type="text"
-                                            class="summary-list-name"
-                                            prop:value=expr_str
+                                            class="summary-list-name summary-item-expr"
+                                            placeholder=move_tr!("effect-expr")
+                                            prop:value=expr_str.clone()
                                             on:change=move |ev| {
                                                 let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
                                                     return;
@@ -126,14 +135,6 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 });
                                             }
                                         />
-                                        <button
-                                            class="btn-icon btn-icon--danger"
-                                            on:click=move |_| { effects.update(|e| { e.remove(i, &store.read()); }); }
-                                        >
-                                            <Icon name="circle-minus" size=14 />
-                                        </button>
-                                    </div>
-                                    <Show when=move || is_open.get()>
                                         <textarea
                                             class="summary-item-desc"
                                             placeholder=move_tr!("description")
