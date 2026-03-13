@@ -74,7 +74,7 @@ pub fn StatsBlock() -> impl IntoView {
                                 />
                                 ")"
                                 <span class="summary-hp-max">
-                                    "/ " {move || combat.hp_max().get()}
+                                    "/ " {move || eff.hp_max()}
                                 </span>
                             </div>
                         </div>

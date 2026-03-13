@@ -58,18 +58,24 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     provide_context(EffectiveCharacter::new(store, effects));
 
     // Recompute effects when character changes; propagate consumable
-    // overrides (like TempHp) back to the store so they can be spent.
+    // overrides (like Hp, TempHp) back to the store so they can be spent.
     Effect::new(move || {
         let character = store.read();
-        let temp_hp = effects.try_update(|e| {
+        let overrides = effects.try_update(|e| {
             e.recompute(&character);
-            e.take_override(Attribute::TempHp)
+            [
+                e.take_override(Attribute::Hp),
+                e.take_override(Attribute::TempHp),
+            ]
         });
-        if let Some(Some(value)) = temp_hp {
-            store
-                .combat()
-                .hp_temp()
-                .update_untracked(|hp| *hp = value as u32);
+        if let Some([hp, temp_hp]) = overrides {
+            let combat = store.combat();
+            if let Some(value) = hp {
+                combat.hp_current().update_untracked(|v| *v = value as u32);
+            }
+            if let Some(value) = temp_hp {
+                combat.hp_temp().update_untracked(|v| *v = value as u32);
+            }
         }
     });
 

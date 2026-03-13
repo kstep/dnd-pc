@@ -48,6 +48,10 @@ impl EffectiveCharacter {
         self.get(Attribute::Speed)
     }
 
+    pub fn hp_max(&self) -> i32 {
+        self.get(Attribute::MaxHp)
+    }
+
     pub fn initiative(&self) -> i32 {
         self.get(Attribute::Initiative)
     }
