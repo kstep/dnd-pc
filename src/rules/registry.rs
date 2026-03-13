@@ -16,7 +16,10 @@ use super::{
 };
 use crate::{
     BASE_URL,
-    model::{Character, CharacterIdentity, ClassLevel, FeatureField, FeatureSource, FreeUses},
+    model::{
+        ActiveEffect, Character, CharacterIdentity, ClassLevel, EffectsIndex, FeatureField,
+        FeatureSource, FreeUses,
+    },
 };
 
 // ---- DefinitionStore newtype wrappers ----
@@ -101,6 +104,7 @@ pub struct RulesRegistry {
     pub(super) race_cache: FetchCache<RaceDefinition>,
     pub(super) background_cache: FetchCache<BackgroundDefinition>,
     spell_list_cache: FetchCache<SpellMap>,
+    effects_index: LocalResource<Result<EffectsIndex, String>>,
 }
 
 impl RulesRegistry {
@@ -120,6 +124,12 @@ impl RulesRegistry {
             let locale = locale.get();
             let url = format!("{BASE_URL}/{locale}/index.json");
             async move { fetch_json::<Index>(&url).await }
+        });
+
+        let effects_index = LocalResource::new(move || {
+            let locale = locale.get();
+            let url = format!("{BASE_URL}/{locale}/effects.json");
+            async move { fetch_json::<EffectsIndex>(&url).await }
         });
 
         let class_cache = FetchCache::new();
@@ -144,6 +154,7 @@ impl RulesRegistry {
         Self {
             locale,
             class_index,
+            effects_index,
             class_cache,
             race_cache,
             background_cache,
@@ -207,6 +218,18 @@ impl RulesRegistry {
 
     pub fn track_spell_cache(&self) {
         self.spell_list_cache.track();
+    }
+
+    // ---- Effects ----
+
+    pub fn with_effects_index<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, ActiveEffect>) -> R,
+    ) -> R {
+        static EMPTY: BTreeMap<Box<str>, ActiveEffect> = BTreeMap::new();
+        let guard = self.effects_index.read();
+        let index: Option<&EffectsIndex> = guard.as_ref().and_then(|r| r.as_ref().ok());
+        f(index.map_or(&EMPTY, |idx| &idx.0))
     }
 
     // ---- Spells ----

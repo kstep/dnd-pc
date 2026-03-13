@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    demap,
     expr::{self, Context, Expr},
     model::{Attribute, Character},
 };
@@ -16,6 +17,20 @@ pub struct ActiveEffect {
     pub expr: Option<Expr<Attribute>>,
     #[serde(default)]
     pub enabled: bool,
+}
+
+impl demap::Named for ActiveEffect {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+pub struct EffectsIndex(pub BTreeMap<Box<str>, ActiveEffect>);
+
+impl<'de> Deserialize<'de> for EffectsIndex {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        demap::named_map(deserializer).map(Self)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
