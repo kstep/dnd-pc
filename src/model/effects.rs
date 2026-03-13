@@ -44,7 +44,8 @@ impl ActiveEffects {
         effect
     }
 
-    /// Update a single field of an effect without recomputing (no expression change).
+    /// Update a single field of an effect without recomputing (no expression
+    /// change).
     pub fn update_field(&mut self, index: usize, f: impl FnOnce(&mut ActiveEffect)) {
         if let Some(effect) = self.effects.get_mut(index) {
             f(effect);
@@ -104,5 +105,4 @@ impl ActiveEffects {
         }
         character.resolve(attr).unwrap_or(0)
     }
-
 }
