@@ -1685,7 +1685,6 @@ input[type="checkbox"] {
 
   .btn-icon {
     margin-left: var(--size-1);
-    margin-right: var(--size-1);
   }
 }
 
@@ -1728,7 +1727,7 @@ input.summary-list-name {
   margin-left: calc(28px + var(--size-2));
   display: flex;
   align-items: center;
-  gap: var(--size-1);
+  gap: var(--size-2);
 }
 
 input.summary-item-expr {
