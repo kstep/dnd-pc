@@ -25,12 +25,10 @@ struct CharacterParams {
 pub fn CharacterLayout() -> impl IntoView {
     let params = use_params::<CharacterParams>();
 
-    let id = move || params.get().ok().map(|params| params.id);
-
-    let character = move || id().and_then(|id| storage::load_character(&id));
+    let id = Memo::new(move |_| params.get().ok().map(|params| params.id));
 
     move || {
-        if let Some(char_data) = character() {
+        if let Some(char_data) = id.get().and_then(|id| storage::load_character(&id)) {
             Either::Left(view! { <CharacterInner char_data /> })
         } else {
             Either::Right(view! {
@@ -59,22 +57,33 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     // Recompute effects when character or effects change; propagate
     // consumable overrides (Hp, TempHp) back to the store so they can
-    // be spent. Uses update_untracked to avoid re-triggering this effect.
+    // be spent. Uses try_ variants to gracefully handle scope disposal.
     Effect::new(move || {
-        let character = store.read();
+        let Some(character) = store.try_read() else {
+            return;
+        };
         effects.track();
-        effects.update_untracked(|eff| {
+        let overrides = effects.try_update_untracked(|eff| {
             eff.recompute(&character);
-            let combat = store.combat();
-            if let Some(value) = eff.take_override(Attribute::Hp) {
-                combat
-                    .hp_current()
-                    .update_untracked(|hp| *hp = value as u32);
-            }
-            if let Some(value) = eff.take_override(Attribute::TempHp) {
-                combat.hp_temp().update_untracked(|hp| *hp = value as u32);
-            }
+            (
+                eff.take_override(Attribute::Hp),
+                eff.take_override(Attribute::TempHp),
+            )
         });
+        if let Some((hp_override, temp_hp_override)) = overrides {
+            if let Some(value) = hp_override {
+                store
+                    .combat()
+                    .hp_current()
+                    .try_update_untracked(|hp| *hp = value as u32);
+            }
+            if let Some(value) = temp_hp_override {
+                store
+                    .combat()
+                    .hp_temp()
+                    .try_update_untracked(|hp| *hp = value as u32);
+            }
+        }
     });
 
     // Auto-save effects when they change.

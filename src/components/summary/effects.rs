@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::{html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -75,13 +73,14 @@ pub fn EffectsBlock() -> impl IntoView {
 
                             let description = effect_desc.get_untracked();
 
-                            effects.update(|e| e.add(ActiveEffect {
+                            let effect = ActiveEffect {
                                 name,
                                 label,
                                 description,
                                 expr,
                                 enabled: true,
-                            }, &store.read()));
+                            };
+                            effects.update(|e| e.add(effect, &store.read()));
 
                             effect_label.set(String::new());
                             effect_key.set(None);
@@ -116,9 +115,7 @@ pub fn EffectsBlock() -> impl IntoView {
             </div>
 
             // -- Effect list --
-            {
-                let expanded = RwSignal::new(HashSet::<usize>::new());
-                move || {
+            {move || {
                 let effects_data = effects.read();
                 let effect_list = effects_data.effects();
                 if effect_list.is_empty() {
@@ -131,19 +128,21 @@ pub fn EffectsBlock() -> impl IntoView {
                             let expr_str = effect.expr.as_ref().map(|expr| format!("{expr}")).unwrap_or_default();
                             let description = effect.description.clone();
                             let enabled = effect.enabled;
-                            let is_open = Signal::derive(move || expanded.get().contains(&i));
+                            let is_open = RwSignal::new(false);
                             view! {
                                 <div class="summary-list-entry" class:disabled=!enabled>
                                     <div class="summary-list-row">
                                         <ToggleButton
                                             expanded=is_open
-                                            on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                            on_toggle=move || is_open.update(|v| *v = !*v)
                                         />
                                         <label class="spell-prepared">
                                             <input
                                                 type="checkbox"
                                                 prop:checked=enabled
-                                                on:change=move |_| effects.update(|e| e.toggle(i, &store.read()))
+                                                on:change=move |_| {
+                                                    effects.update(|e| e.toggle(i, &store.read()));
+                                                }
                                             />
                                         </label>
                                         <input
@@ -165,7 +164,9 @@ pub fn EffectsBlock() -> impl IntoView {
                                         <button
                                             class="btn-icon btn-icon--danger"
                                             title=move_tr!("effect-remove")
-                                            on:click=move |_| { effects.update(|e| { e.remove(i, &store.read()); }); }
+                                            on:click=move |_| {
+                                                effects.update(|e| { e.remove(i, &store.read()); });
+                                            }
                                         >
                                             <Icon name="circle-minus" size=14 />
                                         </button>
