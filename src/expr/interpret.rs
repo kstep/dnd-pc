@@ -1,4 +1,8 @@
-use std::{fmt, marker::PhantomData};
+use std::{
+    collections::{BTreeMap, VecDeque},
+    fmt,
+    marker::PhantomData,
+};
 
 use crate::expr::{Context, Error, Op, stack::Stack};
 
@@ -97,9 +101,12 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
 // --- Shared arithmetic/dice evaluation ---
 
 /// Generate a random number in 1..=sides using getrandom.
-fn roll_die(sides: i32) -> i32 {
-    let n = getrandom::u32().unwrap();
-    (n % sides as u32 + 1) as i32
+fn roll_die(sides: i32) -> Result<i32, Error> {
+    if sides <= 0 {
+        return Err(Error::InvalidDieSides(sides));
+    }
+    let n = getrandom::u32().map_err(|_| Error::RngFailed)?;
+    Ok((n % sides as u32 + 1) as i32)
 }
 
 fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
@@ -151,7 +158,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
         Op::Roll => {
             let (count, sides) = stack.pop2()?;
             for _ in 0..count {
-                stack.push(roll_die(sides));
+                stack.push(roll_die(sides)?);
             }
             stack.push(count);
         }
@@ -190,6 +197,79 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
     Ok(())
+}
+
+// --- DicePool + DicePoolEvaluator (preset dice rolls) ---
+
+/// A pool of preset dice values, keyed by die sides.
+/// Values are consumed in insertion order via `roll()`.
+#[derive(Debug, Clone, Default)]
+pub struct DicePool(BTreeMap<u32, VecDeque<u32>>);
+
+impl DicePool {
+    /// Draw the next preset value for a die with the given number of sides.
+    /// Returns `None` if no more values are available for that die size.
+    pub fn roll(&mut self, sides: u32) -> Option<u32> {
+        self.0.get_mut(&sides)?.pop_front()
+    }
+}
+
+impl From<BTreeMap<u32, VecDeque<u32>>> for DicePool {
+    fn from(pool: BTreeMap<u32, VecDeque<u32>>) -> Self {
+        Self(pool)
+    }
+}
+
+pub(super) struct DicePoolEvaluator<'a, Var, Ctx: Context<Var>> {
+    stack: Stack<i32>,
+    ctx: &'a mut Ctx,
+    pool: &'a mut DicePool,
+    _var: PhantomData<Var>,
+}
+
+impl<'a, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, Var, Ctx> {
+    pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePool) -> Self {
+        Self {
+            stack: Stack::new(),
+            ctx,
+            pool,
+            _var: PhantomData,
+        }
+    }
+}
+
+impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
+    for DicePoolEvaluator<'_, Var, Ctx>
+{
+    type Output = i32;
+
+    fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
+        match op {
+            Op::PushVar(var) => {
+                self.stack.push(self.ctx.resolve(var)?);
+                Ok(())
+            }
+            Op::Assign(var) => self.ctx.assign(var, *self.stack.top()?),
+            Op::Roll => {
+                let (count, sides) = self.stack.pop2()?;
+                let sides_u32 = sides as u32;
+                for _ in 0..count {
+                    let value = self
+                        .pool
+                        .roll(sides_u32)
+                        .ok_or(Error::DicePoolExhausted(sides_u32))?;
+                    self.stack.push(value as i32);
+                }
+                self.stack.push(count);
+                Ok(())
+            }
+            op => eval_op(&mut self.stack, op),
+        }
+    }
+
+    fn finish(self) -> Result<i32, Error> {
+        self.stack.result()
+    }
 }
 
 // --- Formatter (Display interpreter) ---

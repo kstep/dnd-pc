@@ -11,6 +11,9 @@ pub enum Error {
     ReadOnlyField(Box<str>),
     AssignAtEval(Box<str>),
     UnsupportedVar(Box<str>),
+    DicePoolExhausted(u32),
+    InvalidDieSides(i32),
+    RngFailed,
 }
 
 impl Error {
@@ -45,6 +48,9 @@ impl fmt::Display for Error {
             Error::AssignAtEval(var) => {
                 write!(f, "cannot assign to field during evaluation: {var}")
             }
+            Error::DicePoolExhausted(sides) => write!(f, "dice pool exhausted for d{sides}"),
+            Error::InvalidDieSides(sides) => write!(f, "invalid die sides: {sides}"),
+            Error::RngFailed => write!(f, "random number generation failed"),
         }
     }
 }

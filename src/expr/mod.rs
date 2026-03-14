@@ -1,4 +1,4 @@
-use std::{fmt, marker::PhantomData, ops::Deref, str::FromStr};
+use std::{collections::BTreeMap, fmt, marker::PhantomData, ops::Deref, str::FromStr};
 
 use serde::{Deserialize, Deserializer, Serialize, de};
 
@@ -8,9 +8,12 @@ mod parser;
 mod stack;
 mod tokenizer;
 
-pub use crate::expr::{error::Error, interpret::Interpreter};
+pub use crate::expr::{
+    error::Error,
+    interpret::{DicePool, Interpreter},
+};
 use crate::expr::{
-    interpret::{Evaluator, Formatter, ReadOnlyEvaluator},
+    interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
     parser::Parser,
 };
 
@@ -42,8 +45,33 @@ impl<Var: Copy + fmt::Display> Expr<Var> {
         self.run(Evaluator::new(ctx))
     }
 
+    pub fn apply_with_pool(
+        &self,
+        ctx: &mut impl Context<Var>,
+        pool: &mut DicePool,
+    ) -> Result<i32, Error> {
+        self.run(DicePoolEvaluator::new(ctx, pool))
+    }
+
     pub fn eval(&self, ctx: &impl Context<Var>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::new(ctx))
+    }
+}
+
+impl<Var: Copy> Expr<Var> {
+    /// Scans the ops for `[PushConst(count), PushConst(sides), Roll]` patterns
+    /// and returns a map of die sides to total number of rolls needed.
+    pub fn dice_rolls(&self) -> BTreeMap<u32, u32> {
+        let mut result = BTreeMap::new();
+        for window in self.0.windows(3) {
+            if let [Op::PushConst(count), Op::PushConst(sides), Op::Roll] = window
+                && *count > 0
+                && *sides > 0
+            {
+                *result.entry(*sides as u32).or_insert(0) += *count as u32;
+            }
+        }
+        result
     }
 }
 
@@ -119,6 +147,8 @@ impl<Var: Copy + fmt::Display> fmt::Display for Expr<Var> {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::{BTreeMap, VecDeque};
+
     use wasm_bindgen_test::*;
 
     use super::*;
@@ -345,6 +375,67 @@ mod tests {
 
         let expr: Expr = "10 % 3".parse().unwrap();
         assert_eq!(expr.to_string(), "10 % 3");
+    }
+
+    #[wasm_bindgen_test]
+    fn dice_rolls_analysis() {
+        let expr: Expr = "2d6 + 1d20".parse().unwrap();
+        let rolls = expr.dice_rolls();
+        assert_eq!(rolls[&6], 2);
+        assert_eq!(rolls[&20], 1);
+
+        // Multiple dice of same type are summed
+        let expr: Expr = "2d6 + 3d6".parse().unwrap();
+        let rolls = expr.dice_rolls();
+        assert_eq!(rolls[&6], 5);
+
+        // No dice
+        let expr: Expr = "10 + AC".parse().unwrap();
+        let rolls = expr.dice_rolls();
+        assert!(rolls.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    fn dice_pool_evaluator() {
+        let mut ch = test_character();
+        let expr: Expr = "2d6 + 3".parse().unwrap();
+
+        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([3, 5]))]).into();
+        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        assert_eq!(result, 3 + 5 + 3); // 11
+    }
+
+    #[wasm_bindgen_test]
+    fn dice_pool_keep_highest() {
+        let mut ch = test_character();
+        let expr: Expr = "4d6kh3".parse().unwrap();
+
+        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([2, 5, 1, 4]))]).into();
+        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        // Keep highest 3 of [2, 5, 1, 4] = 5 + 4 + 2 = 11
+        assert_eq!(result, 11);
+    }
+
+    #[wasm_bindgen_test]
+    fn dice_pool_exhausted() {
+        let mut ch = test_character();
+        let expr: Expr = "3d6".parse().unwrap();
+
+        // Only 2 values for d6, but need 3
+        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([3, 5]))]).into();
+        let result = expr.apply_with_pool(&mut ch, &mut pool);
+        assert_eq!(result, Err(Error::DicePoolExhausted(6)));
+    }
+
+    #[wasm_bindgen_test]
+    fn dice_pool_mixed_dice() {
+        let mut ch = test_character();
+        let expr: Expr = "1d20 + 2d6".parse().unwrap();
+
+        let mut pool: DicePool =
+            BTreeMap::from([(20, VecDeque::from([15])), (6, VecDeque::from([3, 4]))]).into();
+        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        assert_eq!(result, 15 + 3 + 4); // 22
     }
 
     #[wasm_bindgen_test]
