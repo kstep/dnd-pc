@@ -194,25 +194,25 @@ pub fn EffectsBlock() -> impl IntoView {
                                         </button>
                                     </div>
                                     <Show when=move || is_open.get()>
-                                        <input
-                                            type="text"
-                                            class="summary-list-name summary-item-expr"
-                                            placeholder=move_tr!("effect-expr")
-                                            prop:value=expr_str.clone()
-                                            on:change=move |ev| {
-                                                let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
-                                                    return;
-                                                };
-                                                effects.update(|effects| {
-                                                    effects.update_field(i, |eff| eff.expr = expr);
-                                                    effects.recompute(&store.read());
-                                                });
-                                            }
-                                        />
-                                        {(!dice_rolls.is_empty()).then(|| {
-                                            let rolls = dice_rolls.clone();
-                                            view! {
-                                                <span class="summary-item-dice">
+                                        <div class="summary-item-expr-row">
+                                            <input
+                                                type="text"
+                                                class="summary-list-name summary-item-expr"
+                                                placeholder=move_tr!("effect-expr")
+                                                prop:value=expr_str.clone()
+                                                on:change=move |ev| {
+                                                    let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
+                                                        return;
+                                                    };
+                                                    effects.update(|effects| {
+                                                        effects.update_field(i, |eff| eff.expr = expr);
+                                                        effects.recompute(&store.read());
+                                                    });
+                                                }
+                                            />
+                                            {(!dice_rolls.is_empty()).then(|| {
+                                                let rolls = dice_rolls.clone();
+                                                view! {
                                                     <button
                                                         class="btn-icon"
                                                         title=move_tr!("effect-dice")
@@ -222,13 +222,15 @@ pub fn EffectsBlock() -> impl IntoView {
                                                             show_dice_pool.set(true);
                                                         }
                                                     >
-                                                        <Icon name="dices" size=12 />
+                                                        <Icon name="dices" size=14 />
                                                     </button>
-                                                    {pool_str.clone().map(|pool| view! {
-                                                        {move_tr!("effect-dice")} ": " {pool}
-                                                    })}
-                                                </span>
-                                            }
+                                                }
+                                            })}
+                                        </div>
+                                        {pool_str.clone().map(|pool| view! {
+                                            <span class="summary-item-dice">
+                                                {move_tr!("effect-dice")} ": " {pool}
+                                            </span>
                                         })}
                                         <textarea
                                             class="summary-item-desc"
