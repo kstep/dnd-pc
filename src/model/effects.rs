@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     demap,
-    expr::{self, Context, Expr},
+    expr::{self, Context, DicePool, Expr},
     model::{Attribute, Character},
 };
 
@@ -17,6 +17,8 @@ pub struct ActiveEffect {
     pub description: String,
     #[serde(default)]
     pub expr: Option<Expr<Attribute>>,
+    #[serde(skip)]
+    pub pool: Option<DicePool>,
     #[serde(default)]
     pub enabled: bool,
 }
@@ -95,35 +97,38 @@ impl ActiveEffects {
     pub fn recompute(&mut self, character: &Character) {
         self.overrides.clear();
 
-        let exprs: Vec<Expr<Attribute>> = self
-            .effects
-            .iter()
-            .filter(|e| e.enabled)
-            .filter_map(|e| e.expr.clone())
-            .collect();
-
-        // Mutable wrapper used only here for expression evaluation.
+        // Mutable wrapper: borrows overrides mutably and effects immutably.
         struct Ctx<'a> {
             character: &'a Character,
-            effects: &'a mut ActiveEffects,
+            overrides: &'a mut BTreeMap<Attribute, i32>,
         }
         impl Context<Attribute> for Ctx<'_> {
             fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-                self.effects.overrides.insert(var, value);
+                self.overrides.insert(var, value);
                 Ok(())
             }
 
             fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-                Ok(self.effects.resolve(self.character, var))
+                if let Some(&value) = self.overrides.get(&var) {
+                    return Ok(value);
+                }
+                Ok(self.character.resolve(var).unwrap_or(0))
             }
         }
 
         let mut ctx = Ctx {
             character,
-            effects: self,
+            overrides: &mut self.overrides,
         };
-        for expr in &exprs {
-            if let Err(error) = expr.apply(&mut ctx) {
+        for effect in self.effects.iter().filter(|e| e.enabled) {
+            let Some(ref expr) = effect.expr else {
+                continue;
+            };
+            let result = match effect.pool {
+                Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
+                None => expr.apply(&mut ctx),
+            };
+            if let Err(error) = result {
                 log::error!("Effect expression error: {error}");
             }
         }

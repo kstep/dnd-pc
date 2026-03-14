@@ -1,8 +1,4 @@
-use std::{
-    collections::{BTreeMap, VecDeque},
-    fmt,
-    marker::PhantomData,
-};
+use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 
 use crate::expr::{Context, Error, Op, stack::Stack};
 
@@ -201,34 +197,44 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
 
-/// A pool of preset dice values, keyed by die sides.
-/// Values are consumed in insertion order via `roll()`.
+/// Immutable pool of preset dice values, keyed by die sides.
+/// Create a [`DicePoolIter`] via [`iter()`](DicePool::iter) for evaluation.
 #[derive(Debug, Clone, Default)]
-pub struct DicePool(BTreeMap<u32, VecDeque<u32>>);
+pub struct DicePool(BTreeMap<u32, Vec<u32>>);
 
 impl DicePool {
-    /// Draw the next preset value for a die with the given number of sides.
-    /// Returns `None` if no more values are available for that die size.
-    pub fn roll(&mut self, sides: u32) -> Option<u32> {
-        self.0.get_mut(&sides)?.pop_front()
+    /// Create an iterator that yields preset values in order.
+    pub fn iter(&self) -> DicePoolIter<'_> {
+        DicePoolIter(self.0.iter().map(|(&k, v)| (k, v.iter())).collect())
     }
 }
 
-impl From<BTreeMap<u32, VecDeque<u32>>> for DicePool {
-    fn from(pool: BTreeMap<u32, VecDeque<u32>>) -> Self {
+impl From<BTreeMap<u32, Vec<u32>>> for DicePool {
+    fn from(pool: BTreeMap<u32, Vec<u32>>) -> Self {
         Self(pool)
     }
 }
 
-pub(super) struct DicePoolEvaluator<'a, Var, Ctx: Context<Var>> {
+/// Borrowing iterator over a [`DicePool`] that yields preset values via
+/// `roll()`.
+pub struct DicePoolIter<'a>(BTreeMap<u32, slice::Iter<'a, u32>>);
+
+impl DicePoolIter<'_> {
+    /// Draw the next preset value for a die with the given number of sides.
+    pub fn roll(&mut self, sides: u32) -> Option<u32> {
+        self.0.get_mut(&sides)?.next().copied()
+    }
+}
+
+pub(super) struct DicePoolEvaluator<'a, 'p, Var, Ctx: Context<Var>> {
     stack: Stack<i32>,
     ctx: &'a mut Ctx,
-    pool: &'a mut DicePool,
+    pool: &'a mut DicePoolIter<'p>,
     _var: PhantomData<Var>,
 }
 
-impl<'a, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, Var, Ctx> {
-    pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePool) -> Self {
+impl<'a, 'p, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, 'p, Var, Ctx> {
+    pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePoolIter<'p>) -> Self {
         Self {
             stack: Stack::new(),
             ctx,
@@ -239,7 +245,7 @@ impl<'a, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, Var, Ctx> {
 }
 
 impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
-    for DicePoolEvaluator<'_, Var, Ctx>
+    for DicePoolEvaluator<'_, '_, Var, Ctx>
 {
     type Output = i32;
 

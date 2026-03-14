@@ -2674,3 +2674,55 @@ input.summary-item-expr {
     color: var(--accent);
   }
 }
+
+.hidden {
+  display: none !important;
+}
+
+// Dice pool input modal
+.dice-pool-groups {
+  padding: var(--size-2) var(--size-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.dice-pool-group {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+}
+
+.dice-pool-label {
+  font-weight: var(--font-weight-6);
+  min-width: 3rem;
+}
+
+.dice-pool-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-1);
+}
+
+.dice-pool-value {
+  width: 3rem;
+  text-align: center;
+}
+
+.dice-pool-footer {
+  padding: var(--size-2) var(--size-3);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+  padding: var(--size-1) var(--size-3);
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-2);
+  cursor: pointer;
+}

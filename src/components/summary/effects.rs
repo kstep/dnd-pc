@@ -1,9 +1,14 @@
+use std::collections::BTreeMap;
+
 use leptos::{html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{datalist_input::DatalistInput, icon::Icon, toggle_button::ToggleButton},
+    components::{
+        datalist_input::DatalistInput, dice_pool_input::DicePoolInput, icon::Icon,
+        toggle_button::ToggleButton,
+    },
     effective::EffectiveCharacter,
     expr::Expr,
     model::{ActiveEffect, Attribute, Character},
@@ -30,6 +35,10 @@ pub fn EffectsBlock() -> impl IntoView {
     let effect_key = RwSignal::new(Option::<String>::None);
     let effect_desc = RwSignal::new(String::new());
     let expr_input: NodeRef<html::Input> = NodeRef::new();
+
+    let show_dice_pool = RwSignal::new(false);
+    let pending_effect = RwSignal::new(Option::<ActiveEffect>::None);
+    let pending_rolls = RwSignal::new(BTreeMap::<u32, u32>::new());
 
     let effect_options = Signal::derive(move || {
         registry.with_effects_index(|index| {
@@ -78,9 +87,19 @@ pub fn EffectsBlock() -> impl IntoView {
                                 label,
                                 description,
                                 expr,
+                                pool: None,
                                 enabled: true,
                             };
-                            effects.update(|e| e.add(effect, &store.read()));
+
+                            // Check if expression has dice rolls
+                            let rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
+                            if rolls.is_empty() {
+                                effects.update(|e| e.add(effect, &store.read()));
+                            } else {
+                                pending_effect.set(Some(effect));
+                                pending_rolls.set(rolls);
+                                show_dice_pool.set(true);
+                            }
 
                             effect_label.set(String::new());
                             effect_key.set(None);
@@ -201,6 +220,30 @@ pub fn EffectsBlock() -> impl IntoView {
                             }
                         }).collect_view()}
                     </div>
+                })
+            }}
+
+            // Dice pool modal (re-created when pending_rolls changes)
+            {move || {
+                let rolls = pending_rolls.get();
+                if rolls.is_empty() {
+                    return None;
+                }
+                Some(view! {
+                    <DicePoolInput
+                        rolls=rolls
+                        show=show_dice_pool
+                        on_confirm=move |pool| {
+                            pending_effect.update(|pe| {
+                                if let Some(effect) = pe.take() {
+                                    let mut effect = effect;
+                                    effect.pool = Some(pool);
+                                    effects.update(|e| e.add(effect, &store.read()));
+                                }
+                            });
+                            pending_rolls.set(BTreeMap::new());
+                        }
+                    />
                 })
             }}
         </div>

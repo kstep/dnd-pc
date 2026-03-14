@@ -3,6 +3,7 @@ pub mod cast_button;
 pub mod character_card;
 pub mod character_header;
 pub mod datalist_input;
+pub mod dice_pool_input;
 pub mod entity_field;
 pub mod icon;
 pub mod language_switcher;

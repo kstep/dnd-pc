@@ -45,12 +45,13 @@ impl<Var: Copy + fmt::Display> Expr<Var> {
         self.run(Evaluator::new(ctx))
     }
 
-    pub fn apply_with_pool(
+    pub fn apply_with_dice(
         &self,
         ctx: &mut impl Context<Var>,
-        pool: &mut DicePool,
+        pool: &DicePool,
     ) -> Result<i32, Error> {
-        self.run(DicePoolEvaluator::new(ctx, pool))
+        let mut iter = pool.iter();
+        self.run(DicePoolEvaluator::new(ctx, &mut iter))
     }
 
     pub fn eval(&self, ctx: &impl Context<Var>) -> Result<i32, Error> {
@@ -147,7 +148,7 @@ impl<Var: Copy + fmt::Display> fmt::Display for Expr<Var> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{BTreeMap, VecDeque};
+    use std::collections::BTreeMap;
 
     use wasm_bindgen_test::*;
 
@@ -400,8 +401,8 @@ mod tests {
         let mut ch = test_character();
         let expr: Expr = "2d6 + 3".parse().unwrap();
 
-        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([3, 5]))]).into();
-        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        let pool: DicePool = BTreeMap::from([(6, vec![3, 5])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
         assert_eq!(result, 3 + 5 + 3); // 11
     }
 
@@ -410,8 +411,8 @@ mod tests {
         let mut ch = test_character();
         let expr: Expr = "4d6kh3".parse().unwrap();
 
-        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([2, 5, 1, 4]))]).into();
-        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        let pool: DicePool = BTreeMap::from([(6, vec![2, 5, 1, 4])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
         // Keep highest 3 of [2, 5, 1, 4] = 5 + 4 + 2 = 11
         assert_eq!(result, 11);
     }
@@ -422,8 +423,8 @@ mod tests {
         let expr: Expr = "3d6".parse().unwrap();
 
         // Only 2 values for d6, but need 3
-        let mut pool: DicePool = BTreeMap::from([(6, VecDeque::from([3, 5]))]).into();
-        let result = expr.apply_with_pool(&mut ch, &mut pool);
+        let pool: DicePool = BTreeMap::from([(6, vec![3, 5])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool);
         assert_eq!(result, Err(Error::DicePoolExhausted(6)));
     }
 
@@ -432,9 +433,8 @@ mod tests {
         let mut ch = test_character();
         let expr: Expr = "1d20 + 2d6".parse().unwrap();
 
-        let mut pool: DicePool =
-            BTreeMap::from([(20, VecDeque::from([15])), (6, VecDeque::from([3, 4]))]).into();
-        let result = expr.apply_with_pool(&mut ch, &mut pool).unwrap();
+        let pool: DicePool = BTreeMap::from([(20, vec![15]), (6, vec![3, 4])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
         assert_eq!(result, 15 + 3 + 4); // 22
     }
 
