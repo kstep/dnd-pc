@@ -303,6 +303,10 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
 struct Frag {
     text: String,
     prec: u8, // 0=assign, 1=add/sub, 2=mul/div, 3=atom
+    /// If this frag is a binary op where the left operand was an atom,
+    /// stores (left_text, op_symbol, rhs_text) for compound assignment
+    /// detection.
+    compound: Option<(String, String, String)>,
 }
 
 pub(super) struct Formatter {
@@ -317,7 +321,19 @@ impl Formatter {
     }
 
     fn push(&mut self, text: String, prec: u8) {
-        self.stack.push(Frag { text, prec });
+        self.stack.push(Frag {
+            text,
+            prec,
+            compound: None,
+        });
+    }
+
+    fn wrap_ref(frag: &Frag, min_prec: u8) -> String {
+        if frag.prec < min_prec {
+            format!("({})", frag.text)
+        } else {
+            frag.text.clone()
+        }
     }
 
     fn wrap(frag: Frag, min_prec: u8) -> String {
@@ -331,10 +347,23 @@ impl Formatter {
     fn binary_op(&mut self, sym: &str, prec: u8, right_strict: bool) -> Result<(), Error> {
         let b = self.stack.pop()?;
         let a = self.stack.pop()?;
-        let left = Self::wrap(a, prec);
         let right_min = if right_strict { prec + 1 } else { prec };
+        let compound = if a.prec == 3 && a.compound.is_none() {
+            Some((
+                a.text.clone(),
+                sym.to_string(),
+                Self::wrap_ref(&b, right_min),
+            ))
+        } else {
+            None
+        };
+        let left = Self::wrap(a, prec);
         let right = Self::wrap(b, right_min);
-        self.push(format!("{left} {sym} {right}"), prec);
+        self.stack.push(Frag {
+            text: format!("{left} {sym} {right}"),
+            prec,
+            compound,
+        });
         Ok(())
     }
 
@@ -401,7 +430,17 @@ impl<Var: Copy + fmt::Display> Interpreter<Var> for Formatter {
             }
             Op::Assign(var) => {
                 let val = self.stack.pop()?;
-                self.push(format!("{var} = {}", val.text), 0);
+                let var_str = var.to_string();
+                let text = if let Some((ref left_var, ref op, ref rhs)) = val.compound {
+                    if *left_var == var_str {
+                        format!("{var} {op}= {rhs}")
+                    } else {
+                        format!("{var} = {}", val.text)
+                    }
+                } else {
+                    format!("{var} = {}", val.text)
+                };
+                self.push(text, 0);
             }
         }
         Ok(())

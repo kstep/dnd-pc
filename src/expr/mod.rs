@@ -469,8 +469,31 @@ mod tests {
         let expr: Expr = "AC %= 5".parse().unwrap();
         assert_eq!(expr.apply(&mut ch).unwrap(), 2);
 
-        // Display: compound shows as expanded
+        // Display: compound shows as compound
         let expr: Expr = "AC += 5".parse().unwrap();
-        assert_eq!(expr.to_string(), "AC = AC + 5");
+        assert_eq!(expr.to_string(), "AC += 5");
+
+        let expr: Expr = "AC -= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3");
+
+        let expr: Expr = "AC *= 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC *= 2");
+
+        let expr: Expr = "AC /= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC /= 3");
+
+        let expr: Expr = "AC \\= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC \\= 3");
+
+        let expr: Expr = "AC %= 5".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC %= 5");
+
+        // Non-compound: different var on left
+        let expr: Expr = "AC = DEX + 10".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = DEX + 10");
+
+        // Non-compound: complex left side
+        let expr: Expr = "AC = AC * 2 + 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = AC * 2 + 1");
     }
 }
