@@ -1730,6 +1730,7 @@ input.summary-item-expr {
 }
 
 .summary-item-dice {
+  margin-top: var(--size-1);
   margin-left: calc(28px + var(--size-2));
   font-size: var(--font-size-0);
   color: var(--text-secondary);
