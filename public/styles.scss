@@ -1733,6 +1733,9 @@ input.summary-item-expr {
   margin-left: calc(28px + var(--size-2));
   font-size: var(--font-size-0);
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
 }
 
 .summary-item-desc {
