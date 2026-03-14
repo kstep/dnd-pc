@@ -21,6 +21,18 @@ pub fn DicePoolInput(
         })
         .collect();
 
+    // Focus first input when opened
+    let first_input_ref = groups.values().next().and_then(|refs| refs.first().copied());
+    if let Some(node_ref) = first_input_ref {
+        Effect::new(move || {
+            if show.get()
+                && let Some(input) = node_ref.get()
+            {
+                let _ = input.focus();
+            }
+        });
+    }
+
     let groups_confirm = groups.clone();
 
     let confirm = move |ev: web_sys::SubmitEvent| {
