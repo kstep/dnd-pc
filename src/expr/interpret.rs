@@ -349,12 +349,10 @@ impl Formatter {
         let a = self.stack.pop()?;
         let right_min = if right_strict { prec + 1 } else { prec };
         let compound = if a.prec == 3 && a.compound.is_none() {
-            // Direct: left operand is a plain atom (variable or constant)
-            Some((
-                a.text.clone(),
-                sym.to_string(),
-                Self::wrap_ref(&b, right_min),
-            ))
+            // Direct: left operand is a plain atom (variable or constant).
+            // Store b.text without wrapping — compound assignment implicitly
+            // groups the entire RHS, so outer parens are unnecessary.
+            Some((a.text.clone(), sym.to_string(), b.text.clone()))
         } else if let Some((ref left_var, ref first_op, ref prev_rhs)) = a.compound {
             // Propagate through addition chains: x + (a ± b) = (x + a) ± b
             if *first_op == "+" && prec == 1 {

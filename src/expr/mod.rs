@@ -508,6 +508,14 @@ mod tests {
         let expr: Expr = "AC += INT; AC -= 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC += INT; AC -= 2");
 
+        // Compound subtraction with multi-term rhs (no redundant parens)
+        let expr: Expr = "AC -= INT + 5".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= INT + 5");
+
+        // Compound with sub-expression that needs internal parens
+        let expr: Expr = "AC -= 3 - 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3 - 1");
+
         // Subtraction does not propagate (x - a + b ≠ x - (a + b))
         let expr: Expr = "AC = AC - DEX + 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC = AC - DEX + 2");
