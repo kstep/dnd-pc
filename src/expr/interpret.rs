@@ -209,6 +209,26 @@ impl DicePool {
     }
 }
 
+impl fmt::Display for DicePool {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut first = true;
+        for (sides, rolls) in &self.0 {
+            if !first {
+                f.write_str("; ")?;
+            }
+            first = false;
+            write!(f, "d{sides}: ")?;
+            for (i, roll) in rolls.iter().enumerate() {
+                if i > 0 {
+                    f.write_str(", ")?;
+                }
+                write!(f, "{roll}")?;
+            }
+        }
+        Ok(())
+    }
+}
+
 impl From<BTreeMap<u32, Vec<u32>>> for DicePool {
     fn from(pool: BTreeMap<u32, Vec<u32>>) -> Self {
         Self(pool)

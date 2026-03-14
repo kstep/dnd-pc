@@ -229,6 +229,7 @@ effect-add = Add Effect
 effect-remove = Remove Effect
 effect-name = Effect name
 effect-expr = Expression (optional)
+effect-dice = Dice
 
 ## Reference pages
 ref-reference = Reference

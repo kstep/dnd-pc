@@ -229,6 +229,7 @@ effect-add = Добавить эффект
 effect-remove = Удалить эффект
 effect-name = Название эффекта
 effect-expr = Выражение (опционально)
+effect-dice = Кости
 
 ## Справочные страницы
 ref-reference = Справочник

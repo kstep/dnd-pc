@@ -144,7 +144,8 @@ pub fn EffectsBlock() -> impl IntoView {
                     <div class="summary-list">
                         {effect_list.iter().enumerate().map(|(i, effect)| {
                             let name = effect.label().to_owned();
-                            let expr_str = effect.expr.as_ref().map(|expr| format!("{expr}")).unwrap_or_default();
+                            let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
+                            let pool_str = effect.pool.as_ref().map(ToString::to_string);
                             let description = effect.description.clone();
                             let enabled = effect.enabled;
                             let is_open = RwSignal::new(false);
@@ -206,6 +207,9 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 });
                                             }
                                         />
+                                        {pool_str.clone().map(|pool| view! {
+                                            <span class="summary-item-dice">{move_tr!("effect-dice")} ": " {pool}</span>
+                                        })}
                                         <textarea
                                             class="summary-item-desc"
                                             placeholder=move_tr!("description")

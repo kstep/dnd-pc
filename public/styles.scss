@@ -1729,6 +1729,12 @@ input.summary-item-expr {
   width: calc(100% - 28px - var(--size-2));
 }
 
+.summary-item-dice {
+  margin-left: calc(28px + var(--size-2));
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+}
+
 .summary-item-desc {
   margin: var(--size-1) 0 0;
   margin-left: calc(28px + var(--size-2));
