@@ -230,6 +230,7 @@ effect-remove = Remove Effect
 effect-name = Effect name
 effect-expr = Expression (optional)
 effect-dice = Dice
+effect-reroll = Reroll dice
 
 ## Reference pages
 ref-reference = Reference

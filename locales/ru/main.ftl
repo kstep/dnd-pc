@@ -230,6 +230,7 @@ effect-remove = Удалить эффект
 effect-name = Название эффекта
 effect-expr = Выражение (опционально)
 effect-dice = Кости
+effect-reroll = Перебросить кости
 
 ## Справочные страницы
 ref-reference = Справочник

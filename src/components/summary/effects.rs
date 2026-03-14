@@ -215,7 +215,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 view! {
                                                     <button
                                                         class="btn-icon"
-                                                        title=move_tr!("effect-dice")
+                                                        title=move_tr!("effect-reroll")
                                                         on:click=move |_| {
                                                             reroll_index.set(Some(i));
                                                             pending_rolls.set(rolls.clone());
