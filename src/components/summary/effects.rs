@@ -120,7 +120,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                 registry.with_effects_index(|index| {
                                     if let Some(eff) = index.get(name.as_str()) {
                                         if let Some(el) = expr_input.get() {
-                                            let val = eff.expr.as_ref().map(|e| format!("{e}")).unwrap_or_default();
+                                            let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
                                             el.set_value(&val);
                                         }
                                         effect_desc.set(eff.description.clone());
