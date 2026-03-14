@@ -18,6 +18,8 @@ pub struct CombatStats {
     #[serde(default)]
     pub death_save_failures: u8,
     #[serde(default)]
+    pub attack_bonus: i32,
+    #[serde(default)]
     pub initiative_misc_bonus: i32,
     #[serde(default)]
     pub inspiration: bool,
@@ -33,6 +35,7 @@ impl Default for CombatStats {
             hp_temp: 0,
             death_save_successes: 0,
             death_save_failures: 0,
+            attack_bonus: 0,
             initiative_misc_bonus: 0,
             inspiration: false,
         }

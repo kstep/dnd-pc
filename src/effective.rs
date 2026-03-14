@@ -48,6 +48,10 @@ impl EffectiveCharacter {
         self.get(Attribute::Speed)
     }
 
+    pub fn attack_bonus(&self) -> i32 {
+        self.get(Attribute::AttackBonus)
+    }
+
     pub fn hp_max(&self) -> i32 {
         self.get(Attribute::MaxHp)
     }

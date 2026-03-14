@@ -465,6 +465,9 @@ impl expr::Context<Attribute> for Character {
             Attribute::Speed => {
                 self.combat.speed = value as u32;
             }
+            Attribute::AttackBonus => {
+                self.combat.attack_bonus = value;
+            }
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
@@ -488,6 +491,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::Speed => Ok(self.combat.speed as i32),
             Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
+            Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
             other => Err(expr::Error::unsupported_var(other)),

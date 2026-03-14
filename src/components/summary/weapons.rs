@@ -4,16 +4,19 @@ use reactive_stores::Store;
 
 use crate::{
     components::summary_list::{SummaryList, SummaryListItem},
+    effective::EffectiveCharacter,
     model::{Character, CharacterStoreFields, EquipmentStoreFields, Translatable},
 };
 
 #[component]
 pub fn WeaponsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
     let weapons = store.equipment().weapons();
 
     move || {
+        let global_atk = eff.attack_bonus();
         let items = weapons
             .read()
             .iter()
@@ -21,8 +24,9 @@ pub fn WeaponsBlock() -> impl IntoView {
             .map(|w| {
                 let dmg_type = w.damage_type.map(|dt| i18n.tr(dt.tr_key()));
 
-                let name_atk = if w.attack_bonus != 0 {
-                    format!("{} {:+}", w.name, w.attack_bonus)
+                let total_atk = w.attack_bonus + global_atk;
+                let name_atk = if total_atk != 0 {
+                    format!("{} {:+}", w.name, total_atk)
                 } else {
                     w.name.clone()
                 };
