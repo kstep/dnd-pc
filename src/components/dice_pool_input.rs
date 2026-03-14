@@ -21,67 +21,78 @@ pub fn DicePoolInput(
         })
         .collect();
 
-    // Focus first input when opened
-    let first_input_ref = groups.values().next().and_then(|refs| refs.first().copied());
-    if let Some(node_ref) = first_input_ref {
-        Effect::new(move || {
-            if show.get()
-                && let Some(input) = node_ref.get()
-            {
-                let _ = input.focus();
-            }
-        });
-    }
+    let groups = StoredValue::new(groups);
 
-    let groups_confirm = groups.clone();
+    // Reset all fields and focus first input when opened
+    Effect::new(move || {
+        if show.get() {
+            groups.with_value(|groups| {
+                let mut first = true;
+                for node_ref in groups.values().flatten() {
+                    if let Some(input) = node_ref.get() {
+                        input.set_value("");
+                        if first {
+                            let _ = input.focus();
+                            first = false;
+                        }
+                    }
+                }
+            });
+        }
+    });
 
     let confirm = move |ev: web_sys::SubmitEvent| {
         ev.prevent_default();
-        let mut pool: BTreeMap<u32, Vec<u32>> = BTreeMap::new();
-        for (&sides, refs) in &groups_confirm {
-            let values: Vec<u32> = refs
+        let pool = groups.with_value(|groups| {
+            groups
                 .iter()
-                .map(|input_ref| {
-                    input_ref
-                        .get()
-                        .and_then(|el| el.value().parse::<u32>().ok())
-                        .unwrap_or(1)
+                .map(|(&sides, refs)| {
+                    let values: Vec<u32> = refs
+                        .iter()
+                        .map(|input_ref| {
+                            input_ref
+                                .get()
+                                .and_then(|el| el.value().parse::<u32>().ok())
+                                .unwrap_or(1)
+                        })
+                        .collect();
+                    (sides, values)
                 })
-                .collect();
-            pool.insert(sides, values);
-        }
+                .collect::<BTreeMap<u32, Vec<u32>>>()
+        });
         on_confirm.with_value(|f| f(pool.into()));
         show.set(false);
     };
 
     // Build group views eagerly to avoid ownership issues
-    let group_views = groups
-        .into_iter()
-        .map(|(sides, refs): (u32, Vec<NodeRef<html::Input>>)| {
-            let input_views = refs
-                .into_iter()
-                .map(|node_ref| {
-                    view! {
-                        <input
-                            type="number"
-                            min=1
-                            max=sides
-                            value=1
-                            required
-                            class="dice-pool-value"
-                            node_ref=node_ref
-                        />
-                    }
-                })
-                .collect_view();
-            view! {
-                <div class="dice-pool-group">
-                    <span class="dice-pool-label">"d" {sides}</span>
-                    <div class="dice-pool-inputs">{input_views}</div>
-                </div>
-            }
-        })
-        .collect_view();
+    let group_views = groups.with_value(|groups| {
+        groups
+            .iter()
+            .map(|(&sides, refs)| {
+                let input_views = refs
+                    .iter()
+                    .map(|&node_ref| {
+                        view! {
+                            <input
+                                type="number"
+                                min=1
+                                max=sides
+                                required
+                                class="dice-pool-value"
+                                node_ref=node_ref
+                            />
+                        }
+                    })
+                    .collect_view();
+                view! {
+                    <div class="dice-pool-group">
+                        <span class="dice-pool-label">"d" {sides}</span>
+                        <div class="dice-pool-inputs">{input_views}</div>
+                    </div>
+                }
+            })
+            .collect_view()
+    });
 
     view! {
         <div class="datalist-modal-overlay" class:hidden=move || !show.get() on:click=move |_| show.set(false)>
