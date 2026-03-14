@@ -495,5 +495,21 @@ mod tests {
         // Non-compound: complex left side
         let expr: Expr = "AC = AC * 2 + 1".parse().unwrap();
         assert_eq!(expr.to_string(), "AC = AC * 2 + 1");
+
+        // Compound with chained additions
+        let expr: Expr = "AC += DEX + 10".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += DEX + 10");
+
+        // Compound with complex rhs
+        let expr: Expr = "AC += INT + DEX - 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += INT + DEX - 2");
+
+        // Multi-statement compound
+        let expr: Expr = "AC += INT; AC -= 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += INT; AC -= 2");
+
+        // Subtraction does not propagate (x - a + b ≠ x - (a + b))
+        let expr: Expr = "AC = AC - DEX + 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = AC - DEX + 2");
     }
 }
