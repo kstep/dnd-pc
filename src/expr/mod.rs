@@ -469,8 +469,55 @@ mod tests {
         let expr: Expr = "AC %= 5".parse().unwrap();
         assert_eq!(expr.apply(&mut ch).unwrap(), 2);
 
-        // Display: compound shows as expanded
+        // Display: compound shows as compound
         let expr: Expr = "AC += 5".parse().unwrap();
-        assert_eq!(expr.to_string(), "AC = AC + 5");
+        assert_eq!(expr.to_string(), "AC += 5");
+
+        let expr: Expr = "AC -= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3");
+
+        let expr: Expr = "AC *= 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC *= 2");
+
+        let expr: Expr = "AC /= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC /= 3");
+
+        let expr: Expr = "AC \\= 3".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC \\= 3");
+
+        let expr: Expr = "AC %= 5".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC %= 5");
+
+        // Non-compound: different var on left
+        let expr: Expr = "AC = DEX + 10".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = DEX + 10");
+
+        // Non-compound: complex left side
+        let expr: Expr = "AC = AC * 2 + 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = AC * 2 + 1");
+
+        // Compound with chained additions
+        let expr: Expr = "AC += DEX + 10".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += DEX + 10");
+
+        // Compound with complex rhs
+        let expr: Expr = "AC += INT + DEX - 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += INT + DEX - 2");
+
+        // Multi-statement compound
+        let expr: Expr = "AC += INT; AC -= 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += INT; AC -= 2");
+
+        // Compound subtraction with multi-term rhs (no redundant parens)
+        let expr: Expr = "AC -= INT + 5".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= INT + 5");
+
+        // Compound with sub-expression that needs internal parens
+        let expr: Expr = "AC -= 3 - 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3 - 1");
+
+        // Subtraction does not propagate (x - a + b ≠ x - (a + b))
+        let expr: Expr = "AC = AC - DEX + 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC = AC - DEX + 2");
     }
 }
