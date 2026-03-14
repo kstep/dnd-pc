@@ -21,17 +21,20 @@ pub fn DicePoolInput(
         })
         .collect();
 
-    // Focus first input when opened
-    let first_input_ref = groups.values().next().and_then(|refs| refs.first().copied());
-    if let Some(node_ref) = first_input_ref {
-        Effect::new(move || {
-            if show.get()
-                && let Some(input) = node_ref.get()
-            {
-                let _ = input.focus();
+    // Reset all fields and focus first input when opened
+    let all_refs: Vec<_> = groups.values().flatten().copied().collect();
+    Effect::new(move || {
+        if show.get() {
+            for (i, node_ref) in all_refs.iter().enumerate() {
+                if let Some(input) = node_ref.get() {
+                    input.set_value("");
+                    if i == 0 {
+                        let _ = input.focus();
+                    }
+                }
             }
-        });
-    }
+        }
+    });
 
     let groups_confirm = groups.clone();
 
