@@ -8,10 +8,7 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     effective::EffectiveCharacter,
-    model::{
-        Attribute, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        CombatStatsStoreFields,
-    },
+    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
     storage,
 };
@@ -55,34 +52,21 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     let effects = RwSignal::new(initial_effects);
     provide_context(EffectiveCharacter::new(store, effects));
 
-    // Recompute effects when character or effects change; propagate
-    // consumable overrides (Hp, TempHp) back to the store so they can
-    // be spent. Uses try_ variants to gracefully handle scope disposal.
+    // Recompute effects and propagate consumable overrides (Hp, TempHp)
+    // once on first appearance (memoized to avoid resetting user edits).
     Effect::new(move || {
-        let Some(character) = store.try_read() else {
-            return;
-        };
-        effects.track();
-        let overrides = effects.try_update_untracked(|eff| {
-            eff.recompute(&character);
-            (
-                eff.take_override(Attribute::Hp),
-                eff.take_override(Attribute::TempHp),
-            )
-        });
-        if let Some((hp_override, temp_hp_override)) = overrides {
-            if let Some(value) = hp_override {
-                store
-                    .combat()
-                    .hp_current()
-                    .try_update_untracked(|hp| *hp = value as u32);
-            }
-            if let Some(value) = temp_hp_override {
-                store
-                    .combat()
-                    .hp_temp()
-                    .try_update_untracked(|hp| *hp = value as u32);
-            }
+        let needs_propagation = store
+            .try_with(|character| {
+                effects.track();
+                effects
+                    .try_update_untracked(|eff| eff.recompute(character))
+                    .unwrap_or(false)
+            })
+            .unwrap_or(false);
+        if needs_propagation {
+            store.update(|c| {
+                effects.try_update_untracked(|eff| eff.propagate(c));
+            });
         }
     });
 

@@ -23,7 +23,8 @@ pub fn DicePoolInput(
 
     let groups_confirm = groups.clone();
 
-    let confirm = move |_: web_sys::MouseEvent| {
+    let confirm = move |ev: web_sys::SubmitEvent| {
+        ev.prevent_default();
         let mut pool: BTreeMap<u32, Vec<u32>> = BTreeMap::new();
         for (&sides, refs) in &groups_confirm {
             let values: Vec<u32> = refs
@@ -54,6 +55,7 @@ pub fn DicePoolInput(
                             min=1
                             max=sides
                             value=1
+                            required
                             class="dice-pool-value"
                             node_ref=node_ref
                         />
@@ -71,11 +73,12 @@ pub fn DicePoolInput(
 
     view! {
         <div class="datalist-modal-overlay" class:hidden=move || !show.get() on:click=move |_| show.set(false)>
-            <div
-                class="datalist-modal"
+            <form
+                class="datalist-modal dice-pool-form"
                 on:click=move |event: web_sys::MouseEvent| {
                     event.stop_propagation();
                 }
+                on:submit=confirm
             >
                 <div class="datalist-modal-header">
                     <span>"Dice Rolls"</span>
@@ -89,12 +92,12 @@ pub fn DicePoolInput(
                 </div>
                 <div class="dice-pool-groups">{group_views}</div>
                 <div class="dice-pool-footer">
-                    <button type="button" class="btn-confirm" on:click=confirm>
+                    <button type="submit" class="btn-confirm">
                         <Icon name="check" size=16 />
                         " Confirm"
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     }
 }

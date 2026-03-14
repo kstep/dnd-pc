@@ -2726,3 +2726,8 @@ input.summary-item-expr {
   border-radius: var(--radius-2);
   cursor: pointer;
 }
+
+.dice-pool-form:has(:invalid) .btn-confirm {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

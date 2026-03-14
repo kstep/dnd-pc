@@ -17,7 +17,7 @@
   { "name": "Touch of Death", "description": "Temp HP = WIS mod + monk level (on reducing enemy to 0 HP)", "expr": "TEMP_HP = max(TEMP_HP, WIS.MOD + CLASS_LEVEL)" },
   { "name": "Adrenaline Rush", "description": "Temp HP = proficiency bonus (Dash as bonus action, Orc)", "expr": "TEMP_HP = max(TEMP_HP, PROF_BONUS)" },
   { "name": "Armor of Agathys", "description": "5 temp HP (+5 per slot level above 1st), deals cold damage to melee attackers", "expr": "TEMP_HP = max(TEMP_HP, 5)" },
-  { "name": "False Life", "description": "1d4+4 temp HP (+5 per slot level above 1st). Roll dice and set manually", "expr": "TEMP_HP = max(TEMP_HP, 8)" },
+  { "name": "False Life", "description": "1d4+4 temp HP (+5 per slot level above 1st)", "expr": "TEMP_HP = max(TEMP_HP, 1d4 + 4)" },
   { "name": "Heroism", "description": "Temp HP = spellcasting ability mod at start of each turn (concentration). Set manually" },
 
   { "name": "Aid", "description": "+5 max HP and current HP (+5 per slot level above 2nd, 8 hours)", "expr": "MAX_HP += 5; HP += 5" },
@@ -65,7 +65,7 @@
   { "name": "Dreadful Strikes", "description": "+1d4 psychic damage once per turn on weapon hit (Fey Wanderer)" },
 
   { "name": "Mindless Rage", "description": "Immune to charmed and frightened while raging (Path of Berserker)" },
-  { "name": "Form of Dread", "description": "Immune to frightened, temp HP = 1d10 + warlock level (bonus action, 1 min)" },
+  { "name": "Form of Dread", "description": "Immune to frightened, temp HP = 1d10 + warlock level (bonus action, 1 min)", "expr": "TEMP_HP = max(TEMP_HP, 1d10 + CLASS_LEVEL)" },
 
   { "name": "Enhance Ability", "description": "Advantage on one ability's checks (concentration, 1 hour)" },
   { "name": "Guidance", "description": "+1d4 to one ability check (cantrip, concentration). Dice bonus — apply result manually" },

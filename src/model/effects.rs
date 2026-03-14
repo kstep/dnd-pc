@@ -43,6 +43,10 @@ impl<'de> Deserialize<'de> for EffectsIndex {
     }
 }
 
+/// Attributes whose values are "consumed" — set once by an effect
+/// and then managed by the user (e.g. temp HP spent by damage).
+const CONSUMABLE_ATTRS: [Attribute; 2] = [Attribute::Hp, Attribute::TempHp];
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ActiveEffects {
     #[serde(default)]
@@ -50,6 +54,10 @@ pub struct ActiveEffects {
     /// Computed values set by expression assignments.
     #[serde(skip)]
     overrides: BTreeMap<Attribute, i32>,
+    /// Memoized consumable overrides — evaluated once, then cached
+    /// so user edits (e.g. spending temp HP) aren't overwritten.
+    #[serde(skip)]
+    memoized: BTreeMap<Attribute, i32>,
 }
 
 impl ActiveEffects {
@@ -57,10 +65,23 @@ impl ActiveEffects {
         &self.effects
     }
 
-    /// Remove and return an override value (for consumable attributes like
-    /// TempHp that must be written back to the character store).
-    pub fn take_override(&mut self, attr: Attribute) -> Option<i32> {
-        self.overrides.remove(&attr)
+    /// Propagate consumable overrides (Hp, TempHp) to the character.
+    /// Values are memoized: only written on the first recompute that
+    /// produces them, so user edits aren't overwritten. Returns true
+    /// if any values were propagated.
+    pub fn propagate(&mut self, character: &mut Character) -> bool {
+        let mut changed = false;
+        for attr in CONSUMABLE_ATTRS {
+            if let Some(value) = self.overrides.remove(&attr) {
+                if self.memoized.insert(attr, value).is_none() {
+                    let _ = character.assign(attr, value);
+                    changed = true;
+                }
+            } else {
+                self.memoized.remove(&attr);
+            }
+        }
+        changed
     }
 
     pub fn add(&mut self, effect: ActiveEffect, character: &Character) {
@@ -94,7 +115,7 @@ impl ActiveEffects {
 
     /// Evaluate all enabled expressions. Must be called after
     /// deserialization and after any mutation.
-    pub fn recompute(&mut self, character: &Character) {
+    pub fn recompute(&mut self, character: &Character) -> bool {
         self.overrides.clear();
 
         // Mutable wrapper: borrows overrides mutably and effects immutably.
@@ -132,6 +153,9 @@ impl ActiveEffects {
                 log::error!("Effect expression error: {error}");
             }
         }
+        CONSUMABLE_ATTRS
+            .iter()
+            .any(|attr| self.overrides.contains_key(attr) && !self.memoized.contains_key(attr))
     }
 
     /// Effective value: override if set, otherwise base from character.
