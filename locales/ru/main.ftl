@@ -136,6 +136,7 @@ cost = Цена
 btn-add-spell = + Добавить заклинание
 choose-option = Выбрать
 search = Поиск…
+browse-options = Обзор вариантов
 btn-add-option = + Добавить вариант
 
 ## Характеристики

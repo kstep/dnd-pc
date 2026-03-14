@@ -116,7 +116,7 @@ pub fn DatalistInput(
             <button
                 type="button"
                 class="datalist-browse-btn"
-                title="Browse options"
+                title=move_tr!("browse-options")
                 on:click=move |_| {
                     search_query.set(String::new());
                     show_modal.set(true);

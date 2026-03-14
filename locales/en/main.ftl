@@ -136,6 +136,7 @@ cost = Cost
 btn-add-spell = + Add Spell
 choose-option = Choose option
 search = Search…
+browse-options = Browse options
 btn-add-option = + Add Option
 
 ## Abilities
