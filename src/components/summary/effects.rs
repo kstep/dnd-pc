@@ -38,6 +38,7 @@ pub fn EffectsBlock() -> impl IntoView {
 
     let show_dice_pool = RwSignal::new(false);
     let pending_effect = RwSignal::new(Option::<ActiveEffect>::None);
+    let reroll_index = RwSignal::new(Option::<usize>::None);
     let pending_rolls = RwSignal::new(BTreeMap::<u32, u32>::new());
 
     let effect_options = Signal::derive(move || {
@@ -146,6 +147,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             let name = effect.label().to_owned();
                             let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
                             let pool_str = effect.pool.as_ref().map(ToString::to_string);
+                            let dice_rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
                             let description = effect.description.clone();
                             let enabled = effect.enabled;
                             let is_open = RwSignal::new(false);
@@ -207,8 +209,26 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 });
                                             }
                                         />
-                                        {pool_str.clone().map(|pool| view! {
-                                            <span class="summary-item-dice">{move_tr!("effect-dice")} ": " {pool}</span>
+                                        {(!dice_rolls.is_empty()).then(|| {
+                                            let rolls = dice_rolls.clone();
+                                            view! {
+                                                <span class="summary-item-dice">
+                                                    <button
+                                                        class="btn-icon"
+                                                        title=move_tr!("effect-dice")
+                                                        on:click=move |_| {
+                                                            reroll_index.set(Some(i));
+                                                            pending_rolls.set(rolls.clone());
+                                                            show_dice_pool.set(true);
+                                                        }
+                                                    >
+                                                        <Icon name="dices" size=12 />
+                                                    </button>
+                                                    {pool_str.clone().map(|pool| view! {
+                                                        {move_tr!("effect-dice")} ": " {pool}
+                                                    })}
+                                                </span>
+                                            }
                                         })}
                                         <textarea
                                             class="summary-item-desc"
@@ -238,13 +258,22 @@ pub fn EffectsBlock() -> impl IntoView {
                         rolls=rolls
                         show=show_dice_pool
                         on_confirm=move |pool| {
-                            pending_effect.update(|pe| {
-                                if let Some(effect) = pe.take() {
-                                    let mut effect = effect;
-                                    effect.pool = Some(pool);
-                                    effects.update(|e| e.add(effect, &store.read()));
-                                }
-                            });
+                            if let Some(idx) = reroll_index.get_untracked() {
+                                // Re-roll existing effect
+                                effects.update(|e| {
+                                    e.update_field(idx, |eff| eff.pool = Some(pool));
+                                    e.recompute(&store.read());
+                                });
+                                reroll_index.set(None);
+                            } else {
+                                // New effect
+                                pending_effect.update(|pe| {
+                                    if let Some(mut effect) = pe.take() {
+                                        effect.pool = Some(pool);
+                                        effects.update(|e| e.add(effect, &store.read()));
+                                    }
+                                });
+                            }
                             pending_rolls.set(BTreeMap::new());
                         }
                     />
