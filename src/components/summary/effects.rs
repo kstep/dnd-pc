@@ -109,7 +109,7 @@ pub fn EffectsBlock() -> impl IntoView {
                         }
                     ><Icon name="circle-plus" size=14 /></button>
                     <DatalistInput
-                        value=effect_label.get_untracked()
+                        value=effect_label
                         placeholder=move_tr!("effect-name")
                         class="summary-list-name"
                         options=effect_options

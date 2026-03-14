@@ -28,7 +28,7 @@ fn resolve_name(options: &[(String, String, String)], input: &str) -> Option<Str
 pub fn DatalistInput(
     /// Current input value
     #[prop(into)]
-    value: String,
+    value: Signal<String>,
     /// Placeholder text
     #[prop(into)]
     placeholder: Signal<String>,
@@ -53,7 +53,12 @@ pub fn DatalistInput(
 
     let show_modal = RwSignal::new(false);
     let search_query = RwSignal::new(String::new());
-    let display_value = RwSignal::new(value);
+    let display_value = RwSignal::new(value.get_untracked());
+
+    // Sync display_value when external value changes (e.g. parent resets it)
+    Effect::new(move || {
+        display_value.set(value.get());
+    });
     let on_input = StoredValue::new(on_input);
 
     let search_ref = NodeRef::<leptos::html::Input>::new();
