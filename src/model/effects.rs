@@ -153,9 +153,14 @@ impl ActiveEffects {
                 log::error!("Effect expression error: {error}");
             }
         }
-        CONSUMABLE_ATTRS
-            .iter()
-            .any(|attr| self.overrides.contains_key(attr) && !self.memoized.contains_key(attr))
+        CONSUMABLE_ATTRS.iter().any(|attr| {
+            if self.overrides.contains_key(attr) {
+                !self.memoized.contains_key(attr)
+            } else {
+                // Need to clear stale memoized entries when effect is removed
+                self.memoized.contains_key(attr)
+            }
+        })
     }
 
     /// Effective value: override if set, otherwise base from character.
