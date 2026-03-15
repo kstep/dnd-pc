@@ -1312,9 +1312,20 @@ input[type="checkbox"] {
 }
 
 .btn-remove {
-  @extend .btn-icon;
-  border-color: var(--danger);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-1);
+  background: none;
+  cursor: pointer;
   color: var(--danger);
+  font-size: var(--font-size-1);
+  line-height: 1;
 
   &:hover {
     background: var(--danger);
