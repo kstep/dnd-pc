@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -155,103 +155,121 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let is_natural = armor.armor_type == ArmorType::Natural;
                                     let ac_expr_str = armor.ac_expr.as_ref().map(|e| e.to_string()).unwrap_or_default();
                                     let is_open = Signal::derive(move || armors_expanded.get().contains(&i));
-                                    view! {
-                                        <div class="armor-entry">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder=move_tr!("name")
-                                                prop:value=name
-                                                disabled=is_natural
-                                                on:input=move |e| {
-                                                    armors.write()[i].name = event_target_value(&e);
-                                                }
-                                            />
-                                            <input
-                                                type="number"
-                                                placeholder=move_tr!("base-ac")
-                                                class="short-input"
-                                                min="0"
-                                                prop:value=base_ac
-                                                disabled=is_natural
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        let mut armors = armors.write();
-                                                        let old_base_ac = armors[i].base_ac;
-                                                        let at = armors[i].armor_type;
-                                                        armors[i].base_ac = value;
-                                                        // Auto-fill formula if it matches the previous default
-                                                        let old_default = Armor::default_ac_expr(at, old_base_ac);
-                                                        if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                            armors[i].ac_expr = Armor::default_ac_expr(at, value);
+                                    if is_natural {
+                                        Either::Left(view! {
+                                            <div class="armor-entry armor-natural">
+                                                <span class="armor-name">{name}</span>
+                                                <span class="armor-type-label">
+                                                    {move || i18n.tr(ArmorType::Natural.tr_key())}
+                                                </span>
+                                                <span class="armor-expr">{ac_expr_str}</span>
+                                                <button
+                                                    class="btn-remove"
+                                                    on:click=move |_| {
+                                                        if i < armors.read().len() {
+                                                            armors.write().remove(i);
                                                         }
                                                     }
-                                                }
-                                            />
-                                            <select
-                                                prop:value=armor_type.to_string()
-                                                disabled=is_natural
-                                                on:change=move |e| {
-                                                    let value = event_target_value(&e);
-                                                    if let Ok(idx) = value.parse::<u8>() {
-                                                        let new_type = ArmorType::try_from(idx).unwrap_or_default();
-                                                        let mut armors = armors.write();
-                                                        let old_type = armors[i].armor_type;
-                                                        let base_ac = armors[i].base_ac;
-                                                        armors[i].armor_type = new_type;
-                                                        // Auto-fill formula if it matches the previous default
-                                                        let old_default = Armor::default_ac_expr(old_type, base_ac);
-                                                        if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                            armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
-                                                        }
-                                                    }
-                                                }
-                                            >
-                                                {ArmorType::iter()
-                                                    .filter(|at| *at != ArmorType::Natural)
-                                                    .map(|at| {
-                                                        let option_value = (at as u8).to_string();
-                                                        let selected = at as u8 == armor_type;
-                                                        let label = Signal::derive(move || i18n.tr(at.tr_key()));
-                                                        view! {
-                                                            <option value=option_value selected=selected>
-                                                                {label}
-                                                            </option>
-                                                        }
-                                                    })
-                                                    .collect_view()}
-                                            </select>
-                                            <button
-                                                class="btn-remove"
-                                                on:click=move |_| {
-                                                    if i < armors.read().len() {
-                                                        armors.write().remove(i);
-                                                    }
-                                                }
-                                            >
-                                                <Icon name="x" size=14 />
-                                            </button>
-                                            <Show when=move || is_open.get()>
+                                                >
+                                                    <Icon name="x" size=14 />
+                                                </button>
+                                            </div>
+                                        })
+                                    } else {
+                                        Either::Right(view! {
+                                            <div class="armor-entry">
+                                                <ToggleButton
+                                                    expanded=is_open
+                                                    on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                                />
                                                 <input
                                                     type="text"
-                                                    placeholder=move_tr!("ac-formula")
-                                                    class="ac-expr-input"
-                                                    prop:value=ac_expr_str.clone()
-                                                    disabled=is_natural
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e);
-                                                        armors.write()[i].ac_expr = if value.is_empty() {
-                                                            None
-                                                        } else {
-                                                            value.parse().ok()
-                                                        };
+                                                    placeholder=move_tr!("name")
+                                                    prop:value=name
+                                                    on:input=move |e| {
+                                                        armors.write()[i].name = event_target_value(&e);
                                                     }
                                                 />
-                                            </Show>
-                                        </div>
+                                                <input
+                                                    type="number"
+                                                    placeholder=move_tr!("base-ac")
+                                                    class="short-input"
+                                                    min="0"
+                                                    prop:value=base_ac
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            let mut armors = armors.write();
+                                                            let old_base_ac = armors[i].base_ac;
+                                                            let at = armors[i].armor_type;
+                                                            armors[i].base_ac = value;
+                                                            // Auto-fill formula if it matches the previous default
+                                                            let old_default = Armor::default_ac_expr(at, old_base_ac);
+                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                                armors[i].ac_expr = Armor::default_ac_expr(at, value);
+                                                            }
+                                                        }
+                                                    }
+                                                />
+                                                <select
+                                                    prop:value=armor_type.to_string()
+                                                    on:change=move |e| {
+                                                        let value = event_target_value(&e);
+                                                        if let Ok(idx) = value.parse::<u8>() {
+                                                            let new_type = ArmorType::try_from(idx).unwrap_or_default();
+                                                            let mut armors = armors.write();
+                                                            let old_type = armors[i].armor_type;
+                                                            let base_ac = armors[i].base_ac;
+                                                            armors[i].armor_type = new_type;
+                                                            // Auto-fill formula if it matches the previous default
+                                                            let old_default = Armor::default_ac_expr(old_type, base_ac);
+                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                                armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
+                                                            }
+                                                        }
+                                                    }
+                                                >
+                                                    {ArmorType::iter()
+                                                        .filter(|at| *at != ArmorType::Natural)
+                                                        .map(|at| {
+                                                            let option_value = (at as u8).to_string();
+                                                            let selected = at as u8 == armor_type;
+                                                            let label = Signal::derive(move || i18n.tr(at.tr_key()));
+                                                            view! {
+                                                                <option value=option_value selected=selected>
+                                                                    {label}
+                                                                </option>
+                                                            }
+                                                        })
+                                                        .collect_view()}
+                                                </select>
+                                                <button
+                                                    class="btn-remove"
+                                                    on:click=move |_| {
+                                                        if i < armors.read().len() {
+                                                            armors.write().remove(i);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon name="x" size=14 />
+                                                </button>
+                                                <Show when=move || is_open.get()>
+                                                    <input
+                                                        type="text"
+                                                        placeholder=move_tr!("ac-formula")
+                                                        class="ac-expr-input"
+                                                        prop:value=ac_expr_str.clone()
+                                                        on:change=move |e| {
+                                                            let value = event_target_value(&e);
+                                                            armors.write()[i].ac_expr = if value.is_empty() {
+                                                                None
+                                                            } else {
+                                                                value.parse().ok()
+                                                            };
+                                                        }
+                                                    />
+                                                </Show>
+                                            </div>
+                                        })
                                     }
                                 })
                                 .collect_view()

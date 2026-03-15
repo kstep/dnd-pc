@@ -972,6 +972,31 @@ input[type="checkbox"] {
   }
 }
 
+.armor-natural {
+  .armor-name {
+    flex: 1;
+    min-width: 0;
+    padding: var(--size-1);
+    font-size: var(--font-size-1);
+  }
+
+  .armor-type-label {
+    width: 8em;
+    padding: var(--size-1);
+    font-size: var(--font-size-1);
+    color: var(--text-secondary);
+  }
+
+  .armor-expr {
+    flex: 1;
+    min-width: 0;
+    padding: var(--size-1);
+    font-size: var(--font-size-1);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+}
+
 .item-entry {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
