@@ -1312,14 +1312,14 @@ input[type="checkbox"] {
 }
 
 .btn-remove {
-  background: var(--danger);
-  color: white;
-  border: none;
-  padding: var(--size-1) var(--size-2);
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  font-size: var(--font-size-0);
-  min-width: 28px;
+  @extend .btn-icon;
+  border-color: var(--danger);
+  color: var(--danger);
+
+  &:hover {
+    background: var(--danger);
+    color: white;
+  }
 }
 
 .apply-levels {
@@ -1328,23 +1328,14 @@ input[type="checkbox"] {
 }
 
 .btn-apply-level {
-  background: none;
-  border: 1px solid var(--accent);
+  @extend .btn-icon;
+  border-color: var(--accent);
   color: var(--accent);
-  padding: 2px 6px;
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  font-size: 13px;
-  line-height: 1.4;
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
 
-.btn-apply-level:hover {
-  background: var(--accent);
-  color: white;
+  &:hover {
+    background: var(--accent);
+    color: white;
+  }
 }
 
 /* --------------------- Language Switcher --------------------- */
