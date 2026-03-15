@@ -656,6 +656,18 @@ input[type="checkbox"] {
     font-size: var(--font-size-2);
   }
 
+  .combat-stat-row {
+    display: flex;
+    gap: var(--size-1);
+    align-items: center;
+    width: 100%;
+
+    input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
   .computed-value {
     font-size: var(--font-size-4);
     font-weight: var(--font-weight-7);

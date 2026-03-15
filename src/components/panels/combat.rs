@@ -27,7 +27,7 @@ pub fn CombatPanel() -> impl IntoView {
             <div class="combat-top-row">
                 <div class="combat-stat">
                     <label>{move_tr!("armor-class")}</label>
-                    <div class="ac-input-group">
+                    <div class="combat-stat-row">
                         <input
                             type="number"
                             prop:value=move || store.read().armor_class()
@@ -38,7 +38,7 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         />
                         <button
-                            class="btn-recalc-ac"
+                            class="btn-icon"
                             title=move_tr!("recalculate-ac")
                             on:click=move |_| {
                                 store.update(|c| { c.computed_armor_class(); });
