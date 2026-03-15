@@ -946,6 +946,7 @@ input[type="checkbox"] {
   }
 
   select {
+    width: 8em;
     padding: var(--size-1);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-1);
