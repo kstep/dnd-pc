@@ -2012,6 +2012,19 @@ input.summary-item-expr {
   font-weight: 700;
 }
 
+.adv-up {
+  color: var(--success);
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.adv-down {
+  color: var(--danger);
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 2px;
+}
 
 .summary-spell-slots {
   display: flex;

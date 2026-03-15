@@ -494,6 +494,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
+            a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
         }
     }

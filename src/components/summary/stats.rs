@@ -5,12 +5,24 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::icon::Icon,
-    effective::EffectiveCharacter,
+    effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterStoreFields, CombatStatsStoreFields, Skill, Translatable,
         format_bonus,
     },
 };
+
+fn adv_icon(state: AdvantageState) -> impl IntoView {
+    match state {
+        AdvantageState::Advantage => Some(view! {
+            <span class="adv-up"><Icon name="chevron-up" size=14 /></span>
+        }),
+        AdvantageState::Disadvantage => Some(view! {
+            <span class="adv-down"><Icon name="chevron-down" size=14 /></span>
+        }),
+        AdvantageState::Flat => None,
+    }
+}
 
 #[component]
 pub fn StatsBlock() -> impl IntoView {
@@ -177,7 +189,10 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-ability">
                                 <span class="summary-ability-label">{label}</span>
-                                <span class="summary-ability-mod">{move || format_bonus(eff.ability_modifier(ability))}</span>
+                                <span class="summary-ability-mod">
+                                    {move || format_bonus(eff.ability_modifier(ability))}
+                                    {move || adv_icon(eff.ability_advantage(ability))}
+                                </span>
                             </div>
                         }
                     }).collect_view()}
@@ -192,7 +207,10 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-save" class:proficient=move || store.read().proficient_with(ability)>
                                 <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">{move || format_bonus(eff.saving_throw_bonus(ability))}</span>
+                                <span class="summary-save-value">
+                                    {move || format_bonus(eff.saving_throw_bonus(ability))}
+                                    {move || adv_icon(eff.save_advantage(ability))}
+                                </span>
                             </div>
                         }
                     }).collect_view()}
@@ -208,7 +226,10 @@ pub fn StatsBlock() -> impl IntoView {
                         view! {
                             <div class="summary-save" class:proficient=proficient>
                                 <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">{move || format_bonus(eff.skill_bonus(skill))}</span>
+                                <span class="summary-save-value">
+                                    {move || format_bonus(eff.skill_bonus(skill))}
+                                    {move || adv_icon(eff.skill_advantage(skill))}
+                                </span>
                             </div>
                         }
                     }).collect_view()}
