@@ -1328,9 +1328,18 @@ input[type="checkbox"] {
 }
 
 .btn-apply-level {
-  @extend .btn-icon;
-  border-color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 var(--size-1);
+  height: 28px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-1);
+  background: none;
   color: var(--accent);
+  cursor: pointer;
+  font-size: var(--font-size-1);
+  line-height: 1;
 
   &:hover {
     background: var(--accent);
