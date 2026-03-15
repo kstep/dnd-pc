@@ -125,7 +125,12 @@ impl ActiveEffects {
         }
         impl Context<Attribute> for Ctx<'_> {
             fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-                self.overrides.insert(var, value);
+                if var.is_advantage() {
+                    let current = self.resolve(var).unwrap_or(0);
+                    self.overrides.insert(var, (current + value).clamp(-1, 1));
+                } else {
+                    self.overrides.insert(var, value);
+                }
                 Ok(())
             }
 
@@ -169,5 +174,74 @@ impl ActiveEffects {
             return value;
         }
         character.resolve(attr).unwrap_or(0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+    use crate::model::Ability;
+
+    fn effect_with_expr(expr: &str) -> ActiveEffect {
+        ActiveEffect {
+            name: String::new(),
+            label: None,
+            description: String::new(),
+            expr: Some(expr.parse().unwrap()),
+            pool: None,
+            enabled: true,
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn advantage_additive_clamp() {
+        let character = Character::new();
+        let mut effects = ActiveEffects::default();
+
+        // Single advantage source → advantage
+        effects.add(effect_with_expr("STR.ADV = 1"), &character);
+        assert_eq!(
+            effects.resolve(&character, Attribute::AbilityAdvantage(Ability::Strength)),
+            1
+        );
+
+        // Add disadvantage source → cancels to flat
+        effects.add(effect_with_expr("STR.ADV = -1"), &character);
+        assert_eq!(
+            effects.resolve(&character, Attribute::AbilityAdvantage(Ability::Strength)),
+            0
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn advantage_clamps_to_bounds() {
+        let character = Character::new();
+        let mut effects = ActiveEffects::default();
+
+        // Two advantage sources → still clamped to 1
+        effects.add(effect_with_expr("ATK.ADV = 1"), &character);
+        effects.add(effect_with_expr("ATK.ADV = 1"), &character);
+        assert_eq!(effects.resolve(&character, Attribute::AttackAdvantage), 1);
+
+        // Two disadvantage sources → still clamped to -1
+        let mut effects2 = ActiveEffects::default();
+        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"), &character);
+        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"), &character);
+        assert_eq!(
+            effects2.resolve(&character, Attribute::SaveAdvantage(Ability::Dexterity)),
+            -1
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn advantage_does_not_affect_regular_attrs() {
+        let character = Character::new();
+        let mut effects = ActiveEffects::default();
+
+        // Regular attribute uses plain assignment (not additive-clamp)
+        effects.add(effect_with_expr("AC = 18"), &character);
+        assert_eq!(effects.resolve(&character, Attribute::Ac), 18);
     }
 }

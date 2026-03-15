@@ -33,6 +33,24 @@ pub enum Attribute {
     AttackBonus,
     Initiative,
     Inspiration,
+    AbilityAdvantage(Ability),
+    SkillAdvantage(Skill),
+    SaveAdvantage(Ability),
+    AttackAdvantage,
+}
+
+impl Attribute {
+    /// Returns true if this attribute represents an advantage/disadvantage
+    /// flag.
+    pub fn is_advantage(&self) -> bool {
+        matches!(
+            self,
+            Self::AbilityAdvantage(_)
+                | Self::SkillAdvantage(_)
+                | Self::SaveAdvantage(_)
+                | Self::AttackAdvantage
+        )
+    }
 }
 
 fn parse_ability(s: &str) -> Option<Ability> {
@@ -98,16 +116,40 @@ impl FromStr for Attribute {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // Dotted forms: STR.MOD, STR.SAVE, SKILL.ACRO
-        if let Some((prefix, suffix)) = s.split_once('.') {
+        // Dotted forms: STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV,
+        // SKILL.ACRO, SKILL.ACRO.ADV, ATK.ADV
+        if let Some((prefix, rest)) = s.split_once('.') {
             if prefix == "SKILL" {
-                return parse_skill(suffix).map(Self::Skill).ok_or("unknown skill");
+                // SKILL.ACRO or SKILL.ACRO.ADV
+                if let Some((skill_str, suffix)) = rest.split_once('.') {
+                    if suffix == "ADV" {
+                        return parse_skill(skill_str)
+                            .map(Self::SkillAdvantage)
+                            .ok_or("unknown skill");
+                    }
+                    return Err("unknown skill suffix (expected ADV)");
+                }
+                return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
+            }
+            if prefix == "ATK" {
+                return match rest {
+                    "ADV" => Ok(Self::AttackAdvantage),
+                    _ => Err("unknown ATK suffix (expected ADV)"),
+                };
             }
             if let Some(ability) = parse_ability(prefix) {
-                return match suffix {
+                // STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV
+                if let Some((middle, suffix)) = rest.split_once('.') {
+                    if middle == "SAVE" && suffix == "ADV" {
+                        return Ok(Self::SaveAdvantage(ability));
+                    }
+                    return Err("unknown ability suffix");
+                }
+                return match rest {
                     "MOD" => Ok(Self::Modifier(ability)),
                     "SAVE" => Ok(Self::SavingThrow(ability)),
-                    _ => Err("unknown ability suffix (expected MOD or SAVE)"),
+                    "ADV" => Ok(Self::AbilityAdvantage(ability)),
+                    _ => Err("unknown ability suffix (expected MOD, SAVE, or ADV)"),
                 };
             }
             return Err("unknown attribute");
@@ -157,6 +199,10 @@ impl fmt::Display for Attribute {
             Self::AttackBonus => f.write_str("ATK"),
             Self::Initiative => f.write_str("INITIATIVE"),
             Self::Inspiration => f.write_str("INSPIRATION"),
+            Self::AbilityAdvantage(ability) => write!(f, "{}.ADV", ability_abbr(*ability)),
+            Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill_abbr(*skill)),
+            Self::SaveAdvantage(ability) => write!(f, "{}.SAVE.ADV", ability_abbr(*ability)),
+            Self::AttackAdvantage => f.write_str("ATK.ADV"),
         }
     }
 }
@@ -169,5 +215,101 @@ fn ability_abbr(ability: Ability) -> &'static str {
         Ability::Intelligence => "INT",
         Ability::Wisdom => "WIS",
         Ability::Charisma => "CHA",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn parse_advantage_attributes() {
+        assert_eq!(
+            "STR.ADV".parse::<Attribute>().unwrap(),
+            Attribute::AbilityAdvantage(Ability::Strength)
+        );
+        assert_eq!(
+            "CHA.ADV".parse::<Attribute>().unwrap(),
+            Attribute::AbilityAdvantage(Ability::Charisma)
+        );
+        assert_eq!(
+            "SKILL.STEA.ADV".parse::<Attribute>().unwrap(),
+            Attribute::SkillAdvantage(Skill::Stealth)
+        );
+        assert_eq!(
+            "SKILL.PERC.ADV".parse::<Attribute>().unwrap(),
+            Attribute::SkillAdvantage(Skill::Perception)
+        );
+        assert_eq!(
+            "DEX.SAVE.ADV".parse::<Attribute>().unwrap(),
+            Attribute::SaveAdvantage(Ability::Dexterity)
+        );
+        assert_eq!(
+            "WIS.SAVE.ADV".parse::<Attribute>().unwrap(),
+            Attribute::SaveAdvantage(Ability::Wisdom)
+        );
+        assert_eq!(
+            "ATK.ADV".parse::<Attribute>().unwrap(),
+            Attribute::AttackAdvantage
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_advantage_round_trip() {
+        let cases = [
+            Attribute::AbilityAdvantage(Ability::Strength),
+            Attribute::AbilityAdvantage(Ability::Charisma),
+            Attribute::SkillAdvantage(Skill::Stealth),
+            Attribute::SkillAdvantage(Skill::Perception),
+            Attribute::SaveAdvantage(Ability::Dexterity),
+            Attribute::SaveAdvantage(Ability::Wisdom),
+            Attribute::AttackAdvantage,
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn is_advantage() {
+        assert!(Attribute::AbilityAdvantage(Ability::Strength).is_advantage());
+        assert!(Attribute::SkillAdvantage(Skill::Stealth).is_advantage());
+        assert!(Attribute::SaveAdvantage(Ability::Dexterity).is_advantage());
+        assert!(Attribute::AttackAdvantage.is_advantage());
+        assert!(!Attribute::Ac.is_advantage());
+        assert!(!Attribute::AttackBonus.is_advantage());
+        assert!(!Attribute::Skill(Skill::Stealth).is_advantage());
+    }
+
+    #[wasm_bindgen_test]
+    fn existing_attributes_still_parse() {
+        assert_eq!(
+            "STR".parse::<Attribute>().unwrap(),
+            Attribute::Ability(Ability::Strength)
+        );
+        assert_eq!(
+            "STR.MOD".parse::<Attribute>().unwrap(),
+            Attribute::Modifier(Ability::Strength)
+        );
+        assert_eq!(
+            "STR.SAVE".parse::<Attribute>().unwrap(),
+            Attribute::SavingThrow(Ability::Strength)
+        );
+        assert_eq!(
+            "SKILL.ACRO".parse::<Attribute>().unwrap(),
+            Attribute::Skill(Skill::Acrobatics)
+        );
+        assert_eq!("ATK".parse::<Attribute>().unwrap(), Attribute::AttackBonus);
+    }
+
+    #[wasm_bindgen_test]
+    fn invalid_advantage_attributes() {
+        assert!("SKILL.STEA.MOD".parse::<Attribute>().is_err());
+        assert!("ATK.MOD".parse::<Attribute>().is_err());
+        assert!("STR.SAVE.MOD".parse::<Attribute>().is_err());
     }
 }

@@ -3,6 +3,24 @@ use reactive_stores::Store;
 
 use crate::model::{Ability, ActiveEffects, Attribute, Character, Skill};
 
+/// Advantage/disadvantage state for a roll type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AdvantageState {
+    Advantage,
+    Disadvantage,
+    Flat,
+}
+
+impl From<i32> for AdvantageState {
+    fn from(value: i32) -> Self {
+        match value {
+            1.. => Self::Advantage,
+            ..=-1 => Self::Disadvantage,
+            0 => Self::Flat,
+        }
+    }
+}
+
 /// Reactive read-only view of a character with effects applied.
 /// Holds signals, so it's `Copy` and can be used directly in closures.
 #[derive(Clone, Copy)]
@@ -66,5 +84,22 @@ impl EffectiveCharacter {
 
     pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
         self.proficiency_bonus() + self.ability_modifier(ability)
+    }
+
+    pub fn ability_advantage(&self, ability: Ability) -> AdvantageState {
+        self.get(Attribute::AbilityAdvantage(ability)).into()
+    }
+
+    pub fn skill_advantage(&self, skill: Skill) -> AdvantageState {
+        self.get(Attribute::SkillAdvantage(skill)).into()
+    }
+
+    pub fn save_advantage(&self, ability: Ability) -> AdvantageState {
+        self.get(Attribute::SaveAdvantage(ability)).into()
+    }
+
+    #[allow(dead_code)]
+    pub fn attack_advantage(&self) -> AdvantageState {
+        self.get(Attribute::AttackAdvantage).into()
     }
 }
