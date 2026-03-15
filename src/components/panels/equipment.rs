@@ -157,6 +157,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         type="text"
                                         placeholder=move_tr!("name")
                                         prop:value=name
+                                        disabled=is_natural
                                         on:input=move |e| {
                                             armors.write()[i].name = event_target_value(&e);
                                         }
@@ -167,6 +168,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         class="short-input"
                                         min="0"
                                         prop:value=base_ac
+                                        disabled=is_natural
                                         on:input=move |e| {
                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                 let mut armors = armors.write();
@@ -201,6 +203,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         }
                                     >
                                         {ArmorType::iter()
+                                            .filter(|at| *at != ArmorType::Natural)
                                             .map(|at| {
                                                 let option_value = (at as u8).to_string();
                                                 let selected = at as u8 == armor_type;
@@ -218,6 +221,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         placeholder=move_tr!("ac-formula")
                                         class="ac-expr-input"
                                         prop:value=ac_expr_str
+                                        disabled=is_natural
                                         on:change=move |e| {
                                             let value = event_target_value(&e);
                                             armors.write()[i].ac_expr = if value.is_empty() {
