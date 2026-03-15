@@ -954,6 +954,10 @@ input[type="checkbox"] {
     color: var(--text-primary);
     font-size: var(--font-size-1);
   }
+
+  .ac-expr-input {
+    flex: 1 1 100%;
+  }
 }
 
 .item-entry {
