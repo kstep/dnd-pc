@@ -91,7 +91,9 @@ impl EffectiveCharacter {
     }
 
     pub fn skill_advantage(&self, skill: Skill) -> AdvantageState {
-        self.get(Attribute::SkillAdvantage(skill)).into()
+        let skill_adv = self.get(Attribute::SkillAdvantage(skill));
+        let ability_adv = self.get(Attribute::AbilityAdvantage(skill.ability()));
+        (skill_adv + ability_adv).clamp(-1, 1).into()
     }
 
     pub fn save_advantage(&self, ability: Ability) -> AdvantageState {
