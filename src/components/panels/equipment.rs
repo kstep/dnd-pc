@@ -158,11 +158,14 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     if is_natural {
                                         Either::Left(view! {
                                             <div class="armor-entry armor-natural">
+                                                <ToggleButton
+                                                    expanded=is_open
+                                                    on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                                />
                                                 <span class="armor-name">{name}</span>
                                                 <span class="armor-type-label">
                                                     {move || i18n.tr(ArmorType::Natural.tr_key())}
                                                 </span>
-                                                <span class="armor-expr">{ac_expr_str}</span>
                                                 <button
                                                     class="btn-remove"
                                                     on:click=move |_| {
@@ -173,6 +176,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                 >
                                                     <Icon name="x" size=14 />
                                                 </button>
+                                                <Show when=move || is_open.get()>
+                                                    <span class="ac-expr-input armor-expr">{ac_expr_str.clone()}</span>
+                                                </Show>
                                             </div>
                                         })
                                     } else {
