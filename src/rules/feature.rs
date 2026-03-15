@@ -7,7 +7,8 @@ use crate::{
     demap::{self, Named},
     expr::Expr,
     model::{
-        Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource, FeatureValue,
+        Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
+        FeatureValue,
     },
     rules::utils::get_for_level,
     vecset::VecSet,
@@ -28,6 +29,8 @@ pub struct FeatureDefinition {
     pub fields: BTreeMap<Box<str>, FieldDefinition>,
     #[serde(default)]
     pub assign: Option<Vec<Assignment>>,
+    #[serde(default)]
+    pub ac_expr: Option<Expr<Attribute>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -154,6 +157,24 @@ impl FeatureDefinition {
         );
 
         self.apply_fields(level, character, source);
+
+        // Create Natural armor entry if feature defines an AC expression.
+        // ac_expr is level-independent, so we only insert once and skip on re-apply.
+        if let Some(ac_expr) = &self.ac_expr {
+            let already_exists = character
+                .equipment
+                .armors
+                .iter()
+                .any(|a| a.armor_type == ArmorType::Natural && a.name == self.name);
+            if !already_exists {
+                character.equipment.armors.push(Armor {
+                    name: self.name.clone(),
+                    armor_type: ArmorType::Natural,
+                    ac_expr: Some(ac_expr.clone()),
+                    ..Default::default()
+                });
+            }
+        }
     }
 
     fn free_uses_max(&self, level: u32) -> u32 {

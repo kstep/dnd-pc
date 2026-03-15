@@ -62,6 +62,7 @@ panel-notes = Notes
 
 ## Combat panel
 armor-class = Armor Class
+recalculate-ac = Recalculate AC
 initiative = Initiative
 speed = Speed
 inspiration = Inspiration
@@ -96,10 +97,13 @@ type = Type
 btn-add-weapon = + Add Weapon
 armor = Armor
 base-ac = Base AC
+ac-formula = AC formula
 btn-add-armor = + Add Armor
 armor-type-light = Light
 armor-type-medium = Medium
 armor-type-heavy = Heavy
+armor-type-shield = Shield
+armor-type-natural = Natural
 items = Items
 item-name = Item name
 qty = Qty

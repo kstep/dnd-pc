@@ -35,9 +35,7 @@
       "name": "Unarmored Defense",
       "label": "Защита без доспехов",
       "description": "Пока вы не носите доспехи и не используете Щит, ваш базовый Класс Доспеха равен 10 + ваш модификатор Ловкости + ваш модификатор Мудрости.",
-      "assign": [
-        { "expr": "AC = max(AC, 10 + DEX.MOD + WIS.MOD)", "when": "OnFeatureAdd" }
-      ]
+      "ac_expr": "10 + DEX.MOD + WIS.MOD"
     },
     {
       "name": "Flurry of Blows",

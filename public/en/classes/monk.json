@@ -29,9 +29,7 @@
     {
       "name": "Unarmored Defense",
       "description": "While you aren't wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers.",
-      "assign": [
-        { "expr": "AC = max(AC, 10 + DEX.MOD + WIS.MOD)", "when": "OnFeatureAdd" }
-      ]
+      "ac_expr": "10 + DEX.MOD + WIS.MOD"
     },
     {
       "name": "Flurry of Blows",

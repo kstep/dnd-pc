@@ -939,9 +939,7 @@
           "name": "Unarmored Defense",
           "label": "Защита без доспехов",
           "description": "Ваш базовый Класс Доспеха равен 10 + модификатор Ловкости + модификатор Харизмы.",
-          "assign": [
-            { "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)", "when": "OnFeatureAdd" }
-          ]
+          "ac_expr": "10 + DEX.MOD + CHA.MOD"
         },
         {
           "name": "Inspiring Movement",

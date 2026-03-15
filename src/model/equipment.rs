@@ -1,7 +1,10 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{ArmorType, DamageType, Money};
+use crate::{
+    expr::Expr,
+    model::{ArmorType, Attribute, DamageType, Money},
+};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
@@ -23,6 +26,32 @@ pub struct Armor {
     pub base_ac: u32,
     #[serde(default)]
     pub armor_type: ArmorType,
+    #[serde(default)]
+    pub ac_expr: Option<Expr<Attribute>>,
+}
+
+impl Armor {
+    /// Generate the default AC formula string for the given armor type and base
+    /// AC.
+    pub fn default_ac_expr_str(armor_type: ArmorType, base_ac: u32) -> String {
+        match armor_type {
+            ArmorType::Light => format!("{base_ac} + DEX.MOD"),
+            ArmorType::Medium => format!("{base_ac} + min(DEX.MOD, 2)"),
+            ArmorType::Heavy => format!("{base_ac}"),
+            ArmorType::Shield => format!("AC + {base_ac}"),
+            ArmorType::Natural => String::new(),
+        }
+    }
+
+    /// Generate and parse the default AC formula for the given armor type and
+    /// base AC.
+    pub fn default_ac_expr(armor_type: ArmorType, base_ac: u32) -> Option<Expr<Attribute>> {
+        if armor_type == ArmorType::Natural {
+            return None;
+        }
+        let s = Self::default_ac_expr_str(armor_type, base_ac);
+        s.parse().ok()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

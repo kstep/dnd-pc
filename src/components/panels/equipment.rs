@@ -149,6 +149,8 @@ pub fn EquipmentPanel() -> impl IntoView {
                             let name = armor.name.clone();
                             let base_ac = armor.base_ac.to_string();
                             let armor_type = armor.armor_type as u8;
+                            let is_natural = armor.armor_type == ArmorType::Natural;
+                            let ac_expr_str = armor.ac_expr.as_ref().map(|e| e.to_string()).unwrap_or_default();
                             view! {
                                 <div class="armor-entry">
                                     <input
@@ -167,21 +169,34 @@ pub fn EquipmentPanel() -> impl IntoView {
                                         prop:value=base_ac
                                         on:input=move |e| {
                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                armors.write()[i].base_ac = value;
+                                                let mut armors = armors.write();
+                                                let old_base_ac = armors[i].base_ac;
+                                                let at = armors[i].armor_type;
+                                                armors[i].base_ac = value;
+                                                // Auto-fill formula if it matches the previous default
+                                                let old_default = Armor::default_ac_expr(at, old_base_ac);
+                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                    armors[i].ac_expr = Armor::default_ac_expr(at, value);
+                                                }
                                             }
                                         }
                                     />
                                     <select
                                         prop:value=armor_type.to_string()
+                                        disabled=is_natural
                                         on:change=move |e| {
                                             let value = event_target_value(&e);
                                             if let Ok(idx) = value.parse::<u8>() {
-                                                let armor_type = match idx {
-                                                    1 => ArmorType::Medium,
-                                                    2 => ArmorType::Heavy,
-                                                    _ => ArmorType::Light,
-                                                };
-                                                armors.write()[i].armor_type = armor_type;
+                                                let new_type = ArmorType::try_from(idx).unwrap_or_default();
+                                                let mut armors = armors.write();
+                                                let old_type = armors[i].armor_type;
+                                                let base_ac = armors[i].base_ac;
+                                                armors[i].armor_type = new_type;
+                                                // Auto-fill formula if it matches the previous default
+                                                let old_default = Armor::default_ac_expr(old_type, base_ac);
+                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                    armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
+                                                }
                                             }
                                         }
                                     >
@@ -198,6 +213,20 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             })
                                             .collect_view()}
                                     </select>
+                                    <input
+                                        type="text"
+                                        placeholder=move_tr!("ac-formula")
+                                        class="ac-expr-input"
+                                        prop:value=ac_expr_str
+                                        on:change=move |e| {
+                                            let value = event_target_value(&e);
+                                            armors.write()[i].ac_expr = if value.is_empty() {
+                                                None
+                                            } else {
+                                                value.parse().ok()
+                                            };
+                                        }
+                                    />
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {

@@ -212,6 +212,47 @@ impl Character {
         self.combat.armor_class
     }
 
+    /// Evaluate all armor AC formulas and write the best result to
+    /// `combat.armor_class`. Returns the computed AC.
+    ///
+    /// Evaluation order:
+    /// 1. All non-shield armor formulas → pick the max (or `10 + DEX.MOD`)
+    /// 2. Set AC so shield formulas can read it
+    /// 3. All shield formulas → pick the max
+    pub fn computed_armor_class(&mut self) -> u32 {
+        let default_ac = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
+
+        // Best body armor (non-shield)
+        let body_ac = self
+            .equipment
+            .armors
+            .iter()
+            .filter(|a| a.armor_type != ArmorType::Shield)
+            .filter_map(|a| a.ac_expr.as_ref())
+            .filter_map(|expr| expr.eval(self).ok())
+            .max()
+            .map(|v| v.max(0) as u32)
+            .unwrap_or(default_ac);
+
+        // Set AC so shield formulas can read it via resolve(Ac)
+        self.combat.armor_class = body_ac;
+
+        // Best shield (reads AC = body_ac)
+        if let Some(shield_ac) = self
+            .equipment
+            .armors
+            .iter()
+            .filter(|a| a.armor_type == ArmorType::Shield)
+            .filter_map(|a| a.ac_expr.as_ref())
+            .filter_map(|expr| expr.eval(self).ok())
+            .max()
+        {
+            self.combat.armor_class = shield_ac.max(0) as u32;
+        }
+
+        self.combat.armor_class
+    }
+
     /// Returns (caster_level, caster_class_count) for the given pool in a
     /// single pass.
     fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
@@ -633,7 +674,8 @@ pub mod tests {
 
     use super::*;
     use crate::{
-        model::{ClassLevel, Currency, FeatureSource, Money, SpellData},
+        expr::Expr,
+        model::{Armor, ClassLevel, Currency, FeatureSource, Money, SpellData},
         vecset::VecSet,
     };
 
@@ -1275,5 +1317,105 @@ pub mod tests {
                 ..Default::default()
             }
         );
+    }
+
+    // --- computed_armor_class ---
+
+    fn make_armor(name: &str, base_ac: u32, armor_type: ArmorType, expr_str: &str) -> Armor {
+        Armor {
+            name: name.to_string(),
+            base_ac,
+            armor_type,
+            ac_expr: if expr_str.is_empty() {
+                None
+            } else {
+                Some(expr_str.parse::<Expr<Attribute>>().unwrap())
+            },
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_no_armor() {
+        // DEX 14 → modifier +2 → 10 + 2 = 12
+        let mut ch = test_character();
+        ch.equipment.armors.clear();
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 12);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_light_armor() {
+        // Leather: 11 + DEX.MOD(+2) = 13
+        let mut ch = test_character();
+        ch.equipment.armors = vec![make_armor("Leather", 11, ArmorType::Light, "11 + DEX.MOD")];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 13);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_medium_armor() {
+        // Chain shirt: 13 + min(DEX.MOD(+2), 2) = 15
+        let mut ch = test_character();
+        ch.equipment.armors = vec![make_armor(
+            "Chain Shirt",
+            13,
+            ArmorType::Medium,
+            "13 + min(DEX.MOD, 2)",
+        )];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 15);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_heavy_armor() {
+        // Plate: 18
+        let mut ch = test_character();
+        ch.equipment.armors = vec![make_armor("Plate", 18, ArmorType::Heavy, "18")];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 18);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_with_shield() {
+        // Plate(18) + Shield(+2) = 20
+        let mut ch = test_character();
+        ch.equipment.armors = vec![
+            make_armor("Plate", 18, ArmorType::Heavy, "18"),
+            make_armor("Shield", 2, ArmorType::Shield, "AC + 2"),
+        ];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 20);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_natural_armor() {
+        // Unarmored Defense (Barbarian): 10 + DEX(+2) + CON(+1) = 13
+        let mut ch = test_character();
+        ch.equipment.armors = vec![make_armor(
+            "Unarmored Defense",
+            0,
+            ArmorType::Natural,
+            "10 + DEX.MOD + CON.MOD",
+        )];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 13);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_picks_best() {
+        // Leather(13) vs Plate(18) vs Natural(13) → picks 18
+        let mut ch = test_character();
+        ch.equipment.armors = vec![
+            make_armor("Leather", 11, ArmorType::Light, "11 + DEX.MOD"),
+            make_armor("Plate", 18, ArmorType::Heavy, "18"),
+            make_armor(
+                "Unarmored Defense",
+                0,
+                ArmorType::Natural,
+                "10 + DEX.MOD + CON.MOD",
+            ),
+        ];
+        let ac = ch.computed_armor_class();
+        assert_eq!(ac, 18);
     }
 }

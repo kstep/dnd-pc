@@ -27,15 +27,26 @@ pub fn CombatPanel() -> impl IntoView {
             <div class="combat-top-row">
                 <div class="combat-stat">
                     <label>{move_tr!("armor-class")}</label>
-                    <input
-                        type="number"
-                        prop:value=move || store.read().armor_class()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                combat.armor_class().set(value);
+                    <div class="ac-input-group">
+                        <input
+                            type="number"
+                            prop:value=move || store.read().armor_class()
+                            on:input=move |e| {
+                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                    combat.armor_class().set(value);
+                                }
                             }
-                        }
-                    />
+                        />
+                        <button
+                            class="btn-recalc-ac"
+                            title=move_tr!("recalculate-ac")
+                            on:click=move |_| {
+                                store.update(|c| { c.computed_armor_class(); });
+                            }
+                        >
+                            <Icon name="refresh-cw" size=14 />
+                        </button>
+                    </div>
                 </div>
                 <div class="combat-stat">
                     <label>{move_tr!("initiative")}</label>

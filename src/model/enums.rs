@@ -390,11 +390,15 @@ pub enum ArmorType {
     Light,
     Medium,
     Heavy,
+    Shield,
+    Natural,
 }
 enum_serde_u8!(ArmorType {
     Light,
     Medium,
-    Heavy
+    Heavy,
+    Shield,
+    Natural
 });
 
 impl Translatable for DamageType {
@@ -432,6 +436,8 @@ impl Translatable for ArmorType {
             Self::Light => "armor-type-light",
             Self::Medium => "armor-type-medium",
             Self::Heavy => "armor-type-heavy",
+            Self::Shield => "armor-type-shield",
+            Self::Natural => "armor-type-natural",
         }
     }
 }

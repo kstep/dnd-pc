@@ -62,6 +62,7 @@ panel-notes = Заметки
 
 ## Панель боя
 armor-class = Класс защиты
+recalculate-ac = Пересчитать КЗ
 initiative = Инициатива
 speed = Скорость
 inspiration = Вдохновение
@@ -96,10 +97,13 @@ type = Тип
 btn-add-weapon = + Добавить оружие
 armor = Доспехи
 base-ac = Базовый КЗ
+ac-formula = Формула КЗ
 btn-add-armor = + Добавить доспех
 armor-type-light = Лёгкий
 armor-type-medium = Средний
 armor-type-heavy = Тяжёлый
+armor-type-shield = Щит
+armor-type-natural = Естественный
 items = Предметы
 item-name = Название предмета
 qty = Кол-во
