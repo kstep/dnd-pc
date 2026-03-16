@@ -170,7 +170,8 @@
     },
     {
       "name": "Body and Mind",
-      "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25."
+      "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25.",
+      "assign": [{"expr": "DEX = min(DEX + 4, 25); WIS = min(WIS + 4, 25)", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Class Proficiencies",
