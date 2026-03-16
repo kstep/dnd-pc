@@ -8,10 +8,6 @@
     3,
     4
   ],
-  "saving_throws": [
-    2,
-    3
-  ],
   "features": [
     {
       "name": "Spellcasting (Artificer)",
@@ -741,12 +737,18 @@
       "name": "Soul of Artifice",
       "description": "You have developed a mystical connection to your magic items, which you can draw on for aid. You gain the following benefits. Cheat Death: If you're reduced to 0 Hit Points but not killed outright, you can disintegrate any number of Uncommon or Rare magic items created by your Replicate Magic Item feature."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Spellcasting (Artificer)",
-        "Tinker's Magic"
+        "Tinker's Magic",
+        "Saving Throw Proficiency"
       ]
     },
     {

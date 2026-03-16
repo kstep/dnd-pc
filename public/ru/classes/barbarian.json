@@ -10,10 +10,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    2
-  ],
   "features": [
     {
       "name": "Rage",
@@ -160,13 +156,20 @@
       "label": "Первобытный чемпион",
       "description": "Вы воплощаете первобытную силу. Ваши значения Силы и Телосложения увеличиваются на 4, до максимума 25."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Rage",
         "Unarmored Defense",
-        "Weapon Mastery (Barbarian)"
+        "Weapon Mastery (Barbarian)",
+        "Saving Throw Proficiency"
       ]
     },
     {

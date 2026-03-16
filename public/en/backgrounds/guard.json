@@ -1,15 +1,11 @@
 {
   "name": "Guard",
   "description": "You served as a guard, standing watch over the walls and gates of a settlement, keeping a keen eye out for threats. Your experience taught you vigilance and the value of physical strength in maintaining order.",
-  "proficiencies": [
-    3,
-    11
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "STR += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "STR += 2; WIS += 1; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Alert",

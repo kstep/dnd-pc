@@ -1,15 +1,11 @@
 {
   "name": "Sage",
   "description": "You spent your formative years studying lore in a library or under a mentor, amassing knowledge of the arcane and the historical. Your hunger for knowledge drives you to seek answers to the world's deepest mysteries.",
-  "proficiencies": [
-    2,
-    5
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "INT += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Magic Initiate (Wizard)",

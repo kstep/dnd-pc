@@ -8,10 +8,6 @@
     3,
     4
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Divine Order",
@@ -306,6 +302,11 @@
       "name": "Greater Divine Intervention",
       "description": "You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can't use Divine Intervention again until you finish 2d4 Long Rests."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
@@ -313,7 +314,8 @@
         "Divine Order",
         "Protector",
         "Spellcasting (Cleric)",
-        "Thaumaturge"
+        "Thaumaturge",
+        "Saving Throw Proficiency"
       ]
     },
     {

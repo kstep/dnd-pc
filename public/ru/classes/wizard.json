@@ -6,10 +6,6 @@
   "proficiencies": [
     4
   ],
-  "saving_throws": [
-    3,
-    4
-  ],
   "features": [
     {
       "name": "Arcane Recovery",
@@ -286,13 +282,20 @@
       "label": "Именные заклинания",
       "description": "Выберите два заклинания 3-го уровня из вашей книги заклинаний в качестве именных заклинаний. Вы всегда имеете их подготовленными и можете использовать каждое один раз на 3-м уровне без траты ячейки. Использовав их так, вы не можете повторить до окончания короткого или продолжительного отдыха. Вы можете изменить выбор заклинаний после продолжительного отдыха."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Arcane Recovery",
         "Ritual Adept",
-        "Spellcasting (Wizard)"
+        "Spellcasting (Wizard)",
+        "Saving Throw Proficiency"
       ]
     },
     {

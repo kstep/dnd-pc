@@ -2,16 +2,12 @@
   "name": "Scribe",
   "label": "Писарь",
   "description": "Вы провели годы, переписывая документы и каталогизируя тексты в скриптории или канцелярии. Ваше скрупулёзное внимание к деталям и острая наблюдательность хорошо служили вам в учёных трудах.",
-  "proficiencies": [
-    8,
-    11
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "INT += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "INT += 2; WIS += 1; SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Skilled",

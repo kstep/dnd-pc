@@ -1,15 +1,11 @@
 {
   "name": "Sailor",
   "description": "You spent years aboard a ship, working as a deckhand, navigator, or even first mate. The open sea taught you agility, sharp awareness, and how to handle yourself in a rough-and-tumble brawl.",
-  "proficiencies": [
-    0,
-    11
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "DEX += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "DEX += 2; WIS += 1; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Tavern Brawler",

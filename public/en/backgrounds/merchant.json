@@ -1,15 +1,11 @@
 {
   "name": "Merchant",
   "description": "You earned a living by buying and selling goods, traversing trade routes and navigating bustling marketplaces. Your keen business sense and social savvy have served you well in negotiations both mercantile and otherwise.",
-  "proficiencies": [
-    1,
-    13
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "CHA += 2; INT += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Lucky",

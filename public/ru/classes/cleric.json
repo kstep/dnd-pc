@@ -9,10 +9,6 @@
     3,
     4
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Divine Order",
@@ -325,6 +321,12 @@
       "label": "Великое божественное вмешательство",
       "description": "Вы можете призвать ещё более могущественное божественное вмешательство. Когда вы используете Божественное вмешательство, вы можете выбрать заклинание Исполнение желаний."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
@@ -332,7 +334,8 @@
         "Divine Order",
         "Protector",
         "Spellcasting (Cleric)",
-        "Thaumaturge"
+        "Thaumaturge",
+        "Saving Throw Proficiency"
       ]
     },
     {

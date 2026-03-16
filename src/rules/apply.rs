@@ -132,10 +132,7 @@ impl RulesRegistry {
         // Record applied level and set hit die
         class_level.hit_die_sides = def.hit_die;
 
-        // Apply saving throws and proficiencies
-        character.update_saving_throw_proficiencies(|saving_throws| {
-            saving_throws.extend(def.saving_throws.iter().copied());
-        });
+        // Apply armor/weapon proficiencies
         character.update_proficiencies(|proficiencies| {
             proficiencies.extend(def.proficiencies.iter().cloned());
         });

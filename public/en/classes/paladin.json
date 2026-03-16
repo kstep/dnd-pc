@@ -10,10 +10,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Lay on Hands",
@@ -273,13 +269,19 @@
       "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Truesight is recommended.",
       "stackable": true
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Lay on Hands",
         "Spellcasting (Paladin)",
-        "Weapon Mastery (Paladin)"
+        "Weapon Mastery (Paladin)",
+        "Saving Throw Proficiency"
       ]
     },
     {

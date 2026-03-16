@@ -5,10 +5,6 @@
   "proficiencies": [
     4
   ],
-  "saving_throws": [
-    0,
-    1
-  ],
   "features": [
     {
       "name": "Bonus Unarmed Strike",
@@ -170,6 +166,11 @@
       "name": "Body and Mind",
       "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
@@ -178,7 +179,8 @@
         "Dexterous Attacks",
         "Martial Arts",
         "Martial Arts Die",
-        "Unarmored Defense"
+        "Unarmored Defense",
+        "Saving Throw Proficiency"
       ]
     },
     {

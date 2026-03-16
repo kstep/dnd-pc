@@ -401,6 +401,20 @@ enum_serde_u8!(ArmorType {
     Natural
 });
 
+impl ArmorType {
+    /// Returns the `Proficiency` required to use this armor type,
+    /// or `None` for Natural armor (no proficiency needed).
+    pub fn required_proficiency(self) -> Option<Proficiency> {
+        match self {
+            Self::Light => Some(Proficiency::LightArmor),
+            Self::Medium => Some(Proficiency::MediumArmor),
+            Self::Heavy => Some(Proficiency::HeavyArmor),
+            Self::Shield => Some(Proficiency::Shields),
+            Self::Natural => None,
+        }
+    }
+}
+
 impl Translatable for DamageType {
     fn tr_key(&self) -> &'static str {
         match self {

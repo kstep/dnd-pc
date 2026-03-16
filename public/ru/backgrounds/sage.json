@@ -2,16 +2,12 @@
   "name": "Sage",
   "label": "Мудрец",
   "description": "Вы провели годы становления, изучая предания в библиотеке или под началом наставника, накапливая знания о магическом и историческом. Ваша жажда знаний побуждает вас искать ответы на глубочайшие загадки мира.",
-  "proficiencies": [
-    2,
-    5
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "INT += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Magic Initiate (Wizard)",

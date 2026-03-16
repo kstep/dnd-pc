@@ -2,16 +2,12 @@
   "name": "Wayfarer",
   "label": "Странник",
   "description": "Вы выросли в дороге, путешествуя с отрядом бродяг или скитаясь в одиночку. Жизнь в пути научила вас разбираться в людях, оставаться незамеченным и полагаться на свою смекалку для выживания.",
-  "proficiencies": [
-    6,
-    16
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "WIS += 2; CON += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Lucky",

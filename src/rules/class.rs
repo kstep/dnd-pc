@@ -5,7 +5,7 @@ use serde::Deserialize;
 use super::feature::FeatureDefinition;
 use crate::{
     demap::{self, Named},
-    model::{Ability, Proficiency},
+    model::Proficiency,
     vecset::VecSet,
 };
 
@@ -18,8 +18,6 @@ pub struct ClassDefinition {
     pub hit_die: u32,
     #[serde(default)]
     pub proficiencies: VecSet<Proficiency>,
-    #[serde(default)]
-    pub saving_throws: VecSet<Ability>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<Box<str>, FeatureDefinition>,
     #[serde(default)]

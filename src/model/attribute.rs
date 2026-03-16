@@ -20,6 +20,8 @@ pub enum Attribute {
     Modifier(Ability),
     SavingThrow(Ability),
     Skill(Skill),
+    SkillProficiency(Skill),
+    SaveProficiency(Ability),
     MaxHp,
     Hp,
     TempHp,
@@ -123,12 +125,15 @@ impl FromStr for Attribute {
             if prefix == "SKILL" {
                 // SKILL.ACRO or SKILL.ACRO.ADV
                 if let Some((skill_str, suffix)) = rest.split_once('.') {
-                    if suffix == "ADV" {
-                        return parse_skill(skill_str)
+                    return match suffix {
+                        "ADV" => parse_skill(skill_str)
                             .map(Self::SkillAdvantage)
-                            .ok_or("unknown skill");
-                    }
-                    return Err("unknown skill suffix (expected ADV)");
+                            .ok_or("unknown skill"),
+                        "PROF" => parse_skill(skill_str)
+                            .map(Self::SkillProficiency)
+                            .ok_or("unknown skill"),
+                        _ => Err("unknown skill suffix (expected ADV or PROF)"),
+                    };
                 }
                 return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
             }
@@ -147,8 +152,12 @@ impl FromStr for Attribute {
             if let Some(ability) = parse_ability(prefix) {
                 // STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV
                 if let Some((middle, suffix)) = rest.split_once('.') {
-                    if middle == "SAVE" && suffix == "ADV" {
-                        return Ok(Self::SaveAdvantage(ability));
+                    if middle == "SAVE" {
+                        return match suffix {
+                            "ADV" => Ok(Self::SaveAdvantage(ability)),
+                            "PROF" => Ok(Self::SaveProficiency(ability)),
+                            _ => Err("unknown SAVE suffix (expected ADV or PROF)"),
+                        };
                     }
                     return Err("unknown ability suffix");
                 }
@@ -193,6 +202,8 @@ impl fmt::Display for Attribute {
             Self::Modifier(ability) => write!(f, "{}.MOD", ability_abbr(*ability)),
             Self::SavingThrow(ability) => write!(f, "{}.SAVE", ability_abbr(*ability)),
             Self::Skill(skill) => write!(f, "SKILL.{}", skill_abbr(*skill)),
+            Self::SkillProficiency(skill) => write!(f, "SKILL.{}.PROF", skill_abbr(*skill)),
+            Self::SaveProficiency(ability) => write!(f, "{}.SAVE.PROF", ability_abbr(*ability)),
             Self::MaxHp => f.write_str("MAX_HP"),
             Self::Hp => f.write_str("HP"),
             Self::TempHp => f.write_str("TEMP_HP"),

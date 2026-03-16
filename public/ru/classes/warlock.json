@@ -7,10 +7,6 @@
     0,
     4
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Eldritch Invocations",
@@ -458,13 +454,20 @@
       "label": "Мистический мастер",
       "description": "Когда вы используете Магическую хитрость, вы восстанавливаете все потраченные ячейки Магии договора."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Eldritch Invocation Options",
         "Eldritch Invocations",
-        "Pact Magic"
+        "Pact Magic",
+        "Saving Throw Proficiency"
       ]
     },
     {

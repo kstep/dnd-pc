@@ -1,15 +1,11 @@
 {
   "name": "Artisan",
   "description": "You began mopping floors and scrubbing counters in an artisan's workshop for a few coppers per day as soon as you were strong enough to carry a bucket. Eventually you learned your trade and became a googled artisan in your own right.",
-  "proficiencies": [
-    8,
-    13
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "INT += 2; CHA += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "INT += 2; CHA += 1; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Crafter",

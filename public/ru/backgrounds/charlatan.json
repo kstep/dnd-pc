@@ -2,16 +2,12 @@
   "name": "Charlatan",
   "label": "Шарлатан",
   "description": "Когда-то задиристый и упрямый, вы с тех пор укротили свой нрав хитростью, поняв, что обманывать других куда эффективнее, чем запугивать. Вы прибегаете к уловкам, отвлечению внимания и подделкам, чтобы получить желаемое.",
-  "proficiencies": [
-    4,
-    15
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "CHA += 2; DEX += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Skilled",

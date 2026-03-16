@@ -2,16 +2,12 @@
   "name": "Criminal",
   "label": "Преступник",
   "description": "Вы зарабатывали на жизнь в тёмных переулках, срезая кошельки или обчищая лавки. Возможно, вы были частью небольшой банды единомышленников, присматривавших друг за другом, а может, действовали в одиночку.",
-  "proficiencies": [
-    15,
-    16
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "DEX += 2; INT += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "DEX += 2; INT += 1; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Alert",

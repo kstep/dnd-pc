@@ -5,8 +5,7 @@ use serde::Deserialize;
 use super::feature::FeatureDefinition;
 use crate::{
     demap,
-    model::{Character, FeatureSource, ProficiencyLevel, Skill},
-    vecset::VecSet,
+    model::{Character, FeatureSource},
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -15,8 +14,6 @@ pub struct BackgroundDefinition {
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
-    #[serde(default)]
-    pub proficiencies: VecSet<Skill>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<Box<str>, FeatureDefinition>,
 }
@@ -29,12 +26,6 @@ impl BackgroundDefinition {
     pub fn apply(&self, character: &mut Character) {
         if !character.identity.background_applied {
             character.identity.background_applied = true;
-
-            character.update_skill_proficiencies(|skills| {
-                for &skill in &self.proficiencies {
-                    skills.entry(skill).or_insert(ProficiencyLevel::Proficient);
-                }
-            });
         }
 
         let source = FeatureSource::Background(self.name.clone());

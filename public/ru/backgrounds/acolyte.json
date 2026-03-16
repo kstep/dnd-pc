@@ -2,16 +2,12 @@
   "name": "Acolyte",
   "label": "Послушник",
   "description": "Вы посвятили себя служению в храме, изучая священные обряды и принося жертвы богу или богам, которым поклоняетесь. Служение богам и постижение их священных трудов приведёт вас к величию.",
-  "proficiencies": [
-    6,
-    14
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "WIS += 2; INT += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Magic Initiate (Cleric)",

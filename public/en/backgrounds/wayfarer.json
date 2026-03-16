@@ -1,15 +1,11 @@
 {
   "name": "Wayfarer",
   "description": "You grew up on the road, traveling with a band of wanderers or drifting from place to place on your own. Life on the move taught you how to read people, stay out of sight, and rely on your wits to survive.",
-  "proficiencies": [
-    6,
-    16
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "WIS += 2; CON += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Lucky",

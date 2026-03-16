@@ -6,7 +6,6 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    model::Translatable,
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -50,13 +49,6 @@ pub fn BackgroundReference() -> impl IntoView {
                 let title = def.label().to_string();
                 let description = def.description.clone();
 
-                let skill_profs = def
-                    .proficiencies
-                    .iter()
-                    .map(|s| i18n.tr(s.tr_key()))
-                    .collect::<Vec<_>>()
-                    .join(", ");
-
                 let features = collect_feature_views(def.features.values());
 
                 view! {
@@ -64,15 +56,6 @@ pub fn BackgroundReference() -> impl IntoView {
                     <div class="reference-detail">
                         <h1>{title}</h1>
                         <p class="reference-description">{description}</p>
-
-                        <div class="reference-info-bar">
-                            {(!skill_profs.is_empty()).then(|| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("ref-skill-profs")}</span>
-                                    <span class="info-value">{skill_profs}</span>
-                                </div>
-                            })}
-                        </div>
 
                         {(!features.is_empty()).then(|| view! {
                             <h2>{move_tr!("ref-features")}</h2>

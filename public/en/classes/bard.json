@@ -6,10 +6,6 @@
     0,
     4
   ],
-  "saving_throws": [
-    1,
-    5
-  ],
   "features": [
     {
       "name": "Bardic Inspiration",
@@ -304,12 +300,18 @@
       "name": "Words of Creation",
       "description": "You have mastered two of the Words of Creation: the words of life and death. You therefore always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature with it if that creature is within 10 feet of the first target."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Bardic Inspiration",
-        "Spellcasting (Bard)"
+        "Spellcasting (Bard)",
+        "Saving Throw Proficiency"
       ]
     },
     {

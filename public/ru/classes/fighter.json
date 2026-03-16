@@ -11,10 +11,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    2
-  ],
   "features": [
     {
       "name": "Fighting Style",
@@ -128,13 +124,20 @@
       "label": "Три дополнительные атаки",
       "description": "Вы можете атаковать четырежды вместо одного раза каждый раз, когда совершаете действие Атака в свой ход."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Fighting Style",
         "Second Wind",
-        "Weapon Mastery (Fighter)"
+        "Weapon Mastery (Fighter)",
+        "Saving Throw Proficiency"
       ]
     },
     {

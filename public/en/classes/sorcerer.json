@@ -5,10 +5,6 @@
   "proficiencies": [
     4
   ],
-  "saving_throws": [
-    2,
-    5
-  ],
   "features": [
     {
       "name": "Innate Sorcery",
@@ -389,12 +385,18 @@
       "name": "Arcane Apotheosis",
       "description": "While your Innate Sorcery feature is active, you can use one Metamagic option on each of your turns without spending Sorcery Points on it."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Innate Sorcery",
-        "Spellcasting (Sorcerer)"
+        "Spellcasting (Sorcerer)",
+        "Saving Throw Proficiency"
       ]
     },
     {

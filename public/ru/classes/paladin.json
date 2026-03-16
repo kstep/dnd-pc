@@ -11,10 +11,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Lay on Hands",
@@ -294,13 +290,20 @@
       "description": "Вы получаете черту «Эпический дар» или другую черту по вашему выбору, для которой вы соответствуете требованиям.",
       "stackable": true
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Lay on Hands",
         "Spellcasting (Paladin)",
-        "Weapon Mastery (Paladin)"
+        "Weapon Mastery (Paladin)",
+        "Saving Throw Proficiency"
       ]
     },
     {

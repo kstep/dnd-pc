@@ -225,12 +225,18 @@ impl Character {
     pub fn compute_armor_class(&mut self) -> u32 {
         let default_ac = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
 
-        // Best body armor (non-shield)
+        // Best body armor (non-shield), skipping armor the character isn't proficient
+        // with
         let body_ac = self
             .equipment
             .armors
             .iter()
             .filter(|a| a.armor_type != ArmorType::Shield)
+            .filter(|a| {
+                a.armor_type
+                    .required_proficiency()
+                    .is_none_or(|p| self.proficiencies.contains(&p))
+            })
             .filter_map(|a| {
                 let expr = a.ac_expr.as_ref()?;
                 match expr.eval(self) {
@@ -248,7 +254,10 @@ impl Character {
         // Set AC so shield formulas can read it via resolve(Ac)
         self.combat.armor_class = body_ac;
 
-        // Best shield (reads AC = body_ac)
+        // Best shield (reads AC = body_ac), only if proficient with shields
+        if !self.proficiencies.contains(&Proficiency::Shields) {
+            return self.combat.armor_class;
+        }
         if let Some(shield_ac) = self
             .equipment
             .armors
@@ -574,6 +583,25 @@ impl expr::Context<Attribute> for Character {
             Attribute::InitiativeBonus => {
                 self.combat.initiative_misc_bonus = value;
             }
+            Attribute::SkillProficiency(skill) => {
+                let level = match value.clamp(0, 2) {
+                    0 => ProficiencyLevel::None,
+                    1 => ProficiencyLevel::Proficient,
+                    _ => ProficiencyLevel::Expertise,
+                };
+                self.update_skill_proficiencies(|skills| {
+                    skills.insert(skill, level);
+                });
+            }
+            Attribute::SaveProficiency(ability) => {
+                self.update_saving_throw_proficiencies(|saves| {
+                    if value != 0 {
+                        saves.insert(ability);
+                    } else {
+                        saves.remove(&ability);
+                    }
+                });
+            }
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
@@ -589,6 +617,8 @@ impl expr::Context<Attribute> for Character {
             Attribute::Modifier(ability) => Ok(self.abilities.modifier(ability)),
             Attribute::SavingThrow(ability) => Ok(self.saving_throw_bonus(ability)),
             Attribute::Skill(skill) => Ok(self.skill_bonus(skill)),
+            Attribute::SkillProficiency(skill) => Ok(self.skill_proficiency(skill).multiplier()),
+            Attribute::SaveProficiency(ability) => Ok(self.proficient_with(ability) as i32),
             Attribute::MaxHp => Ok(self.combat.hp_max as i32),
             Attribute::Hp => Ok(self.combat.hp_current as i32),
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),
@@ -800,7 +830,14 @@ pub mod tests {
             features: Vec::new(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
-            proficiencies: VecSet::new(),
+            proficiencies: [
+                Proficiency::LightArmor,
+                Proficiency::MediumArmor,
+                Proficiency::HeavyArmor,
+                Proficiency::Shields,
+            ]
+            .into_iter()
+            .collect(),
             languages: VecSet::new(),
             racial_traits: Vec::new(),
             spell_slots: BTreeMap::new(),

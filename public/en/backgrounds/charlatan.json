@@ -1,15 +1,11 @@
 {
   "name": "Charlatan",
   "description": "Once combative and headstrong, you have since tempered your behavior with cunning, learning that deceiving others is far more effective than strong-arming them. You employ trickery, misdirection, and forgery to get what you want.",
-  "proficiencies": [
-    4,
-    15
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "CHA += 2; DEX += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Skilled",

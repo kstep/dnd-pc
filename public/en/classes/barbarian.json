@@ -9,10 +9,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    2
-  ],
   "features": [
     {
       "name": "Rage",
@@ -136,13 +132,19 @@
       "name": "Primal Champion",
       "description": "You embody primal power. Your Strength and Constitution scores increase by 4, to a maximum of 25."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Rage",
         "Unarmored Defense",
-        "Weapon Mastery (Barbarian)"
+        "Weapon Mastery (Barbarian)",
+        "Saving Throw Proficiency"
       ]
     },
     {

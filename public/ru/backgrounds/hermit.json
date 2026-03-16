@@ -2,16 +2,12 @@
   "name": "Hermit",
   "label": "Отшельник",
   "description": "Какое-то время вы жили в уединении — в обособлённой общине или совсем один, — посвятив себя созерцанию и самопознанию. Во время затворничества вы обрели знания в целительстве и понимание мира природы.",
-  "proficiencies": [
-    9,
-    14
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "WIS += 2; CON += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "WIS += 2; CON += 1; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Healer",

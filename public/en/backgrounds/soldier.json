@@ -1,15 +1,11 @@
 {
   "name": "Soldier",
   "description": "You began training for war as a youth, drilling with weapons and performing forced marches in heavy armor. The horrors of battle have steeled your resolve and given you a ruthless edge in combat.",
-  "proficiencies": [
-    3,
-    7
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "description": "Ability score increase from background.",
-      "assign": [{"expr": "STR += 2; CON += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "STR += 2; CON += 1; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Savage Attacker",

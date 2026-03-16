@@ -6,10 +6,6 @@
     0,
     4
   ],
-  "saving_throws": [
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Eldritch Invocations",
@@ -418,13 +414,19 @@
       "name": "Eldritch Master",
       "description": "When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Eldritch Invocation Options",
         "Eldritch Invocations",
-        "Pact Magic"
+        "Pact Magic",
+        "Saving Throw Proficiency"
       ]
     },
     {

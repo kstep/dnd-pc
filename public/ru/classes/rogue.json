@@ -7,10 +7,6 @@
     0,
     4
   ],
-  "saving_throws": [
-    1,
-    3
-  ],
   "features": [
     {
       "name": "Expertise",
@@ -143,6 +139,12 @@
       "label": "Удача",
       "description": "У вас есть удивительное умение добиваться успеха, когда это необходимо. Если вы проваливаете D20 тест, вы можете превратить результат в 20. Использовав это умение, вы не можете использовать его снова до завершения Короткого или Длительного отдыха."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
@@ -150,7 +152,8 @@
         "Expertise",
         "Sneak Attack",
         "Thieves' Cant",
-        "Weapon Mastery (Rogue)"
+        "Weapon Mastery (Rogue)",
+        "Saving Throw Proficiency"
       ]
     },
     {

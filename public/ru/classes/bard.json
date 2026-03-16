@@ -7,10 +7,6 @@
     0,
     4
   ],
-  "saving_throws": [
-    1,
-    5
-  ],
   "features": [
     {
       "name": "Bardic Inspiration",
@@ -318,12 +314,19 @@
       "label": "Слова Творения",
       "description": "Вы овладели двумя Словами Творения: словами жизни и смерти. Поэтому у вас всегда подготовлены заклинания Слово силы: исцеление и Слово силы: смерть. Когда вы накладываете любое из этих заклинаний, вы можете выбрать вторую цель для него, если это существо находится в пределах 10 футов от первой цели."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Bardic Inspiration",
-        "Spellcasting (Bard)"
+        "Spellcasting (Bard)",
+        "Saving Throw Proficiency"
       ]
     },
     {

@@ -9,10 +9,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    1
-  ],
   "features": [
     {
       "name": "Favored Enemy",
@@ -299,13 +295,19 @@
       "name": "Foe Slayer",
       "description": "The damage die of your Hunter's Mark is a d10 rather than a d6."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Favored Enemy",
         "Spellcasting (Ranger)",
-        "Weapon Mastery (Ranger)"
+        "Weapon Mastery (Ranger)",
+        "Saving Throw Proficiency"
       ]
     },
     {

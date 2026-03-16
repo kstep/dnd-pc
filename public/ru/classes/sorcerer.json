@@ -6,10 +6,6 @@
   "proficiencies": [
     4
   ],
-  "saving_throws": [
-    2,
-    5
-  ],
   "features": [
     {
       "name": "Innate Sorcery",
@@ -413,12 +409,19 @@
       "label": "Мистический апофеоз",
       "description": "Пока активно ваше Врождённое чародейство, вы можете применять одну опцию метамагии в каждый свой ход, не тратя на неё очки чародейства."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Innate Sorcery",
-        "Spellcasting (Sorcerer)"
+        "Spellcasting (Sorcerer)",
+        "Saving Throw Proficiency"
       ]
     },
     {

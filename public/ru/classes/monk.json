@@ -6,10 +6,6 @@
   "proficiencies": [
     4
   ],
-  "saving_throws": [
-    0,
-    1
-  ],
   "features": [
     {
       "name": "Bonus Unarmed Strike",
@@ -185,9 +181,15 @@
       "label": "Тело и разум",
       "description": "Вы развили своё тело и разум до новых высот. Ваши значения Ловкости и Мудрости увеличиваются на 4, до максимума 25."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
-    { "features": ["Bonus Unarmed Strike", "Dexterous Attacks", "Martial Arts", "Martial Arts Die", "Unarmored Defense"] },
+    { "features": ["Bonus Unarmed Strike", "Dexterous Attacks", "Martial Arts", "Martial Arts Die", "Unarmored Defense", "Saving Throw Proficiency"] },
     { "features": ["Flurry of Blows", "Monk's Focus", "Patient Defense", "Step of the Wind", "Unarmored Movement", "Uncanny Metabolism"] },
     { "features": ["Deflect Attacks", "Monk Subclass"] },
     { "features": ["Ability Score Improvement", "Slow Fall"] },

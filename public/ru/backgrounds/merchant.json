@@ -2,16 +2,12 @@
   "name": "Merchant",
   "label": "Торговец",
   "description": "Вы зарабатывали на жизнь покупкой и продажей товаров, путешествуя по торговым маршрутам и лавируя на оживлённых рынках. Ваше деловое чутьё и навыки общения хорошо служили вам как в торговых, так и в иных переговорах.",
-  "proficiencies": [
-    1,
-    13
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "CHA += 2; INT += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Lucky",

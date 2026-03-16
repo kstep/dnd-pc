@@ -9,10 +9,6 @@
     3,
     4
   ],
-  "saving_throws": [
-    2,
-    3
-  ],
   "features": [
     {
       "name": "Spellcasting (Artificer)",
@@ -841,12 +837,19 @@
       "label": "Душа мастерства",
       "description": "Вы развиваете мистическую связь со своими магическими предметами."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Spellcasting (Artificer)",
-        "Tinker's Magic"
+        "Tinker's Magic",
+        "Saving Throw Proficiency"
       ]
     },
     {

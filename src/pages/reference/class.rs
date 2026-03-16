@@ -74,13 +74,6 @@ pub fn ClassReference() -> impl IntoView {
                 let description = def.description.clone();
                 let hit_die = format!("d{}", def.hit_die);
 
-                let saving_throws = def
-                    .saving_throws
-                    .iter()
-                    .map(|a| i18n.tr(a.tr_key()))
-                    .collect::<Vec<_>>()
-                    .join(", ");
-
                 let proficiencies = def
                     .proficiencies
                     .iter()
@@ -267,10 +260,6 @@ pub fn ClassReference() -> impl IntoView {
                             <div class="info-item">
                                 <span class="info-label">{move_tr!("ref-hit-die")}</span>
                                 <span class="info-value">{hit_die}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">{move_tr!("panel-saving-throws")}</span>
-                                <span class="info-value">{saving_throws}</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">{move_tr!("proficiencies")}</span>

@@ -2,16 +2,12 @@
   "name": "Entertainer",
   "label": "Артист",
   "description": "Вы провели большую часть юности, следуя за менестрелями, актёрами и другими артистами, и в конце концов освоили их ремесло. Вы расцветаете перед публикой, зная, как захватить, вдохновить и даже шокировать зрителей.",
-  "proficiencies": [
-    0,
-    12
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "CHA += 2; DEX += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; DEX += 1; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Musician",

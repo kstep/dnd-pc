@@ -10,10 +10,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    1
-  ],
   "features": [
     {
       "name": "Favored Enemy",
@@ -321,13 +317,20 @@
       "label": "Убийца врагов",
       "description": "Вы становитесь неумолимым охотником на своих врагов. Один раз в каждый свой ход, когда вы попадаете по существу атакой, вы можете нанести ему дополнительно 1к10 урона силовым полем. Кроме того, каждый раз, когда вы бросаете Инициативу и у вас не осталось использований «Избранного врага», вы восстанавливаете одно использование."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "label": "Владение спасбросками",
+      "description": "Владение спасбросками от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Favored Enemy",
         "Spellcasting (Ranger)",
-        "Weapon Mastery (Ranger)"
+        "Weapon Mastery (Ranger)",
+        "Saving Throw Proficiency"
       ]
     },
     {

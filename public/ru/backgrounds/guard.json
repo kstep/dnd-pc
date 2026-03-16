@@ -2,16 +2,12 @@
   "name": "Guard",
   "label": "Стражник",
   "description": "Вы служили стражником, стоя на дозоре у стен и ворот поселения, зорко высматривая угрозы. Этот опыт научил вас бдительности и ценности физической силы для поддержания порядка.",
-  "proficiencies": [
-    3,
-    11
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "STR += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "STR += 2; WIS += 1; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Alert",

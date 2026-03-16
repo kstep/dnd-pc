@@ -2,16 +2,12 @@
   "name": "Noble",
   "label": "Аристократ",
   "description": "Вы выросли в семье, принадлежащей к социальной элите, привыкнув к власти и привилегиям. Ваше благородное происхождение даёт вам определённое уважение и влияние, а также образование в области истории и придворного этикета.",
-  "proficiencies": [
-    5,
-    13
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "CHA += 2; INT += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CHA += 2; INT += 1; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Skilled",

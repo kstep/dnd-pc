@@ -10,10 +10,6 @@
     4,
     5
   ],
-  "saving_throws": [
-    0,
-    2
-  ],
   "features": [
     {
       "name": "Fighting Style",
@@ -109,13 +105,19 @@
       "name": "Three Extra Attacks",
       "description": "You can attack four times instead of once whenever you take the Attack action on your turn."
     }
+    {
+      "name": "Saving Throw Proficiency",
+      "description": "Saving throw proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+    }
   ],
   "levels": [
     {
       "features": [
         "Fighting Style",
         "Second Wind",
-        "Weapon Mastery (Fighter)"
+        "Weapon Mastery (Fighter)",
+        "Saving Throw Proficiency"
       ]
     },
     {

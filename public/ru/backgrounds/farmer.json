@@ -2,16 +2,12 @@
   "name": "Farmer",
   "label": "Крестьянин",
   "description": "Вы выросли близко к земле, возделывая посевы и ухаживая за скотом. Ритмы природы и тяжёлый труд во время жатвы закалили ваше тело и сформировали практичный взгляд на жизнь.",
-  "proficiencies": [
-    1,
-    10
-  ],
   "features": [
     {
       "name": "Background Abilities",
       "label": "Бонус характеристик",
       "description": "Повышение характеристик от предыстории.",
-      "assign": [{"expr": "CON += 2; WIS += 1", "when": "OnFeatureAdd"}]
+      "assign": [{"expr": "CON += 2; WIS += 1; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1", "when": "OnFeatureAdd"}]
     },
     {
       "name": "Tough",
