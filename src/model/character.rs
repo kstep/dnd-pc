@@ -309,6 +309,7 @@ impl Character {
         self.compute_armor_class();
         self.compute_hp_max();
         self.compute_speed();
+        self.combat.initiative_misc_bonus = 0;
     }
 
     /// Returns (caster_level, caster_class_count) for the given pool in a
@@ -570,6 +571,9 @@ impl expr::Context<Attribute> for Character {
             Attribute::AttackBonus => {
                 self.combat.attack_bonus = value;
             }
+            Attribute::InitiativeBonus => {
+                self.combat.initiative_misc_bonus = value;
+            }
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
@@ -595,6 +599,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Initiative => Ok(self.initiative()),
+            Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),

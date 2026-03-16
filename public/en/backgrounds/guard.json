@@ -13,7 +13,8 @@
     },
     {
       "name": "Alert",
-      "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
+      "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you.",
+      "assign": [{"expr": "INITIATIVE.BONUS += PROF_BONUS", "when": "OnCompute"}]
     }
   ]
 }

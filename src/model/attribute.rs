@@ -32,6 +32,7 @@ pub enum Attribute {
     ProfBonus,
     AttackBonus,
     Initiative,
+    InitiativeBonus,
     Inspiration,
     AbilityAdvantage(Ability),
     SkillAdvantage(Skill),
@@ -131,6 +132,12 @@ impl FromStr for Attribute {
                 }
                 return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
             }
+            if prefix == "INITIATIVE" {
+                return match rest {
+                    "BONUS" => Ok(Self::InitiativeBonus),
+                    _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
+                };
+            }
             if prefix == "ATK" {
                 return match rest {
                     "ADV" => Ok(Self::AttackAdvantage),
@@ -198,6 +205,7 @@ impl fmt::Display for Attribute {
             Self::ProfBonus => f.write_str("PROF_BONUS"),
             Self::AttackBonus => f.write_str("ATK"),
             Self::Initiative => f.write_str("INITIATIVE"),
+            Self::InitiativeBonus => f.write_str("INITIATIVE.BONUS"),
             Self::Inspiration => f.write_str("INSPIRATION"),
             Self::AbilityAdvantage(ability) => write!(f, "{}.ADV", ability_abbr(*ability)),
             Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill_abbr(*skill)),
