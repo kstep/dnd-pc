@@ -156,6 +156,9 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 })
                                 .collect::<Vec<_>>();
 
+                            if items.is_empty() {
+                                return None;
+                            }
                             let style = short.as_ref().map(|s| format!("--points-symbol: '{s}'"));
                             Some(view! {
                                 <div class="summary-subsection" style=style>
