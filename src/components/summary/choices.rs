@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use leptos::{either::EitherOf3, prelude::*};
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::I18n;
 use reactive_stores::Store;
 
@@ -11,7 +11,7 @@ use crate::{
         summary_list::{SummaryList, SummaryListItem},
     },
     model::{Character, CharacterStoreFields, FeatureOption, FeatureValue, Translatable},
-    rules::{ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
+    rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
 
 /// Info extracted from the registry for a single Choice field.
@@ -21,6 +21,71 @@ struct ChoiceFieldInfo {
     cost: Option<String>,
     /// Definition options that have `action` set (action menu items).
     action_options: Vec<ChoiceOption>,
+}
+
+/// Build a choice/action subsection from an iterator of items.
+fn choice_items_view(
+    items: impl Iterator<Item = (String, String, u32, Option<ActionType>)>,
+    points: u32,
+    spend_cost: Option<Callback<u32>>,
+    short: Option<String>,
+    label: String,
+    i18n: &I18n,
+) -> Option<AnyView> {
+    let items: Vec<_> = items
+        .filter(|(_, _, cost, _)| *cost <= points)
+        .map(|(name, description, cost, action)| {
+            let action_icon = action.map(|a| {
+                let title = i18n.tr(a.tr_key());
+                view! {
+                    <Icon name=a.icon_name() size=14 title=title />
+                }
+            });
+
+            let cost_badge = (cost > 0).then(|| {
+                view! {
+                    <span class="summary-choice-cost">{cost}</span>
+                    {spend_cost.map(|cb| view! {
+                        <CastButton
+                            on_cast={Callback::new(move |_: CastOption| {
+                                cb.run(cost);
+                            })}
+                        />
+                    })}
+                }
+            });
+
+            SummaryListItem {
+                name,
+                description,
+                badge: if action_icon.is_some() || cost_badge.is_some() {
+                    Some(
+                        view! {
+                            {action_icon}
+                            {cost_badge}
+                        }
+                        .into_any(),
+                    )
+                } else {
+                    None
+                },
+            }
+        })
+        .collect();
+
+    if items.is_empty() {
+        return None;
+    }
+    let style = short.map(|s| format!("--points-symbol: '{s}'"));
+    Some(
+        view! {
+            <div class="summary-subsection" style=style>
+                <h4 class="summary-subsection-title">{label}</h4>
+                <SummaryList items=items />
+            </div>
+        }
+        .into_any(),
+    )
 }
 
 #[component]
@@ -90,181 +155,139 @@ pub fn ChoicesBlock() -> impl IntoView {
 
                 let feat_name = feat_name.clone();
                 let id = &id;
-                Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
-                    let info = fields.get(&field.name)?;
-                    let short = info.cost.as_deref().and_then(|c| registry.get_points_short(id, c));
-                    let cost_field = info.cost.as_ref().map(|c| StoredValue::new(c.clone()));
-                    let feat_name = feat_name.clone();
-                    let points = info.points;
+                Some(entry.fields.iter().enumerate().filter_map(
+                    move |(field_index, field)| {
+                        let info = fields.get(&field.name)?;
+                        let short =
+                            info.cost.as_deref().and_then(|c| registry.get_points_short(id, c));
+                        let points = info.points;
 
-                    let FeatureValue::Choice { options } = &field.value else {
-                        return None;
-                    };
+                        let spend_cost =
+                            info.cost.as_ref().map(|c| StoredValue::new(c.clone())).map(
+                                |cfn| {
+                                    Callback::new(move |opt_cost: u32| {
+                                        cfn.with_value(|cost_name| {
+                                            feature_data.update(|map| {
+                                                for entry in map.values_mut() {
+                                                    if let Some(field) = entry
+                                                        .fields
+                                                        .iter_mut()
+                                                        .find(|f| f.name == *cost_name)
+                                                        && let FeatureValue::Points { used, max } =
+                                                            &mut field.value
+                                                    {
+                                                        *used = (*used + opt_cost).min(*max);
+                                                        break;
+                                                    }
+                                                }
+                                            });
+                                        });
+                                    })
+                                },
+                            );
 
-                    Some(match &info.from {
-                        // Action menu: definition options with action types, no stored options
-                        None if options.is_empty() && !info.action_options.is_empty() => EitherOf3::A({
-                            let items = info.action_options
-                                .iter()
-                                .filter(|opt| opt.cost <= points)
-                                .map(|opt| {
-                                    let opt_cost = opt.cost;
-                                    let action_icon = opt.action.map(|a| {
-                                        let title = i18n.tr(a.tr_key());
+                        let FeatureValue::Choice { options } = &field.value else {
+                            return None;
+                        };
+
+                        Some(match &info.from {
+                            // Action menu: definition options with action types
+                            None if options.is_empty() && !info.action_options.is_empty() => {
+                                Either::Left(choice_items_view(
+                                    info.action_options.iter().map(|opt| {
+                                        (
+                                            opt.label().to_string(),
+                                            opt.description.clone(),
+                                            opt.cost,
+                                            opt.action,
+                                        )
+                                    }),
+                                    points,
+                                    spend_cost,
+                                    short,
+                                    field.label().to_string(),
+                                    &i18n,
+                                ))
+                            }
+                            // Regular stored choices
+                            None => Either::Left(choice_items_view(
+                                options.iter().map(|opt| {
+                                    (
+                                        opt.label().to_string(),
+                                        opt.description.clone(),
+                                        opt.cost,
+                                        None,
+                                    )
+                                }),
+                                points,
+                                spend_cost,
+                                short,
+                                field.label().to_string(),
+                                &i18n,
+                            )),
+                            // Ref-based choices (dropdown selects)
+                            Some(from) => Either::Right({
+                                let from_field =
+                                    entry.fields.iter().find(|field| &field.name == from)?;
+                                let FeatureValue::Choice { options: from_options } =
+                                    &from_field.value
+                                else {
+                                    return None;
+                                };
+                                let from_options = StoredValue::new(from_options.clone());
+                                let feat_name = feat_name.clone();
+                                let feat_name = StoredValue::new(feat_name);
+
+                                let choice_entry_factory =
+                                    move |(index, current): (usize, &FeatureOption)| {
+                                        let current_name = current.name.clone();
                                         view! {
-                                            <Icon name=a.icon_name() size=14 title=title />
-                                        }
-                                    });
-
-                                    let cost_badge = (opt.cost > 0).then(|| {
-                                        view! {
-                                            <span class="summary-choice-cost">{opt.cost}</span>
-                                            {cost_field.map(|cfn| view! {
-                                                <CastButton
-                                                    on_cast={Callback::new(move |_: CastOption| {
-                                                        cfn.with_value(|cost_name| {
-                                                            feature_data.update(|map| {
-                                                                for entry in map.values_mut() {
-                                                                    if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                        && let FeatureValue::Points { used, max } = &mut field.value
-                                                                    {
-                                                                        *used = (*used + opt_cost).min(*max);
-                                                                        break;
-                                                                    }
+                                            <div class="choice-entry">
+                                                <select on:change={move |event| {
+                                                    let value = event_target_value(&event);
+                                                    from_options.with_value(|opts| {
+                                                        let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
+                                                            return;
+                                                        };
+                                                        feat_name.with_value(|name| {
+                                                            feature_data.update(|features| {
+                                                                if let Some(entry) = features.get_mut(name)
+                                                                    && let Some(field) = entry.fields.get_mut(field_index)
+                                                                    && let FeatureValue::Choice { options } = &mut field.value
+                                                                    && let Some(option) = options.get_mut(index)
+                                                                {
+                                                                    option.clone_from(selected_option);
                                                                 }
                                                             });
                                                         });
-                                                    })}
-                                                />
-                                            })}
-                                        }
-                                    });
-
-                                    SummaryListItem {
-                                        name: opt.label().to_string(),
-                                        description: opt.description.clone(),
-                                        badge: Some(view! {
-                                            {action_icon}
-                                            {cost_badge}
-                                        }.into_any()),
-                                    }
-                                })
-                                .collect::<Vec<_>>();
-
-                            if items.is_empty() {
-                                return None;
-                            }
-                            let style = short.as_ref().map(|s| format!("--points-symbol: '{s}'"));
-                            Some(view! {
-                                <div class="summary-subsection" style=style>
-                                    <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
-                                    <SummaryList items=items />
-                                </div>
-                            })
-                        }),
-                        // Regular stored choices (non-ref)
-                        None => EitherOf3::B({
-                            let selected = options
-                                .iter()
-                                .filter(|opt| opt.cost <= points)
-                                .map(|opt| {
-                                    let opt_cost = opt.cost;
-                                    SummaryListItem {
-                                        name: opt.label().to_string(),
-                                        description: opt.description.clone(),
-                                        badge: (opt.cost > 0).then(|| {
-                                            view! {
-                                                <span class="summary-choice-cost">{opt.cost}</span>
-                                                {cost_field.map(|cfn| view! {
-                                                    <CastButton
-                                                        on_cast={Callback::new(move |_: CastOption| {
-                                                            cfn.with_value(|cost_name| {
-                                                                feature_data.update(|map| {
-                                                                    for entry in map.values_mut() {
-                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                            && let FeatureValue::Points { used, max } = &mut field.value
-                                                                        {
-                                                                            *used = (*used + opt_cost).min(*max);
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                });
-                                                            });
-                                                        })}
-                                                    />
-                                                })}
-                                            }
-                                            .into_any()
-                                        }),
-                                    }
-                                })
-                                .collect::<Vec<_>>();
-                            if selected.is_empty() {
-                                return None;
-                            }
-
-                            let style = short.as_ref().map(|s| format!("--points-symbol: '{s}'"));
-                            Some(view! {
-                                <div class="summary-subsection" style=style>
-                                    <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
-                                    <SummaryList items=selected />
-                                </div>
-                            })
-                        }),
-                        // Ref-based choices (dropdown selects)
-                        Some(from) => EitherOf3::C({
-                            let from_field = entry.fields.iter().find(|field| &field.name == from)?;
-                            let FeatureValue::Choice { options: from_options } = &from_field.value else {
-                                return None;
-                            };
-                            let from_options = StoredValue::new(from_options.clone());
-                            let feat_name = StoredValue::new(feat_name.to_string());
-
-                            let choice_entry_factory = move |(index, current): (usize, &FeatureOption)| {
-                                let current_name = current.name.clone();
-                                view! {
-                                    <div class="choice-entry">
-                                        <select on:change={move |event| {
-                                            let value = event_target_value(&event);
-                                            from_options.with_value(|opts| {
-                                                let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
-                                                    return;
-                                                };
-                                                feat_name.with_value(|name| {
-                                                    feature_data.update(|features| {
-                                                        if let Some(entry) = features.get_mut(name)
-                                                            && let Some(field) = entry.fields.get_mut(field_index)
-                                                            && let FeatureValue::Choice { options } = &mut field.value
-                                                            && let Some(option) = options.get_mut(index)
-                                                        {
-                                                            option.clone_from(selected_option);
-                                                        }
                                                     });
-                                                });
-                                            });
-                                        }}>
-                                            <option value="">""</option>
-                                            {from_options.with_value(|opts| opts.iter().map(|opt| {
-                                                view! {
-                                                    <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
-                                                }
-                                            }).collect_view())}
-                                        </select>
-                                    </div>
-                                }
-                            };
+                                                }}>
+                                                    <option value="">""</option>
+                                                    {from_options.with_value(|opts| opts.iter().map(|opt| {
+                                                        view! {
+                                                            <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
+                                                        }
+                                                    }).collect_view())}
+                                                </select>
+                                            </div>
+                                        }
+                                    };
 
-                            view! {
-                                <div class="summary-subsection">
-                                    <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
-                                    <div class="choice-list">
-                                        {options.iter().enumerate().map(choice_entry_factory).collect_view()}
-                                    </div>
-                                </div>
-                            }
+                                Some(
+                                    view! {
+                                        <div class="summary-subsection">
+                                            <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
+                                            <div class="choice-list">
+                                                {options.iter().enumerate().map(choice_entry_factory).collect_view()}
+                                            </div>
+                                        </div>
+                                    }
+                                    .into_any(),
+                                )
+                            }),
                         })
-                    })
-                }))
+                    },
+                ))
             })
             .flatten()
             .collect_view()
