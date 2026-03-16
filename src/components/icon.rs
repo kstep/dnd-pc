@@ -10,11 +10,11 @@ pub fn Icon(
 ) -> impl IntoView {
     let href = move || format!("{BASE_URL}/icons.svg#icon-{}", name.get());
     let aria_hidden = title.is_none();
-    let title_attr = title.clone();
     view! {
-        <svg class="icon" width=size height=size attr:aria-hidden=aria_hidden title=title_attr>
-            {title.map(|t| view! { <title>{t}</title> })}
-            <use href=href />
-        </svg>
+        <span class="icon-wrapper" title=title>
+            <svg class="icon" width=size height=size attr:aria-hidden=aria_hidden>
+                <use href=href />
+            </svg>
+        </span>
     }
 }
