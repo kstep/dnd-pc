@@ -109,7 +109,6 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 .filter(|opt| opt.cost <= points)
                                 .map(|opt| {
                                     let opt_cost = opt.cost;
-                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= points;
                                     let action_icon = opt.action.map(|a| {
                                         let title = i18n.tr(a.tr_key());
                                         view! {
@@ -117,41 +116,37 @@ pub fn ChoicesBlock() -> impl IntoView {
                                         }
                                     });
 
-                                    let badge = {
-                                        let cost_badge = (opt.cost > 0).then(|| {
-                                            view! {
-                                                <span class="summary-choice-cost">{opt.cost}</span>
-                                                {cost_field.map(|cfn| view! {
-                                                    <CastButton
-                                                        disabled=!can_cast
-                                                        on_cast={Callback::new(move |_: CastOption| {
-                                                            cfn.with_value(|cost_name| {
-                                                                feature_data.update(|map| {
-                                                                    for entry in map.values_mut() {
-                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                            && let FeatureValue::Points { used, max } = &mut field.value
-                                                                        {
-                                                                            *used = (*used + opt_cost).min(*max);
-                                                                            break;
-                                                                        }
+                                    let cost_badge = (opt.cost > 0).then(|| {
+                                        view! {
+                                            <span class="summary-choice-cost">{opt.cost}</span>
+                                            {cost_field.map(|cfn| view! {
+                                                <CastButton
+                                                    on_cast={Callback::new(move |_: CastOption| {
+                                                        cfn.with_value(|cost_name| {
+                                                            feature_data.update(|map| {
+                                                                for entry in map.values_mut() {
+                                                                    if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                        && let FeatureValue::Points { used, max } = &mut field.value
+                                                                    {
+                                                                        *used = (*used + opt_cost).min(*max);
+                                                                        break;
                                                                     }
-                                                                });
+                                                                }
                                                             });
-                                                        })}
-                                                    />
-                                                })}
-                                            }
-                                        });
-                                        Some(view! {
-                                            {action_icon}
-                                            {cost_badge}
-                                        }.into_any())
-                                    };
+                                                        });
+                                                    })}
+                                                />
+                                            })}
+                                        }
+                                    });
 
                                     SummaryListItem {
                                         name: opt.label().to_string(),
                                         description: opt.description.clone(),
-                                        badge,
+                                        badge: Some(view! {
+                                            {action_icon}
+                                            {cost_badge}
+                                        }.into_any()),
                                     }
                                 })
                                 .collect::<Vec<_>>();
@@ -174,7 +169,6 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 .filter(|opt| opt.cost <= points)
                                 .map(|opt| {
                                     let opt_cost = opt.cost;
-                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= points;
                                     SummaryListItem {
                                         name: opt.label().to_string(),
                                         description: opt.description.clone(),
@@ -183,7 +177,6 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 <span class="summary-choice-cost">{opt.cost}</span>
                                                 {cost_field.map(|cfn| view! {
                                                     <CastButton
-                                                        disabled=!can_cast
                                                         on_cast={Callback::new(move |_: CastOption| {
                                                             cfn.with_value(|cost_name| {
                                                                 feature_data.update(|map| {
