@@ -232,18 +232,12 @@ pub fn CombatPanel() -> impl IntoView {
                 <button
                     class="btn-rest"
                     on:click=move |_| {
-                        store.update(|ch| registry.short_rest(ch));
+                        store.update(|ch| ch.long_rest());
                     }
                 >
-                    {move_tr!("short-rest")}
-                </button>
-                <button
-                    class="btn-rest"
-                    on:click=move |_| {
-                        store.update(|ch| registry.long_rest(ch));
-                    }
-                >
-                    {move_tr!("long-rest")}
+                    <Icon name="list-restart" size=14 />
+                    " "
+                    {move_tr!("reset-stats")}
                 </button>
                 <button
                     class="btn-rest"

@@ -76,6 +76,7 @@ successes = Successes
 failures = Failures
 short-rest = Short Rest
 long-rest = Long Rest
+reset-stats = Reset
 
 ## Spellcasting panel
 casting-ability = Casting Ability

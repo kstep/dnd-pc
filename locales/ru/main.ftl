@@ -76,6 +76,7 @@ successes = Успехи
 failures = Провалы
 short-rest = Короткий отдых
 long-rest = Длинный отдых
+reset-stats = Сброс
 
 ## Панель заклинаний
 casting-ability = Заклинательная хар-ка

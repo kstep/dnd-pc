@@ -502,7 +502,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 <button class="btn-add" title=move_tr!("export-json") on:click=on_export><Icon name="download" size=18 /></button>
                 <button class="btn-add" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
                 <button class="btn-add" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
-                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="refresh-cw" size=18 /></button>
+                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="book-up" size=18 /></button>
                 <button
                     class="btn-add btn-danger"
                     title=move_tr!("reset-character")
