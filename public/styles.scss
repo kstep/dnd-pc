@@ -2546,6 +2546,16 @@ input.summary-item-expr {
   }
 }
 
+.feature-assignments {
+  border-left: 3px solid var(--accent);
+  padding: var(--size-1) var(--size-2);
+  margin: var(--size-1) 0;
+  background: var(--panel-bg);
+  border-radius: 0 var(--radius-1) var(--radius-1) 0;
+  font-size: var(--font-size-1);
+  color: var(--text-secondary);
+}
+
 .reference-features {
   display: flex;
   flex-direction: column;

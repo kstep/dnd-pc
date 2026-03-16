@@ -22,7 +22,10 @@
           }
         ],
         "caster_coef": 1
-      }
+      },
+      "fields": [
+        {"name": "Free Uses", "kind": "FreeUses", "levels": {"1": 1}}
+      ]
     }
   ]
 }

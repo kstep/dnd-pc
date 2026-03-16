@@ -5,7 +5,19 @@
   "features": [
     {
       "name": "Bardic Inspiration",
-      "description": "You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6. Using Bardic Inspiration: As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time. The creature can use the die within the next hour when the creature fails a D20 Test, adding the number rolled to the d20, potentially turning the failure into a success. The Bardic Inspiration die is lost if not used before the hour ends. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+      "description": "You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6. Using Bardic Inspiration: As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time. The creature can use the die within the next hour when the creature fails a D20 Test, adding the number rolled to the d20, potentially turning the failure into a success. The Bardic Inspiration die is lost if not used before the hour ends. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.",
+      "fields": [
+        {
+          "name": "Bardic Inspiration",
+          "kind": "Die",
+          "levels": {
+            "1": {"sides": 6, "amount": "max(1, CHA.MOD)"},
+            "5": {"sides": 8, "amount": "max(1, CHA.MOD)"},
+            "9": {"sides": 10, "amount": "max(1, CHA.MOD)"},
+            "13": {"sides": 12, "amount": "max(1, CHA.MOD)"}
+          }
+        }
+      ]
     },
     {
       "name": "Spellcasting (Bard)",

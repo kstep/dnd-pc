@@ -1,11 +1,11 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt};
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer, de};
 
 use super::spells::SpellsDefinition;
 use crate::{
     demap::{self, Named},
-    expr::Expr,
+    expr::{self, Expr},
     model::{
         Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
         FeatureValue,
@@ -13,6 +13,95 @@ use crate::{
     rules::utils::get_for_level,
     vecset::VecSet,
 };
+
+/// A field value that is either a static number or an expression evaluated
+/// against the character (e.g. `"max(1, CHA.MOD)"` for Bardic Inspiration
+/// uses).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum ValueOrExpr {
+    Value(u32),
+    Expr(Expr<Attribute>),
+}
+
+impl Default for ValueOrExpr {
+    fn default() -> Self {
+        Self::Value(0)
+    }
+}
+
+impl ValueOrExpr {
+    pub fn eval(&self, ctx: &impl expr::Context<Attribute>) -> u32 {
+        match self {
+            Self::Value(v) => *v,
+            Self::Expr(expr) => expr.eval(ctx).unwrap_or(0).max(0) as u32,
+        }
+    }
+}
+
+/// A die pool definition that accepts either a static die string (`"2d6"`)
+/// or an object with expression-based amount (`{"sides": 6, "amount":
+/// "CHA.MOD"}`).
+#[derive(Debug, Clone)]
+pub struct DieOrExpr {
+    pub sides: u32,
+    pub amount: ValueOrExpr,
+}
+
+impl Default for DieOrExpr {
+    fn default() -> Self {
+        Self {
+            sides: 0,
+            amount: ValueOrExpr::Value(0),
+        }
+    }
+}
+
+impl DieOrExpr {
+    pub fn eval(&self, ctx: &impl expr::Context<Attribute>) -> Die {
+        Die {
+            amount: self.amount.eval(ctx),
+            sides: self.sides,
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for DieOrExpr {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct DieOrExprVisitor;
+
+        impl<'de> de::Visitor<'de> for DieOrExprVisitor {
+            type Value = DieOrExpr;
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("a die string like \"2d6\" or an object {sides, amount}")
+            }
+
+            fn visit_str<E: de::Error>(self, s: &str) -> Result<DieOrExpr, E> {
+                let die: Die = s.parse().map_err(de::Error::custom)?;
+                Ok(DieOrExpr {
+                    sides: die.sides,
+                    amount: ValueOrExpr::Value(die.amount),
+                })
+            }
+
+            fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<DieOrExpr, A::Error> {
+                #[derive(Deserialize)]
+                struct Fields {
+                    sides: u32,
+                    amount: ValueOrExpr,
+                }
+                let f = Fields::deserialize(de::value::MapAccessDeserializer::new(map))?;
+                Ok(DieOrExpr {
+                    sides: f.sides,
+                    amount: f.amount,
+                })
+            }
+        }
+
+        deserializer.deserialize_any(DieOrExprVisitor)
+    }
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct FeatureDefinition {
@@ -193,13 +282,14 @@ impl FeatureDefinition {
             return;
         }
 
-        let entry = character.feature_data.entry(self.name.clone()).or_default();
-        if entry.source.is_none() {
-            entry.source = Some(source.clone());
-        }
-        let fields = &mut entry.fields;
-        if fields.is_empty() {
-            *fields = self
+        let is_new = character
+            .feature_data
+            .get(&self.name)
+            .is_none_or(|e| e.fields.is_empty());
+
+        if is_new {
+            // Pre-compute values before mutating feature_data
+            let new_fields: Vec<_> = self
                 .fields
                 .values()
                 .filter(|field_def| !matches!(field_def.kind, FieldKind::FreeUses { .. }))
@@ -207,15 +297,45 @@ impl FeatureDefinition {
                     name: field_def.name.clone(),
                     label: field_def.label.clone(),
                     description: field_def.description.clone(),
-                    value: field_def.kind.to_value(level),
+                    value: field_def.kind.to_value(level, character),
                 })
                 .collect();
+            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            if entry.source.is_none() {
+                entry.source = Some(source.clone());
+            }
+            entry.fields = new_fields;
         } else {
-            for field in fields.iter_mut() {
+            // Pre-compute expression-based values (needs &character before mutation)
+            let evaluated: Vec<_> = character
+                .feature_data
+                .get(&self.name)
+                .into_iter()
+                .flat_map(|e| e.fields.iter())
+                .filter_map(|field| {
+                    let def = self.fields.get(field.name.as_str())?;
+                    match &def.kind {
+                        FieldKind::Points { .. } | FieldKind::Die { .. } => {
+                            Some((field.name.clone(), def.kind.to_value(level, character)))
+                        }
+                        _ => None,
+                    }
+                })
+                .collect();
+
+            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            if entry.source.is_none() {
+                entry.source = Some(source.clone());
+            }
+            for field in entry.fields.iter_mut() {
                 if let Some(def) = self.fields.get(field.name.as_str()) {
                     match (&def.kind, &mut field.value) {
-                        (FieldKind::Die { levels }, FeatureValue::Die { die, .. }) => {
-                            *die = get_for_level(levels, level);
+                        (FieldKind::Die { .. }, FeatureValue::Die { die, .. }) => {
+                            if let Some((_, FeatureValue::Die { die: new_die, .. })) =
+                                evaluated.iter().find(|(n, _)| n == &field.name)
+                            {
+                                *die = *new_die;
+                            }
                         }
                         (FieldKind::Choice { levels, .. }, FeatureValue::Choice { options }) => {
                             let new_len = get_for_level(levels, level) as usize;
@@ -226,8 +346,12 @@ impl FeatureDefinition {
                         (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
                             *b = get_for_level(levels, level);
                         }
-                        (FieldKind::Points { levels, .. }, FeatureValue::Points { max, .. }) => {
-                            *max = get_for_level(levels, level);
+                        (FieldKind::Points { .. }, FeatureValue::Points { max, .. }) => {
+                            if let Some((_, FeatureValue::Points { max: new_max, .. })) =
+                                evaluated.iter().find(|(n, _)| n == &field.name)
+                            {
+                                *max = *new_max;
+                            }
                         }
                         _ => {}
                     }
@@ -299,7 +423,7 @@ pub enum FieldKind {
         #[serde(default)]
         short: Option<String>,
         #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, u32>,
+        levels: BTreeMap<u32, ValueOrExpr>,
     },
     Choice {
         #[serde(default)]
@@ -311,7 +435,7 @@ pub enum FieldKind {
     },
     Die {
         #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, Die>,
+        levels: BTreeMap<u32, DieOrExpr>,
     },
     Bonus {
         #[serde(default, deserialize_with = "demap::u32_key_map")]
@@ -324,10 +448,10 @@ pub enum FieldKind {
 }
 
 impl FieldKind {
-    pub fn to_value(&self, level: u32) -> FeatureValue {
+    pub fn to_value(&self, level: u32, character: &Character) -> FeatureValue {
         match self {
             Self::Die { levels } => FeatureValue::Die {
-                die: get_for_level(levels, level),
+                die: get_for_level(levels, level).eval(character),
                 used: 0,
             },
             Self::Choice { levels, .. } => FeatureValue::Choice {
@@ -336,11 +460,29 @@ impl FieldKind {
             Self::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
             Self::Points { levels, .. } => FeatureValue::Points {
                 used: 0,
-                max: get_for_level(levels, level),
+                max: get_for_level(levels, level).eval(character),
             },
             Self::FreeUses { .. } => {
                 unreachable!("FreeUses fields are not converted to FeatureValue")
             }
+        }
+    }
+
+    /// Re-evaluate dynamic field values (expressions that depend on
+    /// character state like CHA.MOD). Returns a new `FeatureValue` if the
+    /// field has expression-based values that need updating.
+    pub fn recompute_dynamic(&self, level: u32, character: &Character) -> Option<FeatureValue> {
+        match self {
+            Self::Points { levels, .. } => {
+                let value = get_for_level(levels, level);
+                matches!(value, ValueOrExpr::Expr(_)).then(|| self.to_value(level, character))
+            }
+            Self::Die { levels } => {
+                let value = get_for_level(levels, level);
+                matches!(value.amount, ValueOrExpr::Expr(_))
+                    .then(|| self.to_value(level, character))
+            }
+            _ => None,
         }
     }
 }

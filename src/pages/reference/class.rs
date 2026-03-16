@@ -6,8 +6,8 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    model::{Die, Translatable, format_bonus},
-    rules::{DefinitionStore, FieldKind, RulesRegistry, get_for_level},
+    model::{Die, Translatable, format_bonus, proficiency_bonus_for_level},
+    rules::{DefinitionStore, DieOrExpr, FieldKind, RulesRegistry, ValueOrExpr, get_for_level},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -111,7 +111,7 @@ pub fn ClassReference() -> impl IntoView {
                 // Build progression table rows
                 let table_rows: Vec<_> = (1..=20u32)
                     .map(|level| {
-                        let prof_bonus = (level as i32 - 1) / 4 + 2;
+                        let prof_bonus = proficiency_bonus_for_level(level);
 
                         let mut features: Vec<(String, String)> = Vec::new();
                         if let Some(rules) = def.levels.get(level as usize - 1) {
@@ -149,19 +149,23 @@ pub fn ClassReference() -> impl IntoView {
                             .iter()
                             .map(|fc| match fc.kind {
                                 FieldKind::Points { levels, .. } => {
-                                    let v: u32 = get_for_level(levels, level);
-                                    if v > 0 {
-                                        v.to_string()
-                                    } else {
-                                        "\u{2014}".into()
+                                    let v = get_for_level(levels, level);
+                                    match v {
+                                        ValueOrExpr::Value(n) if n > 0 => n.to_string(),
+                                        ValueOrExpr::Expr(expr) => expr.to_string(),
+                                        _ => "\u{2014}".into(),
                                     }
                                 }
                                 FieldKind::Die { levels } => {
-                                    let v: Die = get_for_level(levels, level);
-                                    if v.amount == 0 {
-                                        "\u{2014}".into()
-                                    } else {
-                                        v.to_string()
+                                    let de: DieOrExpr = get_for_level(levels, level);
+                                    match &de.amount {
+                                        ValueOrExpr::Value(0) => "\u{2014}".into(),
+                                        ValueOrExpr::Value(n) => {
+                                            Die { amount: *n, sides: de.sides }.to_string()
+                                        }
+                                        ValueOrExpr::Expr(expr) => {
+                                            format!("({})d{}", expr, de.sides)
+                                        }
                                     }
                                 }
                                 FieldKind::Choice { levels, .. } => {

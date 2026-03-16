@@ -270,7 +270,12 @@
     {
       "name": "Class Proficiencies",
       "description": "Saving throw and equipment proficiencies granted by this class.",
-      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
+      "assign": [
+        {
+          "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
     }
   ],
   "levels": [
@@ -368,70 +373,6 @@
   ],
   "subclasses": [
     {
-      "name": "School of Abjuration",
-      "description": "The School of Abjuration emphasizes magic that blocks, banishes, or protects. Detractors of this school say that its tradition is about denial, negation rather than positive assertion.",
-      "features": [
-        {
-          "name": "School of Abjuration",
-          "description": "The School of Abjuration emphasizes magic that blocks, banishes, or protects. Detractors of this school say that its tradition is about denial, negation rather than positive assertion. You understand, however, that ending harmful effects, protecting the weak, and banishing evil influences is anything but a philosophical void. It is a proud and respected vocation."
-        },
-        {
-          "name": "Abjuration Savant",
-          "description": "The gold and time you must spend to copy an abjuration spell into your spellbook is halved."
-        },
-        {
-          "name": "Arcane Ward",
-          "description": "You can weave magic around yourself for protection. When you cast an abjuration spell of 1st level or higher, you can simultaneously use a strand of the spell's magic to create a magical ward on yourself that lasts until you finish a long rest. The ward has a hit point maximum equal to twice your wizard level + your Intelligence modifier."
-        },
-        {
-          "name": "Projected Ward",
-          "description": "When a creature that you can see within 30 feet of you takes damage, you can use your reaction to cause your Arcane Ward to absorb that damage. If this damage reduces the ward to 0 hit points, the warded creature takes any remaining damage."
-        },
-        {
-          "name": "Improved Abjuration",
-          "description": "When you cast an abjuration spell that requires you to make an ability check as a part of casting that spell (as in counterspell and dispel magic), you add your proficiency bonus to that ability check."
-        },
-        {
-          "name": "Spell Resistance",
-          "description": "You have advantage on saving throws against spells. Furthermore, you have resistance against the damage of spells."
-        }
-      ],
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "School of Abjuration",
-            "Abjuration Savant",
-            "Arcane Ward"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "School of Abjuration"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Projected Ward"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "Improved Abjuration"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Spell Resistance"
-          ]
-        }
-      }
-    },
-    {
       "name": "School of Conjuration",
       "description": "As a conjurer, you favor spells that produce objects and creatures out of thin air. You can conjure billowing clouds of killing fog or summon creatures from elsewhere to fight on your behalf.",
       "features": [
@@ -496,70 +437,6 @@
       }
     },
     {
-      "name": "School of Divination",
-      "description": "The counsel of a diviner is sought by royalty and commoners alike, for all seek a clearer understanding of the past, present, and future. As a diviner, you strive to part the veils of space, time, and consciousness so that you can see clearly.",
-      "features": [
-        {
-          "name": "School of Divination",
-          "description": "The counsel of a diviner is sought by royalty and commoners alike, for all seek a clearer understanding of the past, present, and future. As a diviner, you strive to part the veils of space, time, and consciousness so that you can see clearly. You work to master spells of discernment, remote viewing, supernatural knowledge, and foresight."
-        },
-        {
-          "name": "Divination Savant",
-          "description": "The gold and time you must spend to copy a divination spell into your spellbook is halved."
-        },
-        {
-          "name": "Portent",
-          "description": "When you choose this school, glimpses of the future begin to press in on your awareness. When you finish a long rest, roll two d20s and record the numbers rolled. You can replace any attack roll, saving throw, or ability check made by you or a creature that you can see with one of these foretelling rolls."
-        },
-        {
-          "name": "Expert Divination",
-          "description": "Casting divination spells comes so easily to you that it expends only a fraction of your spellcasting efforts. When you cast a divination spell of 2nd level or higher using a spell slot, you regain one expended spell slot. The slot you regain must be of a level lower than the spell you cast and can't be higher than 5th level."
-        },
-        {
-          "name": "The Third Eye",
-          "description": "You can use your action to increase your powers of perception. When you do so, choose one of the following benefits, which lasts until you are incapacitated or you take a short or long rest. You can't use the feature again until you finish a rest."
-        },
-        {
-          "name": "Greater Portent",
-          "description": "The visions in your dreams intensify and paint a more accurate picture in your mind of what is to come. You roll three d20s for your Portent feature, rather than two."
-        }
-      ],
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "School of Divination",
-            "Divination Savant",
-            "Portent"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "School of Divination"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Expert Divination"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "The Third Eye"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Greater Portent"
-          ]
-        }
-      }
-    },
-    {
       "name": "School of Enchantment",
       "description": "As a member of the School of Enchantment, you have honed your ability to magically entrance and beguile other people and monsters. Some enchanters are peacemakers who bewitch the violent to lay down their arms and charm the cruel into showing mercy.",
       "features": [
@@ -619,134 +496,6 @@
           "level": 14,
           "features": [
             "Alter Memories"
-          ]
-        }
-      }
-    },
-    {
-      "name": "School of Evocation",
-      "description": "You focus your study on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some evokers find employment in military forces, serving as artillery to blast enemy armies from afar.",
-      "features": [
-        {
-          "name": "School of Evocation",
-          "description": "You focus your study on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some evokers find employment in military forces, serving as artillery to blast enemy armies from afar. Others use their spectacular power to protect the weak, while some seek their own gain as bandits, adventurers, or aspiring tyrants."
-        },
-        {
-          "name": "Evocation Savant",
-          "description": "The gold and time you must spend to copy an evocation spell into your spellbook is halved."
-        },
-        {
-          "name": "Sculpt Spells",
-          "description": "You can create pockets of relative safety within the effects of your evocation spells. When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell's level."
-        },
-        {
-          "name": "Potent Cantrip",
-          "description": "Your damaging cantrips affect even creatures that avoid the brunt of the effect. When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip's damage (if any) but suffers no additional effect from the cantrip."
-        },
-        {
-          "name": "Empowered Evocation",
-          "description": "You can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast."
-        },
-        {
-          "name": "Overchannel",
-          "description": "You can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th-level that deals damage, you can deal maximum damage with that spell. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it."
-        }
-      ],
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "School of Evocation",
-            "Evocation Savant",
-            "Sculpt Spells"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "School of Evocation"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Potent Cantrip"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "Empowered Evocation"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Overchannel"
-          ]
-        }
-      }
-    },
-    {
-      "name": "School of Illusion",
-      "description": "You focus your studies on magic that dazzles the senses, befuddles the mind, and tricks even the wisest folk. Your magic is subtle, but the illusions crafted by your keen mind make the impossible seem real.",
-      "features": [
-        {
-          "name": "School of Illusion",
-          "description": "You focus your studies on magic that dazzles the senses, befuddles the mind, and tricks even the wisest folk. Your magic is subtle, but the illusions crafted by your keen mind make the impossible seem real. Some illusionists—including many gnome wizards—are benign tricksters who use their spells to entertain."
-        },
-        {
-          "name": "Illusion Savant",
-          "description": "The gold and time you must spend to copy an illusion spell into your spellbook is halved."
-        },
-        {
-          "name": "Improved Minor Illusion",
-          "description": "You learn the minor illusion cantrip. If you already know this cantrip, you learn a different wizard cantrip of your choice. The cantrip doesn't count against your number of cantrips known. When you cast minor illusion, you can create both a sound and an image with a single casting of the spell."
-        },
-        {
-          "name": "Malleable Illusions",
-          "description": "When you cast an illusion spell that has a duration of 1 minute or longer, you can use your action to change the nature of that illusion (using the spell's normal parameters for the illusion), provided that you can see the illusion."
-        },
-        {
-          "name": "Illusory Self",
-          "description": "You can create an illusory duplicate of yourself as an instant, almost instinctual reaction to danger. When a creature makes an attack roll against you, you can use your reaction to interpose the illusory duplicate between the attacker and yourself. The attack automatically misses you, then the illusion dissipates."
-        },
-        {
-          "name": "Illusory Reality",
-          "description": "By 14th level, you have learned the secret of weaving shadow magic into your illusions to give them a semi-reality. When you cast an illusion spell of 1st level or higher, you can choose one inanimate, nonmagical object that is part of the illusion and make that object real. You can do this on your turn as a bonus action while the spell is ongoing. The object remains real for 1 minute."
-        }
-      ],
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "School of Illusion",
-            "Illusion Savant",
-            "Improved Minor Illusion"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "School of Illusion"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Malleable Illusions"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "Illusory Self"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Illusory Reality"
           ]
         }
       }
@@ -894,7 +643,12 @@
         {
           "name": "Tactical Wit",
           "description": "Your keen ability to assess tactical situations allows you to act quickly in battle. You can give yourself a bonus to your initiative rolls equal to your Intelligence modifier.",
-          "assign": [{"expr": "INITIATIVE.BONUS += INT.MOD", "when": "OnCompute"}]
+          "assign": [
+            {
+              "expr": "INITIATIVE.BONUS += INT.MOD",
+              "when": "OnCompute"
+            }
+          ]
         },
         {
           "name": "Power Surge",
@@ -959,7 +713,12 @@
         {
           "name": "Temporal Awareness",
           "description": "You can add your Intelligence modifier to your initiative rolls.",
-          "assign": [{"expr": "INITIATIVE.BONUS += INT.MOD", "when": "OnCompute"}]
+          "assign": [
+            {
+              "expr": "INITIATIVE.BONUS += INT.MOD",
+              "when": "OnCompute"
+            }
+          ]
         },
         {
           "name": "Momentary Stasis",
@@ -1064,75 +823,6 @@
           "level": 14,
           "features": [
             "Event Horizon"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Bladesinging",
-      "description": "Bladesingers master a tradition of wizardry that incorporates swordplay and dance. Originally created by elves, this tradition has been adopted by non-elf practitioners, who honor and expand on the elven ways.",
-      "features": [
-        {
-          "name": "Bladesinging",
-          "description": "Bladesingers master a tradition of wizardry that incorporates swordplay and dance. Originally created by elves, this tradition has been adopted by non-elf practitioners, who honor and expand on the elven ways. In combat, a bladesinger uses a series of intricate, elegant maneuvers that fend off harm and allow the bladesinger to channel magic into devastating attacks and a cunning defense."
-        },
-        {
-          "name": "Bladesinger Styles",
-          "description": "From its inception as a martial and magical art, Bladesinging has been tied to the sword, more specifically the longsword. Yet many generations of study gave rise to various styles of Bladesinging based on the melee weapon employed. The techniques of these styles are passed from master to students in small schools, some of which have a building dedicated to instruction."
-        },
-        {
-          "name": "Bladesong",
-          "description": "You can invoke a secret elven magic called the Bladesong, provided you aren't wearing medium or heavy armor or using a shield. It graces you with supernatural speed, agility, and focus. You can use a bonus action to start the Bladesong, which lasts for 1 minute."
-        },
-        {
-          "name": "Training in War and Song (Bladesinging)",
-          "description": "You gain proficiency with light armor, and you gain proficiency with one type of one-handed melee weapon of your choice. You also gain proficiency in the Performance skill if you don't already have it."
-        },
-        {
-          "name": "Extra Attack",
-          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn. Moreover, you can cast one of your cantrips in place of one of those attacks."
-        },
-        {
-          "name": "Song of Defense",
-          "description": "You can direct your magic to absorb damage while your bladesong is active. When you take damage, you can use your reaction to expend one spell slot and reduce that damage to you by an amount equal to five times the spell's slot level."
-        },
-        {
-          "name": "Song of Victory",
-          "description": "You add your Intelligence modifier (minimum of +1) to the damage of your melee weapon attacks while your Bladesong is active."
-        }
-      ],
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "Bladesinging",
-            "Bladesinger Styles",
-            "Bladesong",
-            "Training in War and Song (Bladesinging)"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Bladesinging"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Extra Attack"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "Song of Defense"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Song of Victory"
           ]
         }
       }

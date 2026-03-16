@@ -77,11 +77,20 @@
           "name": "Unarmored Movement",
           "description": "Bonus speed while you aren't wearing armor or wielding a Shield",
           "kind": "Bonus",
-          "levels": {"2": 10, "6": 15, "10": 20, "14": 25, "18": 30}
+          "levels": {
+            "2": 10,
+            "6": 15,
+            "10": 20,
+            "14": 25,
+            "18": 30
+          }
         }
       ],
       "assign": [
-        { "expr": "SPEED += 10 + 5 * ((CLASS_LEVEL - 2) / 4)", "when": "OnCompute" }
+        {
+          "expr": "SPEED += 10 + 5 * ((CLASS_LEVEL - 2) / 4)",
+          "when": "OnCompute"
+        }
       ]
     },
     {
@@ -166,7 +175,12 @@
     {
       "name": "Class Proficiencies",
       "description": "Saving throw and equipment proficiencies granted by this class.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
+      "assign": [
+        {
+          "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
     }
   ],
   "levels": [
@@ -287,162 +301,6 @@
     }
   ],
   "subclasses": [
-    {
-      "name": "Way of Shadow",
-      "description": "Monks of the Way of Shadow follow a tradition that values stealth and subterfuge. These monks might be called ninjas or shadow dancers, and they serve as spies and assassins. Sometimes the members of a ninja monastery are family members, forming a clan sworn to secrecy about their arts and missions.",
-      "features": [
-        {
-          "name": "Way of Shadow",
-          "description": "Monks of the Way of Shadow follow a tradition that values stealth and subterfuge. These monks might be called ninjas or shadow dancers, and they serve as spies and assassins. Sometimes the members of a ninja monastery are family members, forming a clan sworn to secrecy about their arts and missions."
-        },
-        {
-          "name": "Shadow Arts",
-          "description": "You can use your ki to duplicate the effects of certain spells. As an action, you can spend 2 ki points to cast darkness, darkvision, pass without trace, or silence, without providing material components. Additionally, you gain the minor illusion cantrip if you don't already know it."
-        },
-        {
-          "name": "Shadow Step",
-          "description": "You gain the ability to step from one shadow into another. When you are in dim light or darkness, as a bonus action you can teleport up to 60 feet to an unoccupied space you can see that is also in dim light or darkness. You then have advantage on the first melee attack you make before the end of the turn."
-        },
-        {
-          "name": "Cloak of Shadows",
-          "description": "By 11th level, you have learned to become one with the shadows. When you are in an area of dim light or darkness, you can use your action to become invisible. You remain invisible until you make an attack, cast a spell, or are in an area of bright light."
-        },
-        {
-          "name": "Opportunist",
-          "description": "You can exploit a creature's momentary distraction when it is hit by an attack. Whenever a creature within 5 feet of you is hit by an attack made by a creature other than you, you can use your reaction to make a melee attack against that creature."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Way of Shadow",
-            "Shadow Arts"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Shadow Step"
-          ]
-        },
-        "11": {
-          "level": 11,
-          "features": [
-            "Cloak of Shadows"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Opportunist"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Way of the Four Elements",
-      "description": "You follow a monastic tradition that teaches you to harness the elements. When you focus your ki, you can align yourself with the forces of creation and bend the four elements to your will, using them as an extension of your body.",
-      "features": [
-        {
-          "name": "Way of the Four Elements",
-          "description": "You follow a monastic tradition that teaches you to harness the elements. When you focus your ki, you can align yourself with the forces of creation and bend the four elements to your will, using them as an extension of your body. Some members of this tradition dedicate themselves to a single element, but others weave the elements together."
-        },
-        {
-          "name": "Disciple of the Elements",
-          "description": "You learn magical disciplines that harness the power of the four elements. A discipline requires you to spend ki points each time you use it. You know the Elemental Attunement discipline and one other elemental discipline of your choice. You learn one additional elemental discipline of your choice at 6th, 11th, and 17th level."
-        },
-        {
-          "name": "Elemental Disciplines",
-          "description": "The elemental disciplines are presented in alphabetical order. If a discipline requires a level, you must be the level in this class to learn the discipline."
-        },
-        {
-          "name": "Extra Elemental Discipline",
-          "description": "You learn one additional elemental discipline of your choice. You should know 2 elemental disciplines, as well as Elemental Attunement. Whenever you learn a new elemental discipline, you can also replace one elemental discipline that you already know with a different discipline."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Way of the Four Elements",
-            "Disciple of the Elements",
-            "Elemental Disciplines"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Extra Elemental Discipline"
-          ]
-        },
-        "11": {
-          "level": 11,
-          "features": [
-            "Extra Elemental Discipline"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Extra Elemental Discipline"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Way of the Open Hand",
-      "description": "Monks of the Way of the Open Hand are the ultimate masters of martial arts combat, whether armed or unarmed. They learn techniques to push and trip their opponents, manipulate ki to heal damage to their bodies, and practice advanced meditation that can protect them from harm.",
-      "features": [
-        {
-          "name": "Way of the Open Hand",
-          "description": "Monks of the Way of the Open Hand are the ultimate masters of martial arts combat, whether armed or unarmed. They learn techniques to push and trip their opponents, manipulate ki to heal damage to their bodies, and practice advanced meditation that can protect them from harm."
-        },
-        {
-          "name": "Open Hand Technique",
-          "description": "You can manipulate your enemy's ki when you harness your own. Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target. It must succeed on a Dexterity saving throw or be knocked prone. It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you."
-        },
-        {
-          "name": "Wholeness of Body",
-          "description": "You gain the ability to heal yourself. As an action, you can regain hit points equal to three times your monk level. You must finish a long rest before you can use this feature again."
-        },
-        {
-          "name": "Tranquility",
-          "description": "You can enter a special meditation that surrounds you with an aura of peace. At the end of a long rest, you gain the effect of a sanctuary spell that lasts until the start of your next long rest (the spell can end early as normal). The saving throw DC for the spell equals 8 + your Wisdom modifier + your proficiency bonus."
-        },
-        {
-          "name": "Quivering Palm",
-          "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Way of the Open Hand",
-            "Open Hand Technique"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Wholeness of Body"
-          ]
-        },
-        "11": {
-          "level": 11,
-          "features": [
-            "Tranquility"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Quivering Palm"
-          ]
-        }
-      }
-    },
     {
       "name": "Way of the Long Death",
       "description": "Monks of the Way of the Long Death are obsessed with the meaning and mechanics of dying. They capture creatures and prepare elaborate experiments to capture, record, and understand the moments of their demise.",
@@ -676,69 +534,6 @@
           "level": 17,
           "features": [
             "Sun Shield"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Way of Mercy",
-      "description": "Monks of the Way of Mercy learn to manipulate the life force of others to bring aid to those in need. They are wandering physicians to the poor and hurt. However, to those beyond their help, they bring a swift end as an act of mercy.",
-      "features": [
-        {
-          "name": "Way of Mercy",
-          "description": "Monks of the Way of Mercy learn to manipulate the life force of others to bring aid to those in need. They are wandering physicians to the poor and hurt. However, to those beyond their help, they bring a swift end as an act of mercy. Those who follow the Way of Mercy might be members of a religious order, administering to the needy and making grim choices rooted in reality rather than idealism."
-        },
-        {
-          "name": "Hand of Harm",
-          "description": "You use your ki to inflict wounds. When you hit a creature with an unarmed strike, you can spend 1 ki point to deal extra necrotic damage equal to one roll of your Martial Arts die + your Wisdom modifier. You can use this feature only once per turn."
-        },
-        {
-          "name": "Hand of Healing",
-          "description": "Your mystical touch can mend wounds. As an action, you can spend 1 ki point to touch a creature and restore a number of hit points equal to a roll of your Martial Arts die + your Wisdom modifier. When you use your Flurry of Blows, you can replace one of the unarmed strikes with a use of this feature without spending a ki point for the healing."
-        },
-        {
-          "name": "Implements of Mercy",
-          "description": "You gain proficiency in the Insight and Medicine skills, and you gain proficiency with the herbalism kit. You also gain a special mask, which you often wear when using the features of this subclass. You determine its appearance, or generate it randomly by rolling on the Merciful Mask table."
-        },
-        {
-          "name": "Physician's Touch",
-          "description": "You can administer even greater cures with a touch, and if you feel it's necessary, you can use your knowledge to cause harm. When you use Hand of Healing on a creature, you can also end one disease or one of the following conditions affecting the creature: blinded, deafened, paralyzed, poisoned, or stunned."
-        },
-        {
-          "name": "Flurry of Healing and Harm",
-          "description": "You can now mete out a flurry of comfort and hurt. When you use Flurry of Blows, you can now replace each of the unarmed strikes with a use of your Hand of Healing, without spending ki points for the healing. In addition, when you make an unarmed strike with Flurry of Blows, you can use Hand of Harm with that strike without spending the ki point for Hand of Harm."
-        },
-        {
-          "name": "Hand of Ultimate Mercy",
-          "description": "Your mastery of life energy opens the door to the ultimate mercy. As an action, you can touch the corpse of a creature that died within the past 24 hours and expend 5 ki points. The creature then returns to life, regaining a number of hit points equal to 4d10 + your Wisdom modifier."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Way of Mercy",
-            "Hand of Harm",
-            "Hand of Healing",
-            "Implements of Mercy"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Physician's Touch"
-          ]
-        },
-        "11": {
-          "level": 11,
-          "features": [
-            "Flurry of Healing and Harm"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Hand of Ultimate Mercy"
           ]
         }
       }

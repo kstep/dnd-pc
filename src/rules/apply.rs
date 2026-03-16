@@ -6,7 +6,7 @@ use super::{
     spells::SpellList,
 };
 use crate::{
-    model::{Character, Context, FeatureSource},
+    model::{Character, Context, FeatureSource, FeatureValue},
     rules::RulesRegistry,
 };
 
@@ -24,6 +24,59 @@ impl RulesRegistry {
     pub fn compute(&self, character: &mut Character) {
         character.compute();
         self.assign(character, WhenCondition::OnCompute);
+        self.recompute_dynamic_fields(character);
+    }
+
+    /// Re-evaluate dynamic field values (Points max, Die amount) after
+    /// ability scores or other stats may have changed.
+    fn recompute_dynamic_fields(&self, character: &mut Character) {
+        let class_cache = self.class_cache.read_untracked();
+        let bg_cache = self.background_cache.read_untracked();
+        let race_cache = self.race_cache.read_untracked();
+
+        // Pre-compute dynamic values (needs &character for eval).
+        // Collect (feat_name, field_index, new_value) — feat_name must be
+        // owned to release the immutable borrow before the apply phase.
+        let mut updates: Vec<(String, usize, FeatureValue)> = Vec::new();
+        for (feat_name, entry) in &character.feature_data {
+            let Some((feat_def, class_level)) = find_feature_with_class_level(
+                &character.identity,
+                feat_name,
+                &class_cache,
+                &bg_cache,
+                &race_cache,
+            ) else {
+                continue;
+            };
+            for (i, field) in entry.fields.iter().enumerate() {
+                let Some(field_def) = feat_def.fields.get(field.name.as_str()) else {
+                    continue;
+                };
+                if let Some(new_val) = field_def.kind.recompute_dynamic(class_level, character) {
+                    updates.push((feat_name.clone(), i, new_val));
+                }
+            }
+        }
+
+        // Apply computed values by index
+        for (feat_name, field_idx, new_val) in updates {
+            if let Some(entry) = character.feature_data.get_mut(&feat_name)
+                && let Some(field) = entry.fields.get_mut(field_idx)
+            {
+                match (&new_val, &mut field.value) {
+                    (
+                        FeatureValue::Points { max: new_max, .. },
+                        FeatureValue::Points { max, .. },
+                    ) => {
+                        *max = *new_max;
+                    }
+                    (FeatureValue::Die { die: new_die, .. }, FeatureValue::Die { die, .. }) => {
+                        *die = *new_die;
+                    }
+                    _ => {}
+                }
+            }
+        }
     }
 
     /// Evaluate assignment expressions across all racial traits and features

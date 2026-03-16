@@ -19,6 +19,12 @@ use crate::{
 /// Default walking speed in feet (most races).
 const DEFAULT_SPEED: u32 = 30;
 
+/// Proficiency bonus for a given character level (D&D 5e standard
+/// progression).
+pub fn proficiency_bonus_for_level(level: u32) -> i32 {
+    (level as i32 - 1) / 4 + 2
+}
+
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
 const SPELL_SLOT_TABLE: &[&[u32]] = &[
@@ -393,7 +399,7 @@ impl Character {
     }
 
     pub fn proficiency_bonus(&self) -> i32 {
-        ((self.level() as i32) - 1) / 4 + 2
+        proficiency_bonus_for_level(self.level())
     }
 
     pub fn ability_modifier(&self, ability: Ability) -> i32 {

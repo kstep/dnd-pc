@@ -49,15 +49,21 @@ pub fn RaceReference() -> impl IntoView {
                 let title = def.label().to_string();
                 let description = def.description.clone();
 
-                let traits: Vec<(String, String, String)> = def
+                let traits: Vec<(String, String, String, String)> = def
                     .traits
                     .values()
                     .map(|trait_def| {
                         let langs = trait_def.languages.join(", ");
+                        let assigns = trait_def
+                            .assign
+                            .as_deref()
+                            .map(|a| super::summarize_assignments(a, &i18n))
+                            .unwrap_or_default();
                         (
                             trait_def.label().to_string(),
                             trait_def.description.clone(),
                             langs,
+                            assigns,
                         )
                     })
                     .collect();
@@ -73,11 +79,14 @@ pub fn RaceReference() -> impl IntoView {
                         {(!traits.is_empty()).then(|| view! {
                             <h2>{move_tr!("racial-traits")}</h2>
                             <div class="reference-features">
-                                {traits.into_iter().map(|(label, desc, langs)| {
+                                {traits.into_iter().map(|(label, desc, langs, assigns)| {
                                     view! {
                                         <div class="reference-feature">
                                             <h3>{label}</h3>
                                             <p>{desc}</p>
+                                            {(!assigns.is_empty()).then(|| view! {
+                                                <p class="feature-assignments">{assigns}</p>
+                                            })}
                                             {(!langs.is_empty()).then(|| view! {
                                                 <p class="feature-languages">
                                                     {move_tr!("ref-languages")}{": "}{langs}

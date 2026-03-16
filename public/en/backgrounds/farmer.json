@@ -9,7 +9,8 @@
     },
     {
       "name": "Tough",
-      "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points."
+      "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points.",
+      "assign": [{"expr": "MAX_HP += LEVEL * 2", "when": "OnCompute"}]
     }
   ]
 }

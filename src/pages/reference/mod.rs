@@ -12,7 +12,9 @@ pub use sidebar::ReferenceSidebar;
 
 use crate::{
     BASE_URL,
-    rules::{ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
+    expr::{Interpreter, Op},
+    model::{Attribute, Translatable},
+    rules::{Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
 };
 
 pub struct InlineSpell {
@@ -107,12 +109,224 @@ pub fn feature_choices(
     }
 }
 
+/// Translate an attribute to a human-readable display name using i18n keys.
+fn attr_display_name(attr: Attribute, i18n: &leptos_fluent::I18n) -> String {
+    match attr {
+        Attribute::Ability(a) => i18n.tr(a.tr_abbr_key()),
+        Attribute::Modifier(a) => i18n.tr(a.tr_abbr_key()),
+        Attribute::Skill(s) => i18n.tr(s.tr_key()),
+        Attribute::MaxHp => i18n.tr("hp-max"),
+        Attribute::Speed => i18n.tr("speed"),
+        Attribute::Initiative | Attribute::InitiativeBonus => i18n.tr("initiative"),
+        Attribute::Ac => i18n.tr("armor-class"),
+        Attribute::Inspiration => i18n.tr("inspiration"),
+        Attribute::ProfBonus => i18n.tr("proficiency-bonus"),
+        Attribute::Level => i18n.tr("level"),
+        Attribute::ClassLevel => i18n.tr("class-level"),
+        Attribute::CasterLevel => i18n.tr("caster-level"),
+        Attribute::SkillProficiency(s) => i18n.tr(s.tr_key()),
+        Attribute::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
+        Attribute::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
+        Attribute::SavingThrow(a) => i18n.tr(a.tr_abbr_key()),
+        _ => attr.to_string(),
+    }
+}
+
+/// An interpreter that produces human-readable translated summaries
+/// of assignment operations in an expression. Categorizes by type
+/// (abilities, skill/save/equipment proficiencies, other effects).
+/// Stack entry: display string + optional numeric value for arithmetic.
+/// Stack entry: display string, optional numeric value, and optional
+/// "compound base" variable (tracks `X` in `X + expr` for compound
+/// assignment detection).
+struct SumEntry {
+    text: String,
+    num: Option<i32>,
+    /// Raw attribute key for compound detection (e.g. "INITIATIVE.BONUS").
+    raw_key: Option<String>,
+    /// If this entry is `var op rhs`, stores `(raw_var_key, op, rhs_text)`.
+    compound: Option<(String, String, String)>,
+}
+
+impl SumEntry {
+    fn constant(n: i32) -> Self {
+        Self {
+            text: n.to_string(),
+            num: Some(n),
+            raw_key: None,
+            compound: None,
+        }
+    }
+
+    fn var(text: String, raw_key: String) -> Self {
+        Self {
+            text,
+            num: None,
+            raw_key: Some(raw_key),
+            compound: None,
+        }
+    }
+}
+
+struct AssignmentSummarizer<'a> {
+    stack: Vec<SumEntry>,
+    i18n: &'a leptos_fluent::I18n,
+    abilities: Vec<String>,
+    skills: Vec<String>,
+    saves: Vec<String>,
+    equipment: Vec<String>,
+    other: Vec<String>,
+}
+
+impl<'a> AssignmentSummarizer<'a> {
+    fn new(i18n: &'a leptos_fluent::I18n) -> Self {
+        Self {
+            stack: Vec::new(),
+            i18n,
+            abilities: Vec::new(),
+            skills: Vec::new(),
+            saves: Vec::new(),
+            equipment: Vec::new(),
+            other: Vec::new(),
+        }
+    }
+
+    fn pop(&mut self) -> SumEntry {
+        self.stack.pop().unwrap_or(SumEntry::constant(0))
+    }
+
+    fn binary_op(&mut self, op_str: &str, f: impl FnOnce(i32, i32) -> i32) {
+        let b = self.pop();
+        let a = self.pop();
+        let num = a.num.zip(b.num).map(|(a, b)| f(a, b));
+        let text = num.map_or_else(
+            || format!("{} {} {}", a.text, op_str, b.text),
+            |n| n.to_string(),
+        );
+        // Track compound: if `a` is a plain variable, record raw key + op + rhs
+        let compound = if let (Some(key), None) = (a.raw_key, &a.compound) {
+            Some((key, op_str.to_string(), b.text))
+        } else {
+            None
+        };
+        self.stack.push(SumEntry {
+            text,
+            num,
+            raw_key: None,
+            compound,
+        });
+    }
+}
+
+impl Interpreter<Attribute> for AssignmentSummarizer<'_> {
+    type Output = String;
+
+    fn exec(&mut self, op: Op<Attribute>) -> Result<(), crate::expr::Error> {
+        match op {
+            Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
+            Op::PushVar(var) => {
+                let raw = var.to_string();
+                let text = attr_display_name(var, self.i18n);
+                self.stack.push(SumEntry::var(text, raw));
+            }
+            Op::Add => self.binary_op("+", |a, b| a + b),
+            Op::Sub => self.binary_op("-", |a, b| a - b),
+            Op::Mul => self.binary_op("*", |a, b| a * b),
+            Op::DivFloor => self.binary_op("/", |a, b| if b != 0 { a / b } else { 0 }),
+            Op::DivCeil => {
+                self.binary_op("\\", |a, b| if b != 0 { (a + b - 1) / b } else { 0 });
+            }
+            Op::Mod => self.binary_op("%", |a, b| if b != 0 { a % b } else { 0 }),
+            Op::Min => self.binary_op("min", |a, b| a.min(b)),
+            Op::Max => self.binary_op("max", |a, b| a.max(b)),
+            Op::AvgHp => {
+                let a = self.pop();
+                let num = a.num.map(crate::expr::avg_hp);
+                let text = num.map_or_else(|| format!("avg_hp({})", a.text), |n| n.to_string());
+                self.stack.push(SumEntry {
+                    text,
+                    num,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::Assign(attr) => {
+                let value = self.pop();
+                let attr_str = attr.to_string();
+                // Detect compound: X op= expr → show "op rhs", otherwise just "value"
+                let (prefix, display) = if let Some((base, op, rhs)) = &value.compound {
+                    if *base == attr_str {
+                        (op.as_str(), rhs.clone())
+                    } else {
+                        ("", value.text.clone())
+                    }
+                } else {
+                    ("", value.text.clone())
+                };
+                match attr {
+                    Attribute::Ability(ability) => {
+                        let label = self.i18n.tr(ability.tr_abbr_key());
+                        self.abilities.push(format!("{label} {prefix}{display}"));
+                    }
+                    Attribute::SkillProficiency(skill) => {
+                        self.skills.push(self.i18n.tr(skill.tr_key()));
+                    }
+                    Attribute::SaveProficiency(ability) => {
+                        self.saves.push(self.i18n.tr(ability.tr_abbr_key()));
+                    }
+                    Attribute::EquipmentProficiency(prof) => {
+                        self.equipment.push(self.i18n.tr(prof.tr_key()));
+                    }
+                    _ => {
+                        let label = attr_display_name(attr, self.i18n);
+                        self.other.push(format!("{label} {prefix}{display}"));
+                    }
+                }
+            }
+            _ => return Err(crate::expr::Error::EmptyExpression),
+        }
+        Ok(())
+    }
+
+    fn finish(self) -> Result<Self::Output, crate::expr::Error> {
+        let mut parts = Vec::new();
+        if !self.abilities.is_empty() {
+            parts.push(self.abilities.join(", "));
+        }
+        if !self.skills.is_empty() {
+            parts.push(self.skills.join(", "));
+        }
+        if !self.saves.is_empty() {
+            parts.push(self.saves.join(", "));
+        }
+        if !self.equipment.is_empty() {
+            parts.push(self.equipment.join(", "));
+        }
+        parts.extend(self.other);
+        Ok(parts.join(" | "))
+    }
+}
+
+/// Extract human-readable assignment summaries from feature expressions.
+pub(super) fn summarize_assignments(
+    assignments: &[Assignment],
+    i18n: &leptos_fluent::I18n,
+) -> String {
+    assignments
+        .iter()
+        .filter_map(|a| a.expr.run(AssignmentSummarizer::new(i18n)).ok())
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<_>>()
+        .join("; ")
+}
+
 /// Pre-collected data for rendering a feature in reference pages.
 pub struct FeatureViewData {
     pub name: String,
     pub label: String,
     pub description: String,
     pub languages: String,
+    pub assignments: String,
     pub spells: FeatureSpells,
     pub choices: Option<Vec<ChoiceFieldView>>,
 }
@@ -122,16 +336,25 @@ pub struct FeatureViewData {
 pub fn collect_feature_views<'a>(
     features: impl Iterator<Item = &'a FeatureDefinition>,
 ) -> Vec<FeatureViewData> {
+    let i18n = expect_context::<leptos_fluent::I18n>();
     features
-        .map(|feat| FeatureViewData {
-            name: feat.name.clone(),
-            label: feat.label().to_string(),
-            description: feat.description.clone(),
-            languages: feat.languages.join(", "),
-            spells: FeatureSpells::from_spell_list(
-                feat.spells.as_ref().map(|spells_def| &spells_def.list),
-            ),
-            choices: feature_choices(&feat.fields),
+        .map(|feat| {
+            let assignments = feat
+                .assign
+                .as_deref()
+                .map(|a| summarize_assignments(a, &i18n))
+                .unwrap_or_default();
+            FeatureViewData {
+                name: feat.name.clone(),
+                label: feat.label().to_string(),
+                description: feat.description.clone(),
+                languages: feat.languages.join(", "),
+                assignments,
+                spells: FeatureSpells::from_spell_list(
+                    feat.spells.as_ref().map(|spells_def| &spells_def.list),
+                ),
+                choices: feature_choices(&feat.fields),
+            }
         })
         .collect()
 }
@@ -159,6 +382,9 @@ pub fn ReferenceFeaturesView(
                                 <p class="feature-languages">
                                     {move_tr!("ref-languages")}{": "}{feat.languages}
                                 </p>
+                            })}
+                            {(!feat.assignments.is_empty()).then(|| view! {
+                                <p class="feature-assignments">{feat.assignments}</p>
                             })}
                             <FeatureSpellsView spells=feat.spells />
                             <FeatureChoicesView choices=feat.choices />
