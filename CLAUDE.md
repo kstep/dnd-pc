@@ -126,9 +126,10 @@ Import page (`src/pages/import_character.rs`) handles both import types: `Import
 - `FieldDefinition` — `name`, `label`, `description`, `kind: FieldKind`
 - `FieldKind` — `#[serde(tag = "kind")]` enum: `Points` (with `short: Option<String>`), `Choice` (with `options`, `cost: Option<String>`), `Die`, `Bonus`, `FreeUses` — each with `levels: BTreeMap<u32, _>` for per-level progression. Method `to_value(level) -> FeatureValue` converts to model value at a given level. `FreeUses` is special: not converted to `FeatureValue`, instead sets `Spell.free_uses` during apply
 - `ChoiceOptions` — `#[serde(untagged)]` enum: `List(Vec<ChoiceOption>)` or `Ref { from: String }` (references another field's choices)
-- `ChoiceOption` — has `name`, `label`, `description`, `level: u32` (level-gated choices), `cost: u32` (point cost for point-based choices) fields
+- `ChoiceOption` — has `name`, `label`, `description`, `level: u32` (level-gated choices), `cost: u32` (point cost for point-based choices), `action: Option<ActionType>` (action menu items) fields
+- `ActionType` — enum: `Action`, `BonusAction`, `Reaction`. Has `icon_name()` (swords/zap/shield) and `Translatable` impl. A Choice field with no `levels` and action options is an **action menu** — rendered read-only in the sheet, with icon badges in the summary
 - `Assignment` — `{ expr: Expr<Attribute>, when: WhenCondition }` for feature expressions
-- `WhenCondition` — enum: `Always`, `OnFeatureAdd`, `OnLevelUp`, `OnLongRest`, `OnShortRest`
+- `WhenCondition` — enum: `OnFeatureAdd`, `OnLevelUp`, `OnLongRest`, `OnShortRest`, `OnCompute`
 - `ClassDefinition` — `features: BTreeMap<String, FeatureDefinition>`, `levels: Vec<ClassLevelRules>`, `subclasses: BTreeMap<String, SubclassDefinition>`, plus `label` field. Method `features(subclass)` iterates class + subclass features. Method `find_feature(name, subclass)` finds a feature by name
 - `RaceDefinition` — `apply(character)` sets speed, ability mods, racial traits, features
 - `BackgroundDefinition` — `apply(character)` sets ability mods, skill proficiencies, features

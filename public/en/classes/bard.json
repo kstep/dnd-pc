@@ -16,6 +16,13 @@
             "9": {"sides": 10, "amount": "max(1, CHA.MOD)"},
             "13": {"sides": 12, "amount": "max(1, CHA.MOD)"}
           }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {"name": "Bardic Inspiration", "description": "Give one creature within 60 ft your Bardic Inspiration die to add to a failed d20 roll within 1 hour", "action": "BonusAction"}
+          ]
         }
       ]
     },

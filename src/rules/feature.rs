@@ -8,7 +8,7 @@ use crate::{
     expr::{self, Expr},
     model::{
         Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
-        FeatureValue,
+        FeatureValue, Translatable,
     },
     rules::utils::get_for_level,
     vecset::VecSet,
@@ -100,6 +100,33 @@ impl<'de> Deserialize<'de> for DieOrExpr {
         }
 
         deserializer.deserialize_any(DieOrExprVisitor)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+pub enum ActionType {
+    Action,
+    BonusAction,
+    Reaction,
+}
+
+impl ActionType {
+    pub fn icon_name(&self) -> &'static str {
+        match self {
+            Self::Action => "swords",
+            Self::BonusAction => "zap",
+            Self::Reaction => "shield",
+        }
+    }
+}
+
+impl Translatable for ActionType {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Action => "action-type-action",
+            Self::BonusAction => "action-type-bonus-action",
+            Self::Reaction => "action-type-reaction",
+        }
     }
 }
 
@@ -404,6 +431,7 @@ impl FieldDefinition {
                     description: o.description.clone(),
                     cost: o.cost,
                     level: 0,
+                    action: None,
                 })
                 .collect(),
         }
@@ -511,6 +539,8 @@ pub struct ChoiceOption {
     pub cost: u32,
     #[serde(default)]
     pub level: u32,
+    #[serde(default)]
+    pub action: Option<ActionType>,
 }
 
 impl ChoiceOption {

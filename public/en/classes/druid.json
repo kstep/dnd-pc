@@ -11,12 +11,8 @@
       ]
     },
     {
-      "name": "Magician",
-      "description": "You know one extra cantrip from the Druid spell list. In addition, your mystical connection to nature gives you a bonus to your Intelligence (Arcana or Nature) checks. The bonus equals your Wisdom modifier (minimum bonus of +1)."
-    },
-    {
       "name": "Primal Order",
-      "description": "You have dedicated yourself to one of the following sacred roles of your choice."
+      "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nMagician: You know one extra cantrip from the Druid spell list. In addition, your mystical connection to nature gives you a bonus to your Intelligence (Arcana or Nature) checks. The bonus equals your Wisdom modifier (minimum bonus of +1).\n\nWarden: Trained for battle, you gain proficiency with Martial weapons and training with Medium armor."
     },
     {
       "name": "Spellcasting (Druid)",
@@ -240,16 +236,13 @@
       }
     },
     {
-      "name": "Warden",
-      "description": "Trained for battle, you gain proficiency with Martial weapons and training with Medium armor."
-    },
-    {
       "name": "Wild Companion",
       "description": "You can summon a nature spirit that assumes an animal form to aid you. As a Magic action, you can expend a spell slot or a use of Wild Shape to cast the Find Familiar spell without Material components. When you cast the spell in this way, the familiar is Fey and disappears when you finish a Long Rest."
     },
     {
       "name": "Wild Shape",
-      "description": "The power of nature allows you to assume the form of an animal. As a Bonus Action, you shape-shift into a Beast form that you have learned for this feature (see \"Known Forms\" below). You stay in that form for a number of hours equal to half your Druid level or until you use Wild Shape again, have the Incapacitated condition, or die. You can also leave the form early as a Bonus Action."
+      "description": "The power of nature allows you to assume the form of an animal. As a Bonus Action, you shape-shift into a Beast form that you have learned for this feature (see \"Known Forms\" below). You stay in that form for a number of hours equal to half your Druid level or until you use Wild Shape again, have the Incapacitated condition, or die. You can also leave the form early as a Bonus Action.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Wild Shape", "description": "Shape-shift into a known Beast form for hours equal to half Druid level", "action": "BonusAction"}]}]
     },
     {
       "name": "Druid Subclass",
@@ -271,15 +264,7 @@
     },
     {
       "name": "Elemental Fury",
-      "description": "The might of the elements flows through you. You gain one of the following options of your choice."
-    },
-    {
-      "name": "Potent Spellcasting",
-      "description": "Add your Wisdom modifier to the damage you deal with any Druid cantrip."
-    },
-    {
-      "name": "Primal Strike",
-      "description": "Once on each of your turns when you hit a creature with an attack roll using a weapon or a Beast form's attack in Wild Shape, you can cause the target to take an extra 1d8 Cold, Fire, Lightning, or Thunder damage (choose when you hit)."
+      "description": "The might of the elements flows through you. You gain one of the following options of your choice.\n\nPotent Spellcasting: Add your Wisdom modifier to the damage you deal with any Druid cantrip.\n\nPrimal Strike: Once on each of your turns when you hit a creature with an attack roll using a weapon or a Beast form's attack in Wild Shape, you can cause the target to take an extra 1d8 Cold, Fire, Lightning, or Thunder damage (choose when you hit)."
     },
     {
       "name": "Improved Elemental Fury",
@@ -308,10 +293,8 @@
     {
       "features": [
         "Druidic",
-        "Magician",
         "Primal Order",
         "Spellcasting (Druid)",
-        "Warden",
         "Class Proficiencies"
       ]
     },
@@ -343,9 +326,7 @@
     },
     {
       "features": [
-        "Elemental Fury",
-        "Potent Spellcasting",
-        "Primal Strike"
+        "Elemental Fury"
       ]
     },
     {

@@ -1,21 +1,33 @@
 use std::collections::BTreeMap;
 
-use leptos::{either::Either, prelude::*};
+use leptos::{either::EitherOf3, prelude::*};
+use leptos_fluent::I18n;
 use reactive_stores::Store;
 
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
-    model::{Character, CharacterStoreFields, FeatureOption, FeatureValue},
-    rules::{ChoiceOptions, FieldKind, RulesRegistry},
+    model::{Character, CharacterStoreFields, FeatureOption, FeatureValue, Translatable},
+    rules::{ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
+
+/// Info extracted from the registry for a single Choice field.
+struct ChoiceFieldInfo {
+    points: u32,
+    from: Option<String>,
+    cost: Option<String>,
+    /// Definition options that have `action` set (action menu items).
+    action_options: Vec<ChoiceOption>,
+}
 
 #[component]
 pub fn ChoicesBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
+    let i18n = expect_context::<I18n>();
 
     let identity = store.identity();
     let feature_data = store.feature_data();
@@ -24,13 +36,14 @@ pub fn ChoicesBlock() -> impl IntoView {
         let features = feature_data.read();
         let remaining_points = features
             .values()
-            .flat_map(|field| {
-                field.fields.iter().filter_map(|field| {
+            .flat_map(|entry| {
+                entry.fields.iter().filter_map(|field| {
                     Some((field.name.as_str(), field.value.available_points()?))
                 })
             })
             .collect::<BTreeMap<_, _>>();
 
+        let char_level = store.read().level();
         let id = identity.read();
         features
             .iter()
@@ -55,7 +68,22 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 .copied()
                                 .unwrap_or_default();
 
-                            Some((name.to_string(), (points, from, cost.clone())))
+                            // Collect action options from definition
+                            let action_options = match options {
+                                ChoiceOptions::List(list) => list
+                                    .iter()
+                                    .filter(|o| o.action.is_some() && o.level <= char_level)
+                                    .cloned()
+                                    .collect(),
+                                _ => Vec::new(),
+                            };
+
+                            Some((name.to_string(), ChoiceFieldInfo {
+                                points,
+                                from,
+                                cost: cost.clone(),
+                                action_options,
+                            }))
                         })
                         .collect::<BTreeMap<_, _>>()
                 })?;
@@ -63,23 +91,86 @@ pub fn ChoicesBlock() -> impl IntoView {
                 let feat_name = feat_name.clone();
                 let id = &id;
                 Some(entry.fields.iter().enumerate().filter_map(move |(field_index, field)| {
-                    let (points, from, cost) = fields.get(&field.name)?;
-                    let short = cost.as_deref().and_then(|c| registry.get_points_short(id, c));
-                    let cost_field = cost.as_ref().map(|c| StoredValue::new(c.clone()));
+                    let info = fields.get(&field.name)?;
+                    let short = info.cost.as_deref().and_then(|c| registry.get_points_short(id, c));
+                    let cost_field = info.cost.as_ref().map(|c| StoredValue::new(c.clone()));
                     let feat_name = feat_name.clone();
+                    let points = info.points;
 
                     let FeatureValue::Choice { options } = &field.value else {
                         return None;
                     };
 
-                    Some(match from {
-                        None => Either::Left({
-                            let selected = options
+                    Some(match &info.from {
+                        // Action menu: definition options with action types, no stored options
+                        None if options.is_empty() && !info.action_options.is_empty() => EitherOf3::A({
+                            let items = info.action_options
                                 .iter()
-                                .filter(|opt| opt.cost <= *points)
                                 .map(|opt| {
                                     let opt_cost = opt.cost;
-                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= *points;
+                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= points;
+                                    let action_icon = opt.action.map(|a| {
+                                        let title = i18n.tr(a.tr_key());
+                                        view! {
+                                            <Icon name=a.icon_name() size=14 title=title />
+                                        }
+                                    });
+
+                                    let badge = {
+                                        let cost_badge = (opt.cost > 0).then(|| {
+                                            view! {
+                                                <span class="summary-choice-cost">{opt.cost}</span>
+                                                {cost_field.map(|cfn| view! {
+                                                    <CastButton
+                                                        disabled=!can_cast
+                                                        on_cast={Callback::new(move |_: CastOption| {
+                                                            cfn.with_value(|cost_name| {
+                                                                feature_data.update(|map| {
+                                                                    for entry in map.values_mut() {
+                                                                        if let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
+                                                                            && let FeatureValue::Points { used, max } = &mut field.value
+                                                                        {
+                                                                            *used = (*used + opt_cost).min(*max);
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                });
+                                                            });
+                                                        })}
+                                                    />
+                                                })}
+                                            }
+                                        });
+                                        Some(view! {
+                                            {action_icon}
+                                            {cost_badge}
+                                        }.into_any())
+                                    };
+
+                                    SummaryListItem {
+                                        name: opt.label().to_string(),
+                                        description: opt.description.clone(),
+                                        badge,
+                                    }
+                                })
+                                .collect::<Vec<_>>();
+
+                            let style = short.as_ref().map(|s| format!("--points-symbol: '{s}'"));
+                            Some(view! {
+                                <div class="summary-subsection" style=style>
+                                    <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
+                                    <SummaryList items=items />
+                                </div>
+                            })
+                        }),
+                        // Regular stored choices (non-ref)
+                        None => EitherOf3::B({
+                            let selected = options
+                                .iter()
+                                .filter(|opt| opt.cost <= points)
+                                .map(|opt| {
+                                    let opt_cost = opt.cost;
+                                    let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= points;
                                     SummaryListItem {
                                         name: opt.label().to_string(),
                                         description: opt.description.clone(),
@@ -123,7 +214,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 </div>
                             })
                         }),
-                        Some(from) => Either::Right({
+                        // Ref-based choices (dropdown selects)
+                        Some(from) => EitherOf3::C({
                             let from_field = entry.fields.iter().find(|field| &field.name == from)?;
                             let FeatureValue::Choice { options: from_options } = &from_field.value else {
                                 return None;

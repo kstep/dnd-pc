@@ -27,6 +27,14 @@
             "9": 3,
             "16": 4
           }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Rages",
+          "options": [
+            {"name": "Rage", "description": "Advantage on STR checks/saves, bonus melee damage, resistance to physical damage. Lasts up to 10 minutes", "cost": 1, "action": "BonusAction"}
+          ]
         }
       ]
     },
@@ -56,7 +64,8 @@
     },
     {
       "name": "Reckless Attack",
-      "description": "You can throw aside all concern for defense to attack with increased ferocity. When you make your first attack roll on your turn, you can decide to attack recklessly. Doing so gives you Advantage on attack rolls using Strength until the start of your next turn, but attack rolls against you have Advantage during that time."
+      "description": "You can throw aside all concern for defense to attack with increased ferocity. When you make your first attack roll on your turn, you can decide to attack recklessly. Doing so gives you Advantage on attack rolls using Strength until the start of your next turn, but attack rolls against you have Advantage during that time.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Reckless Attack", "description": "Advantage on STR attack rolls this turn; attacks against you also have Advantage", "action": "Action"}]}]
     },
     {
       "name": "Barbarian Subclass",

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-use leptos::{either::EitherOf4, prelude::*};
-use leptos_fluent::move_tr;
+use leptos::{either::EitherOf5, prelude::*};
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -10,7 +10,7 @@ use crate::{
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureOption, FeatureValue,
-        format_bonus,
+        Translatable, format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -19,6 +19,7 @@ use crate::{
 pub fn ClassFieldsPanels() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
+    let i18n = expect_context::<I18n>();
 
     move || {
         // Extract feature names + field summaries (skip descriptions — read
@@ -81,7 +82,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let used_val = used.to_string();
                                 let max = die.amount;
                                 let max_val = max.to_string();
-                                EitherOf4::A(view! {
+                                EitherOf5::A(view! {
                                     <div class="field-entry field-points">
                                         <ToggleButton
                                             expanded=is_open
@@ -122,7 +123,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                             FeatureValue::Bonus(val) => {
                                 let label = field.label().to_string();
                                 let formatted = format_bonus(*val);
-                                EitherOf4::B(view! {
+                                EitherOf5::B(view! {
                                     <div class="field-entry">
                                         <ToggleButton
                                             expanded=is_open
@@ -140,7 +141,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let label = field.label().to_string();
                                 let used_val = used.to_string();
                                 let max_val = max.to_string();
-                                EitherOf4::C(view! {
+                                EitherOf5::C(view! {
                                     <div class="field-entry field-points">
                                         <ToggleButton
                                             expanded=is_open
@@ -220,6 +221,59 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 });
                                 drop(feature_data);
                                 drop(classes);
+
+                                // Action menu: empty stored options + definition
+                                // options with `action` → read-only list
+                                let char_level = store.read_untracked().level();
+                                let is_action_menu = options.is_empty()
+                                    && all_options.iter().any(|o| o.action.is_some());
+
+                                if is_action_menu {
+                                    let label_view = if let Some(ref cost_title) = cost_label {
+                                        format!("{label} ({cost_title})")
+                                    } else {
+                                        label
+                                    };
+
+                                    let action_views = all_options
+                                        .iter()
+                                        .filter(|opt| opt.level <= char_level)
+                                        .map(|opt| {
+                                            let action_icon = opt.action.map(|a| {
+                                                let title = i18n.tr(a.tr_key());
+                                                view! {
+                                                    <Icon name=a.icon_name() size=14 title=title />
+                                                }
+                                            });
+                                            let cost_str = (opt.cost > 0).then(|| format!(" ({})", opt.cost));
+                                            view! {
+                                                <div class="choice-entry choice-entry-readonly">
+                                                    {action_icon}
+                                                    <span class="choice-name">{opt.label().to_string()}</span>
+                                                    {cost_str}
+                                                </div>
+                                            }
+                                        })
+                                        .collect_view();
+
+                                    return EitherOf5::E(view! {
+                                        <div class="field-entry field-choice">
+                                            <div class="field-header">
+                                                <ToggleButton
+                                                    expanded=is_open
+                                                    on_toggle=move || desc_expanded.update(|set| {
+                                                        if !set.remove(&field_idx) { set.insert(field_idx); }
+                                                    })
+                                                />
+                                                <span class="field-label">{label_view}</span>
+                                            </div>
+                                            {field_desc_textarea()}
+                                            <div class="choice-list">
+                                                {action_views}
+                                            </div>
+                                        </div>
+                                    });
+                                }
 
                                 let opt_expanded = RwSignal::new(HashSet::<usize>::new());
                                 let has_cost = cost_label.is_some();
@@ -364,7 +418,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     label
                                 };
 
-                                EitherOf4::D(view! {
+                                EitherOf5::D(view! {
                                     <div class="field-entry field-choice">
                                         <div class="field-header">
                                             <ToggleButton

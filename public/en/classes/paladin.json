@@ -5,7 +5,8 @@
   "features": [
     {
       "name": "Lay on Hands",
-      "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level. As a Bonus Action, you can touch a creature (or touch yourself) and draw power from your pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool. Alternatively, you can expend 5 Hit Points from the pool to remove the Poisoned condition from the creature; this use of Lay on Hands doesn't restore Hit Points to the creature."
+      "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level. As a Bonus Action, you can touch a creature (or touch yourself) and draw power from your pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool. Alternatively, you can expend 5 Hit Points from the pool to remove the Poisoned condition from the creature; this use of Lay on Hands doesn't restore Hit Points to the creature.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Lay on Hands", "description": "Restore HP from your pool (5 \u00d7 Paladin level total) or spend 5 to cure Poisoned", "action": "BonusAction"}]}]
     },
     {
       "name": "Spellcasting (Paladin)",
@@ -208,7 +209,8 @@
     },
     {
       "name": "Divine Sense",
-      "description": "As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell."
+      "description": "As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Divine Sense", "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes", "action": "BonusAction"}]}]
     },
     {
       "name": "Paladin Subclass",

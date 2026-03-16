@@ -5,7 +5,8 @@
   "features": [
     {
       "name": "Innate Sorcery",
-      "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: The spell save DC of your Sorcerer spells increases by 1. You have Advantage on the attack rolls of Sorcerer spells you cast."
+      "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: The spell save DC of your Sorcerer spells increases by 1. You have Advantage on the attack rolls of Sorcerer spells you cast.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Innate Sorcery", "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute", "action": "BonusAction"}]}]
     },
     {
       "name": "Spellcasting (Sorcerer)",

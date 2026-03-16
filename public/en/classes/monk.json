@@ -4,20 +4,21 @@
   "hit_die": 8,
   "features": [
     {
-      "name": "Bonus Unarmed Strike",
-      "description": "You can make an Unarmed Strike as a Bonus Action."
-    },
-    {
-      "name": "Dexterous Attacks",
-      "description": "You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC."
-    },
-    {
       "name": "Martial Arts",
-      "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following: Simple Melee Weapons Martial Melee Weapons that have the Light property You gain the following benefits while you are unarmed or wielding only Monk weapons and you aren't wearing armor or wielding a Shield."
-    },
-    {
-      "name": "Martial Arts Die",
-      "description": "You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table."
+      "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons (Simple Melee and Light Martial Melee). While unarmed or wielding only Monk weapons without armor or Shield:\n\nBonus Unarmed Strike: You can make one Unarmed Strike as a Bonus Action.\n\nDexterous Attacks: Use DEX instead of STR for attack/damage rolls of Unarmed Strikes and Monk weapons, and for Grapple/Shove save DCs.\n\nMartial Arts Die: Use 1d6 in place of normal Unarmed Strike or Monk weapon damage. This die increases with Monk level.",
+      "fields": [
+        {
+          "name": "Martial Arts Die",
+          "kind": "Die",
+          "levels": {
+            "1": "1d6",
+            "5": "1d8",
+            "11": "1d10",
+            "17": "1d12"
+          }
+        },
+        {"name": "Actions", "kind": "Choice", "options": [{"name": "Bonus Unarmed Strike", "description": "Make one Unarmed Strike: +DEX mod +Prof to hit, Martial Arts die + DEX mod damage", "action": "BonusAction"}]}
+      ]
     },
     {
       "name": "Unarmored Defense",
@@ -25,12 +26,8 @@
       "ac_expr": "10 + DEX.MOD + WIS.MOD"
     },
     {
-      "name": "Flurry of Blows",
-      "description": "You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action."
-    },
-    {
       "name": "Monk's Focus",
-      "description": "Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table. You can expend these points to enhance or fuel certain Monk features.",
+      "description": "Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table. You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind.\n\nWhen you expend a Focus Point, it is unavailable until you finish a Short or Long Rest, at the end of which you regain all your expended points. Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus.\n\nFlurry of Blows: You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.\n\nPatient Defense: You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.\n\nStep of the Wind: You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn.",
       "fields": [
         {
           "name": "Focus Points",
@@ -58,16 +55,20 @@
             "19": 19,
             "20": 20
           }
+        },
+        {
+          "name": "Focus Actions",
+          "kind": "Choice",
+          "cost": "Focus Points",
+          "options": [
+            {"name": "Flurry of Blows", "description": "Make two Unarmed Strikes (three at level 10)", "cost": 1, "action": "BonusAction"},
+            {"name": "Patient Defense", "description": "Take the Disengage and Dodge actions (gain temp HP at level 10)", "cost": 1, "action": "BonusAction"},
+            {"name": "Step of the Wind", "description": "Take the Disengage and Dash actions, double jump distance", "cost": 1, "action": "BonusAction"},
+            {"name": "Stunning Strike", "description": "On hit: target makes CON save or is Stunned until your next turn", "cost": 1, "action": "Action", "level": 5},
+            {"name": "Superior Defense", "description": "Resistance to all damage except Force for 1 minute", "cost": 3, "action": "Action", "level": 18}
+          ]
         }
       ]
-    },
-    {
-      "name": "Patient Defense",
-      "description": "You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action."
-    },
-    {
-      "name": "Step of the Wind",
-      "description": "You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn."
     },
     {
       "name": "Unarmored Movement",
@@ -99,7 +100,8 @@
     },
     {
       "name": "Deflect Attacks",
-      "description": "When an attack roll hits you and its damage includes Bludgeoning, Piercing, or Slashing damage, you can take a Reaction to reduce the attack's total damage against you. The reduction equals 1d10 plus your Dexterity modifier and Monk level. If you reduce the damage to 0, you can expend 1 Focus Point to redirect some of the attack's force."
+      "description": "When an attack roll hits you and its damage includes Bludgeoning, Piercing, or Slashing damage, you can take a Reaction to reduce the attack's total damage against you. The reduction equals 1d10 plus your Dexterity modifier and Monk level. If you reduce the damage to 0, you can expend 1 Focus Point to redirect some of the attack's force.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Deflect Attacks", "description": "Reduce damage by 1d10 + DEX mod + Monk level; redirect if reduced to 0", "action": "Reaction"}]}]
     },
     {
       "name": "Monk Subclass",
@@ -112,7 +114,8 @@
     },
     {
       "name": "Slow Fall",
-      "description": "You can take a Reaction when you fall to reduce any damage you take from the fall by an amount equal to five times your Monk level."
+      "description": "You can take a Reaction when you fall to reduce any damage you take from the fall by an amount equal to five times your Monk level.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Slow Fall", "description": "Reduce fall damage by 5 \u00d7 Monk level", "action": "Reaction"}]}]
     },
     {
       "name": "Extra Attack",
@@ -187,20 +190,14 @@
   "levels": [
     {
       "features": [
-        "Bonus Unarmed Strike",
-        "Dexterous Attacks",
         "Martial Arts",
-        "Martial Arts Die",
         "Unarmored Defense",
         "Class Proficiencies"
       ]
     },
     {
       "features": [
-        "Flurry of Blows",
         "Monk's Focus",
-        "Patient Defense",
-        "Step of the Wind",
         "Unarmored Movement",
         "Uncanny Metabolism"
       ]

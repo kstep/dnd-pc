@@ -5,11 +5,7 @@
   "features": [
     {
       "name": "Divine Order",
-      "description": "You have dedicated yourself to one of the following sacred roles of your choice."
-    },
-    {
-      "name": "Protector",
-      "description": "Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor."
+      "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nProtector: Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\nThaumaturge: You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
     },
     {
       "name": "Spellcasting (Cleric)",
@@ -233,21 +229,10 @@
       }
     },
     {
-      "name": "Thaumaturge",
-      "description": "You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
-    },
-    {
       "name": "Channel Divinity",
-      "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).",
-      "stackable": true
-    },
-    {
-      "name": "Divine Spark",
-      "description": "As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18."
-    },
-    {
-      "name": "Turn Undead",
-      "description": "As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
+      "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns.",
+      "stackable": true,
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Divine Spark", "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18", "action": "Action"}, {"name": "Turn Undead", "description": "Each Undead within 30 ft makes WIS save or is Frightened and Incapacitated for 1 minute", "action": "Action"}]}]
     },
     {
       "name": "Cleric Subclass",
@@ -269,15 +254,7 @@
     },
     {
       "name": "Blessed Strikes",
-      "description": "Divine power infuses you in battle. You gain one of the following options of your choice (if you get either option from a Cleric subclass in an older book, use only the option you choose for this feature)."
-    },
-    {
-      "name": "Divine Strike",
-      "description": "Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause the target to take an extra 1d8 Necrotic or Radiant damage (your choice)."
-    },
-    {
-      "name": "Potent Spellcasting",
-      "description": "Add your Wisdom modifier to the damage you deal with any Cleric cantrip."
+      "description": "Divine power infuses you in battle. You gain one of the following options of your choice (if you get either option from a Cleric subclass in an older book, use only the option you choose for this feature).\n\nDivine Strike: Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause the target to take an extra 1d8 Necrotic or Radiant damage (your choice).\n\nPotent Spellcasting: Add your Wisdom modifier to the damage you deal with any Cleric cantrip."
     },
     {
       "name": "Divine Intervention",
@@ -306,17 +283,13 @@
     {
       "features": [
         "Divine Order",
-        "Protector",
         "Spellcasting (Cleric)",
-        "Thaumaturge",
         "Class Proficiencies"
       ]
     },
     {
       "features": [
-        "Channel Divinity",
-        "Divine Spark",
-        "Turn Undead"
+        "Channel Divinity"
       ]
     },
     {
@@ -341,9 +314,7 @@
     },
     {
       "features": [
-        "Blessed Strikes",
-        "Divine Strike",
-        "Potent Spellcasting"
+        "Blessed Strikes"
       ]
     },
     {

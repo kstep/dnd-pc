@@ -19,6 +19,14 @@
             "9": {"sides": 10, "amount": "max(1, CHA.MOD)"},
             "13": {"sides": 12, "amount": "max(1, CHA.MOD)"}
           }
+        },
+        {
+          "name": "Actions",
+          "label": "Действия",
+          "kind": "Choice",
+          "options": [
+            {"name": "Bardic Inspiration", "label": "Бардовское вдохновение", "description": "Дать существу в пределах 60 фт кость Вдохновения для прибавки к проваленному броску к20 в течение 1 часа", "action": "BonusAction"}
+          ]
         }
       ]
     },

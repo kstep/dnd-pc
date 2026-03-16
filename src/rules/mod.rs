@@ -15,8 +15,8 @@ pub use background::BackgroundDefinition;
 pub use cache::DefinitionStore;
 pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition, SubclassLevelRules};
 pub use feature::{
-    Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition, FieldDefinition,
-    FieldKind, ValueOrExpr, WhenCondition,
+    ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition,
+    FieldDefinition, FieldKind, ValueOrExpr, WhenCondition,
 };
 pub use index::{BackgroundIndexEntry, ClassIndexEntry, RaceIndexEntry, SpellIndexEntry};
 pub use race::{RaceDefinition, RaceTrait};

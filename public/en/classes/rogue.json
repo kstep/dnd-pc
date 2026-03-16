@@ -52,7 +52,12 @@
     },
     {
       "name": "Cunning Action",
-      "description": "Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide."
+      "description": "Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [
+        {"name": "Dash", "description": "Double your movement speed this turn", "action": "BonusAction"},
+        {"name": "Disengage", "description": "Your movement doesn't provoke opportunity attacks this turn", "action": "BonusAction"},
+        {"name": "Hide", "description": "Make a Stealth check to become hidden", "action": "BonusAction"}
+      ]}]
     },
     {
       "name": "Rogue Subclass",
@@ -60,7 +65,8 @@
     },
     {
       "name": "Steady Aim",
-      "description": "As a Bonus Action, you give yourself Advantage on your next attack roll on the current turn. You can use this feature only if you haven't moved during this turn, and after you use it, your Speed is 0 until the end of the current turn."
+      "description": "As a Bonus Action, you give yourself Advantage on your next attack roll on the current turn. You can use this feature only if you haven't moved during this turn, and after you use it, your Speed is 0 until the end of the current turn.",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Steady Aim", "description": "Advantage on your next attack roll this turn; Speed becomes 0", "action": "BonusAction"}]}]
     },
     {
       "name": "Ability Score Improvement",
@@ -73,7 +79,8 @@
     },
     {
       "name": "Uncanny Dodge",
-      "description": "When an attacker that you can see hits you with an attack roll, you can take a Reaction to halve the attack's damage against you (round down)."
+      "description": "When an attacker that you can see hits you with an attack roll, you can take a Reaction to halve the attack's damage against you (round down).",
+      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Uncanny Dodge", "description": "Halve one attack's damage against you (round down)", "action": "Reaction"}]}]
     },
     {
       "name": "Evasion",
