@@ -476,6 +476,16 @@ pub enum FieldKind {
 }
 
 impl FieldKind {
+    pub fn has_levels(&self) -> bool {
+        match self {
+            Self::Points { levels, .. } => !levels.is_empty(),
+            Self::Choice { levels, .. } => !levels.is_empty(),
+            Self::Die { levels } => !levels.is_empty(),
+            Self::Bonus { levels } => !levels.is_empty(),
+            Self::FreeUses { levels } => !levels.is_empty(),
+        }
+    }
+
     pub fn to_value(&self, level: u32, character: &Character) -> FeatureValue {
         match self {
             Self::Die { levels } => FeatureValue::Die {

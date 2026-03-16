@@ -101,10 +101,12 @@ pub fn ClassReference() -> impl IntoView {
                 let field_columns: Vec<FieldColumn<'_>> = def
                     .features(subname.as_deref())
                     .flat_map(|f| {
-                        f.fields.values().map(|fd| FieldColumn {
-                            label: fd.label().to_string(),
-                            kind: &fd.kind,
-                        })
+                        f.fields.values().filter(|fd| fd.kind.has_levels()).map(
+                            |fd| FieldColumn {
+                                label: fd.label().to_string(),
+                                kind: &fd.kind,
+                            },
+                        )
                     })
                     .collect();
 
