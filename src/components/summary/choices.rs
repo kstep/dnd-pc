@@ -106,6 +106,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                         None if options.is_empty() && !info.action_options.is_empty() => EitherOf3::A({
                             let items = info.action_options
                                 .iter()
+                                .filter(|opt| opt.cost <= points)
                                 .map(|opt| {
                                     let opt_cost = opt.cost;
                                     let can_cast = cost_field.is_some() && opt_cost > 0 && opt_cost <= points;
