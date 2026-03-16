@@ -893,7 +893,8 @@
         },
         {
           "name": "Tactical Wit",
-          "description": "Your keen ability to assess tactical situations allows you to act quickly in battle. You can give yourself a bonus to your initiative rolls equal to your Intelligence modifier."
+          "description": "Your keen ability to assess tactical situations allows you to act quickly in battle. You can give yourself a bonus to your initiative rolls equal to your Intelligence modifier.",
+          "assign": [{"expr": "INITIATIVE.BONUS += INT.MOD", "when": "OnCompute"}]
         },
         {
           "name": "Power Surge",
@@ -957,7 +958,8 @@
         },
         {
           "name": "Temporal Awareness",
-          "description": "You can add your Intelligence modifier to your initiative rolls."
+          "description": "You can add your Intelligence modifier to your initiative rolls.",
+          "assign": [{"expr": "INITIATIVE.BONUS += INT.MOD", "when": "OnCompute"}]
         },
         {
           "name": "Momentary Stasis",

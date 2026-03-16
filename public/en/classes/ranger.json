@@ -541,7 +541,8 @@
       "features": [
         {
           "name": "Dread Ambusher",
-          "description": "You have mastered the art of creating fearsome ambushes, granting you the following benefits. You add your Wisdom modifier to your Initiative rolls. Ambusher's Leap: At the start of your first turn of each combat, your Speed increases by 10 feet until the end of that turn. Dreadful Strike: When you attack a creature and hit it with a weapon, you can deal an extra 2d6 Psychic damage."
+          "description": "You have mastered the art of creating fearsome ambushes, granting you the following benefits. You add your Wisdom modifier to your Initiative rolls. Ambusher's Leap: At the start of your first turn of each combat, your Speed increases by 10 feet until the end of that turn. Dreadful Strike: When you attack a creature and hit it with a weapon, you can deal an extra 2d6 Psychic damage.",
+          "assign": [{"expr": "INITIATIVE.BONUS += WIS.MOD", "when": "OnCompute"}]
         },
         {
           "name": "Gloom Stalker",
