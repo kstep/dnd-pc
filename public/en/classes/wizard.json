@@ -2,9 +2,6 @@
   "name": "Wizard",
   "description": "A scholarly magic-user capable of manipulating the structures of reality.",
   "hit_die": 6,
-  "proficiencies": [
-    4
-  ],
   "features": [
     {
       "name": "Arcane Recovery",
@@ -269,11 +266,11 @@
     {
       "name": "Signature Spells",
       "description": "Choose two level 3 spells in your spellbook as your signature spells. You always have these spells prepared, and you can cast each of them once at level 3 without expending a spell slot. When you do so, you can't cast them in this way again until you finish a Short Rest or Long Rest. To cast either spell at a higher level, you must expend a spell slot. You can change your choices whenever you finish a Long Rest."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -282,7 +279,7 @@
         "Arcane Recovery",
         "Ritual Adept",
         "Spellcasting (Wizard)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

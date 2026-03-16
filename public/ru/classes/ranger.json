@@ -3,13 +3,6 @@
   "label": "Следопыт",
   "description": "Воитель, противостоящий угрозам на краю цивилизации.",
   "hit_die": 10,
-  "proficiencies": [
-    0,
-    1,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Favored Enemy",
@@ -316,12 +309,12 @@
       "name": "Foe Slayer",
       "label": "Убийца врагов",
       "description": "Вы становитесь неумолимым охотником на своих врагов. Один раз в каждый свой ход, когда вы попадаете по существу атакой, вы можете нанести ему дополнительно 1к10 урона силовым полем. Кроме того, каждый раз, когда вы бросаете Инициативу и у вас не осталось использований «Избранного врага», вы восстанавливаете одно использование."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -330,7 +323,7 @@
         "Favored Enemy",
         "Spellcasting (Ranger)",
         "Weapon Mastery (Ranger)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

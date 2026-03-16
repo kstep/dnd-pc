@@ -233,7 +233,9 @@ impl ProficiencyLevel {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, EnumIter, Display
+)]
 #[repr(u8)]
 pub enum Proficiency {
     #[strum(serialize = "Light Armor")]

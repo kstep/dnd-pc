@@ -3,9 +3,6 @@
   "label": "Волшебник",
   "description": "Учёный маг, способный управлять структурами реальности.",
   "hit_die": 6,
-  "proficiencies": [
-    4
-  ],
   "features": [
     {
       "name": "Arcane Recovery",
@@ -281,12 +278,12 @@
       "name": "Signature Spells",
       "label": "Именные заклинания",
       "description": "Выберите два заклинания 3-го уровня из вашей книги заклинаний в качестве именных заклинаний. Вы всегда имеете их подготовленными и можете использовать каждое один раз на 3-м уровне без траты ячейки. Использовав их так, вы не можете повторить до окончания короткого или продолжительного отдыха. Вы можете изменить выбор заклинаний после продолжительного отдыха."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -295,7 +292,7 @@
         "Arcane Recovery",
         "Ritual Adept",
         "Spellcasting (Wizard)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

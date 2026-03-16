@@ -2,10 +2,6 @@
   "name": "Warlock",
   "description": "A wielder of magic derived from a bargain with an extraplanar entity.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    4
-  ],
   "features": [
     {
       "name": "Eldritch Invocations",
@@ -413,11 +409,11 @@
     {
       "name": "Eldritch Master",
       "description": "When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -426,7 +422,7 @@
         "Eldritch Invocation Options",
         "Eldritch Invocations",
         "Pact Magic",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

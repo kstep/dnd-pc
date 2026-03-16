@@ -74,13 +74,6 @@ pub fn ClassReference() -> impl IntoView {
                 let description = def.description.clone();
                 let hit_die = format!("d{}", def.hit_die);
 
-                let proficiencies = def
-                    .proficiencies
-                    .iter()
-                    .map(|p| i18n.tr(p.tr_key()))
-                    .collect::<Vec<_>>()
-                    .join(", ");
-
                 // Find spellcasting feature (the one with spell slot levels, not just a spell list)
                 let spell_feat = def
                     .features(subname.as_deref())
@@ -260,10 +253,6 @@ pub fn ClassReference() -> impl IntoView {
                             <div class="info-item">
                                 <span class="info-label">{move_tr!("ref-hit-die")}</span>
                                 <span class="info-value">{hit_die}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">{move_tr!("proficiencies")}</span>
-                                <span class="info-value">{proficiencies}</span>
                             </div>
                             {(!prerequisites.is_empty()).then(|| view! {
                                 <div class="info-item">

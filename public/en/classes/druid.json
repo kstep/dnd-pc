@@ -2,11 +2,6 @@
   "name": "Druid",
   "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    3,
-    4
-  ],
   "features": [
     {
       "name": "Druidic",
@@ -302,11 +297,11 @@
     {
       "name": "Archdruid",
       "description": "The vitality of nature constantly blooms within you, granting you the following benefits. Evergreen Wild Shape: Whenever you roll Initiative and have no uses of Wild Shape left, you regain one expended use of it. Nature Magician: You can convert uses of Wild Shape into a spell slot (no action required). Choose a number of your unexpended uses of Wild Shape and convert them into a single spell slot, with each use contributing 2 spell levels. For example, you can convert two uses to create a level 4 spell slot. Once you use this benefit, you can't do so again until you finish a Long Rest. Longevity: For every ten years that pass, your body ages only one year."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -317,7 +312,7 @@
         "Primal Order",
         "Spellcasting (Druid)",
         "Warden",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

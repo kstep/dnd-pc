@@ -2,14 +2,6 @@
   "name": "Fighter",
   "description": "A master of martial combat, skilled with a variety of weapons and armor.",
   "hit_die": 10,
-  "proficiencies": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Fighting Style",
@@ -104,11 +96,11 @@
     {
       "name": "Three Extra Attacks",
       "description": "You can attack four times instead of once whenever you take the Attack action on your turn."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -117,7 +109,7 @@
         "Fighting Style",
         "Second Wind",
         "Weapon Mastery (Fighter)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

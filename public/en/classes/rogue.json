@@ -2,10 +2,6 @@
   "name": "Rogue",
   "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    4
-  ],
   "features": [
     {
       "name": "Expertise",
@@ -116,11 +112,11 @@
     {
       "name": "Stroke of Luck",
       "description": "You have a marvelous knack for succeeding when you need to. If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a Short Rest or Long Rest."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -130,7 +126,7 @@
         "Sneak Attack",
         "Thieves' Cant",
         "Weapon Mastery (Rogue)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

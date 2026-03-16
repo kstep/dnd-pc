@@ -2,14 +2,6 @@
   "name": "Paladin",
   "description": "A holy warrior bound to a sacred oath.",
   "hit_die": 10,
-  "proficiencies": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Lay on Hands",
@@ -268,11 +260,11 @@
       "name": "Epic Boon",
       "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Truesight is recommended.",
       "stackable": true
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -281,7 +273,7 @@
         "Lay on Hands",
         "Spellcasting (Paladin)",
         "Weapon Mastery (Paladin)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

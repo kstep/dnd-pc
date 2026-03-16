@@ -3,13 +3,6 @@
   "label": "Варвар",
   "description": "Свирепый воин, способный впадать в боевую ярость.",
   "hit_die": 12,
-  "proficiencies": [
-    0,
-    1,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Rage",
@@ -155,12 +148,12 @@
       "name": "Primal Champion",
       "label": "Первобытный чемпион",
       "description": "Вы воплощаете первобытную силу. Ваши значения Силы и Телосложения увеличиваются на 4, до максимума 25."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -169,7 +162,7 @@
         "Rage",
         "Unarmored Defense",
         "Weapon Mastery (Barbarian)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

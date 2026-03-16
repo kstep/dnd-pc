@@ -2,12 +2,6 @@
   "name": "Cleric",
   "description": "A priestly champion who wields divine magic in service of a higher power.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    1,
-    3,
-    4
-  ],
   "features": [
     {
       "name": "Divine Order",
@@ -301,11 +295,11 @@
     {
       "name": "Greater Divine Intervention",
       "description": "You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can't use Divine Intervention again until you finish 2d4 Long Rests."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -315,7 +309,7 @@
         "Protector",
         "Spellcasting (Cleric)",
         "Thaumaturge",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

@@ -602,6 +602,13 @@ impl expr::Context<Attribute> for Character {
                     }
                 });
             }
+            Attribute::EquipmentProficiency(prof) => {
+                if value != 0 {
+                    self.proficiencies.insert(prof);
+                } else {
+                    self.proficiencies.remove(&prof);
+                }
+            }
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
@@ -619,6 +626,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::Skill(skill) => Ok(self.skill_bonus(skill)),
             Attribute::SkillProficiency(skill) => Ok(self.skill_proficiency(skill).multiplier()),
             Attribute::SaveProficiency(ability) => Ok(self.proficient_with(ability) as i32),
+            Attribute::EquipmentProficiency(prof) => Ok(self.proficiencies.contains(&prof) as i32),
             Attribute::MaxHp => Ok(self.combat.hp_max as i32),
             Attribute::Hp => Ok(self.combat.hp_current as i32),
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),

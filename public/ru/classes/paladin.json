@@ -3,14 +3,6 @@
   "label": "Паладин",
   "description": "Святой воитель, связанный священной клятвой.",
   "hit_die": 10,
-  "proficiencies": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Lay on Hands",
@@ -289,12 +281,12 @@
       "label": "Эпический дар",
       "description": "Вы получаете черту «Эпический дар» или другую черту по вашему выбору, для которой вы соответствуете требованиям.",
       "stackable": true
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -303,7 +295,7 @@
         "Lay on Hands",
         "Spellcasting (Paladin)",
         "Weapon Mastery (Paladin)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

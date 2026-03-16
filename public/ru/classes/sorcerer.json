@@ -3,9 +3,6 @@
   "label": "Чародей",
   "description": "Заклинатель, черпающий врождённую магию из дара или родословной.",
   "hit_die": 6,
-  "proficiencies": [
-    4
-  ],
   "features": [
     {
       "name": "Innate Sorcery",
@@ -408,12 +405,12 @@
       "name": "Arcane Apotheosis",
       "label": "Мистический апофеоз",
       "description": "Пока активно ваше Врождённое чародейство, вы можете применять одну опцию метамагии в каждый свой ход, не тратя на неё очки чародейства."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -421,7 +418,7 @@
       "features": [
         "Innate Sorcery",
         "Spellcasting (Sorcerer)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, Skill};
+use crate::model::{Ability, Proficiency, Skill};
 
 #[derive(
     Debug,
@@ -22,6 +22,7 @@ pub enum Attribute {
     Skill(Skill),
     SkillProficiency(Skill),
     SaveProficiency(Ability),
+    EquipmentProficiency(Proficiency),
     MaxHp,
     Hp,
     TempHp,
@@ -65,6 +66,29 @@ fn parse_ability(s: &str) -> Option<Ability> {
         "WIS" => Some(Ability::Wisdom),
         "CHA" => Some(Ability::Charisma),
         _ => None,
+    }
+}
+
+fn parse_proficiency(s: &str) -> Option<Proficiency> {
+    match s {
+        "LIGHT_ARMOR" => Some(Proficiency::LightArmor),
+        "MEDIUM_ARMOR" => Some(Proficiency::MediumArmor),
+        "HEAVY_ARMOR" => Some(Proficiency::HeavyArmor),
+        "SHIELDS" => Some(Proficiency::Shields),
+        "SIMPLE_WEAPONS" => Some(Proficiency::SimpleWeapons),
+        "MARTIAL_WEAPONS" => Some(Proficiency::MartialWeapons),
+        _ => None,
+    }
+}
+
+fn proficiency_name(p: Proficiency) -> &'static str {
+    match p {
+        Proficiency::LightArmor => "LIGHT_ARMOR",
+        Proficiency::MediumArmor => "MEDIUM_ARMOR",
+        Proficiency::HeavyArmor => "HEAVY_ARMOR",
+        Proficiency::Shields => "SHIELDS",
+        Proficiency::SimpleWeapons => "SIMPLE_WEAPONS",
+        Proficiency::MartialWeapons => "MARTIAL_WEAPONS",
     }
 }
 
@@ -137,6 +161,11 @@ impl FromStr for Attribute {
                 }
                 return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
             }
+            if prefix == "PROF" {
+                return parse_proficiency(rest)
+                    .map(Self::EquipmentProficiency)
+                    .ok_or("unknown proficiency");
+            }
             if prefix == "INITIATIVE" {
                 return match rest {
                     "BONUS" => Ok(Self::InitiativeBonus),
@@ -204,6 +233,7 @@ impl fmt::Display for Attribute {
             Self::Skill(skill) => write!(f, "SKILL.{}", skill_abbr(*skill)),
             Self::SkillProficiency(skill) => write!(f, "SKILL.{}.PROF", skill_abbr(*skill)),
             Self::SaveProficiency(ability) => write!(f, "{}.SAVE.PROF", ability_abbr(*ability)),
+            Self::EquipmentProficiency(prof) => write!(f, "PROF.{}", proficiency_name(*prof)),
             Self::MaxHp => f.write_str("MAX_HP"),
             Self::Hp => f.write_str("HP"),
             Self::TempHp => f.write_str("TEMP_HP"),

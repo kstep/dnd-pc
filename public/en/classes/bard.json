@@ -2,10 +2,6 @@
   "name": "Bard",
   "description": "An inspiring magician whose power echoes the music of creation.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    4
-  ],
   "features": [
     {
       "name": "Bardic Inspiration",
@@ -299,11 +295,11 @@
     {
       "name": "Words of Creation",
       "description": "You have mastered two of the Words of Creation: the words of life and death. You therefore always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature with it if that creature is within 10 feet of the first target."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -311,7 +307,7 @@
       "features": [
         "Bardic Inspiration",
         "Spellcasting (Bard)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

@@ -2,9 +2,6 @@
   "name": "Sorcerer",
   "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
   "hit_die": 6,
-  "proficiencies": [
-    4
-  ],
   "features": [
     {
       "name": "Innate Sorcery",
@@ -384,11 +381,11 @@
     {
       "name": "Arcane Apotheosis",
       "description": "While your Innate Sorcery feature is active, you can use one Metamagic option on each of your turns without spending Sorcery Points on it."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -396,7 +393,7 @@
       "features": [
         "Innate Sorcery",
         "Spellcasting (Sorcerer)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

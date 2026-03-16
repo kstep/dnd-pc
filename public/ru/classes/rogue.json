@@ -3,10 +3,6 @@
   "label": "Плут",
   "description": "Пройдоха, использующий скрытность и хитрость для преодоления препятствий и врагов.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    4
-  ],
   "features": [
     {
       "name": "Expertise",
@@ -138,12 +134,12 @@
       "name": "Stroke of Luck",
       "label": "Удача",
       "description": "У вас есть удивительное умение добиваться успеха, когда это необходимо. Если вы проваливаете D20 тест, вы можете превратить результат в 20. Использовав это умение, вы не можете использовать его снова до завершения Короткого или Длительного отдыха."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -153,7 +149,7 @@
         "Sneak Attack",
         "Thieves' Cant",
         "Weapon Mastery (Rogue)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

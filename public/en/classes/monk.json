@@ -2,9 +2,6 @@
   "name": "Monk",
   "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
   "hit_die": 8,
-  "proficiencies": [
-    4
-  ],
   "features": [
     {
       "name": "Bonus Unarmed Strike",
@@ -165,11 +162,11 @@
     {
       "name": "Body and Mind",
       "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "description": "Saving throw proficiencies granted by this class.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "description": "Saving throw and equipment proficiencies granted by this class.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -180,7 +177,7 @@
         "Martial Arts",
         "Martial Arts Die",
         "Unarmored Defense",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

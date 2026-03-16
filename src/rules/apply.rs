@@ -132,11 +132,6 @@ impl RulesRegistry {
         // Record applied level and set hit die
         class_level.hit_die_sides = def.hit_die;
 
-        // Apply armor/weapon proficiencies
-        character.update_proficiencies(|proficiencies| {
-            proficiencies.extend(def.proficiencies.iter().cloned());
-        });
-
         // Apply class features: create SpellData, update slots, apply features
         let rules = def.levels.get(level as usize - 1);
         let subclass_rules = subclass

@@ -3,10 +3,6 @@
   "label": "Колдун",
   "description": "Обладатель магии, полученной по договору с потусторонней сущностью.",
   "hit_die": 8,
-  "proficiencies": [
-    0,
-    4
-  ],
   "features": [
     {
       "name": "Eldritch Invocations",
@@ -453,12 +449,12 @@
       "name": "Eldritch Master",
       "label": "Мистический мастер",
       "description": "Когда вы используете Магическую хитрость, вы восстанавливаете все потраченные ячейки Магии договора."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -467,7 +463,7 @@
         "Eldritch Invocation Options",
         "Eldritch Invocations",
         "Pact Magic",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {

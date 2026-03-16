@@ -3,14 +3,6 @@
   "label": "Воин",
   "description": "Мастер боевых искусств, владеющий разнообразным оружием и доспехами.",
   "hit_die": 10,
-  "proficiencies": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-  ],
   "features": [
     {
       "name": "Fighting Style",
@@ -123,12 +115,12 @@
       "name": "Three Extra Attacks",
       "label": "Три дополнительные атаки",
       "description": "Вы можете атаковать четырежды вместо одного раза каждый раз, когда совершаете действие Атака в свой ход."
-    }
+    },
     {
-      "name": "Saving Throw Proficiency",
-      "label": "Владение спасбросками",
-      "description": "Владение спасбросками от класса.",
-      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1", "when": "OnFeatureAdd"}]
+      "name": "Class Proficiencies",
+      "label": "Владение классом",
+      "description": "Владение спасбросками и снаряжением от класса.",
+      "assign": [{"expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1", "when": "OnFeatureAdd"}]
     }
   ],
   "levels": [
@@ -137,7 +129,7 @@
         "Fighting Style",
         "Second Wind",
         "Weapon Mastery (Fighter)",
-        "Saving Throw Proficiency"
+        "Class Proficiencies"
       ]
     },
     {
