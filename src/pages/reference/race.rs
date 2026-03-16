@@ -6,7 +6,6 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    model::{Translatable, format_bonus},
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -50,20 +49,6 @@ pub fn RaceReference() -> impl IntoView {
                 let title = def.label().to_string();
                 let description = def.description.clone();
 
-                let speed = def.speed;
-                let ability_mods = def
-                    .ability_modifiers
-                    .iter()
-                    .map(|am| {
-                        format!(
-                            "{} {}",
-                            i18n.tr(am.ability.tr_key()),
-                            format_bonus(am.modifier)
-                        )
-                    })
-                    .collect::<Vec<_>>()
-                    .join(", ");
-
                 let traits: Vec<(String, String, String)> = def
                     .traits
                     .values()
@@ -84,21 +69,6 @@ pub fn RaceReference() -> impl IntoView {
                     <div class="reference-detail">
                         <h1>{title}</h1>
                         <p class="reference-description">{description}</p>
-
-                        <div class="reference-info-bar">
-                            {(speed > 0).then(|| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("speed")}</span>
-                                    <span class="info-value">{format!("{speed} ft")}</span>
-                                </div>
-                            })}
-                            {(!ability_mods.is_empty()).then(|| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("ref-ability-mods")}</span>
-                                    <span class="info-value">{ability_mods}</span>
-                                </div>
-                            })}
-                        </div>
 
                         {(!traits.is_empty()).then(|| view! {
                             <h2>{move_tr!("racial-traits")}</h2>

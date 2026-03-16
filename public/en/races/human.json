@@ -1,7 +1,6 @@
 {
   "name": "Human",
   "description": "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.",
-  "speed": 30,
   "traits": [
     {
       "name": "Resourceful",

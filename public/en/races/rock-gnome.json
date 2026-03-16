@@ -1,7 +1,6 @@
 {
   "name": "Rock Gnome",
   "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

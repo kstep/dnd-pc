@@ -84,8 +84,7 @@
         }
       ],
       "assign": [
-        { "expr": "SPEED = SPEED + 10", "when": "OnFeatureAdd" },
-        { "expr": "SPEED = SPEED + 5 * ((CLASS_LEVEL + 2) / 4 - (CLASS_LEVEL + 1) / 4)", "when": "OnLevelUp" }
+        { "expr": "SPEED += 10 + 5 * ((CLASS_LEVEL - 2) / 4)", "when": "OnCompute" }
       ]
     },
     {

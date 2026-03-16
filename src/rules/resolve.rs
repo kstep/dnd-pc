@@ -68,6 +68,37 @@ pub(super) fn find_feature_with_source<'a>(
     None
 }
 
+/// Find a feature definition and the class level of the owning class
+/// (0 for non-class features). Single-pass replacement for
+/// `find_feature` + `feature_class_level`.
+pub(super) fn find_feature_with_class_level<'a>(
+    identity: &CharacterIdentity,
+    name: &str,
+    class_cache: &'a BTreeMap<Box<str>, ClassDefinition>,
+    bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
+    race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
+) -> Option<(&'a FeatureDefinition, u32)> {
+    for cl in &identity.classes {
+        if let Some(def) = class_cache.get(cl.class.as_str())
+            && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
+        {
+            return Some((feat, cl.level));
+        }
+    }
+
+    if let Some(feat) = bg_cache
+        .get(identity.background.as_str())
+        .and_then(|def| def.features.get(name))
+    {
+        return Some((feat, 0));
+    }
+
+    race_cache
+        .get(identity.race.as_str())
+        .and_then(|def| def.features.get(name))
+        .map(|feat| (feat, 0))
+}
+
 /// Return the class level for the class that owns the given feature.
 /// Returns `None` if the feature is not a class feature.
 pub(super) fn feature_class_level(

@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 
-use crate::expr::{Context, Error, Op, stack::Stack};
+use crate::expr::{Context, Error, Op, avg_hp, stack::Stack};
 
 pub trait Interpreter<Var> {
     type Output;
@@ -189,6 +189,10 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
         Op::Sum => {
             let count = stack.pop()? as usize;
             stack.pop_n_reduce(count, |vals| vals.iter().sum())?;
+        }
+        Op::AvgHp => {
+            let sides = stack.pop()?;
+            stack.push(avg_hp(sides));
         }
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
@@ -392,12 +396,7 @@ impl<Var: Copy + fmt::Display> Interpreter<Var> for Formatter {
     fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
         match op {
             Op::PushConst(n) => {
-                let text = if n < 0 {
-                    format!("({n})")
-                } else {
-                    n.to_string()
-                };
-                self.push(text, 3);
+                self.push(n.to_string(), 3);
             }
             Op::PushVar(var) => {
                 self.push(var.to_string(), 3);
@@ -438,6 +437,10 @@ impl<Var: Copy + fmt::Display> Interpreter<Var> for Formatter {
             Op::DropMin(n) => {
                 let roll = self.stack.pop()?;
                 self.push(format!("{}dl{n}", roll.text), 3);
+            }
+            Op::AvgHp => {
+                let sides = self.stack.pop()?;
+                self.push(format!("avg_hp({})", sides.text), 3);
             }
             Op::Assign(var) => {
                 let val = self.stack.pop()?;

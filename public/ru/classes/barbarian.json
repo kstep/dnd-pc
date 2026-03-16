@@ -104,7 +104,7 @@
       "label": "Быстрое передвижение",
       "description": "Ваша скорость увеличивается на 10 футов, пока на вас нет Тяжёлой брони.",
       "assign": [
-        { "expr": "SPEED = SPEED + 10", "when": "OnFeatureAdd" }
+        { "expr": "SPEED += 10", "when": "OnCompute" }
       ]
     },
     {

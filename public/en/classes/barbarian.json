@@ -90,7 +90,7 @@
       "name": "Fast Movement",
       "description": "Your speed increases by 10 feet while you aren't wearing Heavy armor.",
       "assign": [
-        { "expr": "SPEED = SPEED + 10", "when": "OnFeatureAdd" }
+        { "expr": "SPEED += 10", "when": "OnCompute" }
       ]
     },
     {

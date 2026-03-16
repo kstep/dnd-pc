@@ -1,7 +1,6 @@
 {
   "name": "Tiefling (Chthonic)",
   "description": "Your fiendish legacy connects you to the Underdark's deepest reaches, granting necrotic resistance and deathly spellcasting.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

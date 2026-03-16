@@ -1,8 +1,12 @@
 {
   "name": "Goliath",
   "description": "Goliaths are towering, powerful people descended from giants, driven by competition and a desire to prove themselves.",
-  "speed": 35,
   "traits": [
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 35 feet.",
+      "assign": [{ "expr": "SPEED = 35", "when": "OnCompute" }]
+    },
     {
       "name": "Powerful Build",
       "description": "You have advantage on saving throws to end the Grappled condition. You count as one size larger for carrying capacity."

@@ -19,7 +19,7 @@ pub use feature::{
     WhenCondition,
 };
 pub use index::{BackgroundIndexEntry, ClassIndexEntry, RaceIndexEntry, SpellIndexEntry};
-pub use race::{AbilityModifier, RaceDefinition, RaceTrait};
+pub use race::{RaceDefinition, RaceTrait};
 pub use registry::RulesRegistry;
 pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellsDefinition};
 pub use utils::get_for_level;

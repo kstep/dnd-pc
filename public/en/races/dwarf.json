@@ -1,7 +1,6 @@
 {
   "name": "Dwarf",
   "description": "Dwarves are solidly built, with broad shoulders and thick frames. They are known for their resilience, craftsmanship, and connection to stone.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",
@@ -15,8 +14,7 @@
       "name": "Dwarven Toughness",
       "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
       "assign": [
-        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnFeatureAdd" },
-        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnLevelUp" }
+        { "expr": "MAX_HP += LEVEL", "when": "OnCompute" }
       ]
     },
     {

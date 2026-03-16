@@ -2,7 +2,6 @@
   "name": "Drow",
   "label": "Дроу",
   "description": "Дроу — эльфы Подземья, известные своей врождённой магией и превосходным тёмным зрением.",
-  "speed": 30,
   "traits": [
     {
       "name": "Superior Darkvision",

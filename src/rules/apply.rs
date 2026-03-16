@@ -1,8 +1,12 @@
 use leptos::prelude::*;
 
-use super::{WhenCondition, resolve::find_feature, spells::SpellList};
+use super::{
+    WhenCondition,
+    resolve::{find_feature, find_feature_with_class_level},
+    spells::SpellList,
+};
 use crate::{
-    model::{Ability, Character, FeatureSource},
+    model::{Character, Context, FeatureSource},
     rules::RulesRegistry,
 };
 
@@ -17,55 +21,88 @@ impl RulesRegistry {
         self.assign(character, WhenCondition::OnShortRest);
     }
 
-    /// Evaluate assignment expressions across all features and racial traits
-    /// for rest/global events.
+    pub fn compute(&self, character: &mut Character) {
+        character.compute();
+        self.assign(character, WhenCondition::OnCompute);
+    }
+
+    /// Evaluate assignment expressions across all racial traits and features
+    /// for the given condition.
     ///
-    /// This intentionally uses a simpler evaluation path than
-    /// `FeatureDefinition::assign` (which uses a `Context` with class-level
-    /// awareness). Rest-time expressions operate on the full character without
-    /// per-feature class-level context, since rest effects are class-agnostic.
+    /// Racial traits are evaluated first (flat Character context), then
+    /// features with per-feature `Context` providing `CLASS_LEVEL`,
+    /// `CASTER_LEVEL`, and `CASTER_MODIFIER`.
     pub fn assign(&self, character: &mut Character, when: WhenCondition) {
         let class_cache = self.class_cache.read_untracked();
         let bg_cache = self.background_cache.read_untracked();
         let race_cache = self.race_cache.read_untracked();
 
-        let feature_exprs = character
-            .features
-            .iter()
-            .filter_map(|feat| {
-                let feat_def = find_feature(
-                    &character.identity,
-                    &feat.name,
-                    &class_cache,
-                    &bg_cache,
-                    &race_cache,
-                )?;
-                Some(
-                    feat_def
-                        .assign
-                        .iter()
-                        .flat_map(|a| a.iter())
-                        .filter(|a| a.when == when)
-                        .map(|a| a.expr.clone())
-                        .collect::<Vec<_>>(),
-                )
-            })
-            .flatten();
-
-        let trait_exprs = race_cache
+        // Racial traits first (e.g. speed override, Dwarf Toughness)
+        let trait_exprs: Vec<_> = race_cache
             .get(character.identity.race.as_str())
             .into_iter()
             .flat_map(|race_def| race_def.traits.values())
             .filter_map(|racial_trait| racial_trait.assign.as_ref())
             .flat_map(|assignments| assignments.iter())
             .filter(|a| a.when == when)
-            .map(|a| a.expr.clone());
+            .map(|a| a.expr.clone())
+            .collect();
 
-        let exprs: Vec<_> = feature_exprs.chain(trait_exprs).collect();
-
-        for expr in exprs {
+        for expr in trait_exprs {
             if let Err(error) = expr.apply(character) {
-                log::error!("Failed to apply rest assignment: {error:?}");
+                log::error!("Failed to apply trait assignment: {error:?}");
+            }
+        }
+
+        // Collect per-feature info: (expressions, class_level, caster_level,
+        // caster_modifier). Uses find_feature_with_class_level for a single-pass
+        // lookup. The Vec is necessary because we need &mut character in the loop.
+        let feature_entries: Vec<_> = character
+            .features
+            .iter()
+            .filter_map(|feat| {
+                let (feat_def, class_level) = find_feature_with_class_level(
+                    &character.identity,
+                    &feat.name,
+                    &class_cache,
+                    &bg_cache,
+                    &race_cache,
+                )?;
+                let exprs: Vec<_> = feat_def
+                    .assign
+                    .iter()
+                    .flat_map(|a| a.iter())
+                    .filter(|a| a.when == when)
+                    .map(|a| a.expr.clone())
+                    .collect();
+                if exprs.is_empty() {
+                    return None;
+                }
+                let (caster_level, caster_modifier) = feat_def
+                    .spells
+                    .as_ref()
+                    .map(|s| {
+                        (
+                            character.caster_level(s.pool) as i32,
+                            character.ability_modifier(s.casting_ability),
+                        )
+                    })
+                    .unwrap_or((0, 0));
+                Some((exprs, class_level as i32, caster_level, caster_modifier))
+            })
+            .collect();
+
+        for (exprs, class_level, caster_level, caster_modifier) in feature_entries {
+            let mut ctx = Context {
+                character,
+                class_level,
+                caster_level,
+                caster_modifier,
+            };
+            for expr in exprs {
+                if let Err(error) = expr.apply(&mut ctx) {
+                    log::error!("Failed to apply assignment: {error:?}");
+                }
             }
         }
     }
@@ -124,16 +161,6 @@ impl RulesRegistry {
             }
         }
 
-        // Apply HP gain
-        let con_mod = character.ability_modifier(Ability::Constitution);
-        let hp_gain = if level == 1 {
-            def.hit_die as i32 + con_mod
-        } else {
-            (def.hit_die as i32) / 2 + 1 + con_mod
-        };
-
-        character.gain_hp_max(hp_gain);
-
         // Re-apply race and background features at new total level
         // (unlocks level-gated spells, e.g. Tiefling's Infernal Legacy)
         let total_level = character.level();
@@ -153,6 +180,12 @@ impl RulesRegistry {
                 feat.apply(total_level, character, &source);
             }
         }
+
+        // Recompute all derived stats (HP, AC, speed) + OnCompute assignments
+        let old_hp_max = character.hp_max();
+        self.compute(character);
+        let hp_delta = character.hp_max().saturating_sub(old_hp_max);
+        character.combat.hp_current += hp_delta;
     }
 
     /// Trigger spell list fetches for all feature data entries that reference

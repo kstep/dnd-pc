@@ -37,15 +37,6 @@ pub fn CombatPanel() -> impl IntoView {
                                 }
                             }
                         />
-                        <button
-                            class="btn-icon"
-                            title=move_tr!("recalculate-ac")
-                            on:click=move |_| {
-                                store.update(|c| { c.computed_armor_class(); });
-                            }
-                        >
-                            <Icon name="refresh-cw" size=14 />
-                        </button>
                     </div>
                 </div>
                 <div class="combat-stat">
@@ -253,6 +244,17 @@ pub fn CombatPanel() -> impl IntoView {
                     }
                 >
                     {move_tr!("long-rest")}
+                </button>
+                <button
+                    class="btn-rest"
+                    title=move_tr!("recalculate")
+                    on:click=move |_| {
+                        store.update(|ch| registry.compute(ch));
+                    }
+                >
+                    <Icon name="refresh-cw" size=14 />
+                    " "
+                    {move_tr!("recalculate")}
                 </button>
             </div>
             </div>

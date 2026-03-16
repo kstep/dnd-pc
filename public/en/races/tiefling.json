@@ -1,7 +1,6 @@
 {
   "name": "Tiefling",
   "description": "Tieflings are derived from human bloodlines touched by the Lower Planes, bearing an infernal, abyssal, or chthonic legacy.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

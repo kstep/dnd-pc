@@ -44,6 +44,7 @@ pub enum WhenCondition {
     OnFeatureAdd,
     OnLevelUp,
     OnLongRest,
+    OnCompute,
     OnShortRest,
 }
 

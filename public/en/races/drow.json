@@ -1,7 +1,6 @@
 {
   "name": "Drow",
   "description": "Drow are elves of the Underdark, known for their innate magic and superior darkvision.",
-  "speed": 30,
   "traits": [
     {
       "name": "Superior Darkvision",

@@ -1,7 +1,6 @@
 {
   "name": "Tiefling (Abyssal)",
   "description": "Your fiendish legacy connects you to the Abyss, granting poison resistance and toxic spellcasting.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

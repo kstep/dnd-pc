@@ -16,6 +16,9 @@ use crate::{
     vecset::VecSet,
 };
 
+/// Default walking speed in feet (most races).
+const DEFAULT_SPEED: u32 = 30;
+
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
 const SPELL_SLOT_TABLE: &[&[u32]] = &[
@@ -219,7 +222,7 @@ impl Character {
     /// 1. All non-shield armor formulas → pick the max (or `10 + DEX.MOD`)
     /// 2. Set AC so shield formulas can read it
     /// 3. All shield formulas → pick the max
-    pub fn computed_armor_class(&mut self) -> u32 {
+    pub fn compute_armor_class(&mut self) -> u32 {
         let default_ac = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
 
         // Best body armor (non-shield)
@@ -228,8 +231,16 @@ impl Character {
             .armors
             .iter()
             .filter(|a| a.armor_type != ArmorType::Shield)
-            .filter_map(|a| a.ac_expr.as_ref())
-            .filter_map(|expr| expr.eval(self).ok())
+            .filter_map(|a| {
+                let expr = a.ac_expr.as_ref()?;
+                match expr.eval(self) {
+                    Ok(v) => Some(v),
+                    Err(e) => {
+                        log::warn!("AC expr eval failed for '{}': {e}", a.name);
+                        None
+                    }
+                }
+            })
             .max()
             .map(|v| v.max(0) as u32)
             .unwrap_or(default_ac);
@@ -243,14 +254,61 @@ impl Character {
             .armors
             .iter()
             .filter(|a| a.armor_type == ArmorType::Shield)
-            .filter_map(|a| a.ac_expr.as_ref())
-            .filter_map(|expr| expr.eval(self).ok())
+            .filter_map(|a| {
+                let expr = a.ac_expr.as_ref()?;
+                match expr.eval(self) {
+                    Ok(v) => Some(v),
+                    Err(e) => {
+                        log::warn!("AC expr eval failed for '{}': {e}", a.name);
+                        None
+                    }
+                }
+            })
             .max()
         {
             self.combat.armor_class = shield_ac.max(0) as u32;
         }
 
         self.combat.armor_class
+    }
+
+    /// Compute base max HP from class levels and CON modifier.
+    ///
+    /// Formula: for each class, `hit_die_sides` at level 1 +
+    /// `avg_hp(hit_die_sides)` for each subsequent level, plus
+    /// `total_level * CON modifier`.
+    pub fn compute_hp_max(&mut self) -> u32 {
+        let con_mod = self.ability_modifier(Ability::Constitution);
+        let mut total_level: i32 = 0;
+        let base: i32 = self
+            .identity
+            .classes
+            .iter()
+            .map(|cl| {
+                total_level += cl.level as i32;
+                let sides = cl.hit_die_sides as i32;
+                sides + (cl.level as i32 - 1) * expr::avg_hp(sides)
+            })
+            .sum();
+        let total = (base + total_level * con_mod).max(0) as u32;
+        self.combat.hp_max = total;
+        total
+    }
+
+    /// Reset speed to the default walking speed (30 ft).
+    /// Race/feature `OnCompute` assignments override this.
+    pub fn compute_speed(&mut self) -> u32 {
+        self.combat.speed = DEFAULT_SPEED;
+        DEFAULT_SPEED
+    }
+
+    /// Recompute all base combat stats (AC, HP, speed).
+    /// Call `RulesRegistry::assign(character, OnCompute)` after this
+    /// to apply feature bonuses.
+    pub fn compute(&mut self) {
+        self.compute_armor_class();
+        self.compute_hp_max();
+        self.compute_speed();
     }
 
     /// Returns (caster_level, caster_class_count) for the given pool in a
@@ -491,6 +549,9 @@ impl Default for Character {
 impl expr::Context<Attribute> for Character {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
+            Attribute::Ability(ability) => {
+                self.abilities.set(ability, value.max(1) as u32);
+            }
             Attribute::MaxHp => {
                 self.combat.hp_max = value as u32;
             }
@@ -512,7 +573,7 @@ impl expr::Context<Attribute> for Character {
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
-            other => return Err(expr::Error::read_only_field(other)),
+            other => return Err(expr::Error::read_only_var(other)),
         }
 
         Ok(())
@@ -1319,7 +1380,7 @@ pub mod tests {
         );
     }
 
-    // --- computed_armor_class ---
+    // --- compute_armor_class ---
 
     fn make_armor(name: &str, base_ac: u32, armor_type: ArmorType, expr_str: &str) -> Armor {
         Armor {
@@ -1339,7 +1400,7 @@ pub mod tests {
         // DEX 14 → modifier +2 → 10 + 2 = 12
         let mut ch = test_character();
         ch.equipment.armors.clear();
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 12);
     }
 
@@ -1348,7 +1409,7 @@ pub mod tests {
         // Leather: 11 + DEX.MOD(+2) = 13
         let mut ch = test_character();
         ch.equipment.armors = vec![make_armor("Leather", 11, ArmorType::Light, "11 + DEX.MOD")];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 13);
     }
 
@@ -1362,7 +1423,7 @@ pub mod tests {
             ArmorType::Medium,
             "13 + min(DEX.MOD, 2)",
         )];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 15);
     }
 
@@ -1371,7 +1432,7 @@ pub mod tests {
         // Plate: 18
         let mut ch = test_character();
         ch.equipment.armors = vec![make_armor("Plate", 18, ArmorType::Heavy, "18")];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 18);
     }
 
@@ -1383,7 +1444,7 @@ pub mod tests {
             make_armor("Plate", 18, ArmorType::Heavy, "18"),
             make_armor("Shield", 2, ArmorType::Shield, "AC + 2"),
         ];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 20);
     }
 
@@ -1397,7 +1458,7 @@ pub mod tests {
             ArmorType::Natural,
             "10 + DEX.MOD + CON.MOD",
         )];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 13);
     }
 
@@ -1415,7 +1476,64 @@ pub mod tests {
                 "10 + DEX.MOD + CON.MOD",
             ),
         ];
-        let ac = ch.computed_armor_class();
+        let ac = ch.compute_armor_class();
         assert_eq!(ac, 18);
+    }
+
+    // --- compute_hp_max ---
+
+    #[wasm_bindgen_test]
+    fn compute_hp_max_single_class() {
+        // Fighter level 5, d10, CON 12 (mod +1)
+        // base = 10 + 4 * avg_hp(10) = 10 + 4 * 6 = 34
+        // con = 5 * 1 = 5
+        // total = 39
+        let mut ch = test_character();
+        let hp = ch.compute_hp_max();
+        assert_eq!(hp, 39);
+        assert_eq!(ch.combat.hp_max, 39);
+    }
+
+    #[wasm_bindgen_test]
+    fn compute_hp_max_multiclass() {
+        // Fighter 5 (d10) + Wizard 2 (d6), CON 12 (mod +1), total level 7
+        // Fighter: 10 + 4 * 6 = 34
+        // Wizard: 6 + 1 * 4 = 10
+        // con = 7 * 1 = 7
+        // total = 51
+        let mut ch = test_character();
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            class_label: None,
+            subclass: None,
+            subclass_label: None,
+            level: 2,
+            hit_die_sides: 6,
+            hit_dice_used: 0,
+            applied_levels: VecSet::new(),
+        });
+        let hp = ch.compute_hp_max();
+        assert_eq!(hp, 51);
+    }
+
+    #[wasm_bindgen_test]
+    fn compute_hp_max_negative_con() {
+        // Fighter level 5, d10, CON 6 (mod -2)
+        // base = 10 + 4 * 6 = 34
+        // con = 5 * (-2) = -10
+        // total = 24
+        let mut ch = test_character();
+        ch.abilities.constitution = 6;
+        let hp = ch.compute_hp_max();
+        assert_eq!(hp, 24);
+    }
+
+    #[wasm_bindgen_test]
+    fn compute_speed_resets_to_default() {
+        let mut ch = test_character();
+        ch.combat.speed = 50;
+        let speed = ch.compute_speed();
+        assert_eq!(speed, 30);
+        assert_eq!(ch.combat.speed, 30);
     }
 }

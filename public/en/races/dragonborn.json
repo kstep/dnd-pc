@@ -1,7 +1,6 @@
 {
   "name": "Dragonborn",
   "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

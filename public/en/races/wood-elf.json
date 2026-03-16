@@ -1,8 +1,12 @@
 {
   "name": "Wood Elf",
   "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests.",
-  "speed": 35,
   "traits": [
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 35 feet.",
+      "assign": [{ "expr": "SPEED = 35", "when": "OnCompute" }]
+    },
     {
       "name": "Darkvision",
       "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."

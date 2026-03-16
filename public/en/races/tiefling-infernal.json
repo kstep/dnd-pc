@@ -1,7 +1,6 @@
 {
   "name": "Tiefling (Infernal)",
   "description": "Your fiendish legacy connects you to the Nine Hells, granting fire resistance and infernal spellcasting.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

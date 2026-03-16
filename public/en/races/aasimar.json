@@ -1,7 +1,6 @@
 {
   "name": "Aasimar",
   "description": "Aasimar bear within their souls the light of the heavens, granting them celestial power and a touch of the divine.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

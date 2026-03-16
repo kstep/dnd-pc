@@ -2,21 +2,17 @@
   "name": "Soldier",
   "label": "Солдат",
   "description": "Вы начали готовиться к войне ещё в юности, упражняясь с оружием и совершая марш-броски в тяжёлых доспехах. Ужасы сражений закалили вашу решимость и дали вам беспощадное преимущество в бою.",
-  "ability_modifiers": [
-    {
-      "ability": 0,
-      "modifier": 2
-    },
-    {
-      "ability": 2,
-      "modifier": 1
-    }
-  ],
   "proficiencies": [
     3,
     7
   ],
   "features": [
+    {
+      "name": "Background Abilities",
+      "label": "Бонус характеристик",
+      "description": "Повышение характеристик от предыстории.",
+      "assign": [{"expr": "STR += 2; CON += 1", "when": "OnFeatureAdd"}]
+    },
     {
       "name": "Savage Attacker",
       "label": "Дикий боец",

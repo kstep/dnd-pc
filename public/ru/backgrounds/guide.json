@@ -2,21 +2,17 @@
   "name": "Guide",
   "label": "Проводник",
   "description": "Вы взрослели на природе, вдали от цивилизации, и научились выживать в дикой местности. Вы умело ориентируетесь на бездорожье и можете находить пищу и пресную воду для себя и других.",
-  "ability_modifiers": [
-    {
-      "ability": 4,
-      "modifier": 2
-    },
-    {
-      "ability": 1,
-      "modifier": 1
-    }
-  ],
   "proficiencies": [
     16,
     17
   ],
   "features": [
+    {
+      "name": "Background Abilities",
+      "label": "Бонус характеристик",
+      "description": "Повышение характеристик от предыстории.",
+      "assign": [{"expr": "WIS += 2; DEX += 1", "when": "OnFeatureAdd"}]
+    },
     {
       "name": "Magic Initiate (Druid)",
       "label": "Посвящённый в магию (Друид)",

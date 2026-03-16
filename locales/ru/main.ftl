@@ -62,7 +62,7 @@ panel-notes = Заметки
 
 ## Панель боя
 armor-class = Класс защиты
-recalculate-ac = Пересчитать КЗ
+recalculate = Пересчитать
 initiative = Инициатива
 speed = Скорость
 inspiration = Вдохновение

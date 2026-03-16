@@ -2,21 +2,17 @@
   "name": "Sailor",
   "label": "Моряк",
   "description": "Вы провели годы на борту корабля, работая матросом, штурманом или даже старшим помощником. Открытое море научило вас ловкости, острой наблюдательности и умению постоять за себя в жёсткой потасовке.",
-  "ability_modifiers": [
-    {
-      "ability": 1,
-      "modifier": 2
-    },
-    {
-      "ability": 4,
-      "modifier": 1
-    }
-  ],
   "proficiencies": [
     0,
     11
   ],
   "features": [
+    {
+      "name": "Background Abilities",
+      "label": "Бонус характеристик",
+      "description": "Повышение характеристик от предыстории.",
+      "assign": [{"expr": "DEX += 2; WIS += 1", "when": "OnFeatureAdd"}]
+    },
     {
       "name": "Tavern Brawler",
       "label": "Кабацкий боец",

@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::{feature::FeatureDefinition, race::AbilityModifier};
+use super::feature::FeatureDefinition;
 use crate::{
     demap,
     model::{Character, FeatureSource, ProficiencyLevel, Skill},
@@ -15,8 +15,6 @@ pub struct BackgroundDefinition {
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
-    #[serde(default)]
-    pub ability_modifiers: Vec<AbilityModifier>,
     #[serde(default)]
     pub proficiencies: VecSet<Skill>,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -31,10 +29,6 @@ impl BackgroundDefinition {
     pub fn apply(&self, character: &mut Character) {
         if !character.identity.background_applied {
             character.identity.background_applied = true;
-
-            for am in &self.ability_modifiers {
-                character.modify_ability(am.ability, am.modifier);
-            }
 
             character.update_skill_proficiencies(|skills| {
                 for &skill in &self.proficiencies {

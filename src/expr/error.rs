@@ -8,7 +8,7 @@ pub enum Error {
     StackUnderflow,
     EmptyExpression,
     DivisionByZero,
-    ReadOnlyField(Box<str>),
+    ReadOnlyVar(Box<str>),
     AssignAtEval(Box<str>),
     UnsupportedVar(Box<str>),
     DicePoolExhausted(u32),
@@ -25,8 +25,8 @@ impl Error {
         Self::UnexpectedToken(format!("{token:?}").into_boxed_str())
     }
 
-    pub fn read_only_field<T: fmt::Display>(var: T) -> Self {
-        Self::ReadOnlyField(format!("{var}").into_boxed_str())
+    pub fn read_only_var<T: fmt::Display>(var: T) -> Self {
+        Self::ReadOnlyVar(format!("{var}").into_boxed_str())
     }
 
     pub fn assign_at_eval<T: fmt::Display>(var: T) -> Self {
@@ -43,7 +43,7 @@ impl fmt::Display for Error {
             Error::StackUnderflow => write!(f, "stack underflow"),
             Error::EmptyExpression => write!(f, "empty expression"),
             Error::DivisionByZero => write!(f, "division by zero"),
-            Error::ReadOnlyField(var) => write!(f, "cannot assign to read-only field: {var}"),
+            Error::ReadOnlyVar(var) => write!(f, "cannot assign to read-only variable: {var}"),
             Error::UnsupportedVar(var) => write!(f, "unsupported variable: {var}"),
             Error::AssignAtEval(var) => {
                 write!(f, "cannot assign to field during evaluation: {var}")

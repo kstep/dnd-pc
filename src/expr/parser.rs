@@ -53,9 +53,9 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
         self.tokens.next().transpose()
     }
 
-    fn expect(&mut self, expected: &Token) -> Result<(), Error> {
+    fn expect(&mut self, expected: impl FnOnce(&Token<'a>) -> bool) -> Result<(), Error> {
         match self.next()? {
-            Some(ref token) if token == expected => Ok(()),
+            Some(ref token) if expected(token) => Ok(()),
             Some(token) => Err(Error::unexpected_token(token)),
             None => Err(Error::UnexpectedEnd),
         }
@@ -120,7 +120,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
 
     // unary = '-' unary | dice
     fn parse_unary(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
-        if self.peek() == Some(&Token::Minus) {
+        if let Some(Token::Minus) = self.peek() {
             self.next()?;
             if let Some(&Token::Num(n)) = self.peek() {
                 self.next()?;
@@ -140,7 +140,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     // dice = atom ('d' atom ('kh' num | 'kl' num)?)?
     // Also handle bare 'd' with implicit 1: d20 = 1d20
     fn parse_dice(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
-        if self.peek() == Some(&Token::D) {
+        if let Some(Token::D) = self.peek() {
             self.next()?;
             ops.push(Op::PushConst(1));
             self.parse_atom(ops)?;
@@ -151,7 +151,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
 
         self.parse_atom(ops)?;
 
-        if self.peek() == Some(&Token::D) {
+        if let Some(Token::D) = self.peek() {
             self.next()?;
             self.parse_atom(ops)?;
             ops.push(Op::Roll);
@@ -220,7 +220,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
             }
             Some(Token::LParen) => {
                 self.parse_expr(ops)?;
-                self.expect(&Token::RParen)?;
+                self.expect(|token| matches!(token, Token::RParen))?;
                 Ok(())
             }
             Some(token) => Err(Error::unexpected_token(token)),
@@ -238,6 +238,10 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
                 self.parse_binary_function_call(ops)?;
                 ops.push(Op::Max);
             }
+            "avg_hp" => {
+                self.parse_unary_function_call(ops)?;
+                ops.push(Op::AvgHp);
+            }
             _ => return Err(Error::unexpected_token(name)),
         }
 
@@ -245,11 +249,18 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     fn parse_binary_function_call(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
-        self.expect(&Token::LParen)?;
+        self.expect(|token| matches!(token, Token::LParen))?;
         self.parse_expr(ops)?;
-        self.expect(&Token::Comma)?;
+        self.expect(|token| matches!(token, Token::Comma))?;
         self.parse_expr(ops)?;
-        self.expect(&Token::RParen)?;
+        self.expect(|token| matches!(token, Token::RParen))?;
+        Ok(())
+    }
+
+    fn parse_unary_function_call(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        self.parse_expr(ops)?;
+        self.expect(|token| matches!(token, Token::RParen))?;
         Ok(())
     }
 
@@ -273,7 +284,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
             {
                 // Speculatively consume ident, check for '=' or compound
                 self.next()?;
-                if self.peek() == Some(&Token::Eq) {
+                if let Some(Token::Eq) = self.peek() {
                     self.next()?;
                     self.parse_expr(ops)?;
                     ops.push(Op::Assign(var));

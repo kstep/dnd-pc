@@ -1,7 +1,6 @@
 {
   "name": "Orc",
   "description": "Orcs are hardy, powerful people who trace their creation to Gruumsh. They are known for their endurance and ferocity.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",

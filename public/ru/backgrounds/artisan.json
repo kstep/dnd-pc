@@ -2,21 +2,17 @@
   "name": "Artisan",
   "label": "Ремесленник",
   "description": "Вы начали мыть полы и драить прилавки в мастерской ремесленника за несколько медяков в день, как только смогли поднять ведро. Со временем вы освоили ремесло и стали признанным мастером.",
-  "ability_modifiers": [
-    {
-      "ability": 3,
-      "modifier": 2
-    },
-    {
-      "ability": 5,
-      "modifier": 1
-    }
-  ],
   "proficiencies": [
     8,
     13
   ],
   "features": [
+    {
+      "name": "Background Abilities",
+      "label": "Бонус характеристик",
+      "description": "Повышение характеристик от предыстории.",
+      "assign": [{"expr": "INT += 2; CHA += 1", "when": "OnFeatureAdd"}]
+    },
     {
       "name": "Crafter",
       "label": "Умелец",

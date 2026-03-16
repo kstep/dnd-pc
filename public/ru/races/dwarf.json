@@ -2,7 +2,6 @@
   "name": "Dwarf",
   "label": "Дварф",
   "description": "Дварфы крепко сложены, с широкими плечами и коренастыми телами. Они известны своей стойкостью, мастерством и связью с камнем.",
-  "speed": 30,
   "traits": [
     {
       "name": "Darkvision",
@@ -19,8 +18,7 @@
       "label": "Дварфийская выносливость",
       "description": "Ваш максимум хитов увеличивается на 1, и он увеличивается на 1 каждый раз, когда вы получаете уровень.",
       "assign": [
-        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnFeatureAdd" },
-        { "expr": "MAX_HP = MAX_HP + 1", "when": "OnLevelUp" }
+        { "expr": "MAX_HP += LEVEL", "when": "OnCompute" }
       ]
     },
     {

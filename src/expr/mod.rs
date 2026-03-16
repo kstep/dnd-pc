@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt, marker::PhantomData, ops::Deref, str::FromStr};
+use std::{collections::BTreeMap, fmt, marker::PhantomData, ops::Deref, str::FromStr, sync::Arc};
 
 use serde::{Deserialize, Deserializer, Serialize, de};
 
@@ -17,6 +17,11 @@ use crate::expr::{
     parser::Parser,
 };
 
+/// Average hit points per level for a given hit die: `sides / 2 + 1`.
+pub const fn avg_hp(sides: i32) -> i32 {
+    sides / 2 + 1
+}
+
 pub trait Context<Var> {
     fn assign(&mut self, var: Var, value: i32) -> Result<(), Error>;
     fn resolve(&self, var: Var) -> Result<i32, Error>;
@@ -24,7 +29,7 @@ pub trait Context<Var> {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(transparent)]
-pub struct Expr<Var>(Vec<Op<Var>>);
+pub struct Expr<Var>(Arc<[Op<Var>]>);
 
 impl<Var> Deref for Expr<Var> {
     type Target = [Op<Var>];
@@ -80,7 +85,7 @@ impl<Var: FromStr + Copy> FromStr for Expr<Var> {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Parser::new(s).parse().map(Self)
+        Parser::new(s).parse().map(Vec::into).map(Self)
     }
 }
 
@@ -100,8 +105,9 @@ impl<'de, Var: FromStr + Copy + Deserialize<'de>> Deserialize<'de> for Expr<Var>
             }
 
             fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var>, A::Error> {
-                let ops = Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
-                Ok(Expr(ops))
+                let ops: Vec<Op<Var>> =
+                    Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
+                Ok(Expr(ops.into()))
             }
 
             fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Expr<Var>, A::Error> {
@@ -110,7 +116,7 @@ impl<'de, Var: FromStr + Copy + Deserialize<'de>> Deserialize<'de> for Expr<Var>
                     ops: Vec<Op<Var>>,
                 }
                 let fields = ExprFields::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                Ok(Expr(fields.ops))
+                Ok(Expr(fields.ops.into()))
             }
         }
 
@@ -129,6 +135,7 @@ pub enum Op<Var> {
     DivCeil,  // \
     Min,
     Max,
+    AvgHp,
     Roll,         // 2d20 -> 2 20 Roll Sum
     KeepMax(u32), // 2d20kh1 -> 2 20 Roll KeepMax(1)
     KeepMin(u32),
@@ -260,8 +267,8 @@ mod tests {
         // 10 + CHA + DEX
         let expr: Expr = "10 + CHA + DEX".parse().unwrap();
         assert_eq!(
-            expr.0,
-            vec![
+            &*expr,
+            &[
                 Op::PushConst(10),
                 Op::PushVar(Var::Modifier(Ability::Charisma)),
                 Op::Add,
@@ -280,8 +287,8 @@ mod tests {
 
         let expr: Expr = "AC + 5; AC - 5; (AC - 5) * 2".parse().unwrap();
         assert_eq!(
-            expr.0,
-            vec![
+            &*expr,
+            &[
                 Op::PushVar(Var::Ac),
                 Op::PushConst(5),
                 Op::Add,
@@ -336,14 +343,14 @@ mod tests {
     fn dice_parse() {
         let expr: Expr = "2d6".parse().unwrap();
         assert_eq!(
-            expr.0,
-            vec![Op::PushConst(2), Op::PushConst(6), Op::Roll, Op::Sum]
+            &*expr,
+            &[Op::PushConst(2), Op::PushConst(6), Op::Roll, Op::Sum]
         );
 
         let expr: Expr = "4d6kh3".parse().unwrap();
         assert_eq!(
-            expr.0,
-            vec![Op::PushConst(4), Op::PushConst(6), Op::Roll, Op::KeepMax(3)]
+            &*expr,
+            &[Op::PushConst(4), Op::PushConst(6), Op::Roll, Op::KeepMax(3)]
         );
     }
 
@@ -519,5 +526,23 @@ mod tests {
         // Subtraction does not propagate (x - a + b ≠ x - (a + b))
         let expr: Expr = "AC = AC - DEX + 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC = AC - DEX + 2");
+    }
+
+    #[wasm_bindgen_test]
+    fn average_dice() {
+        let expr: Expr = "avg_hp(6)".parse().unwrap();
+        assert_eq!(expr.to_string(), "avg_hp(6)");
+
+        let ch = test_character();
+        assert_eq!(expr.eval(&ch).unwrap(), 4);
+
+        for (sides, expected) in [(4, 3), (6, 4), (8, 5), (10, 6), (12, 7), (20, 11)] {
+            let expr: Expr = format!("avg_hp({sides})").parse().unwrap();
+            assert_eq!(
+                expr.eval(&ch).unwrap(),
+                expected,
+                "avg_hp({sides}) should be {expected}"
+            );
+        }
     }
 }

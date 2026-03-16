@@ -5,7 +5,7 @@ use serde::Deserialize;
 use super::feature::{Assignment, FeatureDefinition, WhenCondition};
 use crate::{
     demap::{self, Named},
-    model::{Ability, Character, FeatureSource, RacialTrait},
+    model::{Character, FeatureSource, RacialTrait},
     vecset::VecSet,
 };
 
@@ -48,21 +48,11 @@ impl Named for RaceTrait {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct AbilityModifier {
-    pub ability: Ability,
-    pub modifier: i32,
-}
-
-#[derive(Debug, Clone, Deserialize)]
 pub struct RaceDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
     pub description: String,
-    #[serde(default)]
-    pub speed: u32,
-    #[serde(default)]
-    pub ability_modifiers: Vec<AbilityModifier>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub traits: BTreeMap<Box<str>, RaceTrait>,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -77,14 +67,6 @@ impl RaceDefinition {
     pub fn apply(&self, character: &mut Character) {
         if !character.identity.race_applied {
             character.identity.race_applied = true;
-
-            if self.speed > 0 {
-                character.combat.speed = self.speed;
-            }
-
-            for am in &self.ability_modifiers {
-                character.modify_ability(am.ability, am.modifier);
-            }
 
             for racial_trait in self.traits.values() {
                 character.racial_traits.push(RacialTrait {
