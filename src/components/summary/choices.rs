@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use leptos::{either::Either, prelude::*};
+use leptos::{prelude::*, tachys::view::any_view::AnyView};
 use leptos_fluent::I18n;
 use reactive_stores::Store;
 
@@ -23,16 +23,14 @@ struct ChoiceFieldInfo {
     action_options: Vec<ChoiceOption>,
 }
 
-/// Build a choice/action subsection from an iterator of items.
-fn choice_items_view(
+/// Build SummaryListItems from an iterator of choice/action items.
+fn build_choice_items(
     items: impl Iterator<Item = (String, String, u32, Option<ActionType>)>,
     points: u32,
     spend_cost: Option<Callback<u32>>,
-    short: Option<String>,
-    label: String,
     i18n: &I18n,
-) -> Option<AnyView> {
-    let items: Vec<_> = items
+) -> Vec<SummaryListItem> {
+    items
         .filter(|(_, _, cost, _)| *cost <= points)
         .map(|(name, description, cost, action)| {
             let action_icon = action.map(|a| {
@@ -71,21 +69,13 @@ fn choice_items_view(
                 },
             }
         })
-        .collect();
+        .collect()
+}
 
-    if items.is_empty() {
-        return None;
-    }
-    let style = short.map(|s| format!("--points-symbol: '{s}'"));
-    Some(
-        view! {
-            <div class="summary-subsection" style=style>
-                <h4 class="summary-subsection-title">{label}</h4>
-                <SummaryList items=items />
-            </div>
-        }
-        .into_any(),
-    )
+/// A group of choice items to be rendered under a shared header.
+struct ChoiceGroup {
+    short: Option<String>,
+    items: Vec<SummaryListItem>,
 }
 
 #[component]
@@ -110,186 +100,227 @@ pub fn ChoicesBlock() -> impl IntoView {
 
         let char_level = store.read().level();
         let id = identity.read();
-        features
-            .iter()
-            .filter_map(|(feat_name, entry)| {
-                let fields = registry.with_feature(&id, feat_name, |feat| {
-                    feat.fields
-                        .iter()
-                        .filter_map(|(name, def)| {
-                            let FieldKind::Choice { options, cost, .. } = &def.kind else {
-                                return None;
-                            };
 
-                            let from = if let ChoiceOptions::Ref { from } = options {
-                                Some(from.clone())
-                            } else {
-                                None
-                            };
+        // Collect grouped choice items and standalone ref-based views
+        let mut groups: BTreeMap<String, ChoiceGroup> = BTreeMap::new();
+        let mut ref_views: Vec<AnyView> = Vec::new();
 
-                            let points = cost
-                                .as_deref()
-                                .and_then(|cost| remaining_points.get(cost))
-                                .copied()
-                                .unwrap_or_default();
+        for (feat_name, entry) in features.iter() {
+            let Some(fields) = registry.with_feature(&id, feat_name, |feat| {
+                feat.fields
+                    .iter()
+                    .filter_map(|(name, def)| {
+                        let FieldKind::Choice { options, cost, .. } = &def.kind else {
+                            return None;
+                        };
 
-                            // Collect action options from definition
-                            let action_options = match options {
-                                ChoiceOptions::List(list) => list
-                                    .iter()
-                                    .filter(|o| o.action.is_some() && o.level <= char_level)
-                                    .cloned()
-                                    .collect(),
-                                _ => Vec::new(),
-                            };
+                        let from = if let ChoiceOptions::Ref { from } = options {
+                            Some(from.clone())
+                        } else {
+                            None
+                        };
 
-                            Some((name.to_string(), ChoiceFieldInfo {
+                        let points = cost
+                            .as_deref()
+                            .and_then(|cost| remaining_points.get(cost))
+                            .copied()
+                            .unwrap_or_default();
+
+                        let action_options = match options {
+                            ChoiceOptions::List(list) => list
+                                .iter()
+                                .filter(|o| o.action.is_some() && o.level <= char_level)
+                                .cloned()
+                                .collect(),
+                            _ => Vec::new(),
+                        };
+
+                        Some((
+                            name.to_string(),
+                            ChoiceFieldInfo {
                                 points,
                                 from,
                                 cost: cost.clone(),
                                 action_options,
-                            }))
-                        })
-                        .collect::<BTreeMap<_, _>>()
-                })?;
+                            },
+                        ))
+                    })
+                    .collect::<BTreeMap<_, _>>()
+            }) else {
+                continue;
+            };
 
-                let feat_name = feat_name.clone();
-                let id = &id;
-                Some(entry.fields.iter().enumerate().filter_map(
-                    move |(field_index, field)| {
-                        let info = fields.get(&field.name)?;
-                        let short =
-                            info.cost.as_deref().and_then(|c| registry.get_points_short(id, c));
-                        let points = info.points;
+            for (field_index, field) in entry.fields.iter().enumerate() {
+                let Some(info) = fields.get(&field.name) else {
+                    continue;
+                };
+                let short = info
+                    .cost
+                    .as_deref()
+                    .and_then(|c| registry.get_points_short(&id, c));
+                let points = info.points;
 
-                        let spend_cost =
-                            info.cost.as_ref().map(|c| StoredValue::new(c.clone())).map(
-                                |cfn| {
-                                    Callback::new(move |opt_cost: u32| {
-                                        cfn.with_value(|cost_name| {
-                                            feature_data.update(|map| {
-                                                for entry in map.values_mut() {
-                                                    if let Some(field) = entry
-                                                        .fields
-                                                        .iter_mut()
-                                                        .find(|f| f.name == *cost_name)
-                                                        && let FeatureValue::Points { used, max } =
-                                                            &mut field.value
-                                                    {
-                                                        *used = (*used + opt_cost).min(*max);
-                                                        break;
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    })
-                                },
-                            );
-
-                        let FeatureValue::Choice { options } = &field.value else {
-                            return None;
-                        };
-
-                        Some(match &info.from {
-                            // Action menu: definition options with action types
-                            None if options.is_empty() && !info.action_options.is_empty() => {
-                                Either::Left(choice_items_view(
-                                    info.action_options.iter().map(|opt| {
-                                        (
-                                            opt.label().to_string(),
-                                            opt.description.clone(),
-                                            opt.cost,
-                                            opt.action,
-                                        )
-                                    }),
-                                    points,
-                                    spend_cost,
-                                    short,
-                                    field.label().to_string(),
-                                    &i18n,
-                                ))
-                            }
-                            // Regular stored choices
-                            None => Either::Left(choice_items_view(
-                                options.iter().map(|opt| {
-                                    (
-                                        opt.label().to_string(),
-                                        opt.description.clone(),
-                                        opt.cost,
-                                        None,
-                                    )
-                                }),
-                                points,
-                                spend_cost,
-                                short,
-                                field.label().to_string(),
-                                &i18n,
-                            )),
-                            // Ref-based choices (dropdown selects)
-                            Some(from) => Either::Right({
-                                let from_field =
-                                    entry.fields.iter().find(|field| &field.name == from)?;
-                                let FeatureValue::Choice { options: from_options } =
-                                    &from_field.value
-                                else {
-                                    return None;
-                                };
-                                let from_options = StoredValue::new(from_options.clone());
-                                let feat_name = feat_name.clone();
-                                let feat_name = StoredValue::new(feat_name);
-
-                                let choice_entry_factory =
-                                    move |(index, current): (usize, &FeatureOption)| {
-                                        let current_name = current.name.clone();
-                                        view! {
-                                            <div class="choice-entry">
-                                                <select on:change={move |event| {
-                                                    let value = event_target_value(&event);
-                                                    from_options.with_value(|opts| {
-                                                        let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
-                                                            return;
-                                                        };
-                                                        feat_name.with_value(|name| {
-                                                            feature_data.update(|features| {
-                                                                if let Some(entry) = features.get_mut(name)
-                                                                    && let Some(field) = entry.fields.get_mut(field_index)
-                                                                    && let FeatureValue::Choice { options } = &mut field.value
-                                                                    && let Some(option) = options.get_mut(index)
-                                                                {
-                                                                    option.clone_from(selected_option);
-                                                                }
-                                                            });
-                                                        });
-                                                    });
-                                                }}>
-                                                    <option value="">""</option>
-                                                    {from_options.with_value(|opts| opts.iter().map(|opt| {
-                                                        view! {
-                                                            <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
-                                                        }
-                                                    }).collect_view())}
-                                                </select>
-                                            </div>
+                let spend_cost =
+                    info.cost
+                        .as_ref()
+                        .map(|c| StoredValue::new(c.clone()))
+                        .map(|cfn| {
+                            Callback::new(move |opt_cost: u32| {
+                                cfn.with_value(|cost_name| {
+                                    feature_data.update(|map| {
+                                        for entry in map.values_mut() {
+                                            if let Some(field) = entry
+                                                .fields
+                                                .iter_mut()
+                                                .find(|f| f.name == *cost_name)
+                                                && let FeatureValue::Points { used, max } =
+                                                    &mut field.value
+                                            {
+                                                *used = (*used + opt_cost).min(*max);
+                                                break;
+                                            }
                                         }
-                                    };
+                                    });
+                                });
+                            })
+                        });
 
-                                Some(
-                                    view! {
-                                        <div class="summary-subsection">
-                                            <h4 class="summary-subsection-title">{field.label().to_string()}</h4>
-                                            <div class="choice-list">
-                                                {options.iter().enumerate().map(choice_entry_factory).collect_view()}
-                                            </div>
-                                        </div>
-                                    }
-                                    .into_any(),
+                let FeatureValue::Choice { options } = &field.value else {
+                    continue;
+                };
+
+                let label = field.label().to_string();
+
+                match &info.from {
+                    // Action menu or regular stored choices — group by label
+                    None if options.is_empty() && !info.action_options.is_empty() => {
+                        let items = build_choice_items(
+                            info.action_options.iter().map(|opt| {
+                                (
+                                    opt.label().to_string(),
+                                    opt.description.clone(),
+                                    opt.cost,
+                                    opt.action,
                                 )
                             }),
-                        })
-                    },
-                ))
+                            points,
+                            spend_cost,
+                            &i18n,
+                        );
+                        let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
+                            short: short.clone(),
+                            items: Vec::new(),
+                        });
+                        group.items.extend(items);
+                    }
+                    None => {
+                        let items = build_choice_items(
+                            options.iter().map(|opt| {
+                                (
+                                    opt.label().to_string(),
+                                    opt.description.clone(),
+                                    opt.cost,
+                                    None,
+                                )
+                            }),
+                            points,
+                            spend_cost,
+                            &i18n,
+                        );
+                        let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
+                            short: short.clone(),
+                            items: Vec::new(),
+                        });
+                        group.items.extend(items);
+                    }
+                    // Ref-based choices (dropdown selects) — render standalone
+                    Some(from) => {
+                        let Some(from_field) =
+                            entry.fields.iter().find(|field| &field.name == from)
+                        else {
+                            continue;
+                        };
+                        let FeatureValue::Choice {
+                            options: from_options,
+                        } = &from_field.value
+                        else {
+                            continue;
+                        };
+                        let from_options = StoredValue::new(from_options.clone());
+                        let feat_name = StoredValue::new(feat_name.clone());
+
+                        let choice_entry_factory = move |(index, current): (
+                            usize,
+                            &FeatureOption,
+                        )| {
+                            let current_name = current.name.clone();
+                            view! {
+                                <div class="choice-entry">
+                                    <select on:change={move |event| {
+                                        let value = event_target_value(&event);
+                                        from_options.with_value(|opts| {
+                                            let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
+                                                return;
+                                            };
+                                            feat_name.with_value(|name| {
+                                                feature_data.update(|features| {
+                                                    if let Some(entry) = features.get_mut(name)
+                                                        && let Some(field) = entry.fields.get_mut(field_index)
+                                                        && let FeatureValue::Choice { options } = &mut field.value
+                                                        && let Some(option) = options.get_mut(index)
+                                                    {
+                                                        option.clone_from(selected_option);
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    }}>
+                                        <option value="">""</option>
+                                        {from_options.with_value(|opts| opts.iter().map(|opt| {
+                                            view! {
+                                                <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
+                                            }
+                                        }).collect_view())}
+                                    </select>
+                                </div>
+                            }
+                        };
+
+                        ref_views.push(
+                            view! {
+                                <div class="summary-subsection">
+                                    <h4 class="summary-subsection-title">{label}</h4>
+                                    <div class="choice-list">
+                                        {options.iter().enumerate().map(choice_entry_factory).collect_view()}
+                                    </div>
+                                </div>
+                            }
+                            .into_any(),
+                        );
+                    }
+                }
+            }
+        }
+
+        // Render grouped sections
+        let grouped_views: Vec<AnyView> = groups
+            .into_iter()
+            .filter(|(_, group)| !group.items.is_empty())
+            .map(|(label, group)| {
+                let style = group.short.map(|s| format!("--points-symbol: '{s}'"));
+                view! {
+                    <div class="summary-subsection" style=style>
+                        <h4 class="summary-subsection-title">{label}</h4>
+                        <SummaryList items=group.items />
+                    </div>
+                }
+                .into_any()
             })
-            .flatten()
-            .collect_view()
+            .collect();
+
+        view! {
+            {grouped_views}
+            {ref_views}
+        }
     }
 }
