@@ -1,39 +1,17 @@
-name: Deploy to GitHub Pages
+name: Deploy branch preview
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: pages
+  group: preview-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Install wasm-bindgen-cli
-        run: cargo install wasm-bindgen-cli --version 0.2.112
-
-      - name: Run tests
-        run: cargo test --target wasm32-unknown-unknown
-        env:
-          WASM_BINDGEN_USE_BROWSER: 1
-
   build:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,9 +26,9 @@ jobs:
         uses: jetli/trunk-action@v0.5.0
 
       - name: Build
-        run: trunk build --release --public-url /dnd-pc/
+        run: trunk build --release --public-url /dnd-pc/preview/${{ github.ref_name }}/
         env:
-          BASE_URL: /dnd-pc
+          BASE_URL: /dnd-pc/preview/${{ github.ref_name }}
 
       - name: Optimize WASM with wasm-opt
         run: |
@@ -65,7 +43,7 @@ jobs:
       - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
-          name: main-build
+          name: preview-build
           path: dist
 
   deploy:
@@ -75,11 +53,11 @@ jobs:
       - name: Download build output
         uses: actions/download-artifact@v4
         with:
-          name: main-build
+          name: preview-build
           path: dist
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy preview to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
-          clean-exclude: preview
+          target-folder: preview/${{ github.ref_name }}
