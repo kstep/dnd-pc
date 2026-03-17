@@ -114,7 +114,9 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         let pending = self.pending;
         let path: Box<str> = path.into();
         leptos::task::spawn_local(async move {
-            let data_result = fetch_json::<T>(&data_url).await;
+            // Fetch data and locale in parallel
+            let (data_result, locale_result) =
+                futures::join!(fetch_json::<T>(&data_url), fetch_json::<L>(&locale_url));
             pending.update_untracked(|s| {
                 s.remove(&name);
             });
@@ -126,7 +128,7 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
                     });
                     // Apply locale and store localized version
                     let mut localized = val;
-                    match fetch_json::<L>(&locale_url).await {
+                    match locale_result {
                         Ok(locale) => apply(&mut localized, &locale),
                         Err(error) => {
                             log::warn!("Failed to fetch locale for {error_ctx}: {error}");

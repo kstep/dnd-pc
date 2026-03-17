@@ -137,8 +137,12 @@ impl RulesRegistry {
             let data_url = format!("{BASE_URL}/data/index.json");
             let locale_url = format!("{BASE_URL}/{locale}/index.json");
             async move {
-                let mut index = fetch_json::<Index>(&data_url).await?;
-                if let Ok(locale_map) = fetch_json::<locale::IndexLocaleMap>(&locale_url).await {
+                let (data_result, locale_result) = futures::join!(
+                    fetch_json::<Index>(&data_url),
+                    fetch_json::<locale::IndexLocaleMap>(&locale_url),
+                );
+                let mut index = data_result?;
+                if let Ok(locale_map) = locale_result {
                     locale::apply_index_locale(&mut index, &locale_map);
                 }
                 Ok(index)
@@ -150,8 +154,12 @@ impl RulesRegistry {
             let data_url = format!("{BASE_URL}/data/effects.json");
             let locale_url = format!("{BASE_URL}/{locale}/effects.json");
             async move {
-                let mut effects = fetch_json::<EffectsIndex>(&data_url).await?;
-                if let Ok(locale_map) = fetch_json::<locale::EffectsLocaleMap>(&locale_url).await {
+                let (data_result, locale_result) = futures::join!(
+                    fetch_json::<EffectsIndex>(&data_url),
+                    fetch_json::<locale::EffectsLocaleMap>(&locale_url),
+                );
+                let mut effects = data_result?;
+                if let Ok(locale_map) = locale_result {
                     locale::apply_effects_locale(&mut effects, &locale_map);
                 }
                 Ok(effects)
