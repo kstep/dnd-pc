@@ -587,15 +587,14 @@ impl RulesRegistry {
             &bg_cache,
             &race_cache,
             &spell_list_cache,
-            // Fill: set label if None
+            // Fill: always overwrite label from definition (supports locale
+            // switching without a separate clear_all_labels step).
             |target, source| {
-                if target.is_none() {
-                    *target = source.map(String::from);
-                }
+                *target = source.map(String::from);
             },
-            // Fill: set description if empty
+            // Fill: always overwrite description from definition.
             |target, source| {
-                if target.is_empty() && !source.is_empty() {
+                if !source.is_empty() {
                     source.clone_into(target);
                 }
             },

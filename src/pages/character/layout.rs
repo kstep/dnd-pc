@@ -88,19 +88,9 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         });
     });
 
-    // On locale change: clear all labels and descriptions so
-    // fill_from_registry re-fills them from the new locale.
-    let i18n = expect_context::<leptos_fluent::I18n>();
-    let prev_lang = RwSignal::new(i18n.language.get_untracked().id);
-    Effect::new(move || {
-        let current = i18n.language.get().id;
-        if current != prev_lang.get_untracked() {
-            prev_lang.set(current);
-            store.update(|c| {
-                c.clear_all_labels();
-            });
-        }
-    });
+    // No separate locale-change effect needed — fill_from_registry always
+    // overwrites labels/descriptions, so when caches update with new locale
+    // data, fill re-runs and applies the new labels directly.
 
     let name = Memo::new(move |_| store.identity().name().get());
     let class_summary = Memo::new(move |_| store.read().class_summary());
