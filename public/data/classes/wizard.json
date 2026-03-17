@@ -242,10 +242,6 @@
       "name": "Memorize Spell"
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Spell Mastery"
     },
     {
@@ -295,9 +291,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []
@@ -311,9 +305,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []
@@ -327,9 +319,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []

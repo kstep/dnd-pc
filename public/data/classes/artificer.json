@@ -604,10 +604,6 @@
       "stackable": true
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Magic Item Tinker"
     },
     {
@@ -666,9 +662,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -686,9 +680,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -714,9 +706,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

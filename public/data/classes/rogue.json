@@ -115,10 +115,6 @@
       "name": "Reliable Talent"
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Improved Cunning Strike"
     },
     {
@@ -196,9 +192,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -216,9 +210,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -236,9 +228,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

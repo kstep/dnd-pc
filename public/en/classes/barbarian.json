@@ -41,9 +41,6 @@
   "feature.Fast Movement": {
     "description": "Your speed increases by 10 feet while you aren't wearing Heavy armor."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Barbarian subclass."
-  },
   "feature.Feral Instinct": {
     "description": "Your instincts are so honed that you have Advantage on Initiative rolls."
   },
@@ -53,11 +50,26 @@
   "feature.Brutal Strike": {
     "description": "If you use Reckless Attack, you can forgo any Advantage on one Strength-based attack roll of your choice on your turn. The chosen attack roll mustn't have Disadvantage. If the chosen attack roll hits, the target takes an extra 1d10 damage of the same type dealt by the weapon or Unarmed Strike, and you can cause one Brutal Strike effect of your choice. You have the following effect options. Forceful Blow. The target is pushed 15 feet straight away from you. You can then move up to 15 feet straight toward the target without provoking Opportunity Attacks. Hamstring Blow. The target's Speed is reduced by 15 feet until the start of your next turn. A target can be affected by only one Hamstring Blow at a time."
   },
+  "feature.Brutal Strike.field.Actions.option.Forceful Blow": {
+    "description": "Push target 15 ft away, then move 15 ft toward it without provoking OAs"
+  },
+  "feature.Brutal Strike.field.Actions.option.Hamstring Blow": {
+    "description": "Target's Speed reduced by 15 ft until start of your next turn"
+  },
+  "feature.Brutal Strike.field.Actions.option.Staggering Blow": {
+    "description": "Target has Disadvantage on next save and can't make OAs until start of your next turn"
+  },
+  "feature.Brutal Strike.field.Actions.option.Sundering Blow": {
+    "description": "Target's AC reduced by Rage Damage bonus until start of your next turn"
+  },
   "feature.Relentless Rage": {
     "description": "Your Rage can keep you fighting despite grievous wounds. If you drop to 0 Hit Points while your Rage is active and don't die outright, you can make a DC 10 Constitution saving throw. If you succeed, your Hit Points instead change to a number equal to twice your Barbarian level. Each time you use this feature after the first, the DC increases by 5."
   },
   "feature.Improved Brutal Strike": {
-    "description": "You have honed new ways to attack furiously. The following effects are now among your Brutal Strike options. Staggering Blow. The target has Disadvantage on the next saving throw it makes, and it can't make Opportunity Attacks until the start of your next turn. Sundering Blow. Before the first damage roll for the Brutal Strike, the target's AC is reduced by an amount equal to your Rage Damage bonus. This reduction lasts until the start of your next turn, and a target can be affected by only one Sundering Blow at a time. At level 17, your Brutal Strike damage increases to 2d10. In addition, you can use two different Brutal Strike effects whenever you use your Brutal Strike."
+    "description": "You have honed new ways to attack furiously. The following effects are now among your Brutal Strike options. Staggering Blow. The target has Disadvantage on the next saving throw it makes, and it can't make Opportunity Attacks until the start of your next turn. Sundering Blow. Before the first damage roll for the Brutal Strike, the target's AC is reduced by an amount equal to your Rage Damage bonus. This reduction lasts until the start of your next turn, and a target can be affected by only one Sundering Blow at a time."
+  },
+  "feature.Improved Brutal Strike 2": {
+    "description": "Your Brutal Strike damage increases to 2d10. In addition, you can use two different Brutal Strike effects whenever you use your Brutal Strike."
   },
   "feature.Persistent Rage": {
     "description": "When you roll Initiative, you can regain all expended uses of Rage. After you regain uses of Rage in this way, you can't do so again until you finish a Long Rest. In addition, your Rage is so fierce that it now lasts for 10 minutes without you needing to do anything to extend it from round to round."

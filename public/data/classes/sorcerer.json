@@ -6,12 +6,21 @@
       "name": "Innate Sorcery",
       "fields": [
         {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "1": 2
+          }
+        },
+        {
           "name": "Actions",
           "kind": "Choice",
+          "cost": "Free Uses",
           "options": [
             {
               "name": "Innate Sorcery",
-              "action": "BonusAction"
+              "action": "BonusAction",
+              "cost": 1
             }
           ]
         }
@@ -349,10 +358,6 @@
       "name": "Sorcerer Subclass"
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Ability Score Improvement",
       "stackable": true
     },
@@ -409,9 +414,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -444,9 +447,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []
@@ -462,9 +463,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

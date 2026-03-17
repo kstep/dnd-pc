@@ -209,18 +209,24 @@
     },
     {
       "name": "Channel Divinity",
-      "stackable": true
-    },
-    {
-      "name": "Divine Sense",
       "fields": [
+        {
+          "name": "Channel Divinity",
+          "kind": "Points",
+          "levels": {
+            "3": 2,
+            "11": 3
+          }
+        },
         {
           "name": "Actions",
           "kind": "Choice",
+          "cost": "Channel Divinity",
           "options": [
             {
               "name": "Divine Sense",
-              "action": "BonusAction"
+              "action": "BonusAction",
+              "cost": 1
             }
           ]
         }
@@ -241,10 +247,6 @@
     },
     {
       "name": "Aura of Protection"
-    },
-    {
-      "name": "Subclass Feature",
-      "stackable": true
     },
     {
       "name": "Abjure Foes"
@@ -293,7 +295,6 @@
     {
       "features": [
         "Channel Divinity",
-        "Divine Sense",
         "Paladin Subclass"
       ]
     },
@@ -314,9 +315,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -352,9 +351,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -375,9 +372,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     }
   ],
   "subclasses": [

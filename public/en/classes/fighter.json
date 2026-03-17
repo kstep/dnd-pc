@@ -21,6 +21,9 @@
   "feature.Action Surge": {
     "description": "You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action, except the Magic action. Once you use this feature, you can't do so again until you finish a Short Rest or Long Rest. Starting at level 17, you can use it twice before a rest but only once on a turn."
   },
+  "feature.Action Surge.field.Free Uses": {
+    "label": "Action Surge"
+  },
   "feature.Action Surge.field.Actions.option.Action Surge": {
     "description": "Take one additional action (except Magic) this turn"
   },
@@ -39,11 +42,14 @@
   "feature.Tactical Shift": {
     "description": "Whenever you activate your Second Wind with a Bonus Action, you can move up to half your Speed without provoking Opportunity Attack."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Fighter Subclass."
-  },
   "feature.Indomitable": {
     "description": "If you fail a saving throw, you can reroll it with a bonus equal to your Fighter level. You must use the new roll, and you can't use this feature again until you finish a Long Rest. You can use this feature twice before a Long Rest starting at level 13 and three times before a Long Rest starting at level 17."
+  },
+  "feature.Indomitable.field.Free Uses": {
+    "label": "Indomitable"
+  },
+  "feature.Indomitable.field.Actions.option.Indomitable": {
+    "description": "Reroll a failed saving throw with bonus equal to Fighter level"
   },
   "feature.Tactical Master": {
     "description": "When you attack with a weapon whose mastery property you can use, you can replace that property with the Push, Sap, or Slow property for that attack."

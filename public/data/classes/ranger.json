@@ -241,10 +241,6 @@
       ]
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Expertise",
       "stackable": true
     },
@@ -328,9 +324,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -348,9 +342,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -368,9 +360,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

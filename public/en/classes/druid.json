@@ -17,6 +17,9 @@
   "feature.Wild Shape": {
     "description": "The power of nature allows you to assume the form of an animal. As a Bonus Action, you shape-shift into a Beast form that you have learned for this feature (see \"Known Forms\" below). You stay in that form for a number of hours equal to half your Druid level or until you use Wild Shape again, have the Incapacitated condition, or die. You can also leave the form early as a Bonus Action."
   },
+  "feature.Wild Shape.field.Free Uses": {
+    "label": "Wild Shape"
+  },
   "feature.Wild Shape.field.Actions.option.Wild Shape": {
     "description": "Shape-shift into a known Beast form for hours equal to half Druid level"
   },
@@ -28,9 +31,6 @@
   },
   "feature.Wild Resurgence": {
     "description": "Once on each of your turns, if you have no uses of Wild Shape left, you can give yourself one use by expending a spell slot (no action required). In addition, you can expend one use of Wild Shape (no action required) to give yourself a level 1 spell slot, but you can't do so again until you finish a Long Rest."
-  },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Druid Subclass."
   },
   "feature.Elemental Fury": {
     "description": "The might of the elements flows through you. You gain one of the following options of your choice.\n\nPotent Spellcasting: Add your Wisdom modifier to the damage you deal with any Druid cantrip.\n\nPrimal Strike: Once on each of your turns when you hit a creature with an attack roll using a weapon or a Beast form's attack in Wild Shape, you can cause the target to take an extra 1d8 Cold, Fire, Lightning, or Thunder damage (choose when you hit)."

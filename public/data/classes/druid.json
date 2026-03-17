@@ -238,12 +238,23 @@
       "name": "Wild Shape",
       "fields": [
         {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "2": 2,
+            "6": 3,
+            "17": 4
+          }
+        },
+        {
           "name": "Actions",
           "kind": "Choice",
+          "cost": "Free Uses",
           "options": [
             {
               "name": "Wild Shape",
-              "action": "BonusAction"
+              "action": "BonusAction",
+              "cost": 1
             }
           ]
         }
@@ -258,10 +269,6 @@
     },
     {
       "name": "Wild Resurgence"
-    },
-    {
-      "name": "Subclass Feature",
-      "stackable": true
     },
     {
       "name": "Elemental Fury"
@@ -320,9 +327,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -338,9 +343,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []
@@ -354,9 +357,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

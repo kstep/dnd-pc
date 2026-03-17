@@ -35,9 +35,6 @@
   "feature.Roving": {
     "description": "Your Speed increases by 10 feet while you aren't wearing Heavy armor. You also have a Climb Speed and a Swim Speed equal to your Speed."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Ranger Subclass."
-  },
   "feature.Expertise": {
     "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills."
   },

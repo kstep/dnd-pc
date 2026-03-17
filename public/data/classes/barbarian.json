@@ -98,24 +98,44 @@
       ]
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Feral Instinct"
     },
     {
       "name": "Instinctive Pounce"
     },
     {
-      "name": "Brutal Strike"
+      "name": "Brutal Strike",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Forceful Blow"
+            },
+            {
+              "name": "Hamstring Blow"
+            },
+            {
+              "name": "Staggering Blow",
+              "level": 13
+            },
+            {
+              "name": "Sundering Blow",
+              "level": 13
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Relentless Rage"
     },
     {
-      "name": "Improved Brutal Strike",
-      "stackable": true
+      "name": "Improved Brutal Strike"
+    },
+    {
+      "name": "Improved Brutal Strike 2"
     },
     {
       "name": "Persistent Rage"
@@ -173,9 +193,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -194,9 +212,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -214,9 +230,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -230,7 +244,7 @@
     },
     {
       "features": [
-        "Improved Brutal Strike"
+        "Improved Brutal Strike 2"
       ]
     },
     {

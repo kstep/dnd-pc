@@ -354,15 +354,147 @@
       "stackable": true
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Contact Patron"
     },
     {
-      "name": "Mystic Arcanum",
-      "stackable": true
+      "name": "Mystic Arcanum (6th)",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/warlock.json"
+        },
+        "levels": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": { "11": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Mystic Arcanum (7th)",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/warlock.json"
+        },
+        "levels": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": { "13": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Mystic Arcanum (8th)",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/warlock.json"
+        },
+        "levels": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": { "15": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Mystic Arcanum (9th)",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/warlock.json"
+        },
+        "levels": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": { "17": 1 }
+        }
+      ]
     },
     {
       "name": "Epic Boon",
@@ -409,9 +541,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []
@@ -427,33 +557,11 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
-        "Mystic Arcanum"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Mystic Arcanum"
-      ]
-    },
-    {
-      "features": [
-        "Subclass Feature"
-      ]
-    },
-    {
-      "features": [
-        "Mystic Arcanum"
+        "Mystic Arcanum (6th)"
       ]
     },
     {
@@ -463,7 +571,25 @@
     },
     {
       "features": [
-        "Mystic Arcanum"
+        "Mystic Arcanum (7th)"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Mystic Arcanum (8th)"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Mystic Arcanum (9th)"
       ]
     },
     {

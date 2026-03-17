@@ -101,14 +101,20 @@
   "feature.Ability Score Improvement": {
     "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Warlock subclass."
-  },
   "feature.Contact Patron": {
     "description": "In the past, you usually contacted your patron through intermediaries. Now you can communicate directly; you always have the Contact Other Plane spell prepared. With this feature, you can cast the spell without expending a spell slot to contact your patron, and you automatically succeed on the spell's saving throw."
   },
-  "feature.Mystic Arcanum": {
+  "feature.Mystic Arcanum (6th)": {
     "description": "Your patron grants you a magical secret called an arcanum. Choose one level 6 Warlock spell as this arcanum. You can cast your arcanum spell once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again."
+  },
+  "feature.Mystic Arcanum (7th)": {
+    "description": "Choose one level 7 Warlock spell as an arcanum. You can cast it once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again."
+  },
+  "feature.Mystic Arcanum (8th)": {
+    "description": "Choose one level 8 Warlock spell as an arcanum. You can cast it once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again."
+  },
+  "feature.Mystic Arcanum (9th)": {
+    "description": "Choose one level 9 Warlock spell as an arcanum. You can cast it once without expending a spell slot, and you must finish a Long Rest before you can cast it in this way again."
   },
   "feature.Epic Boon": {
     "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended."

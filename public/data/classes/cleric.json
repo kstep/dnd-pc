@@ -227,19 +227,30 @@
     },
     {
       "name": "Channel Divinity",
-      "stackable": true,
       "fields": [
+        {
+          "name": "Channel Divinity",
+          "kind": "Points",
+          "levels": {
+            "2": 2,
+            "6": 3,
+            "18": 4
+          }
+        },
         {
           "name": "Actions",
           "kind": "Choice",
+          "cost": "Channel Divinity",
           "options": [
             {
               "name": "Divine Spark",
-              "action": "Action"
+              "action": "Action",
+              "cost": 1
             },
             {
               "name": "Turn Undead",
-              "action": "Action"
+              "action": "Action",
+              "cost": 1
             }
           ]
         }
@@ -254,10 +265,6 @@
     },
     {
       "name": "Sear Undead"
-    },
-    {
-      "name": "Subclass Feature",
-      "stackable": true
     },
     {
       "name": "Blessed Strikes"
@@ -314,9 +321,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -361,9 +366,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []

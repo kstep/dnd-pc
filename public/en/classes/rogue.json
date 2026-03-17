@@ -53,9 +53,6 @@
   "feature.Reliable Talent": {
     "description": "Whenever you make an ability check that uses one of your skill or tool proficiencies, you can treat a d20 roll of 9 or lower as a 10."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Rogue Subclass."
-  },
   "feature.Improved Cunning Strike": {
     "description": "You can use up to two Cunning Strike effects when you deal Sneak Attack damage, paying the die cost for each effect."
   },

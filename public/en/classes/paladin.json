@@ -23,10 +23,10 @@
   "feature.Channel Divinity": {
     "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11 (three uses). The DC for Channel Divinity saving throws equals your spell save DC."
   },
-  "feature.Divine Sense": {
-    "description": "As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell."
+  "feature.Channel Divinity.field.Channel Divinity": {
+    "short": "CD"
   },
-  "feature.Divine Sense.field.Actions.option.Divine Sense": {
+  "feature.Channel Divinity.field.Actions.option.Divine Sense": {
     "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes"
   },
   "feature.Paladin Subclass": {
@@ -43,9 +43,6 @@
   },
   "feature.Aura of Protection": {
     "description": "You radiate a protective, unseeable aura in a 10-foot Emanation [Area of Effect] that originates from you. The aura is inactive while you have the Incapacitated condition. You and your allies in the aura gain a bonus to saving throws equal to your Charisma modifier (minimum bonus of +1)."
-  },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Paladin Subclass."
   },
   "feature.Abjure Foes": {
     "description": "As a Magic action, you can expend one use of this class's Channel Divinity to overwhelm foes with awe. As you present your Holy Symbol or weapon, you can target a number of creatures equal to your Charisma modifier (minimum of one creature) that you can see within 60 feet of yourself. Each target must succeed on a Wisdom saving throw or have the Frightened condition for 1 minute or until it takes any damage. While Frightened in this way, a target can only do one of the following on its turns: move, take an action, or take a Bonus Action."

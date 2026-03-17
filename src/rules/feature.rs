@@ -320,7 +320,9 @@ impl FeatureDefinition {
             let new_fields: Vec<_> = self
                 .fields
                 .values()
-                .filter(|field_def| !matches!(field_def.kind, FieldKind::FreeUses { .. }))
+                .filter(|field_def| {
+                    !(self.spells.is_some() && matches!(field_def.kind, FieldKind::FreeUses { .. }))
+                })
                 .map(|field_def| FeatureField {
                     name: field_def.name.clone(),
                     label: field_def.label.clone(),
@@ -343,7 +345,9 @@ impl FeatureDefinition {
                 .filter_map(|field| {
                     let def = self.fields.get(field.name.as_str())?;
                     match &def.kind {
-                        FieldKind::Points { .. } | FieldKind::Die { .. } => {
+                        FieldKind::Points { .. }
+                        | FieldKind::Die { .. }
+                        | FieldKind::FreeUses { .. } => {
                             Some((field.name.clone(), def.kind.to_value(level, character)))
                         }
                         _ => None,
@@ -380,6 +384,9 @@ impl FeatureDefinition {
                             {
                                 *max = *new_max;
                             }
+                        }
+                        (FieldKind::FreeUses { levels }, FeatureValue::Points { max, .. }) => {
+                            *max = get_for_level(levels, level);
                         }
                         _ => {}
                     }
@@ -501,9 +508,10 @@ impl FieldKind {
                 used: 0,
                 max: get_for_level(levels, level).eval(character),
             },
-            Self::FreeUses { .. } => {
-                unreachable!("FreeUses fields are not converted to FeatureValue")
-            }
+            Self::FreeUses { levels } => FeatureValue::Points {
+                used: 0,
+                max: get_for_level(levels, level),
+            },
         }
     }
 

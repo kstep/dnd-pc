@@ -297,10 +297,6 @@
       "name": "Font of Inspiration"
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Countercharm"
     },
     {
@@ -356,9 +352,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -392,9 +386,7 @@
       "features": []
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": []

@@ -269,9 +269,6 @@
   "feature.Ability Score Improvement": {
     "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Artificer Subclass."
-  },
   "feature.Magic Item Tinker": {
     "description": "Your Replicate Magic Item feature gains the following options. Charge Magic Item: As a Bonus Action, you can touch a magic item within 5 feet of yourself that you created with Replicate Magic Item and that uses charges. You expend a level 1+ spell slot and recharge the item. The number of charges the item regains is equal to the level of spell slot expended."
   },

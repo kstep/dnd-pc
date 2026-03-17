@@ -167,10 +167,6 @@
       "name": "Empowered Strikes"
     },
     {
-      "name": "Subclass Feature",
-      "stackable": true
-    },
-    {
       "name": "Evasion"
     },
     {
@@ -252,8 +248,7 @@
     },
     {
       "features": [
-        "Empowered Strikes",
-        "Subclass Feature"
+        "Empowered Strikes"
       ]
     },
     {
@@ -278,9 +273,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [
@@ -308,9 +301,7 @@
       ]
     },
     {
-      "features": [
-        "Subclass Feature"
-      ]
+      "features": []
     },
     {
       "features": [

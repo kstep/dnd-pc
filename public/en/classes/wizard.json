@@ -23,9 +23,6 @@
   "feature.Memorize Spell": {
     "description": "Whenever you finish a Short Rest, you can study your spellbook and replace one of the level 1+ Wizard spells you have prepared for your Spellcasting feature with another level 1+ spell from the book."
   },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Wizard Subclass."
-  },
   "feature.Spell Mastery": {
     "description": "You have achieved such mastery over certain spells that you can cast them at will. Choose a level 1 and a level 2 spell in your spellbook that have a casting time of an action. You always have those spells prepared, and you can cast them at their lowest level without expending a spell slot. To cast either spell at a higher level, you must expend a spell slot. You can change your choices whenever you finish a Long Rest."
   },

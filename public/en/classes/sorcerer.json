@@ -5,6 +5,9 @@
   "feature.Innate Sorcery": {
     "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: The spell save DC of your Sorcerer spells increases by 1. You have Advantage on the attack rolls of Sorcerer spells you cast."
   },
+  "feature.Innate Sorcery.field.Free Uses": {
+    "label": "Innate Sorcery"
+  },
   "feature.Innate Sorcery.field.Actions.option.Innate Sorcery": {
     "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute"
   },
@@ -56,9 +59,6 @@
   },
   "feature.Sorcerer Subclass": {
     "description": "You gain a Sorcerer subclass of your choice. A subclass is a specialization that grants you features at certain Sorcerer levels. For the rest of your career, you gain each of your subclass's features that are of your Sorcerer level or lower."
-  },
-  "feature.Subclass Feature": {
-    "description": "You gain a feature from your Sorcerer Subclass."
   },
   "feature.Ability Score Improvement": {
     "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
