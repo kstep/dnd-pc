@@ -163,17 +163,35 @@ impl RulesRegistry {
         let background_cache = FetchCache::new();
         let spell_list_cache = FetchCache::new();
 
-        // Clear all caches when locale changes
+        // Re-apply locale to all caches when locale changes (without
+        // refetching data files).
         let prev_locale = RwSignal::new(locale.get_untracked());
         Effect::new(move || {
             let current = locale.get();
             let prev = prev_locale.get_untracked();
             if current != prev {
-                prev_locale.set(current);
-                class_cache.clear();
-                race_cache.clear();
-                background_cache.clear();
-                spell_list_cache.clear();
+                prev_locale.set(current.clone());
+                let locale_url = |path: &str| format!("{BASE_URL}/{current}/{path}");
+                class_cache.relocalize(
+                    |p| locale_url(p),
+                    locale::apply_class_locale,
+                    "class definition",
+                );
+                race_cache.relocalize(
+                    |p| locale_url(p),
+                    locale::apply_race_locale,
+                    "race definition",
+                );
+                background_cache.relocalize(
+                    |p| locale_url(p),
+                    locale::apply_background_locale,
+                    "background definition",
+                );
+                spell_list_cache.relocalize(
+                    |p| locale_url(p),
+                    locale::apply_spell_map_locale,
+                    "spell list",
+                );
             }
         });
 
@@ -271,6 +289,7 @@ impl RulesRegistry {
         let locale_url = self.localized_url(path);
         self.spell_list_cache.fetch_localized(
             path,
+            path,
             data_url,
             locale_url,
             locale::apply_spell_map_locale,
@@ -314,6 +333,7 @@ impl RulesRegistry {
         let locale_url = self.localized_url(&resolved_path);
         self.spell_list_cache.fetch_localized(
             path,
+            &resolved_path,
             data_url,
             locale_url,
             locale::apply_spell_map_locale,
@@ -487,6 +507,7 @@ impl RulesRegistry {
                     let locale_url = self.localized_url(&entry.url);
                     self.class_cache.fetch_localized(
                         &cl.class,
+                        &entry.url,
                         data_url,
                         locale_url,
                         locale::apply_class_locale,
@@ -501,6 +522,7 @@ impl RulesRegistry {
                 let locale_url = self.localized_url(&entry.url);
                 self.race_cache.fetch_localized(
                     &character.identity.race,
+                    &entry.url,
                     data_url,
                     locale_url,
                     locale::apply_race_locale,
@@ -514,6 +536,7 @@ impl RulesRegistry {
                 let locale_url = self.localized_url(&entry.url);
                 self.background_cache.fetch_localized(
                     &character.identity.background,
+                    &entry.url,
                     data_url,
                     locale_url,
                     locale::apply_background_locale,
