@@ -1,15 +1,11 @@
 {
-  "name": "Hermit",
-  "description": "You lived for a time in seclusion, either in a sheltered community or entirely alone, devoted to contemplation and self-discovery. During your isolation you gained insight into healing and the natural world.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "WIS += 2; CON += 1; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Healer",
-      "description": "You gain proficiency with Healer's Kit. When you use it to stabilize a dying creature, that creature regains 1 Hit Point. As an action, you can use a charge to restore 2d6 + your Proficiency Bonus Hit Points to a creature."
-    }
-  ]
+  "": {
+    "description": "You lived for a time in seclusion, either in a sheltered community or entirely alone, devoted to contemplation and self-discovery. During your isolation you gained insight into healing and the natural world."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Healer": {
+    "description": "You gain proficiency with Healer's Kit. When you use it to stabilize a dying creature, that creature regains 1 Hit Point. As an action, you can use a charge to restore 2d6 + your Proficiency Bonus Hit Points to a creature."
+  }
 }

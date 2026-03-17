@@ -1,0 +1,1608 @@
+{
+  "name": "Artificer",
+  "description": "",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Spellcasting (Artificer)",
+      "description": "",
+      "spells": {
+        "casting_ability": 3,
+        "list": {
+          "from": "spells/artificer.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 2,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 4,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          }
+        ],
+        "caster_coef": 2
+      }
+    },
+    {
+      "name": "Tinker's Magic",
+      "description": "",
+      "spells": {
+        "casting_ability": 3,
+        "list": [
+          {
+            "name": "Mending",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          }
+        ],
+        "caster_coef": 2
+      }
+    },
+    {
+      "name": "Replicate Magic Item",
+      "description": "",
+      "fields": [
+        {
+          "name": "Plans Known",
+          "description": "",
+          "kind": "Choice",
+          "levels": {
+            "2": 4,
+            "3": 4,
+            "4": 4,
+            "5": 4,
+            "6": 5,
+            "7": 5,
+            "8": 5,
+            "9": 5,
+            "10": 6,
+            "11": 6,
+            "12": 6,
+            "13": 6,
+            "14": 7,
+            "15": 7,
+            "16": 7,
+            "17": 7,
+            "18": 8,
+            "19": 8,
+            "20": 8
+          },
+          "options": [
+            {
+              "name": "Alchemy Jug",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Bag of Holding",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Cap of Water Breathing",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Goggles of Night",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Manifold Tool",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Repeating Shot",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Returning Weapon",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Rope of Climbing",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Sending Stones",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Shield +1",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Wand of Magic Detection",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Wand of Secrets",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Wand of the War Mage +1",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Weapon +1",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Wraps of Unarmed Power +1",
+              "level": 2,
+              "description": ""
+            },
+            {
+              "name": "Armor +1",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Boots of Elvenkind",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Boots of the Winding Path",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Cloak of Elvenkind",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Cloak of the Manta Ray",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Dazzling Weapon",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Eyes of Charming",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Eyes of Minute Seeing",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Gloves of Thievery",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Helm of Awareness",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Lantern of Revealing",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Mind Sharpener",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Necklace of Adaptation",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Pipes of Haunting",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Repulsion Shield",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Ring of Swimming",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Ring of Water Walking",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Sentinel Shield",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Spell-Refueling Ring",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Wand of Magic Missiles",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Wand of Web",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Weapon of Warning",
+              "level": 6,
+              "description": ""
+            },
+            {
+              "name": "Armor of Resistance",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Boots of Striding and Springing",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Boots of the Winterlands",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Bracers of Archery",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Brooch of Shielding",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Cloak of Protection",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Dagger of Venom",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Elven Chain",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Eyes of the Eagle",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Gauntlets of Ogre Power",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Gloves of Missile Snaring",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Gloves of Swimming and Climbing",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Hat of Disguise",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Headband of Intellect",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Helm of Telepathy",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Medallion of Thoughts",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Periapt of Wound Closure",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Pipes of the Sewers",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Quiver of Ehlonna",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Ring of Feather Falling",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Ring of Jumping",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Ring of Mind Shielding",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Shield +2",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Slippers of Spider Climbing",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Ventilating Lungs",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Wand of the War Mage +2",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Weapon +2",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Winged Boots",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Wraps of Unarmed Power +2",
+              "level": 10,
+              "description": ""
+            },
+            {
+              "name": "Amulet of Health",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Arcane Propulsion Arm",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Armor +2",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Arrow-Catching Shield",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Belt of Hill Giant Strength",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Boots of Levitation",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Boots of Speed",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Bracers of Defense",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Cloak of the Bat",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Dimensional Shackles",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Flame Tongue",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Gem of Seeing",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Horn of Blasting",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Ring of Free Action",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Ring of Protection",
+              "level": 14,
+              "description": ""
+            },
+            {
+              "name": "Ring of the Ram",
+              "level": 14,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "Magic Items",
+          "kind": "Choice",
+          "levels": {
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 3,
+            "7": 3,
+            "8": 3,
+            "9": 3,
+            "10": 4,
+            "11": 4,
+            "12": 4,
+            "13": 4,
+            "14": 5,
+            "15": 5,
+            "16": 5,
+            "17": 5,
+            "18": 6,
+            "19": 6,
+            "20": 6
+          },
+          "options": {
+            "from": "Plans Known"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Artificer Subclass",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Magic Item Tinker",
+      "description": ""
+    },
+    {
+      "name": "Flash of Genius",
+      "description": ""
+    },
+    {
+      "name": "Magic Item Adept",
+      "description": ""
+    },
+    {
+      "name": "Spell-Storing Item",
+      "description": ""
+    },
+    {
+      "name": "Advanced Artifice",
+      "description": ""
+    },
+    {
+      "name": "Magic Item Master",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Soul of Artifice",
+      "description": ""
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Spellcasting (Artificer)",
+        "Tinker's Magic",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Replicate Magic Item"
+      ]
+    },
+    {
+      "features": [
+        "Artificer Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Magic Item Tinker"
+      ]
+    },
+    {
+      "features": [
+        "Flash of Genius"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Magic Item Adept"
+      ]
+    },
+    {
+      "features": [
+        "Spell-Storing Item"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Advanced Artifice"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Magic Item Master"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Soul of Artifice"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Alchemist",
+      "description": "",
+      "features": [
+        {
+          "name": "Alchemist",
+          "description": ""
+        },
+        {
+          "name": "Alchemist Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Healing Word",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Ray of Sickness",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Flaming Sphere",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Melf's Acid Arrow",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Gaseous Form",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Mass Healing Word",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Death Ward",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Vitriolic Sphere",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Cloudkill",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Raise Dead",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Experimental Elixir",
+          "description": "",
+          "fields": [
+            {
+              "name": "Elixirs",
+              "kind": "Choice",
+              "levels": {
+                "3": 2,
+                "5": 3,
+                "9": 4,
+                "15": 5
+              },
+              "options": [
+                {
+                  "name": "Healing",
+                  "description": ""
+                },
+                {
+                  "name": "Swiftness",
+                  "description": ""
+                },
+                {
+                  "name": "Resilience",
+                  "description": ""
+                },
+                {
+                  "name": "Boldness",
+                  "description": ""
+                },
+                {
+                  "name": "Flight",
+                  "description": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": ""
+        },
+        {
+          "name": "Alchemical Savant",
+          "description": ""
+        },
+        {
+          "name": "Restorative Reagents",
+          "description": ""
+        },
+        {
+          "name": "Chemical Mastery",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Alchemist",
+            "Alchemist Spells",
+            "Experimental Elixir",
+            "Tools of the Trade"
+          ]
+        },
+        "5": {
+          "level": 5,
+          "features": [
+            "Alchemical Savant"
+          ]
+        },
+        "9": {
+          "level": 9,
+          "features": [
+            "Restorative Reagents"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Chemical Mastery"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Armorer",
+      "description": "",
+      "features": [
+        {
+          "name": "Arcane Armor",
+          "description": ""
+        },
+        {
+          "name": "Armor Model",
+          "description": ""
+        },
+        {
+          "name": "Armorer",
+          "description": ""
+        },
+        {
+          "name": "Armorer Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Magic Missile",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Thunderwave",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Mirror Image",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Shatter",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Hypnotic Pattern",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Lightning Bolt",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Fire Shield",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Greater Invisibility",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Passwall",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Wall of Force",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Dreadnaught",
+          "description": ""
+        },
+        {
+          "name": "Guardian",
+          "description": ""
+        },
+        {
+          "name": "Infiltrator",
+          "description": ""
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": ""
+        },
+        {
+          "name": "Extra Attack",
+          "description": ""
+        },
+        {
+          "name": "Improved Armorer",
+          "description": ""
+        },
+        {
+          "name": "Perfected Armor",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Arcane Armor",
+            "Armor Model",
+            "Armorer",
+            "Armorer Spells",
+            "Dreadnaught",
+            "Guardian",
+            "Infiltrator",
+            "Tools of the Trade"
+          ]
+        },
+        "5": {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        "9": {
+          "level": 9,
+          "features": [
+            "Improved Armorer"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Perfected Armor"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Artillerist",
+      "description": "",
+      "features": [
+        {
+          "name": "Artillerist",
+          "description": ""
+        },
+        {
+          "name": "Artillerist Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Shield",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Thunderwave",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Scorching Ray",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Shatter",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fireball",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Wind Wall",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Wall of Fire",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Cone of Cold",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Wall of Force",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Eldritch Cannon",
+          "description": ""
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": ""
+        },
+        {
+          "name": "Arcane Firearm",
+          "description": ""
+        },
+        {
+          "name": "Explosive Cannon",
+          "description": ""
+        },
+        {
+          "name": "Fortified Position",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Artillerist",
+            "Artillerist Spells",
+            "Eldritch Cannon",
+            "Tools of the Trade"
+          ]
+        },
+        "5": {
+          "level": 5,
+          "features": [
+            "Arcane Firearm"
+          ]
+        },
+        "9": {
+          "level": 9,
+          "features": [
+            "Explosive Cannon"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Fortified Position"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Battle Smith",
+      "description": "",
+      "features": [
+        {
+          "name": "Battle Ready",
+          "description": ""
+        },
+        {
+          "name": "Battle Smith",
+          "description": ""
+        },
+        {
+          "name": "Battle Smith Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Heroism",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Shield",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Shining Smite",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Warding Bond",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Aura of Vitality",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Conjure Barrage",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Aura of Purity",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Fire Shield",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Banishing Smite",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Mass Cure Wounds",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Steel Defender",
+          "description": ""
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": ""
+        },
+        {
+          "name": "Extra Attack",
+          "description": ""
+        },
+        {
+          "name": "Arcane Jolt",
+          "description": ""
+        },
+        {
+          "name": "Improved Defender",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Battle Ready",
+            "Battle Smith",
+            "Battle Smith Spells",
+            "Steel Defender",
+            "Tools of the Trade"
+          ]
+        },
+        "5": {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        "9": {
+          "level": 9,
+          "features": [
+            "Arcane Jolt"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Improved Defender"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cartographer",
+      "description": "",
+      "features": [
+        {
+          "name": "Adventurer's Atlas",
+          "description": ""
+        },
+        {
+          "name": "Cartographer",
+          "description": ""
+        },
+        {
+          "name": "Cartographer Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Faerie Fire",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Healing Word",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Locate Object",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Mind Spike",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Call Lightning",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Clairvoyance",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Banishment",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Locate Creature",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Scrying",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Teleportation Circle",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Mapping Magic",
+          "description": ""
+        },
+        {
+          "name": "Tools of the Trade",
+          "description": ""
+        },
+        {
+          "name": "Guided Precision",
+          "description": ""
+        },
+        {
+          "name": "Ingenious Movement",
+          "description": ""
+        },
+        {
+          "name": "Superior Atlas",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Adventurer's Atlas",
+            "Cartographer",
+            "Cartographer Spells",
+            "Mapping Magic",
+            "Tools of the Trade"
+          ]
+        },
+        "5": {
+          "level": 5,
+          "features": [
+            "Guided Precision"
+          ]
+        },
+        "9": {
+          "level": 9,
+          "features": [
+            "Ingenious Movement"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Superior Atlas"
+          ]
+        }
+      }
+    }
+  ]
+}

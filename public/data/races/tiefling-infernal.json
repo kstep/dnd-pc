@@ -1,0 +1,72 @@
+{
+  "name": "Tiefling (Infernal)",
+  "description": "",
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": ""
+    },
+    {
+      "name": "Hellish Resistance",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common",
+        "Infernal"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Infernal Legacy",
+      "description": "",
+      "spells": {
+        "cost": "Free Uses",
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Thaumaturgy",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          },
+          {
+            "name": "Fire Bolt",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          },
+          {
+            "name": "Hellish Rebuke",
+            "level": 1,
+            "description": "",
+            "sticky": true,
+            "min_level": 3,
+            "cost": 1
+          },
+          {
+            "name": "Darkness",
+            "level": 2,
+            "description": "",
+            "sticky": true,
+            "min_level": 5,
+            "cost": 1
+          }
+        ]
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
+    }
+  ]
+}

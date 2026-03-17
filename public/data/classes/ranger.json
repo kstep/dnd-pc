@@ -1,0 +1,1116 @@
+{
+  "name": "Ranger",
+  "description": "",
+  "hit_die": 10,
+  "features": [
+    {
+      "name": "Favored Enemy",
+      "description": "",
+      "spells": {
+        "cost": "Favored Enemy",
+        "casting_ability": 4,
+        "list": [
+          {
+            "name": "Hunter's Mark",
+            "description": "",
+            "level": 1,
+            "cost": 1,
+            "sticky": true
+          }
+        ],
+        "caster_coef": 2
+      },
+      "fields": [
+        {
+          "name": "Favored Enemy",
+          "kind": "Points",
+          "levels": {
+            "1": 2,
+            "5": 3,
+            "9": 4,
+            "13": 5,
+            "17": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "Spellcasting (Ranger)",
+      "description": "",
+      "spells": {
+        "casting_ability": 4,
+        "list": {
+          "from": "spells/ranger.json"
+        },
+        "levels": [
+          {
+            "spells": 2,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "spells": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "spells": 4,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          }
+        ],
+        "caster_coef": 2
+      }
+    },
+    {
+      "name": "Weapon Mastery (Ranger)",
+      "description": "",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deft Explorer",
+      "description": ""
+    },
+    {
+      "name": "Fighting Style",
+      "description": ""
+    },
+    {
+      "name": "Ranger Subclass",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Extra Attack",
+      "description": ""
+    },
+    {
+      "name": "Roving",
+      "description": "",
+      "assign": [
+        {
+          "expr": "SPEED += 10",
+          "when": "OnCompute"
+        }
+      ]
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Expertise",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Tireless",
+      "description": ""
+    },
+    {
+      "name": "Relentless Hunter",
+      "description": ""
+    },
+    {
+      "name": "Nature's Veil",
+      "description": "",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Nature's Veil",
+              "description": "",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Precise Hunter",
+      "description": ""
+    },
+    {
+      "name": "Feral Senses",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Foe Slayer",
+      "description": ""
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Favored Enemy",
+        "Spellcasting (Ranger)",
+        "Weapon Mastery (Ranger)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Deft Explorer",
+        "Fighting Style"
+      ]
+    },
+    {
+      "features": [
+        "Ranger Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack"
+      ]
+    },
+    {
+      "features": [
+        "Roving"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Expertise"
+      ]
+    },
+    {
+      "features": [
+        "Tireless"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Relentless Hunter"
+      ]
+    },
+    {
+      "features": [
+        "Nature's Veil"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Precise Hunter"
+      ]
+    },
+    {
+      "features": [
+        "Feral Senses"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Foe Slayer"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Beast Master",
+      "description": "",
+      "features": [
+        {
+          "name": "Beast Master",
+          "description": ""
+        },
+        {
+          "name": "Primal Companion",
+          "description": ""
+        },
+        {
+          "name": "Exceptional Training",
+          "description": ""
+        },
+        {
+          "name": "Bestial Fury",
+          "description": ""
+        },
+        {
+          "name": "Share Spells",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Beast Master",
+            "Primal Companion"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Exceptional Training"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Bestial Fury"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Share Spells"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Hunter",
+      "description": "",
+      "features": [
+        {
+          "name": "Hunter",
+          "description": ""
+        },
+        {
+          "name": "Hunter's Lore",
+          "description": ""
+        },
+        {
+          "name": "Hunter's Prey",
+          "description": "",
+          "fields": [
+            {
+              "name": "Hunter's Prey",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Colossus Slayer",
+                  "description": ""
+                },
+                {
+                  "name": "Giant Killer",
+                  "description": ""
+                },
+                {
+                  "name": "Horde Breaker",
+                  "description": ""
+                }
+              ],
+              "levels": {
+                "3": 1
+              }
+            }
+          ]
+        },
+        {
+          "name": "Defensive Tactics",
+          "description": ""
+        },
+        {
+          "name": "Superior Hunter's Prey",
+          "description": ""
+        },
+        {
+          "name": "Superior Hunter's Defense",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Hunter",
+            "Hunter's Lore",
+            "Hunter's Prey"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Defensive Tactics"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Superior Hunter's Prey"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Superior Hunter's Defense"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Gloom Stalker",
+      "description": "",
+      "features": [
+        {
+          "name": "Dread Ambusher",
+          "description": "",
+          "assign": [
+            {
+              "expr": "INITIATIVE.BONUS += WIS.MOD",
+              "when": "OnCompute"
+            }
+          ]
+        },
+        {
+          "name": "Gloom Stalker",
+          "description": ""
+        },
+        {
+          "name": "Gloom Stalker Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Disguise Self",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Rope Trick",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fear",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Greater Invisibility",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Seeming",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Umbral Sight",
+          "description": ""
+        },
+        {
+          "name": "Iron Mind",
+          "description": ""
+        },
+        {
+          "name": "Stalker's Flurry",
+          "description": ""
+        },
+        {
+          "name": "Shadowy Dodge",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Dread Ambusher",
+            "Gloom Stalker",
+            "Gloom Stalker Spells",
+            "Umbral Sight"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Iron Mind"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Stalker's Flurry"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Shadowy Dodge"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Horizon Walker",
+      "description": "",
+      "features": [
+        {
+          "name": "Horizon Walker",
+          "description": ""
+        },
+        {
+          "name": "Detect Portal",
+          "description": ""
+        },
+        {
+          "name": "Horizon Walker Magic",
+          "description": ""
+        },
+        {
+          "name": "Planar Warrior",
+          "description": ""
+        },
+        {
+          "name": "Ethereal Step",
+          "description": ""
+        },
+        {
+          "name": "Distant Strike",
+          "description": ""
+        },
+        {
+          "name": "Spectral Defense",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Horizon Walker",
+            "Detect Portal",
+            "Horizon Walker Magic",
+            "Planar Warrior"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Ethereal Step"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Distant Strike"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Spectral Defense"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Monster Slayer",
+      "description": "",
+      "features": [
+        {
+          "name": "Monster Slayer",
+          "description": ""
+        },
+        {
+          "name": "Hunter's Sense",
+          "description": ""
+        },
+        {
+          "name": "Monster Slayer Magic",
+          "description": ""
+        },
+        {
+          "name": "Slayer's Prey",
+          "description": ""
+        },
+        {
+          "name": "Supernatural Defense",
+          "description": ""
+        },
+        {
+          "name": "Magic-User's Nemesis",
+          "description": ""
+        },
+        {
+          "name": "Slayer's Counter",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Monster Slayer",
+            "Hunter's Sense",
+            "Monster Slayer Magic",
+            "Slayer's Prey"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Supernatural Defense"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Magic-User's Nemesis"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Slayer's Counter"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fey Wanderer",
+      "description": "",
+      "features": [
+        {
+          "name": "Fey Wanderer",
+          "description": ""
+        },
+        {
+          "name": "Dreadful Strikes",
+          "description": ""
+        },
+        {
+          "name": "Fey Wanderer Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Charm Person",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Summon Fey",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Dimension Door",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Mislead",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Otherworldly Glamour",
+          "description": ""
+        },
+        {
+          "name": "Beguiling Twist",
+          "description": ""
+        },
+        {
+          "name": "Fey Reinforcements",
+          "description": ""
+        },
+        {
+          "name": "Misty Wanderer",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Fey Wanderer",
+            "Dreadful Strikes",
+            "Fey Wanderer Spells",
+            "Otherworldly Glamour"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Beguiling Twist"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Fey Reinforcements"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Misty Wanderer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Swarmkeeper",
+      "description": "",
+      "features": [
+        {
+          "name": "Swarmkeeper",
+          "description": ""
+        },
+        {
+          "name": "Gathered Swarm",
+          "description": ""
+        },
+        {
+          "name": "Swarmkeeper Magic",
+          "description": ""
+        },
+        {
+          "name": "Writhing Tide",
+          "description": ""
+        },
+        {
+          "name": "Mighty Swarm",
+          "description": ""
+        },
+        {
+          "name": "Swarming Dispersal",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Swarmkeeper",
+            "Gathered Swarm",
+            "Swarmkeeper Magic"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Writhing Tide"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Mighty Swarm"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Swarming Dispersal"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Drakewarden",
+      "description": "",
+      "features": [
+        {
+          "name": "Drakewarden",
+          "description": ""
+        },
+        {
+          "name": "Draconic Gift",
+          "description": ""
+        },
+        {
+          "name": "Drake Companion",
+          "description": ""
+        },
+        {
+          "name": "Bond of Fang and Scale",
+          "description": ""
+        },
+        {
+          "name": "Drake's Breath",
+          "description": ""
+        },
+        {
+          "name": "Perfected Bond",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Drakewarden",
+            "Draconic Gift",
+            "Drake Companion"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Bond of Fang and Scale"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Drake's Breath"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Perfected Bond"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Winter Walker",
+      "description": "",
+      "features": [
+        {
+          "name": "Frigid Explorer",
+          "description": ""
+        },
+        {
+          "name": "Hunter's Rime",
+          "description": ""
+        },
+        {
+          "name": "Winter Walker",
+          "description": ""
+        },
+        {
+          "name": "Winter Walker Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Ice Knife",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Remove Curse",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Cone of Cold",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fortifying Soul",
+          "description": ""
+        },
+        {
+          "name": "Chilling Retribution",
+          "description": ""
+        },
+        {
+          "name": "Frozen Haunt",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Frigid Explorer",
+            "Hunter's Rime",
+            "Winter Walker",
+            "Winter Walker Spells"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Fortifying Soul"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Chilling Retribution"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Frozen Haunt"
+          ]
+        }
+      }
+    }
+  ]
+}

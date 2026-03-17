@@ -1,0 +1,2046 @@
+{
+  "name": "Cleric",
+  "description": "",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Divine Order",
+      "description": ""
+    },
+    {
+      "name": "Spellcasting (Cleric)",
+      "description": "",
+      "spells": {
+        "casting_ability": 4,
+        "list": {
+          "from": "spells/cleric.json"
+        },
+        "levels": [
+          {
+            "cantrips": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
+          }
+        ],
+        "caster_coef": 1
+      }
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "",
+      "stackable": true,
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Divine Spark",
+              "description": "",
+              "action": "Action"
+            },
+            {
+              "name": "Turn Undead",
+              "description": "",
+              "action": "Action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cleric Subclass",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Sear Undead",
+      "description": ""
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Blessed Strikes",
+      "description": ""
+    },
+    {
+      "name": "Divine Intervention",
+      "description": ""
+    },
+    {
+      "name": "Improved Blessed Strikes",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Greater Divine Intervention",
+      "description": ""
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Divine Order",
+        "Spellcasting (Cleric)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Channel Divinity"
+      ]
+    },
+    {
+      "features": [
+        "Cleric Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Sear Undead"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Blessed Strikes"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Divine Intervention"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Improved Blessed Strikes"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Greater Divine Intervention"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Knowledge Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Knowledge Domain",
+          "description": ""
+        },
+        {
+          "name": "Blessings of Knowledge",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Knowledge of the Ages",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Read Thoughts",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Potent Spellcasting",
+          "description": ""
+        },
+        {
+          "name": "Visions of the Past",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Knowledge Domain",
+            "Blessings of Knowledge"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Knowledge of the Ages"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Knowledge of the Ages",
+            "Knowledge Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Channel Divinity: Read Thoughts"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Potent Spellcasting"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Visions of the Past"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Life Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Life Domain",
+          "description": ""
+        },
+        {
+          "name": "Disciple of Life",
+          "description": ""
+        },
+        {
+          "name": "Life Domain Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Bless",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Cure Wounds",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Aid",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Lesser Restoration",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Mass Healing Word",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Revivify",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Aura of Life",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Death Ward",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Greater Restoration",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Mass Cure Wounds",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Preserve Life",
+          "description": ""
+        },
+        {
+          "name": "Blessed Healer",
+          "description": ""
+        },
+        {
+          "name": "Supreme Healing",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Life Domain",
+            "Disciple of Life",
+            "Life Domain Spells",
+            "Preserve Life"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Blessed Healer"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Supreme Healing"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Light Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Light Domain",
+          "description": ""
+        },
+        {
+          "name": "Light Domain Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Burning Hands",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Faerie Fire",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Scorching Ray",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "See Invisibility",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Daylight",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fireball",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Arcane Eye",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Wall of Fire",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Flame Strike",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Scrying",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Radiance of the Dawn",
+          "description": ""
+        },
+        {
+          "name": "Warding Flare",
+          "description": ""
+        },
+        {
+          "name": "Improved Warding Flare",
+          "description": ""
+        },
+        {
+          "name": "Corona of Light",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Light Domain",
+            "Light Domain Spells",
+            "Radiance of the Dawn",
+            "Warding Flare"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Improved Warding Flare"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Corona of Light"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Nature Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Nature Domain",
+          "description": ""
+        },
+        {
+          "name": "Acolyte of Nature",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Charm Animals and Plants",
+          "description": ""
+        },
+        {
+          "name": "Dampen Elements",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Master of Nature",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Nature Domain",
+            "Acolyte of Nature",
+            "Bonus Proficiency"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Charm Animals and Plants"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Charm Animals and Plants",
+            "Nature Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Dampen Elements"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Master of Nature"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Tempest Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Tempest Domain",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Wrath of the Storm",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Destructive Wrath",
+          "description": ""
+        },
+        {
+          "name": "Thunderbolt Strike",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Stormborn",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Tempest Domain",
+            "Bonus Proficiencies",
+            "Wrath of the Storm"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Destructive Wrath"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Destructive Wrath",
+            "Tempest Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Thunderbolt Strike"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Stormborn"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Trickery Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Trickery Domain",
+          "description": ""
+        },
+        {
+          "name": "Blessing of the Trickster",
+          "description": ""
+        },
+        {
+          "name": "Invoke Duplicity",
+          "description": ""
+        },
+        {
+          "name": "Trickery Domain Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Charm Person",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Disguise Self",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Invisibility",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Pass without Trace",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hypnotic Pattern",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Nondetection",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Confusion",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Dimension Door",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Dominate Person",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Modify Memory",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Trickster's Transposition",
+          "description": ""
+        },
+        {
+          "name": "Improved Duplicity",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Trickery Domain",
+            "Blessing of the Trickster",
+            "Invoke Duplicity",
+            "Trickery Domain Spells"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Trickster's Transposition"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Improved Duplicity"
+          ]
+        }
+      }
+    },
+    {
+      "name": "War Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "War Domain",
+          "description": ""
+        },
+        {
+          "name": "Guided Strike",
+          "description": ""
+        },
+        {
+          "name": "War Domain Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Shield of Faith",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Magic Weapon",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Spiritual Weapon",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Crusader's Mantle",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Spirit Guardians",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fire Shield",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Hold Monster",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Steel Wind Strike",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "War Priest",
+          "description": ""
+        },
+        {
+          "name": "War God's Blessing",
+          "description": ""
+        },
+        {
+          "name": "Avatar of Battle",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "War Domain",
+            "Guided Strike",
+            "War Domain Spells",
+            "War Priest"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "War God's Blessing"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Avatar of Battle"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Death Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Death Domain",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": ""
+        },
+        {
+          "name": "Reaper",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Touch of Death",
+          "description": ""
+        },
+        {
+          "name": "Inescapable Destruction",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Improved Reaper",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Death Domain",
+            "Bonus Proficiency",
+            "Reaper"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Touch of Death"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Touch of Death",
+            "Death Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Inescapable Destruction"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Improved Reaper"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arcana Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Arcana Domain",
+          "description": ""
+        },
+        {
+          "name": "Arcane Initiate",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Arcane Abjuration",
+          "description": ""
+        },
+        {
+          "name": "Spell Breaker",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Potent Spellcasting",
+          "description": ""
+        },
+        {
+          "name": "Arcane Mastery",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Arcana Domain",
+            "Arcane Initiate"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Arcane Abjuration"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Arcana Domain",
+            "Channel Divinity: Arcane Abjuration"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Spell Breaker"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Potent Spellcasting"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Arcane Mastery"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ambition Domain (PSA)",
+      "description": "",
+      "features": [
+        {
+          "name": "Ambition Domain (PSA)",
+          "description": ""
+        },
+        {
+          "name": "Warding Flare",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Invoke Duplicity",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Cloak of Shadows",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Potent Spellcasting",
+          "description": ""
+        },
+        {
+          "name": "Improved Duplicity",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Ambition Domain (PSA)",
+            "Warding Flare"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Invoke Duplicity"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Ambition Domain (PSA)",
+            "Channel Divinity: Invoke Duplicity"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Channel Divinity: Cloak of Shadows"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Potent Spellcasting"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Improved Duplicity"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Knowledge Domain (PSA)",
+      "description": "",
+      "features": [
+        {
+          "name": "Knowledge Domain (PSA)",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Knowledge Domain (PSA)"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Knowledge Domain (PSA)"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Solidarity Domain (PSA)",
+      "description": "",
+      "features": [
+        {
+          "name": "Solidarity Domain (PSA)",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": ""
+        },
+        {
+          "name": "Solidarity's Action",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Preserve Life",
+          "description": ""
+        },
+        {
+          "name": "Oketra's Blessing",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Supreme Healing",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Solidarity Domain (PSA)",
+            "Bonus Proficiency",
+            "Solidarity's Action"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Preserve Life"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Preserve Life",
+            "Solidarity Domain (PSA)"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Oketra's Blessing"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Supreme Healing"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Strength Domain (PSA)",
+      "description": "",
+      "features": [
+        {
+          "name": "Strength Domain (PSA)",
+          "description": ""
+        },
+        {
+          "name": "Acolyte of Strength",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Feat of Strength",
+          "description": ""
+        },
+        {
+          "name": "Rhonas's Blessing",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Avatar of Battle",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Strength Domain (PSA)",
+            "Acolyte of Strength",
+            "Bonus Proficiency"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Feat of Strength"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Feat of Strength",
+            "Strength Domain (PSA)"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Rhonas's Blessing"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Avatar of Battle"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Zeal Domain (PSA)",
+      "description": "",
+      "features": [
+        {
+          "name": "Zeal Domain (PSA)",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Priest of Zeal",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Consuming Fervor",
+          "description": ""
+        },
+        {
+          "name": "Resounding Strike",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Blaze of Glory",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Zeal Domain (PSA)",
+            "Bonus Proficiencies",
+            "Priest of Zeal"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Consuming Fervor"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Consuming Fervor",
+            "Zeal Domain (PSA)"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Resounding Strike"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Blaze of Glory"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Forge Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Forge Domain",
+          "description": ""
+        },
+        {
+          "name": "Blessing of the Forge",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiency",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Artisan's Blessing",
+          "description": ""
+        },
+        {
+          "name": "Soul of the Forge",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Saint of Forge and Fire",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Forge Domain",
+            "Blessing of the Forge",
+            "Bonus Proficiency"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Artisan's Blessing"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Artisan's Blessing",
+            "Forge Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Soul of the Forge"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Saint of Forge and Fire"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Grave Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Grave Domain",
+          "description": ""
+        },
+        {
+          "name": "Circle of Mortality",
+          "description": ""
+        },
+        {
+          "name": "Eyes of the Grave",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Path to the Grave",
+          "description": ""
+        },
+        {
+          "name": "Sentinel at Death's Door",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Potent Spellcasting",
+          "description": ""
+        },
+        {
+          "name": "Keeper of Souls",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Grave Domain",
+            "Circle of Mortality",
+            "Eyes of the Grave"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Path to the Grave"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Path to the Grave",
+            "Grave Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Sentinel at Death's Door"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Potent Spellcasting"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Keeper of Souls"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Order Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Order Domain",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Voice of Authority",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Order's Demand",
+          "description": ""
+        },
+        {
+          "name": "Embodiment of the Law",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Order's Wrath",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Order Domain",
+            "Bonus Proficiencies",
+            "Voice of Authority"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Order's Demand"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Order's Demand",
+            "Order Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Embodiment of the Law"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Order's Wrath"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Peace Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Peace Domain",
+          "description": ""
+        },
+        {
+          "name": "Emboldening Bond",
+          "description": ""
+        },
+        {
+          "name": "Implement of Peace",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Balm of Peace",
+          "description": ""
+        },
+        {
+          "name": "Protective Bond",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Potent Spellcasting",
+          "description": ""
+        },
+        {
+          "name": "Expansive Bond",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Peace Domain",
+            "Emboldening Bond",
+            "Implement of Peace"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Balm of Peace"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Balm of Peace",
+            "Peace Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Protective Bond"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Potent Spellcasting"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Expansive Bond"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Twilight Domain",
+      "description": "",
+      "features": [
+        {
+          "name": "Twilight Domain",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Eyes of Night",
+          "description": ""
+        },
+        {
+          "name": "Vigilant Blessing",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity: Twilight Sanctuary",
+          "description": ""
+        },
+        {
+          "name": "Steps of Night",
+          "description": ""
+        },
+        {
+          "name": "Blessed Strikes",
+          "description": ""
+        },
+        {
+          "name": "Divine Strike",
+          "description": ""
+        },
+        {
+          "name": "Twilight Shroud",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Twilight Domain",
+            "Bonus Proficiencies",
+            "Eyes of Night",
+            "Vigilant Blessing"
+          ]
+        },
+        "2": {
+          "level": 2,
+          "features": [
+            "Channel Divinity: Twilight Sanctuary"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Channel Divinity: Twilight Sanctuary",
+            "Twilight Domain"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Steps of Night"
+          ]
+        },
+        "8": {
+          "level": 8,
+          "features": [
+            "Blessed Strikes",
+            "Divine Strike"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Twilight Shroud"
+          ]
+        }
+      }
+    }
+  ]
+}

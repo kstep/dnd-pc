@@ -1,0 +1,857 @@
+{
+  "name": "Barbarian",
+  "description": "",
+  "hit_die": 12,
+  "features": [
+    {
+      "name": "Rage",
+      "description": "",
+      "fields": [
+        {
+          "name": "Rages",
+          "kind": "Points",
+          "levels": {
+            "1": 2,
+            "3": 3,
+            "6": 4,
+            "12": 5,
+            "17": 6
+          }
+        },
+        {
+          "name": "Rage Damage",
+          "kind": "Bonus",
+          "levels": {
+            "1": 2,
+            "9": 3,
+            "16": 4
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Rages",
+          "options": [
+            {
+              "name": "Rage",
+              "description": "",
+              "cost": 1,
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Unarmored Defense",
+      "description": "",
+      "ac_expr": "10 + DEX.MOD + CON.MOD"
+    },
+    {
+      "name": "Weapon Mastery (Barbarian)",
+      "description": "",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2,
+            "4": 3,
+            "10": 4
+          }
+        }
+      ]
+    },
+    {
+      "name": "Danger Sense",
+      "description": ""
+    },
+    {
+      "name": "Reckless Attack",
+      "description": "",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Reckless Attack",
+              "description": "",
+              "action": "Action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Barbarian Subclass",
+      "description": ""
+    },
+    {
+      "name": "Primal Knowledge",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Extra Attack",
+      "description": ""
+    },
+    {
+      "name": "Fast Movement",
+      "description": "",
+      "assign": [
+        {
+          "expr": "SPEED += 10",
+          "when": "OnCompute"
+        }
+      ]
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Feral Instinct",
+      "description": ""
+    },
+    {
+      "name": "Instinctive Pounce",
+      "description": ""
+    },
+    {
+      "name": "Brutal Strike",
+      "description": ""
+    },
+    {
+      "name": "Relentless Rage",
+      "description": ""
+    },
+    {
+      "name": "Improved Brutal Strike",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Persistent Rage",
+      "description": ""
+    },
+    {
+      "name": "Indomitable Might",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Primal Champion",
+      "description": ""
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Rage",
+        "Unarmored Defense",
+        "Weapon Mastery (Barbarian)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Danger Sense",
+        "Reckless Attack"
+      ]
+    },
+    {
+      "features": [
+        "Barbarian Subclass",
+        "Primal Knowledge"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack",
+        "Fast Movement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Feral Instinct",
+        "Instinctive Pounce"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Brutal Strike"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Relentless Rage"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Improved Brutal Strike"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Persistent Rage"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Improved Brutal Strike"
+      ]
+    },
+    {
+      "features": [
+        "Indomitable Might"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Primal Champion"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Path of the Berserker",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Berserker",
+          "description": ""
+        },
+        {
+          "name": "Frenzy",
+          "description": ""
+        },
+        {
+          "name": "Mindless Rage",
+          "description": ""
+        },
+        {
+          "name": "Retaliation",
+          "description": ""
+        },
+        {
+          "name": "Intimidating Presence",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Berserker",
+            "Frenzy"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Mindless Rage"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Retaliation"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Intimidating Presence"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Battlerager",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Battlerager",
+          "description": ""
+        },
+        {
+          "name": "Battlerager Armor",
+          "description": ""
+        },
+        {
+          "name": "Restriction—Dwarves Only",
+          "description": ""
+        },
+        {
+          "name": "Reckless Abandon",
+          "description": ""
+        },
+        {
+          "name": "Battlerager Charge",
+          "description": ""
+        },
+        {
+          "name": "Spiked Retribution",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Battlerager",
+            "Battlerager Armor",
+            "Restriction—Dwarves Only"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Reckless Abandon"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Battlerager Charge"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Spiked Retribution"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Ancestral Guardian",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Ancestral Guardian",
+          "description": ""
+        },
+        {
+          "name": "Ancestral Protectors",
+          "description": ""
+        },
+        {
+          "name": "Spirit Shield",
+          "description": ""
+        },
+        {
+          "name": "Consult the Spirits",
+          "description": ""
+        },
+        {
+          "name": "Vengeful Ancestors",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Ancestral Guardian",
+            "Ancestral Protectors"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Spirit Shield"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Consult the Spirits"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Vengeful Ancestors"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Storm Herald",
+      "description": "",
+      "features": [
+        {
+          "name": "Desert",
+          "description": ""
+        },
+        {
+          "name": "Path of the Storm Herald",
+          "description": ""
+        },
+        {
+          "name": "Sea",
+          "description": ""
+        },
+        {
+          "name": "Tundra",
+          "description": ""
+        },
+        {
+          "name": "Storm Aura",
+          "description": ""
+        },
+        {
+          "name": "Storm Soul",
+          "description": ""
+        },
+        {
+          "name": "Shielding Storm",
+          "description": ""
+        },
+        {
+          "name": "Raging Storm",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Desert",
+            "Path of the Storm Herald",
+            "Sea",
+            "Tundra",
+            "Storm Aura"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Desert",
+            "Sea",
+            "Tundra",
+            "Storm Soul"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Shielding Storm"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Desert",
+            "Sea",
+            "Tundra",
+            "Raging Storm"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Zealot",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Zealot",
+          "description": ""
+        },
+        {
+          "name": "Divine Fury",
+          "description": ""
+        },
+        {
+          "name": "Warrior of the Gods",
+          "description": ""
+        },
+        {
+          "name": "Fanatical Focus",
+          "description": ""
+        },
+        {
+          "name": "Zealous Presence",
+          "description": ""
+        },
+        {
+          "name": "Rage of the Gods",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Zealot",
+            "Divine Fury",
+            "Warrior of the Gods"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Fanatical Focus"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Zealous Presence"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Rage of the Gods"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Beast",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Beast",
+          "description": ""
+        },
+        {
+          "name": "Form of the Beast",
+          "description": ""
+        },
+        {
+          "name": "Bestial Soul",
+          "description": ""
+        },
+        {
+          "name": "Infectious Fury",
+          "description": ""
+        },
+        {
+          "name": "Call the Hunt",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Beast",
+            "Form of the Beast"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Bestial Soul"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Infectious Fury"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Call the Hunt"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of Wild Magic",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of Wild Magic",
+          "description": ""
+        },
+        {
+          "name": "Magic Awareness",
+          "description": ""
+        },
+        {
+          "name": "Wild Surge",
+          "description": ""
+        },
+        {
+          "name": "Bolstering Magic",
+          "description": ""
+        },
+        {
+          "name": "Unstable Backlash",
+          "description": ""
+        },
+        {
+          "name": "Controlled Surge",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of Wild Magic",
+            "Magic Awareness",
+            "Wild Surge"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Bolstering Magic"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Unstable Backlash"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Controlled Surge"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Giant",
+      "description": "",
+      "features": [
+        {
+          "name": "Giant Power",
+          "description": "",
+          "languages": [
+            "Giant"
+          ]
+        },
+        {
+          "name": "Giant's Havoc",
+          "description": ""
+        },
+        {
+          "name": "Path of the Giant",
+          "description": ""
+        },
+        {
+          "name": "Elemental Cleaver",
+          "description": ""
+        },
+        {
+          "name": "Mighty Impel",
+          "description": ""
+        },
+        {
+          "name": "Demiurgic Colossus",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Giant Power",
+            "Giant's Havoc",
+            "Path of the Giant"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Elemental Cleaver"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Mighty Impel"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Demiurgic Colossus"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the Wild Heart",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the Wild Heart",
+          "description": ""
+        },
+        {
+          "name": "Animal Speaker",
+          "description": ""
+        },
+        {
+          "name": "Rage of the Wilds",
+          "description": ""
+        },
+        {
+          "name": "Aspect of the Wilds",
+          "description": ""
+        },
+        {
+          "name": "Nature Speaker",
+          "description": ""
+        },
+        {
+          "name": "Power of the Wilds",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the Wild Heart",
+            "Animal Speaker",
+            "Rage of the Wilds"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Aspect of the Wilds"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Nature Speaker"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Power of the Wilds"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Path of the World Tree",
+      "description": "",
+      "features": [
+        {
+          "name": "Path of the World Tree",
+          "description": ""
+        },
+        {
+          "name": "Vitality of the Tree",
+          "description": ""
+        },
+        {
+          "name": "Branches of the Tree",
+          "description": ""
+        },
+        {
+          "name": "Battering Roots",
+          "description": ""
+        },
+        {
+          "name": "Travel Along the Tree",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Path of the World Tree",
+            "Vitality of the Tree"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Branches of the Tree"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Battering Roots"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Travel Along the Tree"
+          ]
+        }
+      }
+    }
+  ]
+}

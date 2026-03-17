@@ -1,283 +1,137 @@
 {
-  "classes": [
-    {
-      "name": "Artificer",
-      "url": "classes/artificer.json",
-      "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects.",
-      "prerequisites": [
-        3
-      ]
-    },
-    {
-      "name": "Barbarian",
-      "url": "classes/barbarian.json",
-      "description": "A fierce warrior who can enter a battle rage.",
-      "prerequisites": [
-        0
-      ]
-    },
-    {
-      "name": "Bard",
-      "url": "classes/bard.json",
-      "description": "An inspiring magician whose power echoes the music of creation.",
-      "prerequisites": [
-        5
-      ]
-    },
-    {
-      "name": "Cleric",
-      "url": "classes/cleric.json",
-      "description": "A priestly champion who wields divine magic in service of a higher power.",
-      "prerequisites": [
-        4
-      ]
-    },
-    {
-      "name": "Druid",
-      "url": "classes/druid.json",
-      "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
-      "prerequisites": [
-        4
-      ]
-    },
-    {
-      "name": "Fighter",
-      "url": "classes/fighter.json",
-      "description": "A master of martial combat, skilled with a variety of weapons and armor.",
-      "prerequisites": [
-        0
-      ]
-    },
-    {
-      "name": "Monk",
-      "url": "classes/monk.json",
-      "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
-      "prerequisites": [
-        1
-      ]
-    },
-    {
-      "name": "Paladin",
-      "url": "classes/paladin.json",
-      "description": "A holy warrior bound to a sacred oath.",
-      "prerequisites": [
-        5
-      ]
-    },
-    {
-      "name": "Ranger",
-      "url": "classes/ranger.json",
-      "description": "A warrior who combats threats on the edges of civilization.",
-      "prerequisites": [
-        4
-      ]
-    },
-    {
-      "name": "Rogue",
-      "url": "classes/rogue.json",
-      "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
-      "prerequisites": [
-        1
-      ]
-    },
-    {
-      "name": "Sorcerer",
-      "url": "classes/sorcerer.json",
-      "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
-      "prerequisites": [
-        5
-      ]
-    },
-    {
-      "name": "Warlock",
-      "url": "classes/warlock.json",
-      "description": "A wielder of magic derived from a bargain with an extraplanar entity.",
-      "prerequisites": [
-        5
-      ]
-    },
-    {
-      "name": "Wizard",
-      "url": "classes/wizard.json",
-      "description": "A scholarly magic-user capable of manipulating the structures of reality.",
-      "prerequisites": [
-        3
-      ]
-    }
-  ],
-  "races": [
-    {
-      "name": "Aasimar",
-      "url": "races/aasimar.json",
-      "description": "Celestial-touched with healing hands and divine transformation."
-    },
-    {
-      "name": "Dragonborn",
-      "url": "races/dragonborn.json",
-      "description": "Dragon-kin with a breath weapon, damage resistance, and draconic flight."
-    },
-    {
-      "name": "Drow",
-      "url": "races/drow.json",
-      "description": "Elves of the Underdark with superior darkvision and innate magic."
-    },
-    {
-      "name": "Dwarf",
-      "url": "races/dwarf.json",
-      "description": "Resilient and tough, with poison resistance and stonecunning."
-    },
-    {
-      "name": "Forest Gnome",
-      "url": "races/forest-gnome.json",
-      "description": "Small and cunning, with a knack for illusion and speaking with beasts."
-    },
-    {
-      "name": "Goliath",
-      "url": "races/goliath.json",
-      "description": "Towering giant-kin with powerful build and giant ancestry."
-    },
-    {
-      "name": "Halfling",
-      "url": "races/halfling.json",
-      "description": "Small, brave, and lucky, with natural stealth."
-    },
-    {
-      "name": "High Elf",
-      "url": "races/high-elf.json",
-      "description": "Elves with arcane talent and a flexible wizard cantrip."
-    },
-    {
-      "name": "Human",
-      "url": "races/human.json",
-      "description": "Resourceful, skillful, and versatile — the most adaptable species."
-    },
-    {
-      "name": "Orc",
-      "url": "races/orc.json",
-      "description": "Hardy and fierce, with adrenaline rush and relentless endurance."
-    },
-    {
-      "name": "Rock Gnome",
-      "url": "races/rock-gnome.json",
-      "description": "Inventive and cunning, with tinker's magic."
-    },
-    {
-      "name": "Tiefling",
-      "url": "races/tiefling.json",
-      "description": "Fiend-touched with Thaumaturgy. Choose a legacy for full traits."
-    },
-    {
-      "name": "Tiefling (Abyssal)",
-      "url": "races/tiefling-abyssal.json",
-      "description": "Abyssal legacy: poison resistance, Poison Spray, Ray of Sickness, Hold Person."
-    },
-    {
-      "name": "Tiefling (Chthonic)",
-      "url": "races/tiefling-chthonic.json",
-      "description": "Chthonic legacy: necrotic resistance, Chill Touch, False Life, Ray of Enfeeblement."
-    },
-    {
-      "name": "Tiefling (Infernal)",
-      "url": "races/tiefling-infernal.json",
-      "description": "Infernal legacy: fire resistance, Fire Bolt, Hellish Rebuke, Darkness."
-    },
-    {
-      "name": "Wood Elf",
-      "url": "races/wood-elf.json",
-      "description": "Fleet-footed elves with Druidcraft and woodland magic."
-    }
-  ],
-  "backgrounds": [
-    {
-      "name": "Acolyte",
-      "url": "backgrounds/acolyte.json",
-      "description": "Temple servant with sacred rites. Feat: Magic Initiate (Cleric)."
-    },
-    {
-      "name": "Artisan",
-      "url": "backgrounds/artisan.json",
-      "description": "Skilled craftsperson and guild member. Feat: Crafter."
-    },
-    {
-      "name": "Charlatan",
-      "url": "backgrounds/charlatan.json",
-      "description": "Con artist with a silver tongue. Feat: Skilled."
-    },
-    {
-      "name": "Criminal",
-      "url": "backgrounds/criminal.json",
-      "description": "Experienced lawbreaker with underworld contacts. Feat: Alert."
-    },
-    {
-      "name": "Entertainer",
-      "url": "backgrounds/entertainer.json",
-      "description": "Performer who thrives before an audience. Feat: Musician."
-    },
-    {
-      "name": "Farmer",
-      "url": "backgrounds/farmer.json",
-      "description": "Hardy worker of the land. Feat: Tough."
-    },
-    {
-      "name": "Guard",
-      "url": "backgrounds/guard.json",
-      "description": "Trained sentinel who keeps watch. Feat: Alert."
-    },
-    {
-      "name": "Guide",
-      "url": "backgrounds/guide.json",
-      "description": "Wilderness expert and pathfinder. Feat: Magic Initiate (Druid)."
-    },
-    {
-      "name": "Hermit",
-      "url": "backgrounds/hermit.json",
-      "description": "Recluse who discovered a deep truth. Feat: Healer."
-    },
-    {
-      "name": "Merchant",
-      "url": "backgrounds/merchant.json",
-      "description": "Trader with a nose for profit. Feat: Lucky."
-    },
-    {
-      "name": "Noble",
-      "url": "backgrounds/noble.json",
-      "description": "Aristocrat raised in wealth and privilege. Feat: Skilled."
-    },
-    {
-      "name": "Sage",
-      "url": "backgrounds/sage.json",
-      "description": "Scholar devoted to learning. Feat: Magic Initiate (Wizard)."
-    },
-    {
-      "name": "Sailor",
-      "url": "backgrounds/sailor.json",
-      "description": "Seafarer hardened by storms. Feat: Tavern Brawler."
-    },
-    {
-      "name": "Scribe",
-      "url": "backgrounds/scribe.json",
-      "description": "Keeper of records and lore. Feat: Skilled."
-    },
-    {
-      "name": "Soldier",
-      "url": "backgrounds/soldier.json",
-      "description": "Military veteran of rank and discipline. Feat: Savage Attacker."
-    },
-    {
-      "name": "Wayfarer",
-      "url": "backgrounds/wayfarer.json",
-      "description": "Wanderer who survives by luck and wits. Feat: Lucky."
-    }
-  ],
-  "spells": [
-    { "name": "artificer", "url": "spells/artificer.json" },
-    { "name": "bard", "url": "spells/bard.json" },
-    { "name": "cleric", "url": "spells/cleric.json" },
-    { "name": "druid", "url": "spells/druid.json" },
-    { "name": "paladin", "url": "spells/paladin.json" },
-    { "name": "ranger", "url": "spells/ranger.json" },
-    { "name": "sorcerer", "url": "spells/sorcerer.json" },
-    { "name": "warlock", "url": "spells/warlock.json" },
-    { "name": "wizard", "url": "spells/wizard.json" }
-  ]
+  "class.Artificer": {
+    "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects."
+  },
+  "class.Barbarian": {
+    "description": "A fierce warrior who can enter a battle rage."
+  },
+  "class.Bard": {
+    "description": "An inspiring magician whose power echoes the music of creation."
+  },
+  "class.Cleric": {
+    "description": "A priestly champion who wields divine magic in service of a higher power."
+  },
+  "class.Druid": {
+    "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms."
+  },
+  "class.Fighter": {
+    "description": "A master of martial combat, skilled with a variety of weapons and armor."
+  },
+  "class.Monk": {
+    "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection."
+  },
+  "class.Paladin": {
+    "description": "A holy warrior bound to a sacred oath."
+  },
+  "class.Ranger": {
+    "description": "A warrior who combats threats on the edges of civilization."
+  },
+  "class.Rogue": {
+    "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies."
+  },
+  "class.Sorcerer": {
+    "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
+  },
+  "class.Warlock": {
+    "description": "A wielder of magic derived from a bargain with an extraplanar entity."
+  },
+  "class.Wizard": {
+    "description": "A scholarly magic-user capable of manipulating the structures of reality."
+  },
+  "race.Aasimar": {
+    "description": "Celestial-touched with healing hands and divine transformation."
+  },
+  "race.Dragonborn": {
+    "description": "Dragon-kin with a breath weapon, damage resistance, and draconic flight."
+  },
+  "race.Drow": {
+    "description": "Elves of the Underdark with superior darkvision and innate magic."
+  },
+  "race.Dwarf": {
+    "description": "Resilient and tough, with poison resistance and stonecunning."
+  },
+  "race.Forest Gnome": {
+    "description": "Small and cunning, with a knack for illusion and speaking with beasts."
+  },
+  "race.Goliath": {
+    "description": "Towering giant-kin with powerful build and giant ancestry."
+  },
+  "race.Halfling": {
+    "description": "Small, brave, and lucky, with natural stealth."
+  },
+  "race.High Elf": {
+    "description": "Elves with arcane talent and a flexible wizard cantrip."
+  },
+  "race.Human": {
+    "description": "Resourceful, skillful, and versatile — the most adaptable species."
+  },
+  "race.Orc": {
+    "description": "Hardy and fierce, with adrenaline rush and relentless endurance."
+  },
+  "race.Rock Gnome": {
+    "description": "Inventive and cunning, with tinker's magic."
+  },
+  "race.Tiefling": {
+    "description": "Fiend-touched with Thaumaturgy. Choose a legacy for full traits."
+  },
+  "race.Tiefling (Abyssal)": {
+    "description": "Abyssal legacy: poison resistance, Poison Spray, Ray of Sickness, Hold Person."
+  },
+  "race.Tiefling (Chthonic)": {
+    "description": "Chthonic legacy: necrotic resistance, Chill Touch, False Life, Ray of Enfeeblement."
+  },
+  "race.Tiefling (Infernal)": {
+    "description": "Infernal legacy: fire resistance, Fire Bolt, Hellish Rebuke, Darkness."
+  },
+  "race.Wood Elf": {
+    "description": "Fleet-footed elves with Druidcraft and woodland magic."
+  },
+  "background.Acolyte": {
+    "description": "Temple servant with sacred rites. Feat: Magic Initiate (Cleric)."
+  },
+  "background.Artisan": {
+    "description": "Skilled craftsperson and guild member. Feat: Crafter."
+  },
+  "background.Charlatan": {
+    "description": "Con artist with a silver tongue. Feat: Skilled."
+  },
+  "background.Criminal": {
+    "description": "Experienced lawbreaker with underworld contacts. Feat: Alert."
+  },
+  "background.Entertainer": {
+    "description": "Performer who thrives before an audience. Feat: Musician."
+  },
+  "background.Farmer": {
+    "description": "Hardy worker of the land. Feat: Tough."
+  },
+  "background.Guard": {
+    "description": "Trained sentinel who keeps watch. Feat: Alert."
+  },
+  "background.Guide": {
+    "description": "Wilderness expert and pathfinder. Feat: Magic Initiate (Druid)."
+  },
+  "background.Hermit": {
+    "description": "Recluse who discovered a deep truth. Feat: Healer."
+  },
+  "background.Merchant": {
+    "description": "Trader with a nose for profit. Feat: Lucky."
+  },
+  "background.Noble": {
+    "description": "Aristocrat raised in wealth and privilege. Feat: Skilled."
+  },
+  "background.Sage": {
+    "description": "Scholar devoted to learning. Feat: Magic Initiate (Wizard)."
+  },
+  "background.Sailor": {
+    "description": "Seafarer hardened by storms. Feat: Tavern Brawler."
+  },
+  "background.Scribe": {
+    "description": "Keeper of records and lore. Feat: Skilled."
+  },
+  "background.Soldier": {
+    "description": "Military veteran of rank and discipline. Feat: Savage Attacker."
+  },
+  "background.Wayfarer": {
+    "description": "Wanderer who survives by luck and wits. Feat: Lucky."
+  }
 }

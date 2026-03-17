@@ -1,0 +1,282 @@
+[
+  {
+    "name": "Bless",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Ceremony",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Command",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Compelled Duel",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Evil and Good",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Poison and Disease",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Divine Favor",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Divine Smite",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Heroism",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Protection from Evil and Good",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Purify Food and Drink",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Searing Smite",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Shield of Faith",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Thunderous Smite",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Wardaway",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Wrathful Smite",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Find Steed",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Gentle Repose",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Object",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Magic Weapon",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Prayer of Healing",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Shining Smite",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Warding Bond",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Zone of Truth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Aura of Vitality",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Blinding Smite",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Create Food and Water",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Crusader's Mantle",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Daylight",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Elemental Weapon",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Magic Circle",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Spirit Shroud",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Aura of Life",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Aura of Purity",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Banishment",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Death Ward",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Find Greater Steed",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Locate Creature",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Staggering Smite",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Banishing Smite",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Circle of Power",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Destructive Wave",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dispel Evil and Good",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Geas",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Holy Weapon",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Raise Dead",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Summon Celestial",
+    "level": 5,
+    "description": ""
+  }
+]

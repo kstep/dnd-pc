@@ -1,0 +1,1474 @@
+{
+  "name": "Paladin",
+  "description": "",
+  "hit_die": 10,
+  "features": [
+    {
+      "name": "Lay on Hands",
+      "description": "",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Lay on Hands",
+              "description": "",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Spellcasting (Paladin)",
+      "description": "",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/paladin.json"
+        },
+        "levels": [
+          {
+            "spells": 2,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "spells": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "spells": 4,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          }
+        ],
+        "caster_coef": 2
+      }
+    },
+    {
+      "name": "Weapon Mastery (Paladin)",
+      "description": "",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fighting Style",
+      "description": ""
+    },
+    {
+      "name": "Paladin's Smite",
+      "description": ""
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Divine Sense",
+      "description": "",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Divine Sense",
+              "description": "",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Paladin Subclass",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Extra Attack",
+      "description": ""
+    },
+    {
+      "name": "Faithful Steed",
+      "description": ""
+    },
+    {
+      "name": "Aura of Protection",
+      "description": ""
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Abjure Foes",
+      "description": ""
+    },
+    {
+      "name": "Aura of Courage",
+      "description": ""
+    },
+    {
+      "name": "Radiant Strikes",
+      "description": ""
+    },
+    {
+      "name": "Restoring Touch",
+      "description": ""
+    },
+    {
+      "name": "Aura Expansion",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Lay on Hands",
+        "Spellcasting (Paladin)",
+        "Weapon Mastery (Paladin)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Fighting Style",
+        "Paladin's Smite"
+      ]
+    },
+    {
+      "features": [
+        "Channel Divinity",
+        "Divine Sense",
+        "Paladin Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack",
+        "Faithful Steed"
+      ]
+    },
+    {
+      "features": [
+        "Aura of Protection"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Abjure Foes"
+      ]
+    },
+    {
+      "features": [
+        "Aura of Courage"
+      ]
+    },
+    {
+      "features": [
+        "Radiant Strikes"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Restoring Touch"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Aura Expansion"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Oath of Devotion",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of Devotion",
+          "description": ""
+        },
+        {
+          "name": "Oath of Devotion Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Protection from Evil and Good",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Shield of Faith",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Aid",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Zone of Truth",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Beacon of Hope",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Dispel Magic",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Guardian of Faith",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Commune",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Flame Strike",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Sacred Weapon",
+          "description": ""
+        },
+        {
+          "name": "Aura of Devotion",
+          "description": ""
+        },
+        {
+          "name": "Smite of Protection",
+          "description": ""
+        },
+        {
+          "name": "Holy Nimbus",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of Devotion",
+            "Oath of Devotion Spells",
+            "Sacred Weapon"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Devotion"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Smite of Protection"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Holy Nimbus"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of the Ancients",
+      "description": "",
+      "features": [
+        {
+          "name": "Nature's Wrath",
+          "description": ""
+        },
+        {
+          "name": "Oath of the Ancients",
+          "description": ""
+        },
+        {
+          "name": "Oath of the Ancients Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Ensnaring Strike",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Speak with Animals",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Moonbeam",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Plant Growth",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Stoneskin",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Commune with Nature",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Tree Stride",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aura of Warding",
+          "description": ""
+        },
+        {
+          "name": "Undying Sentinel",
+          "description": ""
+        },
+        {
+          "name": "Elder Champion",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Nature's Wrath",
+            "Oath of the Ancients",
+            "Oath of the Ancients Spells"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Warding"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Undying Sentinel"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Elder Champion"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of Vengeance",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of Vengeance",
+          "description": ""
+        },
+        {
+          "name": "Oath of Vengeance Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Bane",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hunter's Mark",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Haste",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Banishment",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Dimension Door",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Hold Monster",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Scrying",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Vow of Enmity",
+          "description": ""
+        },
+        {
+          "name": "Relentless Avenger",
+          "description": ""
+        },
+        {
+          "name": "Soul of Vengeance",
+          "description": ""
+        },
+        {
+          "name": "Avenging Angel",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of Vengeance",
+            "Oath of Vengeance Spells",
+            "Vow of Enmity"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Relentless Avenger"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Soul of Vengeance"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Avenging Angel"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oathbreaker",
+      "description": "",
+      "features": [
+        {
+          "name": "Oathbreaker",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity",
+          "description": ""
+        },
+        {
+          "name": "Control Undead",
+          "description": ""
+        },
+        {
+          "name": "Dreadful Aspect",
+          "description": ""
+        },
+        {
+          "name": "Oathbreaker Spells",
+          "description": ""
+        },
+        {
+          "name": "Aura of Hate",
+          "description": ""
+        },
+        {
+          "name": "Supernatural Resistance",
+          "description": ""
+        },
+        {
+          "name": "Dread Lord",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oathbreaker",
+            "Channel Divinity",
+            "Control Undead",
+            "Dreadful Aspect",
+            "Oathbreaker Spells"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Hate"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Supernatural Resistance"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Dread Lord"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of the Crown",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of the Crown",
+          "description": ""
+        },
+        {
+          "name": "Champion Challenge",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity",
+          "description": ""
+        },
+        {
+          "name": "Oath Spells",
+          "description": ""
+        },
+        {
+          "name": "Tenets of the Crown",
+          "description": ""
+        },
+        {
+          "name": "Turn the Tide",
+          "description": ""
+        },
+        {
+          "name": "Divine Allegiance",
+          "description": ""
+        },
+        {
+          "name": "Unyielding Spirit",
+          "description": ""
+        },
+        {
+          "name": "Exalted Champion",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of the Crown",
+            "Champion Challenge",
+            "Channel Divinity",
+            "Oath Spells",
+            "Tenets of the Crown",
+            "Turn the Tide"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Divine Allegiance"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Unyielding Spirit"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Exalted Champion"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of Conquest",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of Conquest",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity",
+          "description": ""
+        },
+        {
+          "name": "Conquering Presence",
+          "description": ""
+        },
+        {
+          "name": "Guided Strike",
+          "description": ""
+        },
+        {
+          "name": "Oath Spells",
+          "description": ""
+        },
+        {
+          "name": "Tenets of Conquest",
+          "description": ""
+        },
+        {
+          "name": "Aura of Conquest",
+          "description": ""
+        },
+        {
+          "name": "Scornful Rebuke",
+          "description": ""
+        },
+        {
+          "name": "Invincible Conqueror",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of Conquest",
+            "Channel Divinity",
+            "Conquering Presence",
+            "Guided Strike",
+            "Oath Spells",
+            "Tenets of Conquest"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Conquest"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Scornful Rebuke"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Invincible Conqueror"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of Redemption",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of Redemption",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity",
+          "description": ""
+        },
+        {
+          "name": "Emissary of Peace",
+          "description": ""
+        },
+        {
+          "name": "Oath Spells",
+          "description": ""
+        },
+        {
+          "name": "Rebuke the Violent",
+          "description": ""
+        },
+        {
+          "name": "Tenets of Redemption",
+          "description": ""
+        },
+        {
+          "name": "Aura of the Guardian",
+          "description": ""
+        },
+        {
+          "name": "Protective Spirit",
+          "description": ""
+        },
+        {
+          "name": "Emissary of Redemption",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of Redemption",
+            "Channel Divinity",
+            "Emissary of Peace",
+            "Oath Spells",
+            "Rebuke the Violent",
+            "Tenets of Redemption"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of the Guardian"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Protective Spirit"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Emissary of Redemption"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of Glory",
+      "description": "",
+      "features": [
+        {
+          "name": "Inspiring Smite",
+          "description": ""
+        },
+        {
+          "name": "Oath of Glory",
+          "description": ""
+        },
+        {
+          "name": "Oath of Glory Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Heroism",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Enhance Ability",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Magic Weapon",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Haste",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Protection from Energy",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Compulsion",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Legend Lore",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Yolande's Regal Presence",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Peerless Athlete",
+          "description": ""
+        },
+        {
+          "name": "Aura of Alacrity",
+          "description": ""
+        },
+        {
+          "name": "Glorious Defense",
+          "description": ""
+        },
+        {
+          "name": "Living Legend",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Inspiring Smite",
+            "Oath of Glory",
+            "Oath of Glory Spells",
+            "Peerless Athlete"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Alacrity"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Glorious Defense"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Living Legend"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of the Watchers",
+      "description": "",
+      "features": [
+        {
+          "name": "Oath of the Watchers",
+          "description": ""
+        },
+        {
+          "name": "Channel Divinity",
+          "description": ""
+        },
+        {
+          "name": "Oath Spells",
+          "description": ""
+        },
+        {
+          "name": "Tenets of the Watchers",
+          "description": ""
+        },
+        {
+          "name": "Abjure the Extraplanar",
+          "description": ""
+        },
+        {
+          "name": "Watcher's Will",
+          "description": ""
+        },
+        {
+          "name": "Aura of the Sentinel",
+          "description": ""
+        },
+        {
+          "name": "Vigilant Rebuke",
+          "description": ""
+        },
+        {
+          "name": "Mortal Bulwark",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Oath of the Watchers",
+            "Channel Divinity",
+            "Oath Spells",
+            "Tenets of the Watchers",
+            "Abjure the Extraplanar",
+            "Watcher's Will"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of the Sentinel"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Vigilant Rebuke"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Mortal Bulwark"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Oath of the Noble Genies",
+      "description": "",
+      "features": [
+        {
+          "name": "Dao's Crush",
+          "description": ""
+        },
+        {
+          "name": "Djinni's Escape",
+          "description": ""
+        },
+        {
+          "name": "Efreeti's Fury",
+          "description": ""
+        },
+        {
+          "name": "Elemental Smite",
+          "description": ""
+        },
+        {
+          "name": "Genie Spells",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Elementalism",
+                "level": 0,
+                "description": ""
+              },
+              {
+                "name": "Chromatic Orb",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Thunderous Smite",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Mirror Image",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Phantasmal Force",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fly",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Gaseous Form",
+                "level": 3,
+                "description": "",
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Conjure Minor Elementals",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Summon Elemental",
+                "level": 4,
+                "description": "",
+                "sticky": true,
+                "min_level": 13
+              },
+              {
+                "name": "Banishing Smite",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              },
+              {
+                "name": "Contact Other Plane",
+                "level": 5,
+                "description": "",
+                "sticky": true,
+                "min_level": 17
+              }
+            ]
+          }
+        },
+        {
+          "name": "Genie's Splendor",
+          "description": "",
+          "assign": [
+            {
+              "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
+              "when": "OnFeatureAdd"
+            }
+          ]
+        },
+        {
+          "name": "Marid's Surge",
+          "description": ""
+        },
+        {
+          "name": "Oath of the Noble Genies",
+          "description": ""
+        },
+        {
+          "name": "Aura of Elemental Shielding",
+          "description": ""
+        },
+        {
+          "name": "Elemental Rebuke",
+          "description": ""
+        },
+        {
+          "name": "Noble Scion",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Dao's Crush",
+            "Djinni's Escape",
+            "Efreeti's Fury",
+            "Elemental Smite",
+            "Genie Spells",
+            "Genie's Splendor",
+            "Marid's Surge",
+            "Oath of the Noble Genies"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Aura of Elemental Shielding"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Elemental Rebuke"
+          ]
+        },
+        "20": {
+          "level": 20,
+          "features": [
+            "Noble Scion"
+          ]
+        }
+      }
+    }
+  ]
+}

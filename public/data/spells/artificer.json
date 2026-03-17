@@ -1,0 +1,537 @@
+[
+  {
+    "name": "Acid Splash",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Booming Blade",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Create Bonfire",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Dancing Lights",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Elementalism",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Fire Bolt",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Frostbite",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Green-Flame Blade",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Guidance",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Light",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Lightning Lure",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mage Hand",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Magic Stone",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mending",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Message",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Poison Spray",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Prestidigitation",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Ray of Frost",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Resistance",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Shocking Grasp",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Spare the Dying",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Sword Burst",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Thorn Whip",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Thunderclap",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "True Strike",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Absorb Elements",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Alarm",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Catapult",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Disguise Self",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Expeditious Retreat",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Faerie Fire",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "False Life",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Feather Fall",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Grease",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Identify",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Jump",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Longstrider",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Purify Food and Drink",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Sanctuary",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Snare",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Tasha's Caustic Brew",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Air Bubble",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Alter Self",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Arcane Lock",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Arcane Vigor",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Blur",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Continual Flame",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Darkvision",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Dragon's Breath",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enhance Ability",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enlarge/Reduce",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Heat Metal",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Homunculus Servant",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Invisibility",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Kinetic Jaunt",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Levitate",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Magic Mouth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Magic Weapon",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Pyrotechnics",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Rope Trick",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "See Invisibility",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Skywrite",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spider Climb",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Vortex Warp",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Web",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Ashardalon's Stride",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Blink",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Catnap",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Create Food and Water",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Elemental Weapon",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Flame Arrows",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fly",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Glyph of Warding",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Haste",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Intellect Fortress",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Linked Glyphs",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Protection from Energy",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Tiny Servant",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Water Breathing",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Water Walk",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Arcane Eye",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Elemental Bane",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Fabricate",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Freedom of Movement",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Leomund's Secret Chest",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Mordenkainen's Faithful Hound",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Mordenkainen's Private Sanctum",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Otiluke's Resilient Sphere",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Stone Shape",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Stoneskin",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Summon Construct",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Animate Objects",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Bigby's Hand",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Circle of Power",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Create Spelljamming Helm",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Creation",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Skill Empowerment",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Transmute Rock",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Wall of Stone",
+    "level": 5,
+    "description": ""
+  }
+]

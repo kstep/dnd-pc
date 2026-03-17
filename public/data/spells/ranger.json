@@ -1,0 +1,367 @@
+[
+  {
+    "name": "Absorb Elements",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Alarm",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Animal Friendship",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Beast Bond",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Poison and Disease",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Ensnaring Strike",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Entangle",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Fog Cloud",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Goodberry",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Hail of Thorns",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Hunter's Mark",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Jump",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Longstrider",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Searing Smite",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Snare",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Speak with Animals",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Zephyr Strike",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Air Bubble",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Animal Messenger",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Barkskin",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Beast Sense",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Cordon of Arrows",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Darkvision",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enhance Ability",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Find Traps",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Gust of Wind",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Healing Spirit",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Animals or Plants",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Object",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Magic Weapon",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Pass without Trace",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Silence",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spike Growth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Summon Beast",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Ashardalon's Stride",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Conjure Animals",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Conjure Barrage",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Daylight",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Elemental Weapon",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Flame Arrows",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Lightning Arrow",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Meld into Stone",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Nondetection",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Plant Growth",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Protection from Energy",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Speak with Plants",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Summon Fey",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Water Breathing",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Water Walk",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Wind Wall",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Conjure Woodland Beings",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Dominate Beast",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Freedom of Movement",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Grasping Vine",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Guardian of Nature",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Locate Creature",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Stoneskin",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Summon Elemental",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Alustriel's Mooncloak",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Commune with Nature",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Conjure Volley",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Steel Wind Strike",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Swift Quiver",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Tree Stride",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Wrath of Nature",
+    "level": 5,
+    "description": ""
+  }
+]

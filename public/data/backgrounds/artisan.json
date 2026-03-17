@@ -1,0 +1,20 @@
+{
+  "name": "Artisan",
+  "description": "",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "description": "",
+      "assign": [
+        {
+          "expr": "INT += 2; CHA += 1; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Crafter",
+      "description": ""
+    }
+  ]
+}

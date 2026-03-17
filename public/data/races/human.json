@@ -1,0 +1,32 @@
+{
+  "name": "Human",
+  "description": "",
+  "traits": [
+    {
+      "name": "Resourceful",
+      "description": "",
+      "assign": [
+        {
+          "expr": "INSPIRATION = 1",
+          "when": "OnLongRest"
+        }
+      ]
+    },
+    {
+      "name": "Skillful",
+      "description": ""
+    },
+    {
+      "name": "Versatile",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common"
+      ]
+    }
+  ],
+  "features": []
+}

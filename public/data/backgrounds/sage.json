@@ -1,0 +1,42 @@
+{
+  "name": "Sage",
+  "description": "",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "description": "",
+      "assign": [
+        {
+          "expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Magic Initiate (Wizard)",
+      "description": "",
+      "spells": {
+        "casting_ability": 3,
+        "list": {
+          "from": "spells/wizard.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "1": 1
+          }
+        }
+      ]
+    }
+  ]
+}

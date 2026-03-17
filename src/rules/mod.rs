@@ -5,6 +5,7 @@ pub mod class;
 pub mod feature;
 mod index;
 mod labels;
+pub mod locale;
 pub mod race;
 mod registry;
 mod resolve;

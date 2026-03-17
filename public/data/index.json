@@ -1,0 +1,310 @@
+{
+  "classes": [
+    {
+      "name": "Artificer",
+      "url": "classes/artificer.json",
+      "description": "",
+      "prerequisites": [
+        3
+      ]
+    },
+    {
+      "name": "Barbarian",
+      "url": "classes/barbarian.json",
+      "description": "",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Bard",
+      "url": "classes/bard.json",
+      "description": "",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Cleric",
+      "url": "classes/cleric.json",
+      "description": "",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Druid",
+      "url": "classes/druid.json",
+      "description": "",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Fighter",
+      "url": "classes/fighter.json",
+      "description": "",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Monk",
+      "url": "classes/monk.json",
+      "description": "",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Paladin",
+      "url": "classes/paladin.json",
+      "description": "",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Ranger",
+      "url": "classes/ranger.json",
+      "description": "",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Rogue",
+      "url": "classes/rogue.json",
+      "description": "",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "url": "classes/sorcerer.json",
+      "description": "",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Warlock",
+      "url": "classes/warlock.json",
+      "description": "",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Wizard",
+      "url": "classes/wizard.json",
+      "description": "",
+      "prerequisites": [
+        3
+      ]
+    }
+  ],
+  "races": [
+    {
+      "name": "Aasimar",
+      "url": "races/aasimar.json",
+      "description": ""
+    },
+    {
+      "name": "Dragonborn",
+      "url": "races/dragonborn.json",
+      "description": ""
+    },
+    {
+      "name": "Drow",
+      "url": "races/drow.json",
+      "description": ""
+    },
+    {
+      "name": "Dwarf",
+      "url": "races/dwarf.json",
+      "description": ""
+    },
+    {
+      "name": "Forest Gnome",
+      "url": "races/forest-gnome.json",
+      "description": ""
+    },
+    {
+      "name": "Goliath",
+      "url": "races/goliath.json",
+      "description": ""
+    },
+    {
+      "name": "Halfling",
+      "url": "races/halfling.json",
+      "description": ""
+    },
+    {
+      "name": "High Elf",
+      "url": "races/high-elf.json",
+      "description": ""
+    },
+    {
+      "name": "Human",
+      "url": "races/human.json",
+      "description": ""
+    },
+    {
+      "name": "Orc",
+      "url": "races/orc.json",
+      "description": ""
+    },
+    {
+      "name": "Rock Gnome",
+      "url": "races/rock-gnome.json",
+      "description": ""
+    },
+    {
+      "name": "Tiefling",
+      "url": "races/tiefling.json",
+      "description": ""
+    },
+    {
+      "name": "Tiefling (Abyssal)",
+      "url": "races/tiefling-abyssal.json",
+      "description": ""
+    },
+    {
+      "name": "Tiefling (Chthonic)",
+      "url": "races/tiefling-chthonic.json",
+      "description": ""
+    },
+    {
+      "name": "Tiefling (Infernal)",
+      "url": "races/tiefling-infernal.json",
+      "description": ""
+    },
+    {
+      "name": "Wood Elf",
+      "url": "races/wood-elf.json",
+      "description": ""
+    }
+  ],
+  "backgrounds": [
+    {
+      "name": "Acolyte",
+      "url": "backgrounds/acolyte.json",
+      "description": ""
+    },
+    {
+      "name": "Artisan",
+      "url": "backgrounds/artisan.json",
+      "description": ""
+    },
+    {
+      "name": "Charlatan",
+      "url": "backgrounds/charlatan.json",
+      "description": ""
+    },
+    {
+      "name": "Criminal",
+      "url": "backgrounds/criminal.json",
+      "description": ""
+    },
+    {
+      "name": "Entertainer",
+      "url": "backgrounds/entertainer.json",
+      "description": ""
+    },
+    {
+      "name": "Farmer",
+      "url": "backgrounds/farmer.json",
+      "description": ""
+    },
+    {
+      "name": "Guard",
+      "url": "backgrounds/guard.json",
+      "description": ""
+    },
+    {
+      "name": "Guide",
+      "url": "backgrounds/guide.json",
+      "description": ""
+    },
+    {
+      "name": "Hermit",
+      "url": "backgrounds/hermit.json",
+      "description": ""
+    },
+    {
+      "name": "Merchant",
+      "url": "backgrounds/merchant.json",
+      "description": ""
+    },
+    {
+      "name": "Noble",
+      "url": "backgrounds/noble.json",
+      "description": ""
+    },
+    {
+      "name": "Sage",
+      "url": "backgrounds/sage.json",
+      "description": ""
+    },
+    {
+      "name": "Sailor",
+      "url": "backgrounds/sailor.json",
+      "description": ""
+    },
+    {
+      "name": "Scribe",
+      "url": "backgrounds/scribe.json",
+      "description": ""
+    },
+    {
+      "name": "Soldier",
+      "url": "backgrounds/soldier.json",
+      "description": ""
+    },
+    {
+      "name": "Wayfarer",
+      "url": "backgrounds/wayfarer.json",
+      "description": ""
+    }
+  ],
+  "spells": [
+    {
+      "name": "artificer",
+      "url": "spells/artificer.json"
+    },
+    {
+      "name": "bard",
+      "url": "spells/bard.json"
+    },
+    {
+      "name": "cleric",
+      "url": "spells/cleric.json"
+    },
+    {
+      "name": "druid",
+      "url": "spells/druid.json"
+    },
+    {
+      "name": "paladin",
+      "url": "spells/paladin.json"
+    },
+    {
+      "name": "ranger",
+      "url": "spells/ranger.json"
+    },
+    {
+      "name": "sorcerer",
+      "url": "spells/sorcerer.json"
+    },
+    {
+      "name": "warlock",
+      "url": "spells/warlock.json"
+    },
+    {
+      "name": "wizard",
+      "url": "spells/wizard.json"
+    }
+  ]
+}

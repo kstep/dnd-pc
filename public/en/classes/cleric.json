@@ -1,2024 +1,632 @@
 {
-  "name": "Cleric",
-  "description": "A priestly champion who wields divine magic in service of a higher power.",
-  "hit_die": 8,
-  "features": [
-    {
-      "name": "Divine Order",
-      "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nProtector: Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\nThaumaturge: You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
-    },
-    {
-      "name": "Spellcasting (Cleric)",
-      "description": "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class's description. Cantrips: You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended.",
-      "spells": {
-        "casting_ability": 4,
-        "list": {
-          "from": "spells/cleric.json"
-        },
-        "levels": [
-          {
-            "cantrips": 3,
-            "slots": [
-              2
-            ]
-          },
-          {
-            "cantrips": 3,
-            "slots": [
-              3
-            ]
-          },
-          {
-            "cantrips": 3,
-            "slots": [
-              4,
-              2
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              2
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              1
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              2
-            ]
-          },
-          {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              1,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ]
-          },
-          {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              2,
-              2,
-              1,
-              1
-            ]
-          }
-        ],
-        "caster_coef": 1
-      }
-    },
-    {
-      "name": "Channel Divinity",
-      "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns.",
-      "stackable": true,
-      "fields": [{"name": "Actions", "kind": "Choice", "options": [{"name": "Divine Spark", "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18", "action": "Action"}, {"name": "Turn Undead", "description": "Each Undead within 30 ft makes WIS save or is Frightened and Incapacitated for 1 minute", "action": "Action"}]}]
-    },
-    {
-      "name": "Cleric Subclass",
-      "description": "You gain a Cleric subclass of your choice. A subclass is a specialization that grants you features at certain Cleric levels. For the rest of your career, you gain each of your subclass's features that are of your Cleric level or lower."
-    },
-    {
-      "name": "Ability Score Improvement",
-      "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify.",
-      "stackable": true
-    },
-    {
-      "name": "Sear Undead",
-      "description": "Whenever you use Turn Undead, you can roll a number of d8s equal to your Wisdom modifier (minimum of 1d8) and add the rolls together. Each Undead that fails its saving throw against that use of Turn Undead takes Radiant damage equal to the roll's total. This damage doesn't end the turn effect."
-    },
-    {
-      "name": "Subclass Feature",
-      "description": "You gain a feature from your Cleric Subclass.",
-      "stackable": true
-    },
-    {
-      "name": "Blessed Strikes",
-      "description": "Divine power infuses you in battle. You gain one of the following options of your choice (if you get either option from a Cleric subclass in an older book, use only the option you choose for this feature).\n\nDivine Strike: Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause the target to take an extra 1d8 Necrotic or Radiant damage (your choice).\n\nPotent Spellcasting: Add your Wisdom modifier to the damage you deal with any Cleric cantrip."
-    },
-    {
-      "name": "Divine Intervention",
-      "description": "You can call on your deity or pantheon to intervene on your behalf. As a Magic action, choose any Cleric spell of level 5 or lower that doesn't require a Reaction to cast. As part of the same action, you cast that spell without expending a spell slot or needing Material components. You can't use this feature again until you finish a Long Rest."
-    },
-    {
-      "name": "Improved Blessed Strikes",
-      "description": "The option you chose for Blessed Strikes grows more powerful. Divine Strike: The extra damage of your Divine Strike increases to 2d8. Potent Spellcasting: When you cast a Cleric cantrip and deal damage to a creature with it, you can give vitality to yourself or another creature within 60 feet of yourself, granting a number of Temporary Hit Points equal to twice your Wisdom modifier."
-    },
-    {
-      "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended.",
-      "stackable": true
-    },
-    {
-      "name": "Greater Divine Intervention",
-      "description": "You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can't use Divine Intervention again until you finish 2d4 Long Rests."
-    },
-    {
-      "name": "Class Proficiencies",
-      "description": "Saving throw and equipment proficiencies granted by this class.",
-      "assign": [{"expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1", "when": "OnFeatureAdd"}]
-    }
-  ],
-  "levels": [
-    {
-      "features": [
-        "Divine Order",
-        "Spellcasting (Cleric)",
-        "Class Proficiencies"
-      ]
-    },
-    {
-      "features": [
-        "Channel Divinity"
-      ]
-    },
-    {
-      "features": [
-        "Cleric Subclass"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Sear Undead"
-      ]
-    },
-    {
-      "features": [
-        "Subclass Feature"
-      ]
-    },
-    {
-      "features": [
-        "Blessed Strikes"
-      ]
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": []
-    },
-    {
-      "features": [
-        "Divine Intervention"
-      ]
-    },
-    {
-      "features": []
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": []
-    },
-    {
-      "features": [
-        "Improved Blessed Strikes"
-      ]
-    },
-    {
-      "features": []
-    },
-    {
-      "features": [
-        "Ability Score Improvement"
-      ]
-    },
-    {
-      "features": [
-        "Subclass Feature"
-      ]
-    },
-    {
-      "features": []
-    },
-    {
-      "features": [
-        "Epic Boon"
-      ]
-    },
-    {
-      "features": [
-        "Greater Divine Intervention"
-      ]
-    }
-  ],
-  "subclasses": [
-    {
-      "name": "Knowledge Domain",
-      "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention.",
-      "features": [
-        {
-          "name": "Knowledge Domain",
-          "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention. Some deities hoard knowledge and keep its secrets to themselves."
-        },
-        {
-          "name": "Blessings of Knowledge",
-          "description": "You learn two languages of your choice. You also become proficient in your choice of two of the following skills: Arcana, History, Nature, or Religion. Your proficiency bonus is doubled for any ability check you make that uses either of those skills."
-        },
-        {
-          "name": "Channel Divinity: Knowledge of the Ages",
-          "description": "You can use your Channel Divinity to tap into a divine well of knowledge. As an action, you choose one skill or tool. For 10 minutes, you have proficiency with the chosen skill or tool."
-        },
-        {
-          "name": "Channel Divinity: Read Thoughts",
-          "description": "You can use your Channel Divinity to read a creature's thoughts. You can then use your access to the creature's mind to command it. As an action, choose one creature that you can see within 60 feet of you. That creature must make a Wisdom saving throw. If the creature succeeds on the saving throw, you can't use this feature on it again until you finish a long rest."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Potent Spellcasting",
-          "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
-        },
-        {
-          "name": "Visions of the Past",
-          "description": "You can call up visions of the past that relate to an object you hold or your immediate surroundings. You spend at least 1 minute in meditation and prayer, then receive dreamlike, shadowy glimpses of recent events."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Knowledge Domain",
-            "Blessings of Knowledge"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Knowledge of the Ages"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Knowledge of the Ages",
-            "Knowledge Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Channel Divinity: Read Thoughts"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Potent Spellcasting"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Visions of the Past"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Life Domain",
-      "description": "Soothe the Hurts of the World The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts.",
-      "features": [
-        {
-          "name": "Life Domain",
-          "description": "Soothe the Hurts of the World The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts. Existence itself relies on the positive energy associated with this domain, so a Cleric of almost any religious tradition might choose it."
-        },
-        {
-          "name": "Disciple of Life",
-          "description": "When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot's level."
-        },
-        {
-          "name": "Life Domain Spells",
-          "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Life Domain Spells table, you thereafter always have the listed spells prepared.",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Bless",
-                "level": 1,
-                "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Cure Wounds",
-                "level": 1,
-                "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Aid",
-                "level": 2,
-                "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Lesser Restoration",
-                "level": 2,
-                "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Mass Healing Word",
-                "level": 3,
-                "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Revivify",
-                "level": 3,
-                "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Aura of Life",
-                "level": 4,
-                "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Death Ward",
-                "level": 4,
-                "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Greater Restoration",
-                "level": 5,
-                "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum",
-                "sticky": true,
-                "min_level": 9
-              },
-              {
-                "name": "Mass Cure Wounds",
-                "level": 5,
-                "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier.",
-                "sticky": true,
-                "min_level": 9
-              }
-            ]
-          }
-        },
-        {
-          "name": "Preserve Life",
-          "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Points maximum."
-        },
-        {
-          "name": "Blessed Healer",
-          "description": "The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than you, you regain Hit Points equal to 2 plus the spell slot's level."
-        },
-        {
-          "name": "Supreme Healing",
-          "description": "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don't roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Life Domain",
-            "Disciple of Life",
-            "Life Domain Spells",
-            "Preserve Life"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Blessed Healer"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Supreme Healing"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Light Domain",
-      "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal.",
-      "features": [
-        {
-          "name": "Light Domain",
-          "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal."
-        },
-        {
-          "name": "Light Domain Spells",
-          "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Light Domain Spells table, you thereafter always have the listed spells prepared.",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Burning Hands",
-                "level": 1,
-                "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Faerie Fire",
-                "level": 1,
-                "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Scorching Ray",
-                "level": 2,
-                "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "See Invisibility",
-                "level": 2,
-                "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Daylight",
-                "level": 3,
-                "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Fireball",
-                "level": 3,
-                "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much damage on a successful one. The fire spreads around corners and ignites flammable objects that aren't being worn or carried. Using a Higher-Level Spell Slot: the damage increases by 1d6 for each slot level above 3.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Arcane Eye",
-                "level": 4,
-                "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Wall of Fire",
-                "level": 4,
-                "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save, or half on a success. One side of the wall (your choice) deals 5d8 Fire damage to each creature that ends its turn within 10 feet of that side or enters the wall for the first time on a turn. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 4.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Flame Strike",
-                "level": 5,
-                "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: both the Fire and Radiant damage increase by 1d6 for each slot level above 5.",
-                "sticky": true,
-                "min_level": 9
-              },
-              {
-                "name": "Scrying",
-                "level": 5,
-                "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it.",
-                "sticky": true,
-                "min_level": 9
-              }
-            ]
-          }
-        },
-        {
-          "name": "Radiance of the Dawn",
-          "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to emit a flash of light in a 30-foot Emanation [Area of Effect] originating from yourself. Any magical Darkness—such as that created by the Darkness spell—in that area is dispelled. Additionally, each creature of your choice in that area must make a Constitution saving throw, taking Radiant damage equal to 2d10 plus your Cleric level on a failed save, or half as much damage on a successful one."
-        },
-        {
-          "name": "Warding Flare",
-          "description": "When a creature that you can see within 30 feet of yourself makes an attack roll, you can take a Reaction to impose Disadvantage on the attack roll, causing light to flare before it hits or misses. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Long Rest."
-        },
-        {
-          "name": "Improved Warding Flare",
-          "description": "You regain all expended uses of your Warding Flare when you finish a Short Rest or Long Rest. In addition, whenever you use Warding Flare, you can give the target of the triggering attack a number of Temporary Hit Points equal to 2d6 plus your Wisdom modifier."
-        },
-        {
-          "name": "Corona of Light",
-          "description": "As a Magic action, you cause yourself to emit an aura of sunlight that lasts for 1 minute or until you dismiss it (no action required). You emit Bright Light in a 60-foot radius and Dim Light for an additional 30 feet. Your enemies in the Bright Light have Disadvantage on saving throws against your Radiance of the Dawn and any spell that deals Fire or Radiant damage. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Light Domain",
-            "Light Domain Spells",
-            "Radiance of the Dawn",
-            "Warding Flare"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Improved Warding Flare"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Corona of Light"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Nature Domain",
-      "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath).",
-      "features": [
-        {
-          "name": "Nature Domain",
-          "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath)."
-        },
-        {
-          "name": "Acolyte of Nature",
-          "description": "You learn one druid cantrip of your choice. This cantrip doesn't count against the number of cleric cantrips you know. You also gain proficiency in one of the following skills of your choice: Animal Handling, Nature, or Survival."
-        },
-        {
-          "name": "Bonus Proficiency",
-          "description": "You gain proficiency with heavy armor."
-        },
-        {
-          "name": "Channel Divinity: Charm Animals and Plants",
-          "description": "You can use your Channel Divinity to charm animals and plants. As an action, you present your holy symbol and invoke the name of your deity. Each beast or plant creature that can see you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is charmed by you for 1 minute or until it takes damage."
-        },
-        {
-          "name": "Dampen Elements",
-          "description": "When you or a creature within 30 feet of you takes acid, cold, fire, lightning, or thunder damage, you can use your reaction to grant resistance to the creature against that instance of the damage."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 cold, fire, or lightning damage (your choice) to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Master of Nature",
-          "description": "You gain the ability to command animals and plant creatures. While creatures are charmed by your Charm Animals and Plants feature, you can take a bonus action on your turn to verbally command what each of those creatures will do on its next turn."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Nature Domain",
-            "Acolyte of Nature",
-            "Bonus Proficiency"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Charm Animals and Plants"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Charm Animals and Plants",
-            "Nature Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Dampen Elements"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Master of Nature"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Tempest Domain",
-      "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage.",
-      "features": [
-        {
-          "name": "Tempest Domain",
-          "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
-        },
-        {
-          "name": "Bonus Proficiencies",
-          "description": "You gain proficiency with martial weapons and heavy armor."
-        },
-        {
-          "name": "Wrath of the Storm",
-          "description": "You can thunderously rebuke attackers. When a creature within 5 feet of you that you can see hits you with an attack, you can use your reaction to cause the creature to make a Dexterity saving throw. The creature takes 2d8 lightning or thunder damage (your choice) on a failed saving throw, and half as much damage on a successful one."
-        },
-        {
-          "name": "Channel Divinity: Destructive Wrath",
-          "description": "You can use your Channel Divinity to wield the power of the storm with unchecked ferocity. When you roll lightning or thunder damage, you can use your Channel Divinity to deal maximum damage, instead of rolling."
-        },
-        {
-          "name": "Thunderbolt Strike",
-          "description": "When you deal lightning damage to a Large or smaller creature, you can also push it up to 10 feet away from you."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 thunder damage to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Stormborn",
-          "description": "You have a flying speed equal to your current walking speed whenever you are not underground or indoors."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Tempest Domain",
-            "Bonus Proficiencies",
-            "Wrath of the Storm"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Destructive Wrath"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Destructive Wrath",
-            "Tempest Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Thunderbolt Strike"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Stormborn"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Trickery Domain",
-      "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions.",
-      "features": [
-        {
-          "name": "Trickery Domain",
-          "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions. They prefer subterfuge and pranks to direct confrontation."
-        },
-        {
-          "name": "Blessing of the Trickster",
-          "description": "As a Magic action, you can choose yourself or a willing creature within 30 feet of yourself to have Advantage on Dexterity (Stealth) checks. This blessing lasts until you finish a Long Rest or you use this feature again."
-        },
-        {
-          "name": "Invoke Duplicity",
-          "description": "As a Bonus Action, you can expend one use of your Channel Divinity to create a perfect visual illusion of yourself in an unoccupied space you can see within 30 feet of yourself. The illusion is intangible and doesn't occupy its space. It lasts for 1 minute, but it ends early if you dismiss it (no action required) or have the Incapacitated condition."
-        },
-        {
-          "name": "Trickery Domain Spells",
-          "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Trickery Domain Spells table, you thereafter always have the listed spells prepared.",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Charm Person",
-                "level": 1,
-                "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Disguise Self",
-                "level": 1,
-                "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Invisibility",
-                "level": 2,
-                "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Pass without Trace",
-                "level": 2,
-                "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Hypnotic Pattern",
-                "level": 3,
-                "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Nondetection",
-                "level": 3,
-                "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Confusion",
-                "level": 4,
-                "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn: 1 — uses all movement in a random direction, does nothing else; 2-6 — doesn't move or take actions; 7-8 — makes one melee attack against a random creature within reach, or does nothing; 9-10 — acts normally. At the end of each turn, an affected target repeats the save, ending the effect on a success.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Dimension Door",
-                "level": 4,
-                "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You can also bring one willing creature of your size or smaller, provided it is within 5 feet of you. If you would arrive in an occupied space, both you and any traveling companion each take 4d6 Force damage, and the teleportation fails.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Dominate Person",
-                "level": 5,
-                "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success.",
-                "sticky": true,
-                "min_level": 9
-              },
-              {
-                "name": "Modify Memory",
-                "level": 5,
-                "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration.",
-                "sticky": true,
-                "min_level": 9
-              }
-            ]
-          }
-        },
-        {
-          "name": "Trickster's Transposition",
-          "description": "Whenever you take the Bonus Action to create or move the illusion of your Invoke Duplicity, you can teleport, swapping places with the illusion."
-        },
-        {
-          "name": "Improved Duplicity",
-          "description": "The illusion of your Invoke Duplicity has grown more powerful in the following ways. Shared Distraction: When you and your allies make attack rolls against a creature within 5 feet of the illusion, the attack rolls have Advantage. Healing Illusion: When the illusion ends, you or a creature of your choice within 5 feet of it regains a number of Hit Points equal to your Cleric level."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "Trickery Domain",
-            "Blessing of the Trickster",
-            "Invoke Duplicity",
-            "Trickery Domain Spells"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Trickster's Transposition"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Improved Duplicity"
-          ]
-        }
-      }
-    },
-    {
-      "name": "War Domain",
-      "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage.",
-      "features": [
-        {
-          "name": "War Domain",
-          "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage. Clerics who tap into the magic of the War Domain excel in battle, inspiring others to fight the good fight or offering acts of violence as prayers."
-        },
-        {
-          "name": "Guided Strike",
-          "description": "When you or a creature within 30 feet of you misses with an attack roll, you can expend one use of your Channel Divinity and give that roll a +10 bonus, potentially causing it to hit. When you use this feature to benefit another creature's attack roll, you must take a Reaction to do so."
-        },
-        {
-          "name": "War Domain Spells",
-          "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the War Domain Spells table, you thereafter always have the listed spells prepared.",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Guiding Bolt",
-                "level": 1,
-                "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Shield of Faith",
-                "level": 1,
-                "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Magic Weapon",
-                "level": 2,
-                "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Spiritual Weapon",
-                "level": 2,
-                "description": "You create a floating, spectral force that resembles a weapon of your choice and lasts for the duration. The force appears within range in a space of your choice, and you can immediately make one melee spell attack against one creature within 5 feet of the force.",
-                "sticky": true,
-                "min_level": 3
-              },
-              {
-                "name": "Crusader's Mantle",
-                "level": 3,
-                "description": "You radiate a magical aura in a 30-foot Emanation [Area of Effect]. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Spirit Guardians",
-                "level": 3,
-                "description": "Protective spirits flit around you in a 15-foot Emanation [Area of Effect] for the duration. If you are good or neutral, their spectral form appears angelic or fey (your choice). If you are evil, they appear fiendish. When you cast this spell, you can designate creatures to be unaffected by it.",
-                "sticky": true,
-                "min_level": 5
-              },
-              {
-                "name": "Fire Shield",
-                "level": 4,
-                "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Freedom of Movement",
-                "level": 4,
-                "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions.",
-                "sticky": true,
-                "min_level": 7
-              },
-              {
-                "name": "Hold Monster",
-                "level": 5,
-                "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success.",
-                "sticky": true,
-                "min_level": 9
-              },
-              {
-                "name": "Steel Wind Strike",
-                "level": 5,
-                "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 Force damage.",
-                "sticky": true,
-                "min_level": 9
-              }
-            ]
-          }
-        },
-        {
-          "name": "War Priest",
-          "description": "As a Bonus Action, you can make one attack with a weapon or an Unarmed Strike. You can use this Bonus Action a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Short Rest or Long Rest."
-        },
-        {
-          "name": "War God's Blessing",
-          "description": "You can expend a use of your Channel Divinity to cast Shield of Faith or Spiritual Weapon rather than expending a spell slot. When you cast either spell in this way, the spell doesn't require Concentration. Instead the spell lasts for 1 minute, but it ends early if you cast that spell again, have the Incapacitated condition, or die."
-        },
-        {
-          "name": "Avatar of Battle",
-          "description": "You gain Resistance to Bludgeoning, Piercing, and Slashing damage."
-        }
-      ],
-      "levels": {
-        "3": {
-          "level": 3,
-          "features": [
-            "War Domain",
-            "Guided Strike",
-            "War Domain Spells",
-            "War Priest"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "War God's Blessing"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Avatar of Battle"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Death Domain",
-      "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires.",
-      "features": [
-        {
-          "name": "Death Domain",
-          "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires."
-        },
-        {
-          "name": "Bonus Proficiency",
-          "description": "He or she gains proficiency with martial weapons."
-        },
-        {
-          "name": "Reaper",
-          "description": "The cleric learns one necromancy cantrip of his or her choice from any spell list. When the cleric casts a necromancy cantrip that normally targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other."
-        },
-        {
-          "name": "Channel Divinity: Touch of Death",
-          "description": "The cleric can use Channel Divinity to destroy another creature's life force by touch. When the cleric hits a creature with a melee attack, the cleric can use Channel Divinity to deal extra necrotic damage to the target. The damage equals 5 + twice his or her cleric level."
-        },
-        {
-          "name": "Inescapable Destruction",
-          "description": "The cleric's ability to channel negative energy becomes more potent. Necrotic damage dealt by the character's cleric spells and Channel Divinity options ignores resistance to necrotic damage."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "The cleric gains the ability to infuse his or her weapon strikes with necrotic energy. Once on each of the cleric's turns when he or she hits a creature with a weapon attack, the cleric can cause the attack to deal an extra 1d8 necrotic damage to the target. When the cleric reaches 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Improved Reaper",
-          "description": "When the cleric casts a Necromancy spell of 1st through 5th-level that targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other. If the spell consumes its material components, the cleric must provide them for each target."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Death Domain",
-            "Bonus Proficiency",
-            "Reaper"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Touch of Death"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Touch of Death",
-            "Death Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Inescapable Destruction"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Improved Reaper"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Arcana Domain",
-      "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately.",
-      "features": [
-        {
-          "name": "Arcana Domain",
-          "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit."
-        },
-        {
-          "name": "Arcane Initiate",
-          "description": "You gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the wizard spell list. For you, these cantrips count as cleric cantrips."
-        },
-        {
-          "name": "Channel Divinity: Arcane Abjuration",
-          "description": "You can use your Channel Divinity to abjure otherworldly creatures. As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you."
-        },
-        {
-          "name": "Spell Breaker",
-          "description": "When you restore hit points to an ally with a spell of 1st level or higher, you can also end one spell of your choice on that creature. The level of the spell you end must be equal to or lower than the level of the spell slot you use to cast the healing spell."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Potent Spellcasting",
-          "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
-        },
-        {
-          "name": "Arcane Mastery",
-          "description": "You choose four spells from the Wizard spell list, one from each of the following levels: 6th, 7th, 8th, and 9th. You add them to your list of domain spells. Like your other domain spells, they are always prepared and count as cleric spells for you."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Arcana Domain",
-            "Arcane Initiate"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Arcane Abjuration"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Arcana Domain",
-            "Channel Divinity: Arcane Abjuration"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Spell Breaker"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Potent Spellcasting"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Arcane Mastery"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Ambition Domain (PSA)",
-      "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires.",
-      "features": [
-        {
-          "name": "Ambition Domain (PSA)",
-          "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
-        },
-        {
-          "name": "Warding Flare",
-          "description": "You can interpose divine light between yourself and an attacking enemy. When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. An attacker that can't be blinded is immune to this feature."
-        },
-        {
-          "name": "Channel Divinity: Invoke Duplicity",
-          "description": "You can use your Channel Divinity to create an illusory duplicate of yourself. As an action, you create a perfect illusion of yourself that lasts for 1 minute, or until you lose your concentration (as if you were concentration on a spell). The illusion appears in an unoccupied space that you can see within 30 feet of you."
-        },
-        {
-          "name": "Channel Divinity: Cloak of Shadows",
-          "description": "You can use your Channel Divinity to vanish. As an action, you become invisible until the end of your next turn. You become visible if you attack or cast a spell."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Potent Spellcasting",
-          "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
-        },
-        {
-          "name": "Improved Duplicity",
-          "description": "You can create up to four duplicates of yourself, instead of one, when you use Invoke Duplicity. As a bonus action on your turn, you can move any number of them up to 30 feet, to a maximum range of 120 feet."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Ambition Domain (PSA)",
-            "Warding Flare"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Invoke Duplicity"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Ambition Domain (PSA)",
-            "Channel Divinity: Invoke Duplicity"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Channel Divinity: Cloak of Shadows"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Potent Spellcasting"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Improved Duplicity"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Knowledge Domain (PSA)",
-      "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh.",
-      "features": [
-        {
-          "name": "Knowledge Domain (PSA)",
-          "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh. He trains acolytes and initiates to push their limits and challenge their mental capacity with spells of ever-greater power."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Knowledge Domain (PSA)"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Knowledge Domain (PSA)"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Solidarity Domain (PSA)",
-      "description": "Oketra is charged with expounding upon this teaching of the God-Pharaoh, instilling in every initiate the virtue of solidarity. She forges each group of children into a crop of acolytes with just one purpose: to be judged worthy of a glorious afterlife.",
-      "features": [
-        {
-          "name": "Solidarity Domain (PSA)",
-          "description": "Oketra is charged with expounding upon this teaching of the God-Pharaoh, instilling in every initiate the virtue of solidarity. She forges each group of children into a crop of acolytes with just one purpose: to be judged worthy of a glorious afterlife. And she instills in each crop the ability to unite in a single action in pursuit of that purpose."
-        },
-        {
-          "name": "Bonus Proficiency",
-          "description": "You gain proficiency with heavy armor."
-        },
-        {
-          "name": "Solidarity's Action",
-          "description": "When you take the Help action to aid an ally's attack, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain expended uses when you finish a long rest."
-        },
-        {
-          "name": "Channel Divinity: Preserve Life",
-          "description": "You can use your Channel Divinity to heal the badly injured. As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum."
-        },
-        {
-          "name": "Oketra's Blessing",
-          "description": "When a creature within 30 feet of you makes an attack roll, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Supreme Healing",
-          "description": "When you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Solidarity Domain (PSA)",
-            "Bonus Proficiency",
-            "Solidarity's Action"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Preserve Life"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Preserve Life",
-            "Solidarity Domain (PSA)"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Oketra's Blessing"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Supreme Healing"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Strength Domain (PSA)",
-      "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training.",
-      "features": [
-        {
-          "name": "Strength Domain (PSA)",
-          "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training. Rhonas demonstrates his teachings by his example, rather than by giving his students any kind of academic instruction."
-        },
-        {
-          "name": "Acolyte of Strength",
-          "description": "You learn one druid cantrip of your choice. You also gain proficiency in one of the following skills of your choice: Animal Handling, Athletics, Nature, or Survival."
-        },
-        {
-          "name": "Bonus Proficiency",
-          "description": "You gain proficiency with heavy armor."
-        },
-        {
-          "name": "Channel Divinity: Feat of Strength",
-          "description": "You can use your Channel Divinity to enhance your physical might. When you make an attack roll, ability check, or saving throw using Strength, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the roll succeeds or fails."
-        },
-        {
-          "name": "Rhonas's Blessing",
-          "description": "When a creature within 30 feet of you makes an attack roll, ability check, or saving throw using Strength, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the roll succeeds or fail."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Avatar of Battle",
-          "description": "You gain resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Strength Domain (PSA)",
-            "Acolyte of Strength",
-            "Bonus Proficiency"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Feat of Strength"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Feat of Strength",
-            "Strength Domain (PSA)"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Rhonas's Blessing"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Avatar of Battle"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Zeal Domain (PSA)",
-      "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions.",
-      "features": [
-        {
-          "name": "Zeal Domain (PSA)",
-          "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions. Hazoret is charged with cultivating this zeal in the initiates who come under her care, and she has undertaken the task with appropriate enthusiasm."
-        },
-        {
-          "name": "Bonus Proficiencies",
-          "description": "You gain proficiency with martial weapons and heavy armor."
-        },
-        {
-          "name": "Priest of Zeal",
-          "description": "From 1st level, Hazoret delivers bolts of inspiration to you while you are engaged in battle. When you use the Attack action, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier (a minimum of once). You regain all expended uses when you finish a long rest."
-        },
-        {
-          "name": "Channel Divinity: Consuming Fervor",
-          "description": "You can use your Channel Divinity to channel your zeal into unchecked ferocity. When you roll fire or thunder damage, you can use your Channel Divinity to deal maximum damage instead of rolling."
-        },
-        {
-          "name": "Resounding Strike",
-          "description": "When you deal thunder damage to a Large or smaller creature, you can also push it up to 10 feet away from you."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Blaze of Glory",
-          "description": "You can delay death for an instant to perform a final heroic act. When you are reduced to 0 hit points by an attacker you can see, even if you would be killed outright, you can use your reaction to move up to your speed toward the attacker and make one melee weapon attack against it, as long as the movement brings it within your reach. You make this attack with advantage."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Zeal Domain (PSA)",
-            "Bonus Proficiencies",
-            "Priest of Zeal"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Consuming Fervor"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Consuming Fervor",
-            "Zeal Domain (PSA)"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Resounding Strike"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Blaze of Glory"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Forge Domain",
-      "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords.",
-      "features": [
-        {
-          "name": "Forge Domain",
-          "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords. The gods of the forge teach that, with patience and hard work, even the most intractable metal can be transformed from a lump of ore to a beautifully wrought object."
-        },
-        {
-          "name": "Blessing of the Forge",
-          "description": "You gain the ability to imbue magic into a weapon or armor. At the end of a long rest, you can touch one nonmagical object that is a suit of armor or a simple or martial weapon. Until the end of your next long rest or until you die, the object becomes a magic item, granting a +1 bonus to AC if it's armor or a +1 bonus to attack and damage rolls if it's a weapon."
-        },
-        {
-          "name": "Bonus Proficiency",
-          "description": "You gain proficiency with heavy armor and smith's tools."
-        },
-        {
-          "name": "Channel Divinity: Artisan's Blessing",
-          "description": "You can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object (see chapter 5, \"Equipment,\" in the Player's Handbook for examples of these items)."
-        },
-        {
-          "name": "Soul of the Forge",
-          "description": "Your mastery of the forge grants you special abilities: You gain resistance to fire damage. While wearing heavy armor, you gain a +1 bonus to AC."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with the fiery power of the forge. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 fire damage to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Saint of Forge and Fire",
-          "description": "Your blessed affinity with fire and metal becomes more powerful: You gain immunity to fire damage, While wearing heavy armor, you have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Forge Domain",
-            "Blessing of the Forge",
-            "Bonus Proficiency"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Artisan's Blessing"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Artisan's Blessing",
-            "Forge Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Soul of the Forge"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Saint of Forge and Fire"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Grave Domain",
-      "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination.",
-      "features": [
-        {
-          "name": "Grave Domain",
-          "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination. Deities of the grave include Kelemvor, Wee Jas, the ancestral spirits of the Undying Court, Hades, Anubis, and Osiris."
-        },
-        {
-          "name": "Circle of Mortality",
-          "description": "You gain the ability to manipulate the line between life and death. When you would normally roll one or more dice to restore hit points with a spell to a creature at 0 hit points, you instead use the highest number possible for each die. In addition, you learn the spare the dying cantrip, which doesn't count against the number of cleric cantrips you know."
-        },
-        {
-          "name": "Eyes of the Grave",
-          "description": "You gain the ability to occasionally sense the presence of the undead, whose existence is an insult to the natural cycle of life. As an action, you can open your awareness to magically detect undead. Until the end of your next turn, you know the location of any undead within 60 feet of you that isn't behind Cover and that isn't protected from divination magic."
-        },
-        {
-          "name": "Channel Divinity: Path to the Grave",
-          "description": "You can use your Channel Divinity to mark another creature's life force for termination. As an action, you choose one creature you can see within 30 feet of you, cursing it until the end of your next turn. The next time you or an ally of yours hits the cursed creature with an attack, the creature has vulnerability to all of that attack's damage, and then the curse ends."
-        },
-        {
-          "name": "Sentinel at Death's Door",
-          "description": "You gain the ability to impede death's progress. As a reaction when you or a creature you can see within 30 feet of you suffers a critical hit, you can turn that hit into a normal hit. Any effects triggered by a critical hit are canceled. You can use this feature a number of times equal to your Wisdom modifier (minimum of once)."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Potent Spellcasting",
-          "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
-        },
-        {
-          "name": "Keeper of Souls",
-          "description": "You can seize a trace of vitality from a parting soul and use it to heal the living. When an enemy you can see dies within 60 feet of you, you or one creature of your choice that is within 60 feet of you regains hit points equal to the enemy's number of Hit Dice. You can use this feature only if you aren't incapacitated."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Grave Domain",
-            "Circle of Mortality",
-            "Eyes of the Grave"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Path to the Grave"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Path to the Grave",
-            "Grave Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Sentinel at Death's Door"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Potent Spellcasting"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Keeper of Souls"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Order Domain",
-      "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain.",
-      "features": [
-        {
-          "name": "Order Domain",
-          "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain."
-        },
-        {
-          "name": "Bonus Proficiencies",
-          "description": "You gain proficiency with heavy armor. You also gain proficiency in the Intimidation or Persuasion skill (your choice)."
-        },
-        {
-          "name": "Voice of Authority",
-          "description": "You can invoke the power of law to drive an ally to attack. If you cast a spell with a spell slot of 1st level or higher and target an ally with the spell, that ally can use their reaction immediately after the spell to make one weapon attack against a creature of your choice that you can see."
-        },
-        {
-          "name": "Channel Divinity: Order's Demand",
-          "description": "You can use your Channel Divinity to exert an intimidating presence over others. As an action, you present your holy symbol, and each creature of your choice that can see or hear you within 30 feet of you must succeed on a Wisdom saving throw or be charmed by you until the end of your next turn or until the charmed creature takes any damage."
-        },
-        {
-          "name": "Embodiment of the Law",
-          "description": "You become remarkably adept at channeling magical energy to compel others. If you cast a spell of the enchantment school using a spell slot of 1st level or higher, you can change the spell's casting time to 1 bonus action for this casting, provided the spell's casting time is normally 1 action."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 psychic damage to the target. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Order's Wrath",
-          "description": "Enemies you designate for destruction wilt under the combined efforts of you and your allies. If you deal your Divine Strike damage to a creature on your turn, you can curse that creature until the start of your next turn. The next time one of your allies hits the cursed creature with an attack, the target also takes 2d8 psychic damage, and the curse ends."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Order Domain",
-            "Bonus Proficiencies",
-            "Voice of Authority"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Order's Demand"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Order's Demand",
-            "Order Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Embodiment of the Law"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Order's Wrath"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Peace Domain",
-      "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing.",
-      "features": [
-        {
-          "name": "Peace Domain",
-          "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing. See the Peace Deities table for a list of some of the gods associated with this domain."
-        },
-        {
-          "name": "Emboldening Bond",
-          "description": "You can forge an empowering bond among people who are at peace with one another. As an action, you choose a number of willing creatures within 30 feet of you (this can include yourself) equal to your proficiency bonus. You create a magical bond among them for 10 minutes or until you use this feature again."
-        },
-        {
-          "name": "Implement of Peace",
-          "description": "You gain proficiency in the Insight, Performance, or Persuasion skill (your choice)."
-        },
-        {
-          "name": "Channel Divinity: Balm of Peace",
-          "description": "You can use your Channel Divinity to make your very presence a soothing balm. As an action, you can move up to your speed, without provoking opportunity attacks, and when you move within 5 feet of any other creature during this action, you can restore a number of hit points to that creature equal to 2d6 + your Wisdom modifier (minimum of 1 hit point)."
-        },
-        {
-          "name": "Protective Bond",
-          "description": "The bond you forge between people helps them protect each other. When a creature affected by your Emboldening Bond feature is about to take damage, a second bonded creature within 30 feet of the first can use its reaction to teleport to an unoccupied space within 5 feet of the first creature. The second creature then takes all the damage instead."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Potent Spellcasting",
-          "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
-        },
-        {
-          "name": "Expansive Bond",
-          "description": "The benefits of your Emboldening Bond and Protective Bond features now work when the creatures are within 60 feet of each other. Moreover, when a creature uses Protective Bond to take someone else's damage, the creature has resistance to that damage."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Peace Domain",
-            "Emboldening Bond",
-            "Implement of Peace"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Balm of Peace"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Balm of Peace",
-            "Peace Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Protective Bond"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Potent Spellcasting"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Expansive Bond"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Twilight Domain",
-      "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night.",
-      "features": [
-        {
-          "name": "Twilight Domain",
-          "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
-        },
-        {
-          "name": "Bonus Proficiencies",
-          "description": "You gain proficiency with martial weapons and heavy armor."
-        },
-        {
-          "name": "Eyes of Night",
-          "description": "You can see through the deepest gloom. You have darkvision out to a range of 300 feet. In that radius, you can see in dim light as if it were bright light and in darkness as if it were dim light."
-        },
-        {
-          "name": "Vigilant Blessing",
-          "description": "The night has taught you to be vigilant. As an action, you give one creature you touch (including possibly yourself) advantage on the next initiative roll the creature makes. This benefit ends immediately after the roll or if you use this feature again."
-        },
-        {
-          "name": "Channel Divinity: Twilight Sanctuary",
-          "description": "You can use your Channel Divinity to refresh your allies with soothing twilight. As an action, you present your holy symbol, and a sphere of twilight emanates from you. The sphere is centered on you, has a 30-foot radius, and is filled with dim light. The sphere moves with you, and it lasts for 1 minute or until you are incapacitated or die."
-        },
-        {
-          "name": "Steps of Night",
-          "description": "You can draw on the mystical power of night to rise into the air. As a bonus action when you are in dim light or darkness, you can magically give yourself a flying speed equal to your walking speed for 1 minute. You can use this bonus action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
-        },
-        {
-          "name": "Blessed Strikes",
-          "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
-        },
-        {
-          "name": "Divine Strike",
-          "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage. When you reach 14th level, the extra damage increases to 2d8."
-        },
-        {
-          "name": "Twilight Shroud",
-          "description": "The twilight that you summon offers a protective embrace: you and your allies have Cover while in the sphere created by your Twilight Sanctuary."
-        }
-      ],
-      "levels": {
-        "1": {
-          "level": 1,
-          "features": [
-            "Twilight Domain",
-            "Bonus Proficiencies",
-            "Eyes of Night",
-            "Vigilant Blessing"
-          ]
-        },
-        "2": {
-          "level": 2,
-          "features": [
-            "Channel Divinity: Twilight Sanctuary"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Channel Divinity: Twilight Sanctuary",
-            "Twilight Domain"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Steps of Night"
-          ]
-        },
-        "8": {
-          "level": 8,
-          "features": [
-            "Blessed Strikes",
-            "Divine Strike"
-          ]
-        },
-        "17": {
-          "level": 17,
-          "features": [
-            "Twilight Shroud"
-          ]
-        }
-      }
-    }
-  ]
+  "": {
+    "description": "A priestly champion who wields divine magic in service of a higher power."
+  },
+  "feature.Divine Order": {
+    "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nProtector: Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\nThaumaturge: You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
+  },
+  "feature.Spellcasting (Cleric)": {
+    "description": "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class's description. Cantrips: You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended."
+  },
+  "feature.Channel Divinity": {
+    "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
+  },
+  "feature.Channel Divinity.field.Actions.option.Divine Spark": {
+    "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18"
+  },
+  "feature.Channel Divinity.field.Actions.option.Turn Undead": {
+    "description": "Each Undead within 30 ft makes WIS save or is Frightened and Incapacitated for 1 minute"
+  },
+  "feature.Cleric Subclass": {
+    "description": "You gain a Cleric subclass of your choice. A subclass is a specialization that grants you features at certain Cleric levels. For the rest of your career, you gain each of your subclass's features that are of your Cleric level or lower."
+  },
+  "feature.Ability Score Improvement": {
+    "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
+  },
+  "feature.Sear Undead": {
+    "description": "Whenever you use Turn Undead, you can roll a number of d8s equal to your Wisdom modifier (minimum of 1d8) and add the rolls together. Each Undead that fails its saving throw against that use of Turn Undead takes Radiant damage equal to the roll's total. This damage doesn't end the turn effect."
+  },
+  "feature.Subclass Feature": {
+    "description": "You gain a feature from your Cleric Subclass."
+  },
+  "feature.Blessed Strikes": {
+    "description": "Divine power infuses you in battle. You gain one of the following options of your choice (if you get either option from a Cleric subclass in an older book, use only the option you choose for this feature).\n\nDivine Strike: Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause the target to take an extra 1d8 Necrotic or Radiant damage (your choice).\n\nPotent Spellcasting: Add your Wisdom modifier to the damage you deal with any Cleric cantrip."
+  },
+  "feature.Divine Intervention": {
+    "description": "You can call on your deity or pantheon to intervene on your behalf. As a Magic action, choose any Cleric spell of level 5 or lower that doesn't require a Reaction to cast. As part of the same action, you cast that spell without expending a spell slot or needing Material components. You can't use this feature again until you finish a Long Rest."
+  },
+  "feature.Improved Blessed Strikes": {
+    "description": "The option you chose for Blessed Strikes grows more powerful. Divine Strike: The extra damage of your Divine Strike increases to 2d8. Potent Spellcasting: When you cast a Cleric cantrip and deal damage to a creature with it, you can give vitality to yourself or another creature within 60 feet of yourself, granting a number of Temporary Hit Points equal to twice your Wisdom modifier."
+  },
+  "feature.Epic Boon": {
+    "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended."
+  },
+  "feature.Greater Divine Intervention": {
+    "description": "You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can't use Divine Intervention again until you finish 2d4 Long Rests."
+  },
+  "feature.Class Proficiencies": {
+    "description": "Saving throw and equipment proficiencies granted by this class."
+  },
+  "subclass.Knowledge Domain": {
+    "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention."
+  },
+  "subclass.Knowledge Domain.feature.Knowledge Domain": {
+    "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention. Some deities hoard knowledge and keep its secrets to themselves."
+  },
+  "subclass.Knowledge Domain.feature.Blessings of Knowledge": {
+    "description": "You learn two languages of your choice. You also become proficient in your choice of two of the following skills: Arcana, History, Nature, or Religion. Your proficiency bonus is doubled for any ability check you make that uses either of those skills."
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Knowledge of the Ages": {
+    "description": "You can use your Channel Divinity to tap into a divine well of knowledge. As an action, you choose one skill or tool. For 10 minutes, you have proficiency with the chosen skill or tool."
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Read Thoughts": {
+    "description": "You can use your Channel Divinity to read a creature's thoughts. You can then use your access to the creature's mind to command it. As an action, choose one creature that you can see within 60 feet of you. That creature must make a Wisdom saving throw. If the creature succeeds on the saving throw, you can't use this feature on it again until you finish a long rest."
+  },
+  "subclass.Knowledge Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Knowledge Domain.feature.Potent Spellcasting": {
+    "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
+  },
+  "subclass.Knowledge Domain.feature.Visions of the Past": {
+    "description": "You can call up visions of the past that relate to an object you hold or your immediate surroundings. You spend at least 1 minute in meditation and prayer, then receive dreamlike, shadowy glimpses of recent events."
+  },
+  "subclass.Life Domain": {
+    "description": "Soothe the Hurts of the World The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts."
+  },
+  "subclass.Life Domain.feature.Life Domain": {
+    "description": "Soothe the Hurts of the World The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts. Existence itself relies on the positive energy associated with this domain, so a Cleric of almost any religious tradition might choose it."
+  },
+  "subclass.Life Domain.feature.Disciple of Life": {
+    "description": "When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot's level."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells": {
+    "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Life Domain Spells table, you thereafter always have the listed spells prepared."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Bless": {
+    "description": "You bless up to three creatures within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Cure Wounds": {
+    "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Aid": {
+    "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Lesser Restoration": {
+    "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Mass Healing Word": {
+    "description": "Up to six creatures of your choice that you can see within range regain Hit Points equal to 2d4 plus your spellcasting ability modifier."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Revivify": {
+    "description": "You touch a creature that has died within the last minute. That creature revives with 1 Hit Points. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Aura of Life": {
+    "description": "An aura radiates from you in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Points maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Points."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Death Ward": {
+    "description": "You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 Hit Points before the spell ends, the target instead drops to 1 Hit Points, and the spell ends."
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Greater Restoration": {
+    "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
+  },
+  "subclass.Life Domain.feature.Life Domain Spells.spell.Mass Cure Wounds": {
+    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+  },
+  "subclass.Life Domain.feature.Preserve Life": {
+    "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Points maximum."
+  },
+  "subclass.Life Domain.feature.Blessed Healer": {
+    "description": "The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than you, you regain Hit Points equal to 2 plus the spell slot's level."
+  },
+  "subclass.Life Domain.feature.Supreme Healing": {
+    "description": "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don't roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12."
+  },
+  "subclass.Light Domain": {
+    "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal."
+  },
+  "subclass.Light Domain.feature.Light Domain": {
+    "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells": {
+    "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Light Domain Spells table, you thereafter always have the listed spells prepared."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Burning Hands": {
+    "description": "A thin sheet of flames shoots forth from you. Each creature in a 15-foot Cone [Area of Effect] makes a Dexterity saving throw, taking 3d6 Fire damage on a failed save or half as much damage on a successful one."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Faerie Fire": {
+    "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Scorching Ray": {
+    "description": "You hurl three fiery rays. You can hurl them at one target within range or at several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 Fire damage."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.See Invisibility": {
+    "description": "For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Daylight": {
+    "description": "For the duration, sunlight spreads from a point within range and fills a 60-foot-radius Sphere [Area of Effect]. The sunlight's area is Bright Light and sheds Dim Light for an additional 60 feet."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Fireball": {
+    "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much damage on a successful one. The fire spreads around corners and ignites flammable objects that aren't being worn or carried. Using a Higher-Level Spell Slot: the damage increases by 1d6 for each slot level above 3."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Arcane Eye": {
+    "description": "You create an Invisible, invulnerable eye within range that hovers for the duration. You mentally receive visual information from the eye, which can see in every direction. It also has Darkvision with a range of 30 feet. As a Bonus Action, you can move the eye up to 30 feet in any direction."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Wall of Fire": {
+    "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save, or half on a success. One side of the wall (your choice) deals 5d8 Fire damage to each creature that ends its turn within 10 feet of that side or enters the wall for the first time on a turn. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 4."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Flame Strike": {
+    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: both the Fire and Radiant damage increase by 1d6 for each slot level above 5."
+  },
+  "subclass.Light Domain.feature.Light Domain Spells.spell.Scrying": {
+    "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
+  },
+  "subclass.Light Domain.feature.Radiance of the Dawn": {
+    "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to emit a flash of light in a 30-foot Emanation [Area of Effect] originating from yourself. Any magical Darkness—such as that created by the Darkness spell—in that area is dispelled. Additionally, each creature of your choice in that area must make a Constitution saving throw, taking Radiant damage equal to 2d10 plus your Cleric level on a failed save, or half as much damage on a successful one."
+  },
+  "subclass.Light Domain.feature.Warding Flare": {
+    "description": "When a creature that you can see within 30 feet of yourself makes an attack roll, you can take a Reaction to impose Disadvantage on the attack roll, causing light to flare before it hits or misses. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Long Rest."
+  },
+  "subclass.Light Domain.feature.Improved Warding Flare": {
+    "description": "You regain all expended uses of your Warding Flare when you finish a Short Rest or Long Rest. In addition, whenever you use Warding Flare, you can give the target of the triggering attack a number of Temporary Hit Points equal to 2d6 plus your Wisdom modifier."
+  },
+  "subclass.Light Domain.feature.Corona of Light": {
+    "description": "As a Magic action, you cause yourself to emit an aura of sunlight that lasts for 1 minute or until you dismiss it (no action required). You emit Bright Light in a 60-foot radius and Dim Light for an additional 30 feet. Your enemies in the Bright Light have Disadvantage on saving throws against your Radiance of the Dawn and any spell that deals Fire or Radiant damage. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+  },
+  "subclass.Nature Domain": {
+    "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath)."
+  },
+  "subclass.Nature Domain.feature.Nature Domain": {
+    "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath)."
+  },
+  "subclass.Nature Domain.feature.Acolyte of Nature": {
+    "description": "You learn one druid cantrip of your choice. This cantrip doesn't count against the number of cleric cantrips you know. You also gain proficiency in one of the following skills of your choice: Animal Handling, Nature, or Survival."
+  },
+  "subclass.Nature Domain.feature.Bonus Proficiency": {
+    "description": "You gain proficiency with heavy armor."
+  },
+  "subclass.Nature Domain.feature.Channel Divinity: Charm Animals and Plants": {
+    "description": "You can use your Channel Divinity to charm animals and plants. As an action, you present your holy symbol and invoke the name of your deity. Each beast or plant creature that can see you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is charmed by you for 1 minute or until it takes damage."
+  },
+  "subclass.Nature Domain.feature.Dampen Elements": {
+    "description": "When you or a creature within 30 feet of you takes acid, cold, fire, lightning, or thunder damage, you can use your reaction to grant resistance to the creature against that instance of the damage."
+  },
+  "subclass.Nature Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Nature Domain.feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 cold, fire, or lightning damage (your choice) to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Nature Domain.feature.Master of Nature": {
+    "description": "You gain the ability to command animals and plant creatures. While creatures are charmed by your Charm Animals and Plants feature, you can take a bonus action on your turn to verbally command what each of those creatures will do on its next turn."
+  },
+  "subclass.Tempest Domain": {
+    "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
+  },
+  "subclass.Tempest Domain.feature.Tempest Domain": {
+    "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
+  },
+  "subclass.Tempest Domain.feature.Bonus Proficiencies": {
+    "description": "You gain proficiency with martial weapons and heavy armor."
+  },
+  "subclass.Tempest Domain.feature.Wrath of the Storm": {
+    "description": "You can thunderously rebuke attackers. When a creature within 5 feet of you that you can see hits you with an attack, you can use your reaction to cause the creature to make a Dexterity saving throw. The creature takes 2d8 lightning or thunder damage (your choice) on a failed saving throw, and half as much damage on a successful one."
+  },
+  "subclass.Tempest Domain.feature.Channel Divinity: Destructive Wrath": {
+    "description": "You can use your Channel Divinity to wield the power of the storm with unchecked ferocity. When you roll lightning or thunder damage, you can use your Channel Divinity to deal maximum damage, instead of rolling."
+  },
+  "subclass.Tempest Domain.feature.Thunderbolt Strike": {
+    "description": "When you deal lightning damage to a Large or smaller creature, you can also push it up to 10 feet away from you."
+  },
+  "subclass.Tempest Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Tempest Domain.feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 thunder damage to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Tempest Domain.feature.Stormborn": {
+    "description": "You have a flying speed equal to your current walking speed whenever you are not underground or indoors."
+  },
+  "subclass.Trickery Domain": {
+    "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain": {
+    "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions. They prefer subterfuge and pranks to direct confrontation."
+  },
+  "subclass.Trickery Domain.feature.Blessing of the Trickster": {
+    "description": "As a Magic action, you can choose yourself or a willing creature within 30 feet of yourself to have Advantage on Dexterity (Stealth) checks. This blessing lasts until you finish a Long Rest or you use this feature again."
+  },
+  "subclass.Trickery Domain.feature.Invoke Duplicity": {
+    "description": "As a Bonus Action, you can expend one use of your Channel Divinity to create a perfect visual illusion of yourself in an unoccupied space you can see within 30 feet of yourself. The illusion is intangible and doesn't occupy its space. It lasts for 1 minute, but it ends early if you dismiss it (no action required) or have the Incapacitated condition."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells": {
+    "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Trickery Domain Spells table, you thereafter always have the listed spells prepared."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Charm Person": {
+    "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Disguise Self": {
+    "description": "You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends. You can seem 1 foot shorter or taller and can appear heavier or lighter. You must adopt a form that has the same basic arrangement of limbs as you have."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Invisibility": {
+    "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Pass without Trace": {
+    "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Hypnotic Pattern": {
+    "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Nondetection": {
+    "description": "For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Confusion": {
+    "description": "Each creature in a 10-foot-radius Sphere [Area of Effect] centered on a point you choose within range must succeed on a Wisdom saving throw, or that target can't take Bonus Actions or Reactions and must roll 1d10 at the start of each of its turns to determine its behavior for that turn: 1 — uses all movement in a random direction, does nothing else; 2-6 — doesn't move or take actions; 7-8 — makes one melee attack against a random creature within reach, or does nothing; 9-10 — acts normally. At the end of each turn, an affected target repeats the save, ending the effect on a success."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Dimension Door": {
+    "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You can also bring one willing creature of your size or smaller, provided it is within 5 feet of you. If you would arrive in an occupied space, both you and any traveling companion each take 4d6 Force damage, and the teleportation fails."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Dominate Person": {
+    "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success."
+  },
+  "subclass.Trickery Domain.feature.Trickery Domain Spells.spell.Modify Memory": {
+    "description": "You attempt to reshape another creature's memories. One creature that you can see within range makes a Wisdom saving throw. If you are fighting the creature, it has Advantage on the save. On a failed save, the target has the Charmed condition for the duration."
+  },
+  "subclass.Trickery Domain.feature.Trickster's Transposition": {
+    "description": "Whenever you take the Bonus Action to create or move the illusion of your Invoke Duplicity, you can teleport, swapping places with the illusion."
+  },
+  "subclass.Trickery Domain.feature.Improved Duplicity": {
+    "description": "The illusion of your Invoke Duplicity has grown more powerful in the following ways. Shared Distraction: When you and your allies make attack rolls against a creature within 5 feet of the illusion, the attack rolls have Advantage. Healing Illusion: When the illusion ends, you or a creature of your choice within 5 feet of it regains a number of Hit Points equal to your Cleric level."
+  },
+  "subclass.War Domain": {
+    "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage."
+  },
+  "subclass.War Domain.feature.War Domain": {
+    "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage. Clerics who tap into the magic of the War Domain excel in battle, inspiring others to fight the good fight or offering acts of violence as prayers."
+  },
+  "subclass.War Domain.feature.Guided Strike": {
+    "description": "When you or a creature within 30 feet of you misses with an attack roll, you can expend one use of your Channel Divinity and give that roll a +10 bonus, potentially causing it to hit. When you use this feature to benefit another creature's attack roll, you must take a Reaction to do so."
+  },
+  "subclass.War Domain.feature.War Domain Spells": {
+    "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the War Domain Spells table, you thereafter always have the listed spells prepared."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Guiding Bolt": {
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Shield of Faith": {
+    "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Magic Weapon": {
+    "description": "You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls. The spell ends early if you cast it again."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Spiritual Weapon": {
+    "description": "You create a floating, spectral force that resembles a weapon of your choice and lasts for the duration. The force appears within range in a space of your choice, and you can immediately make one melee spell attack against one creature within 5 feet of the force."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Crusader's Mantle": {
+    "description": "You radiate a magical aura in a 30-foot Emanation [Area of Effect]. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Spirit Guardians": {
+    "description": "Protective spirits flit around you in a 15-foot Emanation [Area of Effect] for the duration. If you are good or neutral, their spectral form appears angelic or fey (your choice). If you are evil, they appear fiendish. When you cast this spell, you can designate creatures to be unaffected by it."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Fire Shield": {
+    "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Freedom of Movement": {
+    "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Hold Monster": {
+    "description": "Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or have the Paralyzed condition for the duration. At the end of each of its turns, the target repeats the save, ending the spell on itself on a success."
+  },
+  "subclass.War Domain.feature.War Domain Spells.spell.Steel Wind Strike": {
+    "description": "You flourish the weapon used in the casting and then vanish to strike like the wind. Choose up to five creatures you can see within range. Make a melee spell attack against each target. On a hit, a target takes 6d10 Force damage."
+  },
+  "subclass.War Domain.feature.War Priest": {
+    "description": "As a Bonus Action, you can make one attack with a weapon or an Unarmed Strike. You can use this Bonus Action a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Short Rest or Long Rest."
+  },
+  "subclass.War Domain.feature.War God's Blessing": {
+    "description": "You can expend a use of your Channel Divinity to cast Shield of Faith or Spiritual Weapon rather than expending a spell slot. When you cast either spell in this way, the spell doesn't require Concentration. Instead the spell lasts for 1 minute, but it ends early if you cast that spell again, have the Incapacitated condition, or die."
+  },
+  "subclass.War Domain.feature.Avatar of Battle": {
+    "description": "You gain Resistance to Bludgeoning, Piercing, and Slashing damage."
+  },
+  "subclass.Death Domain": {
+    "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires."
+  },
+  "subclass.Death Domain.feature.Death Domain": {
+    "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires."
+  },
+  "subclass.Death Domain.feature.Bonus Proficiency": {
+    "description": "He or she gains proficiency with martial weapons."
+  },
+  "subclass.Death Domain.feature.Reaper": {
+    "description": "The cleric learns one necromancy cantrip of his or her choice from any spell list. When the cleric casts a necromancy cantrip that normally targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other."
+  },
+  "subclass.Death Domain.feature.Channel Divinity: Touch of Death": {
+    "description": "The cleric can use Channel Divinity to destroy another creature's life force by touch. When the cleric hits a creature with a melee attack, the cleric can use Channel Divinity to deal extra necrotic damage to the target. The damage equals 5 + twice his or her cleric level."
+  },
+  "subclass.Death Domain.feature.Inescapable Destruction": {
+    "description": "The cleric's ability to channel negative energy becomes more potent. Necrotic damage dealt by the character's cleric spells and Channel Divinity options ignores resistance to necrotic damage."
+  },
+  "subclass.Death Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Death Domain.feature.Divine Strike": {
+    "description": "The cleric gains the ability to infuse his or her weapon strikes with necrotic energy. Once on each of the cleric's turns when he or she hits a creature with a weapon attack, the cleric can cause the attack to deal an extra 1d8 necrotic damage to the target. When the cleric reaches 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Death Domain.feature.Improved Reaper": {
+    "description": "When the cleric casts a Necromancy spell of 1st through 5th-level that targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other. If the spell consumes its material components, the cleric must provide them for each target."
+  },
+  "subclass.Arcana Domain": {
+    "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately."
+  },
+  "subclass.Arcana Domain.feature.Arcana Domain": {
+    "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit."
+  },
+  "subclass.Arcana Domain.feature.Arcane Initiate": {
+    "description": "You gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the wizard spell list. For you, these cantrips count as cleric cantrips."
+  },
+  "subclass.Arcana Domain.feature.Channel Divinity: Arcane Abjuration": {
+    "description": "You can use your Channel Divinity to abjure otherworldly creatures. As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you."
+  },
+  "subclass.Arcana Domain.feature.Spell Breaker": {
+    "description": "When you restore hit points to an ally with a spell of 1st level or higher, you can also end one spell of your choice on that creature. The level of the spell you end must be equal to or lower than the level of the spell slot you use to cast the healing spell."
+  },
+  "subclass.Arcana Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Arcana Domain.feature.Potent Spellcasting": {
+    "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
+  },
+  "subclass.Arcana Domain.feature.Arcane Mastery": {
+    "description": "You choose four spells from the Wizard spell list, one from each of the following levels: 6th, 7th, 8th, and 9th. You add them to your list of domain spells. Like your other domain spells, they are always prepared and count as cleric spells for you."
+  },
+  "subclass.Ambition Domain (PSA)": {
+    "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
+  },
+  "subclass.Ambition Domain (PSA).feature.Ambition Domain (PSA)": {
+    "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
+  },
+  "subclass.Ambition Domain (PSA).feature.Warding Flare": {
+    "description": "You can interpose divine light between yourself and an attacking enemy. When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. An attacker that can't be blinded is immune to this feature."
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Invoke Duplicity": {
+    "description": "You can use your Channel Divinity to create an illusory duplicate of yourself. As an action, you create a perfect illusion of yourself that lasts for 1 minute, or until you lose your concentration (as if you were concentration on a spell). The illusion appears in an unoccupied space that you can see within 30 feet of you."
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Cloak of Shadows": {
+    "description": "You can use your Channel Divinity to vanish. As an action, you become invisible until the end of your next turn. You become visible if you attack or cast a spell."
+  },
+  "subclass.Ambition Domain (PSA).feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Ambition Domain (PSA).feature.Potent Spellcasting": {
+    "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
+  },
+  "subclass.Ambition Domain (PSA).feature.Improved Duplicity": {
+    "description": "You can create up to four duplicates of yourself, instead of one, when you use Invoke Duplicity. As a bonus action on your turn, you can move any number of them up to 30 feet, to a maximum range of 120 feet."
+  },
+  "subclass.Knowledge Domain (PSA)": {
+    "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh."
+  },
+  "subclass.Knowledge Domain (PSA).feature.Knowledge Domain (PSA)": {
+    "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh. He trains acolytes and initiates to push their limits and challenge their mental capacity with spells of ever-greater power."
+  },
+  "subclass.Solidarity Domain (PSA)": {
+    "description": "Oketra is charged with expounding upon this teaching of the God-Pharaoh, instilling in every initiate the virtue of solidarity. She forges each group of children into a crop of acolytes with just one purpose: to be judged worthy of a glorious afterlife."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity Domain (PSA)": {
+    "description": "Oketra is charged with expounding upon this teaching of the God-Pharaoh, instilling in every initiate the virtue of solidarity. She forges each group of children into a crop of acolytes with just one purpose: to be judged worthy of a glorious afterlife. And she instills in each crop the ability to unite in a single action in pursuit of that purpose."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Bonus Proficiency": {
+    "description": "You gain proficiency with heavy armor."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity's Action": {
+    "description": "When you take the Help action to aid an ally's attack, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain expended uses when you finish a long rest."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Channel Divinity: Preserve Life": {
+    "description": "You can use your Channel Divinity to heal the badly injured. As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Oketra's Blessing": {
+    "description": "When a creature within 30 feet of you makes an attack roll, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Solidarity Domain (PSA).feature.Supreme Healing": {
+    "description": "When you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12."
+  },
+  "subclass.Strength Domain (PSA)": {
+    "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training."
+  },
+  "subclass.Strength Domain (PSA).feature.Strength Domain (PSA)": {
+    "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training. Rhonas demonstrates his teachings by his example, rather than by giving his students any kind of academic instruction."
+  },
+  "subclass.Strength Domain (PSA).feature.Acolyte of Strength": {
+    "description": "You learn one druid cantrip of your choice. You also gain proficiency in one of the following skills of your choice: Animal Handling, Athletics, Nature, or Survival."
+  },
+  "subclass.Strength Domain (PSA).feature.Bonus Proficiency": {
+    "description": "You gain proficiency with heavy armor."
+  },
+  "subclass.Strength Domain (PSA).feature.Channel Divinity: Feat of Strength": {
+    "description": "You can use your Channel Divinity to enhance your physical might. When you make an attack roll, ability check, or saving throw using Strength, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the roll succeeds or fails."
+  },
+  "subclass.Strength Domain (PSA).feature.Rhonas's Blessing": {
+    "description": "When a creature within 30 feet of you makes an attack roll, ability check, or saving throw using Strength, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the roll succeeds or fail."
+  },
+  "subclass.Strength Domain (PSA).feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Strength Domain (PSA).feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Strength Domain (PSA).feature.Avatar of Battle": {
+    "description": "You gain resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks."
+  },
+  "subclass.Zeal Domain (PSA)": {
+    "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions."
+  },
+  "subclass.Zeal Domain (PSA).feature.Zeal Domain (PSA)": {
+    "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions. Hazoret is charged with cultivating this zeal in the initiates who come under her care, and she has undertaken the task with appropriate enthusiasm."
+  },
+  "subclass.Zeal Domain (PSA).feature.Bonus Proficiencies": {
+    "description": "You gain proficiency with martial weapons and heavy armor."
+  },
+  "subclass.Zeal Domain (PSA).feature.Priest of Zeal": {
+    "description": "From 1st level, Hazoret delivers bolts of inspiration to you while you are engaged in battle. When you use the Attack action, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier (a minimum of once). You regain all expended uses when you finish a long rest."
+  },
+  "subclass.Zeal Domain (PSA).feature.Channel Divinity: Consuming Fervor": {
+    "description": "You can use your Channel Divinity to channel your zeal into unchecked ferocity. When you roll fire or thunder damage, you can use your Channel Divinity to deal maximum damage instead of rolling."
+  },
+  "subclass.Zeal Domain (PSA).feature.Resounding Strike": {
+    "description": "When you deal thunder damage to a Large or smaller creature, you can also push it up to 10 feet away from you."
+  },
+  "subclass.Zeal Domain (PSA).feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Zeal Domain (PSA).feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Zeal Domain (PSA).feature.Blaze of Glory": {
+    "description": "You can delay death for an instant to perform a final heroic act. When you are reduced to 0 hit points by an attacker you can see, even if you would be killed outright, you can use your reaction to move up to your speed toward the attacker and make one melee weapon attack against it, as long as the movement brings it within your reach. You make this attack with advantage."
+  },
+  "subclass.Forge Domain": {
+    "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords."
+  },
+  "subclass.Forge Domain.feature.Forge Domain": {
+    "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords. The gods of the forge teach that, with patience and hard work, even the most intractable metal can be transformed from a lump of ore to a beautifully wrought object."
+  },
+  "subclass.Forge Domain.feature.Blessing of the Forge": {
+    "description": "You gain the ability to imbue magic into a weapon or armor. At the end of a long rest, you can touch one nonmagical object that is a suit of armor or a simple or martial weapon. Until the end of your next long rest or until you die, the object becomes a magic item, granting a +1 bonus to AC if it's armor or a +1 bonus to attack and damage rolls if it's a weapon."
+  },
+  "subclass.Forge Domain.feature.Bonus Proficiency": {
+    "description": "You gain proficiency with heavy armor and smith's tools."
+  },
+  "subclass.Forge Domain.feature.Channel Divinity: Artisan's Blessing": {
+    "description": "You can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object (see chapter 5, \"Equipment,\" in the Player's Handbook for examples of these items)."
+  },
+  "subclass.Forge Domain.feature.Soul of the Forge": {
+    "description": "Your mastery of the forge grants you special abilities: You gain resistance to fire damage. While wearing heavy armor, you gain a +1 bonus to AC."
+  },
+  "subclass.Forge Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Forge Domain.feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with the fiery power of the forge. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 fire damage to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Forge Domain.feature.Saint of Forge and Fire": {
+    "description": "Your blessed affinity with fire and metal becomes more powerful: You gain immunity to fire damage, While wearing heavy armor, you have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks."
+  },
+  "subclass.Grave Domain": {
+    "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination."
+  },
+  "subclass.Grave Domain.feature.Grave Domain": {
+    "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination. Deities of the grave include Kelemvor, Wee Jas, the ancestral spirits of the Undying Court, Hades, Anubis, and Osiris."
+  },
+  "subclass.Grave Domain.feature.Circle of Mortality": {
+    "description": "You gain the ability to manipulate the line between life and death. When you would normally roll one or more dice to restore hit points with a spell to a creature at 0 hit points, you instead use the highest number possible for each die. In addition, you learn the spare the dying cantrip, which doesn't count against the number of cleric cantrips you know."
+  },
+  "subclass.Grave Domain.feature.Eyes of the Grave": {
+    "description": "You gain the ability to occasionally sense the presence of the undead, whose existence is an insult to the natural cycle of life. As an action, you can open your awareness to magically detect undead. Until the end of your next turn, you know the location of any undead within 60 feet of you that isn't behind Cover and that isn't protected from divination magic."
+  },
+  "subclass.Grave Domain.feature.Channel Divinity: Path to the Grave": {
+    "description": "You can use your Channel Divinity to mark another creature's life force for termination. As an action, you choose one creature you can see within 30 feet of you, cursing it until the end of your next turn. The next time you or an ally of yours hits the cursed creature with an attack, the creature has vulnerability to all of that attack's damage, and then the curse ends."
+  },
+  "subclass.Grave Domain.feature.Sentinel at Death's Door": {
+    "description": "You gain the ability to impede death's progress. As a reaction when you or a creature you can see within 30 feet of you suffers a critical hit, you can turn that hit into a normal hit. Any effects triggered by a critical hit are canceled. You can use this feature a number of times equal to your Wisdom modifier (minimum of once)."
+  },
+  "subclass.Grave Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Grave Domain.feature.Potent Spellcasting": {
+    "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
+  },
+  "subclass.Grave Domain.feature.Keeper of Souls": {
+    "description": "You can seize a trace of vitality from a parting soul and use it to heal the living. When an enemy you can see dies within 60 feet of you, you or one creature of your choice that is within 60 feet of you regains hit points equal to the enemy's number of Hit Dice. You can use this feature only if you aren't incapacitated."
+  },
+  "subclass.Order Domain": {
+    "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain."
+  },
+  "subclass.Order Domain.feature.Order Domain": {
+    "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain."
+  },
+  "subclass.Order Domain.feature.Bonus Proficiencies": {
+    "description": "You gain proficiency with heavy armor. You also gain proficiency in the Intimidation or Persuasion skill (your choice)."
+  },
+  "subclass.Order Domain.feature.Voice of Authority": {
+    "description": "You can invoke the power of law to drive an ally to attack. If you cast a spell with a spell slot of 1st level or higher and target an ally with the spell, that ally can use their reaction immediately after the spell to make one weapon attack against a creature of your choice that you can see."
+  },
+  "subclass.Order Domain.feature.Channel Divinity: Order's Demand": {
+    "description": "You can use your Channel Divinity to exert an intimidating presence over others. As an action, you present your holy symbol, and each creature of your choice that can see or hear you within 30 feet of you must succeed on a Wisdom saving throw or be charmed by you until the end of your next turn or until the charmed creature takes any damage."
+  },
+  "subclass.Order Domain.feature.Embodiment of the Law": {
+    "description": "You become remarkably adept at channeling magical energy to compel others. If you cast a spell of the enchantment school using a spell slot of 1st level or higher, you can change the spell's casting time to 1 bonus action for this casting, provided the spell's casting time is normally 1 action."
+  },
+  "subclass.Order Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Order Domain.feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 psychic damage to the target. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Order Domain.feature.Order's Wrath": {
+    "description": "Enemies you designate for destruction wilt under the combined efforts of you and your allies. If you deal your Divine Strike damage to a creature on your turn, you can curse that creature until the start of your next turn. The next time one of your allies hits the cursed creature with an attack, the target also takes 2d8 psychic damage, and the curse ends."
+  },
+  "subclass.Peace Domain": {
+    "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing."
+  },
+  "subclass.Peace Domain.feature.Peace Domain": {
+    "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing. See the Peace Deities table for a list of some of the gods associated with this domain."
+  },
+  "subclass.Peace Domain.feature.Emboldening Bond": {
+    "description": "You can forge an empowering bond among people who are at peace with one another. As an action, you choose a number of willing creatures within 30 feet of you (this can include yourself) equal to your proficiency bonus. You create a magical bond among them for 10 minutes or until you use this feature again."
+  },
+  "subclass.Peace Domain.feature.Implement of Peace": {
+    "description": "You gain proficiency in the Insight, Performance, or Persuasion skill (your choice)."
+  },
+  "subclass.Peace Domain.feature.Channel Divinity: Balm of Peace": {
+    "description": "You can use your Channel Divinity to make your very presence a soothing balm. As an action, you can move up to your speed, without provoking opportunity attacks, and when you move within 5 feet of any other creature during this action, you can restore a number of hit points to that creature equal to 2d6 + your Wisdom modifier (minimum of 1 hit point)."
+  },
+  "subclass.Peace Domain.feature.Protective Bond": {
+    "description": "The bond you forge between people helps them protect each other. When a creature affected by your Emboldening Bond feature is about to take damage, a second bonded creature within 30 feet of the first can use its reaction to teleport to an unoccupied space within 5 feet of the first creature. The second creature then takes all the damage instead."
+  },
+  "subclass.Peace Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Potent Spellcasting feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Peace Domain.feature.Potent Spellcasting": {
+    "description": "You add your Wisdom modifier to the damage you deal with any cleric cantrip."
+  },
+  "subclass.Peace Domain.feature.Expansive Bond": {
+    "description": "The benefits of your Emboldening Bond and Protective Bond features now work when the creatures are within 60 feet of each other. Moreover, when a creature uses Protective Bond to take someone else's damage, the creature has resistance to that damage."
+  },
+  "subclass.Twilight Domain": {
+    "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
+  },
+  "subclass.Twilight Domain.feature.Twilight Domain": {
+    "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
+  },
+  "subclass.Twilight Domain.feature.Bonus Proficiencies": {
+    "description": "You gain proficiency with martial weapons and heavy armor."
+  },
+  "subclass.Twilight Domain.feature.Eyes of Night": {
+    "description": "You can see through the deepest gloom. You have darkvision out to a range of 300 feet. In that radius, you can see in dim light as if it were bright light and in darkness as if it were dim light."
+  },
+  "subclass.Twilight Domain.feature.Vigilant Blessing": {
+    "description": "The night has taught you to be vigilant. As an action, you give one creature you touch (including possibly yourself) advantage on the next initiative roll the creature makes. This benefit ends immediately after the roll or if you use this feature again."
+  },
+  "subclass.Twilight Domain.feature.Channel Divinity: Twilight Sanctuary": {
+    "description": "You can use your Channel Divinity to refresh your allies with soothing twilight. As an action, you present your holy symbol, and a sphere of twilight emanates from you. The sphere is centered on you, has a 30-foot radius, and is filled with dim light. The sphere moves with you, and it lasts for 1 minute or until you are incapacitated or die."
+  },
+  "subclass.Twilight Domain.feature.Steps of Night": {
+    "description": "You can draw on the mystical power of night to rise into the air. As a bonus action when you are in dim light or darkness, you can magically give yourself a flying speed equal to your walking speed for 1 minute. You can use this bonus action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+  },
+  "subclass.Twilight Domain.feature.Blessed Strikes": {
+    "description": "8th-level cleric {@variantrule optional class features, which replaces the Divine Strike feature} You are blessed with divine might in battle. When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you can't use this feature again until the start of your next turn."
+  },
+  "subclass.Twilight Domain.feature.Divine Strike": {
+    "description": "You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage. When you reach 14th level, the extra damage increases to 2d8."
+  },
+  "subclass.Twilight Domain.feature.Twilight Shroud": {
+    "description": "The twilight that you summon offers a protective embrace: you and your allies have Cover while in the sphere created by your Twilight Sanctuary."
+  }
 }

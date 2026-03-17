@@ -1,0 +1,994 @@
+{
+  "name": "Bard",
+  "description": "",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Bardic Inspiration",
+      "description": "",
+      "fields": [
+        {
+          "name": "Bardic Inspiration",
+          "kind": "Die",
+          "levels": {
+            "1": {
+              "sides": 6,
+              "amount": "max(1, CHA.MOD)"
+            },
+            "5": {
+              "sides": 8,
+              "amount": "max(1, CHA.MOD)"
+            },
+            "9": {
+              "sides": 10,
+              "amount": "max(1, CHA.MOD)"
+            },
+            "13": {
+              "sides": 12,
+              "amount": "max(1, CHA.MOD)"
+            }
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Bardic Inspiration",
+              "description": "",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Spellcasting (Bard)",
+      "description": "",
+      "spells": {
+        "casting_ability": 5,
+        "list": {
+          "from": "spells/bard.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 4,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 5,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 6,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 7,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 9,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 11,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 12,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 14,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 16,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 16,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 17,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 17,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 18,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 18,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 19,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 20,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 21,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 22,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
+          }
+        ],
+        "caster_coef": 1
+      }
+    },
+    {
+      "name": "Expertise",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Jack of All Trades",
+      "description": ""
+    },
+    {
+      "name": "Bard Subclass",
+      "description": ""
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Font of Inspiration",
+      "description": ""
+    },
+    {
+      "name": "Subclass Feature",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Countercharm",
+      "description": ""
+    },
+    {
+      "name": "Magical Secrets",
+      "description": ""
+    },
+    {
+      "name": "Superior Inspiration",
+      "description": ""
+    },
+    {
+      "name": "Epic Boon",
+      "description": "",
+      "stackable": true
+    },
+    {
+      "name": "Words of Creation",
+      "description": ""
+    },
+    {
+      "name": "Class Proficiencies",
+      "description": "",
+      "assign": [
+        {
+          "expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Bardic Inspiration",
+        "Spellcasting (Bard)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Expertise",
+        "Jack of All Trades"
+      ]
+    },
+    {
+      "features": [
+        "Bard Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Font of Inspiration"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Countercharm"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Expertise"
+      ]
+    },
+    {
+      "features": [
+        "Magical Secrets"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Superior Inspiration"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Words of Creation"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "College of Lore",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Lore",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Cutting Words",
+          "description": ""
+        },
+        {
+          "name": "Magical Discoveries",
+          "description": ""
+        },
+        {
+          "name": "Peerless Skill",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Lore",
+            "Bonus Proficiencies",
+            "Cutting Words"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Magical Discoveries"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Peerless Skill"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Valor",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Valor",
+          "description": ""
+        },
+        {
+          "name": "Combat Inspiration",
+          "description": ""
+        },
+        {
+          "name": "Martial Training",
+          "description": ""
+        },
+        {
+          "name": "Extra Attack",
+          "description": ""
+        },
+        {
+          "name": "Battle Magic",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Valor",
+            "Combat Inspiration",
+            "Martial Training"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Battle Magic"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Glamour",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Glamour",
+          "description": ""
+        },
+        {
+          "name": "Beguiling Magic",
+          "description": "",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Charm Person",
+                "level": 1,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Mirror Image",
+                "level": 2,
+                "description": "",
+                "sticky": true,
+                "min_level": 3
+              }
+            ]
+          }
+        },
+        {
+          "name": "Mantle of Inspiration",
+          "description": ""
+        },
+        {
+          "name": "Mantle of Majesty",
+          "description": ""
+        },
+        {
+          "name": "Unbreakable Majesty",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Glamour",
+            "Beguiling Magic",
+            "Mantle of Inspiration"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Mantle of Majesty"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Unbreakable Majesty"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Swords",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Swords",
+          "description": ""
+        },
+        {
+          "name": "Defensive Flourish",
+          "description": ""
+        },
+        {
+          "name": "Mobile Flourish",
+          "description": ""
+        },
+        {
+          "name": "Slashing Flourish",
+          "description": ""
+        },
+        {
+          "name": "Blade Flourish",
+          "description": ""
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "description": ""
+        },
+        {
+          "name": "Fighting Style",
+          "description": ""
+        },
+        {
+          "name": "Extra Attack",
+          "description": ""
+        },
+        {
+          "name": "Master's Flourish",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Swords",
+            "Defensive Flourish",
+            "Mobile Flourish",
+            "Slashing Flourish",
+            "Blade Flourish",
+            "Bonus Proficiencies",
+            "Fighting Style"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Master's Flourish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Whispers",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Whispers",
+          "description": ""
+        },
+        {
+          "name": "Psychic Blades",
+          "description": ""
+        },
+        {
+          "name": "Words of Terror",
+          "description": ""
+        },
+        {
+          "name": "Mantle of Whispers",
+          "description": ""
+        },
+        {
+          "name": "Shadow Lore",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Whispers",
+            "Psychic Blades",
+            "Words of Terror"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Mantle of Whispers"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Shadow Lore"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Creation",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Creation",
+          "description": ""
+        },
+        {
+          "name": "Mote of Potential",
+          "description": ""
+        },
+        {
+          "name": "Performance of Creation",
+          "description": ""
+        },
+        {
+          "name": "Animating Performance",
+          "description": ""
+        },
+        {
+          "name": "Creative Crescendo",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Creation",
+            "Mote of Potential",
+            "Performance of Creation"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Animating Performance"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Creative Crescendo"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Eloquence",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Eloquence",
+          "description": ""
+        },
+        {
+          "name": "Silver Tongue",
+          "description": ""
+        },
+        {
+          "name": "Unsettling Words",
+          "description": ""
+        },
+        {
+          "name": "Unfailing Inspiration",
+          "description": ""
+        },
+        {
+          "name": "Universal Speech",
+          "description": ""
+        },
+        {
+          "name": "Infectious Inspiration",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Eloquence",
+            "Silver Tongue",
+            "Unsettling Words"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Unfailing Inspiration",
+            "Universal Speech"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Infectious Inspiration"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Spirits",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Spirits",
+          "description": ""
+        },
+        {
+          "name": "Guiding Whispers",
+          "description": ""
+        },
+        {
+          "name": "Spiritual Focus",
+          "description": ""
+        },
+        {
+          "name": "Tales from Beyond",
+          "description": ""
+        },
+        {
+          "name": "Spirit Session",
+          "description": ""
+        },
+        {
+          "name": "Mystical Connection",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Spirits",
+            "Guiding Whispers",
+            "Spiritual Focus",
+            "Tales from Beyond"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Spirit Session"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Mystical Connection"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of Dance",
+      "description": "",
+      "features": [
+        {
+          "name": "College of Dance",
+          "description": ""
+        },
+        {
+          "name": "Agile Strikes",
+          "description": ""
+        },
+        {
+          "name": "Bardic Damage",
+          "description": ""
+        },
+        {
+          "name": "Dance Virtuoso",
+          "description": ""
+        },
+        {
+          "name": "Dazzling Footwork",
+          "description": ""
+        },
+        {
+          "name": "Unarmored Defense",
+          "description": "",
+          "ac_expr": "10 + DEX.MOD + CHA.MOD"
+        },
+        {
+          "name": "Inspiring Movement",
+          "description": ""
+        },
+        {
+          "name": "Tandem Footwork",
+          "description": ""
+        },
+        {
+          "name": "Leading Evasion",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of Dance",
+            "Agile Strikes",
+            "Bardic Damage",
+            "Dance Virtuoso",
+            "Dazzling Footwork",
+            "Unarmored Defense"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Inspiring Movement",
+            "Tandem Footwork"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Leading Evasion"
+          ]
+        }
+      }
+    },
+    {
+      "name": "College of the Moon",
+      "description": "",
+      "features": [
+        {
+          "name": "College of the Moon",
+          "description": ""
+        },
+        {
+          "name": "Moon's Inspiration",
+          "description": ""
+        },
+        {
+          "name": "Primal Lore",
+          "description": ""
+        },
+        {
+          "name": "Blessing of Moonlight",
+          "description": ""
+        },
+        {
+          "name": "Eventide's Splendor",
+          "description": ""
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "College of the Moon",
+            "Moon's Inspiration",
+            "Primal Lore"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Blessing of Moonlight"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Eventide's Splendor"
+          ]
+        }
+      }
+    }
+  ]
+}

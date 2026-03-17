@@ -1,0 +1,31 @@
+{
+  "name": "Halfling",
+  "description": "",
+  "traits": [
+    {
+      "name": "Brave",
+      "description": ""
+    },
+    {
+      "name": "Halfling Nimbleness",
+      "description": ""
+    },
+    {
+      "name": "Luck",
+      "description": ""
+    },
+    {
+      "name": "Naturally Stealthy",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common",
+        "Halfling"
+      ]
+    }
+  ],
+  "features": []
+}

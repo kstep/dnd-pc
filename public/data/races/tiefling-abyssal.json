@@ -1,0 +1,72 @@
+{
+  "name": "Tiefling (Abyssal)",
+  "description": "",
+  "traits": [
+    {
+      "name": "Darkvision",
+      "description": ""
+    },
+    {
+      "name": "Abyssal Resistance",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common",
+        "Abyssal"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Abyssal Legacy",
+      "description": "",
+      "spells": {
+        "cost": "Free Uses",
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Thaumaturgy",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          },
+          {
+            "name": "Poison Spray",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          },
+          {
+            "name": "Ray of Sickness",
+            "level": 1,
+            "description": "",
+            "sticky": true,
+            "min_level": 3,
+            "cost": 1
+          },
+          {
+            "name": "Hold Person",
+            "level": 2,
+            "description": "",
+            "sticky": true,
+            "min_level": 5,
+            "cost": 1
+          }
+        ]
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
+    }
+  ]
+}

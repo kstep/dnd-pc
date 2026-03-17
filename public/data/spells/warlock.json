@@ -1,0 +1,742 @@
+[
+  {
+    "name": "Blade Ward",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Booming Blade",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Chill Touch",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Create Bonfire",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Eldritch Blast",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Friends",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Frostbite",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Green-Flame Blade",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Infestation",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Lightning Lure",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mage Hand",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Magic Stone",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mind Sliver",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Minor Illusion",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Poison Spray",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Prestidigitation",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Sword Burst",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Thunderclap",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Toll the Dead",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "True Strike",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Armor of Agathys",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Arms of Hadar",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Bane",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cause Fear",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Charm Person",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Comprehend Languages",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Distort Value",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Expeditious Retreat",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Hellish Rebuke",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Hex",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Illusory Script",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Protection from Evil and Good",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Speak with Animals",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Tasha's Hideous Laughter",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Unseen Servant",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Witch Bolt",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Borrowed Knowledge",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Cloud of Daggers",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Crown of Madness",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Darkness",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Earthbind",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enthrall",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Flock of Familiars",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Hold Person",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Invisibility",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Mind Spike",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Mirror Image",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Misty Step",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Ray of Enfeeblement",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Shadow Blade",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Shatter",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spider Climb",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spray of Cards",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Suggestion",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Warp Sense",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Antagonize",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Counterspell",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Enemies Abound",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fear",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fly",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Gaseous Form",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Hunger of Hadar",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Hypnotic Pattern",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Incite Greed",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Intellect Fortress",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Magic Circle",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Major Image",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Spirit Shroud",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Summon Fey",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Summon Lesser Demons",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Summon Shadowspawn",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Summon Undead",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Thunder Step",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Tongues",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Vampiric Touch",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Backlash",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Banishment",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Blight",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Charm Monster",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Dimension Door",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Doomtide",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Elemental Bane",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Galder's Speedy Courier",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Gate Seal",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Hallucinatory Terrain",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Raulothim's Psychic Lance",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Shadow of Moil",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Sickening Radiance",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Spirit of Death",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Summon Aberration",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Summon Greater Demon",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Contact Other Plane",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Danse Macabre",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dream",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Enervation",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Far Step",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Hold Monster",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Infernal Calling",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Jallarzi's Storm of Radiance",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Mislead",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Negative Energy Flood",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Planar Binding",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Scrying",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Synaptic Static",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Teleportation Circle",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Wall of Light",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Arcane Gate",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Circle of Death",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Conjure Fey",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Create Undead",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Eyebite",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Flesh to Stone",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Investiture of Flame",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Investiture of Ice",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Investiture of Stone",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Investiture of Wind",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Mass Suggestion",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Mental Prison",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Soul Cage",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Summon Fiend",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Tasha's Bubbling Cauldron",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Tasha's Otherworldly Guise",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "True Seeing",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Crown of Stars",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Dream of the Blue Veil",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Etherealness",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Finger of Death",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Forcecage",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Plane Shift",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Power Word Pain",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Befuddlement",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Demiplane",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Dominate Monster",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Glibness",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Maddening Darkness",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Power Word Stun",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Astral Projection",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Blade of Disaster",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Foresight",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Gate",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Imprisonment",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Power Word Kill",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Psychic Scream",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "True Polymorph",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Weird",
+    "level": 9,
+    "description": ""
+  }
+]

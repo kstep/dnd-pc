@@ -1,0 +1,74 @@
+{
+  "name": "Drow",
+  "description": "",
+  "traits": [
+    {
+      "name": "Superior Darkvision",
+      "description": ""
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": ""
+    },
+    {
+      "name": "Keen Senses",
+      "description": ""
+    },
+    {
+      "name": "Trance",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common",
+        "Elvish"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Drow Magic",
+      "description": "",
+      "spells": {
+        "cost": "Free Uses",
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Dancing Lights",
+            "level": 0,
+            "description": "",
+            "sticky": true
+          },
+          {
+            "name": "Faerie Fire",
+            "level": 1,
+            "description": "",
+            "sticky": true,
+            "min_level": 3,
+            "cost": 1
+          },
+          {
+            "name": "Darkness",
+            "level": 2,
+            "description": "",
+            "sticky": true,
+            "min_level": 5,
+            "cost": 1
+          }
+        ]
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
+    }
+  ]
+}

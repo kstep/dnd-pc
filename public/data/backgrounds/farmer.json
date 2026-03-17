@@ -1,0 +1,26 @@
+{
+  "name": "Farmer",
+  "description": "",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "description": "",
+      "assign": [
+        {
+          "expr": "CON += 2; WIS += 1; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Tough",
+      "description": "",
+      "assign": [
+        {
+          "expr": "MAX_HP += LEVEL * 2",
+          "when": "OnCompute"
+        }
+      ]
+    }
+  ]
+}

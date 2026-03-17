@@ -1,0 +1,672 @@
+[
+  {
+    "name": "Guidance",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Light",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mending",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Resistance",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Sacred Flame",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Spare the Dying",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Thaumaturgy",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Toll the Dead",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Word of Radiance",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Bane",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Bless",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Ceremony",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Command",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Create or Destroy Water",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Evil and Good",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Poison and Disease",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Guiding Bolt",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Healing Word",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Inflict Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Protection from Evil and Good",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Purify Food and Drink",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Sanctuary",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Shield of Faith",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Wardaway",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Augury",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Blindness/Deafness",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Borrowed Knowledge",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Calm Emotions",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Continual Flame",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Deryan's Helpful Homunculi",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enhance Ability",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Find Traps",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Gentle Repose",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Hold Person",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Object",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Prayer of Healing",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Silence",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spiritual Weapon",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Warding Bond",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Zone of Truth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Animate Dead",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Aura of Vitality",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Beacon of Hope",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Bestow Curse",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Clairvoyance",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Create Food and Water",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Daylight",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fast Friends",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Feign Death",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Glyph of Warding",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Incite Greed",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Laeral's Silver Lance",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Life Transference",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Linked Glyphs",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Magic Circle",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Mass Healing Word",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Meld into Stone",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Motivational Speech",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Protection from Energy",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Sending",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Speak with Dead",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Spirit Guardians",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Spirit Shroud",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Tongues",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Water Walk",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Aura of Life",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Aura of Purity",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Banishment",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Control Water",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Death Ward",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Divination",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Doomtide",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Freedom of Movement",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Guardian of Faith",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Locate Creature",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Stone Shape",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Circle of Power",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Commune",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Contagion",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dawn",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dispel Evil and Good",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Flame Strike",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Geas",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Hallow",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Holy Weapon",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Insect Plague",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Legend Lore",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Mass Cure Wounds",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Planar Binding",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Raise Dead",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Scrying",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Summon Celestial",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Blade Barrier",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Create Undead",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Dirge",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Find the Path",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Forbiddance",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Harm",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Heal",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Heroes' Feast",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Planar Ally",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Sunbeam",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "True Seeing",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Word of Recall",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Conjure Celestial",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Divine Word",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Etherealness",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Fire Storm",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Plane Shift",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Power Word Fortify",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Regenerate",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Resurrection",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Symbol",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Temple of the Gods",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Antimagic Field",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Control Weather",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Earthquake",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Holy Aura",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Holy Star of Mystra",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Sunburst",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Astral Projection",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Gate",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Mass Heal",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Power Word Heal",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "True Resurrection",
+    "level": 9,
+    "description": ""
+  }
+]

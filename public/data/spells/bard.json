@@ -1,0 +1,847 @@
+[
+  {
+    "name": "Blade Ward",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Dancing Lights",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Friends",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Light",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mage Hand",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Mending",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Message",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Minor Illusion",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Prestidigitation",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Starry Wisp",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Thunderclap",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "True Strike",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Vicious Mockery",
+    "level": 0,
+    "description": ""
+  },
+  {
+    "name": "Animal Friendship",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Bane",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Charm Person",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Color Spray",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Command",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Comprehend Languages",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Detect Magic",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Disguise Self",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Dissonant Whispers",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Distort Value",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Earth Tremor",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Faerie Fire",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Feather Fall",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Healing Word",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Heroism",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Identify",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Illusory Script",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Longstrider",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Silent Image",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Silvery Barbs",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Sleep",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Speak with Animals",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Tasha's Hideous Laughter",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Thunderwave",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Unseen Servant",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Wardaway",
+    "level": 1,
+    "description": ""
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Animal Messenger",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Blindness/Deafness",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Borrowed Knowledge",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Calm Emotions",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Cloud of Daggers",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Crown of Madness",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Detect Thoughts",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enhance Ability",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enlarge/Reduce",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Enthrall",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Gift of Gab",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Heat Metal",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Hold Person",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Invisibility",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Kinetic Jaunt",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Knock",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Animals or Plants",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Locate Object",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Magic Mouth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Mirror Image",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Nathair's Mischief",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Phantasmal Force",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Pyrotechnics",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "See Invisibility",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Shatter",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Silence",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Skywrite",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Spray of Cards",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Suggestion",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Warding Wind",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Zone of Truth",
+    "level": 2,
+    "description": ""
+  },
+  {
+    "name": "Antagonize",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Bestow Curse",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Cacophonic Shield",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Catnap",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Clairvoyance",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Enemies Abound",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fast Friends",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Fear",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Feign Death",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Glyph of Warding",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Hypnotic Pattern",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Intellect Fortress",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Leomund's Tiny Hut",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Linked Glyphs",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Major Image",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Mass Healing Word",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Motivational Speech",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Nondetection",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Plant Growth",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Sending",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Slow",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Speak with Dead",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Speak with Plants",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Stinking Cloud",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Tongues",
+    "level": 3,
+    "description": ""
+  },
+  {
+    "name": "Backlash",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Charm Monster",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Compulsion",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Confusion",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Dimension Door",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Doomtide",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Fount of Moonlight",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Freedom of Movement",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Greater Invisibility",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Hallucinatory Terrain",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Locate Creature",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Phantasmal Killer",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Polymorph",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Raulothim's Psychic Lance",
+    "level": 4,
+    "description": ""
+  },
+  {
+    "name": "Alustriel's Mooncloak",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Animate Objects",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Awaken",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dominate Person",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dream",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Geas",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Hold Monster",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Legend Lore",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Mass Cure Wounds",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Mislead",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Modify Memory",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Planar Binding",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Raise Dead",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Rary's Telepathic Bond",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Scrying",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Seeming",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Skill Empowerment",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Synaptic Static",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Teleportation Circle",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Yolande's Regal Presence",
+    "level": 5,
+    "description": ""
+  },
+  {
+    "name": "Dirge",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Eyebite",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Find the Path",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Guards and Wards",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Heroes' Feast",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Mass Suggestion",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Otto's Irresistible Dance",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Programmed Illusion",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "True Seeing",
+    "level": 6,
+    "description": ""
+  },
+  {
+    "name": "Dream of the Blue Veil",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Etherealness",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Forcecage",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Mirage Arcane",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Mordenkainen's Magnificent Mansion",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Mordenkainen's Sword",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Power Word Fortify",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Prismatic Spray",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Project Image",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Regenerate",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Resurrection",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Symbol",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Teleport",
+    "level": 7,
+    "description": ""
+  },
+  {
+    "name": "Antipathy/Sympathy",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Befuddlement",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Dominate Monster",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Glibness",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Mind Blank",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Power Word Stun",
+    "level": 8,
+    "description": ""
+  },
+  {
+    "name": "Foresight",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Mass Polymorph",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Power Word Heal",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Power Word Kill",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Prismatic Wall",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "Psychic Scream",
+    "level": 9,
+    "description": ""
+  },
+  {
+    "name": "True Polymorph",
+    "level": 9,
+    "description": ""
+  }
+]

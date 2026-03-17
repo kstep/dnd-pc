@@ -1,0 +1,38 @@
+{
+  "name": "Goliath",
+  "description": "",
+  "traits": [
+    {
+      "name": "Speed",
+      "description": "",
+      "assign": [
+        {
+          "expr": "SPEED = 35",
+          "when": "OnCompute"
+        }
+      ]
+    },
+    {
+      "name": "Powerful Build",
+      "description": ""
+    },
+    {
+      "name": "Languages",
+      "description": "",
+      "languages": [
+        "Common",
+        "Giant"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Giant Ancestry",
+      "description": ""
+    },
+    {
+      "name": "Large Form",
+      "description": ""
+    }
+  ]
+}

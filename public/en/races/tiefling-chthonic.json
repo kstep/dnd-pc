@@ -1,69 +1,29 @@
 {
-  "name": "Tiefling (Chthonic)",
-  "description": "Your fiendish legacy connects you to the Underdark's deepest reaches, granting necrotic resistance and deathly spellcasting.",
-  "traits": [
-    {
-      "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    {
-      "name": "Chthonic Resistance",
-      "description": "You have resistance to Necrotic damage."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Sylvan.",
-      "languages": ["Common", "Sylvan"]
-    }
-  ],
-  "features": [
-    {
-      "name": "Chthonic Legacy",
-      "description": "You know the Thaumaturgy and Chill Touch cantrips. At 3rd level you can cast False Life once per long rest. At 5th level you can cast Ray of Enfeeblement once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
-      "spells": {
-        "cost": "Free Uses",
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Thaumaturgy",
-            "level": 0,
-            "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles.",
-            "sticky": true
-          },
-          {
-            "name": "Chill Touch",
-            "level": 0,
-            "description": "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack. On a hit, the target takes 1d8 necrotic damage and can't regain hit points until the start of your next turn.",
-            "sticky": true
-          },
-          {
-            "name": "False Life",
-            "level": 1,
-            "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 3,
-            "cost": 1
-          },
-          {
-            "name": "Ray of Enfeeblement",
-            "level": 2,
-            "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 5,
-            "cost": 1
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "Free Uses",
-          "kind": "FreeUses",
-          "levels": {
-            "3": 1,
-            "5": 2
-          }
-        }
-      ]
-    }
-  ]
+  "": {
+    "description": "Your fiendish legacy connects you to the Underdark's deepest reaches, granting necrotic resistance and deathly spellcasting."
+  },
+  "trait.Darkvision": {
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+  },
+  "trait.Chthonic Resistance": {
+    "description": "You have resistance to Necrotic damage."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Sylvan."
+  },
+  "feature.Chthonic Legacy": {
+    "description": "You know the Thaumaturgy and Chill Touch cantrips. At 3rd level you can cast False Life once per long rest. At 5th level you can cast Ray of Enfeeblement once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "feature.Chthonic Legacy.spell.Thaumaturgy": {
+    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
+  },
+  "feature.Chthonic Legacy.spell.Chill Touch": {
+    "description": "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack. On a hit, the target takes 1d8 necrotic damage and can't regain hit points until the start of your next turn."
+  },
+  "feature.Chthonic Legacy.spell.False Life": {
+    "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration. Once per Long Rest (racial)."
+  },
+  "feature.Chthonic Legacy.spell.Ray of Enfeeblement": {
+    "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. Once per Long Rest (racial)."
+  }
 }

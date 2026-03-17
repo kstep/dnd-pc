@@ -1,15 +1,11 @@
 {
-  "name": "Soldier",
-  "description": "You began training for war as a youth, drilling with weapons and performing forced marches in heavy armor. The horrors of battle have steeled your resolve and given you a ruthless edge in combat.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "STR += 2; CON += 1; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Savage Attacker",
-      "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the damage dice twice and use either roll against the target."
-    }
-  ]
+  "": {
+    "description": "You began training for war as a youth, drilling with weapons and performing forced marches in heavy armor. The horrors of battle have steeled your resolve and given you a ruthless edge in combat."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Savage Attacker": {
+    "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the damage dice twice and use either roll against the target."
+  }
 }

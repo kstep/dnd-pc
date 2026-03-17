@@ -1,18 +1,14 @@
 {
-  "name": "Wayfarer",
-  "description": "You grew up on the road, traveling with a band of wanderers or drifting from place to place on your own. Life on the move taught you how to read people, stay out of sight, and rely on your wits to survive.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Lucky",
-      "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll.",
-      "fields": [
-        {"name": "Luck Points", "short": "LP", "kind": "Points", "levels": {"1": "PROF_BONUS"}}
-      ]
-    }
-  ]
+  "": {
+    "description": "You grew up on the road, traveling with a band of wanderers or drifting from place to place on your own. Life on the move taught you how to read people, stay out of sight, and rely on your wits to survive."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Lucky": {
+    "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
+  },
+  "feature.Lucky.field.Luck Points": {
+    "short": "LP"
+  }
 }

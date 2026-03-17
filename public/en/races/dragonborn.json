@@ -1,33 +1,23 @@
 {
-  "name": "Dragonborn",
-  "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension.",
-  "traits": [
-    {
-      "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    {
-      "name": "Draconic Ancestry",
-      "description": "Choose a dragon type: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), White (Cold). This determines your Breath Weapon damage type and Damage Resistance."
-    },
-    {
-      "name": "Damage Resistance",
-      "description": "You have resistance to the damage type determined by your Draconic Ancestry."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Draconic.",
-      "languages": ["Common", "Draconic"]
-    }
-  ],
-  "features": [
-    {
-      "name": "Breath Weapon",
-      "description": "When you take the Attack action, you can replace one attack with an exhalation in a 15-foot Cone or 30-foot Line (5 ft wide). DEX save (DC = 8 + CON mod + Prof Bonus). Damage: 1d10 (1st), 2d10 (5th), 3d10 (11th), 4d10 (17th). Uses: Proficiency Bonus per Long Rest."
-    },
-    {
-      "name": "Draconic Flight",
-      "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
-    }
-  ]
+  "": {
+    "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension."
+  },
+  "trait.Darkvision": {
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+  },
+  "trait.Draconic Ancestry": {
+    "description": "Choose a dragon type: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), White (Cold). This determines your Breath Weapon damage type and Damage Resistance."
+  },
+  "trait.Damage Resistance": {
+    "description": "You have resistance to the damage type determined by your Draconic Ancestry."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Draconic."
+  },
+  "feature.Breath Weapon": {
+    "description": "When you take the Attack action, you can replace one attack with an exhalation in a 15-foot Cone or 30-foot Line (5 ft wide). DEX save (DC = 8 + CON mod + Prof Bonus). Damage: 1d10 (1st), 2d10 (5th), 3d10 (11th), 4d10 (17th). Uses: Proficiency Bonus per Long Rest."
+  },
+  "feature.Draconic Flight": {
+    "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
+  }
 }
