@@ -132,37 +132,60 @@ impl RulesRegistry {
     pub fn new(i18n: leptos_fluent::I18n) -> Self {
         let locale = Signal::derive(move || i18n.language.get().id.to_string());
 
+        // Raw data cached after first fetch — only locale overlay is
+        // re-fetched when the language changes.
+        let raw_index: RwSignal<Option<Index>> = RwSignal::new(None);
+        let raw_effects: RwSignal<Option<EffectsIndex>> = RwSignal::new(None);
+
         let class_index = LocalResource::new(move || {
-            let locale = locale.get();
+            let current_locale = locale.get();
             let data_url = format!("{BASE_URL}/data/index.json");
-            let locale_url = format!("{BASE_URL}/{locale}/index.json");
+            let locale_url = format!("{BASE_URL}/{current_locale}/index.json");
             async move {
-                let (data_result, locale_result) = futures::join!(
-                    fetch_json::<Index>(&data_url),
-                    fetch_json::<locale::IndexLocaleMap>(&locale_url),
-                );
-                let mut index = data_result?;
+                let cached = raw_index.get_untracked();
+                let (index, locale_result) = if let Some(idx) = cached {
+                    let lr = fetch_json::<locale::IndexLocaleMap>(&locale_url).await;
+                    (idx, lr)
+                } else {
+                    let (dr, lr) = futures::join!(
+                        fetch_json::<Index>(&data_url),
+                        fetch_json::<locale::IndexLocaleMap>(&locale_url),
+                    );
+                    let idx = dr?;
+                    raw_index.set(Some(idx.clone()));
+                    (idx, lr)
+                };
+                let mut result = index;
                 if let Ok(locale_map) = locale_result {
-                    locale::apply_index_locale(&mut index, &locale_map);
+                    locale::apply_index_locale(&mut result, &locale_map);
                 }
-                Ok(index)
+                Ok(result)
             }
         });
 
         let effects_index = LocalResource::new(move || {
-            let locale = locale.get();
+            let current_locale = locale.get();
             let data_url = format!("{BASE_URL}/data/effects.json");
-            let locale_url = format!("{BASE_URL}/{locale}/effects.json");
+            let locale_url = format!("{BASE_URL}/{current_locale}/effects.json");
             async move {
-                let (data_result, locale_result) = futures::join!(
-                    fetch_json::<EffectsIndex>(&data_url),
-                    fetch_json::<locale::EffectsLocaleMap>(&locale_url),
-                );
-                let mut effects = data_result?;
+                let cached = raw_effects.get_untracked();
+                let (effects, locale_result) = if let Some(eff) = cached {
+                    let lr = fetch_json::<locale::EffectsLocaleMap>(&locale_url).await;
+                    (eff, lr)
+                } else {
+                    let (dr, lr) = futures::join!(
+                        fetch_json::<EffectsIndex>(&data_url),
+                        fetch_json::<locale::EffectsLocaleMap>(&locale_url),
+                    );
+                    let eff = dr?;
+                    raw_effects.set(Some(eff.clone()));
+                    (eff, lr)
+                };
+                let mut result = effects;
                 if let Ok(locale_map) = locale_result {
-                    locale::apply_effects_locale(&mut effects, &locale_map);
+                    locale::apply_effects_locale(&mut result, &locale_map);
                 }
-                Ok(effects)
+                Ok(result)
             }
         });
 
