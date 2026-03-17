@@ -57,7 +57,8 @@ pub struct ActiveEffects {
     overrides: BTreeMap<Attribute, i32>,
     /// Memoized consumable overrides — evaluated once, then cached
     /// so user edits (e.g. spending temp HP) aren't overwritten.
-    #[serde(skip)]
+    /// Persisted so additive effects (HP += X) don't re-apply on reload.
+    #[serde(default)]
     memoized: BTreeMap<Attribute, i32>,
 }
 
