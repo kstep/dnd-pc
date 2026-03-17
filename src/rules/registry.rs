@@ -9,6 +9,7 @@ use super::{
     feature::{ChoiceOption, FeatureDefinition, FieldKind},
     index::{BackgroundIndexEntry, ClassIndexEntry, Index, RaceIndexEntry, SpellIndexEntry},
     labels,
+    locale::{self, LocaleMap, SpellLocaleMap},
     race::RaceDefinition,
     resolve,
     spells::{SpellDefinition, SpellList, SpellMap},
@@ -29,22 +30,59 @@ pub struct RaceDefs(RulesRegistry);
 pub struct BackgroundDefs(RulesRegistry);
 
 macro_rules! impl_definition_store {
-    ($wrapper:ty, $def:ty, $cache:ident, $index_field:ident, $label:expr) => {
+    ($wrapper:ty, $def:ty, $locale_ty:ty, $cache:ident, $index_field:ident, $apply_fn:expr, $label:expr) => {
         impl DefinitionStore for $wrapper {
             type Definition = $def;
+            type Locale = $locale_ty;
 
             fn cache(&self) -> FetchCache<$def> {
                 self.0.$cache
             }
 
-            fn index_url(&self, name: &str) -> Option<String> {
-                self.0
-                    .resolve_index_url(name, |idx| &idx.$index_field, false)
+            fn data_url(&self, name: &str) -> Option<String> {
+                self.0.resolve_url(
+                    name,
+                    |idx| &idx.$index_field,
+                    false,
+                    RulesRegistry::data_url,
+                )
             }
 
-            fn index_url_tracked(&self, name: &str) -> Option<String> {
+            fn locale_url(&self, name: &str) -> Option<String> {
+                self.0.resolve_url(
+                    name,
+                    |idx| &idx.$index_field,
+                    false,
+                    |p| self.0.localized_url(p),
+                )
+            }
+
+            fn data_url_tracked(&self, name: &str) -> Option<String> {
                 self.0
-                    .resolve_index_url(name, |idx| &idx.$index_field, true)
+                    .resolve_url(name, |idx| &idx.$index_field, true, RulesRegistry::data_url)
+            }
+
+            fn locale_url_tracked(&self, name: &str) -> Option<String> {
+                self.0.resolve_url(
+                    name,
+                    |idx| &idx.$index_field,
+                    true,
+                    |p| self.0.localized_url(p),
+                )
+            }
+
+            fn path(&self, name: &str) -> Option<String> {
+                self.0
+                    .resolve_url(name, |idx| &idx.$index_field, false, |p| p.to_string())
+            }
+
+            fn path_tracked(&self, name: &str) -> Option<String> {
+                self.0
+                    .resolve_url(name, |idx| &idx.$index_field, true, |p| p.to_string())
+            }
+
+            fn apply_locale(def: &mut $def, locale: &$locale_ty) {
+                $apply_fn(def, locale)
             }
 
             fn type_label() -> &'static str {
@@ -57,22 +95,28 @@ macro_rules! impl_definition_store {
 impl_definition_store!(
     ClassDefs,
     ClassDefinition,
+    LocaleMap,
     class_cache,
     classes,
+    locale::apply_class_locale,
     "class definition"
 );
 impl_definition_store!(
     RaceDefs,
     RaceDefinition,
+    LocaleMap,
     race_cache,
     races,
+    locale::apply_race_locale,
     "race definition"
 );
 impl_definition_store!(
     BackgroundDefs,
     BackgroundDefinition,
+    LocaleMap,
     background_cache,
     backgrounds,
+    locale::apply_background_locale,
     "background definition"
 );
 
@@ -120,16 +164,61 @@ impl RulesRegistry {
     pub fn new(i18n: leptos_fluent::I18n) -> Self {
         let locale = Signal::derive(move || i18n.language.get().id.to_string());
 
+        // Raw data cached after first fetch — only locale overlay is
+        // re-fetched when the language changes.
+        let raw_index: RwSignal<Option<Index>> = RwSignal::new(None);
+        let raw_effects: RwSignal<Option<EffectsIndex>> = RwSignal::new(None);
+
         let class_index = LocalResource::new(move || {
-            let locale = locale.get();
-            let url = format!("{BASE_URL}/{locale}/index.json");
-            async move { fetch_json::<Index>(&url).await }
+            let current_locale = locale.get();
+            let data_url = format!("{BASE_URL}/data/index.json");
+            let locale_url = format!("{BASE_URL}/{current_locale}/index.json");
+            async move {
+                let cached = raw_index.get_untracked();
+                let (index, locale_result) = if let Some(idx) = cached {
+                    let lr = fetch_json::<locale::IndexLocaleMap>(&locale_url).await;
+                    (idx, lr)
+                } else {
+                    let (dr, lr) = futures::join!(
+                        fetch_json::<Index>(&data_url),
+                        fetch_json::<locale::IndexLocaleMap>(&locale_url),
+                    );
+                    let idx = dr?;
+                    raw_index.set(Some(idx.clone()));
+                    (idx, lr)
+                };
+                let mut result = index;
+                if let Ok(locale_map) = locale_result {
+                    locale::apply_index_locale(&mut result, &locale_map);
+                }
+                Ok(result)
+            }
         });
 
         let effects_index = LocalResource::new(move || {
-            let locale = locale.get();
-            let url = format!("{BASE_URL}/{locale}/effects.json");
-            async move { fetch_json::<EffectsIndex>(&url).await }
+            let current_locale = locale.get();
+            let data_url = format!("{BASE_URL}/data/effects.json");
+            let locale_url = format!("{BASE_URL}/{current_locale}/effects.json");
+            async move {
+                let cached = raw_effects.get_untracked();
+                let (effects, locale_result) = if let Some(eff) = cached {
+                    let lr = fetch_json::<locale::EffectsLocaleMap>(&locale_url).await;
+                    (eff, lr)
+                } else {
+                    let (dr, lr) = futures::join!(
+                        fetch_json::<EffectsIndex>(&data_url),
+                        fetch_json::<locale::EffectsLocaleMap>(&locale_url),
+                    );
+                    let eff = dr?;
+                    raw_effects.set(Some(eff.clone()));
+                    (eff, lr)
+                };
+                let mut result = effects;
+                if let Ok(locale_map) = locale_result {
+                    locale::apply_effects_locale(&mut result, &locale_map);
+                }
+                Ok(result)
+            }
         });
 
         let class_cache = FetchCache::new();
@@ -137,18 +226,41 @@ impl RulesRegistry {
         let background_cache = FetchCache::new();
         let spell_list_cache = FetchCache::new();
 
-        // Clear all caches when locale changes
-        let prev_locale = RwSignal::new(locale.get_untracked());
-        Effect::new(move || {
+        // Single locale Resource that batch-fetches ALL locale files across
+        // all cache types when locale changes, then applies them in one go.
+        let locale_resource = LocalResource::new(move || {
             let current = locale.get();
-            let prev = prev_locale.get_untracked();
-            if current != prev {
-                prev_locale.set(current);
-                class_cache.clear();
-                race_cache.clear();
-                background_cache.clear();
-                spell_list_cache.clear();
+            async move {
+                futures::join!(
+                    class_cache.fetch_locale::<LocaleMap>(&current),
+                    race_cache.fetch_locale::<LocaleMap>(&current),
+                    background_cache.fetch_locale::<LocaleMap>(&current),
+                    spell_list_cache.fetch_locale::<SpellLocaleMap>(&current),
+                )
             }
+        });
+
+        // Apply all locale results in one Effect — only the last cache
+        // update notifies subscribers, so fill_from_registry runs once.
+        Effect::new(move || {
+            let guard = locale_resource.read();
+            let Some((class_results, race_results, bg_results, spell_results)) = guard.as_ref()
+            else {
+                return;
+            };
+            class_cache.apply_locale_in_place(class_results, locale::apply_class_locale, false);
+            race_cache.apply_locale_in_place(race_results, locale::apply_race_locale, false);
+            background_cache.apply_locale_in_place(
+                bg_results,
+                locale::apply_background_locale,
+                false,
+            );
+            // Last update notifies — triggers one fill_from_registry run.
+            spell_list_cache.apply_locale_in_place(
+                spell_results,
+                locale::apply_spell_map_locale,
+                true,
+            );
         });
 
         Self {
@@ -178,18 +290,22 @@ impl RulesRegistry {
 
     // ---- Internal helpers ----
 
+    fn data_url(path: &str) -> String {
+        format!("{BASE_URL}/data/{path}")
+    }
+
     pub(super) fn localized_url(&self, path: &str) -> String {
         let locale = self.locale.get_untracked();
         format!("{BASE_URL}/{locale}/{path}")
     }
 
-    /// Resolve an index URL by looking up `name` in a specific index field.
-    /// When `tracked` is true, the read subscribes to reactive updates.
-    fn resolve_index_url<T>(
+    /// Look up a name in the index and apply `make_url` to the entry's path.
+    fn resolve_url<T>(
         &self,
         name: &str,
         extractor: impl FnOnce(&Index) -> &BTreeMap<Box<str>, T>,
         tracked: bool,
+        make_url: impl FnOnce(&str) -> String,
     ) -> Option<String>
     where
         T: HasUrl,
@@ -201,7 +317,7 @@ impl RulesRegistry {
         };
         let index = guard.as_ref()?.as_ref().ok()?;
         let entry = extractor(index).get(name)?;
-        Some(self.localized_url(entry.url()))
+        Some(make_url(entry.url()))
     }
 
     /// Access a specific index field, calling `f` with the entries map.
@@ -235,8 +351,14 @@ impl RulesRegistry {
     // ---- Spells ----
 
     pub fn fetch_spell_list(&self, path: &str) {
-        let url = self.localized_url(path);
-        self.spell_list_cache.fetch(path, url, "spell list");
+        self.spell_list_cache.fetch_with_initial_locale(
+            path,
+            path,
+            Self::data_url(path),
+            self.localized_url(path),
+            locale::apply_spell_map_locale,
+            "spell list",
+        );
     }
 
     pub fn with_spell_list<R>(
@@ -255,7 +377,7 @@ impl RulesRegistry {
     }
 
     pub fn fetch_spell_list_tracked(&self, path: &str) {
-        let url = {
+        let resolved_path = {
             let guard = self.class_index.read();
             let index = match guard.as_ref().and_then(|r| r.as_ref().ok()) {
                 Some(idx) => idx,
@@ -266,12 +388,19 @@ impl RulesRegistry {
                 .values()
                 .find(|e| e.url == path || e.name == path)
             {
-                Some(entry) => self.localized_url(&entry.url),
-                None => self.localized_url(path),
+                Some(entry) => entry.url.clone(),
+                None => path.to_string(),
             }
         };
 
-        self.spell_list_cache.fetch(path, url, "spell list");
+        self.spell_list_cache.fetch_with_initial_locale(
+            path,
+            &resolved_path,
+            Self::data_url(&resolved_path),
+            self.localized_url(&resolved_path),
+            locale::apply_spell_map_locale,
+            "spell list",
+        );
     }
 
     pub fn with_spell_list_tracked<R>(
@@ -424,44 +553,61 @@ impl RulesRegistry {
 
     // ---- Fill / Clear ----
 
-    pub fn fill_from_registry(&self, character: &mut Character) {
-        // Tracked read of the index so the calling Effect re-runs when
-        // the index arrives.
+    /// Trigger fetches for any missing definitions. Reads the index with a
+    /// tracked read so the calling Effect re-runs when the index arrives.
+    /// Does NOT read caches or update the store — cheap to re-run.
+    pub fn ensure_definitions_fetched(&self, character: &Character) {
         let index_guard = self.class_index.read();
         let index = index_guard.as_ref().and_then(|r| r.as_ref().ok());
 
-        // Trigger fetches for any missing definitions
         if let Some(idx) = index {
             for cl in &character.identity.classes {
                 if !cl.class.is_empty()
                     && let Some(entry) = idx.classes.get(cl.class.as_str())
                 {
-                    let url = self.localized_url(&entry.url);
-                    self.class_cache.fetch(&cl.class, url, "class definition");
+                    self.class_cache.fetch_with_initial_locale(
+                        &cl.class,
+                        &entry.url,
+                        Self::data_url(&entry.url),
+                        self.localized_url(&entry.url),
+                        locale::apply_class_locale,
+                        "class definition",
+                    );
                 }
             }
             if !character.identity.race.is_empty()
                 && let Some(entry) = idx.races.get(character.identity.race.as_str())
             {
-                let url = self.localized_url(&entry.url);
-                self.race_cache
-                    .fetch(&character.identity.race, url, "race definition");
+                self.race_cache.fetch_with_initial_locale(
+                    &character.identity.race,
+                    &entry.url,
+                    Self::data_url(&entry.url),
+                    self.localized_url(&entry.url),
+                    locale::apply_race_locale,
+                    "race definition",
+                );
             }
             if !character.identity.background.is_empty()
                 && let Some(entry) = idx.backgrounds.get(character.identity.background.as_str())
             {
-                let url = self.localized_url(&entry.url);
-                self.background_cache.fetch(
+                self.background_cache.fetch_with_initial_locale(
                     &character.identity.background,
-                    url,
+                    &entry.url,
+                    Self::data_url(&entry.url),
+                    self.localized_url(&entry.url),
+                    locale::apply_background_locale,
                     "background definition",
                 );
             }
         }
 
-        // Trigger spell list fetches
         self.trigger_spell_list_fetches(character);
+    }
 
+    /// Fill labels and descriptions from cached definitions. Reads caches
+    /// with tracked reads so the calling Effect re-runs when definitions
+    /// arrive or locale changes.
+    pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
@@ -473,15 +619,14 @@ impl RulesRegistry {
             &bg_cache,
             &race_cache,
             &spell_list_cache,
-            // Fill: set label if None
+            // Fill: always overwrite label from definition (supports locale
+            // switching without a separate clear_all_labels step).
             |target, source| {
-                if target.is_none() {
-                    *target = source.map(String::from);
-                }
+                *target = source.map(String::from);
             },
-            // Fill: set description if empty
+            // Fill: always overwrite description from definition.
             |target, source| {
-                if target.is_empty() && !source.is_empty() {
+                if !source.is_empty() {
                     source.clone_into(target);
                 }
             },

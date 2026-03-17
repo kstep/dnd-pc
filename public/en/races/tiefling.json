@@ -1,20 +1,14 @@
 {
-  "name": "Tiefling",
-  "description": "Tieflings are derived from human bloodlines touched by the Lower Planes, bearing an infernal, abyssal, or chthonic legacy.",
-  "traits": [
-    {
-      "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    {
-      "name": "Otherworldly Presence",
-      "description": "You know the Thaumaturgy cantrip. It uses the same spellcasting ability as your Fiendish Legacy."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Infernal.",
-      "languages": ["Common", "Infernal"]
-    }
-  ],
-  "features": []
+  "": {
+    "description": "Tieflings are derived from human bloodlines touched by the Lower Planes, bearing an infernal, abyssal, or chthonic legacy."
+  },
+  "trait.Darkvision": {
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+  },
+  "trait.Otherworldly Presence": {
+    "description": "You know the Thaumaturgy cantrip. It uses the same spellcasting ability as your Fiendish Legacy."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Infernal."
+  }
 }

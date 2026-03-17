@@ -1,31 +1,11 @@
 {
-  "name": "Sage",
-  "description": "You spent your formative years studying lore in a library or under a mentor, amassing knowledge of the arcane and the historical. Your hunger for knowledge drives you to seek answers to the world's deepest mysteries.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Magic Initiate (Wizard)",
-      "description": "You learn two cantrips and one 1st-level spell from the Wizard spell list. You can cast the 1st-level spell once per Long Rest without a spell slot.",
-      "spells": {
-        "casting_ability": 3,
-        "list": {
-          "from": "spells/wizard.json"
-        },
-        "levels": [
-          {
-            "cantrips": 2,
-            "spells": 1
-          }
-        ],
-        "caster_coef": 1
-      },
-      "fields": [
-        {"name": "Free Uses", "kind": "FreeUses", "levels": {"1": 1}}
-      ]
-    }
-  ]
+  "": {
+    "description": "You spent your formative years studying lore in a library or under a mentor, amassing knowledge of the arcane and the historical. Your hunger for knowledge drives you to seek answers to the world's deepest mysteries."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Magic Initiate (Wizard)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Wizard spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  }
 }

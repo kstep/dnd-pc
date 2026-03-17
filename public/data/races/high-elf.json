@@ -1,0 +1,64 @@
+{
+  "name": "High Elf",
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Fey Ancestry"
+    },
+    {
+      "name": "Keen Senses"
+    },
+    {
+      "name": "Trance"
+    },
+    {
+      "name": "Languages",
+      "languages": [
+        "Common",
+        "Elvish"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Elven Lineage",
+      "spells": {
+        "cost": "Free Uses",
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Prestidigitation",
+            "level": 0,
+            "sticky": true
+          },
+          {
+            "name": "Detect Magic",
+            "level": 1,
+            "sticky": true,
+            "min_level": 3,
+            "cost": 1
+          },
+          {
+            "name": "Misty Step",
+            "level": 2,
+            "sticky": true,
+            "min_level": 5,
+            "cost": 1
+          }
+        ]
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "3": 1,
+            "5": 2
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -439,6 +439,7 @@ dependencies = [
  "console_error_panic_hook",
  "console_log",
  "fluent-templates",
+ "futures",
  "getrandom",
  "gloo-net",
  "gloo-storage",

@@ -1,42 +1,23 @@
 {
-  "name": "Rock Gnome",
-  "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
-  "traits": [
-    {
-      "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    {
-      "name": "Gnomish Cunning",
-      "description": "You have advantage on Intelligence, Wisdom, and Charisma saving throws."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Gnomish.",
-      "languages": ["Common", "Gnomish"]
-    }
-  ],
-  "features": [
-    {
-      "name": "Gnomish Lineage",
-      "description": "You know the Mending and Prestidigitation cantrips. You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP) that produces its effect when activated with a Bonus Action. You can have three such devices at a time; each falls apart after 8 hours. Intelligence, Wisdom, or Charisma is your spellcasting ability.",
-      "spells": {
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Mending",
-            "level": 0,
-            "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin.",
-            "sticky": true
-          },
-          {
-            "name": "Prestidigitation",
-            "level": 0,
-            "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image.",
-            "sticky": true
-          }
-        ]
-      }
-    }
-  ]
+  "": {
+    "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes."
+  },
+  "trait.Darkvision": {
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+  },
+  "trait.Gnomish Cunning": {
+    "description": "You have advantage on Intelligence, Wisdom, and Charisma saving throws."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Gnomish."
+  },
+  "feature.Gnomish Lineage": {
+    "description": "You know the Mending and Prestidigitation cantrips. You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP) that produces its effect when activated with a Bonus Action. You can have three such devices at a time; each falls apart after 8 hours. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "feature.Gnomish Lineage.spell.Mending": {
+    "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin."
+  },
+  "feature.Gnomish Lineage.spell.Prestidigitation": {
+    "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image."
+  }
 }

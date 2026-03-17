@@ -1,0 +1,39 @@
+{
+  "name": "Acolyte",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "assign": [
+        {
+          "expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Magic Initiate (Cleric)",
+      "spells": {
+        "casting_ability": 4,
+        "list": {
+          "from": "spells/cleric.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 1
+          }
+        ],
+        "caster_coef": 1
+      },
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "1": 1
+          }
+        }
+      ]
+    }
+  ]
+}

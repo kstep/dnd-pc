@@ -1,0 +1,29 @@
+{
+  "name": "Dragonborn",
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Draconic Ancestry"
+    },
+    {
+      "name": "Damage Resistance"
+    },
+    {
+      "name": "Languages",
+      "languages": [
+        "Common",
+        "Draconic"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Breath Weapon"
+    },
+    {
+      "name": "Draconic Flight"
+    }
+  ]
+}

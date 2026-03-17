@@ -1,0 +1,1272 @@
+{
+  "name": "Warlock",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Eldritch Invocations",
+      "fields": [
+        {
+          "kind": "Choice",
+          "name": "Invocations",
+          "levels": {
+            "1": 1,
+            "2": 3,
+            "5": 5,
+            "7": 6,
+            "9": 7,
+            "12": 8,
+            "15": 9,
+            "18": 10
+          },
+          "options": [
+            {
+              "name": "Agonizing Blast",
+              "level": 2
+            },
+            {
+              "name": "Armor of Shadows"
+            },
+            {
+              "name": "Ascendant Step",
+              "level": 5
+            },
+            {
+              "name": "Devil's Sight",
+              "level": 2
+            },
+            {
+              "name": "Devouring Blade",
+              "level": 12
+            },
+            {
+              "name": "Eldritch Mind"
+            },
+            {
+              "name": "Eldritch Smite",
+              "level": 5
+            },
+            {
+              "name": "Eldritch Spear",
+              "level": 2
+            },
+            {
+              "name": "Fiendish Vigor",
+              "level": 2
+            },
+            {
+              "name": "Gaze of Two Minds",
+              "level": 5
+            },
+            {
+              "name": "Gift of the Depths",
+              "level": 5
+            },
+            {
+              "name": "Gift of the Protectors",
+              "level": 9
+            },
+            {
+              "name": "Investment of the Chain Master",
+              "level": 5
+            },
+            {
+              "name": "Lessons of the First Ones",
+              "level": 2
+            },
+            {
+              "name": "Lifedrinker",
+              "level": 9
+            },
+            {
+              "name": "Mask of Many Faces",
+              "level": 2
+            },
+            {
+              "name": "Master of Myriad Forms",
+              "level": 5
+            },
+            {
+              "name": "Misty Visions",
+              "level": 2
+            },
+            {
+              "name": "One with Shadows",
+              "level": 5
+            },
+            {
+              "name": "Otherworldly Leap",
+              "level": 2
+            },
+            {
+              "name": "Pact of the Blade"
+            },
+            {
+              "name": "Pact of the Chain"
+            },
+            {
+              "name": "Pact of the Tome"
+            },
+            {
+              "name": "Repelling Blast",
+              "level": 2
+            },
+            {
+              "name": "Thirsting Blade",
+              "level": 5
+            },
+            {
+              "name": "Visions of Distant Realms",
+              "level": 9
+            },
+            {
+              "name": "Whispers of the Grave",
+              "level": 7
+            },
+            {
+              "name": "Witch Sight",
+              "level": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pact Magic",
+      "spells": {
+        "casting_ability": 5,
+        "caster_coef": 1,
+        "pool": 1,
+        "list": {
+          "from": "spells/warlock.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "spells": 2,
+            "slots": [
+              1
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "spells": 4,
+            "slots": [
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 5,
+            "slots": [
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 6,
+            "slots": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 7,
+            "slots": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 8,
+            "slots": [
+              0,
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 9,
+            "slots": [
+              0,
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "spells": 10,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 10,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 11,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 11,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 12,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 13,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 13,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              4
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 14,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              4
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              4
+            ]
+          },
+          {
+            "cantrips": 4,
+            "spells": 15,
+            "slots": [
+              0,
+              0,
+              0,
+              0,
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Magical Cunning"
+    },
+    {
+      "name": "Warlock Subclass"
+    },
+    {
+      "name": "Ability Score Improvement",
+      "stackable": true
+    },
+    {
+      "name": "Subclass Feature",
+      "stackable": true
+    },
+    {
+      "name": "Contact Patron"
+    },
+    {
+      "name": "Mystic Arcanum",
+      "stackable": true
+    },
+    {
+      "name": "Epic Boon",
+      "stackable": true
+    },
+    {
+      "name": "Eldritch Master"
+    },
+    {
+      "name": "Class Proficiencies",
+      "assign": [
+        {
+          "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Eldritch Invocation Options",
+        "Eldritch Invocations",
+        "Pact Magic",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Magical Cunning"
+      ]
+    },
+    {
+      "features": [
+        "Warlock Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Contact Patron"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Mystic Arcanum"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Mystic Arcanum"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Mystic Arcanum"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Mystic Arcanum"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Eldritch Master"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "The Undying",
+      "features": [
+        {
+          "name": "The Undying"
+        },
+        {
+          "name": "Among the Dead"
+        },
+        {
+          "name": "Defy Death"
+        },
+        {
+          "name": "Undying Nature"
+        },
+        {
+          "name": "Indestructible Life"
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "The Undying",
+            "Among the Dead"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "The Undying"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Defy Death"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Undying Nature"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Indestructible Life"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Hexblade",
+      "features": [
+        {
+          "name": "The Hexblade"
+        },
+        {
+          "name": "Hex Warrior"
+        },
+        {
+          "name": "Hexblade's Curse"
+        },
+        {
+          "name": "Accursed Specter"
+        },
+        {
+          "name": "Armor of Hexes"
+        },
+        {
+          "name": "Master of Hexes"
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "The Hexblade",
+            "Hex Warrior",
+            "Hexblade's Curse"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "The Hexblade"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Accursed Specter"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Armor of Hexes"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Master of Hexes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Fathomless",
+      "features": [
+        {
+          "name": "The Fathomless"
+        },
+        {
+          "name": "Gift of the Sea"
+        },
+        {
+          "name": "Tentacle of the Deeps"
+        },
+        {
+          "name": "Guardian Coil"
+        },
+        {
+          "name": "Oceanic Soul"
+        },
+        {
+          "name": "Grasping Tentacles"
+        },
+        {
+          "name": "Fathomless Plunge"
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "The Fathomless",
+            "Gift of the Sea",
+            "Tentacle of the Deeps"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "The Fathomless"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Guardian Coil",
+            "Oceanic Soul"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Grasping Tentacles"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Fathomless Plunge"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Genie",
+      "features": [
+        {
+          "name": "Bottled Respite"
+        },
+        {
+          "name": "Genie's Wrath"
+        },
+        {
+          "name": "The Genie"
+        },
+        {
+          "name": "Genie's Vessel"
+        },
+        {
+          "name": "Elemental Gift"
+        },
+        {
+          "name": "Sanctuary Vessel"
+        },
+        {
+          "name": "Limited Wish"
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "The Genie",
+            "Genie's Vessel"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "The Genie"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Elemental Gift"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Sanctuary Vessel"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Limited Wish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Undead",
+      "features": [
+        {
+          "name": "The Undead"
+        },
+        {
+          "name": "Form of Dread"
+        },
+        {
+          "name": "Grave Touched"
+        },
+        {
+          "name": "Necrotic Husk"
+        },
+        {
+          "name": "Spirit Projection"
+        }
+      ],
+      "levels": {
+        "1": {
+          "level": 1,
+          "features": [
+            "The Undead",
+            "Form of Dread"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "The Undead"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Grave Touched"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Necrotic Husk"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Spirit Projection"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Archfey Patron",
+      "features": [
+        {
+          "name": "Archfey Patron"
+        },
+        {
+          "name": "Archfey Spells",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Faerie Fire",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Sleep",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Calm Emotions",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Phantasmal Force",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Blink",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Plant Growth",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Dominate Beast",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Greater Invisibility",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Dominate Person",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Seeming",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Steps of the Fey"
+        },
+        {
+          "name": "Misty Escape"
+        },
+        {
+          "name": "Beguiling Defenses"
+        },
+        {
+          "name": "Bewitching Magic"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Archfey Patron",
+            "Archfey Spells",
+            "Steps of the Fey"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Misty Escape"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Beguiling Defenses"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Bewitching Magic"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Celestial Patron",
+      "features": [
+        {
+          "name": "Celestial Patron"
+        },
+        {
+          "name": "Celestial Spells",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Light",
+                "level": 0
+              },
+              {
+                "name": "Sacred Flame",
+                "level": 0
+              },
+              {
+                "name": "Cure Wounds",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Aid",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Lesser Restoration",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Daylight",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Revivify",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Guardian of Faith",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Wall of Fire",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Greater Restoration",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Summon Celestial",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Healing Light"
+        },
+        {
+          "name": "Radiant Soul"
+        },
+        {
+          "name": "Celestial Resilience",
+          "assign": [
+            {
+              "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)",
+              "when": "OnShortRest"
+            },
+            {
+              "expr": "TEMP_HP = max(TEMP_HP, LEVEL + CHA.MOD)",
+              "when": "OnLongRest"
+            }
+          ]
+        },
+        {
+          "name": "Searing Vengeance"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Celestial Patron",
+            "Celestial Spells",
+            "Healing Light"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Radiant Soul"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Celestial Resilience"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Searing Vengeance"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fiend Patron",
+      "features": [
+        {
+          "name": "Fiend Patron"
+        },
+        {
+          "name": "Dark One's Blessing"
+        },
+        {
+          "name": "Fiend Spells",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Burning Hands",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Command",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Scorching Ray",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Suggestion",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Fireball",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Stinking Cloud",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fire Shield",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Wall of Fire",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Geas",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Insect Plague",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Dark One's Own Luck"
+        },
+        {
+          "name": "Fiendish Resilience"
+        },
+        {
+          "name": "Hurl Through Hell"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Fiend Patron",
+            "Dark One's Blessing",
+            "Fiend Spells"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Dark One's Own Luck"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Fiendish Resilience"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Hurl Through Hell"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Great Old One Patron",
+      "features": [
+        {
+          "name": "Great Old One Patron"
+        },
+        {
+          "name": "Awakened Mind"
+        },
+        {
+          "name": "Great Old One Spells",
+          "spells": {
+            "casting_ability": 5,
+            "list": [
+              {
+                "name": "Dissonant Whispers",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hex",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Tasha's Hideous Laughter",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Detect Thoughts",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Phantasmal Force",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Clairvoyance",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Hunger of Hadar",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Confusion",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Summon Aberration",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Modify Memory",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Telekinesis",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Psychic Spells"
+        },
+        {
+          "name": "Clairvoyant Combatant"
+        },
+        {
+          "name": "Eldritch Hex"
+        },
+        {
+          "name": "Thought Shield"
+        },
+        {
+          "name": "Create Thrall"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Great Old One Patron",
+            "Awakened Mind",
+            "Great Old One Spells",
+            "Psychic Spells"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Clairvoyant Combatant"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Eldritch Hex",
+            "Thought Shield"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Create Thrall"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,873 @@
+{
+  "name": "Monk",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Martial Arts",
+      "fields": [
+        {
+          "name": "Martial Arts Die",
+          "kind": "Die",
+          "levels": {
+            "1": "1d6",
+            "5": "1d8",
+            "11": "1d10",
+            "17": "1d12"
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Bonus Unarmed Strike",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Unarmored Defense",
+      "ac_expr": "10 + DEX.MOD + WIS.MOD"
+    },
+    {
+      "name": "Monk's Focus",
+      "fields": [
+        {
+          "name": "Focus Points",
+          "kind": "Points",
+          "levels": {
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11,
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20
+          }
+        },
+        {
+          "name": "Focus Actions",
+          "kind": "Choice",
+          "cost": "Focus Points",
+          "options": [
+            {
+              "name": "Flurry of Blows",
+              "cost": 1,
+              "action": "BonusAction"
+            },
+            {
+              "name": "Patient Defense",
+              "cost": 1,
+              "action": "BonusAction"
+            },
+            {
+              "name": "Step of the Wind",
+              "cost": 1,
+              "action": "BonusAction"
+            },
+            {
+              "name": "Stunning Strike",
+              "cost": 1,
+              "action": "Action",
+              "level": 5
+            },
+            {
+              "name": "Superior Defense",
+              "cost": 3,
+              "action": "Action",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Unarmored Movement",
+      "fields": [
+        {
+          "name": "Unarmored Movement",
+          "kind": "Bonus",
+          "levels": {
+            "2": 10,
+            "6": 15,
+            "10": 20,
+            "14": 25,
+            "18": 30
+          }
+        }
+      ],
+      "assign": [
+        {
+          "expr": "SPEED += 10 + 5 * ((CLASS_LEVEL - 2) / 4)",
+          "when": "OnCompute"
+        }
+      ]
+    },
+    {
+      "name": "Uncanny Metabolism"
+    },
+    {
+      "name": "Deflect Attacks",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Deflect Attacks",
+              "action": "Reaction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Monk Subclass"
+    },
+    {
+      "name": "Ability Score Improvement",
+      "stackable": true
+    },
+    {
+      "name": "Slow Fall",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Slow Fall",
+              "action": "Reaction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Extra Attack"
+    },
+    {
+      "name": "Stunning Strike"
+    },
+    {
+      "name": "Empowered Strikes"
+    },
+    {
+      "name": "Subclass Feature",
+      "stackable": true
+    },
+    {
+      "name": "Evasion"
+    },
+    {
+      "name": "Acrobatic Movement"
+    },
+    {
+      "name": "Heightened Focus"
+    },
+    {
+      "name": "Self-Restoration"
+    },
+    {
+      "name": "Deflect Energy"
+    },
+    {
+      "name": "Disciplined Survivor"
+    },
+    {
+      "name": "Perfect Focus"
+    },
+    {
+      "name": "Superior Defense"
+    },
+    {
+      "name": "Epic Boon",
+      "stackable": true
+    },
+    {
+      "name": "Body and Mind",
+      "assign": [
+        {
+          "expr": "DEX = min(DEX + 4, 25); WIS = min(WIS + 4, 25)",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Class Proficiencies",
+      "assign": [
+        {
+          "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Martial Arts",
+        "Unarmored Defense",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Monk's Focus",
+        "Unarmored Movement",
+        "Uncanny Metabolism"
+      ]
+    },
+    {
+      "features": [
+        "Deflect Attacks",
+        "Monk Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement",
+        "Slow Fall"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack",
+        "Stunning Strike"
+      ]
+    },
+    {
+      "features": [
+        "Empowered Strikes",
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Evasion"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Acrobatic Movement"
+      ]
+    },
+    {
+      "features": [
+        "Heightened Focus",
+        "Self-Restoration"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Deflect Energy"
+      ]
+    },
+    {
+      "features": [
+        "Disciplined Survivor"
+      ]
+    },
+    {
+      "features": [
+        "Perfect Focus"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Superior Defense"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Body and Mind"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Way of the Long Death",
+      "features": [
+        {
+          "name": "Way of the Long Death"
+        },
+        {
+          "name": "Touch of Death"
+        },
+        {
+          "name": "Hour of Reaping"
+        },
+        {
+          "name": "Mastery of Death"
+        },
+        {
+          "name": "Touch of the Long Death"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Way of the Long Death",
+            "Touch of Death"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Hour of Reaping"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Mastery of Death"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Touch of the Long Death"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Way of the Drunken Master",
+      "features": [
+        {
+          "name": "Way of the Drunken Master"
+        },
+        {
+          "name": "Bonus Proficiencies"
+        },
+        {
+          "name": "Drunken Technique"
+        },
+        {
+          "name": "Leap to Your Feet"
+        },
+        {
+          "name": "Redirect Attack"
+        },
+        {
+          "name": "Tipsy Sway"
+        },
+        {
+          "name": "Drunkard's Luck"
+        },
+        {
+          "name": "Intoxicated Frenzy"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Way of the Drunken Master",
+            "Bonus Proficiencies",
+            "Drunken Technique"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Leap to Your Feet",
+            "Redirect Attack",
+            "Tipsy Sway"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Drunkard's Luck"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Intoxicated Frenzy"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Way of the Kensei",
+      "features": [
+        {
+          "name": "Agile Parry"
+        },
+        {
+          "name": "Kensei's Shot"
+        },
+        {
+          "name": "Way of the Kensei"
+        },
+        {
+          "name": "Path of the Kensei"
+        },
+        {
+          "name": "One with the Blade"
+        },
+        {
+          "name": "Sharpen the Blade"
+        },
+        {
+          "name": "Unerring Accuracy"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Agile Parry",
+            "Kensei's Shot",
+            "Way of the Kensei",
+            "Path of the Kensei"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "One with the Blade"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Sharpen the Blade"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Unerring Accuracy"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Way of the Sun Soul",
+      "features": [
+        {
+          "name": "Way of the Sun Soul"
+        },
+        {
+          "name": "Radiant Sun Bolt"
+        },
+        {
+          "name": "Searing Arc Strike"
+        },
+        {
+          "name": "Searing Sunburst"
+        },
+        {
+          "name": "Sun Shield"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Way of the Sun Soul",
+            "Radiant Sun Bolt"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Searing Arc Strike"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Searing Sunburst"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Sun Shield"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Way of the Astral Self",
+      "features": [
+        {
+          "name": "Way of the Astral Self"
+        },
+        {
+          "name": "Arms of the Astral Self"
+        },
+        {
+          "name": "Forms of Your Astral Self"
+        },
+        {
+          "name": "Visage of the Astral Self"
+        },
+        {
+          "name": "Body of the Astral Self"
+        },
+        {
+          "name": "Awakened Astral Self"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Way of the Astral Self",
+            "Arms of the Astral Self",
+            "Forms of Your Astral Self"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Visage of the Astral Self"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Body of the Astral Self"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Awakened Astral Self"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Way of the Ascendant Dragon",
+      "features": [
+        {
+          "name": "Way of the Ascendant Dragon"
+        },
+        {
+          "name": "Breath of the Dragon"
+        },
+        {
+          "name": "Draconic Disciple"
+        },
+        {
+          "name": "Wings Unfurled"
+        },
+        {
+          "name": "Aspect of the Wyrm"
+        },
+        {
+          "name": "Ascendant Aspect"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Way of the Ascendant Dragon",
+            "Breath of the Dragon",
+            "Draconic Disciple"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Wings Unfurled"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Aspect of the Wyrm"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Ascendant Aspect"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Warrior of Mercy",
+      "features": [
+        {
+          "name": "Warrior of Mercy"
+        },
+        {
+          "name": "Hand of Harm"
+        },
+        {
+          "name": "Hand of Healing"
+        },
+        {
+          "name": "Implements of Mercy"
+        },
+        {
+          "name": "Physician's Touch"
+        },
+        {
+          "name": "Flurry of Healing and Harm"
+        },
+        {
+          "name": "Hand of Ultimate Mercy"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Warrior of Mercy",
+            "Hand of Harm",
+            "Hand of Healing",
+            "Implements of Mercy"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Physician's Touch"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Flurry of Healing and Harm"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Hand of Ultimate Mercy"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Warrior of Shadow",
+      "features": [
+        {
+          "name": "Shadow Arts"
+        },
+        {
+          "name": "Warrior of Shadow"
+        },
+        {
+          "name": "Darkness"
+        },
+        {
+          "name": "Darkvision"
+        },
+        {
+          "name": "Shadowy Figments",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Minor Illusion",
+                "level": 0
+              }
+            ]
+          }
+        },
+        {
+          "name": "Shadow Step"
+        },
+        {
+          "name": "Improved Shadow Step"
+        },
+        {
+          "name": "Cloak of Shadows"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Shadow Arts",
+            "Warrior of Shadow",
+            "Darkness",
+            "Darkvision",
+            "Shadowy Figments"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Shadow Step"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Improved Shadow Step"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Cloak of Shadows"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Warrior of the Elements",
+      "features": [
+        {
+          "name": "Elemental Attunement"
+        },
+        {
+          "name": "Manipulate Elements",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Elementalism",
+                "level": 0
+              }
+            ]
+          }
+        },
+        {
+          "name": "Warrior of the Elements"
+        },
+        {
+          "name": "Elemental Burst"
+        },
+        {
+          "name": "Stride of the Elements"
+        },
+        {
+          "name": "Elemental Epitome"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Elemental Attunement",
+            "Manipulate Elements",
+            "Warrior of the Elements"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Elemental Burst"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Stride of the Elements"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Elemental Epitome"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Warrior of the Open Hand",
+      "features": [
+        {
+          "name": "Open Hand Technique"
+        },
+        {
+          "name": "Warrior of the Open Hand"
+        },
+        {
+          "name": "Wholeness of Body"
+        },
+        {
+          "name": "Fleet Step"
+        },
+        {
+          "name": "Quivering Palm"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Open Hand Technique",
+            "Warrior of the Open Hand"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Wholeness of Body"
+          ]
+        },
+        "11": {
+          "level": 11,
+          "features": [
+            "Fleet Step"
+          ]
+        },
+        "17": {
+          "level": 17,
+          "features": [
+            "Quivering Palm"
+          ]
+        }
+      }
+    }
+  ]
+}

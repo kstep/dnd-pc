@@ -1,71 +1,32 @@
 {
-  "name": "Drow",
-  "description": "Drow are elves of the Underdark, known for their innate magic and superior darkvision.",
-  "traits": [
-    {
-      "name": "Superior Darkvision",
-      "description": "Your darkvision has a radius of 120 feet."
-    },
-    {
-      "name": "Fey Ancestry",
-      "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
-    },
-    {
-      "name": "Keen Senses",
-      "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
-    },
-    {
-      "name": "Trance",
-      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Elvish.",
-      "languages": ["Common", "Elvish"]
-    }
-  ],
-  "features": [
-    {
-      "name": "Drow Magic",
-      "description": "You know the Dancing Lights cantrip. At 3rd level you can cast Faerie Fire once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
-      "spells": {
-        "cost": "Free Uses",
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Dancing Lights",
-            "level": 0,
-            "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration.",
-            "sticky": true
-          },
-          {
-            "name": "Faerie Fire",
-            "level": 1,
-            "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 3,
-            "cost": 1
-          },
-          {
-            "name": "Darkness",
-            "level": 2,
-            "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 5,
-            "cost": 1
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "Free Uses",
-          "kind": "FreeUses",
-          "levels": {
-            "3": 1,
-            "5": 2
-          }
-        }
-      ]
-    }
-  ]
+  "": {
+    "description": "Drow are elves of the Underdark, known for their innate magic and superior darkvision."
+  },
+  "trait.Superior Darkvision": {
+    "description": "Your darkvision has a radius of 120 feet."
+  },
+  "trait.Fey Ancestry": {
+    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
+  },
+  "trait.Keen Senses": {
+    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
+  },
+  "trait.Trance": {
+    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Elvish."
+  },
+  "feature.Drow Magic": {
+    "description": "You know the Dancing Lights cantrip. At 3rd level you can cast Faerie Fire once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  },
+  "feature.Drow Magic.spell.Dancing Lights": {
+    "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration."
+  },
+  "feature.Drow Magic.spell.Faerie Fire": {
+    "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial)."
+  },
+  "feature.Drow Magic.spell.Darkness": {
+    "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
+  }
 }

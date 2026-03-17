@@ -1,31 +1,11 @@
 {
-  "name": "Guide",
-  "description": "You came of age outdoors, far from civilization, and learned to sustain yourself in the wild. You are skilled at navigating trackless terrain and can find food and fresh water for yourself and others.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "WIS += 2; DEX += 1; SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Magic Initiate (Druid)",
-      "description": "You learn two cantrips and one 1st-level spell from the Druid spell list. You can cast the 1st-level spell once per Long Rest without a spell slot.",
-      "spells": {
-        "casting_ability": 4,
-        "list": {
-          "from": "spells/druid.json"
-        },
-        "levels": [
-          {
-            "cantrips": 2,
-            "spells": 1
-          }
-        ],
-        "caster_coef": 1
-      },
-      "fields": [
-        {"name": "Free Uses", "kind": "FreeUses", "levels": {"1": 1}}
-      ]
-    }
-  ]
+  "": {
+    "description": "You came of age outdoors, far from civilization, and learned to sustain yourself in the wild. You are skilled at navigating trackless terrain and can find food and fresh water for yourself and others."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Magic Initiate (Druid)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Druid spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  }
 }

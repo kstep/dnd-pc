@@ -1,0 +1,39 @@
+{
+  "name": "Aasimar",
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Celestial Resistance"
+    },
+    {
+      "name": "Healing Hands"
+    },
+    {
+      "name": "Languages",
+      "languages": [
+        "Common",
+        "Celestial"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Light Bearer",
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Light",
+            "level": 0,
+            "sticky": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Celestial Revelation"
+    }
+  ]
+}

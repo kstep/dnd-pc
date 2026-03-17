@@ -135,6 +135,7 @@ pub struct FeatureDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub languages: VecSet<String>,

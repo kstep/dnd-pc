@@ -1,16 +1,11 @@
 {
-  "name": "Farmer",
-  "description": "You grew up close to the land, tending crops and caring for livestock. The rhythms of nature and the hard work of the harvest shaped your strong constitution and practical outlook on life.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "CON += 2; WIS += 1; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Tough",
-      "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points.",
-      "assign": [{"expr": "MAX_HP += LEVEL * 2", "when": "OnCompute"}]
-    }
-  ]
+  "": {
+    "description": "You grew up close to the land, tending crops and caring for livestock. The rhythms of nature and the hard work of the harvest shaped your strong constitution and practical outlook on life."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Tough": {
+    "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points."
+  }
 }

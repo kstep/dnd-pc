@@ -1,0 +1,23 @@
+{
+  "name": "Guard",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "assign": [
+        {
+          "expr": "STR += 2; WIS += 1; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Alert",
+      "assign": [
+        {
+          "expr": "INITIATIVE.BONUS += PROF_BONUS",
+          "when": "OnCompute"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1166 @@
+{
+  "name": "Druid",
+  "hit_die": 8,
+  "features": [
+    {
+      "name": "Druidic",
+      "languages": [
+        "Druidic"
+      ]
+    },
+    {
+      "name": "Primal Order"
+    },
+    {
+      "name": "Spellcasting (Druid)",
+      "spells": {
+        "casting_ability": 4,
+        "list": {
+          "from": "spells/druid.json"
+        },
+        "levels": [
+          {
+            "cantrips": 2,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 2,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 2,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
+          }
+        ],
+        "caster_coef": 1
+      }
+    },
+    {
+      "name": "Wild Companion"
+    },
+    {
+      "name": "Wild Shape",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Wild Shape",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Druid Subclass"
+    },
+    {
+      "name": "Ability Score Improvement",
+      "stackable": true
+    },
+    {
+      "name": "Wild Resurgence"
+    },
+    {
+      "name": "Subclass Feature",
+      "stackable": true
+    },
+    {
+      "name": "Elemental Fury"
+    },
+    {
+      "name": "Improved Elemental Fury"
+    },
+    {
+      "name": "Beast Spells"
+    },
+    {
+      "name": "Epic Boon",
+      "stackable": true
+    },
+    {
+      "name": "Archdruid"
+    },
+    {
+      "name": "Class Proficiencies",
+      "assign": [
+        {
+          "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Druidic",
+        "Primal Order",
+        "Spellcasting (Druid)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Wild Companion",
+        "Wild Shape"
+      ]
+    },
+    {
+      "features": [
+        "Druid Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Wild Resurgence"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Elemental Fury"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Improved Elemental Fury"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Beast Spells"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Archdruid"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Circle of the Land",
+      "features": [
+        {
+          "name": "Circle of the Land"
+        },
+        {
+          "name": "Circle of the Land Spells",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Acid Splash",
+                "level": 0
+              },
+              {
+                "name": "Fire Bolt",
+                "level": 0
+              },
+              {
+                "name": "Ray of Frost",
+                "level": 0
+              },
+              {
+                "name": "Shocking Grasp",
+                "level": 0
+              },
+              {
+                "name": "Burning Hands",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Fog Cloud",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Ray of Sickness",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Sleep",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Blur",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Hold Person",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Misty Step",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Web",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Fireball",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Lightning Bolt",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Sleet Storm",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Stinking Cloud",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Blight",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Freedom of Movement",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Polymorph",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Cone of Cold",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Insect Plague",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Tree Stride",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Wall of Stone",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Land's Aid"
+        },
+        {
+          "name": "Natural Recovery"
+        },
+        {
+          "name": "Nature's Ward"
+        },
+        {
+          "name": "Nature's Sanctuary"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of the Land",
+            "Circle of the Land Spells",
+            "Land's Aid"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Natural Recovery"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Nature's Ward"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Nature's Sanctuary"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of the Moon",
+      "features": [
+        {
+          "name": "Circle Forms"
+        },
+        {
+          "name": "Circle of the Moon"
+        },
+        {
+          "name": "Circle of the Moon Spells",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Starry Wisp",
+                "level": 0
+              },
+              {
+                "name": "Cure Wounds",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Moonbeam",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Conjure Animals",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Fount of Moonlight",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Mass Cure Wounds",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Improved Circle Forms"
+        },
+        {
+          "name": "Moonlight Step"
+        },
+        {
+          "name": "Lunar Form"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle Forms",
+            "Circle of the Moon",
+            "Circle of the Moon Spells"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Improved Circle Forms"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Moonlight Step"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Lunar Form"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of Dreams",
+      "features": [
+        {
+          "name": "Circle of Dreams"
+        },
+        {
+          "name": "Balm of the Summer Court"
+        },
+        {
+          "name": "Hearth of Moonlight and Shadow"
+        },
+        {
+          "name": "Hidden Paths"
+        },
+        {
+          "name": "Walker in Dreams"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Circle of Dreams",
+            "Balm of the Summer Court"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of Dreams"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Hearth of Moonlight and Shadow"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Hidden Paths"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Walker in Dreams"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of the Shepherd",
+      "features": [
+        {
+          "name": "Circle of the Shepherd"
+        },
+        {
+          "name": "Speech of the Woods",
+          "languages": [
+            "Sylvan"
+          ]
+        },
+        {
+          "name": "Spirit Totem"
+        },
+        {
+          "name": "Mighty Summoner"
+        },
+        {
+          "name": "Guardian Spirit"
+        },
+        {
+          "name": "Faithful Summons"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Circle of the Shepherd",
+            "Speech of the Woods",
+            "Spirit Totem"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of the Shepherd"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Mighty Summoner"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Guardian Spirit"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Faithful Summons"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of Spores",
+      "features": [
+        {
+          "name": "Circle of Spores"
+        },
+        {
+          "name": "Circle Spells"
+        },
+        {
+          "name": "Halo of Spores"
+        },
+        {
+          "name": "Symbiotic Entity"
+        },
+        {
+          "name": "Fungal Infestation"
+        },
+        {
+          "name": "Spreading Spores"
+        },
+        {
+          "name": "Fungal Body"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Circle of Spores",
+            "Circle Spells",
+            "Halo of Spores",
+            "Symbiotic Entity"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of Spores"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Fungal Infestation"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Spreading Spores"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Fungal Body"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of Stars",
+      "features": [
+        {
+          "name": "Circle of Stars"
+        },
+        {
+          "name": "Star Map"
+        },
+        {
+          "name": "Starry Form"
+        },
+        {
+          "name": "Archer"
+        },
+        {
+          "name": "Chalice"
+        },
+        {
+          "name": "Dragon"
+        },
+        {
+          "name": "Cosmic Omen"
+        },
+        {
+          "name": "Twinkling Constellations"
+        },
+        {
+          "name": "Full of Stars"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Circle of Stars",
+            "Star Map",
+            "Starry Form",
+            "Archer",
+            "Chalice",
+            "Dragon"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of Stars"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Cosmic Omen"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Twinkling Constellations"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Full of Stars"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of Wildfire",
+      "features": [
+        {
+          "name": "Circle of Wildfire"
+        },
+        {
+          "name": "Circle Spells"
+        },
+        {
+          "name": "Summon Wildfire Spirit"
+        },
+        {
+          "name": "Enhanced Bond"
+        },
+        {
+          "name": "Cauterizing Flames"
+        },
+        {
+          "name": "Blazing Revival"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Circle of Wildfire",
+            "Circle Spells",
+            "Summon Wildfire Spirit"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of Wildfire"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Enhanced Bond"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Cauterizing Flames"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Blazing Revival"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of the Sea",
+      "features": [
+        {
+          "name": "Circle of the Sea"
+        },
+        {
+          "name": "Circle of the Sea Spells",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Ray of Frost",
+                "level": 0
+              },
+              {
+                "name": "Fog Cloud",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Thunderwave",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Gust of Wind",
+                "level": 2,
+                "sticky": true,
+                "min_level": 3
+              },
+              {
+                "name": "Lightning Bolt",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Water Breathing",
+                "level": 3,
+                "sticky": true,
+                "min_level": 5
+              },
+              {
+                "name": "Control Water",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Ice Storm",
+                "level": 4,
+                "sticky": true,
+                "min_level": 7
+              },
+              {
+                "name": "Conjure Elemental",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              },
+              {
+                "name": "Hold Monster",
+                "level": 5,
+                "sticky": true,
+                "min_level": 9
+              }
+            ]
+          }
+        },
+        {
+          "name": "Wrath of the Sea"
+        },
+        {
+          "name": "Aquatic Affinity"
+        },
+        {
+          "name": "Stormborn"
+        },
+        {
+          "name": "Oceanic Gift"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of the Sea",
+            "Circle of the Sea Spells",
+            "Wrath of the Sea"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Aquatic Affinity"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Stormborn"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Oceanic Gift"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Circle of the Stars",
+      "features": [
+        {
+          "name": "Circle of the Stars"
+        },
+        {
+          "name": "Star Map",
+          "spells": {
+            "casting_ability": 4,
+            "list": [
+              {
+                "name": "Guidance",
+                "level": 0
+              },
+              {
+                "name": "Guiding Bolt",
+                "level": 1,
+                "sticky": true,
+                "min_level": 3
+              }
+            ]
+          }
+        },
+        {
+          "name": "Starry Form"
+        },
+        {
+          "name": "Archer"
+        },
+        {
+          "name": "Chalice"
+        },
+        {
+          "name": "Dragon"
+        },
+        {
+          "name": "Cosmic Omen"
+        },
+        {
+          "name": "Twinkling Constellations"
+        },
+        {
+          "name": "Full of Stars"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Circle of the Stars",
+            "Star Map",
+            "Starry Form",
+            "Archer",
+            "Chalice",
+            "Dragon"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Cosmic Omen"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Twinkling Constellations"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Full of Stars"
+          ]
+        }
+      }
+    }
+  ]
+}

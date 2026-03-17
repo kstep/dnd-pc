@@ -1,0 +1,17 @@
+{
+  "name": "Merchant",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "assign": [
+        {
+          "expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Lucky"
+    }
+  ]
+}

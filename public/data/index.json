@@ -1,0 +1,265 @@
+{
+  "classes": [
+    {
+      "name": "Artificer",
+      "url": "classes/artificer.json",
+      "prerequisites": [
+        3
+      ]
+    },
+    {
+      "name": "Barbarian",
+      "url": "classes/barbarian.json",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Bard",
+      "url": "classes/bard.json",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Cleric",
+      "url": "classes/cleric.json",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Druid",
+      "url": "classes/druid.json",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Fighter",
+      "url": "classes/fighter.json",
+      "prerequisites": [
+        0
+      ]
+    },
+    {
+      "name": "Monk",
+      "url": "classes/monk.json",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Paladin",
+      "url": "classes/paladin.json",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Ranger",
+      "url": "classes/ranger.json",
+      "prerequisites": [
+        4
+      ]
+    },
+    {
+      "name": "Rogue",
+      "url": "classes/rogue.json",
+      "prerequisites": [
+        1
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "url": "classes/sorcerer.json",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Warlock",
+      "url": "classes/warlock.json",
+      "prerequisites": [
+        5
+      ]
+    },
+    {
+      "name": "Wizard",
+      "url": "classes/wizard.json",
+      "prerequisites": [
+        3
+      ]
+    }
+  ],
+  "races": [
+    {
+      "name": "Aasimar",
+      "url": "races/aasimar.json"
+    },
+    {
+      "name": "Dragonborn",
+      "url": "races/dragonborn.json"
+    },
+    {
+      "name": "Drow",
+      "url": "races/drow.json"
+    },
+    {
+      "name": "Dwarf",
+      "url": "races/dwarf.json"
+    },
+    {
+      "name": "Forest Gnome",
+      "url": "races/forest-gnome.json"
+    },
+    {
+      "name": "Goliath",
+      "url": "races/goliath.json"
+    },
+    {
+      "name": "Halfling",
+      "url": "races/halfling.json"
+    },
+    {
+      "name": "High Elf",
+      "url": "races/high-elf.json"
+    },
+    {
+      "name": "Human",
+      "url": "races/human.json"
+    },
+    {
+      "name": "Orc",
+      "url": "races/orc.json"
+    },
+    {
+      "name": "Rock Gnome",
+      "url": "races/rock-gnome.json"
+    },
+    {
+      "name": "Tiefling",
+      "url": "races/tiefling.json"
+    },
+    {
+      "name": "Tiefling (Abyssal)",
+      "url": "races/tiefling-abyssal.json"
+    },
+    {
+      "name": "Tiefling (Chthonic)",
+      "url": "races/tiefling-chthonic.json"
+    },
+    {
+      "name": "Tiefling (Infernal)",
+      "url": "races/tiefling-infernal.json"
+    },
+    {
+      "name": "Wood Elf",
+      "url": "races/wood-elf.json"
+    }
+  ],
+  "backgrounds": [
+    {
+      "name": "Acolyte",
+      "url": "backgrounds/acolyte.json"
+    },
+    {
+      "name": "Artisan",
+      "url": "backgrounds/artisan.json"
+    },
+    {
+      "name": "Charlatan",
+      "url": "backgrounds/charlatan.json"
+    },
+    {
+      "name": "Criminal",
+      "url": "backgrounds/criminal.json"
+    },
+    {
+      "name": "Entertainer",
+      "url": "backgrounds/entertainer.json"
+    },
+    {
+      "name": "Farmer",
+      "url": "backgrounds/farmer.json"
+    },
+    {
+      "name": "Guard",
+      "url": "backgrounds/guard.json"
+    },
+    {
+      "name": "Guide",
+      "url": "backgrounds/guide.json"
+    },
+    {
+      "name": "Hermit",
+      "url": "backgrounds/hermit.json"
+    },
+    {
+      "name": "Merchant",
+      "url": "backgrounds/merchant.json"
+    },
+    {
+      "name": "Noble",
+      "url": "backgrounds/noble.json"
+    },
+    {
+      "name": "Sage",
+      "url": "backgrounds/sage.json"
+    },
+    {
+      "name": "Sailor",
+      "url": "backgrounds/sailor.json"
+    },
+    {
+      "name": "Scribe",
+      "url": "backgrounds/scribe.json"
+    },
+    {
+      "name": "Soldier",
+      "url": "backgrounds/soldier.json"
+    },
+    {
+      "name": "Wayfarer",
+      "url": "backgrounds/wayfarer.json"
+    }
+  ],
+  "spells": [
+    {
+      "name": "artificer",
+      "url": "spells/artificer.json"
+    },
+    {
+      "name": "bard",
+      "url": "spells/bard.json"
+    },
+    {
+      "name": "cleric",
+      "url": "spells/cleric.json"
+    },
+    {
+      "name": "druid",
+      "url": "spells/druid.json"
+    },
+    {
+      "name": "paladin",
+      "url": "spells/paladin.json"
+    },
+    {
+      "name": "ranger",
+      "url": "spells/ranger.json"
+    },
+    {
+      "name": "sorcerer",
+      "url": "spells/sorcerer.json"
+    },
+    {
+      "name": "warlock",
+      "url": "spells/warlock.json"
+    },
+    {
+      "name": "wizard",
+      "url": "spells/wizard.json"
+    }
+  ]
+}

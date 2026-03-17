@@ -1,76 +1,35 @@
 {
-  "name": "Wood Elf",
-  "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests.",
-  "traits": [
-    {
-      "name": "Speed",
-      "description": "Your base walking speed is 35 feet.",
-      "assign": [{ "expr": "SPEED = 35", "when": "OnCompute" }]
-    },
-    {
-      "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    {
-      "name": "Fey Ancestry",
-      "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
-    },
-    {
-      "name": "Keen Senses",
-      "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
-    },
-    {
-      "name": "Trance",
-      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and Elvish.",
-      "languages": ["Common", "Elvish"]
-    }
-  ],
-  "features": [
-    {
-      "name": "Elven Lineage",
-      "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage).",
-      "spells": {
-        "cost": "Free Uses",
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Druidcraft",
-            "level": 0,
-            "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire.",
-            "sticky": true
-          },
-          {
-            "name": "Longstrider",
-            "level": 1,
-            "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 3,
-            "cost": 1
-          },
-          {
-            "name": "Pass without Trace",
-            "level": 2,
-            "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial).",
-            "sticky": true,
-            "min_level": 5,
-            "cost": 1
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "Free Uses",
-          "kind": "FreeUses",
-          "levels": {
-            "3": 1,
-            "5": 2
-          }
-        }
-      ]
-    }
-  ]
+  "": {
+    "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests."
+  },
+  "trait.Speed": {
+    "description": "Your base walking speed is 35 feet."
+  },
+  "trait.Darkvision": {
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
+  },
+  "trait.Fey Ancestry": {
+    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
+  },
+  "trait.Keen Senses": {
+    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
+  },
+  "trait.Trance": {
+    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and Elvish."
+  },
+  "feature.Elven Lineage": {
+    "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  },
+  "feature.Elven Lineage.spell.Druidcraft": {
+    "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire."
+  },
+  "feature.Elven Lineage.spell.Longstrider": {
+    "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial)."
+  },
+  "feature.Elven Lineage.spell.Pass without Trace": {
+    "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial)."
+  }
 }

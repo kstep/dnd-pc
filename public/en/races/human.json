@@ -1,27 +1,17 @@
 {
-  "name": "Human",
-  "description": "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.",
-  "traits": [
-    {
-      "name": "Resourceful",
-      "description": "You gain Heroic Inspiration whenever you finish a Long Rest.",
-      "assign": [
-        {"expr": "INSPIRATION = 1", "when": "OnLongRest"}
-      ]
-    },
-    {
-      "name": "Skillful",
-      "description": "You gain proficiency in one skill of your choice."
-    },
-    {
-      "name": "Versatile",
-      "description": "You gain an Origin feat of your choice."
-    },
-    {
-      "name": "Languages",
-      "description": "You can speak, read, and write Common and one language of your choice.",
-      "languages": ["Common"]
-    }
-  ],
-  "features": []
+  "": {
+    "description": "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds."
+  },
+  "trait.Resourceful": {
+    "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+  },
+  "trait.Skillful": {
+    "description": "You gain proficiency in one skill of your choice."
+  },
+  "trait.Versatile": {
+    "description": "You gain an Origin feat of your choice."
+  },
+  "trait.Languages": {
+    "description": "You can speak, read, and write Common and one language of your choice."
+  }
 }

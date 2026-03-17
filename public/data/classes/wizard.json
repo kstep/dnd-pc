@@ -1,0 +1,1136 @@
+{
+  "name": "Wizard",
+  "hit_die": 6,
+  "features": [
+    {
+      "name": "Arcane Recovery"
+    },
+    {
+      "name": "Ritual Adept"
+    },
+    {
+      "name": "Spellcasting (Wizard)",
+      "spells": {
+        "casting_ability": 3,
+        "list": {
+          "from": "spells/wizard.json"
+        },
+        "levels": [
+          {
+            "cantrips": 3,
+            "slots": [
+              2
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              3
+            ]
+          },
+          {
+            "cantrips": 3,
+            "slots": [
+              4,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 4,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "cantrips": 5,
+            "slots": [
+              4,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              1,
+              1
+            ]
+          }
+        ],
+        "caster_coef": 1
+      }
+    },
+    {
+      "name": "Scholar"
+    },
+    {
+      "name": "Wizard Subclass"
+    },
+    {
+      "name": "Ability Score Improvement",
+      "stackable": true
+    },
+    {
+      "name": "Memorize Spell"
+    },
+    {
+      "name": "Subclass Feature",
+      "stackable": true
+    },
+    {
+      "name": "Spell Mastery"
+    },
+    {
+      "name": "Epic Boon",
+      "stackable": true
+    },
+    {
+      "name": "Signature Spells"
+    },
+    {
+      "name": "Class Proficiencies",
+      "assign": [
+        {
+          "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Arcane Recovery",
+        "Ritual Adept",
+        "Spellcasting (Wizard)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Scholar"
+      ]
+    },
+    {
+      "features": [
+        "Wizard Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Memorize Spell"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": []
+    },
+    {
+      "features": [
+        "Spell Mastery"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Signature Spells"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "School of Conjuration",
+      "features": [
+        {
+          "name": "School of Conjuration"
+        },
+        {
+          "name": "Conjuration Savant"
+        },
+        {
+          "name": "Minor Conjuration"
+        },
+        {
+          "name": "Benign Transposition"
+        },
+        {
+          "name": "Focused Conjuration"
+        },
+        {
+          "name": "Durable Summons"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "School of Conjuration",
+            "Conjuration Savant",
+            "Minor Conjuration"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "School of Conjuration"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Benign Transposition"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Focused Conjuration"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Durable Summons"
+          ]
+        }
+      }
+    },
+    {
+      "name": "School of Enchantment",
+      "features": [
+        {
+          "name": "School of Enchantment"
+        },
+        {
+          "name": "Enchantment Savant"
+        },
+        {
+          "name": "Hypnotic Gaze"
+        },
+        {
+          "name": "Instinctive Charm"
+        },
+        {
+          "name": "Split Enchantment"
+        },
+        {
+          "name": "Alter Memories"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "School of Enchantment",
+            "Enchantment Savant",
+            "Hypnotic Gaze"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "School of Enchantment"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Instinctive Charm"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Split Enchantment"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Alter Memories"
+          ]
+        }
+      }
+    },
+    {
+      "name": "School of Necromancy",
+      "features": [
+        {
+          "name": "School of Necromancy"
+        },
+        {
+          "name": "Grim Harvest"
+        },
+        {
+          "name": "Necromancy Savant"
+        },
+        {
+          "name": "Undead Thralls"
+        },
+        {
+          "name": "Inured to Undeath"
+        },
+        {
+          "name": "Command Undead"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "School of Necromancy",
+            "Grim Harvest",
+            "Necromancy Savant"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "School of Necromancy"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Undead Thralls"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Inured to Undeath"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Command Undead"
+          ]
+        }
+      }
+    },
+    {
+      "name": "School of Transmutation",
+      "features": [
+        {
+          "name": "School of Transmutation"
+        },
+        {
+          "name": "Minor Alchemy"
+        },
+        {
+          "name": "Transmutation Savant"
+        },
+        {
+          "name": "Transmuter's Stone"
+        },
+        {
+          "name": "Shapechanger"
+        },
+        {
+          "name": "Master Transmuter"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "School of Transmutation",
+            "Minor Alchemy",
+            "Transmutation Savant"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "School of Transmutation"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Transmuter's Stone"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Shapechanger"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Master Transmuter"
+          ]
+        }
+      }
+    },
+    {
+      "name": "War Magic",
+      "features": [
+        {
+          "name": "War Magic"
+        },
+        {
+          "name": "Arcane Deflection"
+        },
+        {
+          "name": "Tactical Wit",
+          "assign": [
+            {
+              "expr": "INITIATIVE.BONUS += INT.MOD",
+              "when": "OnCompute"
+            }
+          ]
+        },
+        {
+          "name": "Power Surge"
+        },
+        {
+          "name": "Durable Magic"
+        },
+        {
+          "name": "Deflecting Shroud"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "War Magic",
+            "Arcane Deflection",
+            "Tactical Wit"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "War Magic"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Power Surge"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Durable Magic"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Deflecting Shroud"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chronurgy Magic",
+      "features": [
+        {
+          "name": "Chronurgy Magic"
+        },
+        {
+          "name": "Chronal Shift"
+        },
+        {
+          "name": "Temporal Awareness",
+          "assign": [
+            {
+              "expr": "INITIATIVE.BONUS += INT.MOD",
+              "when": "OnCompute"
+            }
+          ]
+        },
+        {
+          "name": "Momentary Stasis"
+        },
+        {
+          "name": "Arcane Abeyance"
+        },
+        {
+          "name": "Convergent Future"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Chronurgy Magic",
+            "Chronal Shift",
+            "Temporal Awareness"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Chronurgy Magic"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Momentary Stasis"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Arcane Abeyance"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Convergent Future"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Graviturgy Magic",
+      "features": [
+        {
+          "name": "Graviturgy Magic"
+        },
+        {
+          "name": "Adjust Density"
+        },
+        {
+          "name": "Gravity Well"
+        },
+        {
+          "name": "Violent Attraction"
+        },
+        {
+          "name": "Event Horizon"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Graviturgy Magic",
+            "Adjust Density"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Graviturgy Magic"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Gravity Well"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Violent Attraction"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Event Horizon"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Order of Scribes",
+      "features": [
+        {
+          "name": "Order of Scribes"
+        },
+        {
+          "name": "Awakened Spellbook"
+        },
+        {
+          "name": "Wizardly Quill"
+        },
+        {
+          "name": "Manifest Mind"
+        },
+        {
+          "name": "Master Scrivener"
+        },
+        {
+          "name": "One with the Word"
+        }
+      ],
+      "levels": {
+        "2": {
+          "level": 2,
+          "features": [
+            "Order of Scribes",
+            "Awakened Spellbook",
+            "Wizardly Quill"
+          ]
+        },
+        "3": {
+          "level": 3,
+          "features": [
+            "Order of Scribes"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Manifest Mind"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Master Scrivener"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "One with the Word"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Abjurer",
+      "features": [
+        {
+          "name": "Abjurer"
+        },
+        {
+          "name": "Abjuration Savant"
+        },
+        {
+          "name": "Arcane Ward"
+        },
+        {
+          "name": "Projected Ward"
+        },
+        {
+          "name": "Spell Breaker",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Counterspell",
+                "level": 3,
+                "sticky": true,
+                "min_level": 10
+              },
+              {
+                "name": "Dispel Magic",
+                "level": 3,
+                "sticky": true,
+                "min_level": 10
+              }
+            ]
+          }
+        },
+        {
+          "name": "Spell Resistance"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Abjurer",
+            "Abjuration Savant",
+            "Arcane Ward"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Projected Ward"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Spell Breaker"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Spell Resistance"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Diviner",
+      "features": [
+        {
+          "name": "Diviner"
+        },
+        {
+          "name": "Divination Savant"
+        },
+        {
+          "name": "Portent"
+        },
+        {
+          "name": "Expert Divination"
+        },
+        {
+          "name": "The Third Eye",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "See Invisibility",
+                "level": 2,
+                "sticky": true,
+                "min_level": 10
+              }
+            ]
+          }
+        },
+        {
+          "name": "Greater Portent"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Diviner",
+            "Divination Savant",
+            "Portent"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Expert Divination"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "The Third Eye"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Greater Portent"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Evoker",
+      "features": [
+        {
+          "name": "Evoker"
+        },
+        {
+          "name": "Evocation Savant"
+        },
+        {
+          "name": "Potent Cantrip"
+        },
+        {
+          "name": "Sculpt Spells"
+        },
+        {
+          "name": "Empowered Evocation"
+        },
+        {
+          "name": "Overchannel"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Evoker",
+            "Evocation Savant",
+            "Potent Cantrip"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Sculpt Spells"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Empowered Evocation"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Overchannel"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Illusionist",
+      "features": [
+        {
+          "name": "Illusionist"
+        },
+        {
+          "name": "Illusion Savant"
+        },
+        {
+          "name": "Improved Illusions",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Minor Illusion",
+                "level": 0
+              }
+            ]
+          }
+        },
+        {
+          "name": "Phantasmal Creatures",
+          "spells": {
+            "casting_ability": 3,
+            "list": [
+              {
+                "name": "Summon Beast",
+                "level": 2,
+                "sticky": true,
+                "min_level": 6
+              },
+              {
+                "name": "Summon Fey",
+                "level": 3,
+                "sticky": true,
+                "min_level": 6
+              }
+            ]
+          }
+        },
+        {
+          "name": "Illusory Self"
+        },
+        {
+          "name": "Illusory Reality"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Illusionist",
+            "Illusion Savant",
+            "Improved Illusions"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Phantasmal Creatures"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Illusory Self"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Illusory Reality"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Bladesinger",
+      "features": [
+        {
+          "name": "Bladesinger"
+        },
+        {
+          "name": "Bladesong"
+        },
+        {
+          "name": "Training in War and Song"
+        },
+        {
+          "name": "Extra Attack"
+        },
+        {
+          "name": "Song of Defense"
+        },
+        {
+          "name": "Song of Victory"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Bladesinger",
+            "Bladesong",
+            "Training in War and Song"
+          ]
+        },
+        "6": {
+          "level": 6,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Song of Defense"
+          ]
+        },
+        "14": {
+          "level": 14,
+          "features": [
+            "Song of Victory"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1089 @@
+{
+  "name": "Fighter",
+  "hit_die": 10,
+  "features": [
+    {
+      "name": "Fighting Style"
+    },
+    {
+      "name": "Second Wind",
+      "fields": [
+        {
+          "name": "Second Wind",
+          "kind": "Points",
+          "levels": {
+            "1": 2,
+            "4": 3,
+            "10": 4
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Second Wind",
+          "options": [
+            {
+              "name": "Second Wind",
+              "cost": 1,
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Weapon Mastery (Fighter)",
+      "fields": [
+        {
+          "name": "Weapon",
+          "kind": "Choice",
+          "levels": {
+            "1": 3,
+            "4": 4,
+            "10": 5,
+            "16": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "Action Surge",
+      "stackable": true,
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Action Surge",
+              "action": "Action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tactical Mind"
+    },
+    {
+      "name": "Fighter Subclass"
+    },
+    {
+      "name": "Ability Score Improvement",
+      "stackable": true
+    },
+    {
+      "name": "Extra Attack"
+    },
+    {
+      "name": "Tactical Shift"
+    },
+    {
+      "name": "Subclass Feature",
+      "stackable": true
+    },
+    {
+      "name": "Indomitable",
+      "stackable": true
+    },
+    {
+      "name": "Tactical Master"
+    },
+    {
+      "name": "Two Extra Attacks"
+    },
+    {
+      "name": "Studied Attacks"
+    },
+    {
+      "name": "Epic Boon",
+      "stackable": true
+    },
+    {
+      "name": "Three Extra Attacks"
+    },
+    {
+      "name": "Class Proficiencies",
+      "assign": [
+        {
+          "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "features": [
+        "Fighting Style",
+        "Second Wind",
+        "Weapon Mastery (Fighter)",
+        "Class Proficiencies"
+      ]
+    },
+    {
+      "features": [
+        "Action Surge",
+        "Tactical Mind"
+      ]
+    },
+    {
+      "features": [
+        "Fighter Subclass"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Extra Attack",
+        "Tactical Shift"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Indomitable",
+        "Tactical Master"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Two Extra Attacks"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Indomitable",
+        "Studied Attacks"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Ability Score Improvement"
+      ]
+    },
+    {
+      "features": [
+        "Action Surge",
+        "Indomitable"
+      ]
+    },
+    {
+      "features": [
+        "Subclass Feature"
+      ]
+    },
+    {
+      "features": [
+        "Epic Boon"
+      ]
+    },
+    {
+      "features": [
+        "Three Extra Attacks"
+      ]
+    }
+  ],
+  "subclasses": [
+    {
+      "name": "Battle Master",
+      "features": [
+        {
+          "name": "Battle Master"
+        },
+        {
+          "name": "Combat Superiority"
+        },
+        {
+          "name": "Maneuver Options"
+        },
+        {
+          "name": "Student of War"
+        },
+        {
+          "name": "Know Your Enemy"
+        },
+        {
+          "name": "Improved Combat Superiority"
+        },
+        {
+          "name": "Relentless"
+        },
+        {
+          "name": "Ultimate Combat Superiority"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Battle Master",
+            "Combat Superiority",
+            "Maneuver Options",
+            "Student of War"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Know Your Enemy"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Improved Combat Superiority"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Relentless"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Ultimate Combat Superiority"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Champion",
+      "features": [
+        {
+          "name": "Champion"
+        },
+        {
+          "name": "Improved Critical"
+        },
+        {
+          "name": "Remarkable Athlete"
+        },
+        {
+          "name": "Additional Fighting Style"
+        },
+        {
+          "name": "Heroic Warrior"
+        },
+        {
+          "name": "Superior Critical"
+        },
+        {
+          "name": "Survivor"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Champion",
+            "Improved Critical",
+            "Remarkable Athlete"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Additional Fighting Style"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Heroic Warrior"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Superior Critical"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Survivor"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Eldritch Knight",
+      "features": [
+        {
+          "name": "Eldritch Knight"
+        },
+        {
+          "name": "Spellcasting (Eldritch Knight)",
+          "spells": {
+            "casting_ability": 3,
+            "caster_coef": 3,
+            "list": {
+              "from": "spells/wizard.json"
+            },
+            "levels": [
+              {},
+              {},
+              {
+                "cantrips": 2,
+                "spells": 3,
+                "slots": [
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 4,
+                "slots": [
+                  3
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 5,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 6,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 2,
+                "spells": 6,
+                "slots": [
+                  4,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 7,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 8,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 8,
+                "slots": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 9,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 10,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 10,
+                "slots": [
+                  4,
+                  3,
+                  2
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 11,
+                "slots": [
+                  4,
+                  3,
+                  3
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 12,
+                "slots": [
+                  4,
+                  3,
+                  3,
+                  1
+                ]
+              },
+              {
+                "cantrips": 3,
+                "spells": 13,
+                "slots": [
+                  4,
+                  3,
+                  3,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "War Bond"
+        },
+        {
+          "name": "War Magic"
+        },
+        {
+          "name": "Eldritch Strike"
+        },
+        {
+          "name": "Arcane Charge"
+        },
+        {
+          "name": "Improved War Magic"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Eldritch Knight",
+            "Spellcasting (Eldritch Knight)",
+            "War Bond"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "War Magic"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Eldritch Strike"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Arcane Charge"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Improved War Magic"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Purple Dragon Knight (Banneret)",
+      "features": [
+        {
+          "name": "Purple Dragon Knight (Banneret)"
+        },
+        {
+          "name": "Rallying Cry"
+        },
+        {
+          "name": "Restriction: Knighthood"
+        },
+        {
+          "name": "Royal Envoy"
+        },
+        {
+          "name": "Inspiring Surge"
+        },
+        {
+          "name": "Bulwark"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Purple Dragon Knight (Banneret)",
+            "Rallying Cry",
+            "Restriction: Knighthood"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Royal Envoy"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Inspiring Surge"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Bulwark"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Inspiring Surge"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arcane Archer",
+      "features": [
+        {
+          "name": "Arcane Archer"
+        },
+        {
+          "name": "Arcane Archer Lore"
+        },
+        {
+          "name": "Arcane Shot"
+        },
+        {
+          "name": "Arcane Shot Options"
+        },
+        {
+          "name": "Additional Arcane Shot Option"
+        },
+        {
+          "name": "Curving Shot"
+        },
+        {
+          "name": "Magic Arrow"
+        },
+        {
+          "name": "Ever-Ready Shot"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Arcane Archer",
+            "Arcane Archer Lore",
+            "Arcane Shot",
+            "Arcane Shot Options"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Additional Arcane Shot Option",
+            "Curving Shot",
+            "Magic Arrow"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Additional Arcane Shot Option"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Additional Arcane Shot Option",
+            "Ever-Ready Shot"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Additional Arcane Shot Option"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cavalier",
+      "features": [
+        {
+          "name": "Cavalier"
+        },
+        {
+          "name": "Bonus Proficiency"
+        },
+        {
+          "name": "Born to the Saddle"
+        },
+        {
+          "name": "Unwavering Mark"
+        },
+        {
+          "name": "Warding Maneuver"
+        },
+        {
+          "name": "Hold the Line"
+        },
+        {
+          "name": "Ferocious Charger"
+        },
+        {
+          "name": "Vigilant Defender"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Cavalier",
+            "Bonus Proficiency",
+            "Born to the Saddle",
+            "Unwavering Mark"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Warding Maneuver"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Hold the Line"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Ferocious Charger"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Vigilant Defender"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Samurai",
+      "features": [
+        {
+          "name": "Samurai"
+        },
+        {
+          "name": "Bonus Proficiency"
+        },
+        {
+          "name": "Fighting Spirit"
+        },
+        {
+          "name": "Elegant Courtier"
+        },
+        {
+          "name": "Tireless Spirit"
+        },
+        {
+          "name": "Rapid Strike"
+        },
+        {
+          "name": "Strength before Death"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Samurai",
+            "Bonus Proficiency",
+            "Fighting Spirit"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Elegant Courtier"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Tireless Spirit"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Rapid Strike"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Strength before Death"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Echo Knight",
+      "features": [
+        {
+          "name": "Echo Knight"
+        },
+        {
+          "name": "Manifest Echo"
+        },
+        {
+          "name": "Unleash Incarnation"
+        },
+        {
+          "name": "Echo Avatar"
+        },
+        {
+          "name": "Shadow Martyr"
+        },
+        {
+          "name": "Reclaim Potential"
+        },
+        {
+          "name": "Legion of One"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Echo Knight",
+            "Manifest Echo",
+            "Unleash Incarnation"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Echo Avatar"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Shadow Martyr"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Reclaim Potential"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Legion of One"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Psi Warrior",
+      "features": [
+        {
+          "name": "Psi Warrior"
+        },
+        {
+          "name": "Psionic Power"
+        },
+        {
+          "name": "Protective Field"
+        },
+        {
+          "name": "Psionic Strike"
+        },
+        {
+          "name": "Telekinetic Movement"
+        },
+        {
+          "name": "Psi-Powered Leap"
+        },
+        {
+          "name": "Telekinetic Adept"
+        },
+        {
+          "name": "Telekinetic Thrust"
+        },
+        {
+          "name": "Guarded Mind"
+        },
+        {
+          "name": "Bulwark of Force"
+        },
+        {
+          "name": "Telekinetic Master"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Psi Warrior",
+            "Psionic Power",
+            "Protective Field",
+            "Psionic Strike",
+            "Telekinetic Movement"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Psi-Powered Leap",
+            "Telekinetic Adept",
+            "Telekinetic Thrust"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Guarded Mind"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Bulwark of Force"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Telekinetic Master"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rune Knight",
+      "features": [
+        {
+          "name": "Rune Knight"
+        },
+        {
+          "name": "Bonus Proficiencies",
+          "languages": [
+            "Giant"
+          ]
+        },
+        {
+          "name": "Giant's Might"
+        },
+        {
+          "name": "Rune Carver"
+        },
+        {
+          "name": "Additional Rune Known"
+        },
+        {
+          "name": "Runic Shield"
+        },
+        {
+          "name": "Great Stature"
+        },
+        {
+          "name": "Master of Runes"
+        },
+        {
+          "name": "Runic Juggernaut"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Rune Knight",
+            "Bonus Proficiencies",
+            "Giant's Might",
+            "Rune Carver"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Additional Rune Known",
+            "Runic Shield"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Additional Rune Known",
+            "Great Stature"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Additional Rune Known",
+            "Master of Runes"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Runic Juggernaut"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Banneret",
+      "features": [
+        {
+          "name": "Banneret"
+        },
+        {
+          "name": "Group Recovery"
+        },
+        {
+          "name": "Knightly Envoy"
+        },
+        {
+          "name": "Team Tactics"
+        },
+        {
+          "name": "Rallying Surge"
+        },
+        {
+          "name": "Shared Resilience"
+        },
+        {
+          "name": "Inspiring Commander"
+        }
+      ],
+      "levels": {
+        "3": {
+          "level": 3,
+          "features": [
+            "Banneret",
+            "Group Recovery",
+            "Knightly Envoy"
+          ]
+        },
+        "7": {
+          "level": 7,
+          "features": [
+            "Team Tactics"
+          ]
+        },
+        "10": {
+          "level": 10,
+          "features": [
+            "Rallying Surge"
+          ]
+        },
+        "15": {
+          "level": 15,
+          "features": [
+            "Shared Resilience"
+          ]
+        },
+        "18": {
+          "level": 18,
+          "features": [
+            "Inspiring Commander"
+          ]
+        }
+      }
+    }
+  ]
+}

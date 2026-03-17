@@ -1,0 +1,38 @@
+{
+  "name": "Rock Gnome",
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Gnomish Cunning"
+    },
+    {
+      "name": "Languages",
+      "languages": [
+        "Common",
+        "Gnomish"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "Gnomish Lineage",
+      "spells": {
+        "casting_ability": 5,
+        "list": [
+          {
+            "name": "Mending",
+            "level": 0,
+            "sticky": true
+          },
+          {
+            "name": "Prestidigitation",
+            "level": 0,
+            "sticky": true
+          }
+        ]
+      }
+    }
+  ]
+}

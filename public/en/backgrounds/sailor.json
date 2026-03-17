@@ -1,15 +1,11 @@
 {
-  "name": "Sailor",
-  "description": "You spent years aboard a ship, working as a deckhand, navigator, or even first mate. The open sea taught you agility, sharp awareness, and how to handle yourself in a rough-and-tumble brawl.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "DEX += 2; WIS += 1; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Tavern Brawler",
-      "description": "You deal 1d4 enhanced Unarmed Strike damage. When you hit with your Unarmed Strike as part of the Attack action, you can make one Unarmed Strike as a Bonus Action. You have proficiency with improvised weapons."
-    }
-  ]
+  "": {
+    "description": "You spent years aboard a ship, working as a deckhand, navigator, or even first mate. The open sea taught you agility, sharp awareness, and how to handle yourself in a rough-and-tumble brawl."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Tavern Brawler": {
+    "description": "You deal 1d4 enhanced Unarmed Strike damage. When you hit with your Unarmed Strike as part of the Attack action, you can make one Unarmed Strike as a Bonus Action. You have proficiency with improvised weapons."
+  }
 }

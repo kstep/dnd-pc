@@ -1,0 +1,23 @@
+{
+  "name": "Criminal",
+  "features": [
+    {
+      "name": "Background Abilities",
+      "assign": [
+        {
+          "expr": "DEX += 2; INT += 1; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+          "when": "OnFeatureAdd"
+        }
+      ]
+    },
+    {
+      "name": "Alert",
+      "assign": [
+        {
+          "expr": "INITIATIVE.BONUS += PROF_BONUS",
+          "when": "OnCompute"
+        }
+      ]
+    }
+  ]
+}

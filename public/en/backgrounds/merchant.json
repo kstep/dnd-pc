@@ -1,15 +1,11 @@
 {
-  "name": "Merchant",
-  "description": "You earned a living by buying and selling goods, traversing trade routes and navigating bustling marketplaces. Your keen business sense and social savvy have served you well in negotiations both mercantile and otherwise.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Lucky",
-      "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
-    }
-  ]
+  "": {
+    "description": "You earned a living by buying and selling goods, traversing trade routes and navigating bustling marketplaces. Your keen business sense and social savvy have served you well in negotiations both mercantile and otherwise."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Lucky": {
+    "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
+  }
 }

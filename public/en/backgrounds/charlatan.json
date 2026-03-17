@@ -1,15 +1,11 @@
 {
-  "name": "Charlatan",
-  "description": "Once combative and headstrong, you have since tempered your behavior with cunning, learning that deceiving others is far more effective than strong-arming them. You employ trickery, misdirection, and forgery to get what you want.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Skilled",
-      "description": "You gain proficiency in any combination of three skills or tools of your choice."
-    }
-  ]
+  "": {
+    "description": "Once combative and headstrong, you have since tempered your behavior with cunning, learning that deceiving others is far more effective than strong-arming them. You employ trickery, misdirection, and forgery to get what you want."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Skilled": {
+    "description": "You gain proficiency in any combination of three skills or tools of your choice."
+  }
 }

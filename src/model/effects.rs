@@ -35,6 +35,7 @@ impl demap::Named for ActiveEffect {
     }
 }
 
+#[derive(Clone)]
 pub struct EffectsIndex(pub BTreeMap<Box<str>, ActiveEffect>);
 
 impl<'de> Deserialize<'de> for EffectsIndex {

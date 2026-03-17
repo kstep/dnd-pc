@@ -1,31 +1,11 @@
 {
-  "name": "Acolyte",
-  "description": "You devoted yourself to service in a temple, learning sacred rites and providing sacrifices to the god or gods you worship. Serving the gods and discovering their sacred works will guide you to greatness.",
-  "features": [
-    {
-      "name": "Background Abilities",
-      "description": "Ability score increase from background.",
-      "assign": [{"expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1", "when": "OnFeatureAdd"}]
-    },
-    {
-      "name": "Magic Initiate (Cleric)",
-      "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot.",
-      "spells": {
-        "casting_ability": 4,
-        "list": {
-          "from": "spells/cleric.json"
-        },
-        "levels": [
-          {
-            "cantrips": 2,
-            "spells": 1
-          }
-        ],
-        "caster_coef": 1
-      },
-      "fields": [
-        {"name": "Free Uses", "kind": "FreeUses", "levels": {"1": 1}}
-      ]
-    }
-  ]
+  "": {
+    "description": "You devoted yourself to service in a temple, learning sacred rites and providing sacrifices to the god or gods you worship. Serving the gods and discovering their sacred works will guide you to greatness."
+  },
+  "feature.Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "feature.Magic Initiate (Cleric)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  }
 }

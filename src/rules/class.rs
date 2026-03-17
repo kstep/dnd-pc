@@ -13,6 +13,7 @@ pub struct ClassDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     pub hit_die: u32,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -50,6 +51,7 @@ pub struct SubclassDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<Box<str>, FeatureDefinition>,
