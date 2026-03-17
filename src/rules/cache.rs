@@ -137,7 +137,7 @@ pub trait DefinitionStore {
     fn cache(&self) -> FetchCache<Self::Definition>;
     fn index_urls(&self, name: &str) -> Option<LocalizedUrls>;
     fn index_urls_tracked(&self, name: &str) -> Option<LocalizedUrls>;
-    fn apply_locale() -> fn(&mut Self::Definition, &Self::Locale);
+    fn apply(def: &mut Self::Definition, locale: &Self::Locale);
     fn type_label() -> &'static str;
 
     fn has(&self, name: &str) -> bool {
@@ -158,7 +158,7 @@ pub trait DefinitionStore {
                 name,
                 data_url,
                 locale_url,
-                Self::apply_locale(),
+                Self::apply,
                 Self::type_label(),
             );
         }
@@ -170,7 +170,7 @@ pub trait DefinitionStore {
                 name,
                 data_url,
                 locale_url,
-                Self::apply_locale(),
+                Self::apply,
                 Self::type_label(),
             );
         }

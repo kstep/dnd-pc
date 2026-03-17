@@ -49,8 +49,8 @@ macro_rules! impl_definition_store {
                     .resolve_index_urls(name, |idx| &idx.$index_field, true)
             }
 
-            fn apply_locale() -> fn(&mut $def, &$locale_ty) {
-                $apply_fn
+            fn apply(def: &mut $def, locale: &$locale_ty) {
+                $apply_fn(def, locale)
             }
 
             fn type_label() -> &'static str {
