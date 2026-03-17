@@ -105,43 +105,37 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         });
     }
 
-    /// Collect locale fetch futures for all cached entries.
-    /// Returns `(name, future)` pairs — caller should `join_all` them
-    /// together with other caches' futures for batched fetching.
+    /// Fetch locale files for all cached entries in parallel.
+    /// Only clones paths (cheap), not definitions.
     pub async fn fetch_locale<L: for<'de> Deserialize<'de> + 'static>(
         &self,
         locale: &str,
     ) -> Vec<(Box<str>, Option<L>)> {
-        let futs = self
+        // Collect only names + paths (cheap Box<str> clones, no definition clones)
+        let paths: Vec<(Box<str>, Box<str>)> = self
             .raw
-            .get_untracked()
-            .into_iter()
-            .map(|(name, (_, path))| {
-                let url = format!("{BASE_URL}/{locale}/{path}");
-                async move { (name, fetch_json::<L>(&url).await.ok()) }
-            });
+            .with_untracked(|m| m.iter().map(|(n, (_, p))| (n.clone(), p.clone())).collect());
+        let futs = paths.into_iter().map(|(name, path)| {
+            let url = format!("{BASE_URL}/{locale}/{path}");
+            async move { (name, fetch_json::<L>(&url).await.ok()) }
+        });
         join_all(futs).await
     }
 
-    /// Apply fetched locale data to raw entries, updating `data` in a single
-    /// reactive update. Use `notify` to control whether subscribers are
-    /// notified (pass `false` to batch across multiple caches, `true` for the
-    /// last one).
-    pub fn apply_locale_batch<L>(
+    /// Apply fetched locale data in-place on existing `data` entries.
+    /// No cloning of definitions — just overwrites labels/descriptions.
+    pub fn apply_locale_in_place<L>(
         &self,
         results: &[(Box<str>, Option<L>)],
         apply: fn(&mut T, &L),
         notify: bool,
     ) {
-        let raw_guard = self.raw.read_untracked();
         let update_fn = |m: &mut BTreeMap<Box<str>, T>| {
             for (name, locale_opt) in results {
-                if let Some((raw_def, _)) = raw_guard.get(name) {
-                    let mut val = raw_def.clone();
-                    if let Some(locale) = locale_opt {
-                        apply(&mut val, locale);
-                    }
-                    m.insert(name.clone(), val);
+                if let Some(def) = m.get_mut(name)
+                    && let Some(locale) = locale_opt
+                {
+                    apply(def, locale);
                 }
             }
         };
