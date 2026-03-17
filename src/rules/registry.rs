@@ -49,7 +49,7 @@ macro_rules! impl_definition_store {
                     .resolve_index_urls(name, |idx| &idx.$index_field, true)
             }
 
-            fn apply(def: &mut $def, locale: &$locale_ty) {
+            fn apply_locale(def: &mut $def, locale: &$locale_ty) {
                 $apply_fn(def, locale)
             }
 
