@@ -549,13 +549,13 @@ impl RulesRegistry {
 
     // ---- Fill / Clear ----
 
-    pub fn fill_from_registry(&self, character: &mut Character) {
-        // Tracked read of the index so the calling Effect re-runs when
-        // the index arrives.
+    /// Trigger fetches for any missing definitions. Reads the index with a
+    /// tracked read so the calling Effect re-runs when the index arrives.
+    /// Does NOT read caches or update the store — cheap to re-run.
+    pub fn ensure_definitions_fetched(&self, character: &Character) {
         let index_guard = self.class_index.read();
         let index = index_guard.as_ref().and_then(|r| r.as_ref().ok());
 
-        // Trigger fetches for any missing definitions
         if let Some(idx) = index {
             for cl in &character.identity.classes {
                 if !cl.class.is_empty()
@@ -597,9 +597,13 @@ impl RulesRegistry {
             }
         }
 
-        // Trigger spell list fetches
         self.trigger_spell_list_fetches(character);
+    }
 
+    /// Fill labels and descriptions from cached definitions. Reads caches
+    /// with tracked reads so the calling Effect re-runs when definitions
+    /// arrive or locale changes.
+    pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
