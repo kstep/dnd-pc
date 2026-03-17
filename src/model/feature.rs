@@ -17,6 +17,10 @@ impl Feature {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }
+
+    pub fn set_label(&mut self, value: String) {
+        self.label = Some(value);
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -121,6 +125,10 @@ impl FeatureOption {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }
+
+    pub fn set_label(&mut self, value: String) {
+        self.label = Some(value);
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
@@ -136,5 +144,9 @@ pub struct RacialTrait {
 impl RacialTrait {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+
+    pub fn set_label(&mut self, value: String) {
+        self.label = Some(value);
     }
 }

@@ -99,4 +99,8 @@ impl Spell {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }
+
+    pub fn set_label(&mut self, value: String) {
+        self.label = Some(value);
+    }
 }

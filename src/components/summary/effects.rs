@@ -174,11 +174,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 let new_name = event_target_value(&ev).trim().to_string();
                                                 if new_name.is_empty() { return; }
                                                 effects.update(|e| e.update_field(i, |eff| {
-                                                    if eff.label.is_some() {
-                                                        eff.label = Some(new_name);
-                                                    } else {
-                                                        eff.name = new_name;
-                                                    }
+                                                    eff.set_label(new_name);
                                                 }));
                                             }
                                         />

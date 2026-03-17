@@ -104,8 +104,12 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         options=options
                                         on_input=move |input, resolved| {
                                             let mut w = features.write();
-                                            w[i].name = resolved.unwrap_or(input);
-                                            w[i].label = None;
+                                            if let Some(key) = resolved {
+                                                w[i].name = key;
+                                                w[i].label = None;
+                                            } else {
+                                                w[i].set_label(input);
+                                            }
                                             w[i].description.clear();
                                         }
                                     />
@@ -187,8 +191,8 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         class="feature-name"
                                         placeholder=move_tr!("trait-name")
                                         prop:value=name
-                                        on:input=move |e| {
-                                            racial_traits.write()[i].name = event_target_value(&e);
+                                        on:change=move |e| {
+                                            racial_traits.write()[i].set_label(event_target_value(&e));
                                         }
                                     />
                                     <button

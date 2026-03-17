@@ -332,8 +332,12 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                                         && let FeatureValue::Choice { options } = &mut f.value
                                                                         && let Some(opt) = options.get_mut(opt_idx)
                                                                     {
-                                                                        opt.name = resolved.unwrap_or(input);
-                                                                        opt.label = opt_label.flatten();
+                                                                        if let Some(key) = resolved {
+                                                                            opt.name = key;
+                                                                            opt.label = opt_label.flatten();
+                                                                        } else {
+                                                                            opt.set_label(input);
+                                                                        }
                                                                         opt.description.clear();
                                                                         if let Some(cost) = cost {
                                                                             opt.cost = cost;

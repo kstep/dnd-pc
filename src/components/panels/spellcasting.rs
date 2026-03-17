@@ -226,8 +226,7 @@ fn FeatureSpellcastingSection(
                                                     spell.name = name;
                                                     spell.label = Some(input);
                                                 } else {
-                                                    spell.name = input;
-                                                    spell.label = None;
+                                                    spell.set_label(input);
                                                 }
                                                 spell.description.clear();
                                             });
