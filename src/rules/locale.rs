@@ -188,25 +188,22 @@ impl LocaleText {
         self
     }
 
-    /// Fill label if present.
+    /// Always assign label (clears to None if locale doesn't have one).
     pub fn apply_label(&self, target: &mut Option<String>) {
-        if let Some(label) = &self.label {
-            *target = Some(label.clone());
-        }
+        *target = self.label.clone();
     }
 
-    /// Fill description if present.
+    /// Always assign description (clears if locale doesn't have one).
     pub fn apply_description(&self, target: &mut String) {
-        if let Some(desc) = &self.description {
-            desc.clone_into(target);
+        match &self.description {
+            Some(desc) => desc.clone_into(target),
+            None => target.clear(),
         }
     }
 
-    /// Fill short if present.
+    /// Always assign short (clears to None if locale doesn't have one).
     pub fn apply_short(&self, target: &mut Option<String>) {
-        if let Some(short) = &self.short {
-            *target = Some(short.clone());
-        }
+        *target = self.short.clone();
     }
 
     /// Returns true if all fields are None/empty.
@@ -308,38 +305,7 @@ impl LocaleKey {
     }
 }
 
-// --- Clear + apply locale to definition types ---
-
-/// Clear all locale-dependent fields (label, description, short) on a feature.
-fn clear_feature_locale(feat: &mut FeatureDefinition) {
-    feat.label = None;
-    feat.description.clear();
-    for field_def in feat.fields.values_mut() {
-        field_def.label = None;
-        field_def.description.clear();
-        if let FieldKind::Points { short, .. } = &mut field_def.kind {
-            *short = None;
-        }
-        if let FieldKind::Choice {
-            options: ChoiceOptions::List(opts),
-            ..
-        } = &mut field_def.kind
-        {
-            for opt in opts {
-                opt.label = None;
-                opt.description.clear();
-            }
-        }
-    }
-    if let Some(spells_def) = &mut feat.spells
-        && let super::spells::SpellList::Inline(spell_map) = &mut spells_def.list
-    {
-        for spell_def in spell_map.0.values_mut() {
-            spell_def.label = None;
-            spell_def.description.clear();
-        }
-    }
-}
+// --- Application to definition types ---
 
 /// Helper: apply locale text to a feature definition's fields and nested items.
 fn apply_locale_to_feature(
@@ -393,23 +359,7 @@ fn apply_locale_to_feature(
 }
 
 /// Apply a locale map to a `ClassDefinition`.
-/// Clears all locale-dependent fields first, then applies the new locale.
 pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
-    // Clear old locale values
-    def.label = None;
-    def.description.clear();
-    for feat in def.features.values_mut() {
-        clear_feature_locale(feat);
-    }
-    for sc in def.subclasses.values_mut() {
-        sc.label = None;
-        sc.description.clear();
-        for feat in sc.features.values_mut() {
-            clear_feature_locale(feat);
-        }
-    }
-
-    // Apply new locale
     for (key, text) in locale {
         match key.parse() {
             LocalePath::Root => {
@@ -489,16 +439,6 @@ pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
 
 /// Apply a locale map to a `RaceDefinition`.
 pub fn apply_race_locale(def: &mut RaceDefinition, locale: &LocaleMap) {
-    def.label = None;
-    def.description.clear();
-    for rt in def.traits.values_mut() {
-        rt.label = None;
-        rt.description.clear();
-    }
-    for feat in def.features.values_mut() {
-        clear_feature_locale(feat);
-    }
-
     for (key, text) in locale {
         match key.parse() {
             LocalePath::Root => {
@@ -539,12 +479,6 @@ pub fn apply_race_locale(def: &mut RaceDefinition, locale: &LocaleMap) {
 
 /// Apply a locale map to a `BackgroundDefinition`.
 pub fn apply_background_locale(def: &mut BackgroundDefinition, locale: &LocaleMap) {
-    def.label = None;
-    def.description.clear();
-    for feat in def.features.values_mut() {
-        clear_feature_locale(feat);
-    }
-
     for (key, text) in locale {
         match key.parse() {
             LocalePath::Root => {
@@ -840,10 +774,6 @@ pub fn apply_effects_locale(effects: &mut EffectsIndex, locale: &EffectsLocaleMa
 
 /// Apply locale to a `SpellMap`.
 pub fn apply_spell_map_locale(spells: &mut SpellMap, locale: &SpellLocaleMap) {
-    for spell_def in spells.0.values_mut() {
-        spell_def.label = None;
-        spell_def.description.clear();
-    }
     for (name, text) in locale {
         if let Some(spell_def) = spells.0.get_mut(name.as_ref()) {
             text.apply_label(&mut spell_def.label);
