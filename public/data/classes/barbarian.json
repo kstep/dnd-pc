@@ -1,11 +1,9 @@
 {
   "name": "Barbarian",
-  "description": "",
   "hit_die": 12,
   "features": [
     {
       "name": "Rage",
-      "description": "",
       "fields": [
         {
           "name": "Rages",
@@ -34,7 +32,6 @@
           "options": [
             {
               "name": "Rage",
-              "description": "",
               "cost": 1,
               "action": "BonusAction"
             }
@@ -44,12 +41,10 @@
     },
     {
       "name": "Unarmored Defense",
-      "description": "",
       "ac_expr": "10 + DEX.MOD + CON.MOD"
     },
     {
       "name": "Weapon Mastery (Barbarian)",
-      "description": "",
       "fields": [
         {
           "name": "Weapon",
@@ -63,12 +58,10 @@
       ]
     },
     {
-      "name": "Danger Sense",
-      "description": ""
+      "name": "Danger Sense"
     },
     {
       "name": "Reckless Attack",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -76,7 +69,6 @@
           "options": [
             {
               "name": "Reckless Attack",
-              "description": "",
               "action": "Action"
             }
           ]
@@ -84,25 +76,20 @@
       ]
     },
     {
-      "name": "Barbarian Subclass",
-      "description": ""
+      "name": "Barbarian Subclass"
     },
     {
-      "name": "Primal Knowledge",
-      "description": ""
+      "name": "Primal Knowledge"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Extra Attack",
-      "description": ""
+      "name": "Extra Attack"
     },
     {
       "name": "Fast Movement",
-      "description": "",
       "assign": [
         {
           "expr": "SPEED += 10",
@@ -112,50 +99,39 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Feral Instinct",
-      "description": ""
+      "name": "Feral Instinct"
     },
     {
-      "name": "Instinctive Pounce",
-      "description": ""
+      "name": "Instinctive Pounce"
     },
     {
-      "name": "Brutal Strike",
-      "description": ""
+      "name": "Brutal Strike"
     },
     {
-      "name": "Relentless Rage",
-      "description": ""
+      "name": "Relentless Rage"
     },
     {
       "name": "Improved Brutal Strike",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Persistent Rage",
-      "description": ""
+      "name": "Persistent Rage"
     },
     {
-      "name": "Indomitable Might",
-      "description": ""
+      "name": "Indomitable Might"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Primal Champion",
-      "description": ""
+      "name": "Primal Champion"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
@@ -276,27 +252,21 @@
   "subclasses": [
     {
       "name": "Path of the Berserker",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Berserker",
-          "description": ""
+          "name": "Path of the Berserker"
         },
         {
-          "name": "Frenzy",
-          "description": ""
+          "name": "Frenzy"
         },
         {
-          "name": "Mindless Rage",
-          "description": ""
+          "name": "Mindless Rage"
         },
         {
-          "name": "Retaliation",
-          "description": ""
+          "name": "Retaliation"
         },
         {
-          "name": "Intimidating Presence",
-          "description": ""
+          "name": "Intimidating Presence"
         }
       ],
       "levels": {
@@ -329,31 +299,24 @@
     },
     {
       "name": "Path of the Battlerager",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Battlerager",
-          "description": ""
+          "name": "Path of the Battlerager"
         },
         {
-          "name": "Battlerager Armor",
-          "description": ""
+          "name": "Battlerager Armor"
         },
         {
-          "name": "Restriction—Dwarves Only",
-          "description": ""
+          "name": "Restriction—Dwarves Only"
         },
         {
-          "name": "Reckless Abandon",
-          "description": ""
+          "name": "Reckless Abandon"
         },
         {
-          "name": "Battlerager Charge",
-          "description": ""
+          "name": "Battlerager Charge"
         },
         {
-          "name": "Spiked Retribution",
-          "description": ""
+          "name": "Spiked Retribution"
         }
       ],
       "levels": {
@@ -387,27 +350,21 @@
     },
     {
       "name": "Path of the Ancestral Guardian",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Ancestral Guardian",
-          "description": ""
+          "name": "Path of the Ancestral Guardian"
         },
         {
-          "name": "Ancestral Protectors",
-          "description": ""
+          "name": "Ancestral Protectors"
         },
         {
-          "name": "Spirit Shield",
-          "description": ""
+          "name": "Spirit Shield"
         },
         {
-          "name": "Consult the Spirits",
-          "description": ""
+          "name": "Consult the Spirits"
         },
         {
-          "name": "Vengeful Ancestors",
-          "description": ""
+          "name": "Vengeful Ancestors"
         }
       ],
       "levels": {
@@ -440,39 +397,30 @@
     },
     {
       "name": "Path of the Storm Herald",
-      "description": "",
       "features": [
         {
-          "name": "Desert",
-          "description": ""
+          "name": "Desert"
         },
         {
-          "name": "Path of the Storm Herald",
-          "description": ""
+          "name": "Path of the Storm Herald"
         },
         {
-          "name": "Sea",
-          "description": ""
+          "name": "Sea"
         },
         {
-          "name": "Tundra",
-          "description": ""
+          "name": "Tundra"
         },
         {
-          "name": "Storm Aura",
-          "description": ""
+          "name": "Storm Aura"
         },
         {
-          "name": "Storm Soul",
-          "description": ""
+          "name": "Storm Soul"
         },
         {
-          "name": "Shielding Storm",
-          "description": ""
+          "name": "Shielding Storm"
         },
         {
-          "name": "Raging Storm",
-          "description": ""
+          "name": "Raging Storm"
         }
       ],
       "levels": {
@@ -514,31 +462,24 @@
     },
     {
       "name": "Path of the Zealot",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Zealot",
-          "description": ""
+          "name": "Path of the Zealot"
         },
         {
-          "name": "Divine Fury",
-          "description": ""
+          "name": "Divine Fury"
         },
         {
-          "name": "Warrior of the Gods",
-          "description": ""
+          "name": "Warrior of the Gods"
         },
         {
-          "name": "Fanatical Focus",
-          "description": ""
+          "name": "Fanatical Focus"
         },
         {
-          "name": "Zealous Presence",
-          "description": ""
+          "name": "Zealous Presence"
         },
         {
-          "name": "Rage of the Gods",
-          "description": ""
+          "name": "Rage of the Gods"
         }
       ],
       "levels": {
@@ -572,27 +513,21 @@
     },
     {
       "name": "Path of the Beast",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Beast",
-          "description": ""
+          "name": "Path of the Beast"
         },
         {
-          "name": "Form of the Beast",
-          "description": ""
+          "name": "Form of the Beast"
         },
         {
-          "name": "Bestial Soul",
-          "description": ""
+          "name": "Bestial Soul"
         },
         {
-          "name": "Infectious Fury",
-          "description": ""
+          "name": "Infectious Fury"
         },
         {
-          "name": "Call the Hunt",
-          "description": ""
+          "name": "Call the Hunt"
         }
       ],
       "levels": {
@@ -625,31 +560,24 @@
     },
     {
       "name": "Path of Wild Magic",
-      "description": "",
       "features": [
         {
-          "name": "Path of Wild Magic",
-          "description": ""
+          "name": "Path of Wild Magic"
         },
         {
-          "name": "Magic Awareness",
-          "description": ""
+          "name": "Magic Awareness"
         },
         {
-          "name": "Wild Surge",
-          "description": ""
+          "name": "Wild Surge"
         },
         {
-          "name": "Bolstering Magic",
-          "description": ""
+          "name": "Bolstering Magic"
         },
         {
-          "name": "Unstable Backlash",
-          "description": ""
+          "name": "Unstable Backlash"
         },
         {
-          "name": "Controlled Surge",
-          "description": ""
+          "name": "Controlled Surge"
         }
       ],
       "levels": {
@@ -683,34 +611,27 @@
     },
     {
       "name": "Path of the Giant",
-      "description": "",
       "features": [
         {
           "name": "Giant Power",
-          "description": "",
           "languages": [
             "Giant"
           ]
         },
         {
-          "name": "Giant's Havoc",
-          "description": ""
+          "name": "Giant's Havoc"
         },
         {
-          "name": "Path of the Giant",
-          "description": ""
+          "name": "Path of the Giant"
         },
         {
-          "name": "Elemental Cleaver",
-          "description": ""
+          "name": "Elemental Cleaver"
         },
         {
-          "name": "Mighty Impel",
-          "description": ""
+          "name": "Mighty Impel"
         },
         {
-          "name": "Demiurgic Colossus",
-          "description": ""
+          "name": "Demiurgic Colossus"
         }
       ],
       "levels": {
@@ -744,31 +665,24 @@
     },
     {
       "name": "Path of the Wild Heart",
-      "description": "",
       "features": [
         {
-          "name": "Path of the Wild Heart",
-          "description": ""
+          "name": "Path of the Wild Heart"
         },
         {
-          "name": "Animal Speaker",
-          "description": ""
+          "name": "Animal Speaker"
         },
         {
-          "name": "Rage of the Wilds",
-          "description": ""
+          "name": "Rage of the Wilds"
         },
         {
-          "name": "Aspect of the Wilds",
-          "description": ""
+          "name": "Aspect of the Wilds"
         },
         {
-          "name": "Nature Speaker",
-          "description": ""
+          "name": "Nature Speaker"
         },
         {
-          "name": "Power of the Wilds",
-          "description": ""
+          "name": "Power of the Wilds"
         }
       ],
       "levels": {
@@ -802,27 +716,21 @@
     },
     {
       "name": "Path of the World Tree",
-      "description": "",
       "features": [
         {
-          "name": "Path of the World Tree",
-          "description": ""
+          "name": "Path of the World Tree"
         },
         {
-          "name": "Vitality of the Tree",
-          "description": ""
+          "name": "Vitality of the Tree"
         },
         {
-          "name": "Branches of the Tree",
-          "description": ""
+          "name": "Branches of the Tree"
         },
         {
-          "name": "Battering Roots",
-          "description": ""
+          "name": "Battering Roots"
         },
         {
-          "name": "Travel Along the Tree",
-          "description": ""
+          "name": "Travel Along the Tree"
         }
       ],
       "levels": {

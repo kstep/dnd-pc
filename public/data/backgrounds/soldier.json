@@ -1,10 +1,8 @@
 {
   "name": "Soldier",
-  "description": "",
   "features": [
     {
       "name": "Background Abilities",
-      "description": "",
       "assign": [
         {
           "expr": "STR += 2; CON += 1; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
@@ -13,8 +11,7 @@
       ]
     },
     {
-      "name": "Savage Attacker",
-      "description": ""
+      "name": "Savage Attacker"
     }
   ]
 }

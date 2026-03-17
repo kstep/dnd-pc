@@ -1,902 +1,722 @@
 [
   {
     "name": "Control Flames",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Create Bonfire",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Druidcraft",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Elementalism",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Frostbite",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Guidance",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Gust",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Infestation",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Magic Stone",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Mending",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Message",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Mold Earth",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Poison Spray",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Primal Savagery",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Produce Flame",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Resistance",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Shape Water",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Shillelagh",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Spare the Dying",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Starry Wisp",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Thorn Whip",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Thunderclap",
-    "level": 0,
-    "description": ""
+    "level": 0
   },
   {
     "name": "Absorb Elements",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Animal Friendship",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Beast Bond",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Charm Person",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Create or Destroy Water",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Cure Wounds",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Detect Magic",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Detect Poison and Disease",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Earth Tremor",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Entangle",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Faerie Fire",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Fog Cloud",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Goodberry",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Healing Word",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Ice Knife",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Jump",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Longstrider",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Protection from Evil and Good",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Purify Food and Drink",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Snare",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Speak with Animals",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Thunderwave",
-    "level": 1,
-    "description": ""
+    "level": 1
   },
   {
     "name": "Aid",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Air Bubble",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Animal Messenger",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Augury",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Barkskin",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Beast Sense",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Continual Flame",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Darkvision",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Dust Devil",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Earthbind",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Enhance Ability",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Enlarge/Reduce",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Find Traps",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Flame Blade",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Flaming Sphere",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Gust of Wind",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Healing Spirit",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Heat Metal",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Hold Person",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Lesser Restoration",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Locate Animals or Plants",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Locate Object",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Moonbeam",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Pass without Trace",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Protection from Poison",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Skywrite",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Spike Growth",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Summon Beast",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Warding Wind",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Wither and Bloom",
-    "level": 2,
-    "description": ""
+    "level": 2
   },
   {
     "name": "Aura of Vitality",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Call Lightning",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Conjure Animals",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Daylight",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Dispel Magic",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Elemental Weapon",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Erupting Earth",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Feign Death",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Flame Arrows",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Meld into Stone",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Plant Growth",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Protection from Energy",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Revivify",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Sleet Storm",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Speak with Plants",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Summon Fey",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Syluné's Viper",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Tidal Wave",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Wall of Water",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Water Breathing",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Water Walk",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Wind Wall",
-    "level": 3,
-    "description": ""
+    "level": 3
   },
   {
     "name": "Blight",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Charm Monster",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Confusion",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Conjure Minor Elementals",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Conjure Woodland Beings",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Control Water",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Divination",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Dominate Beast",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Elemental Bane",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Fire Shield",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Fount of Moonlight",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Freedom of Movement",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Giant Insect",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Grasping Vine",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Guardian of Nature",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Hallucinatory Terrain",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Ice Storm",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Locate Creature",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Polymorph",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Stone Shape",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Stoneskin",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Summon Elemental",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Wall of Fire",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Watery Sphere",
-    "level": 4,
-    "description": ""
+    "level": 4
   },
   {
     "name": "Alustriel's Mooncloak",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Antilife Shell",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Awaken",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Commune with Nature",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Cone of Cold",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Conjure Elemental",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Contagion",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Control Winds",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Geas",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Greater Restoration",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Insect Plague",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Maelstrom",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Mass Cure Wounds",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Planar Binding",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Reincarnate",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Scrying",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Songal's Elemental Suffusion",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Summon Draconic Spirit",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Transmute Rock",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Tree Stride",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Wall of Stone",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Wrath of Nature",
-    "level": 5,
-    "description": ""
+    "level": 5
   },
   {
     "name": "Bones of the Earth",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Conjure Fey",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Druid Grove",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Elminster's Effulgent Spheres",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Find the Path",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Flesh to Stone",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Heal",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Heroes' Feast",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Investiture of Flame",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Investiture of Ice",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Investiture of Stone",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Investiture of Wind",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Move Earth",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Primordial Ward",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Sunbeam",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Transport via Plants",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Wall of Thorns",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Wind Walk",
-    "level": 6,
-    "description": ""
+    "level": 6
   },
   {
     "name": "Draconic Transformation",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Fire Storm",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Mirage Arcane",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Plane Shift",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Regenerate",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Reverse Gravity",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Symbol",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Whirlwind",
-    "level": 7,
-    "description": ""
+    "level": 7
   },
   {
     "name": "Animal Shapes",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Antipathy/Sympathy",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Befuddlement",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Control Weather",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Earthquake",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Incendiary Cloud",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Sunburst",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Tsunami",
-    "level": 8,
-    "description": ""
+    "level": 8
   },
   {
     "name": "Foresight",
-    "level": 9,
-    "description": ""
+    "level": 9
   },
   {
     "name": "Shapechange",
-    "level": 9,
-    "description": ""
+    "level": 9
   },
   {
     "name": "Storm of Vengeance",
-    "level": 9,
-    "description": ""
+    "level": 9
   },
   {
     "name": "True Resurrection",
-    "level": 9,
-    "description": ""
+    "level": 9
   }
 ]

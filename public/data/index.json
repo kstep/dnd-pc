@@ -3,7 +3,6 @@
     {
       "name": "Artificer",
       "url": "classes/artificer.json",
-      "description": "",
       "prerequisites": [
         3
       ]
@@ -11,7 +10,6 @@
     {
       "name": "Barbarian",
       "url": "classes/barbarian.json",
-      "description": "",
       "prerequisites": [
         0
       ]
@@ -19,7 +17,6 @@
     {
       "name": "Bard",
       "url": "classes/bard.json",
-      "description": "",
       "prerequisites": [
         5
       ]
@@ -27,7 +24,6 @@
     {
       "name": "Cleric",
       "url": "classes/cleric.json",
-      "description": "",
       "prerequisites": [
         4
       ]
@@ -35,7 +31,6 @@
     {
       "name": "Druid",
       "url": "classes/druid.json",
-      "description": "",
       "prerequisites": [
         4
       ]
@@ -43,7 +38,6 @@
     {
       "name": "Fighter",
       "url": "classes/fighter.json",
-      "description": "",
       "prerequisites": [
         0
       ]
@@ -51,7 +45,6 @@
     {
       "name": "Monk",
       "url": "classes/monk.json",
-      "description": "",
       "prerequisites": [
         1
       ]
@@ -59,7 +52,6 @@
     {
       "name": "Paladin",
       "url": "classes/paladin.json",
-      "description": "",
       "prerequisites": [
         5
       ]
@@ -67,7 +59,6 @@
     {
       "name": "Ranger",
       "url": "classes/ranger.json",
-      "description": "",
       "prerequisites": [
         4
       ]
@@ -75,7 +66,6 @@
     {
       "name": "Rogue",
       "url": "classes/rogue.json",
-      "description": "",
       "prerequisites": [
         1
       ]
@@ -83,7 +73,6 @@
     {
       "name": "Sorcerer",
       "url": "classes/sorcerer.json",
-      "description": "",
       "prerequisites": [
         5
       ]
@@ -91,7 +80,6 @@
     {
       "name": "Warlock",
       "url": "classes/warlock.json",
-      "description": "",
       "prerequisites": [
         5
       ]
@@ -99,7 +87,6 @@
     {
       "name": "Wizard",
       "url": "classes/wizard.json",
-      "description": "",
       "prerequisites": [
         3
       ]
@@ -108,165 +95,133 @@
   "races": [
     {
       "name": "Aasimar",
-      "url": "races/aasimar.json",
-      "description": ""
+      "url": "races/aasimar.json"
     },
     {
       "name": "Dragonborn",
-      "url": "races/dragonborn.json",
-      "description": ""
+      "url": "races/dragonborn.json"
     },
     {
       "name": "Drow",
-      "url": "races/drow.json",
-      "description": ""
+      "url": "races/drow.json"
     },
     {
       "name": "Dwarf",
-      "url": "races/dwarf.json",
-      "description": ""
+      "url": "races/dwarf.json"
     },
     {
       "name": "Forest Gnome",
-      "url": "races/forest-gnome.json",
-      "description": ""
+      "url": "races/forest-gnome.json"
     },
     {
       "name": "Goliath",
-      "url": "races/goliath.json",
-      "description": ""
+      "url": "races/goliath.json"
     },
     {
       "name": "Halfling",
-      "url": "races/halfling.json",
-      "description": ""
+      "url": "races/halfling.json"
     },
     {
       "name": "High Elf",
-      "url": "races/high-elf.json",
-      "description": ""
+      "url": "races/high-elf.json"
     },
     {
       "name": "Human",
-      "url": "races/human.json",
-      "description": ""
+      "url": "races/human.json"
     },
     {
       "name": "Orc",
-      "url": "races/orc.json",
-      "description": ""
+      "url": "races/orc.json"
     },
     {
       "name": "Rock Gnome",
-      "url": "races/rock-gnome.json",
-      "description": ""
+      "url": "races/rock-gnome.json"
     },
     {
       "name": "Tiefling",
-      "url": "races/tiefling.json",
-      "description": ""
+      "url": "races/tiefling.json"
     },
     {
       "name": "Tiefling (Abyssal)",
-      "url": "races/tiefling-abyssal.json",
-      "description": ""
+      "url": "races/tiefling-abyssal.json"
     },
     {
       "name": "Tiefling (Chthonic)",
-      "url": "races/tiefling-chthonic.json",
-      "description": ""
+      "url": "races/tiefling-chthonic.json"
     },
     {
       "name": "Tiefling (Infernal)",
-      "url": "races/tiefling-infernal.json",
-      "description": ""
+      "url": "races/tiefling-infernal.json"
     },
     {
       "name": "Wood Elf",
-      "url": "races/wood-elf.json",
-      "description": ""
+      "url": "races/wood-elf.json"
     }
   ],
   "backgrounds": [
     {
       "name": "Acolyte",
-      "url": "backgrounds/acolyte.json",
-      "description": ""
+      "url": "backgrounds/acolyte.json"
     },
     {
       "name": "Artisan",
-      "url": "backgrounds/artisan.json",
-      "description": ""
+      "url": "backgrounds/artisan.json"
     },
     {
       "name": "Charlatan",
-      "url": "backgrounds/charlatan.json",
-      "description": ""
+      "url": "backgrounds/charlatan.json"
     },
     {
       "name": "Criminal",
-      "url": "backgrounds/criminal.json",
-      "description": ""
+      "url": "backgrounds/criminal.json"
     },
     {
       "name": "Entertainer",
-      "url": "backgrounds/entertainer.json",
-      "description": ""
+      "url": "backgrounds/entertainer.json"
     },
     {
       "name": "Farmer",
-      "url": "backgrounds/farmer.json",
-      "description": ""
+      "url": "backgrounds/farmer.json"
     },
     {
       "name": "Guard",
-      "url": "backgrounds/guard.json",
-      "description": ""
+      "url": "backgrounds/guard.json"
     },
     {
       "name": "Guide",
-      "url": "backgrounds/guide.json",
-      "description": ""
+      "url": "backgrounds/guide.json"
     },
     {
       "name": "Hermit",
-      "url": "backgrounds/hermit.json",
-      "description": ""
+      "url": "backgrounds/hermit.json"
     },
     {
       "name": "Merchant",
-      "url": "backgrounds/merchant.json",
-      "description": ""
+      "url": "backgrounds/merchant.json"
     },
     {
       "name": "Noble",
-      "url": "backgrounds/noble.json",
-      "description": ""
+      "url": "backgrounds/noble.json"
     },
     {
       "name": "Sage",
-      "url": "backgrounds/sage.json",
-      "description": ""
+      "url": "backgrounds/sage.json"
     },
     {
       "name": "Sailor",
-      "url": "backgrounds/sailor.json",
-      "description": ""
+      "url": "backgrounds/sailor.json"
     },
     {
       "name": "Scribe",
-      "url": "backgrounds/scribe.json",
-      "description": ""
+      "url": "backgrounds/scribe.json"
     },
     {
       "name": "Soldier",
-      "url": "backgrounds/soldier.json",
-      "description": ""
+      "url": "backgrounds/soldier.json"
     },
     {
       "name": "Wayfarer",
-      "url": "backgrounds/wayfarer.json",
-      "description": ""
+      "url": "backgrounds/wayfarer.json"
     }
   ],
   "spells": [

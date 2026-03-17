@@ -1,10 +1,8 @@
 {
   "name": "Acolyte",
-  "description": "",
   "features": [
     {
       "name": "Background Abilities",
-      "description": "",
       "assign": [
         {
           "expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
@@ -14,7 +12,6 @@
     },
     {
       "name": "Magic Initiate (Cleric)",
-      "description": "",
       "spells": {
         "casting_ability": 4,
         "list": {

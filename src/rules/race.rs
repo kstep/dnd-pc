@@ -14,6 +14,7 @@ pub struct RaceTrait {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub languages: VecSet<String>,
@@ -52,6 +53,7 @@ pub struct RaceDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub traits: BTreeMap<Box<str>, RaceTrait>,

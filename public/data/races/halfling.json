@@ -1,26 +1,20 @@
 {
   "name": "Halfling",
-  "description": "",
   "traits": [
     {
-      "name": "Brave",
-      "description": ""
+      "name": "Brave"
     },
     {
-      "name": "Halfling Nimbleness",
-      "description": ""
+      "name": "Halfling Nimbleness"
     },
     {
-      "name": "Luck",
-      "description": ""
+      "name": "Luck"
     },
     {
-      "name": "Naturally Stealthy",
-      "description": ""
+      "name": "Naturally Stealthy"
     },
     {
       "name": "Languages",
-      "description": "",
       "languages": [
         "Common",
         "Halfling"

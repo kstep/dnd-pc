@@ -13,6 +13,7 @@ pub struct BackgroundDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
+    #[serde(default)]
     pub description: String,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<Box<str>, FeatureDefinition>,

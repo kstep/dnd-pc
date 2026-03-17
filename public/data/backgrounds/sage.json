@@ -1,10 +1,8 @@
 {
   "name": "Sage",
-  "description": "",
   "features": [
     {
       "name": "Background Abilities",
-      "description": "",
       "assign": [
         {
           "expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
@@ -14,7 +12,6 @@
     },
     {
       "name": "Magic Initiate (Wizard)",
-      "description": "",
       "spells": {
         "casting_ability": 3,
         "list": {

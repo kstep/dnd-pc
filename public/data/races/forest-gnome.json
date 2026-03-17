@@ -1,18 +1,14 @@
 {
   "name": "Forest Gnome",
-  "description": "",
   "traits": [
     {
-      "name": "Darkvision",
-      "description": ""
+      "name": "Darkvision"
     },
     {
-      "name": "Gnomish Cunning",
-      "description": ""
+      "name": "Gnomish Cunning"
     },
     {
       "name": "Languages",
-      "description": "",
       "languages": [
         "Common",
         "Gnomish"
@@ -22,14 +18,12 @@
   "features": [
     {
       "name": "Gnomish Lineage",
-      "description": "",
       "spells": {
         "casting_ability": 5,
         "list": [
           {
             "name": "Minor Illusion",
             "level": 0,
-            "description": "",
             "sticky": true
           }
         ]

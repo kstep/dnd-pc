@@ -1,19 +1,15 @@
 {
   "name": "Fighter",
-  "description": "",
   "hit_die": 10,
   "features": [
     {
-      "name": "Fighting Style",
-      "description": ""
+      "name": "Fighting Style"
     },
     {
       "name": "Second Wind",
-      "description": "",
       "fields": [
         {
           "name": "Second Wind",
-          "description": "",
           "kind": "Points",
           "levels": {
             "1": 2,
@@ -28,7 +24,6 @@
           "options": [
             {
               "name": "Second Wind",
-              "description": "",
               "cost": 1,
               "action": "BonusAction"
             }
@@ -38,7 +33,6 @@
     },
     {
       "name": "Weapon Mastery (Fighter)",
-      "description": "",
       "fields": [
         {
           "name": "Weapon",
@@ -54,7 +48,6 @@
     },
     {
       "name": "Action Surge",
-      "description": "",
       "stackable": true,
       "fields": [
         {
@@ -63,7 +56,6 @@
           "options": [
             {
               "name": "Action Surge",
-              "description": "",
               "action": "Action"
             }
           ]
@@ -71,60 +63,47 @@
       ]
     },
     {
-      "name": "Tactical Mind",
-      "description": ""
+      "name": "Tactical Mind"
     },
     {
-      "name": "Fighter Subclass",
-      "description": ""
+      "name": "Fighter Subclass"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Extra Attack",
-      "description": ""
+      "name": "Extra Attack"
     },
     {
-      "name": "Tactical Shift",
-      "description": ""
+      "name": "Tactical Shift"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Indomitable",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Tactical Master",
-      "description": ""
+      "name": "Tactical Master"
     },
     {
-      "name": "Two Extra Attacks",
-      "description": ""
+      "name": "Two Extra Attacks"
     },
     {
-      "name": "Studied Attacks",
-      "description": ""
+      "name": "Studied Attacks"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Three Extra Attacks",
-      "description": ""
+      "name": "Three Extra Attacks"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
@@ -246,39 +225,30 @@
   "subclasses": [
     {
       "name": "Battle Master",
-      "description": "",
       "features": [
         {
-          "name": "Battle Master",
-          "description": ""
+          "name": "Battle Master"
         },
         {
-          "name": "Combat Superiority",
-          "description": ""
+          "name": "Combat Superiority"
         },
         {
-          "name": "Maneuver Options",
-          "description": ""
+          "name": "Maneuver Options"
         },
         {
-          "name": "Student of War",
-          "description": ""
+          "name": "Student of War"
         },
         {
-          "name": "Know Your Enemy",
-          "description": ""
+          "name": "Know Your Enemy"
         },
         {
-          "name": "Improved Combat Superiority",
-          "description": ""
+          "name": "Improved Combat Superiority"
         },
         {
-          "name": "Relentless",
-          "description": ""
+          "name": "Relentless"
         },
         {
-          "name": "Ultimate Combat Superiority",
-          "description": ""
+          "name": "Ultimate Combat Superiority"
         }
       ],
       "levels": {
@@ -319,35 +289,27 @@
     },
     {
       "name": "Champion",
-      "description": "",
       "features": [
         {
-          "name": "Champion",
-          "description": ""
+          "name": "Champion"
         },
         {
-          "name": "Improved Critical",
-          "description": ""
+          "name": "Improved Critical"
         },
         {
-          "name": "Remarkable Athlete",
-          "description": ""
+          "name": "Remarkable Athlete"
         },
         {
-          "name": "Additional Fighting Style",
-          "description": ""
+          "name": "Additional Fighting Style"
         },
         {
-          "name": "Heroic Warrior",
-          "description": ""
+          "name": "Heroic Warrior"
         },
         {
-          "name": "Superior Critical",
-          "description": ""
+          "name": "Superior Critical"
         },
         {
-          "name": "Survivor",
-          "description": ""
+          "name": "Survivor"
         }
       ],
       "levels": {
@@ -387,15 +349,12 @@
     },
     {
       "name": "Eldritch Knight",
-      "description": "",
       "features": [
         {
-          "name": "Eldritch Knight",
-          "description": ""
+          "name": "Eldritch Knight"
         },
         {
           "name": "Spellcasting (Eldritch Knight)",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "caster_coef": 3,
@@ -559,24 +518,19 @@
           }
         },
         {
-          "name": "War Bond",
-          "description": ""
+          "name": "War Bond"
         },
         {
-          "name": "War Magic",
-          "description": ""
+          "name": "War Magic"
         },
         {
-          "name": "Eldritch Strike",
-          "description": ""
+          "name": "Eldritch Strike"
         },
         {
-          "name": "Arcane Charge",
-          "description": ""
+          "name": "Arcane Charge"
         },
         {
-          "name": "Improved War Magic",
-          "description": ""
+          "name": "Improved War Magic"
         }
       ],
       "levels": {
@@ -616,31 +570,24 @@
     },
     {
       "name": "Purple Dragon Knight (Banneret)",
-      "description": "",
       "features": [
         {
-          "name": "Purple Dragon Knight (Banneret)",
-          "description": ""
+          "name": "Purple Dragon Knight (Banneret)"
         },
         {
-          "name": "Rallying Cry",
-          "description": ""
+          "name": "Rallying Cry"
         },
         {
-          "name": "Restriction: Knighthood",
-          "description": ""
+          "name": "Restriction: Knighthood"
         },
         {
-          "name": "Royal Envoy",
-          "description": ""
+          "name": "Royal Envoy"
         },
         {
-          "name": "Inspiring Surge",
-          "description": ""
+          "name": "Inspiring Surge"
         },
         {
-          "name": "Bulwark",
-          "description": ""
+          "name": "Bulwark"
         }
       ],
       "levels": {
@@ -680,39 +627,30 @@
     },
     {
       "name": "Arcane Archer",
-      "description": "",
       "features": [
         {
-          "name": "Arcane Archer",
-          "description": ""
+          "name": "Arcane Archer"
         },
         {
-          "name": "Arcane Archer Lore",
-          "description": ""
+          "name": "Arcane Archer Lore"
         },
         {
-          "name": "Arcane Shot",
-          "description": ""
+          "name": "Arcane Shot"
         },
         {
-          "name": "Arcane Shot Options",
-          "description": ""
+          "name": "Arcane Shot Options"
         },
         {
-          "name": "Additional Arcane Shot Option",
-          "description": ""
+          "name": "Additional Arcane Shot Option"
         },
         {
-          "name": "Curving Shot",
-          "description": ""
+          "name": "Curving Shot"
         },
         {
-          "name": "Magic Arrow",
-          "description": ""
+          "name": "Magic Arrow"
         },
         {
-          "name": "Ever-Ready Shot",
-          "description": ""
+          "name": "Ever-Ready Shot"
         }
       ],
       "levels": {
@@ -756,39 +694,30 @@
     },
     {
       "name": "Cavalier",
-      "description": "",
       "features": [
         {
-          "name": "Cavalier",
-          "description": ""
+          "name": "Cavalier"
         },
         {
-          "name": "Bonus Proficiency",
-          "description": ""
+          "name": "Bonus Proficiency"
         },
         {
-          "name": "Born to the Saddle",
-          "description": ""
+          "name": "Born to the Saddle"
         },
         {
-          "name": "Unwavering Mark",
-          "description": ""
+          "name": "Unwavering Mark"
         },
         {
-          "name": "Warding Maneuver",
-          "description": ""
+          "name": "Warding Maneuver"
         },
         {
-          "name": "Hold the Line",
-          "description": ""
+          "name": "Hold the Line"
         },
         {
-          "name": "Ferocious Charger",
-          "description": ""
+          "name": "Ferocious Charger"
         },
         {
-          "name": "Vigilant Defender",
-          "description": ""
+          "name": "Vigilant Defender"
         }
       ],
       "levels": {
@@ -829,35 +758,27 @@
     },
     {
       "name": "Samurai",
-      "description": "",
       "features": [
         {
-          "name": "Samurai",
-          "description": ""
+          "name": "Samurai"
         },
         {
-          "name": "Bonus Proficiency",
-          "description": ""
+          "name": "Bonus Proficiency"
         },
         {
-          "name": "Fighting Spirit",
-          "description": ""
+          "name": "Fighting Spirit"
         },
         {
-          "name": "Elegant Courtier",
-          "description": ""
+          "name": "Elegant Courtier"
         },
         {
-          "name": "Tireless Spirit",
-          "description": ""
+          "name": "Tireless Spirit"
         },
         {
-          "name": "Rapid Strike",
-          "description": ""
+          "name": "Rapid Strike"
         },
         {
-          "name": "Strength before Death",
-          "description": ""
+          "name": "Strength before Death"
         }
       ],
       "levels": {
@@ -897,35 +818,27 @@
     },
     {
       "name": "Echo Knight",
-      "description": "",
       "features": [
         {
-          "name": "Echo Knight",
-          "description": ""
+          "name": "Echo Knight"
         },
         {
-          "name": "Manifest Echo",
-          "description": ""
+          "name": "Manifest Echo"
         },
         {
-          "name": "Unleash Incarnation",
-          "description": ""
+          "name": "Unleash Incarnation"
         },
         {
-          "name": "Echo Avatar",
-          "description": ""
+          "name": "Echo Avatar"
         },
         {
-          "name": "Shadow Martyr",
-          "description": ""
+          "name": "Shadow Martyr"
         },
         {
-          "name": "Reclaim Potential",
-          "description": ""
+          "name": "Reclaim Potential"
         },
         {
-          "name": "Legion of One",
-          "description": ""
+          "name": "Legion of One"
         }
       ],
       "levels": {
@@ -965,51 +878,39 @@
     },
     {
       "name": "Psi Warrior",
-      "description": "",
       "features": [
         {
-          "name": "Psi Warrior",
-          "description": ""
+          "name": "Psi Warrior"
         },
         {
-          "name": "Psionic Power",
-          "description": ""
+          "name": "Psionic Power"
         },
         {
-          "name": "Protective Field",
-          "description": ""
+          "name": "Protective Field"
         },
         {
-          "name": "Psionic Strike",
-          "description": ""
+          "name": "Psionic Strike"
         },
         {
-          "name": "Telekinetic Movement",
-          "description": ""
+          "name": "Telekinetic Movement"
         },
         {
-          "name": "Psi-Powered Leap",
-          "description": ""
+          "name": "Psi-Powered Leap"
         },
         {
-          "name": "Telekinetic Adept",
-          "description": ""
+          "name": "Telekinetic Adept"
         },
         {
-          "name": "Telekinetic Thrust",
-          "description": ""
+          "name": "Telekinetic Thrust"
         },
         {
-          "name": "Guarded Mind",
-          "description": ""
+          "name": "Guarded Mind"
         },
         {
-          "name": "Bulwark of Force",
-          "description": ""
+          "name": "Bulwark of Force"
         },
         {
-          "name": "Telekinetic Master",
-          "description": ""
+          "name": "Telekinetic Master"
         }
       ],
       "levels": {
@@ -1053,46 +954,36 @@
     },
     {
       "name": "Rune Knight",
-      "description": "",
       "features": [
         {
-          "name": "Rune Knight",
-          "description": ""
+          "name": "Rune Knight"
         },
         {
           "name": "Bonus Proficiencies",
-          "description": "",
           "languages": [
             "Giant"
           ]
         },
         {
-          "name": "Giant's Might",
-          "description": ""
+          "name": "Giant's Might"
         },
         {
-          "name": "Rune Carver",
-          "description": ""
+          "name": "Rune Carver"
         },
         {
-          "name": "Additional Rune Known",
-          "description": ""
+          "name": "Additional Rune Known"
         },
         {
-          "name": "Runic Shield",
-          "description": ""
+          "name": "Runic Shield"
         },
         {
-          "name": "Great Stature",
-          "description": ""
+          "name": "Great Stature"
         },
         {
-          "name": "Master of Runes",
-          "description": ""
+          "name": "Master of Runes"
         },
         {
-          "name": "Runic Juggernaut",
-          "description": ""
+          "name": "Runic Juggernaut"
         }
       ],
       "levels": {
@@ -1136,35 +1027,27 @@
     },
     {
       "name": "Banneret",
-      "description": "",
       "features": [
         {
-          "name": "Banneret",
-          "description": ""
+          "name": "Banneret"
         },
         {
-          "name": "Group Recovery",
-          "description": ""
+          "name": "Group Recovery"
         },
         {
-          "name": "Knightly Envoy",
-          "description": ""
+          "name": "Knightly Envoy"
         },
         {
-          "name": "Team Tactics",
-          "description": ""
+          "name": "Team Tactics"
         },
         {
-          "name": "Rallying Surge",
-          "description": ""
+          "name": "Rallying Surge"
         },
         {
-          "name": "Shared Resilience",
-          "description": ""
+          "name": "Shared Resilience"
         },
         {
-          "name": "Inspiring Commander",
-          "description": ""
+          "name": "Inspiring Commander"
         }
       ],
       "levels": {

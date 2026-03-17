@@ -1,18 +1,15 @@
 {
   "name": "Ranger",
-  "description": "",
   "hit_die": 10,
   "features": [
     {
       "name": "Favored Enemy",
-      "description": "",
       "spells": {
         "cost": "Favored Enemy",
         "casting_ability": 4,
         "list": [
           {
             "name": "Hunter's Mark",
-            "description": "",
             "level": 1,
             "cost": 1,
             "sticky": true
@@ -36,7 +33,6 @@
     },
     {
       "name": "Spellcasting (Ranger)",
-      "description": "",
       "spells": {
         "casting_ability": 4,
         "list": {
@@ -209,7 +205,6 @@
     },
     {
       "name": "Weapon Mastery (Ranger)",
-      "description": "",
       "fields": [
         {
           "name": "Weapon",
@@ -221,29 +216,23 @@
       ]
     },
     {
-      "name": "Deft Explorer",
-      "description": ""
+      "name": "Deft Explorer"
     },
     {
-      "name": "Fighting Style",
-      "description": ""
+      "name": "Fighting Style"
     },
     {
-      "name": "Ranger Subclass",
-      "description": ""
+      "name": "Ranger Subclass"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Extra Attack",
-      "description": ""
+      "name": "Extra Attack"
     },
     {
       "name": "Roving",
-      "description": "",
       "assign": [
         {
           "expr": "SPEED += 10",
@@ -253,25 +242,20 @@
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Expertise",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Tireless",
-      "description": ""
+      "name": "Tireless"
     },
     {
-      "name": "Relentless Hunter",
-      "description": ""
+      "name": "Relentless Hunter"
     },
     {
       "name": "Nature's Veil",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -279,7 +263,6 @@
           "options": [
             {
               "name": "Nature's Veil",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -287,25 +270,20 @@
       ]
     },
     {
-      "name": "Precise Hunter",
-      "description": ""
+      "name": "Precise Hunter"
     },
     {
-      "name": "Feral Senses",
-      "description": ""
+      "name": "Feral Senses"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Foe Slayer",
-      "description": ""
+      "name": "Foe Slayer"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
@@ -423,27 +401,21 @@
   "subclasses": [
     {
       "name": "Beast Master",
-      "description": "",
       "features": [
         {
-          "name": "Beast Master",
-          "description": ""
+          "name": "Beast Master"
         },
         {
-          "name": "Primal Companion",
-          "description": ""
+          "name": "Primal Companion"
         },
         {
-          "name": "Exceptional Training",
-          "description": ""
+          "name": "Exceptional Training"
         },
         {
-          "name": "Bestial Fury",
-          "description": ""
+          "name": "Bestial Fury"
         },
         {
-          "name": "Share Spells",
-          "description": ""
+          "name": "Share Spells"
         }
       ],
       "levels": {
@@ -476,35 +448,28 @@
     },
     {
       "name": "Hunter",
-      "description": "",
       "features": [
         {
-          "name": "Hunter",
-          "description": ""
+          "name": "Hunter"
         },
         {
-          "name": "Hunter's Lore",
-          "description": ""
+          "name": "Hunter's Lore"
         },
         {
           "name": "Hunter's Prey",
-          "description": "",
           "fields": [
             {
               "name": "Hunter's Prey",
               "kind": "Choice",
               "options": [
                 {
-                  "name": "Colossus Slayer",
-                  "description": ""
+                  "name": "Colossus Slayer"
                 },
                 {
-                  "name": "Giant Killer",
-                  "description": ""
+                  "name": "Giant Killer"
                 },
                 {
-                  "name": "Horde Breaker",
-                  "description": ""
+                  "name": "Horde Breaker"
                 }
               ],
               "levels": {
@@ -514,16 +479,13 @@
           ]
         },
         {
-          "name": "Defensive Tactics",
-          "description": ""
+          "name": "Defensive Tactics"
         },
         {
-          "name": "Superior Hunter's Prey",
-          "description": ""
+          "name": "Superior Hunter's Prey"
         },
         {
-          "name": "Superior Hunter's Defense",
-          "description": ""
+          "name": "Superior Hunter's Defense"
         }
       ],
       "levels": {
@@ -557,11 +519,9 @@
     },
     {
       "name": "Gloom Stalker",
-      "description": "",
       "features": [
         {
           "name": "Dread Ambusher",
-          "description": "",
           "assign": [
             {
               "expr": "INITIATIVE.BONUS += WIS.MOD",
@@ -570,47 +530,40 @@
           ]
         },
         {
-          "name": "Gloom Stalker",
-          "description": ""
+          "name": "Gloom Stalker"
         },
         {
           "name": "Gloom Stalker Spells",
-          "description": "",
           "spells": {
             "casting_ability": 4,
             "list": [
               {
                 "name": "Disguise Self",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Rope Trick",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Fear",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Greater Invisibility",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 13
               },
               {
                 "name": "Seeming",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 17
               }
@@ -618,20 +571,16 @@
           }
         },
         {
-          "name": "Umbral Sight",
-          "description": ""
+          "name": "Umbral Sight"
         },
         {
-          "name": "Iron Mind",
-          "description": ""
+          "name": "Iron Mind"
         },
         {
-          "name": "Stalker's Flurry",
-          "description": ""
+          "name": "Stalker's Flurry"
         },
         {
-          "name": "Shadowy Dodge",
-          "description": ""
+          "name": "Shadowy Dodge"
         }
       ],
       "levels": {
@@ -666,35 +615,27 @@
     },
     {
       "name": "Horizon Walker",
-      "description": "",
       "features": [
         {
-          "name": "Horizon Walker",
-          "description": ""
+          "name": "Horizon Walker"
         },
         {
-          "name": "Detect Portal",
-          "description": ""
+          "name": "Detect Portal"
         },
         {
-          "name": "Horizon Walker Magic",
-          "description": ""
+          "name": "Horizon Walker Magic"
         },
         {
-          "name": "Planar Warrior",
-          "description": ""
+          "name": "Planar Warrior"
         },
         {
-          "name": "Ethereal Step",
-          "description": ""
+          "name": "Ethereal Step"
         },
         {
-          "name": "Distant Strike",
-          "description": ""
+          "name": "Distant Strike"
         },
         {
-          "name": "Spectral Defense",
-          "description": ""
+          "name": "Spectral Defense"
         }
       ],
       "levels": {
@@ -729,35 +670,27 @@
     },
     {
       "name": "Monster Slayer",
-      "description": "",
       "features": [
         {
-          "name": "Monster Slayer",
-          "description": ""
+          "name": "Monster Slayer"
         },
         {
-          "name": "Hunter's Sense",
-          "description": ""
+          "name": "Hunter's Sense"
         },
         {
-          "name": "Monster Slayer Magic",
-          "description": ""
+          "name": "Monster Slayer Magic"
         },
         {
-          "name": "Slayer's Prey",
-          "description": ""
+          "name": "Slayer's Prey"
         },
         {
-          "name": "Supernatural Defense",
-          "description": ""
+          "name": "Supernatural Defense"
         },
         {
-          "name": "Magic-User's Nemesis",
-          "description": ""
+          "name": "Magic-User's Nemesis"
         },
         {
-          "name": "Slayer's Counter",
-          "description": ""
+          "name": "Slayer's Counter"
         }
       ],
       "levels": {
@@ -792,54 +725,45 @@
     },
     {
       "name": "Fey Wanderer",
-      "description": "",
       "features": [
         {
-          "name": "Fey Wanderer",
-          "description": ""
+          "name": "Fey Wanderer"
         },
         {
-          "name": "Dreadful Strikes",
-          "description": ""
+          "name": "Dreadful Strikes"
         },
         {
           "name": "Fey Wanderer Spells",
-          "description": "",
           "spells": {
             "casting_ability": 4,
             "list": [
               {
                 "name": "Charm Person",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Misty Step",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Summon Fey",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Dimension Door",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 13
               },
               {
                 "name": "Mislead",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 17
               }
@@ -847,20 +771,16 @@
           }
         },
         {
-          "name": "Otherworldly Glamour",
-          "description": ""
+          "name": "Otherworldly Glamour"
         },
         {
-          "name": "Beguiling Twist",
-          "description": ""
+          "name": "Beguiling Twist"
         },
         {
-          "name": "Fey Reinforcements",
-          "description": ""
+          "name": "Fey Reinforcements"
         },
         {
-          "name": "Misty Wanderer",
-          "description": ""
+          "name": "Misty Wanderer"
         }
       ],
       "levels": {
@@ -895,31 +815,24 @@
     },
     {
       "name": "Swarmkeeper",
-      "description": "",
       "features": [
         {
-          "name": "Swarmkeeper",
-          "description": ""
+          "name": "Swarmkeeper"
         },
         {
-          "name": "Gathered Swarm",
-          "description": ""
+          "name": "Gathered Swarm"
         },
         {
-          "name": "Swarmkeeper Magic",
-          "description": ""
+          "name": "Swarmkeeper Magic"
         },
         {
-          "name": "Writhing Tide",
-          "description": ""
+          "name": "Writhing Tide"
         },
         {
-          "name": "Mighty Swarm",
-          "description": ""
+          "name": "Mighty Swarm"
         },
         {
-          "name": "Swarming Dispersal",
-          "description": ""
+          "name": "Swarming Dispersal"
         }
       ],
       "levels": {
@@ -953,31 +866,24 @@
     },
     {
       "name": "Drakewarden",
-      "description": "",
       "features": [
         {
-          "name": "Drakewarden",
-          "description": ""
+          "name": "Drakewarden"
         },
         {
-          "name": "Draconic Gift",
-          "description": ""
+          "name": "Draconic Gift"
         },
         {
-          "name": "Drake Companion",
-          "description": ""
+          "name": "Drake Companion"
         },
         {
-          "name": "Bond of Fang and Scale",
-          "description": ""
+          "name": "Bond of Fang and Scale"
         },
         {
-          "name": "Drake's Breath",
-          "description": ""
+          "name": "Drake's Breath"
         },
         {
-          "name": "Perfected Bond",
-          "description": ""
+          "name": "Perfected Bond"
         }
       ],
       "levels": {
@@ -1011,58 +917,48 @@
     },
     {
       "name": "Winter Walker",
-      "description": "",
       "features": [
         {
-          "name": "Frigid Explorer",
-          "description": ""
+          "name": "Frigid Explorer"
         },
         {
-          "name": "Hunter's Rime",
-          "description": ""
+          "name": "Hunter's Rime"
         },
         {
-          "name": "Winter Walker",
-          "description": ""
+          "name": "Winter Walker"
         },
         {
           "name": "Winter Walker Spells",
-          "description": "",
           "spells": {
             "casting_ability": 4,
             "list": [
               {
                 "name": "Ice Knife",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Hold Person",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Remove Curse",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Ice Storm",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 13
               },
               {
                 "name": "Cone of Cold",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 17
               }
@@ -1070,16 +966,13 @@
           }
         },
         {
-          "name": "Fortifying Soul",
-          "description": ""
+          "name": "Fortifying Soul"
         },
         {
-          "name": "Chilling Retribution",
-          "description": ""
+          "name": "Chilling Retribution"
         },
         {
-          "name": "Frozen Haunt",
-          "description": ""
+          "name": "Frozen Haunt"
         }
       ],
       "levels": {

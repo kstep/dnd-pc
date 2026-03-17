@@ -1,18 +1,14 @@
 {
   "name": "Tiefling (Chthonic)",
-  "description": "",
   "traits": [
     {
-      "name": "Darkvision",
-      "description": ""
+      "name": "Darkvision"
     },
     {
-      "name": "Chthonic Resistance",
-      "description": ""
+      "name": "Chthonic Resistance"
     },
     {
       "name": "Languages",
-      "description": "",
       "languages": [
         "Common",
         "Sylvan"
@@ -22,7 +18,6 @@
   "features": [
     {
       "name": "Chthonic Legacy",
-      "description": "",
       "spells": {
         "cost": "Free Uses",
         "casting_ability": 5,
@@ -30,19 +25,16 @@
           {
             "name": "Thaumaturgy",
             "level": 0,
-            "description": "",
             "sticky": true
           },
           {
             "name": "Chill Touch",
             "level": 0,
-            "description": "",
             "sticky": true
           },
           {
             "name": "False Life",
             "level": 1,
-            "description": "",
             "sticky": true,
             "min_level": 3,
             "cost": 1
@@ -50,7 +42,6 @@
           {
             "name": "Ray of Enfeeblement",
             "level": 2,
-            "description": "",
             "sticky": true,
             "min_level": 5,
             "cost": 1

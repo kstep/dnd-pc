@@ -1,16 +1,13 @@
 {
   "name": "Rogue",
-  "description": "",
   "hit_die": 8,
   "features": [
     {
       "name": "Expertise",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Sneak Attack",
-      "description": "",
       "fields": [
         {
           "name": "Sneak Attack",
@@ -32,14 +29,12 @@
     },
     {
       "name": "Thieves' Cant",
-      "description": "",
       "languages": [
         "Thieves' Cant"
       ]
     },
     {
       "name": "Weapon Mastery (Rogue)",
-      "description": "",
       "fields": [
         {
           "name": "Weapon",
@@ -52,7 +47,6 @@
     },
     {
       "name": "Cunning Action",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -60,17 +54,14 @@
           "options": [
             {
               "name": "Dash",
-              "description": "",
               "action": "BonusAction"
             },
             {
               "name": "Disengage",
-              "description": "",
               "action": "BonusAction"
             },
             {
               "name": "Hide",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -78,12 +69,10 @@
       ]
     },
     {
-      "name": "Rogue Subclass",
-      "description": ""
+      "name": "Rogue Subclass"
     },
     {
       "name": "Steady Aim",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -91,7 +80,6 @@
           "options": [
             {
               "name": "Steady Aim",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -100,16 +88,13 @@
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Cunning Strike",
-      "description": ""
+      "name": "Cunning Strike"
     },
     {
       "name": "Uncanny Dodge",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -117,7 +102,6 @@
           "options": [
             {
               "name": "Uncanny Dodge",
-              "description": "",
               "action": "Reaction"
             }
           ]
@@ -125,46 +109,36 @@
       ]
     },
     {
-      "name": "Evasion",
-      "description": ""
+      "name": "Evasion"
     },
     {
-      "name": "Reliable Talent",
-      "description": ""
+      "name": "Reliable Talent"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Improved Cunning Strike",
-      "description": ""
+      "name": "Improved Cunning Strike"
     },
     {
-      "name": "Devious Strikes",
-      "description": ""
+      "name": "Devious Strikes"
     },
     {
-      "name": "Slippery Mind",
-      "description": ""
+      "name": "Slippery Mind"
     },
     {
-      "name": "Elusive",
-      "description": ""
+      "name": "Elusive"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Stroke of Luck",
-      "description": ""
+      "name": "Stroke of Luck"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
@@ -285,19 +259,15 @@
   "subclasses": [
     {
       "name": "Arcane Trickster",
-      "description": "",
       "features": [
         {
-          "name": "Arcane Trickster",
-          "description": ""
+          "name": "Arcane Trickster"
         },
         {
-          "name": "Mage Hand Legerdemain",
-          "description": ""
+          "name": "Mage Hand Legerdemain"
         },
         {
           "name": "Spellcasting (Arcane Trickster)",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "caster_coef": 3,
@@ -461,16 +431,13 @@
           }
         },
         {
-          "name": "Magical Ambush",
-          "description": ""
+          "name": "Magical Ambush"
         },
         {
-          "name": "Versatile Trickster",
-          "description": ""
+          "name": "Versatile Trickster"
         },
         {
-          "name": "Spell Thief",
-          "description": ""
+          "name": "Spell Thief"
         }
       ],
       "levels": {
@@ -504,31 +471,24 @@
     },
     {
       "name": "Assassin",
-      "description": "",
       "features": [
         {
-          "name": "Assassin",
-          "description": ""
+          "name": "Assassin"
         },
         {
-          "name": "Assassin's Tools",
-          "description": ""
+          "name": "Assassin's Tools"
         },
         {
-          "name": "Assassinate",
-          "description": ""
+          "name": "Assassinate"
         },
         {
-          "name": "Infiltration Expertise",
-          "description": ""
+          "name": "Infiltration Expertise"
         },
         {
-          "name": "Envenom Weapons",
-          "description": ""
+          "name": "Envenom Weapons"
         },
         {
-          "name": "Death Strike",
-          "description": ""
+          "name": "Death Strike"
         }
       ],
       "levels": {
@@ -562,31 +522,24 @@
     },
     {
       "name": "Thief",
-      "description": "",
       "features": [
         {
-          "name": "Fast Hands",
-          "description": ""
+          "name": "Fast Hands"
         },
         {
-          "name": "Second-Story Work",
-          "description": ""
+          "name": "Second-Story Work"
         },
         {
-          "name": "Thief",
-          "description": ""
+          "name": "Thief"
         },
         {
-          "name": "Supreme Sneak",
-          "description": ""
+          "name": "Supreme Sneak"
         },
         {
-          "name": "Use Magic Device",
-          "description": ""
+          "name": "Use Magic Device"
         },
         {
-          "name": "Thief's Reflexes",
-          "description": ""
+          "name": "Thief's Reflexes"
         }
       ],
       "levels": {
@@ -620,35 +573,27 @@
     },
     {
       "name": "Inquisitive",
-      "description": "",
       "features": [
         {
-          "name": "Inquisitive",
-          "description": ""
+          "name": "Inquisitive"
         },
         {
-          "name": "Ear for Deceit",
-          "description": ""
+          "name": "Ear for Deceit"
         },
         {
-          "name": "Eye for Detail",
-          "description": ""
+          "name": "Eye for Detail"
         },
         {
-          "name": "Insightful Fighting",
-          "description": ""
+          "name": "Insightful Fighting"
         },
         {
-          "name": "Steady Eye",
-          "description": ""
+          "name": "Steady Eye"
         },
         {
-          "name": "Unerring Eye",
-          "description": ""
+          "name": "Unerring Eye"
         },
         {
-          "name": "Eye for Weakness",
-          "description": ""
+          "name": "Eye for Weakness"
         }
       ],
       "levels": {
@@ -683,31 +628,24 @@
     },
     {
       "name": "Mastermind",
-      "description": "",
       "features": [
         {
-          "name": "Mastermind",
-          "description": ""
+          "name": "Mastermind"
         },
         {
-          "name": "Master of Intrigue",
-          "description": ""
+          "name": "Master of Intrigue"
         },
         {
-          "name": "Master of Tactics",
-          "description": ""
+          "name": "Master of Tactics"
         },
         {
-          "name": "Insightful Manipulator",
-          "description": ""
+          "name": "Insightful Manipulator"
         },
         {
-          "name": "Misdirection",
-          "description": ""
+          "name": "Misdirection"
         },
         {
-          "name": "Soul of Deceit",
-          "description": ""
+          "name": "Soul of Deceit"
         }
       ],
       "levels": {
@@ -741,31 +679,24 @@
     },
     {
       "name": "Scout",
-      "description": "",
       "features": [
         {
-          "name": "Scout",
-          "description": ""
+          "name": "Scout"
         },
         {
-          "name": "Skirmisher",
-          "description": ""
+          "name": "Skirmisher"
         },
         {
-          "name": "Survivalist",
-          "description": ""
+          "name": "Survivalist"
         },
         {
-          "name": "Superior Mobility",
-          "description": ""
+          "name": "Superior Mobility"
         },
         {
-          "name": "Ambush Master",
-          "description": ""
+          "name": "Ambush Master"
         },
         {
-          "name": "Sudden Strike",
-          "description": ""
+          "name": "Sudden Strike"
         }
       ],
       "levels": {
@@ -799,31 +730,24 @@
     },
     {
       "name": "Swashbuckler",
-      "description": "",
       "features": [
         {
-          "name": "Swashbuckler",
-          "description": ""
+          "name": "Swashbuckler"
         },
         {
-          "name": "Fancy Footwork",
-          "description": ""
+          "name": "Fancy Footwork"
         },
         {
-          "name": "Rakish Audacity",
-          "description": ""
+          "name": "Rakish Audacity"
         },
         {
-          "name": "Panache",
-          "description": ""
+          "name": "Panache"
         },
         {
-          "name": "Elegant Maneuver",
-          "description": ""
+          "name": "Elegant Maneuver"
         },
         {
-          "name": "Master Duelist",
-          "description": ""
+          "name": "Master Duelist"
         }
       ],
       "levels": {
@@ -857,31 +781,24 @@
     },
     {
       "name": "Phantom",
-      "description": "",
       "features": [
         {
-          "name": "Phantom",
-          "description": ""
+          "name": "Phantom"
         },
         {
-          "name": "Wails from the Grave",
-          "description": ""
+          "name": "Wails from the Grave"
         },
         {
-          "name": "Whispers of the Dead",
-          "description": ""
+          "name": "Whispers of the Dead"
         },
         {
-          "name": "Tokens of the Departed",
-          "description": ""
+          "name": "Tokens of the Departed"
         },
         {
-          "name": "Ghost Walk",
-          "description": ""
+          "name": "Ghost Walk"
         },
         {
-          "name": "Death's Friend",
-          "description": ""
+          "name": "Death's Friend"
         }
       ],
       "levels": {
@@ -915,47 +832,36 @@
     },
     {
       "name": "Soulknife",
-      "description": "",
       "features": [
         {
-          "name": "Soulknife",
-          "description": ""
+          "name": "Soulknife"
         },
         {
-          "name": "Psionic Power",
-          "description": ""
+          "name": "Psionic Power"
         },
         {
-          "name": "Psychic Blades",
-          "description": ""
+          "name": "Psychic Blades"
         },
         {
-          "name": "Psi-Bolstered Knack",
-          "description": ""
+          "name": "Psi-Bolstered Knack"
         },
         {
-          "name": "Psychic Whispers",
-          "description": ""
+          "name": "Psychic Whispers"
         },
         {
-          "name": "Homing Strikes",
-          "description": ""
+          "name": "Homing Strikes"
         },
         {
-          "name": "Psychic Teleportation",
-          "description": ""
+          "name": "Psychic Teleportation"
         },
         {
-          "name": "Soul Blades",
-          "description": ""
+          "name": "Soul Blades"
         },
         {
-          "name": "Psychic Veil",
-          "description": ""
+          "name": "Psychic Veil"
         },
         {
-          "name": "Rend Mind",
-          "description": ""
+          "name": "Rend Mind"
         }
       ],
       "levels": {
@@ -993,31 +899,24 @@
     },
     {
       "name": "Scion of the Three",
-      "description": "",
       "features": [
         {
-          "name": "Bloodthirst",
-          "description": ""
+          "name": "Bloodthirst"
         },
         {
-          "name": "Dread Allegiance",
-          "description": ""
+          "name": "Dread Allegiance"
         },
         {
-          "name": "Scion of the Three",
-          "description": ""
+          "name": "Scion of the Three"
         },
         {
-          "name": "Strike Fear",
-          "description": ""
+          "name": "Strike Fear"
         },
         {
-          "name": "Aura of Malevolence",
-          "description": ""
+          "name": "Aura of Malevolence"
         },
         {
-          "name": "Dread Incarnate",
-          "description": ""
+          "name": "Dread Incarnate"
         }
       ],
       "levels": {

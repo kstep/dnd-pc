@@ -1,11 +1,9 @@
 {
   "name": "Bard",
-  "description": "",
   "hit_die": 8,
   "features": [
     {
       "name": "Bardic Inspiration",
-      "description": "",
       "fields": [
         {
           "name": "Bardic Inspiration",
@@ -35,7 +33,6 @@
           "options": [
             {
               "name": "Bardic Inspiration",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -44,7 +41,6 @@
     },
     {
       "name": "Spellcasting (Bard)",
-      "description": "",
       "spells": {
         "casting_ability": 5,
         "list": {
@@ -285,55 +281,43 @@
     },
     {
       "name": "Expertise",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Jack of All Trades",
-      "description": ""
+      "name": "Jack of All Trades"
     },
     {
-      "name": "Bard Subclass",
-      "description": ""
+      "name": "Bard Subclass"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Font of Inspiration",
-      "description": ""
+      "name": "Font of Inspiration"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Countercharm",
-      "description": ""
+      "name": "Countercharm"
     },
     {
-      "name": "Magical Secrets",
-      "description": ""
+      "name": "Magical Secrets"
     },
     {
-      "name": "Superior Inspiration",
-      "description": ""
+      "name": "Superior Inspiration"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Words of Creation",
-      "description": ""
+      "name": "Words of Creation"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
@@ -442,27 +426,21 @@
   "subclasses": [
     {
       "name": "College of Lore",
-      "description": "",
       "features": [
         {
-          "name": "College of Lore",
-          "description": ""
+          "name": "College of Lore"
         },
         {
-          "name": "Bonus Proficiencies",
-          "description": ""
+          "name": "Bonus Proficiencies"
         },
         {
-          "name": "Cutting Words",
-          "description": ""
+          "name": "Cutting Words"
         },
         {
-          "name": "Magical Discoveries",
-          "description": ""
+          "name": "Magical Discoveries"
         },
         {
-          "name": "Peerless Skill",
-          "description": ""
+          "name": "Peerless Skill"
         }
       ],
       "levels": {
@@ -490,27 +468,21 @@
     },
     {
       "name": "College of Valor",
-      "description": "",
       "features": [
         {
-          "name": "College of Valor",
-          "description": ""
+          "name": "College of Valor"
         },
         {
-          "name": "Combat Inspiration",
-          "description": ""
+          "name": "Combat Inspiration"
         },
         {
-          "name": "Martial Training",
-          "description": ""
+          "name": "Martial Training"
         },
         {
-          "name": "Extra Attack",
-          "description": ""
+          "name": "Extra Attack"
         },
         {
-          "name": "Battle Magic",
-          "description": ""
+          "name": "Battle Magic"
         }
       ],
       "levels": {
@@ -538,29 +510,24 @@
     },
     {
       "name": "College of Glamour",
-      "description": "",
       "features": [
         {
-          "name": "College of Glamour",
-          "description": ""
+          "name": "College of Glamour"
         },
         {
           "name": "Beguiling Magic",
-          "description": "",
           "spells": {
             "casting_ability": 5,
             "list": [
               {
                 "name": "Charm Person",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Mirror Image",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               }
@@ -568,16 +535,13 @@
           }
         },
         {
-          "name": "Mantle of Inspiration",
-          "description": ""
+          "name": "Mantle of Inspiration"
         },
         {
-          "name": "Mantle of Majesty",
-          "description": ""
+          "name": "Mantle of Majesty"
         },
         {
-          "name": "Unbreakable Majesty",
-          "description": ""
+          "name": "Unbreakable Majesty"
         }
       ],
       "levels": {
@@ -605,43 +569,33 @@
     },
     {
       "name": "College of Swords",
-      "description": "",
       "features": [
         {
-          "name": "College of Swords",
-          "description": ""
+          "name": "College of Swords"
         },
         {
-          "name": "Defensive Flourish",
-          "description": ""
+          "name": "Defensive Flourish"
         },
         {
-          "name": "Mobile Flourish",
-          "description": ""
+          "name": "Mobile Flourish"
         },
         {
-          "name": "Slashing Flourish",
-          "description": ""
+          "name": "Slashing Flourish"
         },
         {
-          "name": "Blade Flourish",
-          "description": ""
+          "name": "Blade Flourish"
         },
         {
-          "name": "Bonus Proficiencies",
-          "description": ""
+          "name": "Bonus Proficiencies"
         },
         {
-          "name": "Fighting Style",
-          "description": ""
+          "name": "Fighting Style"
         },
         {
-          "name": "Extra Attack",
-          "description": ""
+          "name": "Extra Attack"
         },
         {
-          "name": "Master's Flourish",
-          "description": ""
+          "name": "Master's Flourish"
         }
       ],
       "levels": {
@@ -673,27 +627,21 @@
     },
     {
       "name": "College of Whispers",
-      "description": "",
       "features": [
         {
-          "name": "College of Whispers",
-          "description": ""
+          "name": "College of Whispers"
         },
         {
-          "name": "Psychic Blades",
-          "description": ""
+          "name": "Psychic Blades"
         },
         {
-          "name": "Words of Terror",
-          "description": ""
+          "name": "Words of Terror"
         },
         {
-          "name": "Mantle of Whispers",
-          "description": ""
+          "name": "Mantle of Whispers"
         },
         {
-          "name": "Shadow Lore",
-          "description": ""
+          "name": "Shadow Lore"
         }
       ],
       "levels": {
@@ -721,27 +669,21 @@
     },
     {
       "name": "College of Creation",
-      "description": "",
       "features": [
         {
-          "name": "College of Creation",
-          "description": ""
+          "name": "College of Creation"
         },
         {
-          "name": "Mote of Potential",
-          "description": ""
+          "name": "Mote of Potential"
         },
         {
-          "name": "Performance of Creation",
-          "description": ""
+          "name": "Performance of Creation"
         },
         {
-          "name": "Animating Performance",
-          "description": ""
+          "name": "Animating Performance"
         },
         {
-          "name": "Creative Crescendo",
-          "description": ""
+          "name": "Creative Crescendo"
         }
       ],
       "levels": {
@@ -769,31 +711,24 @@
     },
     {
       "name": "College of Eloquence",
-      "description": "",
       "features": [
         {
-          "name": "College of Eloquence",
-          "description": ""
+          "name": "College of Eloquence"
         },
         {
-          "name": "Silver Tongue",
-          "description": ""
+          "name": "Silver Tongue"
         },
         {
-          "name": "Unsettling Words",
-          "description": ""
+          "name": "Unsettling Words"
         },
         {
-          "name": "Unfailing Inspiration",
-          "description": ""
+          "name": "Unfailing Inspiration"
         },
         {
-          "name": "Universal Speech",
-          "description": ""
+          "name": "Universal Speech"
         },
         {
-          "name": "Infectious Inspiration",
-          "description": ""
+          "name": "Infectious Inspiration"
         }
       ],
       "levels": {
@@ -822,31 +757,24 @@
     },
     {
       "name": "College of Spirits",
-      "description": "",
       "features": [
         {
-          "name": "College of Spirits",
-          "description": ""
+          "name": "College of Spirits"
         },
         {
-          "name": "Guiding Whispers",
-          "description": ""
+          "name": "Guiding Whispers"
         },
         {
-          "name": "Spiritual Focus",
-          "description": ""
+          "name": "Spiritual Focus"
         },
         {
-          "name": "Tales from Beyond",
-          "description": ""
+          "name": "Tales from Beyond"
         },
         {
-          "name": "Spirit Session",
-          "description": ""
+          "name": "Spirit Session"
         },
         {
-          "name": "Mystical Connection",
-          "description": ""
+          "name": "Mystical Connection"
         }
       ],
       "levels": {
@@ -875,44 +803,34 @@
     },
     {
       "name": "College of Dance",
-      "description": "",
       "features": [
         {
-          "name": "College of Dance",
-          "description": ""
+          "name": "College of Dance"
         },
         {
-          "name": "Agile Strikes",
-          "description": ""
+          "name": "Agile Strikes"
         },
         {
-          "name": "Bardic Damage",
-          "description": ""
+          "name": "Bardic Damage"
         },
         {
-          "name": "Dance Virtuoso",
-          "description": ""
+          "name": "Dance Virtuoso"
         },
         {
-          "name": "Dazzling Footwork",
-          "description": ""
+          "name": "Dazzling Footwork"
         },
         {
           "name": "Unarmored Defense",
-          "description": "",
           "ac_expr": "10 + DEX.MOD + CHA.MOD"
         },
         {
-          "name": "Inspiring Movement",
-          "description": ""
+          "name": "Inspiring Movement"
         },
         {
-          "name": "Tandem Footwork",
-          "description": ""
+          "name": "Tandem Footwork"
         },
         {
-          "name": "Leading Evasion",
-          "description": ""
+          "name": "Leading Evasion"
         }
       ],
       "levels": {
@@ -944,27 +862,21 @@
     },
     {
       "name": "College of the Moon",
-      "description": "",
       "features": [
         {
-          "name": "College of the Moon",
-          "description": ""
+          "name": "College of the Moon"
         },
         {
-          "name": "Moon's Inspiration",
-          "description": ""
+          "name": "Moon's Inspiration"
         },
         {
-          "name": "Primal Lore",
-          "description": ""
+          "name": "Primal Lore"
         },
         {
-          "name": "Blessing of Moonlight",
-          "description": ""
+          "name": "Blessing of Moonlight"
         },
         {
-          "name": "Eventide's Splendor",
-          "description": ""
+          "name": "Eventide's Splendor"
         }
       ],
       "levels": {

@@ -1,11 +1,9 @@
 {
   "name": "Monk",
-  "description": "",
   "hit_die": 8,
   "features": [
     {
       "name": "Martial Arts",
-      "description": "",
       "fields": [
         {
           "name": "Martial Arts Die",
@@ -23,7 +21,6 @@
           "options": [
             {
               "name": "Bonus Unarmed Strike",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -32,16 +29,13 @@
     },
     {
       "name": "Unarmored Defense",
-      "description": "",
       "ac_expr": "10 + DEX.MOD + WIS.MOD"
     },
     {
       "name": "Monk's Focus",
-      "description": "",
       "fields": [
         {
           "name": "Focus Points",
-          "description": "",
           "kind": "Points",
           "levels": {
             "2": 2,
@@ -72,32 +66,27 @@
           "options": [
             {
               "name": "Flurry of Blows",
-              "description": "",
               "cost": 1,
               "action": "BonusAction"
             },
             {
               "name": "Patient Defense",
-              "description": "",
               "cost": 1,
               "action": "BonusAction"
             },
             {
               "name": "Step of the Wind",
-              "description": "",
               "cost": 1,
               "action": "BonusAction"
             },
             {
               "name": "Stunning Strike",
-              "description": "",
               "cost": 1,
               "action": "Action",
               "level": 5
             },
             {
               "name": "Superior Defense",
-              "description": "",
               "cost": 3,
               "action": "Action",
               "level": 18
@@ -108,11 +97,9 @@
     },
     {
       "name": "Unarmored Movement",
-      "description": "",
       "fields": [
         {
           "name": "Unarmored Movement",
-          "description": "",
           "kind": "Bonus",
           "levels": {
             "2": 10,
@@ -131,12 +118,10 @@
       ]
     },
     {
-      "name": "Uncanny Metabolism",
-      "description": ""
+      "name": "Uncanny Metabolism"
     },
     {
       "name": "Deflect Attacks",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -144,7 +129,6 @@
           "options": [
             {
               "name": "Deflect Attacks",
-              "description": "",
               "action": "Reaction"
             }
           ]
@@ -152,17 +136,14 @@
       ]
     },
     {
-      "name": "Monk Subclass",
-      "description": ""
+      "name": "Monk Subclass"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Slow Fall",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -170,7 +151,6 @@
           "options": [
             {
               "name": "Slow Fall",
-              "description": "",
               "action": "Reaction"
             }
           ]
@@ -178,62 +158,48 @@
       ]
     },
     {
-      "name": "Extra Attack",
-      "description": ""
+      "name": "Extra Attack"
     },
     {
-      "name": "Stunning Strike",
-      "description": ""
+      "name": "Stunning Strike"
     },
     {
-      "name": "Empowered Strikes",
-      "description": ""
+      "name": "Empowered Strikes"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Evasion",
-      "description": ""
+      "name": "Evasion"
     },
     {
-      "name": "Acrobatic Movement",
-      "description": ""
+      "name": "Acrobatic Movement"
     },
     {
-      "name": "Heightened Focus",
-      "description": ""
+      "name": "Heightened Focus"
     },
     {
-      "name": "Self-Restoration",
-      "description": ""
+      "name": "Self-Restoration"
     },
     {
-      "name": "Deflect Energy",
-      "description": ""
+      "name": "Deflect Energy"
     },
     {
-      "name": "Disciplined Survivor",
-      "description": ""
+      "name": "Disciplined Survivor"
     },
     {
-      "name": "Perfect Focus",
-      "description": ""
+      "name": "Perfect Focus"
     },
     {
-      "name": "Superior Defense",
-      "description": ""
+      "name": "Superior Defense"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Body and Mind",
-      "description": "",
       "assign": [
         {
           "expr": "DEX = min(DEX + 4, 25); WIS = min(WIS + 4, 25)",
@@ -243,7 +209,6 @@
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
@@ -366,27 +331,21 @@
   "subclasses": [
     {
       "name": "Way of the Long Death",
-      "description": "",
       "features": [
         {
-          "name": "Way of the Long Death",
-          "description": ""
+          "name": "Way of the Long Death"
         },
         {
-          "name": "Touch of Death",
-          "description": ""
+          "name": "Touch of Death"
         },
         {
-          "name": "Hour of Reaping",
-          "description": ""
+          "name": "Hour of Reaping"
         },
         {
-          "name": "Mastery of Death",
-          "description": ""
+          "name": "Mastery of Death"
         },
         {
-          "name": "Touch of the Long Death",
-          "description": ""
+          "name": "Touch of the Long Death"
         }
       ],
       "levels": {
@@ -419,39 +378,30 @@
     },
     {
       "name": "Way of the Drunken Master",
-      "description": "",
       "features": [
         {
-          "name": "Way of the Drunken Master",
-          "description": ""
+          "name": "Way of the Drunken Master"
         },
         {
-          "name": "Bonus Proficiencies",
-          "description": ""
+          "name": "Bonus Proficiencies"
         },
         {
-          "name": "Drunken Technique",
-          "description": ""
+          "name": "Drunken Technique"
         },
         {
-          "name": "Leap to Your Feet",
-          "description": ""
+          "name": "Leap to Your Feet"
         },
         {
-          "name": "Redirect Attack",
-          "description": ""
+          "name": "Redirect Attack"
         },
         {
-          "name": "Tipsy Sway",
-          "description": ""
+          "name": "Tipsy Sway"
         },
         {
-          "name": "Drunkard's Luck",
-          "description": ""
+          "name": "Drunkard's Luck"
         },
         {
-          "name": "Intoxicated Frenzy",
-          "description": ""
+          "name": "Intoxicated Frenzy"
         }
       ],
       "levels": {
@@ -487,35 +437,27 @@
     },
     {
       "name": "Way of the Kensei",
-      "description": "",
       "features": [
         {
-          "name": "Agile Parry",
-          "description": ""
+          "name": "Agile Parry"
         },
         {
-          "name": "Kensei's Shot",
-          "description": ""
+          "name": "Kensei's Shot"
         },
         {
-          "name": "Way of the Kensei",
-          "description": ""
+          "name": "Way of the Kensei"
         },
         {
-          "name": "Path of the Kensei",
-          "description": ""
+          "name": "Path of the Kensei"
         },
         {
-          "name": "One with the Blade",
-          "description": ""
+          "name": "One with the Blade"
         },
         {
-          "name": "Sharpen the Blade",
-          "description": ""
+          "name": "Sharpen the Blade"
         },
         {
-          "name": "Unerring Accuracy",
-          "description": ""
+          "name": "Unerring Accuracy"
         }
       ],
       "levels": {
@@ -550,27 +492,21 @@
     },
     {
       "name": "Way of the Sun Soul",
-      "description": "",
       "features": [
         {
-          "name": "Way of the Sun Soul",
-          "description": ""
+          "name": "Way of the Sun Soul"
         },
         {
-          "name": "Radiant Sun Bolt",
-          "description": ""
+          "name": "Radiant Sun Bolt"
         },
         {
-          "name": "Searing Arc Strike",
-          "description": ""
+          "name": "Searing Arc Strike"
         },
         {
-          "name": "Searing Sunburst",
-          "description": ""
+          "name": "Searing Sunburst"
         },
         {
-          "name": "Sun Shield",
-          "description": ""
+          "name": "Sun Shield"
         }
       ],
       "levels": {
@@ -603,31 +539,24 @@
     },
     {
       "name": "Way of the Astral Self",
-      "description": "",
       "features": [
         {
-          "name": "Way of the Astral Self",
-          "description": ""
+          "name": "Way of the Astral Self"
         },
         {
-          "name": "Arms of the Astral Self",
-          "description": ""
+          "name": "Arms of the Astral Self"
         },
         {
-          "name": "Forms of Your Astral Self",
-          "description": ""
+          "name": "Forms of Your Astral Self"
         },
         {
-          "name": "Visage of the Astral Self",
-          "description": ""
+          "name": "Visage of the Astral Self"
         },
         {
-          "name": "Body of the Astral Self",
-          "description": ""
+          "name": "Body of the Astral Self"
         },
         {
-          "name": "Awakened Astral Self",
-          "description": ""
+          "name": "Awakened Astral Self"
         }
       ],
       "levels": {
@@ -661,31 +590,24 @@
     },
     {
       "name": "Way of the Ascendant Dragon",
-      "description": "",
       "features": [
         {
-          "name": "Way of the Ascendant Dragon",
-          "description": ""
+          "name": "Way of the Ascendant Dragon"
         },
         {
-          "name": "Breath of the Dragon",
-          "description": ""
+          "name": "Breath of the Dragon"
         },
         {
-          "name": "Draconic Disciple",
-          "description": ""
+          "name": "Draconic Disciple"
         },
         {
-          "name": "Wings Unfurled",
-          "description": ""
+          "name": "Wings Unfurled"
         },
         {
-          "name": "Aspect of the Wyrm",
-          "description": ""
+          "name": "Aspect of the Wyrm"
         },
         {
-          "name": "Ascendant Aspect",
-          "description": ""
+          "name": "Ascendant Aspect"
         }
       ],
       "levels": {
@@ -719,35 +641,27 @@
     },
     {
       "name": "Warrior of Mercy",
-      "description": "",
       "features": [
         {
-          "name": "Warrior of Mercy",
-          "description": ""
+          "name": "Warrior of Mercy"
         },
         {
-          "name": "Hand of Harm",
-          "description": ""
+          "name": "Hand of Harm"
         },
         {
-          "name": "Hand of Healing",
-          "description": ""
+          "name": "Hand of Healing"
         },
         {
-          "name": "Implements of Mercy",
-          "description": ""
+          "name": "Implements of Mercy"
         },
         {
-          "name": "Physician's Touch",
-          "description": ""
+          "name": "Physician's Touch"
         },
         {
-          "name": "Flurry of Healing and Harm",
-          "description": ""
+          "name": "Flurry of Healing and Harm"
         },
         {
-          "name": "Hand of Ultimate Mercy",
-          "description": ""
+          "name": "Hand of Ultimate Mercy"
         }
       ],
       "levels": {
@@ -782,49 +696,39 @@
     },
     {
       "name": "Warrior of Shadow",
-      "description": "",
       "features": [
         {
-          "name": "Shadow Arts",
-          "description": ""
+          "name": "Shadow Arts"
         },
         {
-          "name": "Warrior of Shadow",
-          "description": ""
+          "name": "Warrior of Shadow"
         },
         {
-          "name": "Darkness",
-          "description": ""
+          "name": "Darkness"
         },
         {
-          "name": "Darkvision",
-          "description": ""
+          "name": "Darkvision"
         },
         {
           "name": "Shadowy Figments",
-          "description": "",
           "spells": {
             "casting_ability": 4,
             "list": [
               {
                 "name": "Minor Illusion",
-                "level": 0,
-                "description": ""
+                "level": 0
               }
             ]
           }
         },
         {
-          "name": "Shadow Step",
-          "description": ""
+          "name": "Shadow Step"
         },
         {
-          "name": "Improved Shadow Step",
-          "description": ""
+          "name": "Improved Shadow Step"
         },
         {
-          "name": "Cloak of Shadows",
-          "description": ""
+          "name": "Cloak of Shadows"
         }
       ],
       "levels": {
@@ -860,41 +764,33 @@
     },
     {
       "name": "Warrior of the Elements",
-      "description": "",
       "features": [
         {
-          "name": "Elemental Attunement",
-          "description": ""
+          "name": "Elemental Attunement"
         },
         {
           "name": "Manipulate Elements",
-          "description": "",
           "spells": {
             "casting_ability": 4,
             "list": [
               {
                 "name": "Elementalism",
-                "level": 0,
-                "description": ""
+                "level": 0
               }
             ]
           }
         },
         {
-          "name": "Warrior of the Elements",
-          "description": ""
+          "name": "Warrior of the Elements"
         },
         {
-          "name": "Elemental Burst",
-          "description": ""
+          "name": "Elemental Burst"
         },
         {
-          "name": "Stride of the Elements",
-          "description": ""
+          "name": "Stride of the Elements"
         },
         {
-          "name": "Elemental Epitome",
-          "description": ""
+          "name": "Elemental Epitome"
         }
       ],
       "levels": {
@@ -928,27 +824,21 @@
     },
     {
       "name": "Warrior of the Open Hand",
-      "description": "",
       "features": [
         {
-          "name": "Open Hand Technique",
-          "description": ""
+          "name": "Open Hand Technique"
         },
         {
-          "name": "Warrior of the Open Hand",
-          "description": ""
+          "name": "Warrior of the Open Hand"
         },
         {
-          "name": "Wholeness of Body",
-          "description": ""
+          "name": "Wholeness of Body"
         },
         {
-          "name": "Fleet Step",
-          "description": ""
+          "name": "Fleet Step"
         },
         {
-          "name": "Quivering Palm",
-          "description": ""
+          "name": "Quivering Palm"
         }
       ],
       "levels": {

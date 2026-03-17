@@ -1,647 +1,503 @@
 [
   {
     "name": "Shield of Faith",
-    "description": "",
     "expr": "AC += 2"
   },
   {
     "name": "Warding Bond",
-    "description": "",
     "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1"
   },
   {
     "name": "Ceremony: Wedding",
-    "description": "",
     "expr": "AC += 2"
   },
   {
     "name": "Agile Parry",
-    "description": "",
     "expr": "AC += 2"
   },
   {
     "name": "Arcane Deflection",
-    "description": "",
     "expr": "AC += 2; STR.SAVE += 4; DEX.SAVE += 4; CON.SAVE += 4; INT.SAVE += 4; WIS.SAVE += 4; CHA.SAVE += 4"
   },
   {
     "name": "Soul of the Forge",
-    "description": "",
     "expr": "AC += 1"
   },
   {
     "name": "Bladesong",
-    "description": "",
     "expr": "AC += INT.MOD; SPEED += 10; SKILL.ACRO.ADV = 1"
   },
   {
     "name": "Mage Armor",
-    "description": "",
     "expr": "AC = max(AC, 13 + DEX.MOD)"
   },
   {
     "name": "Barkskin",
-    "description": "",
     "expr": "AC = max(AC, 17)"
   },
   {
     "name": "Fighting Spirit",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 5); ATK.ADV = 1"
   },
   {
     "name": "Guardian of Nature: Great Tree",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 10); CON.SAVE.ADV = 1"
   },
   {
     "name": "Vitality of the Tree",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, LEVEL)"
   },
   {
     "name": "Dark One's Blessing",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, CHA.MOD + CLASS_LEVEL)"
   },
   {
     "name": "Celestial Resilience",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, CLASS_LEVEL + CHA.MOD)"
   },
   {
     "name": "Touch of Death",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, WIS.MOD + CLASS_LEVEL)"
   },
   {
     "name": "Adrenaline Rush",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, PROF_BONUS)"
   },
   {
     "name": "Armor of Agathys",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 5)"
   },
   {
     "name": "False Life",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 1d4 + 4)"
   },
   {
-    "name": "Heroism",
-    "description": ""
+    "name": "Heroism"
   },
   {
     "name": "Aid",
-    "description": "",
     "expr": "MAX_HP += 5; HP += 5"
   },
   {
     "name": "Longstrider",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Blade Flourish",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Drunken Technique",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Dread Ambusher",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Aura of Alacrity",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Guardian of Nature: Primal Beast",
-    "description": "",
     "expr": "SPEED += 10; ATK.ADV = 1"
   },
   {
     "name": "Ashardalon's Stride",
-    "description": "",
     "expr": "SPEED += 20"
   },
   {
     "name": "Zephyr Strike",
-    "description": "",
     "expr": "SPEED += 30"
   },
   {
     "name": "Large Form",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Haste",
-    "description": "",
     "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1"
   },
   {
     "name": "Steady Aim",
-    "description": "",
     "expr": "SPEED = 0; ATK.ADV = 1"
   },
   {
-    "name": "Bless",
-    "description": ""
+    "name": "Bless"
   },
   {
     "name": "Pass without Trace",
-    "description": "",
     "expr": "SKILL.STEA += 10"
   },
   {
-    "name": "Bear Totem Spirit",
-    "description": ""
+    "name": "Bear Totem Spirit"
   },
   {
-    "name": "Stoneskin",
-    "description": ""
+    "name": "Stoneskin"
   },
   {
-    "name": "Full of Stars",
-    "description": ""
+    "name": "Full of Stars"
   },
   {
-    "name": "Stormborn",
-    "description": ""
+    "name": "Stormborn"
   },
   {
-    "name": "Superior Defense",
-    "description": ""
+    "name": "Superior Defense"
   },
   {
-    "name": "Umbral Form",
-    "description": ""
+    "name": "Umbral Form"
   },
   {
-    "name": "Fiendish Resilience",
-    "description": ""
+    "name": "Fiendish Resilience"
   },
   {
-    "name": "Steps of Night",
-    "description": ""
+    "name": "Steps of Night"
   },
   {
-    "name": "Draconic Flight",
-    "description": ""
+    "name": "Draconic Flight"
   },
   {
-    "name": "Celestial Revelation: Wings",
-    "description": ""
+    "name": "Celestial Revelation: Wings"
   },
   {
-    "name": "Power of the Wilds: Falcon",
-    "description": ""
+    "name": "Power of the Wilds: Falcon"
   },
   {
-    "name": "Writhing Tide",
-    "description": ""
+    "name": "Writhing Tide"
   },
   {
-    "name": "Rage Damage",
-    "description": ""
+    "name": "Rage Damage"
   },
   {
-    "name": "Divine Favor",
-    "description": ""
+    "name": "Divine Favor"
   },
   {
-    "name": "Hunter's Mark",
-    "description": ""
+    "name": "Hunter's Mark"
   },
   {
     "name": "Magic Weapon",
-    "description": "",
     "expr": "ATK += 1"
   },
   {
     "name": "Elemental Weapon",
-    "description": "",
     "expr": "ATK += 1"
   },
   {
-    "name": "Crusader's Mantle",
-    "description": ""
+    "name": "Crusader's Mantle"
   },
   {
-    "name": "Spirit Shroud",
-    "description": ""
+    "name": "Spirit Shroud"
   },
   {
-    "name": "Holy Weapon",
-    "description": ""
+    "name": "Holy Weapon"
   },
   {
-    "name": "Sneak Attack",
-    "description": ""
+    "name": "Sneak Attack"
   },
   {
-    "name": "Divine Strike",
-    "description": ""
+    "name": "Divine Strike"
   },
   {
-    "name": "Dreadful Strikes",
-    "description": ""
+    "name": "Dreadful Strikes"
   },
   {
-    "name": "Mindless Rage",
-    "description": ""
+    "name": "Mindless Rage"
   },
   {
     "name": "Form of Dread",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 1d10 + CLASS_LEVEL)"
   },
   {
-    "name": "Enhance Ability",
-    "description": ""
+    "name": "Enhance Ability"
   },
   {
-    "name": "Guidance",
-    "description": ""
+    "name": "Guidance"
   },
   {
     "name": "Shield",
-    "description": "",
     "expr": "AC += 5"
   },
   {
     "name": "Fizban's Platinum Shield",
-    "description": "",
     "expr": "AC += 2"
   },
   {
     "name": "Tasha's Otherworldly Guise",
-    "description": "",
     "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)"
   },
   {
     "name": "Alustriel's Mooncloak",
-    "description": "",
     "expr": "AC += 2"
   },
   {
     "name": "Tenser's Transformation",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 50); ATK.ADV = 1"
   },
   {
     "name": "Syluné's Viper",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 15)"
   },
   {
     "name": "Motivational Speech",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1"
   },
   {
     "name": "Power Word Fortify",
-    "description": "",
     "expr": "TEMP_HP = max(TEMP_HP, 20)"
   },
   {
     "name": "Kinetic Jaunt",
-    "description": "",
     "expr": "SPEED += 10"
   },
   {
     "name": "Slow",
-    "description": "",
     "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2"
   },
   {
-    "name": "Blur",
-    "description": ""
+    "name": "Blur"
   },
   {
-    "name": "Mirror Image",
-    "description": ""
+    "name": "Mirror Image"
   },
   {
-    "name": "Sanctuary",
-    "description": ""
+    "name": "Sanctuary"
   },
   {
-    "name": "Warding Wind",
-    "description": ""
+    "name": "Warding Wind"
   },
   {
-    "name": "Fly",
-    "description": ""
+    "name": "Fly"
   },
   {
-    "name": "Dragon's Breath",
-    "description": ""
+    "name": "Dragon's Breath"
   },
   {
-    "name": "Protection from Evil and Good",
-    "description": ""
+    "name": "Protection from Evil and Good"
   },
   {
-    "name": "Protection from Energy",
-    "description": ""
+    "name": "Protection from Energy"
   },
   {
     "name": "Beacon of Hope",
-    "description": "",
     "expr": "WIS.SAVE.ADV = 1"
   },
   {
     "name": "Intellect Fortress",
-    "description": "",
     "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Fire Shield: Warm",
-    "description": ""
+    "name": "Fire Shield: Warm"
   },
   {
-    "name": "Fire Shield: Chill",
-    "description": ""
+    "name": "Fire Shield: Chill"
   },
   {
-    "name": "Death Ward",
-    "description": ""
+    "name": "Death Ward"
   },
   {
-    "name": "Freedom of Movement",
-    "description": ""
+    "name": "Freedom of Movement"
   },
   {
     "name": "Enlarge",
-    "description": "",
     "expr": "STR.ADV = 1; STR.SAVE.ADV = 1"
   },
   {
     "name": "Reduce",
-    "description": "",
     "expr": "STR.ADV = -1; STR.SAVE.ADV = -1"
   },
   {
-    "name": "Dispel Evil and Good",
-    "description": ""
+    "name": "Dispel Evil and Good"
   },
   {
     "name": "Circle of Power",
-    "description": "",
     "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Aura of Purity",
-    "description": ""
+    "name": "Aura of Purity"
   },
   {
-    "name": "Aura of Life",
-    "description": ""
+    "name": "Aura of Life"
   },
   {
-    "name": "Investiture of Flame",
-    "description": ""
+    "name": "Investiture of Flame"
   },
   {
-    "name": "Investiture of Ice",
-    "description": ""
+    "name": "Investiture of Ice"
   },
   {
-    "name": "Investiture of Stone",
-    "description": ""
+    "name": "Investiture of Stone"
   },
   {
     "name": "Investiture of Wind",
-    "description": "",
     "expr": "DEX.SAVE.ADV = 1"
   },
   {
-    "name": "Primordial Ward",
-    "description": ""
+    "name": "Primordial Ward"
   },
   {
-    "name": "Songal's Elemental Suffusion",
-    "description": ""
+    "name": "Songal's Elemental Suffusion"
   },
   {
     "name": "Heroes' Feast",
-    "description": "",
     "expr": "WIS.SAVE.ADV = 1"
   },
   {
     "name": "Holy Aura",
-    "description": "",
     "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Mind Blank",
-    "description": ""
+    "name": "Mind Blank"
   },
   {
     "name": "Foresight",
-    "description": "",
     "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Feign Death",
-    "description": ""
+    "name": "Feign Death"
   },
   {
-    "name": "Shadow Blade",
-    "description": ""
+    "name": "Shadow Blade"
   },
   {
-    "name": "Flame Blade",
-    "description": ""
+    "name": "Flame Blade"
   },
   {
-    "name": "Flame Arrows",
-    "description": ""
+    "name": "Flame Arrows"
   },
   {
-    "name": "Swift Quiver",
-    "description": ""
+    "name": "Swift Quiver"
   },
   {
-    "name": "Fount of Moonlight",
-    "description": ""
+    "name": "Fount of Moonlight"
   },
   {
-    "name": "Darkvision",
-    "description": ""
+    "name": "Darkvision"
   },
   {
-    "name": "Spider Climb",
-    "description": ""
+    "name": "Spider Climb"
   },
   {
-    "name": "Invisibility",
-    "description": ""
+    "name": "Invisibility"
   },
   {
-    "name": "Greater Invisibility",
-    "description": ""
+    "name": "Greater Invisibility"
   },
   {
-    "name": "Protection from Poison",
-    "description": ""
+    "name": "Protection from Poison"
   },
   {
-    "name": "Blink",
-    "description": ""
+    "name": "Blink"
   },
   {
-    "name": "Polymorph",
-    "description": ""
+    "name": "Polymorph"
   },
   {
-    "name": "Gaseous Form",
-    "description": ""
+    "name": "Gaseous Form"
   },
   {
-    "name": "Alter Self",
-    "description": ""
+    "name": "Alter Self"
   },
   {
-    "name": "Levitate",
-    "description": ""
+    "name": "Levitate"
   },
   {
-    "name": "Jump",
-    "description": ""
+    "name": "Jump"
   },
   {
-    "name": "Feather Fall",
-    "description": ""
+    "name": "Feather Fall"
   },
   {
-    "name": "Water Breathing",
-    "description": ""
+    "name": "Water Breathing"
   },
   {
-    "name": "Water Walk",
-    "description": ""
+    "name": "Water Walk"
   },
   {
-    "name": "Expeditious Retreat",
-    "description": ""
+    "name": "Expeditious Retreat"
   },
   {
-    "name": "Borrowed Knowledge",
-    "description": ""
+    "name": "Borrowed Knowledge"
   },
   {
-    "name": "Skill Empowerment",
-    "description": ""
+    "name": "Skill Empowerment"
   },
   {
-    "name": "Fortune's Favor",
-    "description": ""
+    "name": "Fortune's Favor"
   },
   {
-    "name": "Nondetection",
-    "description": ""
+    "name": "Nondetection"
   },
   {
     "name": "Grappled",
-    "description": "",
     "expr": "SPEED = 0"
   },
   {
     "name": "Restrained",
-    "description": "",
     "expr": "SPEED = 0; ATK.ADV = -1; DEX.SAVE.ADV = -1"
   },
   {
     "name": "Paralyzed",
-    "description": "",
     "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20"
   },
   {
     "name": "Stunned",
-    "description": "",
     "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20"
   },
   {
     "name": "Petrified",
-    "description": "",
     "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20"
   },
   {
     "name": "Unconscious",
-    "description": "",
     "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20"
   },
   {
     "name": "Prone",
-    "description": "",
     "expr": "ATK.ADV = -1"
   },
   {
     "name": "Blinded",
-    "description": "",
     "expr": "ATK.ADV = -1"
   },
   {
-    "name": "Charmed",
-    "description": ""
+    "name": "Charmed"
   },
   {
-    "name": "Deafened",
-    "description": ""
+    "name": "Deafened"
   },
   {
     "name": "Frightened",
-    "description": "",
     "expr": "ATK.ADV = -1; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1"
   },
   {
-    "name": "Incapacitated",
-    "description": ""
+    "name": "Incapacitated"
   },
   {
     "name": "Invisible",
-    "description": "",
     "expr": "ATK.ADV = 1"
   },
   {
     "name": "Poisoned",
-    "description": "",
     "expr": "ATK.ADV = -1; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1"
   },
   {
     "name": "Exhaustion 1",
-    "description": "",
     "expr": "STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1"
   },
   {
     "name": "Exhaustion 2",
-    "description": "",
     "expr": "SPEED /= 2; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1"
   },
   {
     "name": "Exhaustion 3",
-    "description": "",
     "expr": "SPEED /= 2; ATK.ADV = -1; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1; STR.SAVE.ADV = -1; DEX.SAVE.ADV = -1; CON.SAVE.ADV = -1; INT.SAVE.ADV = -1; WIS.SAVE.ADV = -1; CHA.SAVE.ADV = -1"
   },
   {
     "name": "Exhaustion 4",
-    "description": "",
     "expr": "SPEED /= 2; MAX_HP /= 2; ATK.ADV = -1; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1; STR.SAVE.ADV = -1; DEX.SAVE.ADV = -1; CON.SAVE.ADV = -1; INT.SAVE.ADV = -1; WIS.SAVE.ADV = -1; CHA.SAVE.ADV = -1"
   },
   {
     "name": "Exhaustion 5",
-    "description": "",
     "expr": "SPEED = 0; MAX_HP /= 2; ATK.ADV = -1; STR.ADV = -1; DEX.ADV = -1; CON.ADV = -1; INT.ADV = -1; WIS.ADV = -1; CHA.ADV = -1; STR.SAVE.ADV = -1; DEX.SAVE.ADV = -1; CON.SAVE.ADV = -1; INT.SAVE.ADV = -1; WIS.SAVE.ADV = -1; CHA.SAVE.ADV = -1"
   }
 ]

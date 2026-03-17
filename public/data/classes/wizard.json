@@ -1,19 +1,15 @@
 {
   "name": "Wizard",
-  "description": "",
   "hit_die": 6,
   "features": [
     {
-      "name": "Arcane Recovery",
-      "description": ""
+      "name": "Arcane Recovery"
     },
     {
-      "name": "Ritual Adept",
-      "description": ""
+      "name": "Ritual Adept"
     },
     {
       "name": "Spellcasting (Wizard)",
-      "description": "",
       "spells": {
         "casting_ability": 3,
         "list": {
@@ -233,43 +229,34 @@
       }
     },
     {
-      "name": "Scholar",
-      "description": ""
+      "name": "Scholar"
     },
     {
-      "name": "Wizard Subclass",
-      "description": ""
+      "name": "Wizard Subclass"
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Memorize Spell",
-      "description": ""
+      "name": "Memorize Spell"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Spell Mastery",
-      "description": ""
+      "name": "Spell Mastery"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Signature Spells",
-      "description": ""
+      "name": "Signature Spells"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
@@ -374,31 +361,24 @@
   "subclasses": [
     {
       "name": "School of Conjuration",
-      "description": "",
       "features": [
         {
-          "name": "School of Conjuration",
-          "description": ""
+          "name": "School of Conjuration"
         },
         {
-          "name": "Conjuration Savant",
-          "description": ""
+          "name": "Conjuration Savant"
         },
         {
-          "name": "Minor Conjuration",
-          "description": ""
+          "name": "Minor Conjuration"
         },
         {
-          "name": "Benign Transposition",
-          "description": ""
+          "name": "Benign Transposition"
         },
         {
-          "name": "Focused Conjuration",
-          "description": ""
+          "name": "Focused Conjuration"
         },
         {
-          "name": "Durable Summons",
-          "description": ""
+          "name": "Durable Summons"
         }
       ],
       "levels": {
@@ -438,31 +418,24 @@
     },
     {
       "name": "School of Enchantment",
-      "description": "",
       "features": [
         {
-          "name": "School of Enchantment",
-          "description": ""
+          "name": "School of Enchantment"
         },
         {
-          "name": "Enchantment Savant",
-          "description": ""
+          "name": "Enchantment Savant"
         },
         {
-          "name": "Hypnotic Gaze",
-          "description": ""
+          "name": "Hypnotic Gaze"
         },
         {
-          "name": "Instinctive Charm",
-          "description": ""
+          "name": "Instinctive Charm"
         },
         {
-          "name": "Split Enchantment",
-          "description": ""
+          "name": "Split Enchantment"
         },
         {
-          "name": "Alter Memories",
-          "description": ""
+          "name": "Alter Memories"
         }
       ],
       "levels": {
@@ -502,31 +475,24 @@
     },
     {
       "name": "School of Necromancy",
-      "description": "",
       "features": [
         {
-          "name": "School of Necromancy",
-          "description": ""
+          "name": "School of Necromancy"
         },
         {
-          "name": "Grim Harvest",
-          "description": ""
+          "name": "Grim Harvest"
         },
         {
-          "name": "Necromancy Savant",
-          "description": ""
+          "name": "Necromancy Savant"
         },
         {
-          "name": "Undead Thralls",
-          "description": ""
+          "name": "Undead Thralls"
         },
         {
-          "name": "Inured to Undeath",
-          "description": ""
+          "name": "Inured to Undeath"
         },
         {
-          "name": "Command Undead",
-          "description": ""
+          "name": "Command Undead"
         }
       ],
       "levels": {
@@ -566,31 +532,24 @@
     },
     {
       "name": "School of Transmutation",
-      "description": "",
       "features": [
         {
-          "name": "School of Transmutation",
-          "description": ""
+          "name": "School of Transmutation"
         },
         {
-          "name": "Minor Alchemy",
-          "description": ""
+          "name": "Minor Alchemy"
         },
         {
-          "name": "Transmutation Savant",
-          "description": ""
+          "name": "Transmutation Savant"
         },
         {
-          "name": "Transmuter's Stone",
-          "description": ""
+          "name": "Transmuter's Stone"
         },
         {
-          "name": "Shapechanger",
-          "description": ""
+          "name": "Shapechanger"
         },
         {
-          "name": "Master Transmuter",
-          "description": ""
+          "name": "Master Transmuter"
         }
       ],
       "levels": {
@@ -630,19 +589,15 @@
     },
     {
       "name": "War Magic",
-      "description": "",
       "features": [
         {
-          "name": "War Magic",
-          "description": ""
+          "name": "War Magic"
         },
         {
-          "name": "Arcane Deflection",
-          "description": ""
+          "name": "Arcane Deflection"
         },
         {
           "name": "Tactical Wit",
-          "description": "",
           "assign": [
             {
               "expr": "INITIATIVE.BONUS += INT.MOD",
@@ -651,16 +606,13 @@
           ]
         },
         {
-          "name": "Power Surge",
-          "description": ""
+          "name": "Power Surge"
         },
         {
-          "name": "Durable Magic",
-          "description": ""
+          "name": "Durable Magic"
         },
         {
-          "name": "Deflecting Shroud",
-          "description": ""
+          "name": "Deflecting Shroud"
         }
       ],
       "levels": {
@@ -700,19 +652,15 @@
     },
     {
       "name": "Chronurgy Magic",
-      "description": "",
       "features": [
         {
-          "name": "Chronurgy Magic",
-          "description": ""
+          "name": "Chronurgy Magic"
         },
         {
-          "name": "Chronal Shift",
-          "description": ""
+          "name": "Chronal Shift"
         },
         {
           "name": "Temporal Awareness",
-          "description": "",
           "assign": [
             {
               "expr": "INITIATIVE.BONUS += INT.MOD",
@@ -721,16 +669,13 @@
           ]
         },
         {
-          "name": "Momentary Stasis",
-          "description": ""
+          "name": "Momentary Stasis"
         },
         {
-          "name": "Arcane Abeyance",
-          "description": ""
+          "name": "Arcane Abeyance"
         },
         {
-          "name": "Convergent Future",
-          "description": ""
+          "name": "Convergent Future"
         }
       ],
       "levels": {
@@ -770,27 +715,21 @@
     },
     {
       "name": "Graviturgy Magic",
-      "description": "",
       "features": [
         {
-          "name": "Graviturgy Magic",
-          "description": ""
+          "name": "Graviturgy Magic"
         },
         {
-          "name": "Adjust Density",
-          "description": ""
+          "name": "Adjust Density"
         },
         {
-          "name": "Gravity Well",
-          "description": ""
+          "name": "Gravity Well"
         },
         {
-          "name": "Violent Attraction",
-          "description": ""
+          "name": "Violent Attraction"
         },
         {
-          "name": "Event Horizon",
-          "description": ""
+          "name": "Event Horizon"
         }
       ],
       "levels": {
@@ -829,31 +768,24 @@
     },
     {
       "name": "Order of Scribes",
-      "description": "",
       "features": [
         {
-          "name": "Order of Scribes",
-          "description": ""
+          "name": "Order of Scribes"
         },
         {
-          "name": "Awakened Spellbook",
-          "description": ""
+          "name": "Awakened Spellbook"
         },
         {
-          "name": "Wizardly Quill",
-          "description": ""
+          "name": "Wizardly Quill"
         },
         {
-          "name": "Manifest Mind",
-          "description": ""
+          "name": "Manifest Mind"
         },
         {
-          "name": "Master Scrivener",
-          "description": ""
+          "name": "Master Scrivener"
         },
         {
-          "name": "One with the Word",
-          "description": ""
+          "name": "One with the Word"
         }
       ],
       "levels": {
@@ -893,41 +825,33 @@
     },
     {
       "name": "Abjurer",
-      "description": "",
       "features": [
         {
-          "name": "Abjurer",
-          "description": ""
+          "name": "Abjurer"
         },
         {
-          "name": "Abjuration Savant",
-          "description": ""
+          "name": "Abjuration Savant"
         },
         {
-          "name": "Arcane Ward",
-          "description": ""
+          "name": "Arcane Ward"
         },
         {
-          "name": "Projected Ward",
-          "description": ""
+          "name": "Projected Ward"
         },
         {
           "name": "Spell Breaker",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "list": [
               {
                 "name": "Counterspell",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 10
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 10
               }
@@ -935,8 +859,7 @@
           }
         },
         {
-          "name": "Spell Resistance",
-          "description": ""
+          "name": "Spell Resistance"
         }
       ],
       "levels": {
@@ -970,34 +893,27 @@
     },
     {
       "name": "Diviner",
-      "description": "",
       "features": [
         {
-          "name": "Diviner",
-          "description": ""
+          "name": "Diviner"
         },
         {
-          "name": "Divination Savant",
-          "description": ""
+          "name": "Divination Savant"
         },
         {
-          "name": "Portent",
-          "description": ""
+          "name": "Portent"
         },
         {
-          "name": "Expert Divination",
-          "description": ""
+          "name": "Expert Divination"
         },
         {
           "name": "The Third Eye",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "list": [
               {
                 "name": "See Invisibility",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 10
               }
@@ -1005,8 +921,7 @@
           }
         },
         {
-          "name": "Greater Portent",
-          "description": ""
+          "name": "Greater Portent"
         }
       ],
       "levels": {
@@ -1040,31 +955,24 @@
     },
     {
       "name": "Evoker",
-      "description": "",
       "features": [
         {
-          "name": "Evoker",
-          "description": ""
+          "name": "Evoker"
         },
         {
-          "name": "Evocation Savant",
-          "description": ""
+          "name": "Evocation Savant"
         },
         {
-          "name": "Potent Cantrip",
-          "description": ""
+          "name": "Potent Cantrip"
         },
         {
-          "name": "Sculpt Spells",
-          "description": ""
+          "name": "Sculpt Spells"
         },
         {
-          "name": "Empowered Evocation",
-          "description": ""
+          "name": "Empowered Evocation"
         },
         {
-          "name": "Overchannel",
-          "description": ""
+          "name": "Overchannel"
         }
       ],
       "levels": {
@@ -1098,47 +1006,39 @@
     },
     {
       "name": "Illusionist",
-      "description": "",
       "features": [
         {
-          "name": "Illusionist",
-          "description": ""
+          "name": "Illusionist"
         },
         {
-          "name": "Illusion Savant",
-          "description": ""
+          "name": "Illusion Savant"
         },
         {
           "name": "Improved Illusions",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "list": [
               {
                 "name": "Minor Illusion",
-                "level": 0,
-                "description": ""
+                "level": 0
               }
             ]
           }
         },
         {
           "name": "Phantasmal Creatures",
-          "description": "",
           "spells": {
             "casting_ability": 3,
             "list": [
               {
                 "name": "Summon Beast",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 6
               },
               {
                 "name": "Summon Fey",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 6
               }
@@ -1146,12 +1046,10 @@
           }
         },
         {
-          "name": "Illusory Self",
-          "description": ""
+          "name": "Illusory Self"
         },
         {
-          "name": "Illusory Reality",
-          "description": ""
+          "name": "Illusory Reality"
         }
       ],
       "levels": {
@@ -1185,31 +1083,24 @@
     },
     {
       "name": "Bladesinger",
-      "description": "",
       "features": [
         {
-          "name": "Bladesinger",
-          "description": ""
+          "name": "Bladesinger"
         },
         {
-          "name": "Bladesong",
-          "description": ""
+          "name": "Bladesong"
         },
         {
-          "name": "Training in War and Song",
-          "description": ""
+          "name": "Training in War and Song"
         },
         {
-          "name": "Extra Attack",
-          "description": ""
+          "name": "Extra Attack"
         },
         {
-          "name": "Song of Defense",
-          "description": ""
+          "name": "Song of Defense"
         },
         {
-          "name": "Song of Victory",
-          "description": ""
+          "name": "Song of Victory"
         }
       ],
       "levels": {

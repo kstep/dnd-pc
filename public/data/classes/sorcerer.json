@@ -1,11 +1,9 @@
 {
   "name": "Sorcerer",
-  "description": "",
   "hit_die": 6,
   "features": [
     {
       "name": "Innate Sorcery",
-      "description": "",
       "fields": [
         {
           "name": "Actions",
@@ -13,7 +11,6 @@
           "options": [
             {
               "name": "Innate Sorcery",
-              "description": "",
               "action": "BonusAction"
             }
           ]
@@ -22,7 +19,6 @@
     },
     {
       "name": "Spellcasting (Sorcerer)",
-      "description": "",
       "spells": {
         "casting_ability": 5,
         "list": {
@@ -263,11 +259,9 @@
     },
     {
       "name": "Font of Magic",
-      "description": "",
       "fields": [
         {
           "name": "Sorcery Points",
-          "description": "",
           "kind": "Points",
           "levels": {
             "2": 2,
@@ -295,11 +289,9 @@
     },
     {
       "name": "Metamagic",
-      "description": "",
       "fields": [
         {
           "name": "Metamagic",
-          "description": "",
           "kind": "Choice",
           "cost": "Sorcery Points",
           "levels": {
@@ -310,52 +302,42 @@
           "options": [
             {
               "name": "Careful Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Distant Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Empowered Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Extended Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Heightened Spell",
-              "description": "",
               "cost": 3
             },
             {
               "name": "Quickened Spell",
-              "description": "",
               "cost": 2
             },
             {
               "name": "Subtle Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Twinned Spell",
-              "description": "",
               "cost": 1
             },
             {
               "name": "Seeking Spell",
-              "description": "",
               "cost": 2
             },
             {
               "name": "Transmuted Spell",
-              "description": "",
               "cost": 1
             }
           ]
@@ -364,39 +346,31 @@
       "stackable": true
     },
     {
-      "name": "Sorcerer Subclass",
-      "description": ""
+      "name": "Sorcerer Subclass"
     },
     {
       "name": "Subclass Feature",
-      "description": "",
       "stackable": true
     },
     {
       "name": "Ability Score Improvement",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Sorcerous Restoration",
-      "description": ""
+      "name": "Sorcerous Restoration"
     },
     {
-      "name": "Sorcery Incarnate",
-      "description": ""
+      "name": "Sorcery Incarnate"
     },
     {
       "name": "Epic Boon",
-      "description": "",
       "stackable": true
     },
     {
-      "name": "Arcane Apotheosis",
-      "description": ""
+      "name": "Arcane Apotheosis"
     },
     {
       "name": "Class Proficiencies",
-      "description": "",
       "assign": [
         {
           "expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
@@ -506,27 +480,21 @@
   "subclasses": [
     {
       "name": "Pyromancer (PSK)",
-      "description": "",
       "features": [
         {
-          "name": "Pyromancer (PSK)",
-          "description": ""
+          "name": "Pyromancer (PSK)"
         },
         {
-          "name": "Heart of Fire",
-          "description": ""
+          "name": "Heart of Fire"
         },
         {
-          "name": "Fire in the Veins",
-          "description": ""
+          "name": "Fire in the Veins"
         },
         {
-          "name": "Pyromancer's Fury",
-          "description": ""
+          "name": "Pyromancer's Fury"
         },
         {
-          "name": "Fiery Soul",
-          "description": ""
+          "name": "Fiery Soul"
         }
       ],
       "levels": {
@@ -565,31 +533,24 @@
     },
     {
       "name": "Divine Soul",
-      "description": "",
       "features": [
         {
-          "name": "Divine Soul",
-          "description": ""
+          "name": "Divine Soul"
         },
         {
-          "name": "Divine Magic",
-          "description": ""
+          "name": "Divine Magic"
         },
         {
-          "name": "Favored by the Gods",
-          "description": ""
+          "name": "Favored by the Gods"
         },
         {
-          "name": "Empowered Healing",
-          "description": ""
+          "name": "Empowered Healing"
         },
         {
-          "name": "Otherworldly Wings",
-          "description": ""
+          "name": "Otherworldly Wings"
         },
         {
-          "name": "Unearthly Recovery",
-          "description": ""
+          "name": "Unearthly Recovery"
         }
       ],
       "levels": {
@@ -629,31 +590,24 @@
     },
     {
       "name": "Shadow Magic",
-      "description": "",
       "features": [
         {
-          "name": "Shadow Magic",
-          "description": ""
+          "name": "Shadow Magic"
         },
         {
-          "name": "Eyes of the Dark",
-          "description": ""
+          "name": "Eyes of the Dark"
         },
         {
-          "name": "Strength of the Grave",
-          "description": ""
+          "name": "Strength of the Grave"
         },
         {
-          "name": "Hound of Ill Omen",
-          "description": ""
+          "name": "Hound of Ill Omen"
         },
         {
-          "name": "Shadow Walk",
-          "description": ""
+          "name": "Shadow Walk"
         },
         {
-          "name": "Umbral Form",
-          "description": ""
+          "name": "Umbral Form"
         }
       ],
       "levels": {
@@ -693,38 +647,30 @@
     },
     {
       "name": "Storm Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Storm Sorcery",
-          "description": ""
+          "name": "Storm Sorcery"
         },
         {
-          "name": "Tempestuous Magic",
-          "description": ""
+          "name": "Tempestuous Magic"
         },
         {
           "name": "Wind Speaker",
-          "description": "",
           "languages": [
             "Primordial"
           ]
         },
         {
-          "name": "Heart of the Storm",
-          "description": ""
+          "name": "Heart of the Storm"
         },
         {
-          "name": "Storm Guide",
-          "description": ""
+          "name": "Storm Guide"
         },
         {
-          "name": "Storm's Fury",
-          "description": ""
+          "name": "Storm's Fury"
         },
         {
-          "name": "Wind Soul",
-          "description": ""
+          "name": "Wind Soul"
         }
       ],
       "levels": {
@@ -765,35 +711,27 @@
     },
     {
       "name": "Lunar Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Lunar Sorcery",
-          "description": ""
+          "name": "Lunar Sorcery"
         },
         {
-          "name": "Lunar Embodiment",
-          "description": ""
+          "name": "Lunar Embodiment"
         },
         {
-          "name": "Moon Fire",
-          "description": ""
+          "name": "Moon Fire"
         },
         {
-          "name": "Lunar Boons",
-          "description": ""
+          "name": "Lunar Boons"
         },
         {
-          "name": "Waxing and Waning",
-          "description": ""
+          "name": "Waxing and Waning"
         },
         {
-          "name": "Lunar Empowerment",
-          "description": ""
+          "name": "Lunar Empowerment"
         },
         {
-          "name": "Lunar Phenomenon",
-          "description": ""
+          "name": "Lunar Phenomenon"
         }
       ],
       "levels": {
@@ -834,28 +772,23 @@
     },
     {
       "name": "Aberrant Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Aberrant Sorcery",
-          "description": ""
+          "name": "Aberrant Sorcery"
         },
         {
           "name": "Psionic Spells",
-          "description": "",
           "spells": {
             "cost": "Sorcery Points",
             "casting_ability": 5,
             "list": [
               {
                 "name": "Mind Sliver",
-                "level": 0,
-                "description": ""
+                "level": 0
               },
               {
                 "name": "Arms of Hadar",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3,
                 "cost": 1
@@ -863,7 +796,6 @@
               {
                 "name": "Dissonant Whispers",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3,
                 "cost": 1
@@ -871,7 +803,6 @@
               {
                 "name": "Calm Emotions",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3,
                 "cost": 2
@@ -879,7 +810,6 @@
               {
                 "name": "Detect Thoughts",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3,
                 "cost": 2
@@ -887,7 +817,6 @@
               {
                 "name": "Hunger of Hadar",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5,
                 "cost": 3
@@ -895,7 +824,6 @@
               {
                 "name": "Sending",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5,
                 "cost": 3
@@ -903,7 +831,6 @@
               {
                 "name": "Evard's Black Tentacles",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7,
                 "cost": 4
@@ -911,7 +838,6 @@
               {
                 "name": "Summon Aberration",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7,
                 "cost": 4
@@ -919,7 +845,6 @@
               {
                 "name": "Rary's Telepathic Bond",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9,
                 "cost": 5
@@ -927,7 +852,6 @@
               {
                 "name": "Telekinesis",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9,
                 "cost": 5
@@ -936,24 +860,19 @@
           }
         },
         {
-          "name": "Telepathic Speech",
-          "description": ""
+          "name": "Telepathic Speech"
         },
         {
-          "name": "Psionic Sorcery",
-          "description": ""
+          "name": "Psionic Sorcery"
         },
         {
-          "name": "Psychic Defenses",
-          "description": ""
+          "name": "Psychic Defenses"
         },
         {
-          "name": "Revelation in Flesh",
-          "description": ""
+          "name": "Revelation in Flesh"
         },
         {
-          "name": "Warping Implosion",
-          "description": ""
+          "name": "Warping Implosion"
         }
       ],
       "levels": {
@@ -988,85 +907,72 @@
     },
     {
       "name": "Clockwork Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Clockwork Sorcery",
-          "description": ""
+          "name": "Clockwork Sorcery"
         },
         {
           "name": "Clockwork Spells",
-          "description": "",
           "spells": {
             "casting_ability": 5,
             "list": [
               {
                 "name": "Alarm",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Protection from Evil and Good",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Aid",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Protection from Energy",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Freedom of Movement",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Summon Construct",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Wall of Force",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               }
@@ -1074,20 +980,16 @@
           }
         },
         {
-          "name": "Restore Balance",
-          "description": ""
+          "name": "Restore Balance"
         },
         {
-          "name": "Bastion of Law",
-          "description": ""
+          "name": "Bastion of Law"
         },
         {
-          "name": "Trance of Order",
-          "description": ""
+          "name": "Trance of Order"
         },
         {
-          "name": "Clockwork Cavalcade",
-          "description": ""
+          "name": "Clockwork Cavalcade"
         }
       ],
       "levels": {
@@ -1121,85 +1023,72 @@
     },
     {
       "name": "Draconic Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Draconic Sorcery",
-          "description": ""
+          "name": "Draconic Sorcery"
         },
         {
           "name": "Draconic Spells",
-          "description": "",
           "spells": {
             "casting_ability": 5,
             "list": [
               {
                 "name": "Chromatic Orb",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Command",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Alter Self",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Dragon's Breath",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Fear",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Fly",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Arcane Eye",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Charm Monster",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Legend Lore",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Summon Dragon",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               }
@@ -1208,7 +1097,6 @@
         },
         {
           "name": "Draconic Resilience",
-          "description": "",
           "ac_expr": "10 + DEX.MOD + CHA.MOD",
           "assign": [
             {
@@ -1218,16 +1106,13 @@
           ]
         },
         {
-          "name": "Elemental Affinity",
-          "description": ""
+          "name": "Elemental Affinity"
         },
         {
-          "name": "Dragon Wings",
-          "description": ""
+          "name": "Dragon Wings"
         },
         {
-          "name": "Dragon Companion",
-          "description": ""
+          "name": "Dragon Companion"
         }
       ],
       "levels": {
@@ -1261,31 +1146,24 @@
     },
     {
       "name": "Wild Magic Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Wild Magic Sorcery",
-          "description": ""
+          "name": "Wild Magic Sorcery"
         },
         {
-          "name": "Tides of Chaos",
-          "description": ""
+          "name": "Tides of Chaos"
         },
         {
-          "name": "Wild Magic Surge",
-          "description": ""
+          "name": "Wild Magic Surge"
         },
         {
-          "name": "Bend Luck",
-          "description": ""
+          "name": "Bend Luck"
         },
         {
-          "name": "Controlled Chaos",
-          "description": ""
+          "name": "Controlled Chaos"
         },
         {
-          "name": "Tamed Surge",
-          "description": ""
+          "name": "Tamed Surge"
         }
       ],
       "levels": {
@@ -1319,104 +1197,87 @@
     },
     {
       "name": "Spellfire Sorcery",
-      "description": "",
       "features": [
         {
-          "name": "Bolstering Flames",
-          "description": ""
+          "name": "Bolstering Flames"
         },
         {
-          "name": "Radiant Fire",
-          "description": ""
+          "name": "Radiant Fire"
         },
         {
-          "name": "Spellfire Burst",
-          "description": ""
+          "name": "Spellfire Burst"
         },
         {
-          "name": "Spellfire Sorcery",
-          "description": ""
+          "name": "Spellfire Sorcery"
         },
         {
           "name": "Spellfire Spells",
-          "description": "",
           "spells": {
             "casting_ability": 5,
             "list": [
               {
                 "name": "Cure Wounds",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Guiding Bolt",
                 "level": 1,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Lesser Restoration",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Scorching Ray",
                 "level": 2,
-                "description": "",
                 "sticky": true,
                 "min_level": 3
               },
               {
                 "name": "Aura of Vitality",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Counterspell",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Dispel Magic",
                 "level": 3,
-                "description": "",
                 "sticky": true,
                 "min_level": 5
               },
               {
                 "name": "Fire Shield",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Wall of Fire",
                 "level": 4,
-                "description": "",
                 "sticky": true,
                 "min_level": 7
               },
               {
                 "name": "Flame Strike",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               },
               {
                 "name": "Greater Restoration",
                 "level": 5,
-                "description": "",
                 "sticky": true,
                 "min_level": 9
               }
@@ -1424,16 +1285,13 @@
           }
         },
         {
-          "name": "Absorb Spells",
-          "description": ""
+          "name": "Absorb Spells"
         },
         {
-          "name": "Honed Spellfire",
-          "description": ""
+          "name": "Honed Spellfire"
         },
         {
-          "name": "Crown of Spellfire",
-          "description": ""
+          "name": "Crown of Spellfire"
         }
       ],
       "levels": {

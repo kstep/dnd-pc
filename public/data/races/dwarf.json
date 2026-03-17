@@ -1,18 +1,14 @@
 {
   "name": "Dwarf",
-  "description": "",
   "traits": [
     {
-      "name": "Darkvision",
-      "description": ""
+      "name": "Darkvision"
     },
     {
-      "name": "Dwarven Resilience",
-      "description": ""
+      "name": "Dwarven Resilience"
     },
     {
       "name": "Dwarven Toughness",
-      "description": "",
       "assign": [
         {
           "expr": "MAX_HP += LEVEL",
@@ -22,7 +18,6 @@
     },
     {
       "name": "Languages",
-      "description": "",
       "languages": [
         "Common",
         "Dwarvish"
@@ -31,8 +26,7 @@
   ],
   "features": [
     {
-      "name": "Stonecunning",
-      "description": ""
+      "name": "Stonecunning"
     }
   ]
 }

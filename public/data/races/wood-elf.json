@@ -1,10 +1,8 @@
 {
   "name": "Wood Elf",
-  "description": "",
   "traits": [
     {
       "name": "Speed",
-      "description": "",
       "assign": [
         {
           "expr": "SPEED = 35",
@@ -13,24 +11,19 @@
       ]
     },
     {
-      "name": "Darkvision",
-      "description": ""
+      "name": "Darkvision"
     },
     {
-      "name": "Fey Ancestry",
-      "description": ""
+      "name": "Fey Ancestry"
     },
     {
-      "name": "Keen Senses",
-      "description": ""
+      "name": "Keen Senses"
     },
     {
-      "name": "Trance",
-      "description": ""
+      "name": "Trance"
     },
     {
       "name": "Languages",
-      "description": "",
       "languages": [
         "Common",
         "Elvish"
@@ -40,7 +33,6 @@
   "features": [
     {
       "name": "Elven Lineage",
-      "description": "",
       "spells": {
         "cost": "Free Uses",
         "casting_ability": 5,
@@ -48,13 +40,11 @@
           {
             "name": "Druidcraft",
             "level": 0,
-            "description": "",
             "sticky": true
           },
           {
             "name": "Longstrider",
             "level": 1,
-            "description": "",
             "sticky": true,
             "min_level": 3,
             "cost": 1
@@ -62,7 +52,6 @@
           {
             "name": "Pass without Trace",
             "level": 2,
-            "description": "",
             "sticky": true,
             "min_level": 5,
             "cost": 1

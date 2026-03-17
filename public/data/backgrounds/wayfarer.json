@@ -1,10 +1,8 @@
 {
   "name": "Wayfarer",
-  "description": "",
   "features": [
     {
       "name": "Background Abilities",
-      "description": "",
       "assign": [
         {
           "expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
@@ -14,7 +12,6 @@
     },
     {
       "name": "Lucky",
-      "description": "",
       "fields": [
         {
           "name": "Luck Points",
