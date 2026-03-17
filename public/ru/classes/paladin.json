@@ -41,6 +41,9 @@
     "label": "Божественный канал",
     "short": "CD"
   },
+  "feature.Channel Divinity.field.Actions": {
+    "label": "Действия"
+  },
   "feature.Channel Divinity.field.Actions.option.Divine Sense": {
     "label": "Божественное чутьё",
     "description": "Обнаружить небожителей, исчадий и нежить в пределах 60 фт на 10 минут"
