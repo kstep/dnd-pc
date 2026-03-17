@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, HashSet};
 
+use futures::future::join_all;
 use leptos::prelude::*;
 use serde::Deserialize;
 
@@ -104,47 +105,51 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         });
     }
 
-    /// Set up a `LocalResource` + `Effect` pair that batch-refetches all locale
-    /// files when locale changes, then recomputes merged definitions in a
-    /// single reactive update.
-    pub fn setup_locale_resource<L: for<'de> Deserialize<'de> + 'static>(
+    /// Collect locale fetch futures for all cached entries.
+    /// Returns `(name, future)` pairs — caller should `join_all` them
+    /// together with other caches' futures for batched fetching.
+    pub async fn fetch_locale<L: for<'de> Deserialize<'de> + 'static>(
         &self,
-        locale: Signal<String>,
-        apply: fn(&mut T, &L),
-    ) {
-        let raw = self.raw;
-        let data = self.data;
-
-        let resource = LocalResource::new(move || {
-            let current = locale.get();
-            let entries = raw.get_untracked();
-            async move {
-                let futs = entries.into_iter().map(|(name, (_, path))| {
-                    let url = format!("{BASE_URL}/{current}/{path}");
-                    async move { (name, fetch_json::<L>(&url).await.ok()) }
-                });
-                futures::future::join_all(futs).await
-            }
-        });
-
-        Effect::new(move || {
-            let guard = resource.read();
-            let Some(results) = guard.as_ref() else {
-                return;
-            };
-            let raw_guard = raw.read_untracked();
-            data.update(|m| {
-                for (name, locale_opt) in results {
-                    if let Some((raw_def, _)) = raw_guard.get(name) {
-                        let mut val = raw_def.clone();
-                        if let Some(locale) = locale_opt {
-                            apply(&mut val, locale);
-                        }
-                        m.insert(name.clone(), val);
-                    }
-                }
+        locale: &str,
+    ) -> Vec<(Box<str>, Option<L>)> {
+        let futs = self
+            .raw
+            .get_untracked()
+            .into_iter()
+            .map(|(name, (_, path))| {
+                let url = format!("{BASE_URL}/{locale}/{path}");
+                async move { (name, fetch_json::<L>(&url).await.ok()) }
             });
-        });
+        join_all(futs).await
+    }
+
+    /// Apply fetched locale data to raw entries, updating `data` in a single
+    /// reactive update. Use `notify` to control whether subscribers are
+    /// notified (pass `false` to batch across multiple caches, `true` for the
+    /// last one).
+    pub fn apply_locale_batch<L>(
+        &self,
+        results: &[(Box<str>, Option<L>)],
+        apply: fn(&mut T, &L),
+        notify: bool,
+    ) {
+        let raw_guard = self.raw.read_untracked();
+        let update_fn = |m: &mut BTreeMap<Box<str>, T>| {
+            for (name, locale_opt) in results {
+                if let Some((raw_def, _)) = raw_guard.get(name) {
+                    let mut val = raw_def.clone();
+                    if let Some(locale) = locale_opt {
+                        apply(&mut val, locale);
+                    }
+                    m.insert(name.clone(), val);
+                }
+            }
+        };
+        if notify {
+            self.data.update(update_fn);
+        } else {
+            self.data.update_untracked(update_fn);
+        }
     }
 }
 

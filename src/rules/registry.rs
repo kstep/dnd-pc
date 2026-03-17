@@ -226,14 +226,38 @@ impl RulesRegistry {
         let background_cache = FetchCache::new();
         let spell_list_cache = FetchCache::new();
 
-        // Set up locale Resources — each batch-refetches all locale files
-        // for its cache type when locale changes, with a single reactive update.
-        class_cache.setup_locale_resource::<LocaleMap>(locale, locale::apply_class_locale);
-        race_cache.setup_locale_resource::<LocaleMap>(locale, locale::apply_race_locale);
-        background_cache
-            .setup_locale_resource::<LocaleMap>(locale, locale::apply_background_locale);
-        spell_list_cache
-            .setup_locale_resource::<SpellLocaleMap>(locale, locale::apply_spell_map_locale);
+        // Single locale Resource that batch-fetches ALL locale files across
+        // all cache types when locale changes, then applies them in one go.
+        let locale_resource = LocalResource::new(move || {
+            let current = locale.get();
+            async move {
+                futures::join!(
+                    class_cache.fetch_locale::<LocaleMap>(&current),
+                    race_cache.fetch_locale::<LocaleMap>(&current),
+                    background_cache.fetch_locale::<LocaleMap>(&current),
+                    spell_list_cache.fetch_locale::<SpellLocaleMap>(&current),
+                )
+            }
+        });
+
+        // Apply all locale results in one Effect — only the last cache
+        // update notifies subscribers, so fill_from_registry runs once.
+        Effect::new(move || {
+            let guard = locale_resource.read();
+            let Some((class_results, race_results, bg_results, spell_results)) = guard.as_ref()
+            else {
+                return;
+            };
+            class_cache.apply_locale_batch(class_results, locale::apply_class_locale, false);
+            race_cache.apply_locale_batch(race_results, locale::apply_race_locale, false);
+            background_cache.apply_locale_batch(bg_results, locale::apply_background_locale, false);
+            // Last update notifies — triggers one fill_from_registry run.
+            spell_list_cache.apply_locale_batch(
+                spell_results,
+                locale::apply_spell_map_locale,
+                true,
+            );
+        });
 
         Self {
             locale,
