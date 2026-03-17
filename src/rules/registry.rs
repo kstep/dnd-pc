@@ -240,8 +240,10 @@ impl RulesRegistry {
             }
         });
 
-        // Apply all locale results in one Effect — only the last cache
-        // update notifies subscribers, so fill_from_registry runs once.
+        // Apply all locale results in one Effect — update all caches
+        // without notifications first, then notify all at once so every
+        // subscriber (fill_from_registry AND reference pages) sees
+        // consistent data.
         Effect::new(move || {
             let guard = locale_resource.read();
             let Some((class_results, race_results, bg_results, spell_results)) = guard.as_ref()
@@ -251,12 +253,16 @@ impl RulesRegistry {
             class_cache.apply_locale_batch(class_results, locale::apply_class_locale, false);
             race_cache.apply_locale_batch(race_results, locale::apply_race_locale, false);
             background_cache.apply_locale_batch(bg_results, locale::apply_background_locale, false);
-            // Last update notifies — triggers one fill_from_registry run.
             spell_list_cache.apply_locale_batch(
                 spell_results,
                 locale::apply_spell_map_locale,
-                true,
+                false,
             );
+            // Notify all at once — Leptos batches these so effects run once.
+            class_cache.notify();
+            race_cache.notify();
+            background_cache.notify();
+            spell_list_cache.notify();
         });
 
         Self {
