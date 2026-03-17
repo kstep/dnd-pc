@@ -248,15 +248,11 @@ impl RulesRegistry {
             else {
                 return;
             };
-            class_cache.apply_locale_in_place(class_results, locale::apply_class_locale, false);
-            race_cache.apply_locale_in_place(race_results, locale::apply_race_locale, false);
-            background_cache.apply_locale_in_place(
-                bg_results,
-                locale::apply_background_locale,
-                false,
-            );
+            class_cache.apply_locale_batch(class_results, locale::apply_class_locale, false);
+            race_cache.apply_locale_batch(race_results, locale::apply_race_locale, false);
+            background_cache.apply_locale_batch(bg_results, locale::apply_background_locale, false);
             // Last update notifies — triggers one fill_from_registry run.
-            spell_list_cache.apply_locale_in_place(
+            spell_list_cache.apply_locale_batch(
                 spell_results,
                 locale::apply_spell_map_locale,
                 true,

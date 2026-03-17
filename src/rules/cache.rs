@@ -122,20 +122,24 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         join_all(futs).await
     }
 
-    /// Apply fetched locale data in-place on existing `data` entries.
-    /// No cloning of definitions — just overwrites labels/descriptions.
-    pub fn apply_locale_in_place<L>(
+    /// Apply fetched locale data by cloning from raw (no labels) and
+    /// applying the new locale on top. Cloning from raw ensures old locale
+    /// values are cleared when switching to a locale with fewer labels.
+    pub fn apply_locale_batch<L>(
         &self,
         results: &[(Box<str>, Option<L>)],
         apply: fn(&mut T, &L),
         notify: bool,
     ) {
+        let raw_guard = self.raw.read_untracked();
         let update_fn = |m: &mut BTreeMap<Box<str>, T>| {
             for (name, locale_opt) in results {
-                if let Some(def) = m.get_mut(name)
-                    && let Some(locale) = locale_opt
-                {
-                    apply(def, locale);
+                if let Some((raw_def, _)) = raw_guard.get(name) {
+                    let mut val = raw_def.clone();
+                    if let Some(locale) = locale_opt {
+                        apply(&mut val, locale);
+                    }
+                    m.insert(name.clone(), val);
                 }
             }
         };
