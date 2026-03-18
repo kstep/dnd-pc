@@ -58,43 +58,44 @@ pub fn BackpackBlock() -> impl IntoView {
             </div>
 
             // -- Add item --
-            <div class="summary-list-entry">
-                <div class="summary-list-row">
-                    <button class="btn-icon btn-icon--success" title=move_tr!("add-item")
-                        on:click=move |_| {
-                            let Some(name_el) = name_input.get() else { return };
-                            let Some(qty_el) = qty_input.get() else { return };
-                            let Some(desc_input) = desc_input.get() else { return };
+            <div class="entry-item">
+                <button class="btn-icon btn-icon--success" title=move_tr!("add-item")
+                    on:click=move |_| {
+                        let Some(name_el) = name_input.get() else { return };
+                        let Some(qty_el) = qty_input.get() else { return };
+                        let Some(desc_input) = desc_input.get() else { return };
 
-                            let name = name_el.value().trim().to_string();
-                            if name.is_empty() { return; }
+                        let name = name_el.value().trim().to_string();
+                        if name.is_empty() { return; }
 
-                            let quantity: u32 = qty_el
-                                .value()
-                                .parse()
-                                .unwrap_or(1);
-                            if quantity == 0 { return; }
+                        let quantity: u32 = qty_el
+                            .value()
+                            .parse()
+                            .unwrap_or(1);
+                        if quantity == 0 { return; }
 
-                            let description = desc_input.value().trim().to_string();
+                        let description = desc_input.value().trim().to_string();
 
-                            equipment.items().write().push(Item {
-                                name,
-                                quantity,
-                                description,
-                            });
+                        equipment.items().write().push(Item {
+                            name,
+                            quantity,
+                            description,
+                        });
 
-                            name_el.set_value("");
-                            qty_el.set_value("1");
-                            desc_input.set_value("");
-                        }
-                    ><Icon name="circle-plus" size=14 /></button>
-                    <input type="text" required class="summary-list-name" placeholder=move_tr!("item-name") node_ref=name_input />
-                    <span class="summary-list-badge">
+                        name_el.set_value("");
+                        qty_el.set_value("1");
+                        desc_input.set_value("");
+                    }
+                ><Icon name="circle-plus" size=14 /></button>
+                <div class="entry-content">
+                    <input type="text" required class="entry-name" placeholder=move_tr!("item-name") node_ref=name_input />
+                    <span class="entry-badge">
                         "\u{00d7}"
                         <input type="number" class="summary-qty-input" min="1" required value="1" node_ref=qty_input />
                     </span>
                 </div>
-                <textarea class="summary-item-desc" placeholder=move_tr!("description") node_ref=desc_input />
+                <div class="entry-actions" />
+                <textarea class="entry-desc" placeholder=move_tr!("description") node_ref=desc_input />
             </div>
 
             {move || {
@@ -110,18 +111,18 @@ pub fn BackpackBlock() -> impl IntoView {
                 } else {
                     let expanded = RwSignal::new(HashSet::<usize>::new());
                     Either::Right(view! {
-                        <div class="summary-list">
+                        <div class="entry-list">
                             {items.into_iter().map(|(idx, name, qty, desc)| {
                                 let is_open = Signal::derive(move || expanded.get().contains(&idx));
                                 view! {
-                                    <div class="summary-list-entry">
-                                        <div class="summary-list-row">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || expanded.update(|set| { if !set.remove(&idx) { set.insert(idx); } })
-                                            />
-                                            <span class="summary-list-name">{name}</span>
-                                            <span class="summary-list-badge">
+                                    <div class="entry-item">
+                                        <ToggleButton
+                                            expanded=is_open
+                                            on_toggle=move || expanded.update(|set| { if !set.remove(&idx) { set.insert(idx); } })
+                                        />
+                                        <div class="entry-content">
+                                            <span class="entry-name">{name}</span>
+                                            <span class="entry-badge">
                                                 "\u{00d7}"
                                                 <input
                                                     type="number"
@@ -136,9 +137,10 @@ pub fn BackpackBlock() -> impl IntoView {
                                                 />
                                             </span>
                                         </div>
+                                        <div class="entry-actions" />
                                         <Show when=move || is_open.get()>
                                             <textarea
-                                                class="summary-item-desc"
+                                                class="entry-desc"
                                                 prop:value=desc.clone()
                                                 on:input=move |e| {
                                                     let value = event_target_value(&e);

@@ -52,7 +52,7 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     view! {
         <Panel title=move_tr!("panel-features") class="features-panel">
-            <div class="features-list">
+            <div class="entry-list">
                 {move || {
                     let classes_list = store.identity().classes().read();
                     let feature_data = store.feature_data().read();
@@ -92,66 +92,70 @@ pub fn FeaturesPanel() -> impl IntoView {
                             });
                             let is_open = Signal::derive(move || expanded.get().contains(&i));
                             view! {
-                                <div class="feature-entry">
+                                <div class="entry-item">
                                     <ToggleButton
                                         expanded=is_open
                                         on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                     />
-                                    <DatalistInput
-                                        value=name
-                                        placeholder=move_tr!("feature-name")
-                                        class="feature-name"
-                                        options=options
-                                        on_input=move |input, resolved| {
-                                            let mut w = features.write();
-                                            if let Some(key) = resolved {
-                                                w[i].name = key;
-                                                w[i].label = None;
-                                            } else {
-                                                w[i].set_label(input);
+                                    <div class="entry-content">
+                                        <DatalistInput
+                                            value=name
+                                            placeholder=move_tr!("feature-name")
+                                            class="entry-name"
+                                            options=options
+                                            on_input=move |input, resolved| {
+                                                let mut w = features.write();
+                                                if let Some(key) = resolved {
+                                                    w[i].name = key;
+                                                    w[i].label = None;
+                                                } else {
+                                                    w[i].set_label(input);
+                                                }
+                                                w[i].description.clear();
                                             }
-                                            w[i].description.clear();
-                                        }
-                                    />
-                                    <button
-                                        class="btn-apply-level"
-                                        title=move_tr!("btn-apply-feature")
-                                        on:click=move |_| {
-                                            let name = features.read()[i].name.clone();
-                                            let (level, identity) = store.with_untracked(|c| {
-                                                let level = registry
-                                                    .feature_class_level(&c.identity, &name)
-                                                    .unwrap_or_else(|| c.level());
-                                                (level, c.identity.clone())
-                                            });
-                                            if registry.with_feature_source(&identity, &name, |feat_def, source| {
-                                                store.update(|c| feat_def.apply(level, c, &source));
-                                            }).is_none() {
-                                                log::warn!("Cannot determine source for feature {name}, registry may not be loaded yet");
-                                            }
-                                        }
-                                    >
-                                        <Icon name="arrow-up" size=14 />
-                                    </button>
-                                    <button
-                                        class="btn-remove"
-                                        on:click=move |_| {
-                                            if i < features.read().len() {
-                                                let removed = features.write().remove(i);
-                                                if !features.read().iter().any(|f| f.name == removed.name) {
-                                                    store.feature_data().write().remove(&removed.name);
+                                        />
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-apply-level"
+                                            title=move_tr!("btn-apply-feature")
+                                            on:click=move |_| {
+                                                let name = features.read()[i].name.clone();
+                                                let (level, identity) = store.with_untracked(|c| {
+                                                    let level = registry
+                                                        .feature_class_level(&c.identity, &name)
+                                                        .unwrap_or_else(|| c.level());
+                                                    (level, c.identity.clone())
+                                                });
+                                                if registry.with_feature_source(&identity, &name, |feat_def, source| {
+                                                    store.update(|c| feat_def.apply(level, c, &source));
+                                                }).is_none() {
+                                                    log::warn!("Cannot determine source for feature {name}, registry may not be loaded yet");
                                                 }
                                             }
-                                        }
-                                    >
-                                        <Icon name="x" size=14 />
-                                    </button>
+                                        >
+                                            <Icon name="arrow-up" size=14 />
+                                        </button>
+                                        <button
+                                            class="btn-remove"
+                                            on:click=move |_| {
+                                                if i < features.read().len() {
+                                                    let removed = features.write().remove(i);
+                                                    if !features.read().iter().any(|f| f.name == removed.name) {
+                                                        store.feature_data().write().remove(&removed.name);
+                                                    }
+                                                }
+                                            }
+                                        >
+                                            <Icon name="x" size=14 />
+                                        </button>
+                                    </div>
                                     <Show when=move || is_open.get()>
                                         {source_text.as_ref().map(|s| view! {
-                                            <span class="feature-source">{s.clone()}</span>
+                                            <span class="entry-sublabel">{s.clone()}</span>
                                         })}
                                         <textarea
-                                            class="feature-desc"
+                                            class="entry-desc"
                                             placeholder=move_tr!("description")
                                             prop:value=desc.clone()
                                             on:change=move |e| {
@@ -170,7 +174,7 @@ pub fn FeaturesPanel() -> impl IntoView {
             </button>
 
             <h4>{move_tr!("racial-traits")}</h4>
-            <div class="features-list">
+            <div class="entry-list">
                 {move || {
                     racial_traits
                         .read()
@@ -181,33 +185,37 @@ pub fn FeaturesPanel() -> impl IntoView {
                             let desc = rt.description.clone();
                             let is_open = Signal::derive(move || rt_expanded.get().contains(&i));
                             view! {
-                                <div class="feature-entry">
+                                <div class="entry-item">
                                     <ToggleButton
                                         expanded=is_open
                                         on_toggle=move || rt_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                     />
-                                    <input
-                                        type="text"
-                                        class="feature-name"
-                                        placeholder=move_tr!("trait-name")
-                                        prop:value=name
-                                        on:change=move |e| {
-                                            racial_traits.write()[i].set_label(event_target_value(&e));
-                                        }
-                                    />
-                                    <button
-                                        class="btn-remove"
-                                        on:click=move |_| {
-                                            if i < racial_traits.read().len() {
-                                                racial_traits.write().remove(i);
+                                    <div class="entry-content">
+                                        <input
+                                            type="text"
+                                            class="entry-name"
+                                            placeholder=move_tr!("trait-name")
+                                            prop:value=name
+                                            on:change=move |e| {
+                                                racial_traits.write()[i].set_label(event_target_value(&e));
                                             }
-                                        }
-                                    >
-                                        <Icon name="x" size=14 />
-                                    </button>
+                                        />
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-remove"
+                                            on:click=move |_| {
+                                                if i < racial_traits.read().len() {
+                                                    racial_traits.write().remove(i);
+                                                }
+                                            }
+                                        >
+                                            <Icon name="x" size=14 />
+                                        </button>
+                                    </div>
                                     <Show when=move || is_open.get()>
                                         <textarea
-                                            class="feature-desc"
+                                            class="entry-desc"
                                             placeholder=move_tr!("description")
                                             prop:value=desc.clone()
                                             on:change=move |e| {

@@ -42,7 +42,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                     description: String::new(),
                     badge: Some(
                         view! {
-                            <span class="summary-list-badge">{damage_info}</span>
+                            <span class="entry-badge">{damage_info}</span>
                         }
                         .into_any(),
                     ),

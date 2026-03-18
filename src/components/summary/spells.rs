@@ -84,7 +84,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             let avail = fu.available();
                             let max = fu.max;
                             view! {
-                                <span class="summary-list-badge">
+                                <span class="entry-badge">
                                     {avail} "/" {max}
                                 </span>
                             }
@@ -100,7 +100,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             let cost = spell.cost;
                             let suffix = cost_short.clone();
                             view! {
-                                <span class="summary-list-badge">
+                                <span class="entry-badge">
                                     {cost} " " {suffix}
                                 </span>
                             }
@@ -209,7 +209,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         });
 
                         let badge = view! {
-                            <span class="summary-spell-badge">
+                            <span class="entry-badge">
                                 <span class="summary-spell-level">{level_str}</span>
                                 {free_uses_badge}
                                 {cost_badge}

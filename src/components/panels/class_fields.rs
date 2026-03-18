@@ -56,7 +56,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                             view! {
                                 <Show when=move || is_open.get()>
                                     <textarea
-                                        class="field-desc"
+                                        class="entry-desc"
                                         placeholder=move_tr!("description")
                                         prop:value=desc.clone()
                                         on:change=move |e| {
@@ -83,39 +83,42 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let max = die.amount;
                                 let max_val = max.to_string();
                                 EitherOf5::A(view! {
-                                    <div class="field-entry field-points">
+                                    <div class="entry-item">
                                         <ToggleButton
                                             expanded=is_open
                                             on_toggle=move || desc_expanded.update(|set| {
                                                 if !set.remove(&field_idx) { set.insert(field_idx); }
                                             })
                                         />
-                                        <span class="field-label">{label}" "{die_label}</span>
-                                        <div class="points-inputs">
-                                            <input
-                                                type="number"
-                                                class="short-input"
-                                                min="0"
-                                                prop:max=max_val
-                                                placeholder=move_tr!("used")
-                                                prop:value=used_val
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        fname.with_value(|key| {
-                                                            store.feature_data().update(|m| {
-                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                    && let Some(f) = fields.get_mut(field_idx)
-                                                                    && let FeatureValue::Die { used, .. } = &mut f.value
-                                                                {
-                                                                    *used = value.min(max);
-                                                                }
+                                        <div class="entry-content">
+                                            <span class="field-label">{label}" "{die_label}</span>
+                                            <div class="points-inputs">
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    min="0"
+                                                    prop:max=max_val
+                                                    placeholder=move_tr!("used")
+                                                    prop:value=used_val
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            fname.with_value(|key| {
+                                                                store.feature_data().update(|m| {
+                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                                        && let FeatureValue::Die { used, .. } = &mut f.value
+                                                                    {
+                                                                        *used = value.min(max);
+                                                                    }
+                                                                });
                                                             });
-                                                        });
+                                                        }
                                                     }
-                                                }
-                                            />
-                                            <span>"/" {max}</span>
+                                                />
+                                                <span>"/" {max}</span>
+                                            </div>
                                         </div>
+                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -124,15 +127,18 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let label = field.label().to_string();
                                 let formatted = format_bonus(*val);
                                 EitherOf5::B(view! {
-                                    <div class="field-entry">
+                                    <div class="entry-item">
                                         <ToggleButton
                                             expanded=is_open
                                             on_toggle=move || desc_expanded.update(|set| {
                                                 if !set.remove(&field_idx) { set.insert(field_idx); }
                                             })
                                         />
-                                        <span class="field-label">{label}</span>
-                                        <span class="field-value">{formatted}</span>
+                                        <div class="entry-content">
+                                            <span class="field-label">{label}</span>
+                                            <span class="field-value">{formatted}</span>
+                                        </div>
+                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -142,59 +148,62 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let used_val = used.to_string();
                                 let max_val = max.to_string();
                                 EitherOf5::C(view! {
-                                    <div class="field-entry field-points">
+                                    <div class="entry-item">
                                         <ToggleButton
                                             expanded=is_open
                                             on_toggle=move || desc_expanded.update(|set| {
                                                 if !set.remove(&field_idx) { set.insert(field_idx); }
                                             })
                                         />
-                                        <span class="field-label">{label}</span>
-                                        <div class="points-inputs">
-                                            <input
-                                                type="number"
-                                                class="short-input"
-                                                min="0"
-                                                placeholder=move_tr!("used")
-                                                prop:value=used_val
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        fname.with_value(|key| {
-                                                            store.feature_data().update(|m| {
-                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                    && let Some(f) = fields.get_mut(field_idx)
-                                                                    && let FeatureValue::Points { used, .. } = &mut f.value
-                                                                {
-                                                                    *used = value;
-                                                                }
+                                        <div class="entry-content">
+                                            <span class="field-label">{label}</span>
+                                            <div class="points-inputs">
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    min="0"
+                                                    placeholder=move_tr!("used")
+                                                    prop:value=used_val
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            fname.with_value(|key| {
+                                                                store.feature_data().update(|m| {
+                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                                        && let FeatureValue::Points { used, .. } = &mut f.value
+                                                                    {
+                                                                        *used = value;
+                                                                    }
+                                                                });
                                                             });
-                                                        });
+                                                        }
                                                     }
-                                                }
-                                            />
-                                            <span>"/"</span>
-                                            <input
-                                                type="number"
-                                                class="short-input"
-                                                min="0"
-                                                placeholder=move_tr!("max")
-                                                prop:value=max_val
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        fname.with_value(|key| {
-                                                            store.feature_data().update(|m| {
-                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                    && let Some(f) = fields.get_mut(field_idx)
-                                                                    && let FeatureValue::Points { max, .. } = &mut f.value
-                                                                {
-                                                                    *max = value;
-                                                                }
+                                                />
+                                                <span>"/"</span>
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    min="0"
+                                                    placeholder=move_tr!("max")
+                                                    prop:value=max_val
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            fname.with_value(|key| {
+                                                                store.feature_data().update(|m| {
+                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                                        && let FeatureValue::Points { max, .. } = &mut f.value
+                                                                    {
+                                                                        *max = value;
+                                                                    }
+                                                                });
                                                             });
-                                                        });
+                                                        }
                                                     }
-                                                }
-                                            />
+                                                />
+                                            </div>
                                         </div>
+                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -247,28 +256,33 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                             });
                                             let cost_str = (opt.cost > 0).then(|| format!(" ({})", opt.cost));
                                             view! {
-                                                <div class="choice-entry choice-entry-readonly">
-                                                    {action_icon}
-                                                    <span class="choice-name">{opt.label().to_string()}</span>
-                                                    {cost_str}
+                                                <div class="entry-item choice-entry-readonly">
+                                                    <div class="entry-content">
+                                                        {action_icon}
+                                                        <span class="entry-name">{opt.label().to_string()}</span>
+                                                    </div>
+                                                    <div class="entry-actions">
+                                                        {cost_str}
+                                                    </div>
                                                 </div>
                                             }
                                         })
                                         .collect_view();
 
                                     return EitherOf5::E(view! {
-                                        <div class="field-entry field-choice">
-                                            <div class="field-header">
-                                                <ToggleButton
-                                                    expanded=is_open
-                                                    on_toggle=move || desc_expanded.update(|set| {
-                                                        if !set.remove(&field_idx) { set.insert(field_idx); }
-                                                    })
-                                                />
+                                        <div class="entry-item">
+                                            <ToggleButton
+                                                expanded=is_open
+                                                on_toggle=move || desc_expanded.update(|set| {
+                                                    if !set.remove(&field_idx) { set.insert(field_idx); }
+                                                })
+                                            />
+                                            <div class="entry-content">
                                                 <span class="field-label">{label_view}</span>
                                             </div>
+                                            <div class="entry-actions" />
                                             {field_desc_textarea()}
-                                            <div class="choice-list">
+                                            <div class="entry-list" style="grid-column: 1 / -1">
                                                 {action_views}
                                             </div>
                                         </div>
@@ -296,102 +310,107 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         });
 
                                         view! {
-                                            <div class="choice-entry">
+                                            <div class="entry-item">
                                                 <ToggleButton
                                                     expanded=is_opt_open
                                                     on_toggle=move || opt_expanded.update(|set| {
                                                         if !set.remove(&opt_idx) { set.insert(opt_idx); }
                                                     })
                                                 />
-                                                <DatalistInput
-                                                    value=opt_name
-                                                    placeholder=move_tr!("choose-option")
-                                                    options=suggestions
-                                                    on_input=move |input, resolved| {
-                                                        fname.with_value(|key| {
-                                                            fld_name.with_value(|fld| {
-                                                                let (cost, opt_label) = resolved
-                                                                    .as_ref()
-                                                                    .map(|name| {
-                                                                        let classes = store.identity().classes().read();
-                                                                        let data = store.feature_data().read();
-                                                                        let char_fields = data.get(key)
-                                                                            .map(|e| e.fields.as_slice())
-                                                                            .unwrap_or(&[]);
-                                                                        registry
-                                                                            .get_choice_options(&classes, key, fld, char_fields)
-                                                                            .into_iter()
-                                                                            .find(|o| o.name == *name)
-                                                                            .map(|o| (o.cost, o.label))
-                                                                            .unzip()
-                                                                    })
-                                                                    .unwrap_or((None, None));
-                                                                store.feature_data().update(|m| {
-                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                        && let Some(f) = fields.get_mut(field_idx)
-                                                                        && let FeatureValue::Choice { options } = &mut f.value
-                                                                        && let Some(opt) = options.get_mut(opt_idx)
-                                                                    {
-                                                                        if let Some(key) = resolved {
-                                                                            opt.name = key;
-                                                                            opt.label = opt_label.flatten();
-                                                                        } else {
-                                                                            opt.set_label(input);
-                                                                        }
-                                                                        opt.description.clear();
-                                                                        if let Some(cost) = cost {
-                                                                            opt.cost = cost;
-                                                                        }
-                                                                    }
-                                                                });
-                                                            });
-                                                        });
-                                                    }
-                                                />
-                                                {(has_cost).then(move || view! {
-                                                    <input
-                                                        type="number"
-                                                        class="choice-cost"
-                                                        min="0"
-                                                        prop:value=opt_cost.clone()
-                                                        on:input=move |e| {
-                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                fname.with_value(|key| {
+                                                <div class="entry-content">
+                                                    <DatalistInput
+                                                        value=opt_name
+                                                        placeholder=move_tr!("choose-option")
+                                                        class="entry-name"
+                                                        options=suggestions
+                                                        on_input=move |input, resolved| {
+                                                            fname.with_value(|key| {
+                                                                fld_name.with_value(|fld| {
+                                                                    let (cost, opt_label) = resolved
+                                                                        .as_ref()
+                                                                        .map(|name| {
+                                                                            let classes = store.identity().classes().read();
+                                                                            let data = store.feature_data().read();
+                                                                            let char_fields = data.get(key)
+                                                                                .map(|e| e.fields.as_slice())
+                                                                                .unwrap_or(&[]);
+                                                                            registry
+                                                                                .get_choice_options(&classes, key, fld, char_fields)
+                                                                                .into_iter()
+                                                                                .find(|o| o.name == *name)
+                                                                                .map(|o| (o.cost, o.label))
+                                                                                .unzip()
+                                                                        })
+                                                                        .unwrap_or((None, None));
                                                                     store.feature_data().update(|m| {
                                                                         if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
                                                                             && let Some(f) = fields.get_mut(field_idx)
                                                                             && let FeatureValue::Choice { options } = &mut f.value
                                                                             && let Some(opt) = options.get_mut(opt_idx)
                                                                         {
-                                                                            opt.cost = value;
+                                                                            if let Some(key) = resolved {
+                                                                                opt.name = key;
+                                                                                opt.label = opt_label.flatten();
+                                                                            } else {
+                                                                                opt.set_label(input);
+                                                                            }
+                                                                            opt.description.clear();
+                                                                            if let Some(cost) = cost {
+                                                                                opt.cost = cost;
+                                                                            }
                                                                         }
                                                                     });
                                                                 });
-                                                            }
+                                                            });
                                                         }
                                                     />
-                                                })}
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        fname.with_value(|key| {
-                                                            store.feature_data().update(|m| {
-                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                    && let Some(f) = fields.get_mut(field_idx)
-                                                                    && let FeatureValue::Choice { options } = &mut f.value
-                                                                    && opt_idx < options.len()
-                                                                {
-                                                                    options.remove(opt_idx);
+                                                    {(has_cost).then(move || view! {
+                                                        <input
+                                                            type="number"
+                                                            class="choice-cost"
+                                                            min="0"
+                                                            prop:value=opt_cost.clone()
+                                                            on:input=move |e| {
+                                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                    fname.with_value(|key| {
+                                                                        store.feature_data().update(|m| {
+                                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                                && let Some(f) = fields.get_mut(field_idx)
+                                                                                && let FeatureValue::Choice { options } = &mut f.value
+                                                                                && let Some(opt) = options.get_mut(opt_idx)
+                                                                            {
+                                                                                opt.cost = value;
+                                                                            }
+                                                                        });
+                                                                    });
                                                                 }
+                                                            }
+                                                        />
+                                                    })}
+                                                </div>
+                                                <div class="entry-actions">
+                                                    <button
+                                                        class="btn-remove"
+                                                        on:click=move |_| {
+                                                            fname.with_value(|key| {
+                                                                store.feature_data().update(|m| {
+                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                                        && let FeatureValue::Choice { options } = &mut f.value
+                                                                        && opt_idx < options.len()
+                                                                    {
+                                                                        options.remove(opt_idx);
+                                                                    }
+                                                                });
                                                             });
-                                                        });
-                                                    }
-                                                >
-                                                    <Icon name="x" size=14 />
-                                                </button>
+                                                        }
+                                                    >
+                                                        <Icon name="x" size=14 />
+                                                    </button>
+                                                </div>
                                                 <Show when=move || is_opt_open.get()>
                                                     <textarea
-                                                        class="choice-desc"
+                                                        class="entry-desc"
                                                         placeholder=move_tr!("description")
                                                         prop:value=opt_desc.clone()
                                                         on:change=move |e| {
@@ -423,18 +442,19 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 };
 
                                 EitherOf5::D(view! {
-                                    <div class="field-entry field-choice">
-                                        <div class="field-header">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || desc_expanded.update(|set| {
-                                                    if !set.remove(&field_idx) { set.insert(field_idx); }
-                                                })
-                                            />
+                                    <div class="entry-item">
+                                        <ToggleButton
+                                            expanded=is_open
+                                            on_toggle=move || desc_expanded.update(|set| {
+                                                if !set.remove(&field_idx) { set.insert(field_idx); }
+                                            })
+                                        />
+                                        <div class="entry-content">
                                             <span class="field-label">{label_view}</span>
                                         </div>
+                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
-                                        <div class="choice-list">
+                                        <div class="entry-list" style="grid-column: 1 / -1">
                                             {option_views}
                                             <button
                                                 class="btn-add"
@@ -463,7 +483,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                 view! {
                     <Panel title=title class="class-fields-panel">
-                        <div class="class-fields-list">
+                        <div class="entry-list">
                             {field_views}
                         </div>
                     </Panel>
