@@ -153,6 +153,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             let pool_str = effect.pool.as_ref().map(ToString::to_string);
                             let dice_rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
                             let description = effect.description.clone();
+                            let scope = effect.scope.clone();
                             let enabled = effect.enabled;
                             let is_open = RwSignal::new(false);
                             view! {
@@ -171,18 +172,23 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 }
                                             />
                                         </label>
-                                        <input
-                                            type="text"
-                                            class="summary-list-name"
-                                            prop:value=name
-                                            on:change=move |ev| {
-                                                let new_name = event_target_value(&ev).trim().to_string();
-                                                if new_name.is_empty() { return; }
-                                                effects.update(|e| e.update_field(i, |eff| {
-                                                    eff.set_label(new_name);
-                                                }));
-                                            }
-                                        />
+                                        <div class="effect-name-col">
+                                            <input
+                                                type="text"
+                                                class="summary-list-name"
+                                                prop:value=name
+                                                on:change=move |ev| {
+                                                    let new_name = event_target_value(&ev).trim().to_string();
+                                                    if new_name.is_empty() { return; }
+                                                    effects.update(|e| e.update_field(i, |eff| {
+                                                        eff.set_label(new_name);
+                                                    }));
+                                                }
+                                            />
+                                            {scope.map(|s| view! {
+                                                <span class="effect-scope-label">{s.to_string()}</span>
+                                            })}
+                                        </div>
                                         <button
                                             class="btn-icon btn-icon--danger"
                                             title=move_tr!("effect-remove")
