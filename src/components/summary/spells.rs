@@ -5,6 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     effective::EffectiveCharacter,
@@ -234,6 +235,7 @@ pub fn SpellsBlock() -> impl IntoView {
                 }
 
                 let atk_str = format_bonus(atk_bonus);
+                let atk_adv = eff.spell_attack_advantage(name);
 
                 Some(view! {
                     <div class="summary-subsection">
@@ -244,6 +246,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             </span>
                             <span class="summary-spell-stat">
                                 {move_tr!("spell-attack")} ": " <strong>{atk_str}</strong>
+                                {adv_icon(atk_adv)}
                             </span>
                         </div>
                         <SummaryList items=all_spells />
