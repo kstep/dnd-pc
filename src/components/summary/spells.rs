@@ -30,8 +30,8 @@ pub fn SpellsBlock() -> impl IntoView {
                 let spell_data = entry.spells.as_ref()?;
                 let ability = spell_data.casting_ability;
 
-                let save_dc = eff.spell_save_dc(ability);
-                let atk_bonus = eff.spell_attack_bonus(ability);
+                let save_dc = eff.spell_save_dc(ability, name);
+                let atk_bonus = eff.spell_attack_bonus(ability, name);
 
                 let (feature_label, cost_field_name, cost_short) = registry
                     .with_feature(&id, name, |feat| {

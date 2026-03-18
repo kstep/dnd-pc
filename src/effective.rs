@@ -78,12 +78,35 @@ impl EffectiveCharacter {
         self.get(Attribute::Initiative)
     }
 
-    pub fn spell_save_dc(&self, ability: Ability) -> i32 {
+    pub fn spell_save_dc(&self, ability: Ability, feature: &str) -> i32 {
+        if let Some(dc) = self
+            .effects
+            .read()
+            .resolve_scoped(feature, Attribute::SpellDc)
+        {
+            return dc;
+        }
         8 + self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
-    pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
+    pub fn spell_attack_bonus(&self, ability: Ability, feature: &str) -> i32 {
+        if let Some(atk) = self
+            .effects
+            .read()
+            .resolve_scoped(feature, Attribute::SpellAttack)
+        {
+            return atk;
+        }
         self.proficiency_bonus() + self.ability_modifier(ability)
+    }
+
+    #[allow(dead_code)]
+    pub fn spell_attack_advantage(&self, feature: &str) -> AdvantageState {
+        self.effects
+            .read()
+            .resolve_scoped(feature, Attribute::SpellAttackAdvantage)
+            .unwrap_or(0)
+            .into()
     }
 
     pub fn ability_advantage(&self, ability: Ability) -> AdvantageState {

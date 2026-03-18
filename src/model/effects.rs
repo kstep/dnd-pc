@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     demap,
     expr::{self, Context, DicePool, Expr},
-    model::{Attribute, Character},
+    model::{Ability, Attribute, Character},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -21,6 +21,8 @@ pub struct ActiveEffect {
     pub pool: Option<DicePool>,
     #[serde(default)]
     pub enabled: bool,
+    #[serde(default)]
+    pub scope: Option<Box<str>>,
 }
 
 impl ActiveEffect {
@@ -59,6 +61,10 @@ pub struct ActiveEffects {
     /// Computed values set by expression assignments.
     #[serde(skip)]
     overrides: BTreeMap<Attribute, i32>,
+    /// Per-feature overrides for scoped effects (e.g. SPELL.DC scoped to a
+    /// spellcasting feature).
+    #[serde(skip)]
+    scoped_overrides: BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
     /// Memoized consumable overrides — evaluated once, then cached
     /// so user edits (e.g. spending temp HP) aren't overwritten.
     /// Persisted so additive effects (HP += X) don't re-apply on reload.
@@ -123,11 +129,14 @@ impl ActiveEffects {
     /// deserialization and after any mutation.
     pub fn recompute(&mut self, character: &Character) -> bool {
         self.overrides.clear();
+        self.scoped_overrides.clear();
 
         // Mutable wrapper: borrows overrides mutably and effects immutably.
         struct Ctx<'a> {
             character: &'a Character,
             overrides: &'a mut BTreeMap<Attribute, i32>,
+            /// Casting ability from scoped feature (None for unscoped effects)
+            casting_ability: Option<Ability>,
         }
         impl Context<Attribute> for Ctx<'_> {
             fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
@@ -144,24 +153,68 @@ impl ActiveEffects {
                 if let Some(&value) = self.overrides.get(&var) {
                     return Ok(value);
                 }
-                Ok(self.character.resolve(var).unwrap_or(0))
+                match var {
+                    Attribute::SpellDc | Attribute::SpellAttack => {
+                        let ability = self
+                            .casting_ability
+                            .ok_or(expr::Error::unsupported_var(var))?;
+                        match var {
+                            Attribute::SpellDc => Ok(self.character.spell_save_dc(ability)),
+                            Attribute::SpellAttack => {
+                                Ok(self.character.spell_attack_bonus(ability))
+                            }
+                            _ => unreachable!(),
+                        }
+                    }
+                    _ => Ok(self.character.resolve(var).unwrap_or(0)),
+                }
             }
         }
 
-        let mut ctx = Ctx {
-            character,
-            overrides: &mut self.overrides,
-        };
         for effect in self.effects.iter().filter(|e| e.enabled) {
             let Some(ref expr) = effect.expr else {
                 continue;
             };
-            let result = match effect.pool {
-                Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
-                None => expr.apply(&mut ctx),
-            };
-            if let Err(error) = result {
-                log::error!("Effect expression error: {error}");
+
+            let casting_ability = effect.scope.as_ref().and_then(|scope| {
+                character
+                    .feature_data
+                    .get(&**scope)
+                    .and_then(|e| e.spells.as_ref())
+                    .map(|s| s.casting_ability)
+            });
+
+            if let Some(scope) = effect.scope.clone() {
+                // Scoped effect: evaluate into a temporary map, then merge
+                let mut scoped = BTreeMap::new();
+                let mut ctx = Ctx {
+                    character,
+                    overrides: &mut scoped,
+                    casting_ability,
+                };
+                let result = match effect.pool {
+                    Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
+                    None => expr.apply(&mut ctx),
+                };
+                if let Err(error) = result {
+                    log::error!("Effect '{}' expression error: {error}", effect.name);
+                }
+                let entry = self.scoped_overrides.entry(scope).or_default();
+                entry.extend(scoped);
+            } else {
+                // Unscoped effect: evaluate into global overrides
+                let mut ctx = Ctx {
+                    character,
+                    overrides: &mut self.overrides,
+                    casting_ability: None,
+                };
+                let result = match effect.pool {
+                    Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
+                    None => expr.apply(&mut ctx),
+                };
+                if let Err(error) = result {
+                    log::error!("Effect '{}' expression error: {error}", effect.name);
+                }
             }
         }
         CONSUMABLE_ATTRS.iter().any(|attr| {
@@ -181,6 +234,15 @@ impl ActiveEffects {
         }
         character.resolve(attr).unwrap_or(0)
     }
+
+    /// Resolve a scoped attribute for a specific feature.
+    /// Returns the scoped override if set, otherwise None.
+    pub fn resolve_scoped(&self, feature: &str, attr: Attribute) -> Option<i32> {
+        self.scoped_overrides
+            .get(feature)
+            .and_then(|m| m.get(&attr))
+            .copied()
+    }
 }
 
 #[cfg(test)]
@@ -198,6 +260,7 @@ mod tests {
             expr: Some(expr.parse().unwrap()),
             pool: None,
             enabled: true,
+            scope: None,
         }
     }
 

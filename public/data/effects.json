@@ -124,7 +124,8 @@
   },
   {
     "name": "Innate Sorcery",
-    "scope": "Spellcasting (Sorcerer)"
+    "scope": "Spellcasting (Sorcerer)",
+    "expr": "SPELL.DC += 1; SPELL.ATK.ADV = 1"
   },
   {
     "name": "Bless"

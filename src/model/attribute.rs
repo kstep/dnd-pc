@@ -41,6 +41,9 @@ pub enum Attribute {
     SkillAdvantage(Skill),
     SaveAdvantage(Ability),
     AttackAdvantage,
+    SpellDc,
+    SpellAttack,
+    SpellAttackAdvantage,
 }
 
 impl Attribute {
@@ -53,6 +56,7 @@ impl Attribute {
                 | Self::SkillAdvantage(_)
                 | Self::SaveAdvantage(_)
                 | Self::AttackAdvantage
+                | Self::SpellAttackAdvantage
         )
     }
 }
@@ -178,6 +182,14 @@ impl FromStr for Attribute {
                     _ => Err("unknown ATK suffix (expected ADV)"),
                 };
             }
+            if prefix == "SPELL" {
+                return match rest {
+                    "DC" => Ok(Self::SpellDc),
+                    "ATK" => Ok(Self::SpellAttack),
+                    "ATK.ADV" => Ok(Self::SpellAttackAdvantage),
+                    _ => Err("unknown SPELL suffix (expected DC, ATK, or ATK.ADV)"),
+                };
+            }
             if let Some(ability) = parse_ability(prefix) {
                 // STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV
                 if let Some((middle, suffix)) = rest.split_once('.') {
@@ -252,6 +264,9 @@ impl fmt::Display for Attribute {
             Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill_abbr(*skill)),
             Self::SaveAdvantage(ability) => write!(f, "{}.SAVE.ADV", ability_abbr(*ability)),
             Self::AttackAdvantage => f.write_str("ATK.ADV"),
+            Self::SpellDc => f.write_str("SPELL.DC"),
+            Self::SpellAttack => f.write_str("SPELL.ATK"),
+            Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
         }
     }
 }
@@ -353,6 +368,33 @@ mod tests {
             Attribute::Skill(Skill::Acrobatics)
         );
         assert_eq!("ATK".parse::<Attribute>().unwrap(), Attribute::AttackBonus);
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_spell_attributes() {
+        assert_eq!("SPELL.DC".parse::<Attribute>().unwrap(), Attribute::SpellDc);
+        assert_eq!(
+            "SPELL.ATK".parse::<Attribute>().unwrap(),
+            Attribute::SpellAttack
+        );
+        assert_eq!(
+            "SPELL.ATK.ADV".parse::<Attribute>().unwrap(),
+            Attribute::SpellAttackAdvantage
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_spell_round_trip() {
+        let cases = [
+            Attribute::SpellDc,
+            Attribute::SpellAttack,
+            Attribute::SpellAttackAdvantage,
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
     }
 
     #[wasm_bindgen_test]

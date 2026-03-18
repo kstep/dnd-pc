@@ -34,6 +34,7 @@ pub fn EffectsBlock() -> impl IntoView {
     let effect_label = RwSignal::new(String::new());
     let effect_key = RwSignal::new(Option::<String>::None);
     let effect_desc = RwSignal::new(String::new());
+    let effect_scope = RwSignal::new(Option::<Box<str>>::None);
     let expr_input: NodeRef<html::Input> = NodeRef::new();
 
     let show_dice_pool = RwSignal::new(false);
@@ -83,6 +84,7 @@ pub fn EffectsBlock() -> impl IntoView {
 
                             let description = effect_desc.get_untracked();
 
+                            let scope = effect_scope.get_untracked();
                             let effect = ActiveEffect {
                                 name,
                                 label,
@@ -90,6 +92,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                 expr,
                                 pool: None,
                                 enabled: true,
+                                scope,
                             };
 
                             // Check if expression has dice rolls
@@ -105,6 +108,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             effect_label.set(String::new());
                             effect_key.set(None);
                             effect_desc.set(String::new());
+                            effect_scope.set(None);
                             expr_el.set_value("");
                         }
                     ><Icon name="circle-plus" size=14 /></button>
@@ -124,6 +128,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             el.set_value(&val);
                                         }
                                         effect_desc.set(eff.description.clone());
+                                        effect_scope.set(eff.scope.clone());
                                     }
                                 });
                             }
