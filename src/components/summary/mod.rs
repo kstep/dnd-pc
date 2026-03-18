@@ -13,5 +13,5 @@ pub use effects::EffectsBlock;
 pub use languages::LanguagesBlock;
 pub use resources::ResourcesBlock;
 pub use spells::SpellsBlock;
-pub use stats::StatsBlock;
+pub use stats::{StatsBlock, adv_icon};
 pub use weapons::WeaponsBlock;

@@ -100,7 +100,6 @@ impl EffectiveCharacter {
         self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
-    #[allow(dead_code)]
     pub fn spell_attack_advantage(&self, feature: &str) -> AdvantageState {
         self.effects
             .read()

@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-fn adv_icon(state: AdvantageState) -> impl IntoView {
+pub fn adv_icon(state: AdvantageState) -> impl IntoView {
     match state {
         AdvantageState::Advantage => Some(view! {
             <span class="adv-up"><Icon name="chevron-up" size=14 /></span>
