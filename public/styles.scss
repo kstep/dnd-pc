@@ -1773,6 +1773,24 @@ input.summary-list-name {
   padding: var(--size-1);
 }
 
+.effect-name-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  input.summary-list-name {
+    width: 100%;
+  }
+}
+
+.effect-scope-label {
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+  line-height: 1;
+  padding-left: var(--size-1);
+}
+
 .summary-item-expr-row {
   margin: var(--size-1) 0 0;
   margin-left: calc(28px + var(--size-2));
