@@ -264,38 +264,38 @@
             "list": {
               "from": "spells/wizard.json"
             },
-            "levels": [
-              {},
-              {},
-              {
+            "levels": {
+              "1": {},
+              "2": {},
+              "3": {
                 "cantrips": 3,
                 "spells": 3,
                 "slots": [
                   2
                 ]
               },
-              {
+              "4": {
                 "cantrips": 3,
                 "spells": 4,
                 "slots": [
                   3
                 ]
               },
-              {
+              "5": {
                 "cantrips": 3,
                 "spells": 4,
                 "slots": [
                   3
                 ]
               },
-              {
+              "6": {
                 "cantrips": 3,
                 "spells": 4,
                 "slots": [
                   3
                 ]
               },
-              {
+              "7": {
                 "cantrips": 3,
                 "spells": 5,
                 "slots": [
@@ -303,7 +303,7 @@
                   2
                 ]
               },
-              {
+              "8": {
                 "cantrips": 3,
                 "spells": 6,
                 "slots": [
@@ -311,7 +311,7 @@
                   2
                 ]
               },
-              {
+              "9": {
                 "cantrips": 3,
                 "spells": 6,
                 "slots": [
@@ -319,7 +319,7 @@
                   2
                 ]
               },
-              {
+              "10": {
                 "cantrips": 4,
                 "spells": 7,
                 "slots": [
@@ -327,7 +327,7 @@
                   3
                 ]
               },
-              {
+              "11": {
                 "cantrips": 4,
                 "spells": 8,
                 "slots": [
@@ -335,7 +335,7 @@
                   3
                 ]
               },
-              {
+              "12": {
                 "cantrips": 4,
                 "spells": 8,
                 "slots": [
@@ -343,7 +343,7 @@
                   3
                 ]
               },
-              {
+              "13": {
                 "cantrips": 4,
                 "spells": 9,
                 "slots": [
@@ -352,7 +352,7 @@
                   2
                 ]
               },
-              {
+              "14": {
                 "cantrips": 4,
                 "spells": 10,
                 "slots": [
@@ -361,7 +361,7 @@
                   2
                 ]
               },
-              {
+              "15": {
                 "cantrips": 4,
                 "spells": 10,
                 "slots": [
@@ -370,7 +370,7 @@
                   2
                 ]
               },
-              {
+              "16": {
                 "cantrips": 4,
                 "spells": 11,
                 "slots": [
@@ -379,7 +379,7 @@
                   3
                 ]
               },
-              {
+              "17": {
                 "cantrips": 4,
                 "spells": 11,
                 "slots": [
@@ -388,7 +388,7 @@
                   3
                 ]
               },
-              {
+              "18": {
                 "cantrips": 4,
                 "spells": 11,
                 "slots": [
@@ -397,7 +397,7 @@
                   3
                 ]
               },
-              {
+              "19": {
                 "cantrips": 4,
                 "spells": 12,
                 "slots": [
@@ -407,7 +407,7 @@
                   1
                 ]
               },
-              {
+              "20": {
                 "cantrips": 4,
                 "spells": 13,
                 "slots": [
@@ -417,7 +417,7 @@
                   1
                 ]
               }
-            ]
+            }
           }
         },
         {

@@ -12,6 +12,8 @@ pub struct SpellData {
     pub pool: SpellSlotPool,
     #[serde(default)]
     pub spells: Vec<Spell>,
+    #[serde(default)]
+    pub known: Option<Vec<Spell>>,
 }
 
 impl SpellData {
@@ -22,6 +24,10 @@ impl SpellData {
     pub fn spells(&self) -> impl Iterator<Item = &Spell> {
         self.spells.iter().filter(|s| s.level > 0)
     }
+
+    pub fn is_two_tier(&self) -> bool {
+        self.known.is_some()
+    }
 }
 
 impl Default for SpellData {
@@ -31,6 +37,7 @@ impl Default for SpellData {
             caster_coef: 0,
             pool: SpellSlotPool::default(),
             spells: Vec::new(),
+            known: None,
         }
     }
 }
@@ -83,8 +90,6 @@ pub struct Spell {
     pub label: Option<String>,
     #[serde(default)]
     pub level: u32,
-    #[serde(default)]
-    pub prepared: bool,
     #[serde(default)]
     pub description: String,
     #[serde(default)]

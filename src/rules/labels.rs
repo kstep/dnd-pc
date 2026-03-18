@@ -7,9 +7,8 @@ use super::{
     race::RaceDefinition,
     resolve::find_feature,
     spells::{SpellDefinition, SpellList, SpellMap},
-    utils::get_for_level,
 };
-use crate::model::{Character, Spell};
+use crate::model::{Character, Spell, SpellData};
 
 /// Resolve a spell definition from an inline list or a cached reference list.
 /// O(log n) lookup via BTreeMap.
@@ -132,20 +131,46 @@ pub(super) fn sync_labels(
                 .fields
                 .values()
                 .find_map(|f| match &f.kind {
-                    FieldKind::FreeUses { levels } => Some(get_for_level(levels, char_level)),
+                    FieldKind::FreeUses { levels } => Some(levels.get_for_level(char_level)),
                     _ => None,
                 })
                 .unwrap_or(0);
 
-            for spell in &mut spell_data.spells {
+            // Sync spellbook (known) labels from registry first
+            if let Some(known) = &mut spell_data.known {
+                for spell in known.iter_mut() {
+                    if spell.name.is_empty() {
+                        continue;
+                    }
+                    let spell_def =
+                        resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
+                    if let Some(def) = spell_def {
+                        set_label(&mut spell.label, def.label.as_deref());
+                        set_desc(&mut spell.description, &def.description);
+                    }
+                }
+            }
+
+            let SpellData { known, spells, .. } = spell_data;
+            let known_spells = known.as_deref().unwrap_or_default();
+            for spell in spells.iter_mut() {
                 if spell.name.is_empty() {
                     continue;
                 }
-                let spell_def = resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
-                if let Some(def) = spell_def {
-                    set_label(&mut spell.label, def.label.as_deref());
-                    set_desc(&mut spell.description, &def.description);
+                // Two-tier: fill from spellbook entry first, registry fallback
+                let known_entry = known_spells.iter().find(|s| s.name == spell.name);
+                if let Some(known) = known_entry {
+                    set_label(&mut spell.label, known.label.as_deref());
+                    set_desc(&mut spell.description, &known.description);
+                } else {
+                    let spell_def =
+                        resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
+                    if let Some(def) = spell_def {
+                        set_label(&mut spell.label, def.label.as_deref());
+                        set_desc(&mut spell.description, &def.description);
+                    }
                 }
+                let spell_def = resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
                 on_spell_extra(spell, spell_def, free_uses_max);
             }
         }

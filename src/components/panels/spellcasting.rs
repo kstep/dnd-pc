@@ -61,6 +61,40 @@ fn read_spell<T: Default>(
     })
 }
 
+fn update_known_spell(
+    fname: StoredValue<String>,
+    store: Store<Character>,
+    index: usize,
+    f: impl FnOnce(&mut Spell),
+) {
+    update_spells(fname, store, |sc| {
+        if let Some(known) = &mut sc.known
+            && let Some(spell) = known.get_mut(index)
+        {
+            f(spell);
+        }
+    });
+}
+
+fn read_known_spell<T: Default>(
+    fname: StoredValue<String>,
+    store: Store<Character>,
+    index: usize,
+    f: impl FnOnce(&Spell) -> T,
+) -> T {
+    fname.with_value(|key| {
+        store
+            .feature_data()
+            .read()
+            .get(key)
+            .and_then(|entry| entry.spells.as_ref())
+            .and_then(|sc| sc.known.as_ref())
+            .and_then(|known| known.get(index))
+            .map(f)
+            .unwrap_or_default()
+    })
+}
+
 #[component]
 fn FeatureSpellcastingSection(
     #[prop(into)] feature_name: String,
@@ -100,8 +134,20 @@ fn FeatureSpellcastingSection(
     let spell_attack = Memo::new(move |_| store.read().spell_attack_bonus(casting_ability.get()));
 
     let spells_expanded = RwSignal::new(HashSet::<usize>::new());
+    let known_expanded = RwSignal::new(HashSet::<usize>::new());
 
-    // Per-level spell suggestions, reactively updated when spell cache loads
+    let is_two_tier = Memo::new(move |_| {
+        fname.with_value(|key| {
+            store
+                .feature_data()
+                .read()
+                .get(key)
+                .and_then(|e| e.spells.as_ref())
+                .is_some_and(|sc| sc.is_two_tier())
+        })
+    });
+
+    // Per-level spell suggestions from registry (for spellbook / single-tier)
     let spell_suggestions: [RwSignal<Vec<(String, String, String)>>; 10] =
         std::array::from_fn(|_| RwSignal::new(Vec::new()));
     Effect::new(move || {
@@ -110,6 +156,34 @@ fn FeatureSpellcastingSection(
             .with_value(|key| resolve_feature_spell_list(&registry, &store.read().identity, key));
         for (level, signal) in spell_suggestions.iter().enumerate() {
             signal.set(std::mem::take(&mut data[level]));
+        }
+    });
+
+    // Per-level suggestions from known (spellbook) entries for prepared spells
+    let known_suggestions: [RwSignal<Vec<(String, String, String)>>; 10] =
+        std::array::from_fn(|_| RwSignal::new(Vec::new()));
+    Effect::new(move || {
+        let guard = store.feature_data().read();
+        let known = fname.with_value(|key| {
+            guard
+                .get(key)
+                .and_then(|e| e.spells.as_ref())
+                .and_then(|sc| sc.known.as_ref())
+        });
+        let mut by_level: [Vec<(String, String, String)>; 10] = Default::default();
+        if let Some(known) = known {
+            for spell in known.iter().filter(|s| !s.name.is_empty()) {
+                if let Some(bucket) = by_level.get_mut(spell.level.min(9) as usize) {
+                    bucket.push((
+                        spell.name.clone(),
+                        spell.label().to_string(),
+                        spell.description.clone(),
+                    ));
+                }
+            }
+        }
+        for (level, signal) in known_suggestions.iter().enumerate() {
+            signal.set(std::mem::take(&mut by_level[level]));
         }
     });
 
@@ -157,8 +231,138 @@ fn FeatureSpellcastingSection(
                 </div>
             </div>
 
+            // Spellbook section (only for two-tier casters like Wizard)
+            <Show when=move || is_two_tier.get()>
+                <div class="section-header">
+                    <h4>{move_tr!("spellbook")}</h4>
+                    <button
+                        class="btn-toggle-desc"
+                        on:click=move |_| {
+                            update_spells(fname, store, |sc| {
+                                if let Some(known) = &mut sc.known {
+                                    known.sort_by(|a, b| {
+                                        b.sticky
+                                            .cmp(&a.sticky)
+                                            .then_with(|| a.level.cmp(&b.level))
+                                            .then_with(|| a.name.cmp(&b.name))
+                                    });
+                                }
+                            });
+                        }
+                    >
+                        <Icon name="arrow-down-a-z" />
+                    </button>
+                </div>
+                <div class="spells-list">
+                    {move || {
+                        let guard = store.feature_data().read();
+                        fname.with_value(|key| {
+                            guard
+                                .get(key)
+                                .and_then(|e| e.spells.as_ref())
+                                .and_then(|sc| sc.known.as_ref())
+                        }).map(|known| known
+                            .iter()
+                            .enumerate()
+                            .map(|(i, spell)| {
+                                let spell_name = spell.label().to_string();
+                                let spell_level = spell.level.to_string();
+                                let spell_sticky = spell.sticky;
+                                let is_open = Signal::derive(move || known_expanded.get().contains(&i));
+                                let options = spell_suggestions[spell.level.min(9) as usize];
+                                view! {
+                                    <div class="spell-entry">
+                                        <ToggleButton
+                                            expanded=is_open
+                                            on_toggle=move || known_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                        />
+                                        <DatalistInput
+                                            value=spell_name
+                                            placeholder=move_tr!("spell-name")
+                                            class="spell-name"
+                                            options=options
+                                            on_input=move |input, resolved| {
+                                                let desc = resolved.as_ref().and_then(|name| {
+                                                    options.with(|opts| {
+                                                        opts.iter()
+                                                            .find(|(n, _, _)| n == name)
+                                                            .map(|(_, _, d)| d.clone())
+                                                    })
+                                                }).unwrap_or_default();
+                                                update_known_spell(fname, store, i, |spell| {
+                                                    if let Some(name) = resolved {
+                                                        spell.name = name;
+                                                        spell.label = Some(input);
+                                                    } else {
+                                                        spell.set_label(input);
+                                                    }
+                                                    spell.description = desc;
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            class="short-input"
+                                            min="0"
+                                            max="9"
+                                            placeholder="Lv"
+                                            prop:value=spell_level
+                                            on:change=move |e| {
+                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                    update_known_spell(fname, store, i, |spell| spell.level = value);
+                                                }
+                                            }
+                                        />
+                                        <Show when=move || !spell_sticky>
+                                            <button
+                                                class="btn-remove"
+                                                on:click=move |_| {
+                                                    update_spells(fname, store, |sc| {
+                                                        if let Some(known) = &mut sc.known
+                                                            && i < known.len()
+                                                        {
+                                                            known.remove(i);
+                                                        }
+                                                    });
+                                                }
+                                            >
+                                                <Icon name="x" size=14 />
+                                            </button>
+                                        </Show>
+                                        <Show when=move || is_open.get()>
+                                            <textarea
+                                                class="spell-desc"
+                                                placeholder=move_tr!("description")
+                                                prop:value=move || read_known_spell(fname, store, i, |spell| spell.description.clone())
+                                                on:change=move |e| {
+                                                    let value = event_target_value(&e);
+                                                    update_known_spell(fname, store, i, |spell| spell.description = value);
+                                                }
+                                            />
+                                        </Show>
+                                    </div>
+                                }
+                            })
+                            .collect_view())
+                    }}
+                </div>
+                <button
+                    class="btn-add"
+                    on:click=move |_| {
+                        update_spells(fname, store, |sc| {
+                            if let Some(known) = &mut sc.known {
+                                known.push(Spell::default());
+                            }
+                        });
+                    }
+                >
+                    {move_tr!("btn-add-spell")}
+                </button>
+            </Show>
+
+            // Prepared spells section (or single-tier spell list)
             <div class="section-header">
-                <h4>{move_tr!("spells")}</h4>
+                <h4>{move || if is_two_tier.get() { move_tr!("prepared-spells") } else { move_tr!("spells") }}</h4>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
@@ -180,6 +384,7 @@ fn FeatureSpellcastingSection(
             <div class="spells-list">
                 {move || {
                     let guard = store.feature_data().read();
+                    let two_tier = is_two_tier.get();
                     fname.with_value(|key| {
                         guard
                             .get(key)
@@ -190,45 +395,44 @@ fn FeatureSpellcastingSection(
                         .map(|(i, spell)| {
                             let spell_name = spell.label().to_string();
                             let spell_level = spell.level.to_string();
-                            let spell_prepared = spell.prepared;
                             let spell_sticky = spell.sticky;
                             let has_free_uses = spell.free_uses.is_some();
                             let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
-                            let options = spell_suggestions[spell.level.min(9) as usize];
+                            // Two-tier: autocomplete from spellbook; single-tier/cantrips: from registry
+                            let options = if two_tier && spell.level > 0 {
+                                known_suggestions[spell.level.min(9) as usize]
+                            } else {
+                                spell_suggestions[spell.level.min(9) as usize]
+                            };
                             view! {
                                 <div class="spell-entry">
                                     <ToggleButton
                                         expanded=is_open
                                         on_toggle=move || spells_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                     />
-                                    <label class="spell-prepared">
-                                        <input
-                                            type="checkbox"
-                                            prop:checked=spell_prepared || spell_sticky
-                                            prop:disabled=spell_sticky
-                                            on:change=move |_| {
-                                                if !spell_sticky {
-                                                    update_spell(fname, store, i, |spell| {
-                                                        spell.prepared = !spell.prepared;
-                                                    });
-                                                }
-                                            }
-                                        />
-                                    </label>
                                     <DatalistInput
                                         value=spell_name
                                         placeholder=move_tr!("spell-name")
                                         class="spell-name"
                                         options=options
                                         on_input=move |input, resolved| {
-                                            update_spell(fname, store, i, |spell| {
+                                            update_spells(fname, store, |sc| {
+                                                let Some(spell) = sc.spells.get_mut(i) else { return };
                                                 if let Some(name) = resolved {
+                                                    // Copy label/description from spellbook entry if two-tier
+                                                    let known_spell = sc.known.as_ref()
+                                                        .and_then(|k| k.iter().find(|s| s.name == name));
+                                                    spell.description = known_spell
+                                                        .map(|s| s.description.clone())
+                                                        .unwrap_or_default();
+                                                    spell.label = known_spell
+                                                        .and_then(|s| s.label.clone())
+                                                        .or(Some(input));
                                                     spell.name = name;
-                                                    spell.label = Some(input);
                                                 } else {
                                                     spell.set_label(input);
+                                                    spell.description.clear();
                                                 }
-                                                spell.description.clear();
                                             });
                                         }
                                     />

@@ -7,7 +7,7 @@ use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     model::{Die, Translatable, format_bonus, proficiency_bonus_for_level},
-    rules::{DefinitionStore, DieOrExpr, FieldKind, RulesRegistry, ValueOrExpr, get_for_level},
+    rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -85,7 +85,7 @@ pub fn ClassReference() -> impl IntoView {
                 let max_spell_level = spells_def
                     .map(|sd| {
                         sd.levels
-                            .iter()
+                            .values()
                             .filter_map(|l| l.slots.as_ref())
                             .map(|s| s.len())
                             .max()
@@ -140,7 +140,7 @@ pub fn ClassReference() -> impl IntoView {
                         }
 
                         let spell_level_rules =
-                            spells_def.and_then(|sd| sd.levels.get(level as usize - 1));
+                            spells_def.and_then(|sd| sd.levels.at_level(level));
                         let cantrips = spell_level_rules.and_then(|r| r.cantrips);
                         let spells_known = spell_level_rules.and_then(|r| r.spells);
                         let slots = spell_level_rules
@@ -151,27 +151,28 @@ pub fn ClassReference() -> impl IntoView {
                             .iter()
                             .map(|fc| match fc.kind {
                                 FieldKind::Points { levels, .. } => {
-                                    let v = get_for_level(levels, level);
-                                    match v {
-                                        ValueOrExpr::Value(n) if n > 0 => n.to_string(),
-                                        ValueOrExpr::Expr(expr) => expr.to_string(),
+                                    match levels.at_level(level) {
+                                        Some(ValueOrExpr::Value(n)) if *n > 0 => n.to_string(),
+                                        Some(ValueOrExpr::Expr(expr)) => expr.to_string(),
                                         _ => "\u{2014}".into(),
                                     }
                                 }
                                 FieldKind::Die { levels } => {
-                                    let de: DieOrExpr = get_for_level(levels, level);
-                                    match &de.amount {
-                                        ValueOrExpr::Value(0) => "\u{2014}".into(),
-                                        ValueOrExpr::Value(n) => {
-                                            Die { amount: *n, sides: de.sides }.to_string()
-                                        }
-                                        ValueOrExpr::Expr(expr) => {
-                                            format!("({})d{}", expr, de.sides)
-                                        }
+                                    match levels.at_level(level) {
+                                        Some(de) => match &de.amount {
+                                            ValueOrExpr::Value(0) => "\u{2014}".into(),
+                                            ValueOrExpr::Value(n) => {
+                                                Die { amount: *n, sides: de.sides }.to_string()
+                                            }
+                                            ValueOrExpr::Expr(expr) => {
+                                                format!("({})d{}", expr, de.sides)
+                                            }
+                                        },
+                                        None => "\u{2014}".into(),
                                     }
                                 }
                                 FieldKind::Choice { levels, .. } => {
-                                    let v: u32 = get_for_level(levels, level);
+                                    let v: u32 = levels.get_for_level(level);
                                     if v > 0 {
                                         v.to_string()
                                     } else {
@@ -179,7 +180,7 @@ pub fn ClassReference() -> impl IntoView {
                                     }
                                 }
                                 FieldKind::Bonus { levels } => {
-                                    let v: i32 = get_for_level(levels, level);
+                                    let v: i32 = levels.get_for_level(level);
                                     if v != 0 {
                                         format_bonus(v)
                                     } else {
@@ -187,7 +188,7 @@ pub fn ClassReference() -> impl IntoView {
                                     }
                                 }
                                 FieldKind::FreeUses { levels } => {
-                                    let v: u32 = get_for_level(levels, level);
+                                    let v: u32 = levels.get_for_level(level);
                                     if v > 0 {
                                         v.to_string()
                                     } else {

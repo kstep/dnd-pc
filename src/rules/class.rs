@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::feature::FeatureDefinition;
+use super::{feature::FeatureDefinition, utils::LevelRules};
 use crate::{
     demap::{self, Named},
     vecset::VecSet,
@@ -55,8 +55,8 @@ pub struct SubclassDefinition {
     pub description: String,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub features: BTreeMap<Box<str>, FeatureDefinition>,
-    #[serde(default, deserialize_with = "demap::u32_key_map")]
-    pub levels: BTreeMap<u32, SubclassLevelRules>,
+    #[serde(default)]
+    pub levels: LevelRules<SubclassLevelRules>,
 }
 
 impl Named for SubclassDefinition {

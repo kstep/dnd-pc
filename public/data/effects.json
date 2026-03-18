@@ -123,6 +123,10 @@
     "expr": "SPEED = 0; ATK.ADV = 1"
   },
   {
+    "name": "Innate Sorcery",
+    "scope": "Spellcasting (Sorcerer)"
+  },
+  {
     "name": "Bless"
   },
   {

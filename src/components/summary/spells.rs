@@ -59,10 +59,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             return false;
                         }
                         if spell.level == 0 {
-                            return spell.prepared || spell.sticky;
-                        }
-                        if !spell.prepared && !spell.sticky {
-                            return false;
+                            return true;
                         }
                         // Show if has remaining free uses (cost per cast)
                         if spell

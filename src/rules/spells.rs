@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
+use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
     model::{Ability, Character, FeatureSource, FreeUses, Spell, SpellData, SpellSlotPool},
@@ -46,7 +47,7 @@ pub struct SpellsDefinition {
     #[serde(default)]
     pub list: SpellList,
     #[serde(default)]
-    pub levels: Vec<SpellLevelRules>,
+    pub levels: LevelRules<SpellLevelRules>,
     #[serde(default)]
     pub cost: Option<String>,
 }
@@ -82,7 +83,7 @@ impl SpellsDefinition {
         // Update spell slots (needs separate borrow scope)
         let slots = self
             .levels
-            .get(level as usize - 1)
+            .at_level(level)
             .and_then(|level_rules| level_rules.slots.as_deref());
         character.update_spell_slots(self.pool, slots);
 
@@ -98,7 +99,7 @@ impl SpellsDefinition {
         };
 
         // Add new cantrip/spell slots based on level rules
-        if let Some(rules) = self.levels.get(level as usize - 1) {
+        if let Some(rules) = self.levels.at_level(level) {
             let (cantrips_current, spells_current) = spell_data
                 .spells
                 .iter()
@@ -114,6 +115,7 @@ impl SpellsDefinition {
             let cantrips_target = rules.cantrips.unwrap_or(cantrips_current as u32) as usize;
             let spells_target = rules.spells.unwrap_or(spells_current as u32) as usize;
 
+            // Cantrips always go into spells (always prepared)
             spell_data.spells.extend(
                 (cantrips_current..cantrips_target)
                     .map(|_| Spell {
@@ -125,30 +127,50 @@ impl SpellsDefinition {
                         ..Default::default()
                     })),
             );
+
+            // Grow spellbook (known) if two-tier
+            if let Some(known_target) = rules.known {
+                let known = spell_data.known.get_or_insert_with(Vec::new);
+                let known_current = known.iter().filter(|s| !s.sticky).count();
+                let known_target = known_target as usize;
+                known.extend((known_current..known_target).map(|_| Spell {
+                    level: highest_slot_level,
+                    ..Default::default()
+                }));
+            }
         }
 
-        // Sticky spells from inline list
+        // Sticky spells from inline list — route to known (spellbook) if two-tier
         if let SpellList::Inline(list) = &self.list {
+            let two_tier = spell_data.is_two_tier();
+            let target = if two_tier {
+                spell_data.known.get_or_insert_with(Vec::new)
+            } else {
+                &mut spell_data.spells
+            };
             for s in list.values().filter(|s| s.sticky && s.min_level <= level) {
-                if !spell_data.spells.iter().any(|ex| ex.name == s.name) {
-                    spell_data.spells.push(Spell {
+                if !target.iter().any(|ex| ex.name == s.name) {
+                    // free_uses only on prepared/castable spells, not spellbook entries
+                    let free_uses =
+                        (!two_tier && s.cost > 0 && free_uses_max > 0).then_some(FreeUses {
+                            used: 0,
+                            max: free_uses_max,
+                        });
+                    target.push(Spell {
                         name: s.name.clone(),
                         label: s.label.clone(),
                         description: s.description.clone(),
                         level: s.level,
-                        prepared: true,
                         sticky: true,
                         cost: s.cost,
-                        free_uses: (s.cost > 0 && free_uses_max > 0).then_some(FreeUses {
-                            used: 0,
-                            max: free_uses_max,
-                        }),
+                        free_uses,
                     });
                 }
             }
         }
 
-        // Update free_uses.max on existing spells (level-up)
+        // Update free_uses.max on existing spells (level-up) — only
+        // prepared/castable spells, not spellbook entries
         if free_uses_max > 0 {
             for spell in &mut spell_data.spells {
                 if spell.cost > 0 {
@@ -225,4 +247,6 @@ pub struct SpellLevelRules {
     pub spells: Option<u32>,
     #[serde(default)]
     pub slots: Option<Vec<u32>>,
+    #[serde(default)]
+    pub known: Option<u32>,
 }

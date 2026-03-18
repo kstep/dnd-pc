@@ -23,4 +23,4 @@ pub use index::{BackgroundIndexEntry, ClassIndexEntry, RaceIndexEntry, SpellInde
 pub use race::{RaceDefinition, RaceTrait};
 pub use registry::RulesRegistry;
 pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellsDefinition};
-pub use utils::get_for_level;
+pub use utils::LevelRules;

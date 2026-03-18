@@ -1,5 +1,4 @@
 ## Page-level
-app-title = D&D 5e Character Sheet
 page-characters = D&D 5e Characters
 btn-new-character = + New Character
 btn-load-character = Load from File
@@ -88,9 +87,10 @@ spell-save-dc = Spell Save DC
 spell-attack = Spell Attack
 spell-slots = Spell Slots
 spells = Spells
+spellbook = Spellbook
+prepared-spells = Prepared Spells
 spell-name = Spell name
 free-uses = Free Uses
-sorcery-points = Sorcery Points
 
 ## Equipment panel
 weapons = Weapons
@@ -98,7 +98,6 @@ name = Name
 atk-bonus = Atk Bonus
 damage = Damage
 heal = Heal
-type = Type
 btn-add-weapon = + Add Weapon
 armor = Armor
 base-ac = Base AC
@@ -229,12 +228,10 @@ view-summary = Summary
 view-full-sheet = Full Sheet
 summary-cantrips = Cantrips
 summary-no-weapons = No weapons
-summary-no-spells = No spells available
 summary-no-items = No items
 summary-ability-mods = Ability Modifiers
 summary-saving-throws = Saving Throws
 summary-languages = Comprehensible Languages
-summary-feature-actions = Actions
 action-type-action = Action
 action-type-bonus-action = Bonus Action
 action-type-reaction = Reaction
@@ -257,8 +254,6 @@ ref-hit-die = Hit Die
 ref-cantrips = Cantrips
 ref-spells-known = Spells Known
 ref-subclasses = Subclasses
-ref-ability-mods = Ability Modifiers
-ref-skill-profs = Skill Proficiencies
 ref-progression = Progression
 ref-loading = Loading...
 ref-select-class = Select a class to view details
@@ -266,7 +261,6 @@ ref-select-race = Select a race to view details
 ref-select-background = Select a background to view details
 ref-home = Home
 ref-spells = Spells
-ref-spell-list = Spell List
 ref-select-spell-list = Select a spell list to view spells
 ref-cantrips-level = cantrips
 ref-spell-level = {$level ->
@@ -284,10 +278,6 @@ ref-languages = Languages
 ## Spell slot pools
 pool-arcane = Arcane Slots
 pool-pact = Pact Slots
-
-## Language switcher
-lang-en = EN
-lang-ru = RU
 
 ## Cloud sync
 sync-disabled = Offline

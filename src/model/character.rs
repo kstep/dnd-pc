@@ -512,6 +512,10 @@ impl Character {
                     spell.label = None;
                     spell.description.clear();
                 }
+                for spell in spells.known.iter_mut().flatten() {
+                    spell.label = None;
+                    spell.description.clear();
+                }
             }
         }
     }
@@ -754,12 +758,12 @@ impl Character {
                             name: "Vicious Mockery".to_string(),
                             label: None,
                             level: 0,
-                            prepared: true,
                             description: "Unleash a string of insults...".to_string(),
                             sticky: false,
                             cost: 0,
                             free_uses: None,
                         }],
+                        known: None,
                     }),
                 },
             )]),
@@ -878,6 +882,7 @@ pub mod tests {
                     caster_coef,
                     pool,
                     spells: Vec::new(),
+                    known: None,
                 }),
                 ..Default::default()
             },

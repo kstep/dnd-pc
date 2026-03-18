@@ -10,7 +10,7 @@ use crate::{
         Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
         FeatureValue, Translatable,
     },
-    rules::utils::get_for_level,
+    rules::utils::LevelRules,
     vecset::VecSet,
 };
 
@@ -299,7 +299,7 @@ impl FeatureDefinition {
         self.fields
             .values()
             .find_map(|field_def| match &field_def.kind {
-                FieldKind::FreeUses { levels } => Some(get_for_level(levels, level)),
+                FieldKind::FreeUses { levels } => Some(levels.get_for_level(level)),
                 _ => None,
             })
             .unwrap_or_default()
@@ -370,13 +370,13 @@ impl FeatureDefinition {
                             }
                         }
                         (FieldKind::Choice { levels, .. }, FeatureValue::Choice { options }) => {
-                            let new_len = get_for_level(levels, level) as usize;
+                            let new_len = levels.get_for_level(level) as usize;
                             if options.len() < new_len {
                                 options.resize(new_len, Default::default());
                             }
                         }
                         (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
-                            *b = get_for_level(levels, level);
+                            *b = levels.get_for_level(level);
                         }
                         (FieldKind::Points { .. }, FeatureValue::Points { max, .. }) => {
                             if let Some((_, FeatureValue::Points { max: new_max, .. })) =
@@ -386,11 +386,38 @@ impl FeatureDefinition {
                             }
                         }
                         (FieldKind::FreeUses { levels }, FeatureValue::Points { max, .. }) => {
-                            *max = get_for_level(levels, level);
+                            *max = levels.get_for_level(level);
                         }
                         _ => {}
                     }
                 }
+            }
+
+            // Add fields from definition that are missing from stored data
+            // (e.g. new fields added to a definition after the feature was
+            // first applied). Pre-compute before mutating feature_data.
+            let missing_fields: Vec<_> = self
+                .fields
+                .values()
+                .filter(|fd| {
+                    !(self.spells.is_some() && matches!(fd.kind, FieldKind::FreeUses { .. }))
+                })
+                .filter(|fd| {
+                    !character
+                        .feature_data
+                        .get(&self.name)
+                        .is_some_and(|e| e.fields.iter().any(|f| f.name == fd.name))
+                })
+                .map(|fd| FeatureField {
+                    name: fd.name.clone(),
+                    label: fd.label.clone(),
+                    description: fd.description.clone(),
+                    value: fd.kind.to_value(level, character),
+                })
+                .collect();
+            if !missing_fields.is_empty() {
+                let entry = character.feature_data.entry(self.name.clone()).or_default();
+                entry.fields.extend(missing_fields);
             }
         }
     }
@@ -458,28 +485,28 @@ pub enum FieldKind {
     Points {
         #[serde(default)]
         short: Option<String>,
-        #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, ValueOrExpr>,
+        #[serde(default)]
+        levels: LevelRules<ValueOrExpr>,
     },
     Choice {
         #[serde(default)]
         options: ChoiceOptions,
         #[serde(default)]
         cost: Option<String>,
-        #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, u32>,
+        #[serde(default)]
+        levels: LevelRules<u32>,
     },
     Die {
-        #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, DieOrExpr>,
+        #[serde(default)]
+        levels: LevelRules<DieOrExpr>,
     },
     Bonus {
-        #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, i32>,
+        #[serde(default)]
+        levels: LevelRules<i32>,
     },
     FreeUses {
-        #[serde(default, deserialize_with = "demap::u32_key_map")]
-        levels: BTreeMap<u32, u32>,
+        #[serde(default)]
+        levels: LevelRules<u32>,
     },
 }
 
@@ -497,20 +524,26 @@ impl FieldKind {
     pub fn to_value(&self, level: u32, character: &Character) -> FeatureValue {
         match self {
             Self::Die { levels } => FeatureValue::Die {
-                die: get_for_level(levels, level).eval(character),
+                die: levels
+                    .at_level(level)
+                    .map(|v| v.eval(character))
+                    .unwrap_or_default(),
                 used: 0,
             },
             Self::Choice { levels, .. } => FeatureValue::Choice {
-                options: vec![Default::default(); get_for_level(levels, level) as usize],
+                options: vec![Default::default(); levels.get_for_level(level) as usize],
             },
-            Self::Bonus { levels } => FeatureValue::Bonus(get_for_level(levels, level)),
+            Self::Bonus { levels } => FeatureValue::Bonus(levels.get_for_level(level)),
             Self::Points { levels, .. } => FeatureValue::Points {
                 used: 0,
-                max: get_for_level(levels, level).eval(character),
+                max: levels
+                    .at_level(level)
+                    .map(|v| v.eval(character))
+                    .unwrap_or(0),
             },
             Self::FreeUses { levels } => FeatureValue::Points {
                 used: 0,
-                max: get_for_level(levels, level),
+                max: levels.get_for_level(level),
             },
         }
     }
@@ -520,15 +553,14 @@ impl FieldKind {
     /// field has expression-based values that need updating.
     pub fn recompute_dynamic(&self, level: u32, character: &Character) -> Option<FeatureValue> {
         match self {
-            Self::Points { levels, .. } => {
-                let value = get_for_level(levels, level);
-                matches!(value, ValueOrExpr::Expr(_)).then(|| self.to_value(level, character))
-            }
-            Self::Die { levels } => {
-                let value = get_for_level(levels, level);
-                matches!(value.amount, ValueOrExpr::Expr(_))
-                    .then(|| self.to_value(level, character))
-            }
+            Self::Points { levels, .. } => levels
+                .at_level(level)
+                .is_some_and(|v| matches!(v, ValueOrExpr::Expr(_)))
+                .then(|| self.to_value(level, character)),
+            Self::Die { levels } => levels
+                .at_level(level)
+                .is_some_and(|v| matches!(v.amount, ValueOrExpr::Expr(_)))
+                .then(|| self.to_value(level, character)),
             _ => None,
         }
     }

@@ -1,5 +1,4 @@
 ## Страницы
-app-title = Лист персонажа D&D 5e
 page-characters = Персонажи D&D 5e
 btn-new-character = + Новый персонаж
 btn-load-character = Загрузить из файла
@@ -88,9 +87,10 @@ spell-save-dc = Сложность спасения
 spell-attack = Атака заклинанием
 spell-slots = Ячейки заклинаний
 spells = Заклинания
+spellbook = Книга заклинаний
+prepared-spells = Подготовленные заклинания
 spell-name = Название заклинания
 free-uses = Своб. исп.
-sorcery-points = Очки чародейства
 
 ## Панель снаряжения
 weapons = Оружие
@@ -98,7 +98,6 @@ name = Название
 atk-bonus = Бонус атаки
 damage = Урон
 heal = Лечение
-type = Тип
 btn-add-weapon = + Добавить оружие
 armor = Доспехи
 base-ac = Базовый КЗ
@@ -229,12 +228,10 @@ view-summary = Сводка
 view-full-sheet = Полный лист
 summary-cantrips = Заговоры
 summary-no-weapons = Нет оружия
-summary-no-spells = Нет доступных заклинаний
 summary-no-items = Нет предметов
 summary-ability-mods = Модификаторы характеристик
 summary-saving-throws = Спасброски
 summary-languages = Понятные языки
-summary-feature-actions = Действия
 action-type-action = Действие
 action-type-bonus-action = Бонусное действие
 action-type-reaction = Реакция
@@ -257,8 +254,6 @@ ref-hit-die = Кость хитов
 ref-cantrips = Заговоры
 ref-spells-known = Заклинаний
 ref-subclasses = Подклассы
-ref-ability-mods = Модификаторы характеристик
-ref-skill-profs = Навыки
 ref-progression = Прогрессия
 ref-loading = Загрузка...
 ref-select-class = Выберите класс для просмотра
@@ -266,7 +261,6 @@ ref-select-race = Выберите расу для просмотра
 ref-select-background = Выберите предысторию для просмотра
 ref-home = Главная
 ref-spells = Заклинания
-ref-spell-list = Список заклинаний
 ref-select-spell-list = Выберите список заклинаний для просмотра
 ref-cantrips-level = заговоры
 ref-spell-level = {$level}-й уровень
@@ -279,10 +273,6 @@ ref-languages = Языки
 ## Пулы ячеек заклинаний
 pool-arcane = Магические ячейки
 pool-pact = Ячейки пакта
-
-## Переключатель языка
-lang-en = EN
-lang-ru = RU
 
 ## Облачная синхронизация
 sync-disabled = Офлайн

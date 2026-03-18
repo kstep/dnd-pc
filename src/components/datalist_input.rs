@@ -60,6 +60,7 @@ pub fn DatalistInput(
         display_value.set(value.get());
     });
     let on_input = StoredValue::new(on_input);
+    let focused = RwSignal::new(false);
 
     let search_ref = NodeRef::<leptos::html::Input>::new();
 
@@ -89,7 +90,7 @@ pub fn DatalistInput(
     view! {
         <div class=format!("datalist-input-wrapper {}", class.unwrap_or_default())>
             <datalist id=format!("datalist-{id}")>
-                {move || options.with(|opts| {
+                {move || focused.get().then(|| options.with(|opts| {
                     opts.iter().map(|(_, label, description)| {
                         let label = label.clone();
                         let description = description.clone();
@@ -99,13 +100,17 @@ pub fn DatalistInput(
                             </option>
                         }
                     }).collect_view()
-                })}
+                }))}
             </datalist>
+            // NB: on:change reads from `options` signal directly (not the DOM
+            // datalist), so it works even after the datalist options are cleared.
             <input
                 type="text"
                 list=format!("datalist-{id}")
                 placeholder=move || placeholder.get()
                 prop:value=move || display_value.get()
+                on:focus=move |_| focused.set(true)
+                on:blur=move |_| focused.set(false)
                 on:change=move |event| {
                     let input = event_target_value(&event);
                     display_value.set(input.clone());

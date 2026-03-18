@@ -430,5 +430,8 @@
   },
   "Exhaustion 5": {
     "description": "Disadvantage on ability checks, attacks, and saves, speed 0, max HP halved"
+  },
+  "Innate Sorcery": {
+    "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute"
   }
 }
