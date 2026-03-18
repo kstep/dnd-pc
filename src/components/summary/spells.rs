@@ -8,7 +8,7 @@ use crate::{
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
     },
-    effective::{AdvantageState, EffectiveCharacter},
+    effective::EffectiveCharacter,
     model::{Character, CharacterStoreFields, FeatureValue, SpellSlotLevel, format_bonus},
     rules::RulesRegistry,
 };
@@ -29,11 +29,6 @@ pub fn SpellsBlock() -> impl IntoView {
             .iter()
             .filter_map(|(name, entry)| {
                 let spell_data = entry.spells.as_ref()?;
-                let ability = spell_data.casting_ability;
-
-                let save_dc = eff.spell_save_dc(ability, name);
-                let atk_bonus = eff.spell_attack_bonus(ability, name);
-                let atk_adv = eff.spell_attack_advantage(name);
 
                 let (feature_label, cost_field_name, cost_short) = registry
                     .with_feature(&id, name, |feat| {
@@ -235,6 +230,9 @@ pub fn SpellsBlock() -> impl IntoView {
                     return None;
                 }
 
+                let ability = spell_data.casting_ability;
+                let save_dc = eff.spell_save_dc(ability, name);
+                let atk_bonus = eff.spell_attack_bonus(ability, name);
                 let atk_str = format_bonus(atk_bonus);
                 let atk_adv = eff.spell_attack_advantage(name);
 

@@ -62,79 +62,77 @@ pub fn EffectsBlock() -> impl IntoView {
             <h3 class="summary-section-title">{move_tr!("summary-effects")}</h3>
 
             // -- Add effect form --
-            <div class="summary-list-entry">
-                <div class="summary-list-row">
-                    <button class="btn-icon btn-icon--success"
-                        title=move_tr!("effect-add")
-                        on:click=move |_| {
-                            let Some(expr_el) = expr_input.get() else { return };
+            <div class="summary-list-entry effect-add-form">
+                <button class="btn-icon btn-icon--success"
+                    title=move_tr!("effect-add")
+                    on:click=move |_| {
+                        let Some(expr_el) = expr_input.get() else { return };
 
-                            let label_text = effect_label.get_untracked();
-                            let label_text = label_text.trim();
-                            if label_text.is_empty() { return; }
+                        let label_text = effect_label.get_untracked();
+                        let label_text = label_text.trim();
+                        if label_text.is_empty() { return; }
 
-                            let Ok(expr) = parse_expr(&expr_el.value()) else {
-                                return;
-                            };
+                        let Ok(expr) = parse_expr(&expr_el.value()) else {
+                            return;
+                        };
 
-                            let (name, label) = match effect_key.get_untracked() {
-                                Some(key) => (key, Some(label_text.to_owned())),
-                                None => (label_text.to_owned(), None),
-                            };
+                        let (name, label) = match effect_key.get_untracked() {
+                            Some(key) => (key, Some(label_text.to_owned())),
+                            None => (label_text.to_owned(), None),
+                        };
 
-                            let description = effect_desc.get_untracked();
+                        let description = effect_desc.get_untracked();
 
-                            let scope = effect_scope.get_untracked();
-                            let effect = ActiveEffect {
-                                name,
-                                label,
-                                description,
-                                expr,
-                                pool: None,
-                                enabled: true,
-                                scope,
-                            };
+                        let scope = effect_scope.get_untracked();
+                        let effect = ActiveEffect {
+                            name,
+                            label,
+                            description,
+                            expr,
+                            pool: None,
+                            enabled: true,
+                            scope,
+                        };
 
-                            // Check if expression has dice rolls
-                            let rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
-                            if rolls.is_empty() {
-                                effects.update(|e| e.add(effect, &store.read()));
-                            } else {
-                                pending_effect.set(Some(effect));
-                                pending_rolls.set(rolls);
-                                show_dice_pool.set(true);
-                            }
-
-                            effect_label.set(String::new());
-                            effect_key.set(None);
-                            effect_desc.set(String::new());
-                            effect_scope.set(None);
-                            expr_el.set_value("");
+                        // Check if expression has dice rolls
+                        let rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
+                        if rolls.is_empty() {
+                            effects.update(|e| e.add(effect, &store.read()));
+                        } else {
+                            pending_effect.set(Some(effect));
+                            pending_rolls.set(rolls);
+                            show_dice_pool.set(true);
                         }
-                    ><Icon name="circle-plus" size=14 /></button>
-                    <DatalistInput
-                        value=effect_label
-                        placeholder=move_tr!("effect-name")
-                        class="summary-list-name"
-                        options=effect_options
-                        on_input=move |input, resolved| {
-                            effect_label.set(input);
-                            effect_key.set(resolved.clone());
-                            if let Some(name) = resolved {
-                                registry.with_effects_index(|index| {
-                                    if let Some(eff) = index.get(name.as_str()) {
-                                        if let Some(el) = expr_input.get() {
-                                            let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
-                                            el.set_value(&val);
-                                        }
-                                        effect_desc.set(eff.description.clone());
-                                        effect_scope.set(eff.scope.clone());
+
+                        effect_label.set(String::new());
+                        effect_key.set(None);
+                        effect_desc.set(String::new());
+                        effect_scope.set(None);
+                        expr_el.set_value("");
+                    }
+                ><Icon name="circle-plus" size=14 /></button>
+                <DatalistInput
+                    value=effect_label
+                    placeholder=move_tr!("effect-name")
+                    class="summary-list-name"
+                    options=effect_options
+                    on_input=move |input, resolved| {
+                        effect_label.set(input);
+                        effect_key.set(resolved.clone());
+                        if let Some(name) = resolved {
+                            registry.with_effects_index(|index| {
+                                if let Some(eff) = index.get(name.as_str()) {
+                                    if let Some(el) = expr_input.get() {
+                                        let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
+                                        el.set_value(&val);
                                     }
-                                });
-                            }
+                                    effect_desc.set(eff.description.clone());
+                                    effect_scope.set(eff.scope.clone());
+                                }
+                            });
                         }
-                    />
-                </div>
+                    }
+                />
                 <input type="text" class="summary-list-name summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
             </div>
 
@@ -158,47 +156,43 @@ pub fn EffectsBlock() -> impl IntoView {
                             let is_open = RwSignal::new(false);
                             view! {
                                 <div class="summary-list-entry" class:disabled=!enabled>
-                                    <div class="summary-list-row">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || is_open.update(|v| *v = !*v)
-                                        />
-                                        <label class="spell-prepared">
-                                            <input
-                                                type="checkbox"
-                                                prop:checked=enabled
-                                                on:change=move |_| {
-                                                    effects.update(|e| e.toggle(i, &store.read()));
-                                                }
-                                            />
-                                        </label>
-                                        <div class="effect-name-col">
-                                            <input
-                                                type="text"
-                                                class="summary-list-name"
-                                                prop:value=name
-                                                on:change=move |ev| {
-                                                    let new_name = event_target_value(&ev).trim().to_string();
-                                                    if new_name.is_empty() { return; }
-                                                    effects.update(|e| e.update_field(i, |eff| {
-                                                        eff.set_label(new_name);
-                                                    }));
-                                                }
-                                            />
-                                            {scope.map(|s| view! {
-                                                <span class="effect-scope-label">{s.to_string()}</span>
-                                            })}
-                                        </div>
-                                        <button
-                                            class="btn-icon btn-icon--danger"
-                                            title=move_tr!("effect-remove")
-                                            on:click=move |_| {
-                                                effects.update(|e| { e.remove(i, &store.read()); });
+                                    <ToggleButton
+                                        expanded=is_open
+                                        on_toggle=move || is_open.update(|v| *v = !*v)
+                                    />
+                                    <label class="spell-prepared">
+                                        <input
+                                            type="checkbox"
+                                            prop:checked=enabled
+                                            on:change=move |_| {
+                                                effects.update(|e| e.toggle(i, &store.read()));
                                             }
-                                        >
-                                            <Icon name="circle-minus" size=14 />
-                                        </button>
-                                    </div>
+                                        />
+                                    </label>
+                                    <input
+                                        type="text"
+                                        class="summary-list-name"
+                                        prop:value=name
+                                        on:change=move |ev| {
+                                            let new_name = event_target_value(&ev).trim().to_string();
+                                            if new_name.is_empty() { return; }
+                                            effects.update(|e| e.update_field(i, |eff| {
+                                                eff.set_label(new_name);
+                                            }));
+                                        }
+                                    />
+                                    <button
+                                        class="btn-icon btn-icon--danger"
+                                        title=move_tr!("effect-remove")
+                                        on:click=move |_| {
+                                            effects.update(|e| { e.remove(i, &store.read()); });
+                                        }
+                                    >
+                                        <Icon name="circle-minus" size=14 />
+                                    </button>
+                                    {scope.map(|s| view! {
+                                        <span class="effect-scope">{s.to_string()}</span>
+                                    })}
                                     <Show when=move || is_open.get()>
                                         <div class="summary-item-expr-row">
                                             <input
