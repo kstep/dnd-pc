@@ -301,19 +301,7 @@
       "stackable": true
     },
     {
-      "name": "Greater Divine Intervention",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Greater Divine Intervention",
-              "action": "Action"
-            }
-          ]
-        }
-      ]
+      "name": "Greater Divine Intervention"
     },
     {
       "name": "Class Proficiencies",
