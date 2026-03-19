@@ -35,6 +35,9 @@
   "feature.Divine Intervention": {
     "description": "You can call on your deity or pantheon to intervene on your behalf. As a Magic action, choose any Cleric spell of level 5 or lower that doesn't require a Reaction to cast. As part of the same action, you cast that spell without expending a spell slot or needing Material components. You can't use this feature again until you finish a Long Rest."
   },
+  "feature.Divine Intervention.field.Actions.option.Divine Intervention": {
+    "description": "Cast any Cleric spell of level 5 or lower without a spell slot or Material components (1/Long Rest)"
+  },
   "feature.Improved Blessed Strikes": {
     "description": "The option you chose for Blessed Strikes grows more powerful. Divine Strike: The extra damage of your Divine Strike increases to 2d8. Potent Spellcasting: When you cast a Cleric cantrip and deal damage to a creature with it, you can give vitality to yourself or another creature within 60 feet of yourself, granting a number of Temporary Hit Points equal to twice your Wisdom modifier."
   },
@@ -43,6 +46,9 @@
   },
   "feature.Greater Divine Intervention": {
     "description": "You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can't use Divine Intervention again until you finish 2d4 Long Rests."
+  },
+  "feature.Greater Divine Intervention.field.Actions.option.Greater Divine Intervention": {
+    "description": "You can choose Wish when using Divine Intervention (can't use again until 2d4 Long Rests)"
   },
   "feature.Class Proficiencies": {
     "description": "Saving throw and equipment proficiencies granted by this class."

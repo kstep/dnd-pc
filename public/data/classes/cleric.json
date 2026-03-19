@@ -270,7 +270,28 @@
       "name": "Blessed Strikes"
     },
     {
-      "name": "Divine Intervention"
+      "name": "Divine Intervention",
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "10": 1
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Free Uses",
+          "options": [
+            {
+              "name": "Divine Intervention",
+              "action": "Action",
+              "cost": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Improved Blessed Strikes"
@@ -280,7 +301,19 @@
       "stackable": true
     },
     {
-      "name": "Greater Divine Intervention"
+      "name": "Greater Divine Intervention",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Greater Divine Intervention",
+              "action": "Action"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Class Proficiencies",
