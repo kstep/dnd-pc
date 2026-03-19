@@ -62,7 +62,7 @@ pub fn EffectsBlock() -> impl IntoView {
             <h3 class="summary-section-title">{move_tr!("summary-effects")}</h3>
 
             // -- Add effect form --
-            <div class="summary-list-entry effect-add-form">
+            <div class="entry-item effect-add-form">
                 <button class="btn-icon btn-icon--success"
                     title=move_tr!("effect-add")
                     on:click=move |_| {
@@ -111,29 +111,32 @@ pub fn EffectsBlock() -> impl IntoView {
                         expr_el.set_value("");
                     }
                 ><Icon name="circle-plus" size=14 /></button>
-                <DatalistInput
-                    value=effect_label
-                    placeholder=move_tr!("effect-name")
-                    class="summary-list-name"
-                    options=effect_options
-                    on_input=move |input, resolved| {
-                        effect_label.set(input);
-                        effect_key.set(resolved.clone());
-                        if let Some(name) = resolved {
-                            registry.with_effects_index(|index| {
-                                if let Some(eff) = index.get(name.as_str()) {
-                                    if let Some(el) = expr_input.get() {
-                                        let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
-                                        el.set_value(&val);
+                <div class="entry-content">
+                    <DatalistInput
+                        value=effect_label
+                        placeholder=move_tr!("effect-name")
+                        class="entry-name"
+                        options=effect_options
+                        on_input=move |input, resolved| {
+                            effect_label.set(input);
+                            effect_key.set(resolved.clone());
+                            if let Some(name) = resolved {
+                                registry.with_effects_index(|index| {
+                                    if let Some(eff) = index.get(name.as_str()) {
+                                        if let Some(el) = expr_input.get() {
+                                            let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
+                                            el.set_value(&val);
+                                        }
+                                        effect_desc.set(eff.description.clone());
+                                        effect_scope.set(eff.scope.clone());
                                     }
-                                    effect_desc.set(eff.description.clone());
-                                    effect_scope.set(eff.scope.clone());
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
-                />
-                <input type="text" class="summary-list-name summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
+                    />
+                    <input type="text" class="summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
+                </div>
+                <div class="entry-actions" />
             </div>
 
             // -- Effect list --
@@ -144,7 +147,7 @@ pub fn EffectsBlock() -> impl IntoView {
                     return None;
                 }
                 Some(view! {
-                    <div class="summary-list">
+                    <div class="entry-list">
                         {effect_list.iter().enumerate().map(|(i, effect)| {
                             let name = effect.label().to_owned();
                             let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
@@ -155,49 +158,53 @@ pub fn EffectsBlock() -> impl IntoView {
                             let enabled = effect.enabled;
                             let is_open = RwSignal::new(false);
                             view! {
-                                <div class="summary-list-entry" class:disabled=!enabled>
+                                <div class="entry-item" class:disabled=!enabled>
                                     <ToggleButton
                                         expanded=is_open
                                         on_toggle=move || is_open.update(|v| *v = !*v)
                                     />
-                                    <label class="spell-prepared">
+                                    <div class="entry-content">
+                                        <label class="spell-prepared">
+                                            <input
+                                                type="checkbox"
+                                                prop:checked=enabled
+                                                on:change=move |_| {
+                                                    effects.update(|e| e.toggle(i, &store.read()));
+                                                }
+                                            />
+                                        </label>
                                         <input
-                                            type="checkbox"
-                                            prop:checked=enabled
-                                            on:change=move |_| {
-                                                effects.update(|e| e.toggle(i, &store.read()));
+                                            type="text"
+                                            class="entry-name"
+                                            prop:value=name
+                                            on:change=move |ev| {
+                                                let new_name = event_target_value(&ev).trim().to_string();
+                                                if new_name.is_empty() { return; }
+                                                effects.update(|e| e.update_field(i, |eff| {
+                                                    eff.set_label(new_name);
+                                                }));
                                             }
                                         />
-                                    </label>
-                                    <input
-                                        type="text"
-                                        class="summary-list-name"
-                                        prop:value=name
-                                        on:change=move |ev| {
-                                            let new_name = event_target_value(&ev).trim().to_string();
-                                            if new_name.is_empty() { return; }
-                                            effects.update(|e| e.update_field(i, |eff| {
-                                                eff.set_label(new_name);
-                                            }));
-                                        }
-                                    />
-                                    <button
-                                        class="btn-icon btn-icon--danger"
-                                        title=move_tr!("effect-remove")
-                                        on:click=move |_| {
-                                            effects.update(|e| { e.remove(i, &store.read()); });
-                                        }
-                                    >
-                                        <Icon name="circle-minus" size=14 />
-                                    </button>
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-icon btn-icon--danger"
+                                            title=move_tr!("effect-remove")
+                                            on:click=move |_| {
+                                                effects.update(|e| { e.remove(i, &store.read()); });
+                                            }
+                                        >
+                                            <Icon name="circle-minus" size=14 />
+                                        </button>
+                                    </div>
                                     {scope.map(|s| view! {
-                                        <span class="effect-scope">{s.to_string()}</span>
+                                        <span class="entry-sublabel">{s.to_string()}</span>
                                     })}
                                     <Show when=move || is_open.get()>
-                                        <div class="summary-item-expr-row">
+                                        <div class="entry-full-row summary-item-expr-row">
                                             <input
                                                 type="text"
-                                                class="summary-list-name summary-item-expr"
+                                                class="entry-name summary-item-expr"
                                                 placeholder=move_tr!("effect-expr")
                                                 prop:value=expr_str.clone()
                                                 on:change=move |ev| {
@@ -228,12 +235,12 @@ pub fn EffectsBlock() -> impl IntoView {
                                             })}
                                         </div>
                                         {pool_str.clone().map(|pool| view! {
-                                            <span class="summary-item-dice">
+                                            <span class="entry-sublabel summary-item-dice">
                                                 {move_tr!("effect-dice")} ": " {pool}
                                             </span>
                                         })}
                                         <textarea
-                                            class="summary-item-desc"
+                                            class="entry-desc"
                                             placeholder=move_tr!("description")
                                             prop:value=description.clone()
                                             on:input=move |ev| {

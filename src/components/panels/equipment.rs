@@ -39,86 +39,105 @@ pub fn EquipmentPanel() -> impl IntoView {
                     <Icon name="arrow-down-a-z" />
                 </button>
             </div>
-            <div class="weapons-list">
-                {move || {
-                    weapons
-                        .read()
-                        .iter()
-                        .enumerate()
-                        .map(|(i, weapon)| {
-                            let name = weapon.name.clone();
-                            let atk = weapon.attack_bonus.to_string();
-                            let dmg = weapon.damage.clone();
-                            let dmg_type = weapon.damage_type.map(|dt| dt as u8);
-                            view! {
-                                <div class="weapon-entry">
-                                    <input
-                                        type="text"
-                                        placeholder=move_tr!("name")
-                                        prop:value=name
-                                        on:input=move |e| {
-                                            weapons.write()[i].name = event_target_value(&e);
-                                        }
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder=move_tr!("atk-bonus")
-                                        class="short-input"
-                                        prop:value=atk
-                                        on:input=move |e| {
-                                            weapons.write()[i].attack_bonus = event_target_value(&e).parse().unwrap_or(0);
-                                        }
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder=move_tr!("damage")
-                                        prop:value=dmg
-                                        on:input=move |e| {
-                                            weapons.write()[i].damage = event_target_value(&e);
-                                        }
-                                    />
-                                    <select
-                                        class="short-input"
-                                        prop:value=dmg_type.map(|dt| dt.to_string()).unwrap_or_default()
-                                        on:change=move |e| {
-                                            let value = event_target_value(&e);
-                                            weapons.write()[i].damage_type = if value.is_empty() {
-                                                None
-                                            } else {
-                                                DamageType::from_u8_str(&value)
-                                            };
-                                        }
-                                    >
-                                        <option value="" selected=dmg_type.is_none()>"\u{2014}"</option>
-                                        {DamageType::iter()
-                                            .map(|dt| {
-                                                let option_value = (dt as u8).to_string();
-                                                let selected = dmg_type == Some(dt as u8);
-                                                let label = Signal::derive(move || i18n.tr(dt.tr_key()));
-                                                view! {
-                                                    <option value=option_value selected=selected>
-                                                        {label}
-                                                    </option>
-                                                }
-                                            })
-                                            .collect_view()}
-                                    </select>
-                                    <button
-                                        class="btn-remove"
-                                        on:click=move |_| {
-                                            if i < weapons.read().len() {
-                                                weapons.write().remove(i);
-                                            }
-                                        }
-                                    >
-                                        <Icon name="x" size=14 />
-                                    </button>
-                                </div>
+            {
+                let weapons_expanded = RwSignal::new(HashSet::<usize>::new());
+                view! {
+                    <div class="entry-list">
+                        {move || {
+                            weapons
+                                .read()
+                                .iter()
+                                .enumerate()
+                                .map(|(i, weapon)| {
+                                    let name = weapon.name.clone();
+                                    let atk = weapon.attack_bonus.to_string();
+                                    let dmg = weapon.damage.clone();
+                                    let dmg_type = weapon.damage_type.map(|dt| dt as u8);
+                                    let is_open = Signal::derive(move || weapons_expanded.get().contains(&i));
+                                    view! {
+                                        <div class="entry-item">
+                                            <ToggleButton
+                                                expanded=is_open
+                                                on_toggle=move || weapons_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
+                                            />
+                                            <div class="entry-content">
+                                                <input
+                                                    type="text"
+                                                    class="entry-name"
+                                                    placeholder=move_tr!("name")
+                                                    prop:value=name
+                                                    on:input=move |e| {
+                                                        weapons.write()[i].name = event_target_value(&e);
+                                                    }
+                                                />
+                                                <input
+                                                    type="number"
+                                                    placeholder=move_tr!("atk-bonus")
+                                                    class="short-input"
+                                                    prop:value=atk
+                                                    on:input=move |e| {
+                                                        weapons.write()[i].attack_bonus = event_target_value(&e).parse().unwrap_or(0);
+                                                    }
+                                                />
+                                                <select class="select-fixed"
+                                                    prop:value=dmg_type.map(|dt| dt.to_string()).unwrap_or_default()
+                                                    on:change=move |e| {
+                                                        let value = event_target_value(&e);
+                                                        weapons.write()[i].damage_type = if value.is_empty() {
+                                                            None
+                                                        } else {
+                                                            DamageType::from_u8_str(&value)
+                                                        };
+                                                    }
+                                                >
+                                                    <option value="" selected=dmg_type.is_none()>"\u{2014}"</option>
+                                                    {DamageType::iter()
+                                                        .map(|dt| {
+                                                            let option_value = (dt as u8).to_string();
+                                                            let selected = dmg_type == Some(dt as u8);
+                                                            let label = Signal::derive(move || i18n.tr(dt.tr_key()));
+                                                            view! {
+                                                                <option value=option_value selected=selected>
+                                                                    {label}
+                                                                </option>
+                                                            }
+                                                        })
+                                                        .collect_view()}
+                                                </select>
+                                            </div>
+                                            <div class="entry-actions">
+                                                <button
+                                                    class="btn-remove"
+                                                    on:click=move |_| {
+                                                        if i < weapons.read().len() {
+                                                            weapons.write().remove(i);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon name="x" size=14 />
+                                                </button>
+                                            </div>
+                                            <Show when=move || is_open.get()>
+                                                <div class="entry-full-row">
+                                                    <input
+                                                        type="text"
+                                                        placeholder=move_tr!("damage")
+                                                        class="damage-input"
+                                                        prop:value=dmg.clone()
+                                                        on:input=move |e| {
+                                                            weapons.write()[i].damage = event_target_value(&e);
+                                                        }
+                                                    />
+                                                </div>
+                                            </Show>
+                                        </div>
                             }
                         })
                         .collect_view()
                 }}
-            </div>
+                    </div>
+                }
+            }
             <button
                 class="btn-add"
                 on:click=move |_| {
@@ -142,7 +161,7 @@ pub fn EquipmentPanel() -> impl IntoView {
             {
                 let armors_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
-                    <div class="armors-list">
+                    <div class="entry-list">
                         {move || {
                             armors
                                 .read()
@@ -157,112 +176,121 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let is_open = Signal::derive(move || armors_expanded.get().contains(&i));
                                     if is_natural {
                                         Either::Left(view! {
-                                            <div class="armor-entry armor-natural">
+                                            <div class="entry-item armor-natural">
                                                 <ToggleButton
                                                     expanded=is_open
                                                     on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                                 />
-                                                <span class="armor-name">{name}</span>
-                                                <span class="armor-type-label">
-                                                    {move || i18n.tr(ArmorType::Natural.tr_key())}
-                                                </span>
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        if i < armors.read().len() {
-                                                            armors.write().remove(i);
+                                                <div class="entry-content">
+                                                    <span class="entry-name armor-name">{name}</span>
+                                                    <span class="armor-type-label">
+                                                        {move || i18n.tr(ArmorType::Natural.tr_key())}
+                                                    </span>
+                                                </div>
+                                                <div class="entry-actions">
+                                                    <button
+                                                        class="btn-remove"
+                                                        on:click=move |_| {
+                                                            if i < armors.read().len() {
+                                                                armors.write().remove(i);
+                                                            }
                                                         }
-                                                    }
-                                                >
-                                                    <Icon name="x" size=14 />
-                                                </button>
+                                                    >
+                                                        <Icon name="x" size=14 />
+                                                    </button>
+                                                </div>
                                                 <Show when=move || is_open.get()>
-                                                    <span class="ac-expr-input armor-expr">{ac_expr_str.clone()}</span>
+                                                    <span class="entry-sublabel">{ac_expr_str.clone()}</span>
                                                 </Show>
                                             </div>
                                         })
                                     } else {
                                         Either::Right(view! {
-                                            <div class="armor-entry">
+                                            <div class="entry-item">
                                                 <ToggleButton
                                                     expanded=is_open
                                                     on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                                 />
-                                                <input
-                                                    type="text"
-                                                    placeholder=move_tr!("name")
-                                                    prop:value=name
-                                                    on:input=move |e| {
-                                                        armors.write()[i].name = event_target_value(&e);
-                                                    }
-                                                />
-                                                <input
-                                                    type="number"
-                                                    placeholder=move_tr!("base-ac")
-                                                    class="short-input"
-                                                    min="0"
-                                                    prop:value=base_ac
-                                                    on:input=move |e| {
-                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                            let mut armors = armors.write();
-                                                            let old_base_ac = armors[i].base_ac;
-                                                            let at = armors[i].armor_type;
-                                                            armors[i].base_ac = value;
-                                                            // Auto-fill formula if it matches the previous default
-                                                            let old_default = Armor::default_ac_expr(at, old_base_ac);
-                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                                armors[i].ac_expr = Armor::default_ac_expr(at, value);
+                                                <div class="entry-content">
+                                                    <input
+                                                        type="text"
+                                                        class="entry-name"
+                                                        placeholder=move_tr!("name")
+                                                        prop:value=name
+                                                        on:input=move |e| {
+                                                            armors.write()[i].name = event_target_value(&e);
+                                                        }
+                                                    />
+                                                    <input
+                                                        type="number"
+                                                        placeholder=move_tr!("base-ac")
+                                                        class="short-input"
+                                                        min="0"
+                                                        prop:value=base_ac
+                                                        on:input=move |e| {
+                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                let mut armors = armors.write();
+                                                                let old_base_ac = armors[i].base_ac;
+                                                                let at = armors[i].armor_type;
+                                                                armors[i].base_ac = value;
+                                                                // Auto-fill formula if it matches the previous default
+                                                                let old_default = Armor::default_ac_expr(at, old_base_ac);
+                                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                                    armors[i].ac_expr = Armor::default_ac_expr(at, value);
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                />
-                                                <select
-                                                    prop:value=armor_type.to_string()
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e);
-                                                        if let Ok(idx) = value.parse::<u8>() {
-                                                            let new_type = ArmorType::try_from(idx).unwrap_or_default();
-                                                            let mut armors = armors.write();
-                                                            let old_type = armors[i].armor_type;
-                                                            let base_ac = armors[i].base_ac;
-                                                            armors[i].armor_type = new_type;
-                                                            // Auto-fill formula if it matches the previous default
-                                                            let old_default = Armor::default_ac_expr(old_type, base_ac);
-                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                                armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
+                                                    />
+                                                    <select class="select-fixed"
+                                                        prop:value=armor_type.to_string()
+                                                        on:change=move |e| {
+                                                            let value = event_target_value(&e);
+                                                            if let Ok(idx) = value.parse::<u8>() {
+                                                                let new_type = ArmorType::try_from(idx).unwrap_or_default();
+                                                                let mut armors = armors.write();
+                                                                let old_type = armors[i].armor_type;
+                                                                let base_ac = armors[i].base_ac;
+                                                                armors[i].armor_type = new_type;
+                                                                // Auto-fill formula if it matches the previous default
+                                                                let old_default = Armor::default_ac_expr(old_type, base_ac);
+                                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                                    armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                >
-                                                    {ArmorType::iter()
-                                                        .filter(|at| *at != ArmorType::Natural)
-                                                        .map(|at| {
-                                                            let option_value = (at as u8).to_string();
-                                                            let selected = at as u8 == armor_type;
-                                                            let label = Signal::derive(move || i18n.tr(at.tr_key()));
-                                                            view! {
-                                                                <option value=option_value selected=selected>
-                                                                    {label}
-                                                                </option>
+                                                    >
+                                                        {ArmorType::iter()
+                                                            .filter(|at| *at != ArmorType::Natural)
+                                                            .map(|at| {
+                                                                let option_value = (at as u8).to_string();
+                                                                let selected = at as u8 == armor_type;
+                                                                let label = Signal::derive(move || i18n.tr(at.tr_key()));
+                                                                view! {
+                                                                    <option value=option_value selected=selected>
+                                                                        {label}
+                                                                    </option>
+                                                                }
+                                                            })
+                                                            .collect_view()}
+                                                    </select>
+                                                </div>
+                                                <div class="entry-actions">
+                                                    <button
+                                                        class="btn-remove"
+                                                        on:click=move |_| {
+                                                            if i < armors.read().len() {
+                                                                armors.write().remove(i);
                                                             }
-                                                        })
-                                                        .collect_view()}
-                                                </select>
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        if i < armors.read().len() {
-                                                            armors.write().remove(i);
                                                         }
-                                                    }
-                                                >
-                                                    <Icon name="x" size=14 />
-                                                </button>
+                                                    >
+                                                        <Icon name="x" size=14 />
+                                                    </button>
+                                                </div>
                                                 <Show when=move || is_open.get()>
                                                     <input
                                                         type="text"
                                                         placeholder=move_tr!("ac-formula")
-                                                        class="ac-expr-input"
+                                                        class="entry-desc ac-expr-input"
                                                         prop:value=ac_expr_str.clone()
                                                         on:change=move |e| {
                                                             let value = event_target_value(&e);
@@ -306,7 +334,7 @@ pub fn EquipmentPanel() -> impl IntoView {
             {
                 let items_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
-                    <div class="items-list">
+                    <div class="entry-list">
                         {move || {
                             items
                                 .read()
@@ -318,44 +346,49 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let desc = item.description.clone();
                                     let is_open = Signal::derive(move || items_expanded.get().contains(&i));
                                     view! {
-                                        <div class="item-entry">
+                                        <div class="entry-item">
                                             <ToggleButton
                                                 expanded=is_open
                                                 on_toggle=move || items_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
                                             />
-                                            <input
-                                                type="text"
-                                                placeholder=move_tr!("item-name")
-                                                prop:value=name
-                                                on:input=move |e| {
-                                                    items.write()[i].name = event_target_value(&e);
-                                                }
-                                            />
-                                            <input
-                                                type="number"
-                                                class="short-input"
-                                                placeholder=move_tr!("qty")
-                                                min="0"
-                                                prop:value=qty
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        items.write()[i].quantity = value;
+                                            <div class="entry-content">
+                                                <input
+                                                    type="text"
+                                                    class="entry-name"
+                                                    placeholder=move_tr!("item-name")
+                                                    prop:value=name
+                                                    on:input=move |e| {
+                                                        items.write()[i].name = event_target_value(&e);
                                                     }
-                                                }
-                                            />
-                                            <button
-                                                class="btn-remove"
-                                                on:click=move |_| {
-                                                    if i < items.read().len() {
-                                                        items.write().remove(i);
+                                                />
+                                                <input
+                                                    type="number"
+                                                    class="short-input"
+                                                    placeholder=move_tr!("qty")
+                                                    min="0"
+                                                    prop:value=qty
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            items.write()[i].quantity = value;
+                                                        }
                                                     }
-                                                }
-                                            >
-                                                <Icon name="x" size=14 />
-                                            </button>
+                                                />
+                                            </div>
+                                            <div class="entry-actions">
+                                                <button
+                                                    class="btn-remove"
+                                                    on:click=move |_| {
+                                                        if i < items.read().len() {
+                                                            items.write().remove(i);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon name="x" size=14 />
+                                                </button>
+                                            </div>
                                             <Show when=move || is_open.get()>
                                                 <textarea
-                                                    class="item-desc"
+                                                    class="entry-desc"
                                                     placeholder=move_tr!("description")
                                                     prop:value=desc.clone()
                                                     on:change=move |e| {

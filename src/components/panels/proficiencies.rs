@@ -52,7 +52,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
 
             // --- Languages ---
             <h4>{move_tr!("languages")}</h4>
-            <div class="string-list">
+            <div class="entry-list">
                 {move || {
                     languages
                         .read()
@@ -61,25 +61,30 @@ pub fn ProficienciesPanel() -> impl IntoView {
                         .map(|(i, lang)| {
                             let val = lang.clone();
                             view! {
-                                <div class="string-list-entry">
-                                    <input
-                                        type="text"
-                                        placeholder=move_tr!("language")
-                                        prop:value=val
-                                        on:input=move |e| {
-                                            languages.write().set(i, event_target_value(&e));
-                                        }
-                                    />
-                                    <button
-                                        class="btn-remove"
-                                        on:click=move |_| {
-                                            if i < languages.read().len() {
-                                                languages.write().remove_at(i);
+                                <div class="entry-item">
+                                    <div class="entry-content">
+                                        <input
+                                            type="text"
+                                            class="entry-name"
+                                            placeholder=move_tr!("language")
+                                            prop:value=val
+                                            on:input=move |e| {
+                                                languages.write().set(i, event_target_value(&e));
                                             }
-                                        }
-                                    >
-                                        <Icon name="x" size=14 />
-                                    </button>
+                                        />
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-remove"
+                                            on:click=move |_| {
+                                                if i < languages.read().len() {
+                                                    languages.write().remove_at(i);
+                                                }
+                                            }
+                                        >
+                                            <Icon name="x" size=14 />
+                                        </button>
+                                    </div>
                                 </div>
                             }
                         })

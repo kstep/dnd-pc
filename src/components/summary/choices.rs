@@ -255,33 +255,36 @@ pub fn ChoicesBlock() -> impl IntoView {
                         )| {
                             let current_name = current.name.clone();
                             view! {
-                                <div class="choice-entry">
-                                    <select on:change={move |event| {
-                                        let value = event_target_value(&event);
-                                        from_options.with_value(|opts| {
-                                            let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
-                                                return;
-                                            };
-                                            feat_name.with_value(|name| {
-                                                feature_data.update(|features| {
-                                                    if let Some(entry) = features.get_mut(name)
-                                                        && let Some(field) = entry.fields.get_mut(field_index)
-                                                        && let FeatureValue::Choice { options } = &mut field.value
-                                                        && let Some(option) = options.get_mut(index)
-                                                    {
-                                                        option.clone_from(selected_option);
-                                                    }
+                                <div class="entry-item">
+                                    <div class="entry-content">
+                                        <select class="entry-name" on:change={move |event| {
+                                            let value = event_target_value(&event);
+                                            from_options.with_value(|opts| {
+                                                let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
+                                                    return;
+                                                };
+                                                feat_name.with_value(|name| {
+                                                    feature_data.update(|features| {
+                                                        if let Some(entry) = features.get_mut(name)
+                                                            && let Some(field) = entry.fields.get_mut(field_index)
+                                                            && let FeatureValue::Choice { options } = &mut field.value
+                                                            && let Some(option) = options.get_mut(index)
+                                                        {
+                                                            option.clone_from(selected_option);
+                                                        }
+                                                    });
                                                 });
                                             });
-                                        });
-                                    }}>
-                                        <option value="">""</option>
-                                        {from_options.with_value(|opts| opts.iter().map(|opt| {
-                                            view! {
-                                                <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
-                                            }
-                                        }).collect_view())}
-                                    </select>
+                                        }}>
+                                            <option value="">""</option>
+                                            {from_options.with_value(|opts| opts.iter().map(|opt| {
+                                                view! {
+                                                    <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
+                                                }
+                                            }).collect_view())}
+                                        </select>
+                                    </div>
+                                    <div class="entry-actions" />
                                 </div>
                             }
                         };
@@ -290,7 +293,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                             view! {
                                 <div class="summary-subsection">
                                     <h4 class="summary-subsection-title">{label}</h4>
-                                    <div class="choice-list">
+                                    <div class="entry-list">
                                         {options.iter().enumerate().map(choice_entry_factory).collect_view()}
                                     </div>
                                 </div>
