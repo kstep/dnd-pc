@@ -65,5 +65,7 @@ impl CombatStats {
         }
 
         self.hp_current = (self.hp_current + amount).min(self.hp_max);
+        self.death_save_successes = 0;
+        self.death_save_failures = 0;
     }
 }

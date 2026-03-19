@@ -67,6 +67,11 @@ html {
 }
 
 /* --------------------- Base ---------------------------------- */
+button {
+  font-weight: normal;
+  text-shadow: none;
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--text-primary);
@@ -798,21 +803,6 @@ input[type="checkbox"] {
   white-space: nowrap;
 }
 
-.btn-spend-hd {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: var(--size-1) var(--size-2);
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  font-size: var(--font-size-0);
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
 /* --------------------- Textarea Panels ----------------------- */
 .textarea-field {
   margin-bottom: var(--size-2);
@@ -886,23 +876,30 @@ input[type="checkbox"] {
   align-items: center;
   justify-content: center;
 
-  // Plus/minus icons only on empty buttons (ToggleButton renders empty,
-  // sort buttons and other uses have Icon children inside)
-  &:empty {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
+  // Plus/minus icons on empty buttons via ::before pseudo-element.
+  // Uses mask-image so the icon color follows currentColor (works in dark theme).
+  &:empty::before {
+    content: '';
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / contain no-repeat;
   }
 
-  .expanded > &:empty,
-  .expanded > * > &:empty {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+  .expanded > &:empty::before,
+  .expanded > * > &:empty::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+  }
+
+  &:disabled::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
   }
 
   &:disabled {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
     opacity: 0.3;
     cursor: default;
   }
@@ -951,6 +948,17 @@ input[type="checkbox"] {
   .entry-item:has(> .entry-actions:empty) > & {
     grid-column: 2 / -1;
   }
+
+  .icon-wrapper {
+    padding: var(--size-1);
+  }
+}
+
+.entry-value {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
 }
 
 .entry-name {
@@ -989,16 +997,15 @@ select.entry-name {
 }
 
 .entry-sublabel {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
   font-size: var(--font-size-0);
   color: var(--text-secondary);
   padding: 0 var(--size-1);
 }
 
 .entry-desc {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
   min-height: 40px;
-  padding: var(--size-1);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
   background: var(--input-bg);
@@ -1014,13 +1021,12 @@ select.entry-name {
     white-space: pre-line;
     overflow-wrap: break-word;
     resize: none;
-    margin: var(--size-1) 0 0;
     max-inline-size: none;
   }
 }
 
 .entry-full-row {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
   display: flex;
   align-items: center;
   gap: var(--size-1);
@@ -1290,6 +1296,7 @@ select.entry-name {
   cursor: pointer;
   font-size: var(--font-size-1);
   margin-top: var(--size-1);
+  width: fit-content;
 
   &.btn-danger {
     background: var(--danger);
@@ -1463,14 +1470,6 @@ select.entry-name {
 }
 
 /* --------------------- Class Fields -------------------------- */
-.field-label {
-  font-size: var(--font-size-2);
-  font-weight: var(--font-weight-7);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  margin: 0;
-}
-
 .field-value {
   font-size: var(--font-size-2);
 }

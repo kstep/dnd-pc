@@ -5,8 +5,8 @@ use reactive_stores::Store;
 use crate::{
     components::{icon::Icon, panel::Panel},
     model::{
-        Ability, Character, CharacterIdentityStoreFields, CharacterStoreFields,
-        CombatStatsStoreFields, format_bonus,
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
+        format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -124,11 +124,8 @@ pub fn CombatPanel() -> impl IntoView {
                                 class.class_label().to_string()
                             };
                             let die_label = format!("d{}", class.hit_die_sides);
-                            let used_val = class.hit_dice_used.to_string();
-                            let total = class.level.to_string();
-                            let sides = class.hit_die_sides;
-                            let level = class.level;
-                            let all_used = class.hit_dice_used >= level;
+                            let used_val = class.hit_dice_used;
+                            let total = class.level;
                             view! {
                                 <div class="hit-dice-entry">
                                     <span class="hit-dice-class">{class_label}</span>
@@ -137,7 +134,7 @@ pub fn CombatPanel() -> impl IntoView {
                                         type="number"
                                         class="hit-dice-used"
                                         min="0"
-                                        prop:max=total.clone()
+                                        prop:max=total
                                         prop:value=used_val
                                         on:input=move |e| {
                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
@@ -148,22 +145,6 @@ pub fn CombatPanel() -> impl IntoView {
                                     />
                                     <span class="hit-dice-sep">"/"</span>
                                     <span class="hit-dice-total">{total}</span>
-                                    <button
-                                        class="btn-spend-hd"
-                                        disabled=all_used
-                                        on:click=move |_| {
-                                            if classes.read()[i].hit_dice_used >= level {
-                                                return;
-                                            }
-                                            let con_mod = store.read_untracked().ability_modifier(Ability::Constitution);
-                                            let roll = (js_sys::Math::random() * sides as f64).floor() as i32 + 1;
-                                            let heal = (roll + con_mod).max(1);
-                                            store.combat().update(|ch| ch.heal(heal as u32));
-                                            classes.write()[i].hit_dice_used += 1;
-                                        }
-                                    >
-                                        <Icon name="dices" size=14 />
-                                    </button>
                                 </div>
                             }
                         })

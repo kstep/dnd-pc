@@ -62,7 +62,7 @@ pub fn CharacterList() -> impl IntoView {
                         </div>
                         <div class="character-list">
                             <For
-                                each=move || characters.get().characters.into_values()
+                                each=move || characters.get().characters.sorted_unstable_by(|_, ch1, _, ch2| ch1.name.cmp(&ch2.name)).map(|(_, ch)| ch)
                                 key=|c| c.id
                                 let:character
                             >

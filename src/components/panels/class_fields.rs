@@ -78,6 +78,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}" "{die_label}</span>
+                                        </div>
+                                        <div class="entry-actions" />
+                                        <div class="entry-value">
                                             <div class="points-inputs">
                                                 <input
                                                     type="number"
@@ -104,7 +107,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 <span>"/" {max}</span>
                                             </div>
                                         </div>
-                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -117,9 +119,11 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}</span>
-                                            <span class="field-value">{formatted}</span>
                                         </div>
                                         <div class="entry-actions" />
+                                        <div class="entry-value">
+                                            <span class="field-value">{formatted}</span>
+                                        </div>
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -133,6 +137,9 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}</span>
+                                        </div>
+                                        <div class="entry-actions" />
+                                        <div class="entry-value">
                                             <div class="points-inputs">
                                                 <input
                                                     type="number"
@@ -179,7 +186,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                 />
                                             </div>
                                         </div>
-                                        <div class="entry-actions" />
                                         {field_desc_textarea()}
                                     </div>
                                 })
@@ -411,25 +417,25 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         {field_desc_textarea()}
                                         <div class="entry-list" style="grid-column: 1 / -1">
                                             {option_views}
-                                            <button
-                                                class="btn-add"
-                                                on:click=move |_| {
-                                                    fname.with_value(|key| {
-                                                        store.feature_data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                && let Some(f) = fields.get_mut(field_idx)
-                                                                && let FeatureValue::Choice { options } = &mut f.value
-                                                            {
-                                                                options.push(FeatureOption::default());
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            >
-                                                {move_tr!("btn-add-option")}
-                                            </button>
                                         </div>
                                     </div>
+                                    <button
+                                        class="btn-add"
+                                        on:click=move |_| {
+                                            fname.with_value(|key| {
+                                                store.feature_data().update(|m| {
+                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                        && let FeatureValue::Choice { options } = &mut f.value
+                                                    {
+                                                        options.push(FeatureOption::default());
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    >
+                                        {move_tr!("btn-add-option")}
+                                    </button>
                                 })
                             }
                         }

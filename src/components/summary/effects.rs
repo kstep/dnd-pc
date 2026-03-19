@@ -134,9 +134,11 @@ pub fn EffectsBlock() -> impl IntoView {
                             }
                         }
                     />
-                    <input type="text" class="summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
                 </div>
                 <div class="entry-actions" />
+                <div class="entry-value">
+                    <input type="text" class="summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
+                </div>
             </div>
 
             // -- Effect list --

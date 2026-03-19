@@ -25,6 +25,12 @@ pub fn proficiency_bonus_for_level(level: u32) -> i32 {
     (level as i32 - 1) / 4 + 2
 }
 
+/// XP thresholds for character levels 1–20 (D&D 5e standard progression).
+const XP_THRESHOLDS: [u32; 20] = [
+    0, 300, 900, 2_700, 6_500, 14_000, 23_000, 34_000, 48_000, 64_000, 85_000, 100_000, 120_000,
+    140_000, 165_000, 195_000, 225_000, 265_000, 305_000, 355_000,
+];
+
 /// Spell slot table (full-caster Wizard progression), indexed by caster level
 /// 1–20. Each row lists slot counts for spell levels 1–9.
 const SPELL_SLOT_TABLE: &[&[u32]] = &[
@@ -396,6 +402,13 @@ impl Character {
             .map(|c| c.level)
             .sum::<u32>()
             .max(1)
+    }
+
+    pub fn xp_threshold(&self) -> u32 {
+        XP_THRESHOLDS
+            .get(self.level().saturating_sub(1) as usize)
+            .copied()
+            .unwrap_or(0)
     }
 
     pub fn proficiency_bonus(&self) -> i32 {

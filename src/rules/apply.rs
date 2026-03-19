@@ -231,6 +231,12 @@ impl RulesRegistry {
         self.compute(character);
         let hp_delta = character.hp_max().saturating_sub(old_hp_max);
         character.combat.hp_current += hp_delta;
+
+        // Ensure XP meets the threshold for the new total level
+        let xp_threshold = character.xp_threshold();
+        if character.identity.experience_points < xp_threshold {
+            character.identity.experience_points = xp_threshold;
+        }
     }
 
     /// Trigger spell list fetches for all feature data entries that reference
