@@ -59,6 +59,15 @@ impl Attribute {
                 | Self::SpellAttackAdvantage
         )
     }
+
+    /// Returns true if this attribute is scoped (stored per-feature
+    /// rather than globally when inside a scoped effect).
+    pub fn is_scoped(&self) -> bool {
+        matches!(
+            self,
+            Self::SpellDc | Self::SpellAttack | Self::SpellAttackAdvantage
+        )
+    }
 }
 
 fn parse_ability(s: &str) -> Option<Ability> {

@@ -173,8 +173,23 @@
   "Form of Dread": {
     "description": "Immune to frightened, temp HP = 1d10 + warlock level (bonus action, 1 min)"
   },
-  "Enhance Ability": {
-    "description": "Advantage on one ability's checks (concentration, 1 hour)"
+  "Enhance Ability: Bull's Strength": {
+    "description": "Advantage on Strength checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Cat's Grace": {
+    "description": "Advantage on Dexterity checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Bear's Endurance": {
+    "description": "Advantage on Constitution checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Fox's Cunning": {
+    "description": "Advantage on Intelligence checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Owl's Wisdom": {
+    "description": "Advantage on Wisdom checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Eagle's Splendor": {
+    "description": "Advantage on Charisma checks (concentration, 1 hour)"
   },
   "Guidance": {
     "description": "+1d4 to one ability check (cantrip, concentration). Dice bonus — apply result manually"
@@ -433,5 +448,77 @@
   },
   "Innate Sorcery": {
     "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute"
+  },
+  "Rod of the Pact Keeper +1": {
+    "description": "+1 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Rod of the Pact Keeper +2": {
+    "description": "+2 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Rod of the Pact Keeper +3": {
+    "description": "+3 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Bloodwell Vial +1": {
+    "description": "+1 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Bloodwell Vial +2": {
+    "description": "+2 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Bloodwell Vial +3": {
+    "description": "+3 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Arcane Grimoire +1": {
+    "description": "+1 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Arcane Grimoire +2": {
+    "description": "+2 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Arcane Grimoire +3": {
+    "description": "+3 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Moon Sickle +1 (Druid)": {
+    "description": "+1 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +2 (Druid)": {
+    "description": "+2 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +3 (Druid)": {
+    "description": "+3 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +1 (Ranger)": {
+    "description": "+1 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Moon Sickle +2 (Ranger)": {
+    "description": "+2 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Moon Sickle +3 (Ranger)": {
+    "description": "+3 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Amulet of the Devout +1 (Cleric)": {
+    "description": "+1 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +2 (Cleric)": {
+    "description": "+2 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +3 (Cleric)": {
+    "description": "+3 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +1 (Paladin)": {
+    "description": "+1 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Amulet of the Devout +2 (Paladin)": {
+    "description": "+2 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Amulet of the Devout +3 (Paladin)": {
+    "description": "+3 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Wand of the War Mage +1": {
+    "description": "+1 to spell attack rolls (attunement, spellcaster)"
+  },
+  "Wand of the War Mage +2": {
+    "description": "+2 to spell attack rolls (attunement, spellcaster)"
+  },
+  "Wand of the War Mage +3": {
+    "description": "+3 to spell attack rolls (attunement, spellcaster)"
   }
 }

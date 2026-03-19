@@ -131,26 +131,40 @@ impl ActiveEffects {
         self.overrides.clear();
         self.scoped_overrides.clear();
 
-        // Mutable wrapper: borrows overrides mutably and effects immutably.
+        // Mutable wrapper that layers scoped overrides on top of global ones.
+        // Spell-specific attributes (SpellDc, SpellAttack, SpellAttackAdvantage)
+        // are written to the scoped map; all other attributes forward to global.
         struct Ctx<'a> {
             character: &'a Character,
-            overrides: &'a mut BTreeMap<Attribute, i32>,
-            /// Casting ability from scoped feature (None for unscoped effects)
+            global: &'a mut BTreeMap<Attribute, i32>,
+            scoped: Option<&'a mut BTreeMap<Attribute, i32>>,
             casting_ability: Option<Ability>,
         }
         impl Context<Attribute> for Ctx<'_> {
             fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-                if var.is_advantage() {
+                let value = if var.is_advantage() {
                     let current = self.resolve(var).unwrap_or(0);
-                    self.overrides.insert(var, (current + value).clamp(-1, 1));
+                    (current + value).clamp(-1, 1)
                 } else {
-                    self.overrides.insert(var, value);
-                }
+                    value
+                };
+                let target = if var.is_scoped() {
+                    self.scoped.as_deref_mut().unwrap_or(&mut *self.global)
+                } else {
+                    &mut *self.global
+                };
+                target.insert(var, value);
                 Ok(())
             }
 
             fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-                if let Some(&value) = self.overrides.get(&var) {
+                // Check scoped first, then global, then character base
+                if let Some(ref scoped) = self.scoped
+                    && let Some(&value) = scoped.get(&var)
+                {
+                    return Ok(value);
+                }
+                if let Some(&value) = self.global.get(&var) {
                     return Ok(value);
                 }
                 match var {
@@ -171,7 +185,15 @@ impl ActiveEffects {
             }
         }
 
-        for effect in self.effects.iter().filter(|e| e.enabled) {
+        // Destructure to allow simultaneous mutable borrows of different fields
+        let Self {
+            effects,
+            overrides,
+            scoped_overrides,
+            ..
+        } = self;
+
+        for effect in effects.iter().filter(|e| e.enabled) {
             let Some(ref expr) = effect.expr else {
                 continue;
             };
@@ -184,37 +206,22 @@ impl ActiveEffects {
                     .map(|s| s.casting_ability)
             });
 
-            if let Some(scope) = effect.scope.clone() {
-                // Scoped effect: evaluate into a temporary map, then merge
-                let mut scoped = BTreeMap::new();
-                let mut ctx = Ctx {
-                    character,
-                    overrides: &mut scoped,
-                    casting_ability,
-                };
-                let result = match effect.pool {
-                    Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
-                    None => expr.apply(&mut ctx),
-                };
-                if let Err(error) = result {
-                    log::error!("Effect '{}' expression error: {error}", effect.name);
-                }
-                let entry = self.scoped_overrides.entry(scope).or_default();
-                entry.extend(scoped);
-            } else {
-                // Unscoped effect: evaluate into global overrides
-                let mut ctx = Ctx {
-                    character,
-                    overrides: &mut self.overrides,
-                    casting_ability: None,
-                };
-                let result = match effect.pool {
-                    Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
-                    None => expr.apply(&mut ctx),
-                };
-                if let Err(error) = result {
-                    log::error!("Effect '{}' expression error: {error}", effect.name);
-                }
+            let mut ctx = Ctx {
+                character,
+                global: overrides,
+                scoped: effect
+                    .scope
+                    .clone()
+                    .map(|scope| scoped_overrides.entry(scope).or_default()),
+                casting_ability,
+            };
+
+            let result = match effect.pool {
+                Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
+                None => expr.apply(&mut ctx),
+            };
+            if let Err(error) = result {
+                log::error!("Effect '{}' expression error: {error}", effect.name);
             }
         }
         CONSUMABLE_ATTRS.iter().any(|attr| {
@@ -225,6 +232,11 @@ impl ActiveEffects {
                 self.memoized.contains_key(attr)
             }
         })
+    }
+
+    /// Returns a global override for the given attribute, if any.
+    pub fn global_override(&self, attr: Attribute) -> Option<i32> {
+        self.overrides.get(&attr).copied()
     }
 
     /// Effective value: override if set, otherwise base from character.
@@ -250,7 +262,7 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::model::Ability;
+    use crate::model::{Ability, FeatureData, SpellData, SpellSlotPool};
 
     fn effect_with_expr(expr: &str) -> ActiveEffect {
         ActiveEffect {
@@ -302,6 +314,94 @@ mod tests {
             effects2.resolve(&character, Attribute::SaveAdvantage(Ability::Dexterity)),
             -1
         );
+    }
+
+    fn scoped_effect(scope: &str, expr: &str) -> ActiveEffect {
+        ActiveEffect {
+            name: String::new(),
+            label: None,
+            description: String::new(),
+            expr: Some(expr.parse().unwrap()),
+            pool: None,
+            enabled: true,
+            scope: Some(scope.into()),
+        }
+    }
+
+    fn character_with_spellcasting(feature: &str, ability: Ability) -> Character {
+        let mut character = Character::new();
+        character.feature_data.insert(
+            feature.to_string(),
+            FeatureData {
+                spells: Some(SpellData {
+                    casting_ability: ability,
+                    caster_coef: 1,
+                    pool: SpellSlotPool::default(),
+                    spells: Vec::new(),
+                    known: None,
+                }),
+                ..Default::default()
+            },
+        );
+        character
+    }
+
+    #[wasm_bindgen_test]
+    fn scoped_effects_stack() {
+        let feature = "Spellcasting (Sorcerer)";
+        let character = character_with_spellcasting(feature, Ability::Charisma);
+        let base_dc = character.spell_save_dc(Ability::Charisma);
+        let mut effects = ActiveEffects::default();
+
+        effects.add(scoped_effect(feature, "SPELL.DC += 1"), &character);
+        assert_eq!(
+            effects.resolve_scoped(feature, Attribute::SpellDc),
+            Some(base_dc + 1),
+        );
+
+        effects.add(scoped_effect(feature, "SPELL.DC += 1"), &character);
+        assert_eq!(
+            effects.resolve_scoped(feature, Attribute::SpellDc),
+            Some(base_dc + 2),
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn scoped_effect_forwards_non_spell_attrs_to_global() {
+        let feature = "Spellcasting (Sorcerer)";
+        let character = character_with_spellcasting(feature, Ability::Charisma);
+        let base_ac = character.resolve(Attribute::Ac).unwrap_or(0);
+        let base_dc = character.spell_save_dc(Ability::Charisma);
+        let mut effects = ActiveEffects::default();
+
+        // Scoped effect with both spell and non-spell attributes
+        effects.add(scoped_effect(feature, "SPELL.DC += 1; AC += 1"), &character);
+
+        // Spell DC goes to scoped storage
+        assert_eq!(
+            effects.resolve_scoped(feature, Attribute::SpellDc),
+            Some(base_dc + 1),
+        );
+        // AC forwards to global overrides
+        assert_eq!(effects.resolve(&character, Attribute::Ac), base_ac + 1);
+        // AC is NOT in scoped storage
+        assert_eq!(effects.resolve_scoped(feature, Attribute::Ac), None);
+    }
+
+    #[wasm_bindgen_test]
+    fn scoped_effect_sees_unscoped_overrides() {
+        let feature = "Spellcasting (Sorcerer)";
+        let character = character_with_spellcasting(feature, Ability::Charisma);
+        let base_ac = character.resolve(Attribute::Ac).unwrap_or(0);
+        let mut effects = ActiveEffects::default();
+
+        // Unscoped effect sets AC
+        effects.add(effect_with_expr("AC += 2"), &character);
+        // Scoped effect layers on top
+        effects.add(scoped_effect(feature, "AC += 1"), &character);
+
+        // Should see base + 2 + 1 = base + 3
+        assert_eq!(effects.resolve(&character, Attribute::Ac), base_ac + 3);
     }
 
     #[wasm_bindgen_test]

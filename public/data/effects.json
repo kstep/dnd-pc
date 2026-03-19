@@ -213,7 +213,28 @@
     "expr": "TEMP_HP = max(TEMP_HP, 1d10 + CLASS_LEVEL)"
   },
   {
-    "name": "Enhance Ability"
+    "name": "Enhance Ability: Bull's Strength",
+    "expr": "STR.ADV = 1"
+  },
+  {
+    "name": "Enhance Ability: Cat's Grace",
+    "expr": "DEX.ADV = 1"
+  },
+  {
+    "name": "Enhance Ability: Bear's Endurance",
+    "expr": "CON.ADV = 1"
+  },
+  {
+    "name": "Enhance Ability: Fox's Cunning",
+    "expr": "INT.ADV = 1"
+  },
+  {
+    "name": "Enhance Ability: Owl's Wisdom",
+    "expr": "WIS.ADV = 1"
+  },
+  {
+    "name": "Enhance Ability: Eagle's Splendor",
+    "expr": "CHA.ADV = 1"
   },
   {
     "name": "Guidance"
@@ -358,7 +379,8 @@
     "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Feign Death"
+    "name": "Feign Death",
+    "expr": "SPEED = 0"
   },
   {
     "name": "Shadow Blade"
@@ -431,6 +453,123 @@
   },
   {
     "name": "Nondetection"
+  },
+  {
+    "name": "Rod of the Pact Keeper +1",
+    "scope": "Pact Magic",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Rod of the Pact Keeper +2",
+    "scope": "Pact Magic",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Rod of the Pact Keeper +3",
+    "scope": "Pact Magic",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Bloodwell Vial +1",
+    "scope": "Spellcasting (Sorcerer)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Bloodwell Vial +2",
+    "scope": "Spellcasting (Sorcerer)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Bloodwell Vial +3",
+    "scope": "Spellcasting (Sorcerer)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Arcane Grimoire +1",
+    "scope": "Spellcasting (Wizard)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Arcane Grimoire +2",
+    "scope": "Spellcasting (Wizard)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Arcane Grimoire +3",
+    "scope": "Spellcasting (Wizard)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Moon Sickle +1 (Druid)",
+    "scope": "Spellcasting (Druid)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Moon Sickle +2 (Druid)",
+    "scope": "Spellcasting (Druid)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Moon Sickle +3 (Druid)",
+    "scope": "Spellcasting (Druid)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Moon Sickle +1 (Ranger)",
+    "scope": "Spellcasting (Ranger)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Moon Sickle +2 (Ranger)",
+    "scope": "Spellcasting (Ranger)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Moon Sickle +3 (Ranger)",
+    "scope": "Spellcasting (Ranger)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Amulet of the Devout +1 (Cleric)",
+    "scope": "Spellcasting (Cleric)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Amulet of the Devout +2 (Cleric)",
+    "scope": "Spellcasting (Cleric)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Amulet of the Devout +3 (Cleric)",
+    "scope": "Spellcasting (Cleric)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Amulet of the Devout +1 (Paladin)",
+    "scope": "Spellcasting (Paladin)",
+    "expr": "SPELL.DC += 1; SPELL.ATK += 1"
+  },
+  {
+    "name": "Amulet of the Devout +2 (Paladin)",
+    "scope": "Spellcasting (Paladin)",
+    "expr": "SPELL.DC += 2; SPELL.ATK += 2"
+  },
+  {
+    "name": "Amulet of the Devout +3 (Paladin)",
+    "scope": "Spellcasting (Paladin)",
+    "expr": "SPELL.DC += 3; SPELL.ATK += 3"
+  },
+  {
+    "name": "Wand of the War Mage +1",
+    "expr": "SPELL.ATK += 1"
+  },
+  {
+    "name": "Wand of the War Mage +2",
+    "expr": "SPELL.ATK += 2"
+  },
+  {
+    "name": "Wand of the War Mage +3",
+    "expr": "SPELL.ATK += 3"
   },
   {
     "name": "Grappled",
