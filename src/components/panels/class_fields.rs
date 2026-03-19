@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::{either::EitherOf5, prelude::*};
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
@@ -42,36 +40,29 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                     .unwrap_or_else(|| feature_name.clone());
                 let fname = StoredValue::new(feature_name);
 
-                let desc_expanded = RwSignal::new(HashSet::<usize>::new());
-
                 let field_views = fields
                     .into_iter()
                     .enumerate()
                     .map(|(field_idx, field)| {
-                        let is_open =
-                            Signal::derive(move || desc_expanded.get().contains(&field_idx));
-
                         let desc = field.description.clone();
                         let field_desc_textarea = move || {
                             view! {
-                                <Show when=move || is_open.get()>
-                                    <textarea
-                                        class="entry-desc"
-                                        placeholder=move_tr!("description")
-                                        prop:value=desc.clone()
-                                        on:change=move |e| {
-                                            fname.with_value(|key| {
-                                                store.feature_data().update(|m| {
-                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                        && let Some(f) = fields.get_mut(field_idx)
-                                                    {
-                                                        f.description = event_target_value(&e);
-                                                    }
-                                                });
+                                <textarea
+                                    class="entry-desc"
+                                    placeholder=move_tr!("description")
+                                    prop:value=desc.clone()
+                                    on:change=move |e| {
+                                        fname.with_value(|key| {
+                                            store.feature_data().update(|m| {
+                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                    && let Some(f) = fields.get_mut(field_idx)
+                                                {
+                                                    f.description = event_target_value(&e);
+                                                }
                                             });
-                                        }
-                                    />
-                                </Show>
+                                        });
+                                    }
+                                />
                             }
                         };
 
@@ -84,12 +75,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let max_val = max.to_string();
                                 EitherOf5::A(view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || desc_expanded.update(|set| {
-                                                if !set.remove(&field_idx) { set.insert(field_idx); }
-                                            })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}" "{die_label}</span>
                                             <div class="points-inputs">
@@ -128,12 +114,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let formatted = format_bonus(*val);
                                 EitherOf5::B(view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || desc_expanded.update(|set| {
-                                                if !set.remove(&field_idx) { set.insert(field_idx); }
-                                            })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}</span>
                                             <span class="field-value">{formatted}</span>
@@ -149,12 +130,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let max_val = max.to_string();
                                 EitherOf5::C(view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || desc_expanded.update(|set| {
-                                                if !set.remove(&field_idx) { set.insert(field_idx); }
-                                            })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label}</span>
                                             <div class="points-inputs">
@@ -271,12 +247,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                                     return EitherOf5::E(view! {
                                         <div class="entry-item">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || desc_expanded.update(|set| {
-                                                    if !set.remove(&field_idx) { set.insert(field_idx); }
-                                                })
-                                            />
+                                            <ToggleButton />
                                             <div class="entry-content">
                                                 <span class="field-label">{label_view}</span>
                                             </div>
@@ -289,7 +260,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                     });
                                 }
 
-                                let opt_expanded = RwSignal::new(HashSet::<usize>::new());
                                 let has_cost = cost_label.is_some();
                                 let fld_name = StoredValue::new(field_name.clone());
                                 let suggestions: Signal<Vec<(String, String, String)>> =
@@ -305,18 +275,10 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         let opt_name = option.label().to_string();
                                         let opt_cost = option.cost.to_string();
                                         let opt_desc = option.description.clone();
-                                        let is_opt_open = Signal::derive(move || {
-                                            opt_expanded.get().contains(&opt_idx)
-                                        });
 
                                         view! {
                                             <div class="entry-item">
-                                                <ToggleButton
-                                                    expanded=is_opt_open
-                                                    on_toggle=move || opt_expanded.update(|set| {
-                                                        if !set.remove(&opt_idx) { set.insert(opt_idx); }
-                                                    })
-                                                />
+                                                <ToggleButton />
                                                 <div class="entry-content">
                                                     <DatalistInput
                                                         value=opt_name
@@ -408,26 +370,24 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                         <Icon name="x" size=14 />
                                                     </button>
                                                 </div>
-                                                <Show when=move || is_opt_open.get()>
-                                                    <textarea
-                                                        class="entry-desc"
-                                                        placeholder=move_tr!("description")
-                                                        prop:value=opt_desc.clone()
-                                                        on:change=move |e| {
-                                                            fname.with_value(|key| {
-                                                                store.feature_data().update(|m| {
-                                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
-                                                                        && let Some(f) = fields.get_mut(field_idx)
-                                                                        && let FeatureValue::Choice { options } = &mut f.value
-                                                                        && let Some(opt) = options.get_mut(opt_idx)
-                                                                    {
-                                                                        opt.description = event_target_value(&e);
-                                                                    }
-                                                                });
+                                                <textarea
+                                                    class="entry-desc"
+                                                    placeholder=move_tr!("description")
+                                                    prop:value=opt_desc.clone()
+                                                    on:change=move |e| {
+                                                        fname.with_value(|key| {
+                                                            store.feature_data().update(|m| {
+                                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                                    && let Some(f) = fields.get_mut(field_idx)
+                                                                    && let FeatureValue::Choice { options } = &mut f.value
+                                                                    && let Some(opt) = options.get_mut(opt_idx)
+                                                                {
+                                                                    opt.description = event_target_value(&e);
+                                                                }
                                                             });
-                                                        }
-                                                    />
-                                                </Show>
+                                                        });
+                                                    }
+                                                />
                                             </div>
                                         }
                                     })
@@ -443,12 +403,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
 
                                 EitherOf5::D(view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || desc_expanded.update(|set| {
-                                                if !set.remove(&field_idx) { set.insert(field_idx); }
-                                            })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <span class="field-label">{label_view}</span>
                                         </div>

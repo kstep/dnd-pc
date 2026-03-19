@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -40,7 +38,6 @@ pub fn EquipmentPanel() -> impl IntoView {
                 </button>
             </div>
             {
-                let weapons_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
                     <div class="entry-list">
                         {move || {
@@ -53,13 +50,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let atk = weapon.attack_bonus.to_string();
                                     let dmg = weapon.damage.clone();
                                     let dmg_type = weapon.damage_type.map(|dt| dt as u8);
-                                    let is_open = Signal::derive(move || weapons_expanded.get().contains(&i));
                                     view! {
                                         <div class="entry-item">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || weapons_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                            />
+                                            <ToggleButton />
                                             <div class="entry-content">
                                                 <input
                                                     type="text"
@@ -117,19 +110,17 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     <Icon name="x" size=14 />
                                                 </button>
                                             </div>
-                                            <Show when=move || is_open.get()>
-                                                <div class="entry-full-row">
-                                                    <input
-                                                        type="text"
-                                                        placeholder=move_tr!("damage")
-                                                        class="damage-input"
-                                                        prop:value=dmg.clone()
-                                                        on:input=move |e| {
-                                                            weapons.write()[i].damage = event_target_value(&e);
-                                                        }
-                                                    />
-                                                </div>
-                                            </Show>
+                                            <div class="entry-full-row">
+                                                <input
+                                                    type="text"
+                                                    placeholder=move_tr!("damage")
+                                                    class="damage-input"
+                                                    prop:value=dmg.clone()
+                                                    on:input=move |e| {
+                                                        weapons.write()[i].damage = event_target_value(&e);
+                                                    }
+                                                />
+                                            </div>
                                         </div>
                             }
                         })
@@ -159,7 +150,6 @@ pub fn EquipmentPanel() -> impl IntoView {
                 </button>
             </div>
             {
-                let armors_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
                     <div class="entry-list">
                         {move || {
@@ -173,14 +163,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let armor_type = armor.armor_type as u8;
                                     let is_natural = armor.armor_type == ArmorType::Natural;
                                     let ac_expr_str = armor.ac_expr.as_ref().map(|e| e.to_string()).unwrap_or_default();
-                                    let is_open = Signal::derive(move || armors_expanded.get().contains(&i));
                                     if is_natural {
                                         Either::Left(view! {
                                             <div class="entry-item armor-natural">
-                                                <ToggleButton
-                                                    expanded=is_open
-                                                    on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                                />
+                                                <ToggleButton />
                                                 <div class="entry-content">
                                                     <span class="entry-name armor-name">{name}</span>
                                                     <span class="armor-type-label">
@@ -199,18 +185,13 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         <Icon name="x" size=14 />
                                                     </button>
                                                 </div>
-                                                <Show when=move || is_open.get()>
-                                                    <span class="entry-sublabel">{ac_expr_str.clone()}</span>
-                                                </Show>
+                                                <span class="entry-sublabel">{ac_expr_str.clone()}</span>
                                             </div>
                                         })
                                     } else {
                                         Either::Right(view! {
                                             <div class="entry-item">
-                                                <ToggleButton
-                                                    expanded=is_open
-                                                    on_toggle=move || armors_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                                />
+                                                <ToggleButton />
                                                 <div class="entry-content">
                                                     <input
                                                         type="text"
@@ -286,22 +267,20 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         <Icon name="x" size=14 />
                                                     </button>
                                                 </div>
-                                                <Show when=move || is_open.get()>
-                                                    <input
-                                                        type="text"
-                                                        placeholder=move_tr!("ac-formula")
-                                                        class="entry-desc ac-expr-input"
-                                                        prop:value=ac_expr_str.clone()
-                                                        on:change=move |e| {
-                                                            let value = event_target_value(&e);
-                                                            armors.write()[i].ac_expr = if value.is_empty() {
-                                                                None
-                                                            } else {
-                                                                value.parse().ok()
-                                                            };
-                                                        }
-                                                    />
-                                                </Show>
+                                                <input
+                                                    type="text"
+                                                    placeholder=move_tr!("ac-formula")
+                                                    class="entry-desc ac-expr-input"
+                                                    prop:value=ac_expr_str.clone()
+                                                    on:change=move |e| {
+                                                        let value = event_target_value(&e);
+                                                        armors.write()[i].ac_expr = if value.is_empty() {
+                                                            None
+                                                        } else {
+                                                            value.parse().ok()
+                                                        };
+                                                    }
+                                                />
                                             </div>
                                         })
                                     }
@@ -332,7 +311,6 @@ pub fn EquipmentPanel() -> impl IntoView {
                 </button>
             </div>
             {
-                let items_expanded = RwSignal::new(HashSet::<usize>::new());
                 view! {
                     <div class="entry-list">
                         {move || {
@@ -344,13 +322,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let name = item.name.clone();
                                     let qty = item.quantity.to_string();
                                     let desc = item.description.clone();
-                                    let is_open = Signal::derive(move || items_expanded.get().contains(&i));
                                     view! {
                                         <div class="entry-item">
-                                            <ToggleButton
-                                                expanded=is_open
-                                                on_toggle=move || items_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                            />
+                                            <ToggleButton />
                                             <div class="entry-content">
                                                 <input
                                                     type="text"
@@ -386,16 +360,14 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     <Icon name="x" size=14 />
                                                 </button>
                                             </div>
-                                            <Show when=move || is_open.get()>
-                                                <textarea
-                                                    class="entry-desc"
-                                                    placeholder=move_tr!("description")
-                                                    prop:value=desc.clone()
-                                                    on:change=move |e| {
-                                                        items.write()[i].description = event_target_value(&e);
-                                                    }
-                                                />
-                                            </Show>
+                                            <textarea
+                                                class="entry-desc"
+                                                placeholder=move_tr!("description")
+                                                prop:value=desc.clone()
+                                                on:change=move |e| {
+                                                    items.write()[i].description = event_target_value(&e);
+                                                }
+                                            />
                                         </div>
                                     }
                                 })

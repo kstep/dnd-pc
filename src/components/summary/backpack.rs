@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::{either::Either, html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -109,17 +107,12 @@ pub fn BackpackBlock() -> impl IntoView {
                         <p class="summary-empty">{move_tr!("summary-no-items")}</p>
                     })
                 } else {
-                    let expanded = RwSignal::new(HashSet::<usize>::new());
                     Either::Right(view! {
                         <div class="entry-list">
                             {items.into_iter().map(|(idx, name, qty, desc)| {
-                                let is_open = Signal::derive(move || expanded.get().contains(&idx));
                                 view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || expanded.update(|set| { if !set.remove(&idx) { set.insert(idx); } })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <span class="entry-name">{name}</span>
                                             <span class="entry-badge">
@@ -138,16 +131,14 @@ pub fn BackpackBlock() -> impl IntoView {
                                             </span>
                                         </div>
                                         <div class="entry-actions" />
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="entry-desc"
-                                                prop:value=desc.clone()
-                                                on:input=move |e| {
-                                                    let value = event_target_value(&e);
-                                                    equipment.items().write()[idx].description = value;
-                                                }
-                                            />
-                                        </Show>
+                                        <textarea
+                                            class="entry-desc"
+                                            prop:value=desc.clone()
+                                            on:input=move |e| {
+                                                let value = event_target_value(&e);
+                                                equipment.items().write()[idx].description = value;
+                                            }
+                                        />
                                     </div>
                                 }
                             }).collect_view()}

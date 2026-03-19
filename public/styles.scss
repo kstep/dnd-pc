@@ -871,7 +871,7 @@ input[type="checkbox"] {
 
 
 
-/* --------------------- Features Panel ------------------------ */
+/* --------------------- Toggle Button ------------------------- */
 .btn-toggle-desc {
   background: none;
   border: 1px solid var(--panel-border);
@@ -880,17 +880,40 @@ input[type="checkbox"] {
   height: 28px;
   padding: 0;
   cursor: pointer;
-  font-size: var(--font-size-1);
-  font-weight: var(--font-weight-7);
   line-height: 1;
   color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
+  // Plus/minus icons only on empty buttons (ToggleButton renders empty,
+  // sort buttons and other uses have Icon children inside)
+  &:empty {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .expanded > &:empty,
+  .expanded > * > &:empty {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+  }
+
   &:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.3;
     cursor: default;
+  }
+}
+
+/* --------------------- Expandable content visibility --------- */
+.entry-item:not(.expanded) {
+  > .entry-desc,
+  > .entry-sublabel,
+  > .entry-full-row {
+    display: none;
   }
 }
 
@@ -924,6 +947,10 @@ input[type="checkbox"] {
   align-items: center;
   gap: var(--size-1);
   min-width: 0;
+
+  .entry-item:has(> .entry-actions:empty) > & {
+    grid-column: 2 / -1;
+  }
 }
 
 .entry-name {
@@ -954,6 +981,10 @@ select.entry-name {
   grid-column: 3;
   display: flex;
   align-items: center;
+
+  &:empty {
+    display: none;
+  }
   gap: 2px;
 }
 
@@ -993,6 +1024,7 @@ select.entry-name {
   display: flex;
   align-items: center;
   gap: var(--size-1);
+  flex-wrap: wrap;
 }
 
 /* --------------------- Equipment Panel ----------------------- */

@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -133,9 +131,6 @@ fn FeatureSpellcastingSection(
     let spell_save_dc = Memo::new(move |_| store.read().spell_save_dc(casting_ability.get()));
     let spell_attack = Memo::new(move |_| store.read().spell_attack_bonus(casting_ability.get()));
 
-    let spells_expanded = RwSignal::new(HashSet::<usize>::new());
-    let known_expanded = RwSignal::new(HashSet::<usize>::new());
-
     let is_two_tier = Memo::new(move |_| {
         fname.with_value(|key| {
             store
@@ -268,14 +263,10 @@ fn FeatureSpellcastingSection(
                                 let spell_name = spell.label().to_string();
                                 let spell_level = spell.level.to_string();
                                 let spell_sticky = spell.sticky;
-                                let is_open = Signal::derive(move || known_expanded.get().contains(&i));
                                 let options = spell_suggestions[spell.level.min(9) as usize];
                                 view! {
                                     <div class="entry-item">
-                                        <ToggleButton
-                                            expanded=is_open
-                                            on_toggle=move || known_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                        />
+                                        <ToggleButton />
                                         <div class="entry-content">
                                             <DatalistInput
                                                 value=spell_name
@@ -333,17 +324,15 @@ fn FeatureSpellcastingSection(
                                                 </button>
                                             </Show>
                                         </div>
-                                        <Show when=move || is_open.get()>
-                                            <textarea
-                                                class="entry-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=move || read_known_spell(fname, store, i, |spell| spell.description.clone())
-                                                on:change=move |e| {
-                                                    let value = event_target_value(&e);
-                                                    update_known_spell(fname, store, i, |spell| spell.description = value);
-                                                }
-                                            />
-                                        </Show>
+                                        <textarea
+                                            class="entry-desc"
+                                            placeholder=move_tr!("description")
+                                            prop:value=move || read_known_spell(fname, store, i, |spell| spell.description.clone())
+                                            on:change=move |e| {
+                                                let value = event_target_value(&e);
+                                                update_known_spell(fname, store, i, |spell| spell.description = value);
+                                            }
+                                        />
                                     </div>
                                 }
                             })
@@ -401,7 +390,6 @@ fn FeatureSpellcastingSection(
                             let spell_level = spell.level.to_string();
                             let spell_sticky = spell.sticky;
                             let has_free_uses = spell.free_uses.is_some();
-                            let is_open = Signal::derive(move || spells_expanded.get().contains(&i));
                             // Two-tier: autocomplete from spellbook; single-tier/cantrips: from registry
                             let options = if two_tier && spell.level > 0 {
                                 known_suggestions[spell.level.min(9) as usize]
@@ -410,10 +398,7 @@ fn FeatureSpellcastingSection(
                             };
                             view! {
                                 <div class="entry-item">
-                                    <ToggleButton
-                                        expanded=is_open
-                                        on_toggle=move || spells_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                    />
+                                    <ToggleButton />
                                     <div class="entry-content">
                                         <DatalistInput
                                             value=spell_name
@@ -421,15 +406,24 @@ fn FeatureSpellcastingSection(
                                             class="entry-name"
                                             options=options
                                             on_input=move |input, resolved| {
+                                                // Look up description from suggestions
+                                                let desc = resolved.as_ref().and_then(|name| {
+                                                    options.with(|opts| {
+                                                        opts.iter()
+                                                            .find(|(n, _, _)| n == name)
+                                                            .map(|(_, _, d)| d.clone())
+                                                    })
+                                                }).unwrap_or_default();
                                                 update_spells(fname, store, |sc| {
                                                     let Some(spell) = sc.spells.get_mut(i) else { return };
                                                     if let Some(name) = resolved {
-                                                        // Copy label/description from spellbook entry if two-tier
+                                                        // Prefer spellbook description, fall back to registry
                                                         let known_spell = sc.known.as_ref()
                                                             .and_then(|k| k.iter().find(|s| s.name == name));
                                                         spell.description = known_spell
                                                             .map(|s| s.description.clone())
-                                                            .unwrap_or_default();
+                                                            .filter(|d| !d.is_empty())
+                                                            .unwrap_or(desc);
                                                         spell.label = known_spell
                                                             .and_then(|s| s.label.clone())
                                                             .or(Some(input));
@@ -471,8 +465,7 @@ fn FeatureSpellcastingSection(
                                             </button>
                                         </Show>
                                     </div>
-                                    <Show when=move || is_open.get()>
-                                        <Show when=move || has_free_uses || has_cost_field>
+                                    <Show when=move || has_free_uses || has_cost_field>
                                             <div class="entry-full-row spell-cost-row">
                                                 <Show when=move || has_free_uses>
                                                     <span class="spell-field-group">
@@ -542,7 +535,6 @@ fn FeatureSpellcastingSection(
                                                 update_spell(fname, store, i, |spell| spell.description = value);
                                             }
                                         />
-                                    </Show>
                                 </div>
                             }
                         })
@@ -604,9 +596,10 @@ pub fn SpellcastingPanel() -> impl IntoView {
         <Show when=move || has_spells.get()>
             <Panel title=move_tr!("panel-spellcasting") class="spellcasting-panel">
                 <div class="section-header">
-                    <ToggleButton
-                        expanded=Signal::derive(move || slots_expanded.get())
-                        on_toggle=move || slots_expanded.update(|expanded| *expanded = !*expanded)
+                    <button
+                        class="btn-toggle-desc"
+                        class:expanded=move || slots_expanded.get()
+                        on:click=move |_| slots_expanded.update(|expanded| *expanded = !*expanded)
                     />
                     <h4>{move_tr!("spell-slots")}</h4>
                 </div>

@@ -156,13 +156,9 @@ pub fn EffectsBlock() -> impl IntoView {
                             let description = effect.description.clone();
                             let scope = effect.scope.clone();
                             let enabled = effect.enabled;
-                            let is_open = RwSignal::new(false);
                             view! {
                                 <div class="entry-item" class:disabled=!enabled>
-                                    <ToggleButton
-                                        expanded=is_open
-                                        on_toggle=move || is_open.update(|v| *v = !*v)
-                                    />
+                                    <ToggleButton />
                                     <div class="entry-content">
                                         <label class="spell-prepared">
                                             <input
@@ -200,7 +196,6 @@ pub fn EffectsBlock() -> impl IntoView {
                                     {scope.map(|s| view! {
                                         <span class="entry-sublabel">{s.to_string()}</span>
                                     })}
-                                    <Show when=move || is_open.get()>
                                         <div class="entry-full-row summary-item-expr-row">
                                             <input
                                                 type="text"
@@ -248,7 +243,6 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 effects.update(|e| e.update_field(i, |eff| eff.description = val));
                                             }
                                         />
-                                    </Show>
                                 </div>
                             }
                         }).collect_view()}

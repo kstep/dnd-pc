@@ -1,8 +1,6 @@
-use std::collections::HashSet;
-
 use leptos::{either::Either, prelude::*};
 
-use crate::components::{icon::Icon, toggle_button::ToggleButton};
+use crate::components::toggle_button::ToggleButton;
 
 pub struct SummaryListItem {
     pub name: String,
@@ -12,35 +10,19 @@ pub struct SummaryListItem {
 
 #[component]
 pub fn SummaryList(items: Vec<SummaryListItem>) -> impl IntoView {
-    let expanded = RwSignal::new(HashSet::<usize>::new());
     view! {
         <div class="entry-list">
             {items
                 .into_iter()
-                .enumerate()
-                .map(|(i, item)| {
-                    let is_open = Signal::derive(move || expanded.get().contains(&i));
+                .map(|item| {
                     let has_desc = !item.description.is_empty();
                     view! {
                         <div class="entry-item">
                             {if has_desc {
-                                Either::Left(view! {
-                                    <ToggleButton
-                                        expanded=is_open
-                                        on_toggle=move || {
-                                            expanded.update(|set| {
-                                                if !set.remove(&i) {
-                                                    set.insert(i);
-                                                }
-                                            })
-                                        }
-                                    />
-                                })
+                                Either::Left(view! { <ToggleButton /> })
                             } else {
                                 Either::Right(view! {
-                                    <button class="btn-toggle-desc" disabled=true>
-                                        <Icon name="minus" />
-                                    </button>
+                                    <button class="btn-toggle-desc" disabled=true />
                                 })
                             }}
                             <div class="entry-content">
@@ -48,9 +30,9 @@ pub fn SummaryList(items: Vec<SummaryListItem>) -> impl IntoView {
                                 {item.badge}
                             </div>
                             <div class="entry-actions" />
-                            <Show when=move || is_open.get() && has_desc>
+                            {has_desc.then(|| view! {
                                 <p class="entry-desc">{item.description.clone()}</p>
-                            </Show>
+                            })}
                         </div>
                     }
                 })

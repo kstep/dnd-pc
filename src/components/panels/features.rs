@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
@@ -22,8 +20,6 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     let features = store.features();
     let racial_traits = store.racial_traits();
-    let expanded = RwSignal::new(HashSet::<usize>::new());
-    let rt_expanded = RwSignal::new(HashSet::<usize>::new());
 
     let add_feature = move |_| {
         features.write().push(Feature::default());
@@ -90,13 +86,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     format!("{prefix}: {label}")
                                 })
                             });
-                            let is_open = Signal::derive(move || expanded.get().contains(&i));
                             view! {
                                 <div class="entry-item">
-                                    <ToggleButton
-                                        expanded=is_open
-                                        on_toggle=move || expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                    />
+                                    <ToggleButton />
                                     <div class="entry-content">
                                         <DatalistInput
                                             value=name
@@ -150,19 +142,17 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             <Icon name="x" size=14 />
                                         </button>
                                     </div>
-                                    <Show when=move || is_open.get()>
-                                        {source_text.as_ref().map(|s| view! {
-                                            <span class="entry-sublabel">{s.clone()}</span>
-                                        })}
-                                        <textarea
-                                            class="entry-desc"
-                                            placeholder=move_tr!("description")
-                                            prop:value=desc.clone()
-                                            on:change=move |e| {
-                                                features.write()[i].description = event_target_value(&e);
-                                            }
-                                        />
-                                    </Show>
+                                    {source_text.as_ref().map(|s| view! {
+                                        <span class="entry-sublabel">{s.clone()}</span>
+                                    })}
+                                    <textarea
+                                        class="entry-desc"
+                                        placeholder=move_tr!("description")
+                                        prop:value=desc.clone()
+                                        on:change=move |e| {
+                                            features.write()[i].description = event_target_value(&e);
+                                        }
+                                    />
                                 </div>
                             }
                         })
@@ -183,13 +173,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, rt)| {
                             let name = rt.label().to_string();
                             let desc = rt.description.clone();
-                            let is_open = Signal::derive(move || rt_expanded.get().contains(&i));
                             view! {
                                 <div class="entry-item">
-                                    <ToggleButton
-                                        expanded=is_open
-                                        on_toggle=move || rt_expanded.update(|set| { if !set.remove(&i) { set.insert(i); } })
-                                    />
+                                    <ToggleButton />
                                     <div class="entry-content">
                                         <input
                                             type="text"
@@ -213,16 +199,14 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             <Icon name="x" size=14 />
                                         </button>
                                     </div>
-                                    <Show when=move || is_open.get()>
-                                        <textarea
-                                            class="entry-desc"
-                                            placeholder=move_tr!("description")
-                                            prop:value=desc.clone()
-                                            on:change=move |e| {
-                                                racial_traits.write()[i].description = event_target_value(&e);
-                                            }
-                                        />
-                                    </Show>
+                                    <textarea
+                                        class="entry-desc"
+                                        placeholder=move_tr!("description")
+                                        prop:value=desc.clone()
+                                        on:change=move |e| {
+                                            racial_traits.write()[i].description = event_target_value(&e);
+                                        }
+                                    />
                                 </div>
                             }
                         })

@@ -1,18 +1,18 @@
 use leptos::prelude::*;
 
-use crate::components::icon::Icon;
-
+/// Toggle button that expands/collapses the nearest `.entry-item` parent
+/// by toggling the `.expanded` class on it. Icon switches via CSS.
 #[component]
-pub fn ToggleButton(
-    #[prop(into)] expanded: Signal<bool>,
-    on_toggle: impl Fn() + Send + Sync + 'static,
-) -> impl IntoView {
+pub fn ToggleButton() -> impl IntoView {
     view! {
         <button
             class="btn-toggle-desc"
-            on:click=move |_| on_toggle()
-        >
-            <Icon name=move || if expanded.get() { "minus" } else { "plus" } />
-        </button>
+            on:click=move |e| {
+                let btn: web_sys::HtmlElement = event_target(&e);
+                if let Ok(Some(entry)) = btn.closest(".entry-item") {
+                    let _ = entry.class_list().toggle("expanded");
+                }
+            }
+        />
     }
 }
