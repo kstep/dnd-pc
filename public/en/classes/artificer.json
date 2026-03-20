@@ -2,9 +2,6 @@
   "": {
     "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.Alchemist": {
     "description": "Craft Magic Elixirs and Potions An Alchemist is an expert at combining reagents to produce magical effects. Alchemists use their creations to give life and to leech it away."
   },

@@ -1,24 +1,13 @@
 {
   "name": "Fighter",
   "hit_die": 10,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Fighting Style",
         "Second Wind",
         "Weapon Mastery (Fighter)",
-        "Class Proficiencies"
+        "Class Proficiencies (Fighter)"
       ]
     },
     {

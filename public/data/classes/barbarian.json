@@ -1,28 +1,13 @@
 {
   "name": "Barbarian",
   "hit_die": 12,
-  "features": [
-    {
-      "name": "Unarmored Defense",
-      "ac_expr": "10 + DEX.MOD + CON.MOD"
-    },
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Rage",
-        "Unarmored Defense",
+        "Unarmored Defense (Barbarian)",
         "Weapon Mastery (Barbarian)",
-        "Class Proficiencies"
+        "Class Proficiencies (Barbarian)"
       ]
     },
     {

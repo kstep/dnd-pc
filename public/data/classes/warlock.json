@@ -1,23 +1,12 @@
 {
   "name": "Warlock",
   "hit_die": 8,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Eldritch Invocations",
         "Pact Magic",
-        "Class Proficiencies"
+        "Class Proficiencies (Warlock)"
       ]
     },
     {

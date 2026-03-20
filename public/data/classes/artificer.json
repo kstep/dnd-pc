@@ -1,23 +1,12 @@
 {
   "name": "Artificer",
   "hit_die": 8,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Spellcasting (Artificer)",
         "Tinker's Magic",
-        "Class Proficiencies"
+        "Class Proficiencies (Artificer)"
       ]
     },
     {

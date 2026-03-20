@@ -2,9 +2,6 @@
   "": {
     "description": "An inspiring magician whose power echoes the music of creation."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.College of Lore": {
     "description": "Plumb the Depths of Magical Knowledge Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college's members gather in libraries and universities to share their lore with one another."
   },
@@ -31,9 +28,6 @@
   },
   "subclass.College of Dance": {
     "description": "Move in Harmony with the Cosmos Bards of the College of Dance know that the Words of Creation can't be contained within speech or song; the words are uttered by the movements of celestial bodies and flow through the motions of the smallest creatures."
-  },
-  "subclass.College of Dance.feature.Unarmored Defense": {
-    "description": "Your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
   },
   "subclass.College of the Moon": {
     "description": "Inspire Allies with Primal Tales The College of the Moon traces its origins to the ancient druidic circles of the Moonshae Isles, who entrusted the first Bards of this tradition with chronicling the stories of the islands and their people."

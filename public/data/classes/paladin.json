@@ -26,15 +26,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
     }
   ],
   "levels": [
@@ -43,7 +34,7 @@
         "Lay on Hands",
         "Spellcasting (Paladin)",
         "Weapon Mastery (Paladin)",
-        "Class Proficiencies"
+        "Class Proficiencies (Paladin)"
       ]
     },
     {

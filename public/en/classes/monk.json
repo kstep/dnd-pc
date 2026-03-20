@@ -2,12 +2,6 @@
   "": {
     "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection."
   },
-  "feature.Unarmored Defense": {
-    "description": "While you aren't wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers."
-  },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.Way of the Long Death": {
     "description": "Monks of the Way of the Long Death are obsessed with the meaning and mechanics of dying. They capture creatures and prepare elaborate experiments to capture, record, and understand the moments of their demise."
   },

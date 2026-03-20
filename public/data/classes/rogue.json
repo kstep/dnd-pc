@@ -1,17 +1,6 @@
 {
   "name": "Rogue",
   "hit_die": 8,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
@@ -19,7 +8,7 @@
         "Sneak Attack",
         "Thieves' Cant",
         "Weapon Mastery (Rogue)",
-        "Class Proficiencies"
+        "Class Proficiencies (Rogue)"
       ]
     },
     {

@@ -2,9 +2,6 @@
   "": {
     "description": "A scholarly magic-user capable of manipulating the structures of reality."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.School of Conjuration": {
     "description": "As a conjurer, you favor spells that produce objects and creatures out of thin air. You can conjure billowing clouds of killing fog or summon creatures from elsewhere to fight on your behalf."
   },

@@ -11,9 +11,6 @@
   "feature.Channel Divinity.field.Actions.option.Divine Sense": {
     "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes"
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.Oath of Devotion": {
     "description": "Uphold the Ideals of Justice and Order The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor."
   },

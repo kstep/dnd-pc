@@ -1,23 +1,12 @@
 {
   "name": "Sorcerer",
   "hit_die": 6,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Innate Sorcery",
         "Spellcasting (Sorcerer)",
-        "Class Proficiencies"
+        "Class Proficiencies (Sorcerer)"
       ]
     },
     {

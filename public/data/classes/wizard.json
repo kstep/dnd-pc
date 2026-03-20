@@ -1,24 +1,13 @@
 {
   "name": "Wizard",
   "hit_die": 6,
-  "features": [
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Arcane Recovery",
         "Ritual Adept",
         "Spellcasting (Wizard)",
-        "Class Proficiencies"
+        "Class Proficiencies (Wizard)"
       ]
     },
     {

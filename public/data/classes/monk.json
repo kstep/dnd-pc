@@ -1,27 +1,12 @@
 {
   "name": "Monk",
   "hit_die": 8,
-  "features": [
-    {
-      "name": "Unarmored Defense",
-      "ac_expr": "10 + DEX.MOD + WIS.MOD"
-    },
-    {
-      "name": "Class Proficiencies",
-      "assign": [
-        {
-          "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
         "Martial Arts",
-        "Unarmored Defense",
-        "Class Proficiencies"
+        "Unarmored Defense (Monk)",
+        "Class Proficiencies (Monk)"
       ]
     },
     {

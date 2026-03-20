@@ -10786,5 +10786,134 @@
         }
       ]
     }
+  },
+  {
+    "name": "Class Proficiencies (Artificer)",
+    "assign": [
+      {
+        "expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Unarmored Defense (Barbarian)",
+    "ac_expr": "10 + DEX.MOD + CON.MOD"
+  },
+  {
+    "name": "Class Proficiencies (Barbarian)",
+    "assign": [
+      {
+        "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Bard)",
+    "assign": [
+      {
+        "expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Unarmored Defense (Bard)",
+    "ac_expr": "10 + DEX.MOD + CHA.MOD"
+  },
+  {
+    "name": "Class Proficiencies (Cleric)",
+    "assign": [
+      {
+        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Druid)",
+    "assign": [
+      {
+        "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Fighter)",
+    "assign": [
+      {
+        "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Unarmored Defense (Monk)",
+    "ac_expr": "10 + DEX.MOD + WIS.MOD"
+  },
+  {
+    "name": "Class Proficiencies (Monk)",
+    "assign": [
+      {
+        "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Paladin)",
+    "assign": [
+      {
+        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Ranger)",
+    "assign": [
+      {
+        "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Rogue)",
+    "assign": [
+      {
+        "expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Sorcerer)",
+    "assign": [
+      {
+        "expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Warlock)",
+    "assign": [
+      {
+        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Class Proficiencies (Wizard)",
+    "assign": [
+      {
+        "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
   }
 ]

@@ -2,9 +2,6 @@
   "": {
     "description": "A warrior who combats threats on the edges of civilization."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.Beast Master": {
     "description": "Bond with a Primal Beast A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world."
   },

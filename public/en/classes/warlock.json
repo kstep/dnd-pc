@@ -2,9 +2,6 @@
   "": {
     "description": "A wielder of magic derived from a bargain with an extraplanar entity."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.The Undying": {
     "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights."
   },

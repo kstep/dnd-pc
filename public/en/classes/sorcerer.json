@@ -2,9 +2,6 @@
   "": {
     "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
   },
-  "feature.Class Proficiencies": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
-  },
   "subclass.Pyromancer (PSK)": {
     "description": "Your innate magic manifests in fire. You are your fire, and your fire is you."
   },
