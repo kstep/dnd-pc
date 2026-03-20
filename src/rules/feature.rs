@@ -178,6 +178,8 @@ pub struct FeatureDefinition {
     pub languages: VecSet<String>,
     #[serde(default)]
     pub stackable: bool,
+    #[serde(default)]
+    pub selectable: bool,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub fields: BTreeMap<Box<str>, FieldDefinition>,

@@ -30,7 +30,7 @@ pub fn FeaturesPanel() -> impl IntoView {
         registry.with_features_index(|features_index| {
             features_index
                 .values()
-                .filter(|feat| feat.meets_prerequisites(&character))
+                .filter(|feat| feat.selectable && feat.meets_prerequisites(&character))
                 .map(|feat| {
                     (
                         feat.name.clone(),

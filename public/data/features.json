@@ -6,14 +6,17 @@
         "expr": "INITIATIVE.BONUS += PROF_BONUS",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Crafter",
-    "stackable": true
+    "stackable": true,
+    "selectable": true
   },
   {
-    "name": "Healer"
+    "name": "Healer",
+    "selectable": true
   },
   {
     "name": "Lucky",
@@ -25,24 +28,30 @@
           "1": "PROF_BONUS"
         }
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Magic Initiate",
-    "stackable": true
+    "stackable": true,
+    "selectable": true
   },
   {
-    "name": "Musician"
+    "name": "Musician",
+    "selectable": true
   },
   {
-    "name": "Savage Attacker"
+    "name": "Savage Attacker",
+    "selectable": true
   },
   {
     "name": "Skilled",
-    "stackable": true
+    "stackable": true,
+    "selectable": true
   },
   {
-    "name": "Tavern Brawler"
+    "name": "Tavern Brawler",
+    "selectable": true
   },
   {
     "name": "Tough",
@@ -51,161 +60,200 @@
         "expr": "MAX_HP += LEVEL * 2",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Ability Score Improvement",
     "stackable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Actor",
-    "prerequisites": "LEVEL >= 4 and CHA >= 13"
+    "prerequisites": "LEVEL >= 4 and CHA >= 13",
+    "selectable": true
   },
   {
     "name": "Athlete",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Charger",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Chef",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Crossbow Expert",
-    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+    "prerequisites": "LEVEL >= 4 and DEX >= 13",
+    "selectable": true
   },
   {
     "name": "Crusher",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Defensive Duelist",
-    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+    "prerequisites": "LEVEL >= 4 and DEX >= 13",
+    "selectable": true
   },
   {
     "name": "Dual Wielder",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Durable",
-    "prerequisites": "LEVEL >= 4 and CON >= 13"
+    "prerequisites": "LEVEL >= 4 and CON >= 13",
+    "selectable": true
   },
   {
     "name": "Elemental Adept",
     "stackable": true,
-    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "selectable": true
   },
   {
     "name": "Fey Touched",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "Grappler",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Great Weapon Master",
-    "prerequisites": "LEVEL >= 4 and STR >= 13"
+    "prerequisites": "LEVEL >= 4 and STR >= 13",
+    "selectable": true
   },
   {
     "name": "Heavily Armored",
-    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1"
+    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
+    "selectable": true
   },
   {
     "name": "Heavy Armor Master",
-    "prerequisites": "LEVEL >= 4 and PROF.HEAVY_ARMOR == 1"
+    "prerequisites": "LEVEL >= 4 and PROF.HEAVY_ARMOR == 1",
+    "selectable": true
   },
   {
     "name": "Inspiring Leader",
-    "prerequisites": "LEVEL >= 4 and (WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "Keen Mind",
-    "prerequisites": "LEVEL >= 4 and INT >= 13"
+    "prerequisites": "LEVEL >= 4 and INT >= 13",
+    "selectable": true
   },
   {
     "name": "Lightly Armored",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Mage Slayer",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Martial Weapon Training",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Medium Armor Master",
-    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1"
+    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
+    "selectable": true
   },
   {
     "name": "Moderately Armored",
-    "prerequisites": "LEVEL >= 4 and PROF.LIGHT_ARMOR == 1"
+    "prerequisites": "LEVEL >= 4 and PROF.LIGHT_ARMOR == 1",
+    "selectable": true
   },
   {
     "name": "Mounted Combatant",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Observant",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13)",
+    "selectable": true
   },
   {
     "name": "Piercer",
-    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+    "prerequisites": "LEVEL >= 4 and DEX >= 13",
+    "selectable": true
   },
   {
     "name": "Poisoner",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Polearm Master",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Resilient",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Ritual Caster",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "Sentinel",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Shadow Touched",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "Sharpshooter",
-    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+    "prerequisites": "LEVEL >= 4 and DEX >= 13",
+    "selectable": true
   },
   {
     "name": "Shield Master",
-    "prerequisites": "LEVEL >= 4 and PROF.SHIELDS == 1"
+    "prerequisites": "LEVEL >= 4 and PROF.SHIELDS == 1",
+    "selectable": true
   },
   {
     "name": "Skill Expert",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Skulker",
-    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+    "prerequisites": "LEVEL >= 4 and DEX >= 13",
+    "selectable": true
   },
   {
     "name": "Slasher",
-    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
+    "selectable": true
   },
   {
     "name": "Spell Sniper",
-    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "selectable": true
   },
   {
     "name": "Speedy",
@@ -215,23 +263,28 @@
         "expr": "SPEED += 10",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Telekinetic",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "Telepathic",
-    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
+    "selectable": true
   },
   {
     "name": "War Caster",
-    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "selectable": true
   },
   {
     "name": "Weapon Master",
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "selectable": true
   },
   {
     "name": "Archery",
@@ -240,13 +293,16 @@
         "expr": "ATK += 2",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
-    "name": "Blessed Warrior"
+    "name": "Blessed Warrior",
+    "selectable": true
   },
   {
-    "name": "Blind Fighting"
+    "name": "Blind Fighting",
+    "selectable": true
   },
   {
     "name": "Defense",
@@ -255,43 +311,55 @@
         "expr": "AC += 1",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
-    "name": "Druidic Warrior"
+    "name": "Druidic Warrior",
+    "selectable": true
   },
   {
-    "name": "Dueling"
+    "name": "Dueling",
+    "selectable": true
   },
   {
-    "name": "Great Weapon Fighting"
+    "name": "Great Weapon Fighting",
+    "selectable": true
   },
   {
-    "name": "Interception"
+    "name": "Interception",
+    "selectable": true
   },
   {
-    "name": "Protection"
+    "name": "Protection",
+    "selectable": true
   },
   {
-    "name": "Thrown Weapon Fighting"
+    "name": "Thrown Weapon Fighting",
+    "selectable": true
   },
   {
-    "name": "Two-Weapon Fighting"
+    "name": "Two-Weapon Fighting",
+    "selectable": true
   },
   {
-    "name": "Unarmed Fighting"
+    "name": "Unarmed Fighting",
+    "selectable": true
   },
   {
     "name": "Boon of Combat Prowess",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Dimensional Travel",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Energy Resistance",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Fate",
@@ -304,7 +372,8 @@
           "19": "PROF_BONUS"
         }
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Boon of Fortitude",
@@ -314,11 +383,13 @@
         "expr": "MAX_HP += 40",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Boon of Irresistible Offense",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Recovery",
@@ -331,11 +402,13 @@
           "19": "10d10"
         }
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Boon of Skill",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Speed",
@@ -345,19 +418,23 @@
         "expr": "SPEED += 30",
         "when": "OnCompute"
       }
-    ]
+    ],
+    "selectable": true
   },
   {
     "name": "Boon of Spell Recall",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of the Night Spirit",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Boon of Truesight",
-    "prerequisites": "LEVEL >= 19"
+    "prerequisites": "LEVEL >= 19",
+    "selectable": true
   },
   {
     "name": "Spellcasting (Artificer)",
