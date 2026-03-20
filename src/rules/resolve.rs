@@ -6,101 +6,86 @@ use super::{
 };
 use crate::model::{CharacterIdentity, FeatureSource};
 
-/// Find a feature definition by name, searching class → background → race
-/// caches.
+/// Find a feature definition by name in the global features catalog.
+/// Falls back to background/race inline features if not in catalog.
 pub(super) fn find_feature<'a>(
     identity: &CharacterIdentity,
     name: &str,
-    class_cache: &'a BTreeMap<Box<str>, ClassDefinition>,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
     bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
     race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<&'a FeatureDefinition> {
-    for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str())
-            && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
-        {
-            return Some(feat);
-        }
-    }
-
-    if let Some(feat) = bg_cache
-        .get(identity.background.as_str())
-        .and_then(|def| def.features.get(name))
-    {
-        return Some(feat);
-    }
-
-    race_cache
-        .get(identity.race.as_str())
-        .and_then(|def| def.features.get(name))
+    features_index.get(name).or_else(|| {
+        bg_cache
+            .get(identity.background.as_str())
+            .and_then(|def| def.features.get(name))
+            .or_else(|| {
+                race_cache
+                    .get(identity.race.as_str())
+                    .and_then(|def| def.features.get(name))
+            })
+    })
 }
 
-/// Find a feature and return both the definition and its source.
+/// Find a feature and determine its source (Class/Background/Race).
 pub(super) fn find_feature_with_source<'a>(
     identity: &CharacterIdentity,
     name: &str,
-    class_cache: &'a BTreeMap<Box<str>, ClassDefinition>,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
     bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
     race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<(&'a FeatureDefinition, FeatureSource)> {
+    let feat = features_index.get(name)?;
+
+    // Determine source by checking which class/bg/race references this feature
     for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str())
-            && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
-        {
-            return Some((feat, FeatureSource::Class(cl.class.clone())));
+        if let Some(def) = class_cache.get(cl.class.as_str()) {
+            if def.feature_names(cl.subclass.as_deref()).any(|n| n == name) {
+                return Some((feat, FeatureSource::Class(cl.class.clone())));
+            }
         }
     }
 
-    if let Some(feat) = bg_cache
-        .get(identity.background.as_str())
-        .and_then(|def| def.features.get(name))
-    {
-        return Some((feat, FeatureSource::Background(identity.background.clone())));
+    if let Some(bg) = bg_cache.get(identity.background.as_str()) {
+        if bg.features.contains_key(name) {
+            return Some((feat, FeatureSource::Background(identity.background.clone())));
+        }
     }
 
-    if let Some(feat) = race_cache
-        .get(identity.race.as_str())
-        .and_then(|def| def.features.get(name))
-    {
-        return Some((feat, FeatureSource::Race(identity.race.clone())));
+    if let Some(race) = race_cache.get(identity.race.as_str()) {
+        if race.features.contains_key(name) {
+            return Some((feat, FeatureSource::Race(identity.race.clone())));
+        }
     }
 
-    None
+    // Feature exists in catalog but not referenced by any current source
+    Some((feat, FeatureSource::Class(String::new())))
 }
 
-/// Find a feature definition and the class level of the owning class
-/// (0 for non-class features). Single-pass replacement for
-/// `find_feature` + `feature_class_level`.
+/// Find a feature and the class level of the owning class (0 for non-class).
 pub(super) fn find_feature_with_class_level<'a>(
     identity: &CharacterIdentity,
     name: &str,
-    class_cache: &'a BTreeMap<Box<str>, ClassDefinition>,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
     bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
     race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<(&'a FeatureDefinition, u32)> {
+    let feat = find_feature(identity, name, features_index, bg_cache, race_cache)?;
+
     for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str())
-            && let Some(feat) = def.find_feature(name, cl.subclass.as_deref())
-        {
-            return Some((feat, cl.level));
+        if let Some(def) = class_cache.get(cl.class.as_str()) {
+            if def.feature_names(cl.subclass.as_deref()).any(|n| n == name) {
+                return Some((feat, cl.level));
+            }
         }
     }
 
-    if let Some(feat) = bg_cache
-        .get(identity.background.as_str())
-        .and_then(|def| def.features.get(name))
-    {
-        return Some((feat, 0));
-    }
-
-    race_cache
-        .get(identity.race.as_str())
-        .and_then(|def| def.features.get(name))
-        .map(|feat| (feat, 0))
+    Some((feat, 0))
 }
 
 /// Return the class level for the class that owns the given feature.
-/// Returns `None` if the feature is not a class feature.
 pub(super) fn feature_class_level(
     identity: &CharacterIdentity,
     feature_name: &str,
@@ -108,7 +93,8 @@ pub(super) fn feature_class_level(
 ) -> Option<u32> {
     identity.classes.iter().find_map(|cl| {
         let def = class_cache.get(cl.class.as_str())?;
-        def.find_feature(feature_name, cl.subclass.as_deref())
-            .map(|_| cl.level)
+        def.feature_names(cl.subclass.as_deref())
+            .any(|n| n == feature_name)
+            .then_some(cl.level)
     })
 }

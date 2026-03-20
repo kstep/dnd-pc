@@ -472,10 +472,18 @@ impl RulesRegistry {
         feature_name: &str,
         f: impl FnOnce(&FeatureDefinition) -> R,
     ) -> Option<R> {
-        let class_cache = self.class_cache.read_untracked();
-        let bg_cache = self.background_cache.read_untracked();
-        let race_cache = self.race_cache.read_untracked();
-        resolve::find_feature(identity, feature_name, &class_cache, &bg_cache, &race_cache).map(f)
+        self.with_features_index_untracked(|features_index| {
+            let bg_cache = self.background_cache.read_untracked();
+            let race_cache = self.race_cache.read_untracked();
+            resolve::find_feature(
+                identity,
+                feature_name,
+                features_index,
+                &bg_cache,
+                &race_cache,
+            )
+            .map(f)
+        })
     }
 
     pub fn with_feature_source<R>(
@@ -484,17 +492,20 @@ impl RulesRegistry {
         feature_name: &str,
         f: impl FnOnce(&FeatureDefinition, FeatureSource) -> R,
     ) -> Option<R> {
-        let class_cache = self.class_cache.read_untracked();
-        let bg_cache = self.background_cache.read_untracked();
-        let race_cache = self.race_cache.read_untracked();
-        resolve::find_feature_with_source(
-            identity,
-            feature_name,
-            &class_cache,
-            &bg_cache,
-            &race_cache,
-        )
-        .map(|(feat, source)| f(feat, source))
+        self.with_features_index_untracked(|features_index| {
+            let class_cache = self.class_cache.read_untracked();
+            let bg_cache = self.background_cache.read_untracked();
+            let race_cache = self.race_cache.read_untracked();
+            resolve::find_feature_with_source(
+                identity,
+                feature_name,
+                features_index,
+                &class_cache,
+                &bg_cache,
+                &race_cache,
+            )
+            .map(|(feat, source)| f(feat, source))
+        })
     }
 
     pub fn feature_class_level(
@@ -515,16 +526,15 @@ impl RulesRegistry {
         field_name: &str,
         character_fields: &[FeatureField],
     ) -> Vec<ChoiceOption> {
-        let cache = self.class_cache.read_untracked();
-        for cl in classes {
-            if let Some(def) = cache.get(cl.class.as_str())
-                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
+        self.with_features_index_untracked(|features_index| {
+            if let Some(feat) = features_index.get(feature_name)
                 && let Some(field_def) = feat.fields.get(field_name)
             {
-                return field_def.resolve_choice_options(character_fields, cl.level);
+                let level = self.feature_class_level_for(classes, feature_name);
+                return field_def.resolve_choice_options(character_fields, level);
             }
-        }
-        Vec::new()
+            Vec::new()
+        })
     }
 
     pub fn get_choice_cost_label(
@@ -533,75 +543,59 @@ impl RulesRegistry {
         feature_name: &str,
         field_name: &str,
     ) -> Option<String> {
-        let cache = self.class_cache.read_untracked();
-        for cl in classes {
-            if let Some(def) = cache.get(cl.class.as_str())
-                && let Some(feat) = def.find_feature(feature_name, cl.subclass.as_deref())
-                && let Some(fd) = feat.fields.get(field_name)
-                && let FieldKind::Choice { cost, .. } = &fd.kind
-                && let Some(cost_name) = cost
-            {
-                let short = def
-                    .features(cl.subclass.as_deref())
-                    .flat_map(|f| f.fields.values())
-                    .find(|f| f.name == *cost_name)
-                    .and_then(|f| {
-                        if let FieldKind::Points { short, .. } = &f.kind {
-                            short.as_deref()
-                        } else {
-                            None
-                        }
-                    })
-                    .map(|s| s.to_string())
-                    .unwrap_or_else(|| cost_name.clone());
-                return Some(short);
-            }
-        }
-        None
+        self.with_features_index_untracked(|features_index| {
+            let feat = features_index.get(feature_name)?;
+            let fd = feat.fields.get(field_name)?;
+            let FieldKind::Choice { cost, .. } = &fd.kind else {
+                return None;
+            };
+            let cost_name = cost.as_ref()?;
+            // Search all features for the cost field's short label
+            let short = features_index
+                .values()
+                .flat_map(|f| f.fields.values())
+                .find(|f| f.name == *cost_name)
+                .and_then(|f| {
+                    if let FieldKind::Points { short, .. } = &f.kind {
+                        short.as_deref()
+                    } else {
+                        None
+                    }
+                })
+                .map(|s| s.to_string())
+                .unwrap_or_else(|| cost_name.clone());
+            Some(short)
+        })
     }
 
     pub fn get_points_short(
         &self,
-        identity: &CharacterIdentity,
+        _identity: &CharacterIdentity,
         field_name: &str,
     ) -> Option<String> {
+        self.with_features_index_untracked(|features_index| {
+            for feat in features_index.values() {
+                if let Some(fd) = feat.fields.get(field_name)
+                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
+                {
+                    return Some(s.clone());
+                }
+            }
+            None
+        })
+    }
+
+    fn feature_class_level_for(&self, classes: &[ClassLevel], feature_name: &str) -> u32 {
         let class_cache = self.class_cache.read_untracked();
-        let bg_cache = self.background_cache.read_untracked();
-        let race_cache = self.race_cache.read_untracked();
-
-        for cl in &identity.classes {
-            if let Some(def) = class_cache.get(cl.class.as_str()) {
-                for feat in def.features(cl.subclass.as_deref()) {
-                    if let Some(fd) = feat.fields.get(field_name)
-                        && let FieldKind::Points { short: Some(s), .. } = &fd.kind
-                    {
-                        return Some(s.clone());
-                    }
-                }
-            }
-        }
-
-        if let Some(bg) = bg_cache.get(identity.background.as_str()) {
-            for feat in bg.features.values() {
-                if let Some(fd) = feat.fields.get(field_name)
-                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
-                {
-                    return Some(s.clone());
-                }
-            }
-        }
-
-        if let Some(race) = race_cache.get(identity.race.as_str()) {
-            for feat in race.features.values() {
-                if let Some(fd) = feat.fields.get(field_name)
-                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
-                {
-                    return Some(s.clone());
-                }
-            }
-        }
-
-        None
+        classes
+            .iter()
+            .find_map(|cl| {
+                let def = class_cache.get(cl.class.as_str())?;
+                def.feature_names(cl.subclass.as_deref())
+                    .any(|n| n == feature_name)
+                    .then_some(cl.level)
+            })
+            .unwrap_or(0)
     }
 
     // ---- Fill / Clear ----

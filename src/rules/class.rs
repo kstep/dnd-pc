@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::{feature::FeatureDefinition, utils::LevelRules};
+use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
     vecset::VecSet,
@@ -16,8 +16,6 @@ pub struct ClassDefinition {
     #[serde(default)]
     pub description: String,
     pub hit_die: u32,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub features: BTreeMap<Box<str>, FeatureDefinition>,
     #[serde(default)]
     pub levels: Vec<ClassLevelRules>,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -29,20 +27,17 @@ impl ClassDefinition {
         self.label.as_deref().unwrap_or(&self.name)
     }
 
-    pub fn features(&self, subclass: Option<&str>) -> impl Iterator<Item = &FeatureDefinition> {
+    /// Iterate all feature names from class levels and subclass levels.
+    pub fn feature_names<'a>(&'a self, subclass: Option<&str>) -> impl Iterator<Item = &'a str> {
         let sc_features = subclass
-            .and_then(|name| self.subclasses.get(name))
+            .and_then(|s| self.subclasses.get(s))
             .into_iter()
-            .flat_map(|sc| sc.features.values());
-        self.features.values().chain(sc_features)
-    }
-
-    pub fn find_feature(&self, name: &str, subclass: Option<&str>) -> Option<&FeatureDefinition> {
-        self.features.get(name).or_else(|| {
-            subclass
-                .and_then(|sc| self.subclasses.get(sc))
-                .and_then(|sc| sc.features.get(name))
-        })
+            .flat_map(|sc| sc.levels.values())
+            .flat_map(|lr| lr.features.iter().map(String::as_str));
+        self.levels
+            .iter()
+            .flat_map(|lr| lr.features.iter().map(String::as_str))
+            .chain(sc_features)
     }
 }
 
@@ -53,8 +48,6 @@ pub struct SubclassDefinition {
     pub label: Option<String>,
     #[serde(default)]
     pub description: String,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub features: BTreeMap<Box<str>, FeatureDefinition>,
     #[serde(default)]
     pub levels: LevelRules<SubclassLevelRules>,
 }

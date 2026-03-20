@@ -192,10 +192,16 @@ impl RulesRegistry {
             .and_then(|sc| def.subclasses.get(sc))
             .and_then(|sc| sc.levels.get(&level));
 
-        for feat in def.features(subclass.as_deref()) {
-            let is_new = rules.is_some_and(|r| r.features.contains(&feat.name))
-                || subclass_rules.is_some_and(|r| r.features.contains(&feat.name));
-            let already_has = character.features.iter().any(|f| f.name == feat.name);
+        let features_guard = self.features_index.read_untracked();
+        let features_catalog = features_guard.as_ref().ok().map(|idx| &idx.0);
+
+        for feat_name in def.feature_names(subclass.as_deref()) {
+            let Some(feat) = features_catalog.and_then(|c| c.get(feat_name)) else {
+                continue;
+            };
+            let is_new = rules.is_some_and(|r| r.features.contains(feat_name))
+                || subclass_rules.is_some_and(|r| r.features.contains(feat_name));
+            let already_has = character.features.iter().any(|f| f.name == feat_name);
 
             if is_new && already_has && !feat.stackable {
                 continue;
