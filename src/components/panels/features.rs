@@ -126,9 +126,9 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                     (level, c.identity.clone())
                                                 });
                                                 if registry.with_feature_source(&identity, &name, |feat_def, source| {
-                                                    store.update(|c| feat_def.apply(level, c, &source));
+                                                    store.update(|c| feat_def.apply(level, c, source.as_ref()));
                                                 }).is_none() {
-                                                    log::warn!("Cannot determine source for feature {name}, registry may not be loaded yet");
+                                                    log::warn!("Feature {name} not found in catalog, registry may not be loaded yet");
                                                 }
                                             }
                                         >

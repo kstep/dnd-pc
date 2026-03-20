@@ -224,7 +224,7 @@ impl RulesRegistry {
             }
 
             if is_new || already_has {
-                feat.apply(level, character, &source);
+                feat.apply(level, character, Some(&source));
             }
         }
 
@@ -237,7 +237,7 @@ impl RulesRegistry {
             let source = FeatureSource::Race(character.identity.race.clone());
             for feat_name in &race_def.features {
                 if let Some(feat) = features_catalog.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, &source);
+                    feat.apply(total_level, character, Some(&source));
                 }
             }
         }
@@ -247,7 +247,7 @@ impl RulesRegistry {
             let source = FeatureSource::Background(character.identity.background.clone());
             for feat_name in &bg_def.features {
                 if let Some(feat) = features_catalog.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, &source);
+                    feat.apply(total_level, character, Some(&source));
                 }
             }
         }

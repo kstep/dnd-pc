@@ -26,7 +26,7 @@ pub(super) fn find_feature_with_source<'a>(
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
     bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
     race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
-) -> Option<(&'a FeatureDefinition, FeatureSource)> {
+) -> Option<(&'a FeatureDefinition, Option<FeatureSource>)> {
     let feat = features_index.get(name)?;
 
     // Determine source by checking which class/bg/race references this feature
@@ -34,31 +34,28 @@ pub(super) fn find_feature_with_source<'a>(
         if let Some(def) = class_cache.get(cl.class.as_str())
             && def.feature_names(cl.subclass.as_deref()).any(|n| n == name)
         {
-            return Some((feat, FeatureSource::Class(cl.class.clone())));
+            return Some((feat, Some(FeatureSource::Class(cl.class.clone()))));
         }
     }
 
     if let Some(bg) = bg_cache.get(identity.background.as_str())
         && bg.features.iter().any(|n| n == name)
     {
-        return Some((feat, FeatureSource::Background(identity.background.clone())));
+        return Some((
+            feat,
+            Some(FeatureSource::Background(identity.background.clone())),
+        ));
     }
 
     if let Some(race) = race_cache.get(identity.race.as_str())
         && race.features.iter().any(|n| n == name)
     {
-        return Some((feat, FeatureSource::Race(identity.race.clone())));
+        return Some((feat, Some(FeatureSource::Race(identity.race.clone()))));
     }
 
-    // Feature exists in catalog but not referenced by any current source —
-    // this happens for manually-added feats (e.g. "Lucky", "Tough").
-    // Use the first class as a fallback source for apply context.
-    let fallback_source = identity
-        .classes
-        .first()
-        .map(|cl| FeatureSource::Class(cl.class.clone()))
-        .unwrap_or_else(|| FeatureSource::Class(String::new()));
-    Some((feat, fallback_source))
+    // Feature exists in catalog but not referenced by any class/race/background —
+    // manually-added feats (e.g. "Lucky", "Tough").
+    Some((feat, None))
 }
 
 /// Find a feature and the class level of the owning class (0 for non-class).

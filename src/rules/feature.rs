@@ -277,7 +277,7 @@ impl FeatureDefinition {
         });
     }
 
-    pub fn apply(&self, level: u32, character: &mut Character, source: &FeatureSource) {
+    pub fn apply(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
         let when = if character.features.iter().any(|f| f.name == self.name) {
             WhenCondition::OnLevelUp
         } else {
@@ -343,7 +343,7 @@ impl FeatureDefinition {
             .unwrap_or_default()
     }
 
-    fn apply_fields(&self, level: u32, character: &mut Character, source: &FeatureSource) {
+    fn apply_fields(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
         if self.fields.is_empty() {
             return;
         }
@@ -370,7 +370,7 @@ impl FeatureDefinition {
                 .collect();
             let entry = character.feature_data.entry(self.name.clone()).or_default();
             if entry.source.is_none() {
-                entry.source = Some(source.clone());
+                entry.source = source.cloned();
             }
             entry.fields = new_fields;
         } else {
@@ -395,7 +395,7 @@ impl FeatureDefinition {
 
             let entry = character.feature_data.entry(self.name.clone()).or_default();
             if entry.source.is_none() {
-                entry.source = Some(source.clone());
+                entry.source = source.cloned();
             }
             for field in entry.fields.iter_mut() {
                 if let Some(def) = self.fields.get(field.name.as_str()) {

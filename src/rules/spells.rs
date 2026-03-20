@@ -60,7 +60,7 @@ impl SpellsDefinition {
         level: u32,
         character: &mut Character,
         feature_name: &str,
-        source: &FeatureSource,
+        source: Option<&FeatureSource>,
         free_uses_max: u32,
     ) {
         // Ensure SpellData exists so update_spell_slots can count caster classes
@@ -70,7 +70,7 @@ impl SpellsDefinition {
                 .entry(feature_name.to_string())
                 .or_default();
             if entry.source.is_none() {
-                entry.source = Some(source.clone());
+                entry.source = source.cloned();
             }
             entry.spells.get_or_insert_with(|| SpellData {
                 casting_ability: self.casting_ability,

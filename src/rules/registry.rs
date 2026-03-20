@@ -490,7 +490,7 @@ impl RulesRegistry {
         &self,
         identity: &CharacterIdentity,
         feature_name: &str,
-        f: impl FnOnce(&FeatureDefinition, FeatureSource) -> R,
+        f: impl FnOnce(&FeatureDefinition, Option<FeatureSource>) -> R,
     ) -> Option<R> {
         self.with_features_index_untracked(|features_index| {
             let class_cache = self.class_cache.read_untracked();
