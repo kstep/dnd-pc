@@ -51,8 +51,14 @@ pub(super) fn find_feature_with_source<'a>(
     }
 
     // Feature exists in catalog but not referenced by any current source —
-    // this happens for manually-added feats that aren't tied to a class.
-    None
+    // this happens for manually-added feats (e.g. "Lucky", "Tough").
+    // Use the first class as a fallback source for apply context.
+    let fallback_source = identity
+        .classes
+        .first()
+        .map(|cl| FeatureSource::Class(cl.class.clone()))
+        .unwrap_or_else(|| FeatureSource::Class(String::new()));
+    Some((feat, fallback_source))
 }
 
 /// Find a feature and the class level of the owning class (0 for non-class).

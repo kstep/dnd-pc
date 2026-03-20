@@ -250,7 +250,7 @@ impl Character {
             .filter_map(|a| {
                 let expr = a.ac_expr.as_ref()?;
                 match expr.eval(self) {
-                    Ok(v) => Some(v),
+                    Ok(value) => Some(value),
                     Err(error) => {
                         log::warn!("AC expr eval failed for '{}': {error}", a.name);
                         None
@@ -276,7 +276,7 @@ impl Character {
             .filter_map(|a| {
                 let expr = a.ac_expr.as_ref()?;
                 match expr.eval(self) {
-                    Ok(v) => Some(v),
+                    Ok(value) => Some(value),
                     Err(error) => {
                         log::warn!("AC expr eval failed for '{}': {error}", a.name);
                         None
