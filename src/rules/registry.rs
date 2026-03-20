@@ -6,7 +6,7 @@ use super::{
     background::BackgroundDefinition,
     cache::{DefinitionStore, FetchCache},
     class::ClassDefinition,
-    feature::{ChoiceOption, FeatureDefinition, FieldKind},
+    feature::{ChoiceOption, FeatureDefinition, FeaturesIndex, FieldKind},
     index::{BackgroundIndexEntry, ClassIndexEntry, Index, RaceIndexEntry, SpellIndexEntry},
     labels,
     locale::{self, LocaleMap, SpellLocaleMap},
@@ -149,6 +149,7 @@ pub struct RulesRegistry {
     pub(super) background_cache: FetchCache<BackgroundDefinition>,
     spell_list_cache: FetchCache<SpellMap>,
     effects_index: LocalResource<Result<EffectsIndex, String>>,
+    pub(super) features_index: LocalResource<Result<FeaturesIndex, String>>,
 }
 
 impl RulesRegistry {
@@ -221,6 +222,33 @@ impl RulesRegistry {
             }
         });
 
+        let raw_features: RwSignal<Option<FeaturesIndex>> = RwSignal::new(None);
+        let features_index = LocalResource::new(move || {
+            let current_locale = locale.get();
+            let data_url = format!("{BASE_URL}/data/features.json");
+            let locale_url = format!("{BASE_URL}/{current_locale}/features.json");
+            async move {
+                let cached = raw_features.get_untracked();
+                let (features, locale_result) = if let Some(f) = cached {
+                    let lr = fetch_json::<locale::LocaleMap>(&locale_url).await;
+                    (f, lr)
+                } else {
+                    let (dr, lr) = futures::join!(
+                        fetch_json::<FeaturesIndex>(&data_url),
+                        fetch_json::<locale::LocaleMap>(&locale_url),
+                    );
+                    let f = dr?;
+                    raw_features.set(Some(f.clone()));
+                    (f, lr)
+                };
+                let mut result = features;
+                if let Ok(locale_map) = locale_result {
+                    locale::apply_features_locale(&mut result, &locale_map);
+                }
+                Ok(result)
+            }
+        });
+
         let class_cache = FetchCache::new();
         let race_cache = FetchCache::new();
         let background_cache = FetchCache::new();
@@ -269,6 +297,7 @@ impl RulesRegistry {
             locale,
             class_index,
             effects_index,
+            features_index,
             class_cache,
             race_cache,
             background_cache,
@@ -347,6 +376,28 @@ impl RulesRegistry {
         static EMPTY: BTreeMap<Box<str>, ActiveEffect> = BTreeMap::new();
         let guard = self.effects_index.read();
         let index: Option<&EffectsIndex> = guard.as_ref().and_then(|r| r.as_ref().ok());
+        f(index.map_or(&EMPTY, |idx| &idx.0))
+    }
+
+    // ---- Features catalog ----
+
+    pub fn with_features_index<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, FeatureDefinition>) -> R,
+    ) -> R {
+        static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let guard = self.features_index.read();
+        let index: Option<&FeaturesIndex> = guard.as_ref().and_then(|r| r.as_ref().ok());
+        f(index.map_or(&EMPTY, |idx| &idx.0))
+    }
+
+    pub fn with_features_index_untracked<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, FeatureDefinition>) -> R,
+    ) -> R {
+        static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let guard = self.features_index.read_untracked();
+        let index: Option<&FeaturesIndex> = guard.as_ref().and_then(|r| r.as_ref().ok());
         f(index.map_or(&EMPTY, |idx| &idx.0))
     }
 

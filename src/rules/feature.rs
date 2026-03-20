@@ -210,6 +210,16 @@ impl Named for FeatureDefinition {
     }
 }
 
+/// Global features catalog, loaded from `features.json`.
+#[derive(Clone)]
+pub struct FeaturesIndex(pub BTreeMap<Box<str>, FeatureDefinition>);
+
+impl<'de> serde::Deserialize<'de> for FeaturesIndex {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        demap::named_map(deserializer).map(Self)
+    }
+}
+
 impl FeatureDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)

@@ -5,7 +5,7 @@ use serde::Deserialize;
 use super::{
     background::BackgroundDefinition,
     class::ClassDefinition,
-    feature::{ChoiceOptions, FeatureDefinition, FieldKind},
+    feature::{ChoiceOptions, FeatureDefinition, FeaturesIndex, FieldKind},
     index::Index,
     race::RaceDefinition,
     spells::SpellMap,
@@ -270,6 +270,29 @@ impl LocaleKey {
 
     pub fn feature(name: &str) -> Self {
         Self(format!("feature.{name}").into_boxed_str())
+    }
+
+    /// Whether this key is a bare name (no dots).
+    pub fn is_bare(&self) -> bool {
+        !self.0.contains('.')
+    }
+
+    /// The raw key string.
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+
+    /// Flat key for the features catalog (no "feature." prefix).
+    pub fn flat_field(feat: &str, field: &str) -> Self {
+        Self(format!("{feat}.field.{field}").into_boxed_str())
+    }
+
+    pub fn flat_field_option(feat: &str, field: &str, option: &str) -> Self {
+        Self(format!("{feat}.field.{field}.option.{option}").into_boxed_str())
+    }
+
+    pub fn flat_spell(feat: &str, spell: &str) -> Self {
+        Self(format!("{feat}.spell.{spell}").into_boxed_str())
     }
 
     pub fn feature_field(feat: &str, field: &str) -> Self {
@@ -768,6 +791,37 @@ pub fn apply_effects_locale(effects: &mut EffectsIndex, locale: &EffectsLocaleMa
     for (name, text) in locale {
         if let Some(effect) = effects.0.get_mut(name.as_ref()) {
             text.apply_description(&mut effect.description);
+        }
+    }
+}
+
+/// Apply locale to a `FeaturesIndex`.
+/// Keys are flat: `"Rage"` for label/description, `"Rage.field.X"` for
+/// sub-paths.
+pub fn apply_features_locale(features: &mut FeaturesIndex, locale: &LocaleMap) {
+    // First pass: feature-level label/description (keys without dots = bare feature
+    // names)
+    for (key, text) in locale {
+        if !key.is_bare() {
+            continue;
+        }
+        if let Some(feat) = features.0.get_mut(key.as_str()) {
+            text.apply_label(&mut feat.label);
+            text.apply_description(&mut feat.description);
+        }
+    }
+    // Second pass: field/option/spell sub-keys
+    let feature_names: Vec<Box<str>> = features.0.keys().cloned().collect();
+    for feat_name in &feature_names {
+        if let Some(feat) = features.0.get_mut(feat_name.as_ref()) {
+            apply_locale_to_feature(
+                feat,
+                feat_name,
+                locale,
+                LocaleKey::flat_field,
+                LocaleKey::flat_field_option,
+                LocaleKey::flat_spell,
+            );
         }
     }
 }
