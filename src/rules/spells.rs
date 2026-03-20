@@ -72,12 +72,15 @@ impl SpellsDefinition {
             if entry.source.is_none() {
                 entry.source = source.cloned();
             }
-            entry.spells.get_or_insert_with(|| SpellData {
+            let spell_data = entry.spells.get_or_insert_with(|| SpellData {
                 casting_ability: self.casting_ability,
                 caster_coef: self.caster_coef,
                 pool: self.pool,
                 ..Default::default()
             });
+            // Backfill fields that may be missing in old persisted data
+            spell_data.caster_coef = self.caster_coef;
+            spell_data.pool = self.pool;
         }
 
         // Update spell slots (needs separate borrow scope)
