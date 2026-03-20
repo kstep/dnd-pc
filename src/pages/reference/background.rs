@@ -49,7 +49,14 @@ pub fn BackgroundReference() -> impl IntoView {
                 let title = def.label().to_string();
                 let description = def.description.clone();
 
-                let features = collect_feature_views(def.features.values());
+                let features = registry.with_features_index(|features_index| {
+                    let resolved: Vec<_> = def
+                        .features
+                        .iter()
+                        .filter_map(|name| features_index.get(name.as_str()))
+                        .collect();
+                    collect_feature_views(resolved.into_iter())
+                });
 
                 view! {
                     <Title text=title.clone() />

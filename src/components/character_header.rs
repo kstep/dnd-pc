@@ -249,9 +249,9 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                         fetch=move |name: &str| registry.backgrounds().fetch(name)
                         has=move |name: &str| registry.backgrounds().has(name)
-                        apply=move |name: &str| {
-                            registry.backgrounds().with(name, |def| {
-                                store.update(|c| def.apply(c));
+                        apply=move |_name: &str| {
+                            store.update(|c| {
+                                c.identity.background_applied = true;
                             });
                         }
                     />

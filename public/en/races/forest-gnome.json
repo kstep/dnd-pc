@@ -10,11 +10,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Gnomish."
-  },
-  "feature.Gnomish Lineage": {
-    "description": "You know the Minor Illusion cantrip. You always have Speak with Animals prepared and can cast it without a spell slot a number of times equal to your Proficiency Bonus per Long Rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
-  },
-  "feature.Gnomish Lineage.spell.Minor Illusion": {
-    "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion ends if you dismiss it or cast this spell again."
   }
 }

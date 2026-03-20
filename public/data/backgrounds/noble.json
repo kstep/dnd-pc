@@ -1,17 +1,7 @@
 {
   "name": "Noble",
   "features": [
-    {
-      "name": "Background Abilities",
-      "assign": [
-        {
-          "expr": "CHA += 2; INT += 1; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    },
-    {
-      "name": "Skilled"
-    }
+    "Background Abilities",
+    "Skilled"
   ]
 }

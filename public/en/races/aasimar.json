@@ -13,14 +13,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Celestial."
-  },
-  "feature.Light Bearer": {
-    "description": "You know the Light cantrip. Charisma is your spellcasting ability for it."
-  },
-  "feature.Light Bearer.spell.Light": {
-    "description": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet."
-  },
-  "feature.Celestial Revelation": {
-    "description": "Starting at 3rd level, as a Bonus Action you transform for 1 minute (once per Long Rest). Choose: Heavenly Wings (Fly Speed = Speed, extra Radiant damage = Prof Bonus), Inner Radiance (shed bright light 10 ft, Radiant damage to nearby creatures = Prof Bonus), or Necrotic Shroud (CHA save or Frightened, extra Necrotic damage = Prof Bonus)."
   }
 }

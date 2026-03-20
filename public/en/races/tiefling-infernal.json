@@ -10,20 +10,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Infernal."
-  },
-  "feature.Infernal Legacy": {
-    "description": "You know the Thaumaturgy and Fire Bolt cantrips. At 3rd level you can cast Hellish Rebuke once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
-  },
-  "feature.Infernal Legacy.spell.Thaumaturgy": {
-    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
-  },
-  "feature.Infernal Legacy.spell.Fire Bolt": {
-    "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack. On a hit, the target takes 1d10 fire damage."
-  },
-  "feature.Infernal Legacy.spell.Hellish Rebuke": {
-    "description": "As a Reaction when you are damaged by a creature within 60 feet, the creature must make a Dexterity save, taking 2d10 fire damage on a failed save, half on success. Once per Long Rest (racial)."
-  },
-  "feature.Infernal Legacy.spell.Darkness": {
-    "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
   }
 }

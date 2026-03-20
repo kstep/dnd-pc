@@ -1,11 +1,5 @@
 {
   "": {
     "description": "You spent your formative years studying lore in a library or under a mentor, amassing knowledge of the arcane and the historical. Your hunger for knowledge drives you to seek answers to the world's deepest mysteries."
-  },
-  "feature.Background Abilities": {
-    "description": "Ability score increase from background."
-  },
-  "feature.Magic Initiate (Wizard)": {
-    "description": "You learn two cantrips and one 1st-level spell from the Wizard spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
   }
 }

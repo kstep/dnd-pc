@@ -2,10 +2,10 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::feature::{Assignment, FeatureDefinition, WhenCondition};
+use super::feature::{Assignment, WhenCondition};
 use crate::{
-    demap::{self, Named},
-    model::{Character, FeatureSource, RacialTrait},
+    demap::Named,
+    model::{Character, RacialTrait},
     vecset::VecSet,
 };
 
@@ -55,10 +55,10 @@ pub struct RaceDefinition {
     pub label: Option<String>,
     #[serde(default)]
     pub description: String,
-    #[serde(default, deserialize_with = "demap::named_map")]
+    #[serde(default, deserialize_with = "crate::demap::named_map")]
     pub traits: BTreeMap<Box<str>, RaceTrait>,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub features: BTreeMap<Box<str>, FeatureDefinition>,
+    #[serde(default)]
+    pub features: VecSet<String>,
 }
 
 impl RaceDefinition {
@@ -81,12 +81,6 @@ impl RaceDefinition {
                     .extend(racial_trait.languages.iter().cloned());
                 racial_trait.assign(character, WhenCondition::OnFeatureAdd);
             }
-        }
-
-        let total_level = character.level();
-        let source = FeatureSource::Race(self.name.clone());
-        for feat in self.features.values() {
-            feat.apply(total_level, character, &source);
         }
     }
 }

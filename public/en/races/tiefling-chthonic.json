@@ -10,20 +10,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Sylvan."
-  },
-  "feature.Chthonic Legacy": {
-    "description": "You know the Thaumaturgy and Chill Touch cantrips. At 3rd level you can cast False Life once per long rest. At 5th level you can cast Ray of Enfeeblement once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
-  },
-  "feature.Chthonic Legacy.spell.Thaumaturgy": {
-    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
-  },
-  "feature.Chthonic Legacy.spell.Chill Touch": {
-    "description": "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack. On a hit, the target takes 1d8 necrotic damage and can't regain hit points until the start of your next turn."
-  },
-  "feature.Chthonic Legacy.spell.False Life": {
-    "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration. Once per Long Rest (racial)."
-  },
-  "feature.Chthonic Legacy.spell.Ray of Enfeeblement": {
-    "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. Once per Long Rest (racial)."
   }
 }

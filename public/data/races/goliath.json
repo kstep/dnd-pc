@@ -22,11 +22,7 @@
     }
   ],
   "features": [
-    {
-      "name": "Giant Ancestry"
-    },
-    {
-      "name": "Large Form"
-    }
+    "Giant Ancestry",
+    "Large Form"
   ]
 }

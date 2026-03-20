@@ -1,33 +1,33 @@
 {
   "Alert": {
-    "description": "Add your Proficiency Bonus to Initiative rolls. You can swap your Initiative with a willing ally's after initiatives are rolled."
+    "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
   },
   "Crafter": {
-    "description": "Gain proficiency with three Artisan's Tools of your choice. When you craft an item using tools you're proficient with, the item costs half the normal amount in materials. Once per Long Rest you can create a Tiny item for free over 1 hour."
+    "description": "You gain proficiency with three Artisan's Tools of your choice. Items you craft with tools cost 20% less, and you can craft items during a Long Rest."
   },
   "Healer": {
-    "description": "Gain proficiency with the Healer's Kit. When you use a Healer's Kit to stabilize a creature, they also regain 1 HP. As a Magic action, you can spend one use of a Healer's Kit to restore 1d6+4 HP + 1 per CR/level to a creature that has at least 1 HP (once per creature per Short or Long Rest)."
+    "description": "You gain proficiency with Healer's Kit. When you use it to stabilize a dying creature, that creature regains 1 Hit Point. As an action, you can use a charge to restore 2d6 + your Proficiency Bonus Hit Points to a creature."
   },
   "Lucky": {
-    "description": "You have a number of Luck Points equal to your Proficiency Bonus. You can spend one to roll an extra d20 for any d20 Test you make or that targets you, choosing which die to use. You regain all Luck Points after a Long Rest."
+    "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
   },
   "Magic Initiate": {
     "description": "Choose a spellcasting class: Cleric, Druid, or Wizard (or another if your DM permits). You learn two cantrips and one level 1 spell from that class's list. You can cast the level 1 spell once per Long Rest without a spell slot, or using spell slots you have. Spellcasting ability is INT, WIS, or CHA (chosen when you take this feat)."
   },
   "Musician": {
-    "description": "Gain proficiency with three Musical Instruments of your choice. After a Short or Long Rest, you and up to six allies who heard you perform gain Heroic Inspiration."
+    "description": "You gain proficiency with three Musical Instruments of your choice. After finishing a Short or Long Rest, you and allies who hear your performance gain Heroic Inspiration."
   },
   "Savage Attacker": {
-    "description": "Once per turn when you hit a target with a weapon or an Unarmed Strike, you can roll the attack's damage dice twice and use the higher roll."
+    "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the damage dice twice and use either roll against the target."
   },
   "Skilled": {
-    "description": "Gain proficiency in any combination of three Skills or Tools of your choice."
+    "description": "You gain proficiency in any combination of three skills or tools of your choice."
   },
   "Tavern Brawler": {
-    "description": "You are proficient with improvised weapons. When you hit with an Unarmed Strike or improvised weapon, you can use a Bonus Action to attempt to grapple or shove the target. Your Unarmed Strike damage die increases to 1d4. You can reroll one damage die once per turn on a hit."
+    "description": "You deal 1d4 enhanced Unarmed Strike damage. When you hit with your Unarmed Strike as part of the Attack action, you can make one Unarmed Strike as a Bonus Action. You have proficiency with improvised weapons."
   },
   "Tough": {
-    "description": "Your HP maximum increases by 2 per character level. Whenever you gain a level, your HP maximum increases by an additional 2."
+    "description": "Your Hit Point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points."
   },
   "Ability Score Improvement": {
     "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
@@ -4966,5 +4966,137 @@
   },
   "Warding Flare (Ambition Domain).field.Actions.option.Warding Flare": {
     "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
+  },
+  "Background Abilities": {
+    "description": "Ability score increase from background."
+  },
+  "Magic Initiate (Cleric)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  },
+  "Magic Initiate (Druid)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Druid spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  },
+  "Magic Initiate (Wizard)": {
+    "description": "You learn two cantrips and one 1st-level spell from the Wizard spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
+  },
+  "Light Bearer": {
+    "description": "You know the Light cantrip. Charisma is your spellcasting ability for it."
+  },
+  "Light Bearer.spell.Light": {
+    "description": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet."
+  },
+  "Celestial Revelation": {
+    "description": "Starting at 3rd level, as a Bonus Action you transform for 1 minute (once per Long Rest). Choose: Heavenly Wings (Fly Speed = Speed, extra Radiant damage = Prof Bonus), Inner Radiance (shed bright light 10 ft, Radiant damage to nearby creatures = Prof Bonus), or Necrotic Shroud (CHA save or Frightened, extra Necrotic damage = Prof Bonus)."
+  },
+  "Breath Weapon": {
+    "description": "When you take the Attack action, you can replace one attack with an exhalation in a 15-foot Cone or 30-foot Line (5 ft wide). DEX save (DC = 8 + CON mod + Prof Bonus). Damage: 1d10 (1st), 2d10 (5th), 3d10 (11th), 4d10 (17th). Uses: Proficiency Bonus per Long Rest."
+  },
+  "Draconic Flight": {
+    "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
+  },
+  "Drow Magic": {
+    "description": "You know the Dancing Lights cantrip. At 3rd level you can cast Faerie Fire once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  },
+  "Drow Magic.spell.Dancing Lights": {
+    "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration."
+  },
+  "Drow Magic.spell.Faerie Fire": {
+    "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial)."
+  },
+  "Drow Magic.spell.Darkness": {
+    "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
+  },
+  "Stonecunning": {
+    "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching a stone surface. You can use this a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest."
+  },
+  "Gnomish Lineage": {
+    "description": "You know the Mending and Prestidigitation cantrips. You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP) that produces its effect when activated with a Bonus Action. You can have three such devices at a time; each falls apart after 8 hours. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Gnomish Lineage.spell.Minor Illusion": {
+    "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion ends if you dismiss it or cast this spell again."
+  },
+  "Giant Ancestry": {
+    "description": "Choose one: Cloud's Jaunt (teleport 30 ft as Bonus Action), Fire's Burn (+1d10 fire on hit), Frost's Chill (+1d6 cold on hit, -10 ft speed), Hill's Tumble (knock Large or smaller Prone on hit), Stone's Endurance (Reaction: reduce damage by 1d12 + CON mod), Storm's Thunder (Reaction: 1d8 thunder to attacker within 60 ft). Uses: Proficiency Bonus per Long Rest."
+  },
+  "Large Form": {
+    "description": "Starting at 5th level, as a Bonus Action you become Large for 10 minutes (if space permits). You have advantage on Strength checks and your Speed increases by 10 feet. Once per Long Rest."
+  },
+  "Elven Lineage": {
+    "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  },
+  "Elven Lineage.spell.Prestidigitation": {
+    "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image."
+  },
+  "Elven Lineage.spell.Detect Magic": {
+    "description": "For the duration, you sense the presence of magic within 30 feet of you. The spell can penetrate most barriers. Once per Long Rest (racial)."
+  },
+  "Elven Lineage.spell.Misty Step": {
+    "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see. Once per Long Rest (racial)."
+  },
+  "Adrenaline Rush": {
+    "description": "You can take the Dash action as a Bonus Action, gaining Temporary Hit Points equal to your Proficiency Bonus. Uses: Proficiency Bonus per Short or Long Rest."
+  },
+  "Relentless Endurance": {
+    "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. Once per Long Rest."
+  },
+  "Gnomish Lineage.spell.Mending": {
+    "description": "This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin."
+  },
+  "Gnomish Lineage.spell.Prestidigitation": {
+    "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image."
+  },
+  "Abyssal Legacy": {
+    "description": "You know the Thaumaturgy and Poison Spray cantrips. At 3rd level you can cast Ray of Sickness once per long rest. At 5th level you can cast Hold Person once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Abyssal Legacy.spell.Thaumaturgy": {
+    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
+  },
+  "Abyssal Legacy.spell.Poison Spray": {
+    "description": "You extend your hand toward a creature you can see within range and project a puff of noxious gas. The creature must succeed on a CON save or take 1d12 poison damage."
+  },
+  "Abyssal Legacy.spell.Ray of Sickness": {
+    "description": "A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack. On a hit, the target takes 2d8 poison damage and must make a CON save or be Poisoned until the end of your next turn. Once per Long Rest (racial)."
+  },
+  "Abyssal Legacy.spell.Hold Person": {
+    "description": "Choose a humanoid that you can see within range. The target must succeed on a WIS save or be Paralyzed for the duration. Once per Long Rest (racial)."
+  },
+  "Chthonic Legacy": {
+    "description": "You know the Thaumaturgy and Chill Touch cantrips. At 3rd level you can cast False Life once per long rest. At 5th level you can cast Ray of Enfeeblement once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Chthonic Legacy.spell.Thaumaturgy": {
+    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
+  },
+  "Chthonic Legacy.spell.Chill Touch": {
+    "description": "You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack. On a hit, the target takes 1d8 necrotic damage and can't regain hit points until the start of your next turn."
+  },
+  "Chthonic Legacy.spell.False Life": {
+    "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration. Once per Long Rest (racial)."
+  },
+  "Chthonic Legacy.spell.Ray of Enfeeblement": {
+    "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. Once per Long Rest (racial)."
+  },
+  "Infernal Legacy": {
+    "description": "You know the Thaumaturgy and Fire Bolt cantrips. At 3rd level you can cast Hellish Rebuke once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Infernal Legacy.spell.Thaumaturgy": {
+    "description": "You manifest a minor wonder, a sign of supernatural power: your voice booms, your eyes flash, flames flicker, or the ground trembles."
+  },
+  "Infernal Legacy.spell.Fire Bolt": {
+    "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack. On a hit, the target takes 1d10 fire damage."
+  },
+  "Infernal Legacy.spell.Hellish Rebuke": {
+    "description": "As a Reaction when you are damaged by a creature within 60 feet, the creature must make a Dexterity save, taking 2d10 fire damage on a failed save, half on success. Once per Long Rest (racial)."
+  },
+  "Infernal Legacy.spell.Darkness": {
+    "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
+  },
+  "Elven Lineage.spell.Druidcraft": {
+    "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire."
+  },
+  "Elven Lineage.spell.Longstrider": {
+    "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial)."
+  },
+  "Elven Lineage.spell.Pass without Trace": {
+    "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial)."
   }
 }

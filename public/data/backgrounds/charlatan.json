@@ -1,17 +1,7 @@
 {
   "name": "Charlatan",
   "features": [
-    {
-      "name": "Background Abilities",
-      "assign": [
-        {
-          "expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    },
-    {
-      "name": "Skilled"
-    }
+    "Background Abilities",
+    "Skilled"
   ]
 }

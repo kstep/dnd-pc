@@ -1,11 +1,5 @@
 {
   "": {
     "description": "You spent years copying documents and cataloguing texts in a scriptorium or government office. Your meticulous attention to detail and keen powers of observation served you well in your scholarly duties."
-  },
-  "feature.Background Abilities": {
-    "description": "Ability score increase from background."
-  },
-  "feature.Skilled": {
-    "description": "You gain proficiency in any combination of three skills or tools of your choice."
   }
 }

@@ -13,8 +13,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Dwarvish."
-  },
-  "feature.Stonecunning": {
-    "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching a stone surface. You can use this a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest."
   }
 }

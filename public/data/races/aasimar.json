@@ -19,21 +19,7 @@
     }
   ],
   "features": [
-    {
-      "name": "Light Bearer",
-      "spells": {
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Light",
-            "level": 0,
-            "sticky": true
-          }
-        ]
-      }
-    },
-    {
-      "name": "Celestial Revelation"
-    }
+    "Light Bearer",
+    "Celestial Revelation"
   ]
 }

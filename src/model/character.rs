@@ -656,7 +656,10 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
-            Attribute::CasterLevel => Ok(self.caster_level(SpellSlotPool::default()) as i32),
+            Attribute::CasterLevel => Ok(self
+                .caster_level(SpellSlotPool::Arcane)
+                .max(self.caster_level(SpellSlotPool::Pact))
+                as i32),
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Initiative => Ok(self.initiative()),

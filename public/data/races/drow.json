@@ -22,43 +22,6 @@
     }
   ],
   "features": [
-    {
-      "name": "Drow Magic",
-      "spells": {
-        "cost": "Free Uses",
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Dancing Lights",
-            "level": 0,
-            "sticky": true
-          },
-          {
-            "name": "Faerie Fire",
-            "level": 1,
-            "sticky": true,
-            "min_level": 3,
-            "cost": 1
-          },
-          {
-            "name": "Darkness",
-            "level": 2,
-            "sticky": true,
-            "min_level": 5,
-            "cost": 1
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "Free Uses",
-          "kind": "FreeUses",
-          "levels": {
-            "3": 1,
-            "5": 2
-          }
-        }
-      ]
-    }
+    "Drow Magic"
   ]
 }

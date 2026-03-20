@@ -16,48 +16,6 @@
     }
   ],
   "features": [
-    {
-      "name": "Infernal Legacy",
-      "spells": {
-        "cost": "Free Uses",
-        "casting_ability": 5,
-        "list": [
-          {
-            "name": "Thaumaturgy",
-            "level": 0,
-            "sticky": true
-          },
-          {
-            "name": "Fire Bolt",
-            "level": 0,
-            "sticky": true
-          },
-          {
-            "name": "Hellish Rebuke",
-            "level": 1,
-            "sticky": true,
-            "min_level": 3,
-            "cost": 1
-          },
-          {
-            "name": "Darkness",
-            "level": 2,
-            "sticky": true,
-            "min_level": 5,
-            "cost": 1
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "Free Uses",
-          "kind": "FreeUses",
-          "levels": {
-            "3": 1,
-            "5": 2
-          }
-        }
-      ]
-    }
+    "Infernal Legacy"
   ]
 }

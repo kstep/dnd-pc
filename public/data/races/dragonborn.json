@@ -19,11 +19,7 @@
     }
   ],
   "features": [
-    {
-      "name": "Breath Weapon"
-    },
-    {
-      "name": "Draconic Flight"
-    }
+    "Breath Weapon",
+    "Draconic Flight"
   ]
 }

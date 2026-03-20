@@ -7,11 +7,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Orc."
-  },
-  "feature.Adrenaline Rush": {
-    "description": "You can take the Dash action as a Bonus Action, gaining Temporary Hit Points equal to your Proficiency Bonus. Uses: Proficiency Bonus per Short or Long Rest."
-  },
-  "feature.Relentless Endurance": {
-    "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. Once per Long Rest."
   }
 }

@@ -9,22 +9,13 @@ use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
 /// Find a feature definition by name in the global features catalog.
 /// Falls back to background/race inline features if not in catalog.
 pub(super) fn find_feature<'a>(
-    identity: &CharacterIdentity,
+    _identity: &CharacterIdentity,
     name: &str,
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-    bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-    race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
+    _bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
+    _race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<&'a FeatureDefinition> {
-    features_index.get(name).or_else(|| {
-        bg_cache
-            .get(identity.background.as_str())
-            .and_then(|def| def.features.get(name))
-            .or_else(|| {
-                race_cache
-                    .get(identity.race.as_str())
-                    .and_then(|def| def.features.get(name))
-            })
-    })
+    features_index.get(name)
 }
 
 /// Find a feature and determine its source (Class/Background/Race).
@@ -48,13 +39,13 @@ pub(super) fn find_feature_with_source<'a>(
     }
 
     if let Some(bg) = bg_cache.get(identity.background.as_str())
-        && bg.features.contains_key(name)
+        && bg.features.iter().any(|n| n == name)
     {
         return Some((feat, FeatureSource::Background(identity.background.clone())));
     }
 
     if let Some(race) = race_cache.get(identity.race.as_str())
-        && race.features.contains_key(name)
+        && race.features.iter().any(|n| n == name)
     {
         return Some((feat, FeatureSource::Race(identity.race.clone())));
     }

@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, Proficiency, Skill};
+use crate::model::{Ability, Proficiency, Skill, SpellSlotPool};
 
 #[derive(
     Debug,
@@ -30,7 +30,7 @@ pub enum Attribute {
     Ac,
     Speed,
     ClassLevel,
-    CasterLevel,
+    CasterLevel(Option<SpellSlotPool>),
     CasterModifier,
     ProfBonus,
     AttackBonus,
@@ -234,7 +234,9 @@ impl FromStr for Attribute {
             "AC" => Ok(Self::Ac),
             "SPEED" => Ok(Self::Speed),
             "CLASS_LEVEL" => Ok(Self::ClassLevel),
-            "CASTER_LEVEL" => Ok(Self::CasterLevel),
+            "CASTER_LEVEL" => Ok(Self::CasterLevel(None)),
+            "CASTER_LEVEL.ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
+            "CASTER_LEVEL.PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
             "CASTER_MODIFIER" => Ok(Self::CasterModifier),
             "PROF_BONUS" => Ok(Self::ProfBonus),
             "ATK" => Ok(Self::AttackBonus),
@@ -262,7 +264,9 @@ impl fmt::Display for Attribute {
             Self::Ac => f.write_str("AC"),
             Self::Speed => f.write_str("SPEED"),
             Self::ClassLevel => f.write_str("CLASS_LEVEL"),
-            Self::CasterLevel => f.write_str("CASTER_LEVEL"),
+            Self::CasterLevel(None) => f.write_str("CASTER_LEVEL"),
+            Self::CasterLevel(Some(SpellSlotPool::Arcane)) => f.write_str("CASTER_LEVEL.ARCANE"),
+            Self::CasterLevel(Some(SpellSlotPool::Pact)) => f.write_str("CASTER_LEVEL.PACT"),
             Self::CasterModifier => f.write_str("CASTER_MODIFIER"),
             Self::ProfBonus => f.write_str("PROF_BONUS"),
             Self::AttackBonus => f.write_str("ATK"),

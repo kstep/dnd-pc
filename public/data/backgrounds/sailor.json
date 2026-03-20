@@ -1,17 +1,7 @@
 {
   "name": "Sailor",
   "features": [
-    {
-      "name": "Background Abilities",
-      "assign": [
-        {
-          "expr": "DEX += 2; WIS += 1; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    },
-    {
-      "name": "Tavern Brawler"
-    }
+    "Background Abilities",
+    "Tavern Brawler"
   ]
 }

@@ -1,17 +1,7 @@
 {
   "name": "Hermit",
   "features": [
-    {
-      "name": "Background Abilities",
-      "assign": [
-        {
-          "expr": "WIS += 2; CON += 1; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    },
-    {
-      "name": "Healer"
-    }
+    "Background Abilities",
+    "Healer"
   ]
 }

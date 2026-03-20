@@ -247,16 +247,20 @@ impl RulesRegistry {
         let race_cache = self.race_cache.read_untracked();
         if let Some(race_def) = race_cache.get(character.identity.race.as_str()) {
             let source = FeatureSource::Race(character.identity.race.clone());
-            for feat in race_def.features.values() {
-                feat.apply(total_level, character, &source);
+            for feat_name in &race_def.features {
+                if let Some(feat) = features_catalog.and_then(|f| f.get(feat_name.as_str())) {
+                    feat.apply(total_level, character, &source);
+                }
             }
         }
 
         let bg_cache = self.background_cache.read_untracked();
         if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
             let source = FeatureSource::Background(character.identity.background.clone());
-            for feat in bg_def.features.values() {
-                feat.apply(total_level, character, &source);
+            for feat_name in &bg_def.features {
+                if let Some(feat) = features_catalog.and_then(|f| f.get(feat_name.as_str())) {
+                    feat.apply(total_level, character, &source);
+                }
             }
         }
 

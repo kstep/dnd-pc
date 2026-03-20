@@ -13,11 +13,5 @@
   },
   "trait.Languages": {
     "description": "You can speak, read, and write Common and Draconic."
-  },
-  "feature.Breath Weapon": {
-    "description": "When you take the Attack action, you can replace one attack with an exhalation in a 15-foot Cone or 30-foot Line (5 ft wide). DEX save (DC = 8 + CON mod + Prof Bonus). Damage: 1d10 (1st), 2d10 (5th), 3d10 (11th), 4d10 (17th). Uses: Proficiency Bonus per Long Rest."
-  },
-  "feature.Draconic Flight": {
-    "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
   }
 }

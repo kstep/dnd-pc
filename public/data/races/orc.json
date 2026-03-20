@@ -13,11 +13,7 @@
     }
   ],
   "features": [
-    {
-      "name": "Adrenaline Rush"
-    },
-    {
-      "name": "Relentless Endurance"
-    }
+    "Adrenaline Rush",
+    "Relentless Endurance"
   ]
 }

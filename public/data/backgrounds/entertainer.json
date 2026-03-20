@@ -1,17 +1,7 @@
 {
   "name": "Entertainer",
   "features": [
-    {
-      "name": "Background Abilities",
-      "assign": [
-        {
-          "expr": "CHA += 2; DEX += 1; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
-          "when": "OnFeatureAdd"
-        }
-      ]
-    },
-    {
-      "name": "Musician"
-    }
+    "Background Abilities",
+    "Musician"
   ]
 }
