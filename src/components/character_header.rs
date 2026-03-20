@@ -222,7 +222,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry.species().fetch(&name);
                         }
                         fetch=move |name: &str| registry.species().fetch(name)
-                        has=move |name: &str| registry.species().has(name)
+                        has=move |name: &str| registry.species().has_tracked(name)
                         apply=move |_name: &str| {
                             store.update(|c| registry.apply_species(c));
                         }
@@ -246,7 +246,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry.backgrounds().fetch(&name);
                         }
                         fetch=move |name: &str| registry.backgrounds().fetch(name)
-                        has=move |name: &str| registry.backgrounds().has(name)
+                        has=move |name: &str| registry.backgrounds().has_tracked(name)
                         apply=move |_name: &str| {
                             store.update(|c| registry.apply_background(c));
                         }
