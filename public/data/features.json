@@ -32,11 +32,6 @@
     "selectable": true
   },
   {
-    "name": "Magic Initiate",
-    "stackable": true,
-    "selectable": true
-  },
-  {
     "name": "Musician",
     "selectable": true
   },
@@ -11102,6 +11097,8 @@
   },
   {
     "name": "Magic Initiate (Cleric)",
+    "stackable": true,
+    "selectable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -11127,6 +11124,8 @@
   },
   {
     "name": "Magic Initiate (Druid)",
+    "stackable": true,
+    "selectable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -11152,6 +11151,8 @@
   },
   {
     "name": "Magic Initiate (Wizard)",
+    "stackable": true,
+    "selectable": true,
     "spells": {
       "casting_ability": 3,
       "list": {

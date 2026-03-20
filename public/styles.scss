@@ -1335,13 +1335,20 @@ select.entry-name {
 .apply-levels {
   display: inline-flex;
   gap: 2px;
+
+  .btn-apply-level {
+    width: auto;
+    padding: 0 var(--size-1);
+  }
 }
 
 .btn-apply-level {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  padding: 0 var(--size-1);
+  padding: 0;
+  width: 28px;
   height: 28px;
   border: 1px solid var(--accent);
   border-radius: var(--radius-1);

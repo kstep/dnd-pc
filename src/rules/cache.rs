@@ -172,6 +172,10 @@ pub trait DefinitionStore {
         self.cache().read_untracked().contains_key(name)
     }
 
+    fn has_tracked(&self, name: &str) -> bool {
+        self.cache().read().contains_key(name)
+    }
+
     fn with<R>(&self, name: &str, f: impl FnOnce(&Self::Definition) -> R) -> Option<R> {
         self.cache().read_untracked().get(name).map(f)
     }

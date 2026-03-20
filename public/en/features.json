@@ -11,9 +11,6 @@
   "Lucky": {
     "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
   },
-  "Magic Initiate": {
-    "description": "Choose a spellcasting class: Cleric, Druid, or Wizard (or another if your DM permits). You learn two cantrips and one level 1 spell from that class's list. You can cast the level 1 spell once per Long Rest without a spell slot, or using spell slots you have. Spellcasting ability is INT, WIS, or CHA (chosen when you take this feat)."
-  },
   "Musician": {
     "description": "You gain proficiency with three Musical Instruments of your choice. After finishing a Short or Long Rest, you and allies who hear your performance gain Heroic Inspiration."
   },
