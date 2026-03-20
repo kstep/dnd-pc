@@ -2,102 +2,8 @@
   "": {
     "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection."
   },
-  "feature.Martial Arts": {
-    "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons (Simple Melee and Light Martial Melee). While unarmed or wielding only Monk weapons without armor or Shield:\n\nBonus Unarmed Strike: You can make one Unarmed Strike as a Bonus Action.\n\nDexterous Attacks: Use DEX instead of STR for attack/damage rolls of Unarmed Strikes and Monk weapons, and for Grapple/Shove save DCs.\n\nMartial Arts Die: Use 1d6 in place of normal Unarmed Strike or Monk weapon damage. This die increases with Monk level."
-  },
-  "feature.Martial Arts.field.Actions.option.Bonus Unarmed Strike": {
-    "description": "Make one Unarmed Strike: +DEX mod +Prof to hit, Martial Arts die + DEX mod damage"
-  },
   "feature.Unarmored Defense": {
     "description": "While you aren't wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers."
-  },
-  "feature.Monk's Focus": {
-    "description": "Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table. You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind.\n\nWhen you expend a Focus Point, it is unavailable until you finish a Short or Long Rest, at the end of which you regain all your expended points. Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus.\n\nFlurry of Blows: You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.\n\nPatient Defense: You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.\n\nStep of the Wind: You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn."
-  },
-  "feature.Monk's Focus.field.Focus Points": {
-    "description": "The number of Focus Points you have.",
-    "short": "FP"
-  },
-  "feature.Monk's Focus.field.Focus Actions.option.Flurry of Blows": {
-    "description": "Make two Unarmed Strikes (three at level 10)"
-  },
-  "feature.Monk's Focus.field.Focus Actions.option.Patient Defense": {
-    "description": "Take the Disengage and Dodge actions (gain temp HP at level 10)"
-  },
-  "feature.Monk's Focus.field.Focus Actions.option.Step of the Wind": {
-    "description": "Take the Disengage and Dash actions, double jump distance"
-  },
-  "feature.Monk's Focus.field.Focus Actions.option.Stunning Strike": {
-    "description": "On hit: target makes CON save or is Stunned until your next turn"
-  },
-  "feature.Monk's Focus.field.Focus Actions.option.Superior Defense": {
-    "description": "Resistance to all damage except Force for 1 minute"
-  },
-  "feature.Unarmored Movement": {
-    "description": "Your speed increases by 10 feet while you aren't wearing armor or wielding a Shield. This bonus increases when you reach certain Monk levels, as shown on the Monk Features table."
-  },
-  "feature.Unarmored Movement.field.Unarmored Movement": {
-    "description": "Bonus speed while you aren't wearing armor or wielding a Shield"
-  },
-  "feature.Uncanny Metabolism": {
-    "description": "When you roll Initiative, you can regain all expended Focus Points. When you do so, roll your Martial Arts die, and regain a number of Hit Points equal to your Monk level plus the number rolled. Once you use this feature, you can't use it again until you finish a Long Rest."
-  },
-  "feature.Deflect Attacks": {
-    "description": "When an attack roll hits you and its damage includes Bludgeoning, Piercing, or Slashing damage, you can take a Reaction to reduce the attack's total damage against you. The reduction equals 1d10 plus your Dexterity modifier and Monk level. If you reduce the damage to 0, you can expend 1 Focus Point to redirect some of the attack's force."
-  },
-  "feature.Deflect Attacks.field.Actions.option.Deflect Attacks": {
-    "description": "Reduce damage by 1d10 + DEX mod + Monk level; redirect if reduced to 0"
-  },
-  "feature.Monk Subclass": {
-    "description": "You gain a Monk subclass of your choice. A subclass is a specialization that grants you features at certain Monk levels. For the rest of your career, you gain each of your subclass's features that are of your Monk level or lower."
-  },
-  "feature.Ability Score Improvement": {
-    "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
-  },
-  "feature.Slow Fall": {
-    "description": "You can take a Reaction when you fall to reduce any damage you take from the fall by an amount equal to five times your Monk level."
-  },
-  "feature.Slow Fall.field.Actions.option.Slow Fall": {
-    "description": "Reduce fall damage by 5 × Monk level"
-  },
-  "feature.Extra Attack": {
-    "description": "You can attack twice instead of once whenever you take the Attack action on your turn."
-  },
-  "feature.Stunning Strike": {
-    "description": "Once per turn when you hit a creature with a Monk weapon or an Unarmed Strike, you can expend 1 Focus Point to attempt a stunning strike. The target must make a Constitution saving throw. On a failed save, the target has the Stunned condition until the start of your next turn."
-  },
-  "feature.Empowered Strikes": {
-    "description": "Whenever you deal damage with your Unarmed Strike, it can deal your choice of Force damage or its normal damage type."
-  },
-  "feature.Evasion": {
-    "description": "When you're subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw and only half damage if you fail. You don't benefit from this feature if you have the Incapacitated condition."
-  },
-  "feature.Acrobatic Movement": {
-    "description": "While you aren't wearing armor or wielding a Shield, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the movement."
-  },
-  "feature.Heightened Focus": {
-    "description": "Your Flurry of Blows, Patient Defense, and Step of the Wind gain the following benefits. Flurry of Blows: You can expend 1 Focus Point to use Flurry of Blows and make three Unarmed Strikes with it instead of two. Patient Defense: When you expend a Focus Point to use Patient Defense, you gain a number of Temporary Hit Points equal to two rolls of your Martial Arts die."
-  },
-  "feature.Self-Restoration": {
-    "description": "Through sheer force of will, you can remove one of the following conditions from yourself at the end of each of your turns: Charmed, Frightened, or Poisoned. In addition, forgoing food and drink doesn't give you levels of Exhaustion."
-  },
-  "feature.Deflect Energy": {
-    "description": "You can now use your Deflect Attacks feature against attacks that deal any damage type, not just Bludgeoning, Piercing, or Slashing."
-  },
-  "feature.Disciplined Survivor": {
-    "description": "Your physical and mental discipline grant you proficiency in all saving throws. Additionally, whenever you make a saving throw and fail, you can expend 1 Focus Point to reroll it, and you must use the new roll."
-  },
-  "feature.Perfect Focus": {
-    "description": "When you roll Initiative and don't use Uncanny Metabolism, you regain expended Focus Points until you have 4 if you have 3 or fewer."
-  },
-  "feature.Superior Defense": {
-    "description": "At the start of your turn, you can expend 3 Focus Points to bolster yourself against harm for 1 minute or until you have the Incapacitated condition. During that time, you have Resistance to all damage except Force damage."
-  },
-  "feature.Epic Boon": {
-    "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended."
-  },
-  "feature.Body and Mind": {
-    "description": "You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25."
   },
   "feature.Class Proficiencies": {
     "description": "Saving throw and equipment proficiencies granted by this class."
@@ -105,274 +11,34 @@
   "subclass.Way of the Long Death": {
     "description": "Monks of the Way of the Long Death are obsessed with the meaning and mechanics of dying. They capture creatures and prepare elaborate experiments to capture, record, and understand the moments of their demise."
   },
-  "subclass.Way of the Long Death.feature.Way of the Long Death": {
-    "description": "Monks of the Way of the Long Death are obsessed with the meaning and mechanics of dying. They capture creatures and prepare elaborate experiments to capture, record, and understand the moments of their demise. They use this knowledge to guide their understanding of martial arts, yielding a deadly fighting style."
-  },
-  "subclass.Way of the Long Death.feature.Touch of Death": {
-    "description": "Your study of death allows you to extract vitality from another creature as it nears its demise. When you reduce a creature within 5 feet of you to 0 hit points, you gain temporary hit points equal to your Wisdom modifier + your monk level (minimum of 1 temporary hit point)."
-  },
-  "subclass.Way of the Long Death.feature.Hour of Reaping": {
-    "description": "You gain the ability to unsettle or terrify those around you as an action, for your soul has been touched by the shadow of death. When you take this action, each creature within 30 feet of you that can see you must succeed on a Wisdom saving throw or be frightened of you until the end of your next turn."
-  },
-  "subclass.Way of the Long Death.feature.Mastery of Death": {
-    "description": "You use your familiarity with death to escape its grasp. When you are reduced to 0 hit points, you can expend 1 ki point (no action required) to have 1 hit point instead."
-  },
-  "subclass.Way of the Long Death.feature.Touch of the Long Death": {
-    "description": "Your touch can channel the energy of death into a creature. As an action, you touch one creature within 5 feet of you, and you expend 1 to 10 ki points. The target must make a Constitution saving throw, and it takes 2d10 necrotic damage per ki point spent on a failed save, or half as much damage on a successful one."
-  },
   "subclass.Way of the Drunken Master": {
     "description": "The Way of the Drunken Master teaches its students to move with the jerky, unpredictable movements of a drunkard. A drunken master sways, tottering on unsteady feet, to present what seems like an incompetent combatant who proves frustrating to engage."
-  },
-  "subclass.Way of the Drunken Master.feature.Way of the Drunken Master": {
-    "description": "The Way of the Drunken Master teaches its students to move with the jerky, unpredictable movements of a drunkard. A drunken master sways, tottering on unsteady feet, to present what seems like an incompetent combatant who proves frustrating to engage. The drunken master's erratic stumbles conceal a carefully executed dance of blocks, parries, advances, attacks, and retreats."
   },
   "subclass.Way of the Drunken Master.feature.Bonus Proficiencies": {
     "description": "You gain proficiency in the Performance skill if you don't already have it. Your martial arts technique mixes combat training with the precision of a dancer and the antics of a jester. You also gain proficiency with brewer's supplies if you don't already have it."
   },
-  "subclass.Way of the Drunken Master.feature.Drunken Technique": {
-    "description": "You learn how to twist and turn quickly as part of your Flurry of Blows. Whenever you use Flurry of Blows, you gain the benefit of the Disengage action, and your walking speed increases by 10 feet until the end of the current turn."
-  },
-  "subclass.Way of the Drunken Master.feature.Leap to Your Feet": {
-    "description": "When you're prone, you can stand up by spending 5 feet of movement, rather than half your speed."
-  },
-  "subclass.Way of the Drunken Master.feature.Redirect Attack": {
-    "description": "When a creature misses you with a melee attack roll, you can spend 1 ki point as a reaction to cause that attack to hit one creature of your choice, other than the attacker, that you can see within 5 feet of you."
-  },
-  "subclass.Way of the Drunken Master.feature.Tipsy Sway": {
-    "description": "You can move in sudden, swaying ways. You gain the following benefits."
-  },
-  "subclass.Way of the Drunken Master.feature.Drunkard's Luck": {
-    "description": "You always seem to get a lucky bounce at the right moment. When you make an ability check, an attack roll, or a saving throw and have disadvantage on the roll, you can spend 2 ki points to cancel the disadvantage for that roll."
-  },
-  "subclass.Way of the Drunken Master.feature.Intoxicated Frenzy": {
-    "description": "You gain the ability to make an overwhelming number of attacks against a group of enemies. When you use your Flurry of Blows, you can make up to three additional attacks with it (up to a total of five Flurry of Blows attacks), provided that each Flurry of Blows attack targets a different creature this turn."
-  },
   "subclass.Way of the Kensei": {
     "description": "If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated."
-  },
-  "subclass.Way of the Kensei.feature.Agile Parry": {
-    "description": "If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated."
-  },
-  "subclass.Way of the Kensei.feature.Kensei's Shot": {
-    "description": "You can use a bonus action on your turn to make your ranged attacks with a kensei weapon more deadly. When you do so, any target you hit with a ranged attack using a kensei weapon takes an extra 1d4 damage of the weapon's type. You retain this benefit until the end of the current turn."
-  },
-  "subclass.Way of the Kensei.feature.Way of the Kensei": {
-    "description": "Monks of the Way of the Kensei train relentlessly with their weapons, to the point where the weapon becomes an extension of the body. Founded on a mastery of sword fighting, the tradition has expanded to include many different weapons. A kensei sees a weapon in much the same way a calligrapher or painter regards a pen or brush."
-  },
-  "subclass.Way of the Kensei.feature.Path of the Kensei": {
-    "description": "Your special martial arts training leads you to master the use of certain weapons. This path also includes instruction in the deft strokes of calligraphy or painting. You gain the following benefits. Kensei Weapons: Choose two types of weapons to be your kensei weapons: one melee weapon and one ranged weapon."
-  },
-  "subclass.Way of the Kensei.feature.One with the Blade": {
-    "description": "You extend your ki into your kensei weapons, granting you the following benefits. Magic Kensei Weapons: Your attacks with your kensei weapons count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
-  },
-  "subclass.Way of the Kensei.feature.Sharpen the Blade": {
-    "description": "You gain the ability to augment your weapons further with your ki. As a bonus action, you can expend up to 3 ki points to grant one kensei weapon you touch a bonus to attack and damage rolls when you attack with it. The bonus equals the number of ki points you spent. This bonus lasts for 1 minute or until you use this feature again."
-  },
-  "subclass.Way of the Kensei.feature.Unerring Accuracy": {
-    "description": "Your mastery of weapons grants you extraordinary accuracy. If you miss with an attack roll using a monk weapon on your turn, you can reroll it. You can use this feature only once on each of your turns."
   },
   "subclass.Way of the Sun Soul": {
     "description": "Monks of the Way of the Sun Soul learn to channel their life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature."
   },
-  "subclass.Way of the Sun Soul.feature.Way of the Sun Soul": {
-    "description": "Monks of the Way of the Sun Soul learn to channel their life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature."
-  },
-  "subclass.Way of the Sun Soul.feature.Radiant Sun Bolt": {
-    "description": "You can hurl searing bolts of magical radiance. You gain a new attack option that you can use with the Attack action. The special attack is a ranged spell attack with a range of 30 feet. You are proficient with it, and you add your Dexterity modifier to its attack and damage rolls. Its damage is radiant, and its damage die is a d4."
-  },
-  "subclass.Way of the Sun Soul.feature.Searing Arc Strike": {
-    "description": "You gain the ability to channel your ki into searing waves of energy. Immediately after you take the Attack action on your turn, you can spend 2 ki points to cast the burning hands spell as a bonus action. You can spend additional ki points to cast burning hands as a higher-level spell. Each additional ki point you spend increases the spell's level by 1."
-  },
-  "subclass.Way of the Sun Soul.feature.Searing Sunburst": {
-    "description": "You gain the ability to create an orb of light that erupts into a devastating explosion. As an action, you magically create an orb and hurl it at a point you choose within 150 feet, where it erupts into a sphere of radiant light for a brief but deadly instant. Each creature in that 20-foot-radius sphere must succeed on a Constitution saving throw or take 2d6 radiant damage."
-  },
-  "subclass.Way of the Sun Soul.feature.Sun Shield": {
-    "description": "You become wreathed in a luminous, magical aura. You shed bright light in a 30-foot radius and dim light for an additional 30 feet. You can extinguish or restore the light as a bonus action. If a creature hits you with a melee attack while this light shines, you can use your reaction to deal radiant damage to the creature. The radiant damage equals 5 + your Wisdom modifier."
-  },
   "subclass.Way of the Astral Self": {
     "description": "A monk who follows the Way of the Astral Self believes their body is an illusion. They see their ki as a representation of their true form, an astral self."
-  },
-  "subclass.Way of the Astral Self.feature.Way of the Astral Self": {
-    "description": "A monk who follows the Way of the Astral Self believes their body is an illusion. They see their ki as a representation of their true form, an astral self. This astral self has the capacity to be a force of order or disorder, with some monasteries training students to use their power to protect the weak and other instructing aspirants in how to manifest their true selves in service to the mighty."
-  },
-  "subclass.Way of the Astral Self.feature.Arms of the Astral Self": {
-    "description": "Your mastery of your ki allows you to summon a portion of your astral self. As a bonus action, you can spend 1 ki point to summon the arms of your astral self. When you do so, each creature of your choice that you can see within 10 feet of you must succeed on a Dexterity saving throw or take force damage equal to two rolls of your Martial Arts die."
-  },
-  "subclass.Way of the Astral Self.feature.Forms of Your Astral Self": {
-    "description": "The astral self is a translucent embodiment of the monk's soul. As a result, an astral self can reflect aspects of a monk's background, ideals, flaws, and bonds, and an astral self doesn't necessarily look anything like the monk. For example, the astral self of a lanky human might be reminiscent of a minotaur-the strength of which the monk feels within."
-  },
-  "subclass.Way of the Astral Self.feature.Visage of the Astral Self": {
-    "description": "You can summon the visage of your astral self. As a bonus action, or as part of the bonus action you take to activate Arms of the Astral Self, you can spend 1 ki point to summon this visage for 10 minutes. It vanishes early if you are incapacitated or die. The spectral visage covers your face like a helmet or mask. You determine its appearance."
-  },
-  "subclass.Way of the Astral Self.feature.Body of the Astral Self": {
-    "description": "When you have both your astral arms and visage summoned, you can cause the body of your astral self to appear (no action required). This spectral body covers your physical form like a suit of armor, connecting with the arms and visage. You determine its appearance. While the spectral body is present, you gain the following benefits."
-  },
-  "subclass.Way of the Astral Self.feature.Awakened Astral Self": {
-    "description": "Your connection to your astral self is complete, allowing you to unleash its full potential. As a bonus action, you can spend 5 ki points to summon the arms, visage, and body of your astral self and awaken it for 10 minutes. This awakening ends early if you are incapacitated or die. While your astral self is awakened, you gain the following benefits."
   },
   "subclass.Way of the Ascendant Dragon": {
     "description": "The dragon god Bahamut is known to travel the Material Plane in the guise of a young monk, and legend says that he founded the first monastery of the Way of the Ascendant Dragon in this guise."
   },
-  "subclass.Way of the Ascendant Dragon.feature.Way of the Ascendant Dragon": {
-    "description": "The dragon god Bahamut is known to travel the Material Plane in the guise of a young monk, and legend says that he founded the first monastery of the Way of the Ascendant Dragon in this guise. The fundamental teaching of this tradition holds that by emulating dragons, a monk becomes a more integrated part of the world and its magic."
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Breath of the Dragon": {
-    "description": "You can channel destructive waves of energy, like those created by the dragons you emulate. When you take the Attack action on your turn, you can replace one of the attacks with an exhalation of draconic energy in either a 20-foot cone or a 30-foot line that is 5 feet wide (your choice). Choose a damage type: acid, cold, fire, lightning, or poison."
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Draconic Disciple": {
-    "description": "You can channel draconic power to magnify your presence and imbue your unarmed strikes with the essence of a dragon's breath. You gain the following benefits: Draconic Presence:  Draconic Strike:  Tongue of Dragons:"
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Wings Unfurled": {
-    "description": "When you use your Step of the Wind, you can unfurl spectral draconic wings from your back that vanish at the end of your turn. While the wings exist, you have a flying speed equal to your walking speed. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Aspect of the Wyrm": {
-    "description": "The power of your draconic spirit now radiates from you, warding your allies or inspiring fear in your enemies. As a bonus action, you can create an aura of draconic power that radiates 10 feet from you for 1 minute."
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Ascendant Aspect": {
-    "description": "Your draconic spirit reaches its peak. You gain the following benefits: Augment Breath:  Blindsight:  Explosive Fury:"
-  },
   "subclass.Warrior of Mercy": {
     "description": "Manipulate Forces of Life and Death Warriors of Mercy manipulate the life force of others. These Monks are wandering physicians, but they bring a swift end to their enemies. They often wear masks, presenting themselves as faceless bringers of life and death."
-  },
-  "subclass.Warrior of Mercy.feature.Warrior of Mercy": {
-    "description": "Manipulate Forces of Life and Death Warriors of Mercy manipulate the life force of others. These Monks are wandering physicians, but they bring a swift end to their enemies. They often wear masks, presenting themselves as faceless bringers of life and death."
-  },
-  "subclass.Warrior of Mercy.feature.Hand of Harm": {
-    "description": "Once per turn when you hit a creature with an Unarmed Strike and deal damage, you can expend 1 Focus Point to deal extra Necrotic damage equal to one roll of your Martial Arts die plus your Wisdom modifier."
-  },
-  "subclass.Warrior of Mercy.feature.Hand of Healing": {
-    "description": "As a Magic action, you can expend 1 Focus Point to touch a creature and restore a number of Hit Points equal to a roll of your Martial Arts die plus your Wisdom modifier. When you use your Flurry of Blows, you can replace one of the Unarmed Strikes with a use of this feature without expending a Focus Point for the healing."
-  },
-  "subclass.Warrior of Mercy.feature.Implements of Mercy": {
-    "description": "You gain proficiency in the Insight and Medicine skills and proficiency with the Herbalism Kit."
-  },
-  "subclass.Warrior of Mercy.feature.Physician's Touch": {
-    "description": "Your Hand of Harm and Hand of Healing improve, as detailed below. Hand of Harm: When you use Hand of Harm on a creature, you can also give that creature the Poisoned condition until the end of your next turn. Hand of Healing: When you use Hand of Healing, you can also end one of the following conditions on the creature you heal: Blinded, Deafened, Paralyzed, Poisoned, or Stunned."
-  },
-  "subclass.Warrior of Mercy.feature.Flurry of Healing and Harm": {
-    "description": "When you use Flurry of Blows, you can replace each of the Unarmed Strikes with a use of Hand of Healing without expending Focus Points for the healing. In addition, when you make an Unarmed Strike with Flurry of Blows and deal damage, you can use Hand of Harm with that strike without expending a Focus Point for Hand of Harm. You can still use Hand of Harm only once per turn."
-  },
-  "subclass.Warrior of Mercy.feature.Hand of Ultimate Mercy": {
-    "description": "Your mastery of life energy opens the door to the ultimate mercy. As a Magic action, you can touch the corpse of a creature that died within the past 24 hours and expend 5 Focus Points. The creature then returns to life with a number of Hit Points equal to 4d10 plus your Wisdom modifier."
   },
   "subclass.Warrior of Shadow": {
     "description": "You have learned to draw on the power of the Shadowfell, gaining the following benefits."
   },
-  "subclass.Warrior of Shadow.feature.Shadow Arts": {
-    "description": "You have learned to draw on the power of the Shadowfell, gaining the following benefits."
-  },
-  "subclass.Warrior of Shadow.feature.Warrior of Shadow": {
-    "description": "Harness Shadow Power for Stealth and Subterfuge Warriors of Shadow practice stealth and subterfuge, harnessing the power of the Shadowfell. They are at home in darkness, able to draw gloom around themselves to hide, leap from shadow to shadow, and take on a wraithlike form."
-  },
-  "subclass.Warrior of Shadow.feature.Darkness": {
-    "description": "You can expend 1 Focus Point to cast the Darkness spell without spell components. You can see within the spell's area when you cast it with this feature. While the spell persists, you can move its area of Darkness to a space within 60 feet of yourself at the start of each of your turns."
-  },
-  "subclass.Warrior of Shadow.feature.Darkvision": {
-    "description": "You gain Darkvision with a range of 60 feet. If you already have Darkvision, its range increases by 60 feet."
-  },
-  "subclass.Warrior of Shadow.feature.Shadowy Figments": {
-    "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it."
-  },
-  "subclass.Warrior of Shadow.feature.Shadowy Figments.spell.Minor Illusion": {
-    "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
-  },
-  "subclass.Warrior of Shadow.feature.Shadow Step": {
-    "description": "While entirely within Dim Light or Darkness, you can use a Bonus Action to teleport up to 60 feet to an unoccupied space you can see that is also in Dim Light or Darkness. You then have Advantage on the next melee attack you make before the end of the current turn."
-  },
-  "subclass.Warrior of Shadow.feature.Improved Shadow Step": {
-    "description": "You can draw on your Shadowfell connection to empower your teleportation. When you use your Shadow Step, you can expend 1 Focus Point to remove the requirement that you must start and end in Dim Light or Darkness for that use of the feature. As part of this Bonus Action, you can make an Unarmed Strike immediately after you teleport."
-  },
-  "subclass.Warrior of Shadow.feature.Cloak of Shadows": {
-    "description": "As a Magic action while entirely within Dim Light or Darkness, you can expend 3 Focus Points to shroud yourself with shadows for 1 minute, until you have the Incapacitated condition, or until you end your turn in Bright Light. While shrouded by these shadows, you gain the following benefits. Invisibility: You have the Invisible condition."
-  },
   "subclass.Warrior of the Elements": {
     "description": "At the start of your turn, you can expend 1 Focus Point to imbue yourself with elemental energy. The energy lasts for 10 minutes or until you have the Incapacitated condition. You gain the following benefits while this feature is active."
   },
-  "subclass.Warrior of the Elements.feature.Elemental Attunement": {
-    "description": "At the start of your turn, you can expend 1 Focus Point to imbue yourself with elemental energy. The energy lasts for 10 minutes or until you have the Incapacitated condition. You gain the following benefits while this feature is active. Reach: When you make an Unarmed Strike, your reach is 10 feet greater than normal, as elemental energy extends from you."
-  },
-  "subclass.Warrior of the Elements.feature.Manipulate Elements": {
-    "description": "You know the Elementalism spell. Wisdom is your spellcasting ability for it."
-  },
-  "subclass.Warrior of the Elements.feature.Manipulate Elements.spell.Elementalism": {
-    "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
-  },
-  "subclass.Warrior of the Elements.feature.Warrior of the Elements": {
-    "description": "Wield Strikes and Bursts of Elemental Power Warriors of the Elements tap into the power of the Elemental Planes. Harnessing their supernatural focus, these Monks momentarily tame the energy of the Elemental Chaos to empower themselves in and out of battle."
-  },
-  "subclass.Warrior of the Elements.feature.Elemental Burst": {
-    "description": "As a Magic action, you can expend 2 Focus Points to cause elemental energy to burst in a 20-foot-radius Sphere [Area of Effect] centered on a point within 120 feet of yourself. Choose a damage type: Acid, Cold, Fire, Lightning, or Thunder. Each creature in the Sphere [Area of Effect] must make a Dexterity saving throw."
-  },
-  "subclass.Warrior of the Elements.feature.Stride of the Elements": {
-    "description": "While your Elemental Attunement is active, you also have a Fly Speed and a Swim Speed equal to your Speed."
-  },
-  "subclass.Warrior of the Elements.feature.Elemental Epitome": {
-    "description": "While your Elemental Attunement is active, you also gain the following benefits. Damage Resistance: You gain Resistance to one of the following damage types of your choice: Acid, Cold, Fire, Lightning, or Thunder. At the start of each of your turns, you can change this choice. Destructive Stride: When you use your Step of the Wind, your Speed increases by 20 feet until the end of the turn."
-  },
   "subclass.Warrior of the Open Hand": {
     "description": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target. Addle: The target can't make Opportunity Attack until the start of its next turn."
-  },
-  "subclass.Warrior of the Open Hand.feature.Open Hand Technique": {
-    "description": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target. Addle: The target can't make Opportunity Attack until the start of its next turn. Push: The target must succeed on a Strength saving throw or be pushed up to 15 feet away from you."
-  },
-  "subclass.Warrior of the Open Hand.feature.Warrior of the Open Hand": {
-    "description": "Master Unarmed Combat Techniques Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm."
-  },
-  "subclass.Warrior of the Open Hand.feature.Wholeness of Body": {
-    "description": "You gain the ability to heal yourself. As a Bonus Action, you can roll your Martial Arts die. You regain a number of Hit Points equal to the number rolled plus your Wisdom modifier (minimum of 1 Hit Points regained). You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
-  },
-  "subclass.Warrior of the Open Hand.feature.Fleet Step": {
-    "description": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately after that Bonus Action."
-  },
-  "subclass.Warrior of the Open Hand.feature.Quivering Palm": {
-    "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them."
-  },
-  "subclass.Way of the Drunken Master.feature.Redirect Attack.field.Actions.option.Redirect Attack": {
-    "description": "On missed melee attack: spend 1 ki point to redirect the attack to another creature within 5 ft"
-  },
-  "subclass.Way of the Kensei.feature.Kensei's Shot.field.Actions.option.Kensei's Shot": {
-    "description": "Ranged kensei weapon attacks deal +1d4 damage until end of turn"
-  },
-  "subclass.Way of the Kensei.feature.Sharpen the Blade.field.Actions.option.Sharpen the Blade": {
-    "description": "Spend 1–3 ki points: kensei weapon gains equal bonus to attack and damage rolls for 1 minute"
-  },
-  "subclass.Way of the Sun Soul.feature.Searing Arc Strike.field.Actions.option.Searing Arc Strike": {
-    "description": "After Attack action: spend 2+ ki points to cast Burning Hands (15 ft cone, DEX save, 3d6 fire per 2 ki)"
-  },
-  "subclass.Way of the Sun Soul.feature.Sun Shield.field.Actions.option.Sun Shield": {
-    "description": "Toggle luminous aura: bright light 30 ft, dim 30 ft; reaction on melee hit deals 5 + WIS mod Radiant"
-  },
-  "subclass.Way of the Astral Self.feature.Arms of the Astral Self.field.Actions.option.Arms of the Astral Self": {
-    "description": "Spend 1 ki: summon astral arms; creatures within 10 ft make DEX save or take 2× Martial Arts die Force"
-  },
-  "subclass.Way of the Astral Self.feature.Visage of the Astral Self.field.Actions.option.Visage of the Astral Self": {
-    "description": "Spend 1 ki: summon astral visage for 10 min; gain WIS-based Insight/Intimidation and 60 ft Darkvision"
-  },
-  "subclass.Way of the Astral Self.feature.Awakened Astral Self.field.Actions.option.Awakened Astral Self": {
-    "description": "Spend 5 ki: awaken full astral self for 10 min; +2 to attacks, extra unarmed strike, +WIS mod damage"
-  },
-  "subclass.Way of the Ascendant Dragon.feature.Aspect of the Wyrm.field.Actions.option.Aspect of the Wyrm": {
-    "description": "Create 10 ft draconic aura for 1 min: allies gain damage resistance or enemies make WIS save vs. Frightened"
-  },
-  "subclass.Warrior of Mercy.feature.Hand of Healing.field.Actions.option.Hand of Healing": {
-    "description": "Spend 1 Focus Point: touch a creature to restore Martial Arts die + WIS mod HP"
-  },
-  "subclass.Warrior of Mercy.feature.Hand of Ultimate Mercy.field.Actions.option.Hand of Ultimate Mercy": {
-    "description": "Spend 5 Focus Points: touch corpse dead ≤24 hrs; creature returns to life with 4d10 + WIS mod HP"
-  },
-  "subclass.Warrior of Shadow.feature.Shadow Step.field.Actions.option.Shadow Step": {
-    "description": "In dim light or darkness: teleport up to 60 ft to dim/dark space; Advantage on next melee attack"
-  },
-  "subclass.Warrior of Shadow.feature.Cloak of Shadows.field.Actions.option.Cloak of Shadows": {
-    "description": "In dim light or darkness: spend 3 Focus Points to become Invisible for 1 min (ends in bright light)"
-  },
-  "subclass.Warrior of the Elements.feature.Elemental Burst.field.Actions.option.Elemental Burst": {
-    "description": "Spend 2 Focus Points: 20 ft radius burst within 120 ft; DEX save or full elemental damage (half on save)"
-  },
-  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Free Uses": {
-    "label": "Free Uses"
-  },
-  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Actions.option.Wholeness of Body": {
-    "description": "Roll Martial Arts die: regain that many + WIS mod HP (min 1); uses equal to WIS mod per Long Rest"
   }
 }

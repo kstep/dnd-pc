@@ -3,152 +3,8 @@
   "hit_die": 12,
   "features": [
     {
-      "name": "Rage",
-      "fields": [
-        {
-          "name": "Rages",
-          "kind": "Points",
-          "levels": {
-            "1": 2,
-            "3": 3,
-            "6": 4,
-            "12": 5,
-            "17": 6
-          }
-        },
-        {
-          "name": "Rage Damage",
-          "kind": "Bonus",
-          "levels": {
-            "1": 2,
-            "9": 3,
-            "16": 4
-          }
-        },
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "cost": "Rages",
-          "options": [
-            {
-              "name": "Rage",
-              "cost": 1,
-              "action": "BonusAction"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Unarmored Defense",
       "ac_expr": "10 + DEX.MOD + CON.MOD"
-    },
-    {
-      "name": "Weapon Mastery (Barbarian)",
-      "fields": [
-        {
-          "name": "Weapon",
-          "kind": "Choice",
-          "levels": {
-            "1": 2,
-            "4": 3,
-            "10": 4
-          }
-        }
-      ]
-    },
-    {
-      "name": "Danger Sense"
-    },
-    {
-      "name": "Reckless Attack",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Reckless Attack",
-              "action": "Action"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Barbarian Subclass"
-    },
-    {
-      "name": "Primal Knowledge"
-    },
-    {
-      "name": "Ability Score Improvement",
-      "stackable": true
-    },
-    {
-      "name": "Extra Attack"
-    },
-    {
-      "name": "Fast Movement",
-      "assign": [
-        {
-          "expr": "SPEED += 10",
-          "when": "OnCompute"
-        }
-      ]
-    },
-    {
-      "name": "Feral Instinct"
-    },
-    {
-      "name": "Instinctive Pounce"
-    },
-    {
-      "name": "Brutal Strike",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Forceful Blow"
-            },
-            {
-              "name": "Hamstring Blow"
-            },
-            {
-              "name": "Staggering Blow",
-              "level": 13
-            },
-            {
-              "name": "Sundering Blow",
-              "level": 13
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Relentless Rage"
-    },
-    {
-      "name": "Improved Brutal Strike"
-    },
-    {
-      "name": "Improved Brutal Strike 2"
-    },
-    {
-      "name": "Persistent Rage"
-    },
-    {
-      "name": "Indomitable Might"
-    },
-    {
-      "name": "Epic Boon",
-      "stackable": true
-    },
-    {
-      "name": "Primal Champion"
     },
     {
       "name": "Class Proficiencies",
@@ -266,35 +122,6 @@
   "subclasses": [
     {
       "name": "Path of the Berserker",
-      "features": [
-        {
-          "name": "Path of the Berserker"
-        },
-        {
-          "name": "Frenzy"
-        },
-        {
-          "name": "Mindless Rage"
-        },
-        {
-          "name": "Retaliation"
-        },
-        {
-          "name": "Intimidating Presence",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Intimidating Presence",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -325,38 +152,6 @@
     },
     {
       "name": "Path of the Battlerager",
-      "features": [
-        {
-          "name": "Path of the Battlerager"
-        },
-        {
-          "name": "Battlerager Armor",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Battlerager Armor",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Restriction—Dwarves Only"
-        },
-        {
-          "name": "Reckless Abandon"
-        },
-        {
-          "name": "Battlerager Charge"
-        },
-        {
-          "name": "Spiked Retribution"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -388,35 +183,6 @@
     },
     {
       "name": "Path of the Ancestral Guardian",
-      "features": [
-        {
-          "name": "Path of the Ancestral Guardian"
-        },
-        {
-          "name": "Ancestral Protectors"
-        },
-        {
-          "name": "Spirit Shield",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Spirit Shield",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Consult the Spirits"
-        },
-        {
-          "name": "Vengeful Ancestors"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -447,32 +213,6 @@
     },
     {
       "name": "Path of the Storm Herald",
-      "features": [
-        {
-          "name": "Desert"
-        },
-        {
-          "name": "Path of the Storm Herald"
-        },
-        {
-          "name": "Sea"
-        },
-        {
-          "name": "Tundra"
-        },
-        {
-          "name": "Storm Aura"
-        },
-        {
-          "name": "Storm Soul"
-        },
-        {
-          "name": "Shielding Storm"
-        },
-        {
-          "name": "Raging Storm"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -512,71 +252,6 @@
     },
     {
       "name": "Path of the Zealot",
-      "features": [
-        {
-          "name": "Path of the Zealot"
-        },
-        {
-          "name": "Divine Fury"
-        },
-        {
-          "name": "Warrior of the Gods",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "Die",
-              "levels": {
-                "3": "4d12",
-                "6": "5d12",
-                "12": "6d12",
-                "17": "7d12"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Warrior of the Gods",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Fanatical Focus"
-        },
-        {
-          "name": "Zealous Presence",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "10": 1
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Zealous Presence",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Rage of the Gods"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -608,23 +283,6 @@
     },
     {
       "name": "Path of the Beast",
-      "features": [
-        {
-          "name": "Path of the Beast"
-        },
-        {
-          "name": "Form of the Beast"
-        },
-        {
-          "name": "Bestial Soul"
-        },
-        {
-          "name": "Infectious Fury"
-        },
-        {
-          "name": "Call the Hunt"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -655,38 +313,6 @@
     },
     {
       "name": "Path of Wild Magic",
-      "features": [
-        {
-          "name": "Path of Wild Magic"
-        },
-        {
-          "name": "Magic Awareness"
-        },
-        {
-          "name": "Wild Surge"
-        },
-        {
-          "name": "Bolstering Magic"
-        },
-        {
-          "name": "Unstable Backlash",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Unstable Backlash",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Controlled Surge"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -718,41 +344,6 @@
     },
     {
       "name": "Path of the Giant",
-      "features": [
-        {
-          "name": "Giant Power",
-          "languages": [
-            "Giant"
-          ]
-        },
-        {
-          "name": "Giant's Havoc"
-        },
-        {
-          "name": "Path of the Giant"
-        },
-        {
-          "name": "Elemental Cleaver"
-        },
-        {
-          "name": "Mighty Impel",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Mighty Impel",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Demiurgic Colossus"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -784,26 +375,6 @@
     },
     {
       "name": "Path of the Wild Heart",
-      "features": [
-        {
-          "name": "Path of the Wild Heart"
-        },
-        {
-          "name": "Animal Speaker"
-        },
-        {
-          "name": "Rage of the Wilds"
-        },
-        {
-          "name": "Aspect of the Wilds"
-        },
-        {
-          "name": "Nature Speaker"
-        },
-        {
-          "name": "Power of the Wilds"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -835,35 +406,6 @@
     },
     {
       "name": "Path of the World Tree",
-      "features": [
-        {
-          "name": "Path of the World Tree"
-        },
-        {
-          "name": "Vitality of the Tree"
-        },
-        {
-          "name": "Branches of the Tree"
-        },
-        {
-          "name": "Battering Roots"
-        },
-        {
-          "name": "Travel Along the Tree",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Travel Along the Tree",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

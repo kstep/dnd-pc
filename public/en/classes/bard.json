@@ -2,286 +2,49 @@
   "": {
     "description": "An inspiring magician whose power echoes the music of creation."
   },
-  "feature.Bardic Inspiration": {
-    "description": "You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6. Using Bardic Inspiration: As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time. The creature can use the die within the next hour when the creature fails a D20 Test, adding the number rolled to the d20, potentially turning the failure into a success. The Bardic Inspiration die is lost if not used before the hour ends. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
-  },
-  "feature.Bardic Inspiration.field.Actions.option.Bardic Inspiration": {
-    "description": "Give one creature within 60 ft your Bardic Inspiration die to add to a failed d20 roll within 1 hour"
-  },
-  "feature.Spellcasting (Bard)": {
-    "description": "You have learned to cast spells through your bardic arts. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Bard spells, which appear in the Bard spell list later in the class's description. Cantrips: You know two cantrips of your choice from the Bard spell list. Dancing Lights and Vicious Mockery are recommended."
-  },
-  "feature.Expertise": {
-    "description": "You gain Expertise in two of your skill proficiencies of your choice. Performance and Persuasion are recommended if you have proficiency in them. At Bard level 9, you gain Expertise in two more of your skill proficiencies of your choice."
-  },
-  "feature.Jack of All Trades": {
-    "description": "You can add half your Proficiency (round down) to any ability check you make that uses a skill proficiency you lack and that doesn't otherwise use your Proficiency. For example, if you make a Strength (Athletics) check and lack Athletics proficiency, you can add half your Proficiency to the check."
-  },
-  "feature.Bard Subclass": {
-    "description": "You gain a Bard subclass of your choice. A subclass is a specialization that grants you features at certain Bard levels. For the rest of your career, you gain each of your subclass's features that are of your Bard level or lower."
-  },
-  "feature.Ability Score Improvement": {
-    "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20. Instead, you can choose another feat of your choice for which you qualify."
-  },
-  "feature.Font of Inspiration": {
-    "description": "You now regain all your expended uses of Bardic Inspiration when you finish a Short Rest or Long Rest. In addition, you can expend a spell slot (no action required) to regain one expended use of Bardic Inspiration."
-  },
-  "feature.Countercharm": {
-    "description": "You can use musical notes or words of power to disrupt mind-influencing effects. If you or a creature within 30 feet of you fails a saving throw against an effect that applies the Charmed or Frightened condition, you can take a Reaction to cause the save to be rerolled, and the new roll has Advantage."
-  },
-  "feature.Magical Secrets": {
-    "description": "You've learned secrets from various magical traditions. Whenever you reach a Bard level (including this level) and the Prepared Spells number in the Bard Features table increases, you can choose any of your new prepared spells from the Bard, Cleric, Druid, and Wizard spell lists, and the chosen spells count as Bard spells for you (see a class's section for its spell list)."
-  },
-  "feature.Superior Inspiration": {
-    "description": "When you roll Initiative, you regain expended uses of Bardic Inspiration until you have two if you have fewer than that."
-  },
-  "feature.Epic Boon": {
-    "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Spell Recall is recommended."
-  },
-  "feature.Words of Creation": {
-    "description": "You have mastered two of the Words of Creation: the words of life and death. You therefore always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature with it if that creature is within 10 feet of the first target."
-  },
   "feature.Class Proficiencies": {
     "description": "Saving throw and equipment proficiencies granted by this class."
   },
   "subclass.College of Lore": {
     "description": "Plumb the Depths of Magical Knowledge Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college's members gather in libraries and universities to share their lore with one another."
   },
-  "subclass.College of Lore.feature.College of Lore": {
-    "description": "Plumb the Depths of Magical Knowledge Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college's members gather in libraries and universities to share their lore with one another."
-  },
   "subclass.College of Lore.feature.Bonus Proficiencies": {
     "description": "You gain proficiency with three skills of your choice."
-  },
-  "subclass.College of Lore.feature.Cutting Words": {
-    "description": "You learn to use your wit to supernaturally distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of yourself makes a damage roll or succeeds on an ability check or attack roll, you can take a Reaction to expend one use of your Bardic Inspiration; roll your Bardic Inspiration die, and subtract the number rolled from the creature's roll, reducing the damage or potentially turning the success into a failure."
-  },
-  "subclass.College of Lore.feature.Magical Discoveries": {
-    "description": "You learn two spells of your choice. These spells can come from the Cleric, Druid, or Wizard spell list or any combination thereof (see a class's section for its spell list). A spell you choose must be a cantrip or a spell for which you have spell slots, as shown in the Bard Features table."
-  },
-  "subclass.College of Lore.feature.Peerless Skill": {
-    "description": "When you make an ability check or attack roll and fail, you can expend one use of Bardic Inspiration; roll the Bardic Inspiration die, and add the number rolled to the d20, potentially turning a failure into a success. On a failure, the Bardic Inspiration isn't expended."
   },
   "subclass.College of Valor": {
     "description": "Sing the Deeds of Ancient Heroes Bards of the College of Valor are daring storytellers whose tales preserve the memory of the great heroes of the past. These Bards sing the deeds of the mighty in vaulted halls or to crowds gathered around great bonfires."
   },
-  "subclass.College of Valor.feature.College of Valor": {
-    "description": "Sing the Deeds of Ancient Heroes Bards of the College of Valor are daring storytellers whose tales preserve the memory of the great heroes of the past. These Bards sing the deeds of the mighty in vaulted halls or to crowds gathered around great bonfires. They travel to witness great events firsthand and to ensure that the memory of these events doesn't pass away."
-  },
-  "subclass.College of Valor.feature.Combat Inspiration": {
-    "description": "You can use your wit to turn the tide of battle. A creature that has a Bardic Inspiration die from you can use it for one of the following effects. Defense: When the creature is hit by an attack roll, that creature can use its Reaction to roll the Bardic Inspiration die and add the number rolled to its AC against that attack, potentially causing the attack to miss. Offense: Immediately after you hit a target with an attack roll, you can expend the Bardic Inspiration die and add the number rolled to the attack's damage."
-  },
-  "subclass.College of Valor.feature.Martial Training": {
-    "description": "You gain proficiency with Martial weapons and training with Medium armor and Shield. In addition, you can use a Simple or Martial weapon as a Spellcasting Focus to cast spells from your Bard spell list."
-  },
-  "subclass.College of Valor.feature.Extra Attack": {
-    "description": "You can attack twice instead of once whenever you take the Attack action on your turn. In addition, you can cast one of your cantrips that has a casting time of an action in place of one of those attacks."
-  },
-  "subclass.College of Valor.feature.Battle Magic": {
-    "description": "After you cast a spell that has a casting time of an action, you can make one attack with a weapon as a Bonus Action."
-  },
   "subclass.College of Glamour": {
     "description": "Weave Beguiling Fey Magic The College of Glamour traces its origins to the beguiling magic of the Feywild. Bards who study this magic weave threads of beauty and terror into their songs and stories, and the mightiest among them can cloak themselves in otherworldly majesty."
-  },
-  "subclass.College of Glamour.feature.College of Glamour": {
-    "description": "Weave Beguiling Fey Magic The College of Glamour traces its origins to the beguiling magic of the Feywild. Bards who study this magic weave threads of beauty and terror into their songs and stories, and the mightiest among them can cloak themselves in otherworldly majesty."
-  },
-  "subclass.College of Glamour.feature.Beguiling Magic": {
-    "description": "You always have the Charm Person and Mirror Image spells prepared. In addition, immediately after you cast an Enchantment or Illusion spell using a spell slot, you can cause a creature you can see within 60 feet of yourself to make a Wisdom saving throw against your spell save DC. On a failed save, the target has the Charmed or Frightened condition (your choice) for 1 minute. The target repeats the save at the end of each of its turns, ending the effect on itself on a success. Once you use this benefit, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending one use of your Bardic Inspiration (no action required)."
-  },
-  "subclass.College of Glamour.feature.Beguiling Magic.spell.Charm Person": {
-    "description": "One Humanoid you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
-  },
-  "subclass.College of Glamour.feature.Beguiling Magic.spell.Mirror Image": {
-    "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
-  },
-  "subclass.College of Glamour.feature.Mantle of Inspiration": {
-    "description": "You can weave fey magic into a song or dance to fill others with vigor. As a Bonus Action, you can expend a use of Bardic Inspiration, rolling a Bardic Inspiration die. When you do so, choose a number of other creatures within 60 feet of yourself, up to a number equal to your Charisma modifier (minimum of one creature). Each of those creatures gains Temporary Hit Points equal to two times the number rolled on the Bardic Inspiration die and can use its Reaction to move up to its Speed without provoking Opportunity Attacks."
-  },
-  "subclass.College of Glamour.feature.Mantle of Majesty": {
-    "description": "You always have the Command spell prepared. As a Bonus Action, you cast Command without expending a spell slot, and you take on an unearthly appearance for 1 minute or until your Concentration ends. During this time, you can cast Command as a Bonus Action without expending a spell slot. Once you use this feature, you can't use it again until you finish a Long Rest, unless you expend a spell slot of level 3 or higher to restore your use of it (no action required)."
-  },
-  "subclass.College of Glamour.feature.Unbreakable Majesty": {
-    "description": "As a Bonus Action, you can assume a magically majestic presence for 1 minute or until you have the Incapacitated condition. For the duration, whenever any creature hits you with an attack roll for the first time on a turn, the attacker must succeed on a Charisma saving throw against your spell save DC, or the attack misses instead, as the creature recoils from your majesty."
   },
   "subclass.College of Swords": {
     "description": "Bards of the College of Swords are called blades, and they entertain through daring feats of weapon prowess. Blades perform stunts such as sword swallowing, knife throwing and juggling, and mock combats."
   },
-  "subclass.College of Swords.feature.College of Swords": {
-    "description": "Bards of the College of Swords are called blades, and they entertain through daring feats of weapon prowess. Blades perform stunts such as sword swallowing, knife throwing and juggling, and mock combats. Though they use their weapons to entertain, they are also highly trained and skilled warriors in their own right. Their talent with weapons inspires many blades to lead double lives."
-  },
-  "subclass.College of Swords.feature.Defensive Flourish": {
-    "description": "You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit. The damage equals the number you roll on the Bardic Inspiration die. You also add the number rolled to your AC until the start of your next turn."
-  },
-  "subclass.College of Swords.feature.Mobile Flourish": {
-    "description": "You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit. The damage equals the number you roll on the Bardic Inspiration die. You can also push the target up to 5 feet away from you, plus a number of feet equal to the number you roll on that die."
-  },
-  "subclass.College of Swords.feature.Slashing Flourish": {
-    "description": "You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit and to any other creature of your choice that you can see within 5 feet of you. The damage equals the number you roll on the Bardic Inspiration die."
-  },
-  "subclass.College of Swords.feature.Blade Flourish": {
-    "description": "You learn to perform impressive displays of martial prowess and speed. Whenever you take the Attack action on your turn, your walking speed increases by 10 feet until the end of the turn, and if a weapon attack that you make as part of this action hits a creature, you can use one of the following Blade Flourish options of your choice."
-  },
   "subclass.College of Swords.feature.Bonus Proficiencies": {
     "description": "You gain proficiency with medium armor and the scimitar. If you're proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells."
-  },
-  "subclass.College of Swords.feature.Fighting Style": {
-    "description": "You adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if something in the game lets you choose again."
-  },
-  "subclass.College of Swords.feature.Extra Attack": {
-    "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn."
-  },
-  "subclass.College of Swords.feature.Master's Flourish": {
-    "description": "Whenever you use a Blade Flourish option, you can roll a d6 and use it instead of expending a Bardic Inspiration die."
   },
   "subclass.College of Whispers": {
     "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather."
   },
-  "subclass.College of Whispers.feature.College of Whispers": {
-    "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather. In truth, the College of Whispers teaches its students that they are wolves among sheep."
-  },
   "subclass.College of Whispers.feature.Psychic Blades": {
     "description": "You gain the ability to make your weapon attacks magically toxic to a creature's mind. When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an extra 2d6 psychic damage to that target. You can do so only once per round on your turn."
-  },
-  "subclass.College of Whispers.feature.Words of Terror": {
-    "description": "You learn to infuse innocent-seeming words with an insidious magic that can inspire terror. If you speak to a humanoid alone for at least 1 minute, you can attempt to seed paranoia in its mind. At the end of the conversation, the target must succeed on a Wisdom saving throw against your spell save DC or be frightened of you or another creature of your choice."
-  },
-  "subclass.College of Whispers.feature.Mantle of Whispers": {
-    "description": "You gain the ability to adopt a humanoid's persona. When a humanoid dies within 30 feet of you, you can magically capture its shadow using your reaction. You retain this shadow until you use it or you finish a long rest. You can use the shadow as an action. When you do so, it vanishes, magically transforming into a disguise that appears on you."
-  },
-  "subclass.College of Whispers.feature.Shadow Lore": {
-    "description": "You gain the ability to weave dark magic into your words and tap into a creature's deepest fears. As an action, you magically whisper a phrase that only one creature of your choice within 30 feet of you can hear. The target must make a Wisdom saving throw against your spell save DC. It automatically succeeds if it doesn't share a language with you or if it can't hear you."
   },
   "subclass.College of Creation": {
     "description": "Bards believe the cosmos is a work of art-the creation of the first dragons and gods. That creative work included harmonies that continue to resound through existence today, a power known as the Song of Creation."
   },
-  "subclass.College of Creation.feature.College of Creation": {
-    "description": "Bards believe the cosmos is a work of art-the creation of the first dragons and gods. That creative work included harmonies that continue to resound through existence today, a power known as the Song of Creation."
-  },
-  "subclass.College of Creation.feature.Mote of Potential": {
-    "description": "Whenever you give a creature a Bardic Inspiration die, you can utter a note from the Song of Creation to create a Tiny mote of potential, which orbits within 5 feet of that creature. The mote is intangible and invulnerable, and it lasts until the Bardic Inspiration die is lost."
-  },
-  "subclass.College of Creation.feature.Performance of Creation": {
-    "description": "As an action, you can channel the magic of the Song of Creation to create one nonmagical item of your choice in an unoccupied space within 10 feet of you. The item must appear on a surface or in a liquid that can support it. The gp value of the item can't be more than 20 times your bard level, and the item must be Medium or smaller."
-  },
-  "subclass.College of Creation.feature.Animating Performance": {
-    "description": "As an action, you can animate one Large or smaller nonmagical item within 30 feet of you that isn't being worn or carried. The animate item uses the Dancing Item stat block, which uses your proficiency bonus (PB). The item is friendly to you and your companions and obeys your commands."
-  },
-  "subclass.College of Creation.feature.Creative Crescendo": {
-    "description": "When you use your Performance of Creation feature, you can create more than one item at once. The number of items equals your Charisma modifier (minimum of two items). If you create an item that would exceed that number, you choose which of the previously created items disappears."
-  },
   "subclass.College of Eloquence": {
     "description": "Adherents of the College of Eloquence master the art of oratory. Persuasion is regarded as a high art, and a well-reasoned, well-spoken argument often proves more persuasive than facts."
-  },
-  "subclass.College of Eloquence.feature.College of Eloquence": {
-    "description": "Adherents of the College of Eloquence master the art of oratory. Persuasion is regarded as a high art, and a well-reasoned, well-spoken argument often proves more persuasive than facts. These bards wield a blend of logic and theatrical wordplay, winning over skeptics and detractors with logical arguments and plucking at heartstrings to appeal to the emotions of audiences."
-  },
-  "subclass.College of Eloquence.feature.Silver Tongue": {
-    "description": "You are a master at saying the right thing at the right time. When you make a Charisma (Persuasion) or Charisma (Deception) check, you can treat a d20 roll of 9 or lower as a 10."
-  },
-  "subclass.College of Eloquence.feature.Unsettling Words": {
-    "description": "You can spin words laced with magic that unsettle a creature and cause it to doubt itself. As a bonus action, you can expend one use of your Bardic Inspiration and choose one creature you can see within 60 feet of you. Roll the Bardic Inspiration die."
-  },
-  "subclass.College of Eloquence.feature.Unfailing Inspiration": {
-    "description": "Your inspiring words are so persuasive that others feel driven to succeed. When a creature adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll fails, the creature can keep the Bardic Inspiration die."
-  },
-  "subclass.College of Eloquence.feature.Universal Speech": {
-    "description": "You have gained the ability to make your speech intelligible to any creature. As an action, choose one or more creatures within 60 feet of you, up to a number equal to your Charisma modifier (minimum of one creature). The chosen creatures can magically understand you, regardless of the language you speak, for 1 hour."
-  },
-  "subclass.College of Eloquence.feature.Infectious Inspiration": {
-    "description": "When you successfully inspire someone, the power of your eloquence can now spread to someone else. When a creature within 60 feet of you adds one of your Bardic Inspiration dice to its ability check, attack roll, or saving throw and the roll succeeds, you can use your reaction to encourage a different creature (other than yourself) that can hear you within 60 feet of you, giving it a Bardic Inspiration die without expending any of your Bardic Inspiration uses. You can use this reaction a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a long rest."
   },
   "subclass.College of Spirits": {
     "description": "Bards of the College of Spirits seek tales with inherent power—be they legends, histories, or fictions—and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more."
   },
-  "subclass.College of Spirits.feature.College of Spirits": {
-    "description": "Bards of the College of Spirits seek tales with inherent power—be they legends, histories, or fictions—and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more. Such spirits are capricious, though, and what a bard summons isn't always entirely under their control."
-  },
-  "subclass.College of Spirits.feature.Guiding Whispers": {
-    "description": "You can reach out to spirits to guide you and others. You learn the guidance cantrip, which doesn't count against the number of bard cantrips you know. For you, it has a range of 60 feet when you cast it."
-  },
-  "subclass.College of Spirits.feature.Spiritual Focus": {
-    "description": "You employ tools that aid you in channeling spirits, be they historical figures or fictional archetypes. You can use the following objects as a spellcasting focus for your bard spells: a candle, crystal ball, skull, spirit board, or tarokka deck."
-  },
-  "subclass.College of Spirits.feature.Tales from Beyond": {
-    "description": "You reach out to spirits who tell their tales through you. While you are holding your Spiritual Focus, you can use a bonus action to expend one use of your Bardic Inspiration and roll on the Spirit Tales table using your Bardic Inspiration die to determine the tale the spirits direct you to tell."
-  },
-  "subclass.College of Spirits.feature.Spirit Session": {
-    "description": "Spirits provide you with supernatural insights. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of willing creatures equal to your proficiency bonus (including yourself)."
-  },
-  "subclass.College of Spirits.feature.Mystical Connection": {
-    "description": "You now have the ability to nudge the spirits of Tales from Beyond toward certain tales. Whenever you roll on the Spirit Tales table, you can roll the die twice and choose which of the two effects to bestow. If you roll the same number on both dice, you can ignore the number and choose any effect on the table."
-  },
   "subclass.College of Dance": {
     "description": "Move in Harmony with the Cosmos Bards of the College of Dance know that the Words of Creation can't be contained within speech or song; the words are uttered by the movements of celestial bodies and flow through the motions of the smallest creatures."
-  },
-  "subclass.College of Dance.feature.College of Dance": {
-    "description": "Move in Harmony with the Cosmos Bards of the College of Dance know that the Words of Creation can't be contained within speech or song; the words are uttered by the movements of celestial bodies and flow through the motions of the smallest creatures. These Bards practice a way of being in harmony with the whirling cosmos that emphasizes agility, speed, and grace."
-  },
-  "subclass.College of Dance.feature.Agile Strikes": {
-    "description": "When you expend a use of your Bardic Inspiration as part of an action, a Bonus Action, or a Reaction, you can make one Unarmed Strike as part of that action, Bonus Action, or Reaction."
-  },
-  "subclass.College of Dance.feature.Bardic Damage": {
-    "description": "You can use Dexterity instead of Strength for the attack rolls of your Unarmed Strikes. When you deal damage with an Unarmed Strike, you can deal Bludgeoning damage equal to a roll of your Bardic Inspiration die plus your Dexterity modifier, instead of the strike's normal damage. This roll doesn't expend the die."
-  },
-  "subclass.College of Dance.feature.Dance Virtuoso": {
-    "description": "You have Advantage on any Charisma (Performance) check you make that involves you dancing."
-  },
-  "subclass.College of Dance.feature.Dazzling Footwork": {
-    "description": "While you aren't wearing armor or wielding a Shield, you gain the following benefits."
   },
   "subclass.College of Dance.feature.Unarmored Defense": {
     "description": "Your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
   },
-  "subclass.College of Dance.feature.Inspiring Movement": {
-    "description": "When an enemy you can see ends its turn within 5 feet of you, you can take a Reaction and expend one use of your Bardic Inspiration to move up to half your Speed. Then one ally of your choice within 30 feet of you can also move up to half their Speed using their Reaction. None of this feature's movement provokes Opportunity Attack."
-  },
-  "subclass.College of Dance.feature.Tandem Footwork": {
-    "description": "When you roll Initiative, you can expend one use of your Bardic Inspiration if you don't have the Incapacitated condition. When you do so, roll your Bardic Inspiration die; you and each ally within 30 feet of you who can see or hear you gains a bonus to Initiative equal to the number rolled."
-  },
-  "subclass.College of Dance.feature.Leading Evasion": {
-    "description": "When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw and only half damage if you fail. If any creatures within 5 feet of you are making the same Dexterity saving throw, you can share this benefit with them for that save. You can't use this feature if you have the Incapacitated condition."
-  },
   "subclass.College of the Moon": {
     "description": "Inspire Allies with Primal Tales The College of the Moon traces its origins to the ancient druidic circles of the Moonshae Isles, who entrusted the first Bards of this tradition with chronicling the stories of the islands and their people."
-  },
-  "subclass.College of the Moon.feature.College of the Moon": {
-    "description": "Inspire Allies with Primal Tales The College of the Moon traces its origins to the ancient druidic circles of the Moonshae Isles, who entrusted the first Bards of this tradition with chronicling the stories of the islands and their people."
-  },
-  "subclass.College of the Moon.feature.Moon's Inspiration": {
-    "description": "The primal and ever-changing power of the moon flows through you, granting you the following benefits. Inspired Eclipse: When you take a Bonus Action to give a creature a Bardic Inspiration die, you can have the Invisible condition and teleport up to 30 feet to an unoccupied space you can see as part of that Bonus Action."
-  },
-  "subclass.College of the Moon.feature.Primal Lore": {
-    "description": "You learn Druidic and one cantrip from the Druid spell list. It counts as a Bard spell for you but doesn't count against the number of cantrips you know. Whenever you gain a Bard level, you can replace this cantrip with another cantrip of your choice from the Druid spell list. Additionally, choose one of the following skills: Animal Handling, Insight, Medicine, Nature, Perception, or Survival."
-  },
-  "subclass.College of the Moon.feature.Blessing of Moonlight": {
-    "description": "You always have the Moonbeam spell prepared. When you cast Moonbeam, you can modify the spell so that you glow faintly while the spell is active. While glowing, you shed Dim Light out to 5 feet, and whenever a creature fails its saving throw against the effects of this Moonbeam, another creature of your choice that you can see within 60 feet of yourself regains 2d4 Hit Points."
-  },
-  "subclass.College of the Moon.feature.Eventide's Splendor": {
-    "description": "You become suffused with the might of the moon, improving your Moon's Inspiration in the following ways. Shadow of the New Moon: When you use Inspired Eclipse, the creature who received the Bardic Inspiration die can also have the Invisible condition and immediately take a Reaction to teleport up to 30 feet to an unoccupied space it can see."
-  },
-  "subclass.College of Glamour.feature.Mantle of Majesty.field.Free Uses": {
-    "label": "Free Uses"
-  },
-  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Free Uses": {
-    "label": "Free Uses"
-  },
-  "subclass.College of Glamour.feature.Mantle of Inspiration.field.Actions.option.Mantle of Inspiration": {
-    "description": "Expend Bardic Inspiration: up to CHA mod creatures within 60 ft each gain temp HP = 2× die roll and can Reaction-move full Speed without provoking Opportunity Attacks"
-  },
-  "subclass.College of Glamour.feature.Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
-    "description": "Cast Command (no spell slot) and assume unearthly appearance for 1 min (Concentration); during this time cast Command as Bonus Action for free each turn"
-  },
-  "subclass.College of Glamour.feature.Unbreakable Majesty.field.Actions.option.Unbreakable Majesty": {
-    "description": "Assume majestic presence for 1 min: whenever a creature hits you for the first time on a turn, it must succeed on a CHA save vs spell DC or the attack misses"
-  },
-  "subclass.College of Eloquence.feature.Unsettling Words.field.Actions.option.Unsettling Words": {
-    "description": "Expend Bardic Inspiration: one creature within 60 ft must subtract the die roll from its next saving throw before your next turn"
-  },
-  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Actions.option.Infectious Inspiration": {
-    "description": "When an ally succeeds on a roll using your Bardic Inspiration die, give a different creature within 60 ft a free Bardic Inspiration die (no use expended)"
-  },
-  "subclass.College of Spirits.feature.Tales from Beyond.field.Actions.option.Tales from Beyond": {
-    "description": "Expend Bardic Inspiration and roll on the Spirit Tales table using the die to determine which random tale effect the spirits grant"
   }
 }

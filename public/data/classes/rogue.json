@@ -3,137 +3,6 @@
   "hit_die": 8,
   "features": [
     {
-      "name": "Expertise",
-      "stackable": true
-    },
-    {
-      "name": "Sneak Attack",
-      "fields": [
-        {
-          "name": "Sneak Attack",
-          "kind": "Die",
-          "levels": {
-            "1": "1d6",
-            "3": "2d6",
-            "5": "3d6",
-            "7": "4d6",
-            "9": "5d6",
-            "11": "6d6",
-            "13": "7d6",
-            "15": "8d6",
-            "17": "9d6",
-            "19": "10d6"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Thieves' Cant",
-      "languages": [
-        "Thieves' Cant"
-      ]
-    },
-    {
-      "name": "Weapon Mastery (Rogue)",
-      "fields": [
-        {
-          "name": "Weapon",
-          "kind": "Choice",
-          "levels": {
-            "1": 2
-          }
-        }
-      ]
-    },
-    {
-      "name": "Cunning Action",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Dash",
-              "action": "BonusAction"
-            },
-            {
-              "name": "Disengage",
-              "action": "BonusAction"
-            },
-            {
-              "name": "Hide",
-              "action": "BonusAction"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Rogue Subclass"
-    },
-    {
-      "name": "Steady Aim",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Steady Aim",
-              "action": "BonusAction"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Ability Score Improvement",
-      "stackable": true
-    },
-    {
-      "name": "Cunning Strike"
-    },
-    {
-      "name": "Uncanny Dodge",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Uncanny Dodge",
-              "action": "Reaction"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Evasion"
-    },
-    {
-      "name": "Reliable Talent"
-    },
-    {
-      "name": "Improved Cunning Strike"
-    },
-    {
-      "name": "Devious Strikes"
-    },
-    {
-      "name": "Slippery Mind"
-    },
-    {
-      "name": "Elusive"
-    },
-    {
-      "name": "Epic Boon",
-      "stackable": true
-    },
-    {
-      "name": "Stroke of Luck"
-    },
-    {
       "name": "Class Proficiencies",
       "assign": [
         {
@@ -249,199 +118,6 @@
   "subclasses": [
     {
       "name": "Arcane Trickster",
-      "features": [
-        {
-          "name": "Arcane Trickster"
-        },
-        {
-          "name": "Mage Hand Legerdemain",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Mage Hand Legerdemain",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Spellcasting (Arcane Trickster)",
-          "spells": {
-            "casting_ability": 3,
-            "caster_coef": 3,
-            "list": {
-              "from": "spells/wizard.json"
-            },
-            "levels": {
-              "1": {},
-              "2": {},
-              "3": {
-                "cantrips": 3,
-                "spells": 3,
-                "slots": [
-                  2
-                ]
-              },
-              "4": {
-                "cantrips": 3,
-                "spells": 4,
-                "slots": [
-                  3
-                ]
-              },
-              "5": {
-                "cantrips": 3,
-                "spells": 4,
-                "slots": [
-                  3
-                ]
-              },
-              "6": {
-                "cantrips": 3,
-                "spells": 4,
-                "slots": [
-                  3
-                ]
-              },
-              "7": {
-                "cantrips": 3,
-                "spells": 5,
-                "slots": [
-                  4,
-                  2
-                ]
-              },
-              "8": {
-                "cantrips": 3,
-                "spells": 6,
-                "slots": [
-                  4,
-                  2
-                ]
-              },
-              "9": {
-                "cantrips": 3,
-                "spells": 6,
-                "slots": [
-                  4,
-                  2
-                ]
-              },
-              "10": {
-                "cantrips": 4,
-                "spells": 7,
-                "slots": [
-                  4,
-                  3
-                ]
-              },
-              "11": {
-                "cantrips": 4,
-                "spells": 8,
-                "slots": [
-                  4,
-                  3
-                ]
-              },
-              "12": {
-                "cantrips": 4,
-                "spells": 8,
-                "slots": [
-                  4,
-                  3
-                ]
-              },
-              "13": {
-                "cantrips": 4,
-                "spells": 9,
-                "slots": [
-                  4,
-                  3,
-                  2
-                ]
-              },
-              "14": {
-                "cantrips": 4,
-                "spells": 10,
-                "slots": [
-                  4,
-                  3,
-                  2
-                ]
-              },
-              "15": {
-                "cantrips": 4,
-                "spells": 10,
-                "slots": [
-                  4,
-                  3,
-                  2
-                ]
-              },
-              "16": {
-                "cantrips": 4,
-                "spells": 11,
-                "slots": [
-                  4,
-                  3,
-                  3
-                ]
-              },
-              "17": {
-                "cantrips": 4,
-                "spells": 11,
-                "slots": [
-                  4,
-                  3,
-                  3
-                ]
-              },
-              "18": {
-                "cantrips": 4,
-                "spells": 11,
-                "slots": [
-                  4,
-                  3,
-                  3
-                ]
-              },
-              "19": {
-                "cantrips": 4,
-                "spells": 12,
-                "slots": [
-                  4,
-                  3,
-                  3,
-                  1
-                ]
-              },
-              "20": {
-                "cantrips": 4,
-                "spells": 13,
-                "slots": [
-                  4,
-                  3,
-                  3,
-                  1
-                ]
-              }
-            }
-          }
-        },
-        {
-          "name": "Magical Ambush"
-        },
-        {
-          "name": "Versatile Trickster"
-        },
-        {
-          "name": "Spell Thief"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -473,26 +149,6 @@
     },
     {
       "name": "Assassin",
-      "features": [
-        {
-          "name": "Assassin"
-        },
-        {
-          "name": "Assassin's Tools"
-        },
-        {
-          "name": "Assassinate"
-        },
-        {
-          "name": "Infiltration Expertise"
-        },
-        {
-          "name": "Envenom Weapons"
-        },
-        {
-          "name": "Death Strike"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -524,38 +180,6 @@
     },
     {
       "name": "Thief",
-      "features": [
-        {
-          "name": "Fast Hands",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Fast Hands",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Second-Story Work"
-        },
-        {
-          "name": "Thief"
-        },
-        {
-          "name": "Supreme Sneak"
-        },
-        {
-          "name": "Use Magic Device"
-        },
-        {
-          "name": "Thief's Reflexes"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -587,53 +211,6 @@
     },
     {
       "name": "Inquisitive",
-      "features": [
-        {
-          "name": "Inquisitive"
-        },
-        {
-          "name": "Ear for Deceit"
-        },
-        {
-          "name": "Eye for Detail",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Eye for Detail",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Insightful Fighting",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Insightful Fighting",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Steady Eye"
-        },
-        {
-          "name": "Unerring Eye"
-        },
-        {
-          "name": "Eye for Weakness"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -666,50 +243,6 @@
     },
     {
       "name": "Mastermind",
-      "features": [
-        {
-          "name": "Mastermind"
-        },
-        {
-          "name": "Master of Intrigue"
-        },
-        {
-          "name": "Master of Tactics",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Master of Tactics",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Insightful Manipulator"
-        },
-        {
-          "name": "Misdirection",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Misdirection",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Soul of Deceit"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -741,50 +274,6 @@
     },
     {
       "name": "Scout",
-      "features": [
-        {
-          "name": "Scout"
-        },
-        {
-          "name": "Skirmisher",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Skirmisher",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Survivalist"
-        },
-        {
-          "name": "Superior Mobility"
-        },
-        {
-          "name": "Ambush Master"
-        },
-        {
-          "name": "Sudden Strike",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Sudden Strike",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -816,38 +305,6 @@
     },
     {
       "name": "Swashbuckler",
-      "features": [
-        {
-          "name": "Swashbuckler"
-        },
-        {
-          "name": "Fancy Footwork"
-        },
-        {
-          "name": "Rakish Audacity"
-        },
-        {
-          "name": "Panache"
-        },
-        {
-          "name": "Elegant Maneuver",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Elegant Maneuver",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Master Duelist"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -879,68 +336,6 @@
     },
     {
       "name": "Phantom",
-      "features": [
-        {
-          "name": "Phantom"
-        },
-        {
-          "name": "Wails from the Grave"
-        },
-        {
-          "name": "Whispers of the Dead"
-        },
-        {
-          "name": "Tokens of the Departed",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "9": "PROF_BONUS"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Tokens of the Departed",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Ghost Walk",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "13": 1
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Ghost Walk",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Death's Friend"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -974,12 +369,6 @@
       "name": "Soulknife",
       "features": [
         {
-          "name": "Soulknife"
-        },
-        {
-          "name": "Psionic Power"
-        },
-        {
           "name": "Psychic Blades",
           "fields": [
             {
@@ -993,70 +382,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Psi-Bolstered Knack"
-        },
-        {
-          "name": "Psychic Whispers",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Psychic Whispers",
-                  "action": "Action"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Homing Strikes"
-        },
-        {
-          "name": "Psychic Teleportation",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Psychic Teleportation",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Soul Blades"
-        },
-        {
-          "name": "Psychic Veil",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": { "13": 1 }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Psychic Veil",
-                  "action": "Action",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Rend Mind"
         }
       ],
       "levels": {
@@ -1094,26 +419,6 @@
     },
     {
       "name": "Scion of the Three",
-      "features": [
-        {
-          "name": "Bloodthirst"
-        },
-        {
-          "name": "Dread Allegiance"
-        },
-        {
-          "name": "Scion of the Three"
-        },
-        {
-          "name": "Strike Fear"
-        },
-        {
-          "name": "Aura of Malevolence"
-        },
-        {
-          "name": "Dread Incarnate"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

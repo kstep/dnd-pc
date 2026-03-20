@@ -3,205 +3,8 @@
   "hit_die": 8,
   "features": [
     {
-      "name": "Martial Arts",
-      "fields": [
-        {
-          "name": "Martial Arts Die",
-          "kind": "Die",
-          "levels": {
-            "1": "1d6",
-            "5": "1d8",
-            "11": "1d10",
-            "17": "1d12"
-          }
-        },
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Bonus Unarmed Strike",
-              "action": "BonusAction"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Unarmored Defense",
       "ac_expr": "10 + DEX.MOD + WIS.MOD"
-    },
-    {
-      "name": "Monk's Focus",
-      "fields": [
-        {
-          "name": "Focus Points",
-          "kind": "Points",
-          "levels": {
-            "2": 2,
-            "3": 3,
-            "4": 4,
-            "5": 5,
-            "6": 6,
-            "7": 7,
-            "8": 8,
-            "9": 9,
-            "10": 10,
-            "11": 11,
-            "12": 12,
-            "13": 13,
-            "14": 14,
-            "15": 15,
-            "16": 16,
-            "17": 17,
-            "18": 18,
-            "19": 19,
-            "20": 20
-          }
-        },
-        {
-          "name": "Focus Actions",
-          "kind": "Choice",
-          "cost": "Focus Points",
-          "options": [
-            {
-              "name": "Flurry of Blows",
-              "cost": 1,
-              "action": "BonusAction"
-            },
-            {
-              "name": "Patient Defense",
-              "cost": 1,
-              "action": "BonusAction"
-            },
-            {
-              "name": "Step of the Wind",
-              "cost": 1,
-              "action": "BonusAction"
-            },
-            {
-              "name": "Stunning Strike",
-              "cost": 1,
-              "action": "Action",
-              "level": 5
-            },
-            {
-              "name": "Superior Defense",
-              "cost": 3,
-              "action": "Action",
-              "level": 18
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Unarmored Movement",
-      "fields": [
-        {
-          "name": "Unarmored Movement",
-          "kind": "Bonus",
-          "levels": {
-            "2": 10,
-            "6": 15,
-            "10": 20,
-            "14": 25,
-            "18": 30
-          }
-        }
-      ],
-      "assign": [
-        {
-          "expr": "SPEED += 10 + 5 * ((CLASS_LEVEL - 2) / 4)",
-          "when": "OnCompute"
-        }
-      ]
-    },
-    {
-      "name": "Uncanny Metabolism"
-    },
-    {
-      "name": "Deflect Attacks",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Deflect Attacks",
-              "action": "Reaction"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Monk Subclass"
-    },
-    {
-      "name": "Ability Score Improvement",
-      "stackable": true
-    },
-    {
-      "name": "Slow Fall",
-      "fields": [
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "options": [
-            {
-              "name": "Slow Fall",
-              "action": "Reaction"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Extra Attack"
-    },
-    {
-      "name": "Stunning Strike"
-    },
-    {
-      "name": "Empowered Strikes"
-    },
-    {
-      "name": "Evasion"
-    },
-    {
-      "name": "Acrobatic Movement"
-    },
-    {
-      "name": "Heightened Focus"
-    },
-    {
-      "name": "Self-Restoration"
-    },
-    {
-      "name": "Deflect Energy"
-    },
-    {
-      "name": "Disciplined Survivor"
-    },
-    {
-      "name": "Perfect Focus"
-    },
-    {
-      "name": "Superior Defense"
-    },
-    {
-      "name": "Epic Boon",
-      "stackable": true
-    },
-    {
-      "name": "Body and Mind",
-      "assign": [
-        {
-          "expr": "DEX = min(DEX + 4, 25); WIS = min(WIS + 4, 25)",
-          "when": "OnFeatureAdd"
-        }
-      ]
     },
     {
       "name": "Class Proficiencies",
@@ -322,23 +125,6 @@
   "subclasses": [
     {
       "name": "Way of the Long Death",
-      "features": [
-        {
-          "name": "Way of the Long Death"
-        },
-        {
-          "name": "Touch of Death"
-        },
-        {
-          "name": "Hour of Reaping"
-        },
-        {
-          "name": "Mastery of Death"
-        },
-        {
-          "name": "Touch of the Long Death"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -371,42 +157,7 @@
       "name": "Way of the Drunken Master",
       "features": [
         {
-          "name": "Way of the Drunken Master"
-        },
-        {
           "name": "Bonus Proficiencies"
-        },
-        {
-          "name": "Drunken Technique"
-        },
-        {
-          "name": "Leap to Your Feet"
-        },
-        {
-          "name": "Redirect Attack",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Redirect Attack",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Tipsy Sway"
-        },
-        {
-          "name": "Drunkard's Luck"
-        },
-        {
-          "name": "Intoxicated Frenzy"
         }
       ],
       "levels": {
@@ -442,55 +193,6 @@
     },
     {
       "name": "Way of the Kensei",
-      "features": [
-        {
-          "name": "Agile Parry"
-        },
-        {
-          "name": "Kensei's Shot",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Kensei's Shot",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Way of the Kensei"
-        },
-        {
-          "name": "Path of the Kensei"
-        },
-        {
-          "name": "One with the Blade"
-        },
-        {
-          "name": "Sharpen the Blade",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Sharpen the Blade",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Unerring Accuracy"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -523,49 +225,6 @@
     },
     {
       "name": "Way of the Sun Soul",
-      "features": [
-        {
-          "name": "Way of the Sun Soul"
-        },
-        {
-          "name": "Radiant Sun Bolt"
-        },
-        {
-          "name": "Searing Arc Strike",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Searing Arc Strike",
-                  "action": "BonusAction",
-                  "cost": 2
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Searing Sunburst"
-        },
-        {
-          "name": "Sun Shield",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Sun Shield",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -596,68 +255,6 @@
     },
     {
       "name": "Way of the Astral Self",
-      "features": [
-        {
-          "name": "Way of the Astral Self"
-        },
-        {
-          "name": "Arms of the Astral Self",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Arms of the Astral Self",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Forms of Your Astral Self"
-        },
-        {
-          "name": "Visage of the Astral Self",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Visage of the Astral Self",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Body of the Astral Self"
-        },
-        {
-          "name": "Awakened Astral Self",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Awakened Astral Self",
-                  "action": "BonusAction",
-                  "cost": 5
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -689,38 +286,6 @@
     },
     {
       "name": "Way of the Ascendant Dragon",
-      "features": [
-        {
-          "name": "Way of the Ascendant Dragon"
-        },
-        {
-          "name": "Breath of the Dragon"
-        },
-        {
-          "name": "Draconic Disciple"
-        },
-        {
-          "name": "Wings Unfurled"
-        },
-        {
-          "name": "Aspect of the Wyrm",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Aspect of the Wyrm",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Ascendant Aspect"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -752,57 +317,6 @@
     },
     {
       "name": "Warrior of Mercy",
-      "features": [
-        {
-          "name": "Warrior of Mercy"
-        },
-        {
-          "name": "Hand of Harm"
-        },
-        {
-          "name": "Hand of Healing",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Hand of Healing",
-                  "action": "Action",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Implements of Mercy"
-        },
-        {
-          "name": "Physician's Touch"
-        },
-        {
-          "name": "Flurry of Healing and Harm"
-        },
-        {
-          "name": "Hand of Ultimate Mercy",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Hand of Ultimate Mercy",
-                  "action": "Action",
-                  "cost": 5
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -835,67 +349,6 @@
     },
     {
       "name": "Warrior of Shadow",
-      "features": [
-        {
-          "name": "Shadow Arts"
-        },
-        {
-          "name": "Warrior of Shadow"
-        },
-        {
-          "name": "Darkness"
-        },
-        {
-          "name": "Darkvision"
-        },
-        {
-          "name": "Shadowy Figments",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Minor Illusion",
-                "level": 0
-              }
-            ]
-          }
-        },
-        {
-          "name": "Shadow Step",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Shadow Step",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Improved Shadow Step"
-        },
-        {
-          "name": "Cloak of Shadows",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Cloak of Shadows",
-                  "action": "Action",
-                  "cost": 3
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -929,49 +382,6 @@
     },
     {
       "name": "Warrior of the Elements",
-      "features": [
-        {
-          "name": "Elemental Attunement"
-        },
-        {
-          "name": "Manipulate Elements",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Elementalism",
-                "level": 0
-              }
-            ]
-          }
-        },
-        {
-          "name": "Warrior of the Elements"
-        },
-        {
-          "name": "Elemental Burst",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Focus Points",
-              "options": [
-                {
-                  "name": "Elemental Burst",
-                  "action": "Action",
-                  "cost": 2
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Stride of the Elements"
-        },
-        {
-          "name": "Elemental Epitome"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -1003,44 +413,6 @@
     },
     {
       "name": "Warrior of the Open Hand",
-      "features": [
-        {
-          "name": "Open Hand Technique"
-        },
-        {
-          "name": "Warrior of the Open Hand"
-        },
-        {
-          "name": "Wholeness of Body",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "6": "max(1, WIS.MOD)"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Wholeness of Body",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Fleet Step"
-        },
-        {
-          "name": "Quivering Palm"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

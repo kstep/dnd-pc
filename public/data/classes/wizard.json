@@ -3,295 +3,6 @@
   "hit_die": 6,
   "features": [
     {
-      "name": "Arcane Recovery"
-    },
-    {
-      "name": "Ritual Adept"
-    },
-    {
-      "name": "Spellcasting (Wizard)",
-      "spells": {
-        "casting_ability": 3,
-        "list": {
-          "from": "spells/wizard.json"
-        },
-        "levels": {
-          "1": {
-            "cantrips": 3,
-            "slots": [
-              2
-            ],
-            "spells": 4,
-            "known": 6
-          },
-          "2": {
-            "cantrips": 3,
-            "slots": [
-              3
-            ],
-            "spells": 5,
-            "known": 8
-          },
-          "3": {
-            "cantrips": 3,
-            "slots": [
-              4,
-              2
-            ],
-            "spells": 6,
-            "known": 10
-          },
-          "4": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3
-            ],
-            "spells": 7,
-            "known": 12
-          },
-          "5": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              2
-            ],
-            "spells": 9,
-            "known": 14
-          },
-          "6": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3
-            ],
-            "spells": 10,
-            "known": 16
-          },
-          "7": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              1
-            ],
-            "spells": 11,
-            "known": 18
-          },
-          "8": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              2
-            ],
-            "spells": 12,
-            "known": 20
-          },
-          "9": {
-            "cantrips": 4,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              1
-            ],
-            "spells": 14,
-            "known": 22
-          },
-          "10": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2
-            ],
-            "spells": 15,
-            "known": 24
-          },
-          "11": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1
-            ],
-            "spells": 16,
-            "known": 26
-          },
-          "12": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1
-            ],
-            "spells": 16,
-            "known": 28
-          },
-          "13": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1
-            ],
-            "spells": 17,
-            "known": 30
-          },
-          "14": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1
-            ],
-            "spells": 18,
-            "known": 32
-          },
-          "15": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ],
-            "spells": 19,
-            "known": 34
-          },
-          "16": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ],
-            "spells": 21,
-            "known": 36
-          },
-          "17": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1,
-              1
-            ],
-            "spells": 22,
-            "known": 38
-          },
-          "18": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              1,
-              1,
-              1,
-              1
-            ],
-            "spells": 23,
-            "known": 40
-          },
-          "19": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              2,
-              1,
-              1,
-              1
-            ],
-            "spells": 24,
-            "known": 42
-          },
-          "20": {
-            "cantrips": 5,
-            "slots": [
-              4,
-              3,
-              3,
-              3,
-              3,
-              2,
-              2,
-              1,
-              1
-            ],
-            "spells": 25,
-            "known": 44
-          }
-        },
-        "caster_coef": 1
-      }
-    },
-    {
-      "name": "Scholar"
-    },
-    {
-      "name": "Wizard Subclass"
-    },
-    {
-      "name": "Ability Score Improvement",
-      "stackable": true
-    },
-    {
-      "name": "Memorize Spell"
-    },
-    {
-      "name": "Spell Mastery"
-    },
-    {
-      "name": "Epic Boon",
-      "stackable": true
-    },
-    {
-      "name": "Signature Spells"
-    },
-    {
       "name": "Class Proficiencies",
       "assign": [
         {
@@ -391,50 +102,6 @@
   "subclasses": [
     {
       "name": "School of Conjuration",
-      "features": [
-        {
-          "name": "School of Conjuration"
-        },
-        {
-          "name": "Conjuration Savant"
-        },
-        {
-          "name": "Minor Conjuration",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Minor Conjuration",
-                  "action": "Action"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Benign Transposition",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Benign Transposition",
-                  "action": "Action"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Focused Conjuration"
-        },
-        {
-          "name": "Durable Summons"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -472,47 +139,6 @@
     },
     {
       "name": "School of Enchantment",
-      "features": [
-        {
-          "name": "School of Enchantment"
-        },
-        {
-          "name": "Enchantment Savant"
-        },
-        {
-          "name": "Hypnotic Gaze"
-        },
-        {
-          "name": "Instinctive Charm",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "6": 1
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Instinctive Charm",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Split Enchantment"
-        },
-        {
-          "name": "Alter Memories"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -550,26 +176,6 @@
     },
     {
       "name": "School of Necromancy",
-      "features": [
-        {
-          "name": "School of Necromancy"
-        },
-        {
-          "name": "Grim Harvest"
-        },
-        {
-          "name": "Necromancy Savant"
-        },
-        {
-          "name": "Undead Thralls"
-        },
-        {
-          "name": "Inured to Undeath"
-        },
-        {
-          "name": "Command Undead"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -607,47 +213,6 @@
     },
     {
       "name": "School of Transmutation",
-      "features": [
-        {
-          "name": "School of Transmutation"
-        },
-        {
-          "name": "Minor Alchemy"
-        },
-        {
-          "name": "Transmutation Savant"
-        },
-        {
-          "name": "Transmuter's Stone"
-        },
-        {
-          "name": "Shapechanger"
-        },
-        {
-          "name": "Master Transmuter",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "14": 1
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Master Transmuter",
-                  "action": "Action",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -685,44 +250,6 @@
     },
     {
       "name": "War Magic",
-      "features": [
-        {
-          "name": "War Magic"
-        },
-        {
-          "name": "Arcane Deflection",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Arcane Deflection",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Tactical Wit",
-          "assign": [
-            {
-              "expr": "INITIATIVE.BONUS += INT.MOD",
-              "when": "OnCompute"
-            }
-          ]
-        },
-        {
-          "name": "Power Surge"
-        },
-        {
-          "name": "Durable Magic"
-        },
-        {
-          "name": "Deflecting Shroud"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -760,86 +287,6 @@
     },
     {
       "name": "Chronurgy Magic",
-      "features": [
-        {
-          "name": "Chronurgy Magic"
-        },
-        {
-          "name": "Chronal Shift",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "2": "PROF_BONUS"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Chronal Shift",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Temporal Awareness",
-          "assign": [
-            {
-              "expr": "INITIATIVE.BONUS += INT.MOD",
-              "when": "OnCompute"
-            }
-          ]
-        },
-        {
-          "name": "Momentary Stasis",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "6": "max(1, INT.MOD)"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Momentary Stasis",
-                  "action": "Action",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Arcane Abeyance"
-        },
-        {
-          "name": "Convergent Future",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Convergent Future",
-                  "action": "Reaction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -877,44 +324,6 @@
     },
     {
       "name": "Graviturgy Magic",
-      "features": [
-        {
-          "name": "Graviturgy Magic"
-        },
-        {
-          "name": "Adjust Density"
-        },
-        {
-          "name": "Gravity Well"
-        },
-        {
-          "name": "Violent Attraction",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "10": "max(1, INT.MOD)"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Violent Attraction",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Event Horizon"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -951,47 +360,6 @@
     },
     {
       "name": "Order of Scribes",
-      "features": [
-        {
-          "name": "Order of Scribes"
-        },
-        {
-          "name": "Awakened Spellbook"
-        },
-        {
-          "name": "Wizardly Quill"
-        },
-        {
-          "name": "Manifest Mind",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "6": "PROF_BONUS"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Manifest Mind",
-                  "action": "BonusAction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Master Scrivener"
-        },
-        {
-          "name": "One with the Word"
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -1031,18 +399,6 @@
       "name": "Abjurer",
       "features": [
         {
-          "name": "Abjurer"
-        },
-        {
-          "name": "Abjuration Savant"
-        },
-        {
-          "name": "Arcane Ward"
-        },
-        {
-          "name": "Projected Ward"
-        },
-        {
           "name": "Spell Breaker",
           "spells": {
             "casting_ability": 3,
@@ -1061,9 +417,6 @@
               }
             ]
           }
-        },
-        {
-          "name": "Spell Resistance"
         }
       ],
       "levels": {
@@ -1097,37 +450,6 @@
     },
     {
       "name": "Diviner",
-      "features": [
-        {
-          "name": "Diviner"
-        },
-        {
-          "name": "Divination Savant"
-        },
-        {
-          "name": "Portent"
-        },
-        {
-          "name": "Expert Divination"
-        },
-        {
-          "name": "The Third Eye",
-          "spells": {
-            "casting_ability": 3,
-            "list": [
-              {
-                "name": "See Invisibility",
-                "level": 2,
-                "sticky": true,
-                "min_level": 10
-              }
-            ]
-          }
-        },
-        {
-          "name": "Greater Portent"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -1159,26 +481,6 @@
     },
     {
       "name": "Evoker",
-      "features": [
-        {
-          "name": "Evoker"
-        },
-        {
-          "name": "Evocation Savant"
-        },
-        {
-          "name": "Potent Cantrip"
-        },
-        {
-          "name": "Sculpt Spells"
-        },
-        {
-          "name": "Empowered Evocation"
-        },
-        {
-          "name": "Overchannel"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -1210,64 +512,6 @@
     },
     {
       "name": "Illusionist",
-      "features": [
-        {
-          "name": "Illusionist"
-        },
-        {
-          "name": "Illusion Savant"
-        },
-        {
-          "name": "Improved Illusions",
-          "spells": {
-            "casting_ability": 3,
-            "list": [
-              {
-                "name": "Minor Illusion",
-                "level": 0
-              }
-            ]
-          }
-        },
-        {
-          "name": "Phantasmal Creatures",
-          "spells": {
-            "casting_ability": 3,
-            "list": [
-              {
-                "name": "Summon Beast",
-                "level": 2,
-                "sticky": true,
-                "min_level": 6
-              },
-              {
-                "name": "Summon Fey",
-                "level": 3,
-                "sticky": true,
-                "min_level": 6
-              }
-            ]
-          }
-        },
-        {
-          "name": "Illusory Self"
-        },
-        {
-          "name": "Illusory Reality",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Illusory Reality",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -1299,38 +543,6 @@
     },
     {
       "name": "Bladesinger",
-      "features": [
-        {
-          "name": "Bladesinger"
-        },
-        {
-          "name": "Bladesong",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Bladesong",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Training in War and Song"
-        },
-        {
-          "name": "Extra Attack"
-        },
-        {
-          "name": "Song of Defense"
-        },
-        {
-          "name": "Song of Victory"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
