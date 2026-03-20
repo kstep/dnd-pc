@@ -1,0 +1,309 @@
+[
+  {
+    "name": "Alert",
+    "assign": [{"expr": "INITIATIVE.BONUS += PROF_BONUS", "when": "OnCompute"}]
+  },
+  {
+    "name": "Crafter",
+    "stackable": true
+  },
+  {
+    "name": "Healer"
+  },
+  {
+    "name": "Lucky",
+    "fields": [
+      {"name": "Luck Points", "kind": "FreeUses", "levels": {"1": "PROF_BONUS"}}
+    ]
+  },
+  {
+    "name": "Magic Initiate",
+    "stackable": true
+  },
+  {
+    "name": "Musician"
+  },
+  {
+    "name": "Savage Attacker"
+  },
+  {
+    "name": "Skilled",
+    "stackable": true
+  },
+  {
+    "name": "Tavern Brawler"
+  },
+  {
+    "name": "Tough",
+    "assign": [{"expr": "MAX_HP += LEVEL * 2", "when": "OnCompute"}]
+  },
+  {
+    "name": "Ability Score Improvement",
+    "stackable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Actor",
+    "prerequisites": "LEVEL >= 4 and CHA >= 13"
+  },
+  {
+    "name": "Athlete",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Charger",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Chef",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Crossbow Expert",
+    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+  },
+  {
+    "name": "Crusher",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Defensive Duelist",
+    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+  },
+  {
+    "name": "Dual Wielder",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Durable",
+    "prerequisites": "LEVEL >= 4 and CON >= 13"
+  },
+  {
+    "name": "Elemental Adept",
+    "stackable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+  },
+  {
+    "name": "Fey Touched",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "Grappler",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Great Weapon Master",
+    "prerequisites": "LEVEL >= 4 and STR >= 13"
+  },
+  {
+    "name": "Heavily Armored",
+    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1"
+  },
+  {
+    "name": "Heavy Armor Master",
+    "prerequisites": "LEVEL >= 4 and PROF.HEAVY_ARMOR == 1"
+  },
+  {
+    "name": "Inspiring Leader",
+    "prerequisites": "LEVEL >= 4 and (WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "Keen Mind",
+    "prerequisites": "LEVEL >= 4 and INT >= 13"
+  },
+  {
+    "name": "Lightly Armored",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mage Slayer",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Martial Weapon Training",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Medium Armor Master",
+    "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1"
+  },
+  {
+    "name": "Moderately Armored",
+    "prerequisites": "LEVEL >= 4 and PROF.LIGHT_ARMOR == 1"
+  },
+  {
+    "name": "Mounted Combatant",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Observant",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13)"
+  },
+  {
+    "name": "Piercer",
+    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+  },
+  {
+    "name": "Poisoner",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Polearm Master",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Resilient",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Ritual Caster",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "Sentinel",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Shadow Touched",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "Sharpshooter",
+    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+  },
+  {
+    "name": "Shield Master",
+    "prerequisites": "LEVEL >= 4 and PROF.SHIELDS == 1"
+  },
+  {
+    "name": "Skill Expert",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Skulker",
+    "prerequisites": "LEVEL >= 4 and DEX >= 13"
+  },
+  {
+    "name": "Slasher",
+    "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)"
+  },
+  {
+    "name": "Spell Sniper",
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+  },
+  {
+    "name": "Speedy",
+    "prerequisites": "LEVEL >= 4 and (DEX >= 13 or CON >= 13)",
+    "assign": [{"expr": "SPEED += 10", "when": "OnCompute"}]
+  },
+  {
+    "name": "Telekinetic",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "Telepathic",
+    "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)"
+  },
+  {
+    "name": "War Caster",
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1"
+  },
+  {
+    "name": "Weapon Master",
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Archery",
+    "assign": [{"expr": "ATK += 2", "when": "OnCompute"}]
+  },
+  {
+    "name": "Blessed Warrior"
+  },
+  {
+    "name": "Blind Fighting"
+  },
+  {
+    "name": "Defense",
+    "assign": [{"expr": "AC += 1", "when": "OnCompute"}]
+  },
+  {
+    "name": "Druidic Warrior"
+  },
+  {
+    "name": "Dueling"
+  },
+  {
+    "name": "Great Weapon Fighting"
+  },
+  {
+    "name": "Interception"
+  },
+  {
+    "name": "Protection"
+  },
+  {
+    "name": "Thrown Weapon Fighting"
+  },
+  {
+    "name": "Two-Weapon Fighting"
+  },
+  {
+    "name": "Unarmed Fighting"
+  },
+  {
+    "name": "Boon of Combat Prowess",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Dimensional Travel",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Energy Resistance",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Fate",
+    "prerequisites": "LEVEL >= 19",
+    "fields": [
+      {"name": "Free Uses", "kind": "FreeUses", "levels": {"19": "PROF_BONUS"}}
+    ]
+  },
+  {
+    "name": "Boon of Fortitude",
+    "prerequisites": "LEVEL >= 19",
+    "assign": [{"expr": "MAX_HP += 40", "when": "OnCompute"}]
+  },
+  {
+    "name": "Boon of Irresistible Offense",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Recovery",
+    "prerequisites": "LEVEL >= 19",
+    "fields": [
+      {"name": "Recovery Pool", "kind": "Die", "levels": {"19": "10d10"}}
+    ]
+  },
+  {
+    "name": "Boon of Skill",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Speed",
+    "prerequisites": "LEVEL >= 19",
+    "assign": [{"expr": "SPEED += 30", "when": "OnCompute"}]
+  },
+  {
+    "name": "Boon of Spell Recall",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of the Night Spirit",
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Truesight",
+    "prerequisites": "LEVEL >= 19"
+  }
+]

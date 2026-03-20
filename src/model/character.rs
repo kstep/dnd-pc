@@ -8,7 +8,7 @@ use uuid::Uuid;
 use crate::{
     constvec::ConstVec,
     demap::{self, Keyed},
-    expr,
+    expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, Equipment, Feature, FeatureData,
         FeatureValue, Personality, RacialTrait, SpellSlotLevel, enums::*,

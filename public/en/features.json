@@ -1,0 +1,233 @@
+{
+  "Alert": {
+    "description": "Add your Proficiency Bonus to Initiative rolls. You can swap your Initiative with a willing ally's after initiatives are rolled."
+  },
+  "Crafter": {
+    "description": "Gain proficiency with three Artisan's Tools of your choice. When you craft an item using tools you're proficient with, the item costs half the normal amount in materials. Once per Long Rest you can create a Tiny item for free over 1 hour."
+  },
+  "Healer": {
+    "description": "Gain proficiency with the Healer's Kit. When you use a Healer's Kit to stabilize a creature, they also regain 1 HP. As a Magic action, you can spend one use of a Healer's Kit to restore 1d6+4 HP + 1 per CR/level to a creature that has at least 1 HP (once per creature per Short or Long Rest)."
+  },
+  "Lucky": {
+    "description": "You have a number of Luck Points equal to your Proficiency Bonus. You can spend one to roll an extra d20 for any d20 Test you make or that targets you, choosing which die to use. You regain all Luck Points after a Long Rest."
+  },
+  "Magic Initiate": {
+    "description": "Choose a spellcasting class: Cleric, Druid, or Wizard (or another if your DM permits). You learn two cantrips and one level 1 spell from that class's list. You can cast the level 1 spell once per Long Rest without a spell slot, or using spell slots you have. Spellcasting ability is INT, WIS, or CHA (chosen when you take this feat)."
+  },
+  "Musician": {
+    "description": "Gain proficiency with three Musical Instruments of your choice. After a Short or Long Rest, you and up to six allies who heard you perform gain Heroic Inspiration."
+  },
+  "Savage Attacker": {
+    "description": "Once per turn when you hit a target with a weapon or an Unarmed Strike, you can roll the attack's damage dice twice and use the higher roll."
+  },
+  "Skilled": {
+    "description": "Gain proficiency in any combination of three Skills or Tools of your choice."
+  },
+  "Tavern Brawler": {
+    "description": "You are proficient with improvised weapons. When you hit with an Unarmed Strike or improvised weapon, you can use a Bonus Action to attempt to grapple or shove the target. Your Unarmed Strike damage die increases to 1d4. You can reroll one damage die once per turn on a hit."
+  },
+  "Tough": {
+    "description": "Your HP maximum increases by 2 per character level. Whenever you gain a level, your HP maximum increases by an additional 2."
+  },
+  "Ability Score Improvement": {
+    "description": "Increase one ability score by 2, or two ability scores by 1 each. A score cannot exceed 20."
+  },
+  "Actor": {
+    "description": "Gain proficiency in the Performance and Deception skills (or Expertise if already proficient). You can mimic another person's voice and mannerisms; a successful DC 15 Insight check is needed to detect the mimicry."
+  },
+  "Athlete": {
+    "description": "Increase STR or DEX by 1 (max 20). Standing up from Prone costs only 5 feet of movement. Climbing doesn't cost extra movement. You can make a running Long or High Jump after moving only 5 feet."
+  },
+  "Charger": {
+    "description": "Increase STR or DEX by 1 (max 20). When you take the Dash action, you can make one melee attack or shove as a Bonus Action; if you moved at least 10 feet in a straight line toward the target, the attack deals +1d8 damage or the shove pushes 10 feet."
+  },
+  "Chef": {
+    "description": "Gain proficiency with Cook's Utensils (or Expertise if proficient). After a Long Rest, you can cook a number of treats equal to your Proficiency Bonus that each restore 1d8 HP when consumed. During a Short Rest, you can prepare a meal that grants temporary HP equal to your Proficiency Bonus to up to five creatures."
+  },
+  "Crossbow Expert": {
+    "description": "Increase DEX by 1 (max 20). Ignore the loading property of crossbows. Being within 5 feet of an enemy doesn't impose disadvantage on ranged attacks. When you attack with a one-handed weapon, you can use a Bonus Action to attack with a hand crossbow."
+  },
+  "Crusher": {
+    "description": "Increase STR or CON by 1 (max 20). Once per turn when you deal bludgeoning damage, you can push the target 5 feet. When you score a critical hit with bludgeoning damage, all attack rolls against the target have advantage until the start of your next turn."
+  },
+  "Defensive Duelist": {
+    "description": "Increase DEX by 1 (max 20). When you are hit by a melee attack while holding a finesse weapon, you can use a Reaction to add your Proficiency Bonus to your AC for that attack, potentially turning the hit into a miss."
+  },
+  "Dual Wielder": {
+    "description": "Increase STR or DEX by 1 (max 20). When you make an extra attack with your off-hand weapon via Two-Weapon Fighting, you can add your ability modifier to the damage. You can use two-weapon fighting even if both weapons aren't Light. You can draw or stow two one-handed weapons at once."
+  },
+  "Durable": {
+    "description": "Increase CON by 1 (max 20). When you roll a Hit Die to recover HP during a Short Rest, you can reroll it and use either result. You can use a Bonus Action to regain HP equal to 1d4 + CON modifier a number of times equal to your Proficiency Bonus, regaining uses on a Long Rest."
+  },
+  "Elemental Adept": {
+    "description": "Choose a damage type: Acid, Cold, Fire, Lightning, or Thunder. Spells and magical effects you create ignore resistance to that damage type. When you roll damage of that type, treat any 1 on a damage die as a 2."
+  },
+  "Fey Touched": {
+    "description": "Increase INT, WIS, or CHA by 1 (max 20). You learn the Misty Step spell and one level 1 divination or enchantment spell of your choice. You can cast each once per Long Rest without a spell slot, or using spell slots you have."
+  },
+  "Grappler": {
+    "description": "Increase STR or DEX by 1 (max 20). You have advantage on attack rolls against creatures you are grappling. When you grapple a creature, you can also deal damage equal to your unarmed strike. Creatures at least one size smaller than you can be grappled and restrained simultaneously."
+  },
+  "Great Weapon Master": {
+    "description": "Increase STR by 1 (max 20). When you score a critical hit or reduce a creature to 0 HP with a melee weapon, you can make one melee weapon attack as a Bonus Action. Heavy weapon attacks you make deal +1d6 damage on a hit."
+  },
+  "Heavily Armored": {
+    "description": "Gain proficiency with Heavy Armor. Increase STR by 1 (max 20)."
+  },
+  "Heavy Armor Master": {
+    "description": "Increase STR by 1 (max 20). While wearing Heavy Armor, bludgeoning, piercing, and slashing damage you take from nonmagical weapons is reduced by 3."
+  },
+  "Inspiring Leader": {
+    "description": "Increase WIS or CHA by 1 (max 20). As a Magic action, you can spend 10 minutes giving an inspiring speech to up to 6 willing allies (including yourself) who can hear and understand you. Each gains temporary HP equal to your level + your Charisma modifier."
+  },
+  "Keen Mind": {
+    "description": "Increase INT by 1 (max 20). You always know which direction is north and how many hours until sunrise/sunset. You can accurately recall anything you have seen or heard in the past month. You have advantage on saving throws to maintain Concentration."
+  },
+  "Lightly Armored": {
+    "description": "Gain proficiency with Light Armor and Shields. Increase STR or DEX by 1 (max 20)."
+  },
+  "Mage Slayer": {
+    "description": "Increase STR or DEX by 1 (max 20). When a creature within 5 feet of you casts a spell, you can use a Reaction to make a melee weapon attack against it. When you damage a creature that is concentrating on a spell, it has disadvantage on the save to maintain Concentration."
+  },
+  "Martial Weapon Training": {
+    "description": "Gain proficiency with all Martial weapons. Increase STR or DEX by 1 (max 20)."
+  },
+  "Medium Armor Master": {
+    "description": "Increase STR or DEX by 1 (max 20). While wearing Medium Armor, you can add up to +3 (instead of +2) from DEX to your AC. Wearing Medium Armor doesn't impose disadvantage on Stealth checks."
+  },
+  "Moderately Armored": {
+    "description": "Gain proficiency with Medium Armor and Shields. Increase STR or DEX by 1 (max 20)."
+  },
+  "Mounted Combatant": {
+    "description": "Increase STR, DEX, or WIS by 1 (max 20). While mounted, you have advantage on melee attack rolls against unmounted creatures smaller than your mount. You can force an attack that targets your mount to target you instead. If your mount would take damage, you can use a Reaction to have it take no damage (Evasion-style) on a successful DEX save."
+  },
+  "Observant": {
+    "description": "Increase INT or WIS by 1 (max 20). You can read lips if you can see a creature's mouth and know its language. You have a +5 bonus to your passive Perception and passive Investigation scores."
+  },
+  "Piercer": {
+    "description": "Increase STR or DEX by 1 (max 20). Once per turn when you deal piercing damage, you can reroll one of the damage dice; you must use the new result. When you score a critical hit that deals piercing damage, you roll one additional piercing damage die."
+  },
+  "Poisoner": {
+    "description": "Gain proficiency with the Poisoner's Kit. Coating a weapon with poison you create takes only a Bonus Action. You can create a number of doses of potent poison per Long Rest equal to your Proficiency Bonus; it deals 2d8 poison damage on a failed CON save (DC 8 + PB + INT)."
+  },
+  "Polearm Master": {
+    "description": "Increase STR or DEX by 1 (max 20). When you take the Attack action with a glaive, halberd, pike, quarterstaff, or spear, you can use a Bonus Action to make a melee attack with the opposite end dealing 1d4 bludgeoning damage. Creatures provoke Opportunity Attacks when they enter your reach."
+  },
+  "Resilient": {
+    "description": "Choose one ability score. Gain proficiency in saving throws using that ability. Increase that ability score by 1 (max 20)."
+  },
+  "Ritual Caster": {
+    "description": "Increase INT, WIS, or CHA by 1 (max 20). You have a ritual book containing two level 1 ritual spells of your choice (from any class list). You can cast them as rituals. You can add new ritual spells found in the world. Spellcasting ability is the increased ability score."
+  },
+  "Sentinel": {
+    "description": "Increase STR or DEX by 1 (max 20). Creatures you hit with an Opportunity Attack have their speed reduced to 0. Creatures within your reach provoke Opportunity Attacks even if they took the Disengage action. You can use a Reaction to make a melee attack against a creature that attacks a creature other than you."
+  },
+  "Shadow Touched": {
+    "description": "Increase INT, WIS, or CHA by 1 (max 20). You learn the Invisibility spell and one level 1 illusion or necromancy spell of your choice. You can cast each once per Long Rest without a spell slot, or using spell slots you have."
+  },
+  "Sharpshooter": {
+    "description": "Increase DEX by 1 (max 20). Ranged weapon attacks ignore half cover and three-quarters cover. Attacking at long range doesn't impose disadvantage. Ranged weapon attacks you make deal +1d8 damage on a hit."
+  },
+  "Shield Master": {
+    "description": "Increase STR by 1 (max 20). If you take the Attack action, you can use a Bonus Action to try to shove a creature within 5 feet. If you are subjected to an effect that allows a DEX save for half damage, you can use a Reaction to take no damage on a success (Evasion style). You add your shield's AC bonus to DEX saves while wielding it."
+  },
+  "Skill Expert": {
+    "description": "Increase one ability score by 1 (max 20). Gain proficiency in one skill. Gain Expertise (double proficiency) in one skill you are proficient in."
+  },
+  "Skulker": {
+    "description": "Increase DEX by 1 (max 20). You can try to hide when lightly obscured. While hidden, missing a ranged attack doesn't reveal your position. Dim light doesn't impose disadvantage on your Perception checks."
+  },
+  "Slasher": {
+    "description": "Increase STR or DEX by 1 (max 20). Once per turn when you deal slashing damage, you can reduce the target's speed by 10 feet until the start of your next turn. When you score a critical hit that deals slashing damage, the target has disadvantage on attack rolls until the start of your next turn."
+  },
+  "Speedy": {
+    "description": "Increase DEX or CON by 1 (max 20). Your Speed increases by 10 feet. When you take the Dash action, Difficult Terrain doesn't cost extra movement for the rest of the turn. You can take the Dash or Disengage action as a Bonus Action."
+  },
+  "Telekinetic": {
+    "description": "Increase INT, WIS, or CHA by 1 (max 20). You learn the Mage Hand cantrip or can cast it without visible components. As a Bonus Action, you can use telekinesis to push a creature within 30 feet up to 5 feet away (STR save DC 8 + PB + spellcasting ability to resist)."
+  },
+  "War Caster": {
+    "description": "Gain advantage on CON saving throws to maintain Concentration on a spell. You can perform the somatic components of a spell while holding weapons or a shield. When a creature provokes an Opportunity Attack from you, you can use your Reaction to cast a spell at it (1 action or Reaction spell, single target)."
+  },
+  "Archery": {
+    "description": "You gain a +2 bonus to attack rolls you make with ranged weapons."
+  },
+  "Blessed Warrior": {
+    "description": "You learn two cantrips of your choice from the Cleric spell list. WIS is your spellcasting ability for them. Whenever you gain a level, you can replace one of these cantrips with another from the Cleric list."
+  },
+  "Blind Fighting": {
+    "description": "You have Blindsight with a range of 10 feet. Within that range, you can see invisible creatures and obstacles even if you are Blinded or in magical Darkness."
+  },
+  "Defense": {
+    "description": "While you are wearing armor, you gain a +1 bonus to AC."
+  },
+  "Druidic Warrior": {
+    "description": "You learn two cantrips of your choice from the Druid spell list. WIS is your spellcasting ability for them. Whenever you gain a level, you can replace one of these cantrips with another from the Druid list."
+  },
+  "Dueling": {
+    "description": "When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+  },
+  "Great Weapon Fighting": {
+    "description": "When you roll a 1 or 2 on a damage die for an attack with a two-handed or versatile weapon held with two hands, you can reroll the die and must use the new roll."
+  },
+  "Interception": {
+    "description": "When a creature you can see hits a target other than you within 5 feet of you with an attack, you can use a Reaction to reduce the damage to the target by 1d10 + your Proficiency Bonus (minimum 0). You must be holding a shield or a simple or martial weapon."
+  },
+  "Protection": {
+    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can use a Reaction to impose disadvantage on the attack roll. You must be wielding a shield."
+  },
+  "Thrown Weapon Fighting": {
+    "description": "You can draw a weapon that has the Thrown property as part of the attack you make with it. In addition, when you hit with a thrown weapon, you gain a +2 bonus to the damage roll."
+  },
+  "Two-Weapon Fighting": {
+    "description": "When you make the extra attack granted by Two-Weapon Fighting, you can add your ability modifier to the damage of that attack."
+  },
+  "Unarmed Fighting": {
+    "description": "Your Unarmed Strike damage die is 1d6 (or 1d8 if you have both hands free). At the start of each of your turns, you can deal 1d4 bludgeoning damage to one creature you are grappling."
+  },
+  "Boon of Combat Prowess": {
+    "description": "Increase one ability score by 1 (max 30). When you miss with a melee attack, you can hit instead — usable once per Short or Long Rest."
+  },
+  "Boon of Dimensional Travel": {
+    "description": "Increase one ability score by 1 (max 30). As a Bonus Action, you can teleport up to 30 feet to an unoccupied space you can see. You can use this a number of times equal to your Proficiency Bonus, regaining uses on a Long Rest."
+  },
+  "Boon of Energy Resistance": {
+    "description": "Increase one ability score by 1 (max 30). Choose one damage type: Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant, or Thunder. You gain resistance to that type and can change your choice when you finish a Long Rest."
+  },
+  "Boon of Fate": {
+    "description": "Increase one ability score by 1 (max 30). When another creature within 60 feet makes a d20 Test, you can use a Reaction to roll 2d4 and apply the result as a bonus or penalty to the roll. You have a number of uses equal to your Proficiency Bonus, regained on a Long Rest."
+  },
+  "Boon of Fortitude": {
+    "description": "Increase one ability score by 1 (max 30). Your HP maximum increases by 40."
+  },
+  "Boon of Irresistible Offense": {
+    "description": "Increase STR or DEX by 1 (max 30). Your melee and thrown weapon attacks and Unarmed Strikes deal an extra +1d8 damage. Attacks you make ignore resistance to bludgeoning, piercing, and slashing damage."
+  },
+  "Boon of Recovery": {
+    "description": "Increase one ability score by 1 (max 30). You can use a Bonus Action to spend Hit Dice from a pool of 10d10 to regain HP (regained on Long Rest). When you would die from damage while at 0 HP, you can choose to drop to 1 HP instead (once per Long Rest)."
+  },
+  "Boon of Skill": {
+    "description": "Increase one ability score by 1 (max 30). Gain proficiency in all skills. Choose one skill to gain Expertise in."
+  },
+  "Boon of Speed": {
+    "description": "Increase one ability score by 1 (max 30). Your Speed increases by 30 feet. As a Bonus Action, you can take the Dash or Disengage action, and Opportunity Attacks against you have disadvantage for the rest of the turn."
+  },
+  "Boon of Spell Recall": {
+    "description": "Increase one ability score by 1 (max 30). You can cast any spell you know or have prepared without expending a spell slot. Once you do so, you cannot use this benefit again until you finish a Long Rest."
+  },
+  "Boon of the Night Spirit": {
+    "description": "Increase one ability score by 1 (max 30). While in dim light or darkness you are Invisible. You also gain resistance to necrotic damage and can move through creatures and objects as if they were difficult terrain (taking 1d10 force damage if you end your turn inside an object)."
+  },
+  "Boon of Truesight": {
+    "description": "Increase one ability score by 1 (max 30). You gain Truesight with a range of 60 feet, allowing you to see through magical darkness, invisible creatures, illusions, shapechangers, and into the Ethereal Plane."
+  },
+  "Spell Sniper": {
+    "description": "Spell attack rolls ignore Half and Three-Quarters Cover. No Disadvantage on spell attacks within 5 ft. Spells with 10+ ft range that require attack rolls gain +60 ft range. +1 INT/WIS/CHA."
+  },
+  "Telepathic": {
+    "description": "Telepathically speak to creatures within 60 ft (they understand you even without shared language). Cast Detect Thoughts 1/Long Rest without a slot. +1 INT/WIS/CHA."
+  },
+  "Weapon Master": {
+    "description": "Proficiency with all Martial weapons. +1 STR/DEX."
+  }
+}

@@ -1,23 +1,27 @@
 use std::{
     collections::BTreeMap,
     fmt,
-    marker::PhantomData,
     ops::{Deref, Neg},
     str::FromStr,
     sync::Arc,
 };
 
-use serde::{Deserialize, Deserializer, Serialize, de};
+use serde::Serialize;
 
+mod de;
 mod error;
 mod interpret;
+mod ops;
 mod parser;
 mod stack;
 mod tokenizer;
+mod traits;
 
 pub use crate::expr::{
     error::Error,
     interpret::{DicePool, Interpreter},
+    ops::Op,
+    traits::{Context, Eval},
 };
 use crate::expr::{
     interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
@@ -27,18 +31,6 @@ use crate::expr::{
 /// Average hit points per level for a given hit die: `sides / 2 + 1`.
 pub const fn avg_hp(sides: i32) -> i32 {
     sides / 2 + 1
-}
-
-pub trait Context<Var, Val> {
-    fn assign(&mut self, var: Var, value: Val) -> Result<(), Error>;
-    fn resolve(&self, var: Var) -> Result<Val, Error>;
-}
-
-pub trait Eval<Var, Val> {
-    type Output;
-
-    fn eval(&self, ctx: &impl Context<Var, Val>) -> Self::Output;
-    fn is_dynamic(&self) -> bool;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -72,9 +64,17 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
         let mut iter = pool.iter();
         self.run(DicePoolEvaluator::new(ctx, &mut iter))
     }
+}
 
-    pub fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+impl<Var: Copy + fmt::Display> Eval<Var, i32> for Expr<Var, i32> {
+    type Output = Result<i32, Error>;
+
+    fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::new(ctx))
+    }
+
+    fn is_dynamic(&self) -> bool {
+        true
     }
 }
 
@@ -103,71 +103,6 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     }
 }
 
-impl<'de, Var, Val> Deserialize<'de> for Expr<Var, Val>
-where
-    Var: FromStr + Copy + Deserialize<'de>,
-    Val: FromStr + Copy + Neg<Output = Val> + Deserialize<'de>,
-{
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct ExprVisitor<Var, Val>(PhantomData<(Var, Val)>);
-
-        impl<'de, Var, Val> de::Visitor<'de> for ExprVisitor<Var, Val>
-        where
-            Var: FromStr + Copy + Deserialize<'de>,
-            Val: FromStr + Copy + Neg<Output = Val> + Deserialize<'de>,
-        {
-            type Value = Expr<Var, Val>;
-
-            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.write_str("an expression string or a sequence of ops")
-            }
-
-            fn visit_str<E: de::Error>(self, s: &str) -> Result<Expr<Var, Val>, E> {
-                s.parse().map_err(de::Error::custom)
-            }
-
-            fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var, Val>, A::Error> {
-                let ops: Vec<Op<Var, Val>> =
-                    Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
-                Ok(Expr(ops.into()))
-            }
-
-            fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Expr<Var, Val>, A::Error> {
-                #[derive(serde::Deserialize)]
-                struct ExprFields<Var, Val> {
-                    ops: Vec<Op<Var, Val>>,
-                }
-                let fields = ExprFields::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                Ok(Expr(fields.ops.into()))
-            }
-        }
-
-        deserializer.deserialize_any(ExprVisitor(PhantomData))
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Op<Var, Val> {
-    PushVar(Var),
-    PushConst(Val),
-    Add,      // +
-    Sub,      // -
-    Mul,      // *
-    DivFloor, // /
-    DivCeil,  // \
-    Min,
-    Max,
-    AvgHp,
-    Roll,         // 2d20 -> 2 20 Roll Sum
-    KeepMax(Val), // 2d20kh1 -> 2 20 Roll KeepMax(1)
-    KeepMin(Val),
-    DropMax(Val),
-    DropMin(Val),
-    Sum,
-    Assign(Var),
-    Mod, // %
-}
-
 impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<Var, Val> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = self.run(Formatter::new()).map_err(|_| fmt::Error)?;
@@ -179,6 +114,7 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<V
 mod tests {
     use std::collections::BTreeMap;
 
+    use serde::Deserialize;
     use wasm_bindgen_test::*;
 
     use super::*;
@@ -548,6 +484,124 @@ mod tests {
         // Subtraction does not propagate (x - a + b ≠ x - (a + b))
         let expr: Expr = "AC = AC - DEX + 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC = AC - DEX + 2");
+    }
+
+    #[wasm_bindgen_test]
+    fn comparison_ops() {
+        let ch = test_character();
+
+        assert_eq!("3 > 2".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("2 > 3".parse::<Expr>().unwrap().eval(&ch).unwrap(), 0);
+        assert_eq!("3 >= 3".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("3 < 4".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("3 <= 3".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("1 == 1".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("1 == 2".parse::<Expr>().unwrap().eval(&ch).unwrap(), 0);
+        assert_eq!("1 != 2".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("1 != 1".parse::<Expr>().unwrap().eval(&ch).unwrap(), 0);
+
+        // With expressions
+        assert_eq!("AC >= 13".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1); // AC=15
+        assert_eq!("AC + 1 > 15".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn boolean_ops() {
+        let ch = test_character();
+
+        assert_eq!(
+            "1 > 0 and 2 > 1"
+                .parse::<Expr>()
+                .unwrap()
+                .eval(&ch)
+                .unwrap(),
+            1
+        );
+        assert_eq!(
+            "1 > 0 and 0 > 1"
+                .parse::<Expr>()
+                .unwrap()
+                .eval(&ch)
+                .unwrap(),
+            0
+        );
+        assert_eq!(
+            "1 > 0 or 0 > 1".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            1
+        );
+        assert_eq!(
+            "0 > 1 or 0 > 2".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            0
+        );
+        assert_eq!("not 0".parse::<Expr>().unwrap().eval(&ch).unwrap(), 1);
+        assert_eq!("not 1".parse::<Expr>().unwrap().eval(&ch).unwrap(), 0);
+
+        // Precedence: and binds tighter than or
+        assert_eq!(
+            "0 or 1 and 1".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            1
+        ); // 0 or (1 and 1) = 1
+        assert_eq!(
+            "1 or 1 and 0".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            1
+        ); // 1 or (1 and 0) = 1
+
+        // Parenthesized
+        assert_eq!(
+            "(AC >= 13) and (CHA >= 3)"
+                .parse::<Expr>()
+                .unwrap()
+                .eval(&ch)
+                .unwrap(),
+            1
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn if_function() {
+        let ch = test_character();
+
+        assert_eq!(
+            "if(1, 10, 20)".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            10
+        );
+        assert_eq!(
+            "if(0, 10, 20)".parse::<Expr>().unwrap().eval(&ch).unwrap(),
+            20
+        );
+        assert_eq!(
+            "if(AC > 10, AC, 10)"
+                .parse::<Expr>()
+                .unwrap()
+                .eval(&ch)
+                .unwrap(),
+            15
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_boolean() {
+        assert_eq!(
+            "3 >= 2 and 1 < 5".parse::<Expr>().unwrap().to_string(),
+            "3 >= 2 and 1 < 5"
+        );
+        assert_eq!(
+            "1 > 0 or 2 > 0".parse::<Expr>().unwrap().to_string(),
+            "1 > 0 or 2 > 0"
+        );
+        assert_eq!(
+            "not (AC > 3)".parse::<Expr>().unwrap().to_string(),
+            "not (AC > 3)"
+        );
+        assert_eq!(
+            "if(AC > 0, AC, 0)".parse::<Expr>().unwrap().to_string(),
+            "if(AC > 0, AC, 0)"
+        );
+        // Precedence in display: or groups and
+        assert_eq!(
+            "(1 or 2) and 3".parse::<Expr>().unwrap().to_string(),
+            "(1 or 2) and 3"
+        );
     }
 
     #[wasm_bindgen_test]

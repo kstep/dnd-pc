@@ -5,7 +5,7 @@ use serde::{Deserialize, Deserializer, de};
 use super::spells::SpellsDefinition;
 use crate::{
     demap::{self, Named},
-    expr::{self, Expr},
+    expr::{self, Eval as _, Expr},
     model::{
         Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
         FeatureValue, Translatable,
@@ -185,6 +185,8 @@ pub struct FeatureDefinition {
     pub assign: Option<Vec<Assignment>>,
     #[serde(default)]
     pub ac_expr: Option<Expr<Attribute>>,
+    #[serde(default)]
+    pub prerequisites: Option<Expr<Attribute>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -211,6 +213,12 @@ impl Named for FeatureDefinition {
 impl FeatureDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+
+    pub fn meets_prerequisites(&self, character: &Character) -> bool {
+        self.prerequisites
+            .as_ref()
+            .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
     }
 
     /// Returns `(cost_field_name, short_suffix)` if this feature has a

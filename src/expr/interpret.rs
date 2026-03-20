@@ -196,6 +196,48 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
             let sides = stack.pop()?;
             stack.push(avg_hp(sides));
         }
+        Op::And => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a != 0 && b != 0) as i32);
+        }
+        Op::Or => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a != 0 || b != 0) as i32);
+        }
+        Op::Not => {
+            let a = stack.pop()?;
+            stack.push((a == 0) as i32);
+        }
+        Op::Lt => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a < b) as i32);
+        }
+        Op::Gt => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a > b) as i32);
+        }
+        Op::Le => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a <= b) as i32);
+        }
+        Op::Ge => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a >= b) as i32);
+        }
+        Op::CmpEq => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a == b) as i32);
+        }
+        Op::CmpNe => {
+            let (a, b) = stack.pop2()?;
+            stack.push((a != b) as i32);
+        }
+        Op::If => {
+            let else_val = stack.pop()?;
+            let then_val = stack.pop()?;
+            let cond = stack.pop()?;
+            stack.push(if cond != 0 { then_val } else { else_val });
+        }
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
     Ok(())
@@ -308,7 +350,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 
 struct Frag {
     text: String,
-    prec: u8, // 0=assign, 1=add/sub, 2=mul/div, 3=atom
+    prec: u8, // 0=assign, 1=or, 2=and, 3=cmp, 4=add/sub, 5=mul/div, 6=unary, 7=atom
     /// If this frag is a binary op where the left operand was an atom,
     /// stores (left_text, op_symbol, rhs_text) for compound assignment
     /// detection.
@@ -354,14 +396,14 @@ impl Formatter {
         let b = self.stack.pop()?;
         let a = self.stack.pop()?;
         let right_min = if right_strict { prec + 1 } else { prec };
-        let compound = if a.prec == 3 && a.compound.is_none() {
+        let compound = if a.prec == 7 && a.compound.is_none() {
             // Direct: left operand is a plain atom (variable or constant).
             // Store b.text without wrapping — compound assignment implicitly
             // groups the entire RHS, so outer parens are unnecessary.
             Some((a.text.clone(), sym.to_string(), b.text.clone()))
         } else if let Some((ref left_var, ref first_op, ref prev_rhs)) = a.compound {
             // Propagate through addition chains: x + (a ± b) = (x + a) ± b
-            if *first_op == "+" && prec == 1 {
+            if *first_op == "+" && prec == 4 {
                 let right = Self::wrap_ref(&b, right_min);
                 Some((
                     left_var.clone(),
@@ -398,17 +440,17 @@ impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
     fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error> {
         match op {
             Op::PushConst(n) => {
-                self.push(n.to_string(), 3);
+                self.push(n.to_string(), 7);
             }
             Op::PushVar(var) => {
-                self.push(var.to_string(), 3);
+                self.push(var.to_string(), 7);
             }
-            Op::Add => self.binary_op("+", 1, false)?,
-            Op::Sub => self.binary_op("-", 1, true)?,
-            Op::Mul => self.binary_op("*", 2, false)?,
-            Op::DivFloor => self.binary_op("/", 2, true)?,
-            Op::DivCeil => self.binary_op("\\", 2, true)?,
-            Op::Mod => self.binary_op("%", 2, true)?,
+            Op::Add => self.binary_op("+", 4, false)?,
+            Op::Sub => self.binary_op("-", 4, true)?,
+            Op::Mul => self.binary_op("*", 5, false)?,
+            Op::DivFloor => self.binary_op("/", 5, true)?,
+            Op::DivCeil => self.binary_op("\\", 5, true)?,
+            Op::Mod => self.binary_op("%", 5, true)?,
             Op::Min => self.binary_func("min")?,
             Op::Max => self.binary_func("max")?,
             Op::Roll => {
@@ -419,30 +461,52 @@ impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
                 } else {
                     format!("{}d{}", count.text, sides.text)
                 };
-                self.push(text, 3);
+                self.push(text, 7);
             }
             Op::Sum => {
                 // Follows Roll; roll fragment is already on stack
             }
             Op::KeepMax(n) => {
                 let roll = self.stack.pop()?;
-                self.push(format!("{}kh{n}", roll.text), 3);
+                self.push(format!("{}kh{n}", roll.text), 7);
             }
             Op::KeepMin(n) => {
                 let roll = self.stack.pop()?;
-                self.push(format!("{}kl{n}", roll.text), 3);
+                self.push(format!("{}kl{n}", roll.text), 7);
             }
             Op::DropMax(n) => {
                 let roll = self.stack.pop()?;
-                self.push(format!("{}dh{n}", roll.text), 3);
+                self.push(format!("{}dh{n}", roll.text), 7);
             }
             Op::DropMin(n) => {
                 let roll = self.stack.pop()?;
-                self.push(format!("{}dl{n}", roll.text), 3);
+                self.push(format!("{}dl{n}", roll.text), 7);
             }
             Op::AvgHp => {
                 let sides = self.stack.pop()?;
-                self.push(format!("avg_hp({})", sides.text), 3);
+                self.push(format!("avg_hp({})", sides.text), 7);
+            }
+            Op::And => self.binary_op("and", 2, false)?,
+            Op::Or => self.binary_op("or", 1, false)?,
+            Op::Not => {
+                let a = self.stack.pop()?;
+                let text = Self::wrap(a, 6);
+                self.push(format!("not {text}"), 6);
+            }
+            Op::Lt => self.binary_op("<", 3, false)?,
+            Op::Gt => self.binary_op(">", 3, false)?,
+            Op::Le => self.binary_op("<=", 3, false)?,
+            Op::Ge => self.binary_op(">=", 3, false)?,
+            Op::CmpEq => self.binary_op("==", 3, false)?,
+            Op::CmpNe => self.binary_op("!=", 3, false)?,
+            Op::If => {
+                let else_val = self.stack.pop()?;
+                let then_val = self.stack.pop()?;
+                let cond = self.stack.pop()?;
+                self.push(
+                    format!("if({}, {}, {})", cond.text, then_val.text, else_val.text),
+                    7,
+                );
             }
             Op::Assign(var) => {
                 let val = self.stack.pop()?;

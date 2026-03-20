@@ -61,6 +61,60 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         }
     }
 
+    // or = and ('or' and)*
+    fn parse_or(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.parse_and(ops)?;
+        self.parse_or_tail(ops)
+    }
+
+    fn parse_or_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        while let Some(Token::Or) = self.peek() {
+            self.next()?;
+            self.parse_and(ops)?;
+            ops.push(Op::Or);
+        }
+        Ok(())
+    }
+
+    // and = comparison ('and' comparison)*
+    fn parse_and(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.parse_comparison(ops)?;
+        self.parse_and_tail(ops)
+    }
+
+    fn parse_and_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        while let Some(Token::And) = self.peek() {
+            self.next()?;
+            self.parse_comparison(ops)?;
+            ops.push(Op::And);
+        }
+        Ok(())
+    }
+
+    // comparison = expr (('<' | '>' | '<=' | '>=' | '==' | '!=') expr)?
+    fn parse_comparison(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.parse_expr(ops)?;
+        self.parse_comparison_tail(ops)
+    }
+
+    fn parse_comparison_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        let cmp_op = match self.peek() {
+            Some(Token::Lt) => Some(Op::Lt),
+            Some(Token::Gt) => Some(Op::Gt),
+            Some(Token::Le) => Some(Op::Le),
+            Some(Token::Ge) => Some(Op::Ge),
+            Some(Token::EqEq) => Some(Op::CmpEq),
+            Some(Token::NotEq) => Some(Op::CmpNe),
+            _ => None,
+        };
+        if let Some(op) = cmp_op {
+            self.next()?;
+            self.parse_expr(ops)?;
+            ops.push(op);
+        }
+        Ok(())
+    }
+
     // Continue parsing +/- after the first term has been parsed
     fn parse_expr_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         loop {
@@ -118,8 +172,14 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Ok(())
     }
 
-    // unary = '-' unary | dice
+    // unary = '-' unary | 'not' unary | dice
     fn parse_unary(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        if let Some(Token::Not) = self.peek() {
+            self.next()?;
+            self.parse_unary(ops)?;
+            ops.push(Op::Not);
+            return Ok(());
+        }
         if let Some(Token::Minus) = self.peek() {
             self.next()?;
             if let Some(&Token::Value(n)) = self.peek() {
@@ -227,7 +287,7 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 Ok(())
             }
             Some(Token::LParen) => {
-                self.parse_expr(ops)?;
+                self.parse_or(ops)?;
                 self.expect(|token| matches!(token, Token::RParen))?;
                 Ok(())
             }
@@ -250,9 +310,13 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 self.parse_binary_function_call(ops)?;
                 ops.push(Op::Max);
             }
-            "avg_hp" => {
+            "avg_hp" | "not" => {
                 self.parse_unary_function_call(ops)?;
-                ops.push(Op::AvgHp);
+                ops.push(if name == "not" { Op::Not } else { Op::AvgHp });
+            }
+            "if" => {
+                self.parse_ternary_function_call(ops)?;
+                ops.push(Op::If);
             }
             _ => return Err(Error::unexpected_token(name)),
         }
@@ -265,6 +329,17 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::Comma))?;
         self.parse_expr(ops)?;
+        self.expect(|token| matches!(token, Token::RParen))?;
+        Ok(())
+    }
+
+    fn parse_ternary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        self.parse_or(ops)?;
+        self.expect(|token| matches!(token, Token::Comma))?;
+        self.parse_or(ops)?;
+        self.expect(|token| matches!(token, Token::Comma))?;
+        self.parse_or(ops)?;
         self.expect(|token| matches!(token, Token::RParen))?;
         Ok(())
     }
@@ -298,22 +373,26 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 self.next()?;
                 if let Some(Token::Eq) = self.peek() {
                     self.next()?;
-                    self.parse_expr(ops)?;
+                    self.parse_or(ops)?;
                     ops.push(Op::Assign(var));
                 } else if let Some(arith_op) = self.peek().and_then(Self::compound_op) {
                     self.next()?;
                     ops.push(Op::PushVar(var));
-                    self.parse_expr(ops)?;
+                    self.parse_or(ops)?;
                     ops.push(arith_op);
                     ops.push(Op::Assign(var));
                 } else {
-                    // Not an assignment, push the var and continue as expr
+                    // Not an assignment — push var, finish expr, then
+                    // handle comparison/boolean tail
                     ops.push(Op::PushVar(var));
                     self.parse_expr_tail(ops)?;
+                    self.parse_comparison_tail(ops)?;
+                    self.parse_and_tail(ops)?;
+                    self.parse_or_tail(ops)?;
                 }
             } else {
-                // Not an assignment, parse as expr
-                self.parse_expr(ops)?;
+                // Not an assignment, parse as or_expr
+                self.parse_or(ops)?;
             }
 
             if let Some(&Token::Semicolon) = self.peek() {

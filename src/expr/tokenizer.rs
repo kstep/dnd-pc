@@ -26,6 +26,16 @@ pub(super) enum Token<'a> {
     RParen,
     Comma,
     Semicolon,
+    // Boolean / comparison
+    And,
+    Or,
+    Not,
+    Lt,
+    Gt,
+    Le,
+    Ge,
+    EqEq,
+    NotEq,
 }
 
 pub(super) struct Tokenizer<'a> {
@@ -65,10 +75,14 @@ impl<'a> Iterator for Tokenizer<'a> {
                     "kl" => Token::Kl,
                     "dh" => Token::Dh,
                     "dl" => Token::Dl,
+                    "and" => Token::And,
+                    "or" => Token::Or,
+                    "not" => Token::Not,
                     _ => Token::Ident(ident),
                 }))
             }
-            b'+' | b'-' | b'*' | b'/' | b'\\' | b'%' | b'(' | b')' | b',' | b'=' | b';' => {
+            b'+' | b'-' | b'*' | b'/' | b'\\' | b'%' | b'(' | b')' | b',' | b'=' | b';' | b'<'
+            | b'>' | b'!' => {
                 let second = self.rest.as_bytes().get(1).copied();
                 if second == Some(b'=') {
                     let tok = match first {
@@ -78,6 +92,10 @@ impl<'a> Iterator for Tokenizer<'a> {
                         b'/' => Some(Token::SlashEq),
                         b'\\' => Some(Token::BackslashEq),
                         b'%' => Some(Token::PercentEq),
+                        b'=' => Some(Token::EqEq),
+                        b'!' => Some(Token::NotEq),
+                        b'<' => Some(Token::Le),
+                        b'>' => Some(Token::Ge),
                         _ => None,
                     };
                     if let Some(tok) = tok {
@@ -94,11 +112,13 @@ impl<'a> Iterator for Tokenizer<'a> {
                     b'\\' => Token::Backslash,
                     b'%' => Token::Percent,
                     b'=' => Token::Eq,
+                    b'<' => Token::Lt,
+                    b'>' => Token::Gt,
                     b'(' => Token::LParen,
                     b')' => Token::RParen,
                     b',' => Token::Comma,
                     b';' => Token::Semicolon,
-                    _ => unreachable!(),
+                    _ => return Some(Err(Error::UnexpectedChar(first as char))),
                 }))
             }
             _ => Some(Err(Error::UnexpectedChar(first as char))),
