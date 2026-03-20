@@ -255,4 +255,42 @@ impl RulesRegistry {
             }
         });
     }
+
+    /// Apply race features from the global catalog.
+    pub fn apply_race(&self, character: &mut Character) {
+        character.identity.race_applied = true;
+        let total_level = character.level().max(1);
+        let race_cache = self.race_cache.read_untracked();
+        let Some(race_def) = race_cache.get(character.identity.race.as_str()) else {
+            return;
+        };
+        let source = FeatureSource::Race(character.identity.race.clone());
+        self.with_features_index_untracked(|features_index| {
+            for feat_name in &race_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        });
+        self.compute(character);
+    }
+
+    /// Apply background features from the global catalog.
+    pub fn apply_background(&self, character: &mut Character) {
+        character.identity.background_applied = true;
+        let total_level = character.level().max(1);
+        let bg_cache = self.background_cache.read_untracked();
+        let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) else {
+            return;
+        };
+        let source = FeatureSource::Background(character.identity.background.clone());
+        self.with_features_index_untracked(|features_index| {
+            for feat_name in &bg_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        });
+        self.compute(character);
+    }
 }
