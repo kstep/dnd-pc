@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use super::{
     background::BackgroundDefinition,
     class::ClassDefinition,
-    feature::FieldKind,
+    feature::{FeatureDefinition, FieldKind},
     race::RaceDefinition,
     resolve::find_feature,
     spells::{SpellDefinition, SpellList, SpellMap},
@@ -40,6 +40,7 @@ fn resolve_spell_def<'a>(
 pub(super) fn sync_labels(
     character: &mut Character,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     bg_cache: &BTreeMap<Box<str>, BackgroundDefinition>,
     race_cache: &BTreeMap<Box<str>, RaceDefinition>,
     spell_list_cache: &BTreeMap<Box<str>, SpellMap>,
@@ -70,7 +71,7 @@ pub(super) fn sync_labels(
         if let Some(feat_def) = find_feature(
             &character.identity,
             &feature.name,
-            class_cache,
+            features_index,
             bg_cache,
             race_cache,
         ) {
@@ -101,17 +102,26 @@ pub(super) fn sync_labels(
         .feature_data
         .keys()
         .filter_map(|key| {
-            let feat_def =
-                find_feature(&character.identity, key, class_cache, bg_cache, race_cache)?;
+            let feat_def = find_feature(
+                &character.identity,
+                key,
+                features_index,
+                bg_cache,
+                race_cache,
+            )?;
             let max = feat_def.free_uses_max(char_level, character);
             (max > 0).then(|| (key.clone(), max))
         })
         .collect();
 
     for (key, entry) in &mut character.feature_data {
-        let Some(feat_def) =
-            find_feature(&character.identity, key, class_cache, bg_cache, race_cache)
-        else {
+        let Some(feat_def) = find_feature(
+            &character.identity,
+            key,
+            features_index,
+            bg_cache,
+            race_cache,
+        ) else {
             continue;
         };
 

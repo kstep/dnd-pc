@@ -74,41 +74,48 @@ pub fn ClassReference() -> impl IntoView {
                 let description = def.description.clone();
                 let hit_die = format!("d{}", def.hit_die);
 
-                // Find spellcasting feature (the one with spell slot levels, not just a spell list)
-                let spell_feat = def
-                    .features(subname.as_deref())
-                    .find(|f| f.spells.as_ref().is_some_and(|s| !s.levels.is_empty()));
-                let spells_def = spell_feat.and_then(|f| f.spells.as_ref());
+                // Resolve features from the global features catalog
+                let spells_def = registry.with_features_index(|features_index| {
+                    def.feature_names(subname.as_deref())
+                        .find_map(|feat_name| {
+                            let feat = features_index.get(feat_name)?;
+                            feat.spells.as_ref().filter(|s| !s.levels.is_empty()).cloned()
+                        })
+                });
                 let has_spells = spells_def.is_some();
                 let spell_list_name =
-                    spells_def.and_then(|sd| sd.list.ref_name().map(|s| s.to_string()));
+                    spells_def.as_ref().and_then(|sd| sd.list.ref_name().map(|s: &str| s.to_string()));
                 let max_spell_level = spells_def
+                    .as_ref()
                     .map(|sd| {
                         sd.levels
                             .values()
                             .filter_map(|l| l.slots.as_ref())
-                            .map(|s| s.len())
+                            .map(|s: &Vec<u32>| s.len())
                             .max()
                             .unwrap_or(0)
                     })
                     .unwrap_or(0);
 
-                // Field columns
-                struct FieldColumn<'a> {
+                // Field columns — collect owned data since features_index borrow is temporary
+                struct FieldColumn {
                     label: String,
-                    kind: &'a FieldKind,
+                    kind: FieldKind,
                 }
-                let field_columns: Vec<FieldColumn<'_>> = def
-                    .features(subname.as_deref())
-                    .flat_map(|f| {
-                        f.fields.values().filter(|fd| fd.kind.has_levels()).map(
-                            |fd| FieldColumn {
-                                label: fd.label().to_string(),
-                                kind: &fd.kind,
-                            },
-                        )
-                    })
-                    .collect();
+                let field_columns: Vec<FieldColumn> = registry.with_features_index(|features_index| {
+                    def.feature_names(subname.as_deref())
+                        .flat_map(|feat_name| {
+                            features_index.get(feat_name).into_iter().flat_map(|f| {
+                                f.fields.values().filter(|fd| fd.kind.has_levels()).map(
+                                    |fd| FieldColumn {
+                                        label: fd.label().to_string(),
+                                        kind: fd.kind.clone(),
+                                    },
+                                )
+                            })
+                        })
+                        .collect()
+                });
 
                 // Build progression table rows
                 let table_rows: Vec<_> = (1..=20u32)
@@ -116,31 +123,31 @@ pub fn ClassReference() -> impl IntoView {
                         let prof_bonus = proficiency_bonus_for_level(level);
 
                         let mut features: Vec<(String, String)> = Vec::new();
-                        if let Some(rules) = def.levels.get(level as usize - 1) {
-                            for feat_name in &rules.features {
-                                let label = def
-                                    .features
-                                    .get(feat_name.as_str())
-                                    .map(|f| f.label().to_string())
-                                    .unwrap_or_else(|| feat_name.clone());
-                                features.push((feat_name.clone(), label));
+                        registry.with_features_index(|features_index| {
+                            if let Some(rules) = def.levels.get(level as usize - 1) {
+                                for feat_name in &rules.features {
+                                    let label = features_index
+                                        .get(feat_name.as_str())
+                                        .map(|f| f.label().to_string())
+                                        .unwrap_or_else(|| feat_name.clone());
+                                    features.push((feat_name.clone(), label));
+                                }
                             }
-                        }
-                        if let Some(sc) = subclass_def
-                            && let Some(sc_rules) = sc.levels.get(&level)
-                        {
-                            for feat_name in &sc_rules.features {
-                                let label = sc
-                                    .features
-                                    .get(feat_name.as_str())
-                                    .map(|f| f.label().to_string())
-                                    .unwrap_or_else(|| feat_name.clone());
-                                features.push((feat_name.clone(), label));
+                            if let Some(sc) = subclass_def
+                                && let Some(sc_rules) = sc.levels.get(&level)
+                            {
+                                for feat_name in &sc_rules.features {
+                                    let label = features_index
+                                        .get(feat_name.as_str())
+                                        .map(|f| f.label().to_string())
+                                        .unwrap_or_else(|| feat_name.clone());
+                                    features.push((feat_name.clone(), label));
+                                }
                             }
-                        }
+                        });
 
                         let spell_level_rules =
-                            spells_def.and_then(|sd| sd.levels.at_level(level));
+                            spells_def.as_ref().and_then(|sd| sd.levels.at_level(level));
                         let cantrips = spell_level_rules.and_then(|r| r.cantrips);
                         let spells_known = spell_level_rules.and_then(|r| r.spells);
                         let slots = spell_level_rules
@@ -149,7 +156,7 @@ pub fn ClassReference() -> impl IntoView {
 
                         let field_values: Vec<String> = field_columns
                             .iter()
-                            .map(|fc| match fc.kind {
+                            .map(|fc| match &fc.kind {
                                 FieldKind::Points { levels, .. }
                                 | FieldKind::FreeUses { levels } => {
                                     match levels.at_level(level) {
@@ -196,11 +203,22 @@ pub fn ClassReference() -> impl IntoView {
                     })
                     .collect();
 
-                let class_features = collect_feature_views(def.features.values());
+                let class_features = registry.with_features_index(|features_index| {
+                    let class_feat_iter = def.feature_names(None)
+                        .filter_map(|name| features_index.get(name));
+                    collect_feature_views(class_feat_iter)
+                });
 
-                let subclass_features = subclass_def
-                    .map(|sc| collect_feature_views(sc.features.values()))
-                    .unwrap_or_default();
+                let subclass_features = registry.with_features_index(|features_index| {
+                    subclass_def
+                        .map(|sc| {
+                            let sc_feat_iter = sc.levels.values()
+                                .flat_map(|lr| lr.features.iter())
+                                .filter_map(|name| features_index.get(name.as_str()));
+                            collect_feature_views(sc_feat_iter)
+                        })
+                        .unwrap_or_default()
+                });
 
                 let subclass_list: Vec<(String, String, String)> = if subclass_def.is_none() {
                     def.subclasses

@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use leptos::prelude::*;
 
 use super::{
@@ -33,6 +35,16 @@ impl RulesRegistry {
         let class_cache = self.class_cache.read_untracked();
         let bg_cache = self.background_cache.read_untracked();
         let race_cache = self.race_cache.read_untracked();
+        let features_guard = self.features_index.read_untracked();
+        let features_index = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+            .unwrap_or_else(|| {
+                static EMPTY: BTreeMap<Box<str>, super::feature::FeatureDefinition> =
+                    BTreeMap::new();
+                &EMPTY
+            });
 
         // Pre-compute dynamic values (needs &character for eval).
         // Collect (feat_name, field_index, new_value) — feat_name must be
@@ -42,6 +54,7 @@ impl RulesRegistry {
             let Some((feat_def, class_level)) = find_feature_with_class_level(
                 &character.identity,
                 feat_name,
+                features_index,
                 &class_cache,
                 &bg_cache,
                 &race_cache,
@@ -89,6 +102,16 @@ impl RulesRegistry {
         let class_cache = self.class_cache.read_untracked();
         let bg_cache = self.background_cache.read_untracked();
         let race_cache = self.race_cache.read_untracked();
+        let features_guard = self.features_index.read_untracked();
+        let features_index = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+            .unwrap_or_else(|| {
+                static EMPTY: BTreeMap<Box<str>, super::feature::FeatureDefinition> =
+                    BTreeMap::new();
+                &EMPTY
+            });
 
         // Racial traits first (e.g. speed override, Dwarf Toughness)
         let trait_exprs: Vec<_> = race_cache
@@ -117,6 +140,7 @@ impl RulesRegistry {
                 let (feat_def, class_level) = find_feature_with_class_level(
                     &character.identity,
                     &feat.name,
+                    features_index,
                     &class_cache,
                     &bg_cache,
                     &race_cache,
@@ -193,14 +217,18 @@ impl RulesRegistry {
             .and_then(|sc| sc.levels.get(&level));
 
         let features_guard = self.features_index.read_untracked();
-        let features_catalog = features_guard.as_ref().ok().map(|idx| &idx.0);
+        let features_catalog = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0);
 
         for feat_name in def.feature_names(subclass.as_deref()) {
             let Some(feat) = features_catalog.and_then(|c| c.get(feat_name)) else {
                 continue;
             };
-            let is_new = rules.is_some_and(|r| r.features.contains(feat_name))
-                || subclass_rules.is_some_and(|r| r.features.contains(feat_name));
+            let feat_name_string = feat_name.to_string();
+            let is_new = rules.is_some_and(|r| r.features.contains(&feat_name_string))
+                || subclass_rules.is_some_and(|r| r.features.contains(&feat_name_string));
             let already_has = character.features.iter().any(|f| f.name == feat_name);
 
             if is_new && already_has && !feat.stackable {
@@ -249,15 +277,24 @@ impl RulesRegistry {
     /// external spell lists. Used by `fill_from_registry` before acquiring
     /// the spell list cache read guard.
     pub(super) fn trigger_spell_list_fetches(&self, character: &Character) {
-        let class_cache = self.class_cache.read_untracked();
         let bg_cache = self.background_cache.read_untracked();
         let race_cache = self.race_cache.read_untracked();
+        let features_guard = self.features_index.read_untracked();
+        let features_index = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+            .unwrap_or_else(|| {
+                static EMPTY: BTreeMap<Box<str>, super::feature::FeatureDefinition> =
+                    BTreeMap::new();
+                &EMPTY
+            });
 
         for key in character.feature_data.keys() {
             if let Some(feat_def) = find_feature(
                 &character.identity,
                 key,
-                &class_cache,
+                features_index,
                 &bg_cache,
                 &race_cache,
             ) && let Some(spells_def) = &feat_def.spells

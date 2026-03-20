@@ -539,7 +539,7 @@ impl RulesRegistry {
 
     pub fn get_choice_cost_label(
         &self,
-        classes: &[ClassLevel],
+        _classes: &[ClassLevel],
         feature_name: &str,
         field_name: &str,
     ) -> Option<String> {
@@ -656,6 +656,15 @@ impl RulesRegistry {
     /// arrive or locale changes.
     pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
+        let features_guard = self.features_index.read();
+        let features_index = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+            .unwrap_or_else(|| {
+                static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+                &EMPTY
+            });
         let bg_cache = self.background_cache.read();
         let race_cache = self.race_cache.read();
         let spell_list_cache = self.spell_list_cache.read();
@@ -663,6 +672,7 @@ impl RulesRegistry {
         labels::sync_labels(
             character,
             &class_cache,
+            features_index,
             &bg_cache,
             &race_cache,
             &spell_list_cache,
@@ -699,6 +709,15 @@ impl RulesRegistry {
 
     pub fn clear_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read_untracked();
+        let features_guard = self.features_index.read_untracked();
+        let features_index = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+            .unwrap_or_else(|| {
+                static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+                &EMPTY
+            });
         let bg_cache = self.background_cache.read_untracked();
         let race_cache = self.race_cache.read_untracked();
         let spell_list_cache = self.spell_list_cache.read_untracked();
@@ -706,6 +725,7 @@ impl RulesRegistry {
         labels::sync_labels(
             character,
             &class_cache,
+            features_index,
             &bg_cache,
             &race_cache,
             &spell_list_cache,

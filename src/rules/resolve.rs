@@ -40,23 +40,23 @@ pub(super) fn find_feature_with_source<'a>(
 
     // Determine source by checking which class/bg/race references this feature
     for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str()) {
-            if def.feature_names(cl.subclass.as_deref()).any(|n| n == name) {
-                return Some((feat, FeatureSource::Class(cl.class.clone())));
-            }
+        if let Some(def) = class_cache.get(cl.class.as_str())
+            && def.feature_names(cl.subclass.as_deref()).any(|n| n == name)
+        {
+            return Some((feat, FeatureSource::Class(cl.class.clone())));
         }
     }
 
-    if let Some(bg) = bg_cache.get(identity.background.as_str()) {
-        if bg.features.contains_key(name) {
-            return Some((feat, FeatureSource::Background(identity.background.clone())));
-        }
+    if let Some(bg) = bg_cache.get(identity.background.as_str())
+        && bg.features.contains_key(name)
+    {
+        return Some((feat, FeatureSource::Background(identity.background.clone())));
     }
 
-    if let Some(race) = race_cache.get(identity.race.as_str()) {
-        if race.features.contains_key(name) {
-            return Some((feat, FeatureSource::Race(identity.race.clone())));
-        }
+    if let Some(race) = race_cache.get(identity.race.as_str())
+        && race.features.contains_key(name)
+    {
+        return Some((feat, FeatureSource::Race(identity.race.clone())));
     }
 
     // Feature exists in catalog but not referenced by any current source
@@ -75,10 +75,10 @@ pub(super) fn find_feature_with_class_level<'a>(
     let feat = find_feature(identity, name, features_index, bg_cache, race_cache)?;
 
     for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str()) {
-            if def.feature_names(cl.subclass.as_deref()).any(|n| n == name) {
-                return Some((feat, cl.level));
-            }
+        if let Some(def) = class_cache.get(cl.class.as_str())
+            && def.feature_names(cl.subclass.as_deref()).any(|n| n == name)
+        {
+            return Some((feat, cl.level));
         }
     }
 

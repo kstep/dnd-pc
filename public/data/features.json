@@ -3701,7 +3701,7 @@
       {
         "name": "Actions",
         "kind": "Choice",
-        "cost": "Free Uses",
+        "cost": "Wild Shape",
         "options": [
           {
             "name": "Wild Companion",
@@ -3716,8 +3716,8 @@
     "name": "Wild Shape",
     "fields": [
       {
-        "name": "Free Uses",
-        "kind": "FreeUses",
+        "name": "Wild Shape",
+        "kind": "Points",
         "levels": {
           "2": 2,
           "6": 3,
@@ -3727,7 +3727,7 @@
       {
         "name": "Actions",
         "kind": "Choice",
-        "cost": "Free Uses",
+        "cost": "Wild Shape",
         "options": [
           {
             "name": "Wild Shape",

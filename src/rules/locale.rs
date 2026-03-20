@@ -382,6 +382,8 @@ fn apply_locale_to_feature(
 }
 
 /// Apply a locale map to a `ClassDefinition`.
+/// Features are now in the global features catalog, so only root and subclass
+/// labels are handled here.
 pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
     for (key, text) in locale {
         match key.parse() {
@@ -389,73 +391,15 @@ pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
                 text.apply_label(&mut def.label);
                 text.apply_description(&mut def.description);
             }
-            LocalePath::Feature(name) => {
-                if let Some(feat) = def.features.get_mut(name) {
-                    text.apply_label(&mut feat.label);
-                    text.apply_description(&mut feat.description);
-                }
-            }
             LocalePath::Subclass(name) => {
                 if let Some(sc) = def.subclasses.get_mut(name) {
                     text.apply_label(&mut sc.label);
                     text.apply_description(&mut sc.description);
                 }
             }
-            LocalePath::SubclassFeature(sc_name, feat_name) => {
-                if let Some(sc) = def.subclasses.get_mut(sc_name)
-                    && let Some(feat) = sc.features.get_mut(feat_name)
-                {
-                    text.apply_label(&mut feat.label);
-                    text.apply_description(&mut feat.description);
-                }
-            }
-            // Field/option/spell handled below via second pass
+            // Features are now in the global features catalog — locale is
+            // applied via apply_features_locale instead.
             _ => {}
-        }
-    }
-
-    // Second pass: apply nested feature content (fields, options, spells)
-    let feature_names: Vec<Box<str>> = def.features.keys().cloned().collect();
-    for feat_name in &feature_names {
-        if let Some(feat) = def.features.get_mut(feat_name.as_ref()) {
-            apply_locale_to_feature(
-                feat,
-                feat_name,
-                locale,
-                LocaleKey::feature_field,
-                LocaleKey::feature_field_option,
-                LocaleKey::feature_spell,
-            );
-        }
-    }
-
-    // Subclass features second pass
-    let sc_names: Vec<Box<str>> = def.subclasses.keys().cloned().collect();
-    for sc_name in &sc_names {
-        if let Some(sc) = def.subclasses.get_mut(sc_name.as_ref()) {
-            let sc_feat_names: Vec<Box<str>> = sc.features.keys().cloned().collect();
-            for feat_name in &sc_feat_names {
-                if let Some(feat) = sc.features.get_mut(feat_name.as_ref()) {
-                    let sc_n = sc_name.clone();
-                    apply_locale_to_feature(
-                        feat,
-                        feat_name,
-                        locale,
-                        |f, field| LocaleKey::subclass_feature_field(&sc_n, f, field),
-                        |f, field, opt| {
-                            LocaleKey::subclass_feature_field_option(&sc_n, f, field, opt)
-                        },
-                        // Subclass feature spells are unusual but handle for completeness
-                        |f, spell| {
-                            // No dedicated constructor — use feature_spell as these are rare
-                            LocaleKey(
-                                format!("subclass.{sc_n}.feature.{f}.spell.{spell}")
-                                    .into_boxed_str(),
-                            )
-                        },
-                    );
-                }
-            }
         }
     }
 }
@@ -573,6 +517,8 @@ impl LocaleText {
 
 /// Extract locale text from a `ClassDefinition`, returning the locale map
 /// and leaving the definition with empty text fields.
+/// Features are now in the global features catalog, so only root and subclass
+/// labels are extracted here.
 pub fn extract_class_locale(def: &mut ClassDefinition) -> LocaleMap {
     let mut map = LocaleMap::new();
 
@@ -582,39 +528,11 @@ pub fn extract_class_locale(def: &mut ClassDefinition) -> LocaleMap {
         map.insert(LocaleKey::root(), root);
     }
 
-    // Features
-    for (feat_name, feat) in &mut def.features {
-        extract_feature_locale(
-            feat,
-            feat_name,
-            &mut map,
-            LocaleKey::feature_field,
-            LocaleKey::feature_field_option,
-            LocaleKey::feature_spell,
-            LocaleKey::feature,
-        );
-    }
-
-    // Subclasses
+    // Subclasses (label/description only — features are in the global catalog)
     for (sc_name, sc) in &mut def.subclasses {
         let sc_text = LocaleText::extract(&mut sc.label, &mut sc.description);
         if !sc_text.is_empty() {
             map.insert(LocaleKey::subclass(sc_name), sc_text);
-        }
-
-        for (feat_name, feat) in &mut sc.features {
-            let sc_n = sc_name.clone();
-            extract_feature_locale(
-                feat,
-                feat_name,
-                &mut map,
-                |f, field| LocaleKey::subclass_feature_field(&sc_n, f, field),
-                |f, field, opt| LocaleKey::subclass_feature_field_option(&sc_n, f, field, opt),
-                |f, spell| {
-                    LocaleKey(format!("subclass.{sc_n}.feature.{f}.spell.{spell}").into_boxed_str())
-                },
-                |f| LocaleKey::subclass_feature(&sc_n, f),
-            );
         }
     }
 
