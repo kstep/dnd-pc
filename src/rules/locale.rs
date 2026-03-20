@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, fmt};
 
-use serde::Deserialize;
+use serde::{Deserialize, ser::SerializeMap};
 
 use super::{
     background::BackgroundDefinition,
@@ -224,7 +224,6 @@ impl serde::Serialize for LocaleKey {
 
 impl serde::Serialize for LocaleText {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        use serde::ser::SerializeMap;
         // Count non-None fields
         let count = self.label.is_some() as usize + self.description.is_some() as usize;
         let mut map = serializer.serialize_map(Some(count))?;
