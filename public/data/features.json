@@ -11435,7 +11435,28 @@
     "name": "Celestial Resistance"
   },
   {
-    "name": "Healing Hands"
+    "name": "Healing Hands",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "1": 1
+        }
+      },
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Free Uses",
+        "options": [
+          {
+            "name": "Healing Hands",
+            "action": "Action",
+            "cost": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Languages",
