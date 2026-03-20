@@ -54,10 +54,14 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
-                            let has_source = feature_data
+                            let is_readonly = feature_data
                                 .get(&feature.name)
                                 .and_then(|fd| fd.source.as_ref())
-                                .is_some();
+                                .is_some()
+                                || registry.with_features_index(|idx| {
+                                    idx.get(feature.name.as_str())
+                                        .is_some_and(|f| !f.selectable)
+                                });
                             let source_text = feature_data.get(&feature.name).and_then(|fd| {
                                 fd.source.as_ref().map(|src| {
                                     let (prefix, label) = match src {
@@ -88,7 +92,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                 <div class="entry-item">
                                     <ToggleButton />
                                     <div class="entry-content">
-                                        {if has_source {
+                                        {if is_readonly {
                                             Either::Left(view! {
                                                 <span class="entry-name entry-name-readonly">{name.clone()}</span>
                                             })

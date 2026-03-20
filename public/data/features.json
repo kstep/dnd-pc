@@ -11101,15 +11101,6 @@
     "name": "War Magic"
   },
   {
-    "name": "Background Abilities",
-    "assign": [
-      {
-        "expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
-        "when": "OnFeatureAdd"
-      }
-    ]
-  },
-  {
     "name": "Magic Initiate (Cleric)",
     "spells": {
       "casting_ability": 4,
@@ -11535,5 +11526,149 @@
   },
   {
     "name": "Otherworldly Presence"
+  },
+  {
+    "name": "Background Abilities (Acolyte)",
+    "assign": [
+      {
+        "expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Artisan)",
+    "assign": [
+      {
+        "expr": "INT += 2; CHA += 1; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Charlatan)",
+    "assign": [
+      {
+        "expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Criminal)",
+    "assign": [
+      {
+        "expr": "DEX += 2; INT += 1; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Entertainer)",
+    "assign": [
+      {
+        "expr": "CHA += 2; DEX += 1; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Farmer)",
+    "assign": [
+      {
+        "expr": "CON += 2; WIS += 1; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Guard)",
+    "assign": [
+      {
+        "expr": "STR += 2; WIS += 1; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Guide)",
+    "assign": [
+      {
+        "expr": "WIS += 2; DEX += 1; SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Hermit)",
+    "assign": [
+      {
+        "expr": "WIS += 2; CON += 1; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Merchant)",
+    "assign": [
+      {
+        "expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Noble)",
+    "assign": [
+      {
+        "expr": "CHA += 2; INT += 1; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Sage)",
+    "assign": [
+      {
+        "expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Sailor)",
+    "assign": [
+      {
+        "expr": "DEX += 2; WIS += 1; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Scribe)",
+    "assign": [
+      {
+        "expr": "INT += 2; WIS += 1; SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Soldier)",
+    "assign": [
+      {
+        "expr": "STR += 2; CON += 1; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Background Abilities (Wayfarer)",
+    "assign": [
+      {
+        "expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
   }
 ]

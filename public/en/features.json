@@ -4967,9 +4967,6 @@
   "Warding Flare (Ambition Domain).field.Actions.option.Warding Flare": {
     "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
   },
-  "Background Abilities": {
-    "description": "Ability score increase from background."
-  },
   "Magic Initiate (Cleric)": {
     "description": "You learn two cantrips and one 1st-level spell from the Cleric spell list. You can cast the 1st-level spell once per Long Rest without a spell slot."
   },
@@ -5173,5 +5170,53 @@
   },
   "Otherworldly Presence": {
     "description": "You know the Thaumaturgy cantrip. It uses the same spellcasting ability as your Fiendish Legacy."
+  },
+  "Background Abilities (Acolyte)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Artisan)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Charlatan)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Criminal)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Entertainer)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Farmer)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Guard)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Guide)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Hermit)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Merchant)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Noble)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Sage)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Sailor)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Scribe)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Soldier)": {
+    "description": "Ability score increase from background."
+  },
+  "Background Abilities (Wayfarer)": {
+    "description": "Ability score increase from background."
   }
 }

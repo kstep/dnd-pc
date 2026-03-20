@@ -6657,10 +6657,6 @@
     "label": "Защитная вспышка",
     "description": "Реакция: наложить помеху на бросок атаки атакующего в 30 фт; использований = мод. МУД (мин. 1), восстановление после продолжительного отдыха"
   },
-  "Background Abilities": {
-    "label": "Бонус характеристик",
-    "description": "Повышение характеристик от предыстории."
-  },
   "Magic Initiate (Cleric)": {
     "label": "Посвящённый в магию (Жрец)",
     "description": "Вы изучаете два заговора и одно заклинание 1-го уровня из списка заклинаний Жреца. Вы можете использовать заклинание 1-го уровня один раз за Продолжительный отдых без ячейки заклинания."
@@ -6950,5 +6946,69 @@
   "Otherworldly Presence": {
     "label": "Потустороннее присутствие",
     "description": "Вы знаете заговор Чудотворство. Он использует ту же заклинательную характеристику, что и ваше Дьявольское наследие."
+  },
+  "Background Abilities (Acolyte)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Artisan)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Charlatan)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Criminal)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Entertainer)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Farmer)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Guard)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Guide)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Hermit)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Merchant)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Noble)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Sage)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Sailor)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Scribe)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Soldier)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
+  },
+  "Background Abilities (Wayfarer)": {
+    "label": "Бонус характеристик",
+    "description": "Повышение характеристик от предыстории."
   }
 }
