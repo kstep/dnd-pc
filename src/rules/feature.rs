@@ -233,13 +233,13 @@ impl FeatureDefinition {
 
     /// Returns `(cost_field_name, short_suffix)` if this feature has a
     /// spells cost backed by a Points field (e.g. Sorcery Points → "SP").
-    pub fn cost_info(&self) -> Option<(&str, &str)> {
+    pub fn cost_info(&self) -> Option<(&str, String)> {
         let cost_name = self.spells.as_ref()?.cost.as_deref()?;
         let field_def = self.fields.get(cost_name)?;
-        let short = match &field_def.kind {
-            FieldKind::Points { short, .. } => short.as_deref()?,
-            _ => return None,
-        };
+        if !matches!(field_def.kind, FieldKind::Points { .. }) {
+            return None;
+        }
+        let short = crate::model::short_name(cost_name);
         Some((cost_name, short))
     }
 
@@ -263,33 +263,14 @@ impl FeatureDefinition {
     }
 
     pub fn assign<'a>(&self, mut context: Context<'a>, when: WhenCondition) {
-        log::info!(
-            "Checking assignments for feature '{}', when condition: {when:?}",
-            self.name,
-        );
-
         let Some(assign) = &self.assign else { return };
 
         assign.iter().filter(|a| a.when == when).for_each(|a| {
-            log::info!(
-                "Applying assignment for feature '{}': {:?} (when: {:?})",
-                self.name,
-                a.expr,
-                a.when,
-            );
-            match a.expr.apply(&mut context) {
-                Ok(value) => {
-                    log::info!(
-                        "Result of assignment expression for feature '{}': {value:?}",
-                        self.name,
-                    );
-                }
-                Err(error) => {
-                    log::error!(
-                        "Failed to apply assignment for feature '{}': {error:?}",
-                        self.name,
-                    );
-                }
+            if let Err(error) = a.expr.apply(&mut context) {
+                log::error!(
+                    "Failed to apply assignment for feature '{}': {error:?}",
+                    self.name,
+                );
             }
         });
     }
@@ -542,8 +523,6 @@ impl Named for FieldDefinition {
 #[serde(tag = "kind")]
 pub enum FieldKind {
     Points {
-        #[serde(default)]
-        short: Option<String>,
         #[serde(default)]
         levels: LevelRules<ValueOrExpr>,
     },

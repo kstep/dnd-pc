@@ -4,7 +4,7 @@ use super::{
     background::BackgroundDefinition, class::ClassDefinition, feature::FeatureDefinition,
     race::RaceDefinition,
 };
-use crate::model::{CharacterIdentity, FeatureSource};
+use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
 
 /// Find a feature definition by name in the global features catalog.
 /// Falls back to background/race inline features if not in catalog.
@@ -59,8 +59,9 @@ pub(super) fn find_feature_with_source<'a>(
         return Some((feat, FeatureSource::Race(identity.race.clone())));
     }
 
-    // Feature exists in catalog but not referenced by any current source
-    Some((feat, FeatureSource::Class(String::new())))
+    // Feature exists in catalog but not referenced by any current source —
+    // this happens for manually-added feats that aren't tied to a class.
+    None
 }
 
 /// Find a feature and the class level of the owning class (0 for non-class).
@@ -91,7 +92,16 @@ pub(super) fn feature_class_level(
     feature_name: &str,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
 ) -> Option<u32> {
-    identity.classes.iter().find_map(|cl| {
+    feature_class_level_from_classes(&identity.classes, feature_name, class_cache)
+}
+
+/// Shared helper: scan class levels for the class owning a feature.
+pub(super) fn feature_class_level_from_classes(
+    classes: &[ClassLevel],
+    feature_name: &str,
+    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
+) -> Option<u32> {
+    classes.iter().find_map(|cl| {
         let def = class_cache.get(cl.class.as_str())?;
         def.feature_names(cl.subclass.as_deref())
             .any(|n| n == feature_name)

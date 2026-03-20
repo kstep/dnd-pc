@@ -785,9 +785,6 @@
   "Rage": {
     "description": "You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren't wearing Heavy armor. You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table. Your Rage lasts until the end of your next turn, and it ends early if you don Haven armor or have the Incapacitated condition. If your Rage would end and you have attacked a creature, forced a creature to make a saving throw, or taken a Bonus Action during this turn, your Rage instead continues until the end of your next turn. You can also extend your Rage for another round as a Bonus Action. It can last for up to 10 minutes."
   },
-  "Rage.field.Rages": {
-    "short": "R"
-  },
   "Rage.field.Actions.option.Rage": {
     "description": "Advantage on STR checks/saves, bonus melee damage, resistance to physical damage. Lasts up to 10 minutes"
   },
@@ -2046,8 +2043,7 @@
     "description": "You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level. You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest."
   },
   "Second Wind.field.Second Wind": {
-    "description": "As a Bonus Action, you can use Second Wind to regain 1d10 HP + Fighter Level",
-    "short": "SW"
+    "description": "As a Bonus Action, you can use Second Wind to regain 1d10 HP + Fighter Level"
   },
   "Second Wind.field.Actions.option.Second Wind": {
     "description": "Regain 1d10 + Fighter level HP"
@@ -2380,8 +2376,7 @@
     "description": "Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table. You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind.\n\nWhen you expend a Focus Point, it is unavailable until you finish a Short or Long Rest, at the end of which you regain all your expended points. Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus.\n\nFlurry of Blows: You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.\n\nPatient Defense: You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.\n\nStep of the Wind: You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn."
   },
   "Monk's Focus.field.Focus Points": {
-    "description": "The number of Focus Points you have.",
-    "short": "FP"
+    "description": "The number of Focus Points you have."
   },
   "Monk's Focus.field.Focus Actions.option.Flurry of Blows": {
     "description": "Make two Unarmed Strikes (three at level 10)"
@@ -3136,9 +3131,6 @@
   "Favored Enemy": {
     "description": "You always have the Hunter's Mark spell prepared. You can cast it twice without expending a spell slot, and you regain all expended uses of this ability when you finish a Long Rest. The number of times you can cast the spell without a spell slot increases when you reach certain Ranger levels, as shown in the Favored Enemy column of the Ranger Features table."
   },
-  "Favored Enemy.field.Favored Enemy": {
-    "short": "FE"
-  },
   "Favored Enemy.spell.Hunter's Mark": {
     "description": "You mark one creature you can see within range as your quarry. Until the spell ends, you deal an extra 1d6 Force damage to the target whenever you hit it with an attack roll. If the target drops to 0 Hit Points before this spell ends, you can take a Bonus Action to mark a new creature you can see within range."
   },
@@ -3713,8 +3705,7 @@
     "description": "You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects. You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can't have more Sorcery Points than the number shown in the table for your level."
   },
   "Font of Magic.field.Sorcery Points": {
-    "description": "The number of Sorcery Points you have.",
-    "short": "SP"
+    "description": "The number of Sorcery Points you have."
   },
   "Metamagic": {
     "description": "Because your magic flows from within, you can alter your spells to suit your needs; you gain two Metamagic options of your choice from \"Metamagic Options\" later in this class's description. You use the chosen options to temporarily modify spells you cast. To use an option, you must spend the number of Sorcery Points that it costs."
@@ -4946,9 +4937,6 @@
   "Channel Divinity (Cleric)": {
     "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
   },
-  "Channel Divinity (Cleric).field.Channel Divinity (Cleric)": {
-    "short": "CD"
-  },
   "Channel Divinity (Cleric).field.Actions.option.Divine Spark": {
     "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18"
   },
@@ -4957,9 +4945,6 @@
   },
   "Channel Divinity (Paladin)": {
     "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11 (three uses). The DC for Channel Divinity saving throws equals your spell save DC."
-  },
-  "Channel Divinity (Paladin).field.Channel Divinity (Paladin)": {
-    "short": "CD"
   },
   "Channel Divinity (Paladin).field.Actions.option.Divine Sense": {
     "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes"

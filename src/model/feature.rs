@@ -86,6 +86,15 @@ impl Default for FeatureValue {
     }
 }
 
+/// Derive a short abbreviation from a name by taking the first letter of each
+/// word. "Channel Divinity" → "CD", "Sorcery Points" → "SP", "Rages" → "R"
+pub fn short_name(name: &str) -> String {
+    name.split_whitespace()
+        .filter_map(|w| w.chars().next())
+        .flat_map(char::to_uppercase)
+        .collect()
+}
+
 impl FeatureValue {
     pub fn available_points(&self) -> Option<u32> {
         match self {

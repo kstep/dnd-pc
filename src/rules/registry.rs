@@ -537,12 +537,7 @@ impl RulesRegistry {
         })
     }
 
-    pub fn get_choice_cost_label(
-        &self,
-        _classes: &[ClassLevel],
-        feature_name: &str,
-        field_name: &str,
-    ) -> Option<String> {
+    pub fn get_choice_cost_label(&self, feature_name: &str, field_name: &str) -> Option<String> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(feature_name)?;
             let fd = feat.fields.get(field_name)?;
@@ -550,52 +545,13 @@ impl RulesRegistry {
                 return None;
             };
             let cost_name = cost.as_ref()?;
-            // Search all features for the cost field's short label
-            let short = features_index
-                .values()
-                .flat_map(|f| f.fields.values())
-                .find(|f| f.name == *cost_name)
-                .and_then(|f| {
-                    if let FieldKind::Points { short, .. } = &f.kind {
-                        short.as_deref()
-                    } else {
-                        None
-                    }
-                })
-                .map(|s| s.to_string())
-                .unwrap_or_else(|| cost_name.clone());
-            Some(short)
-        })
-    }
-
-    pub fn get_points_short(
-        &self,
-        _identity: &CharacterIdentity,
-        field_name: &str,
-    ) -> Option<String> {
-        self.with_features_index_untracked(|features_index| {
-            for feat in features_index.values() {
-                if let Some(fd) = feat.fields.get(field_name)
-                    && let FieldKind::Points { short: Some(s), .. } = &fd.kind
-                {
-                    return Some(s.clone());
-                }
-            }
-            None
+            Some(crate::model::short_name(cost_name))
         })
     }
 
     fn feature_class_level_for(&self, classes: &[ClassLevel], feature_name: &str) -> u32 {
         let class_cache = self.class_cache.read_untracked();
-        classes
-            .iter()
-            .find_map(|cl| {
-                let def = class_cache.get(cl.class.as_str())?;
-                def.feature_names(cl.subclass.as_deref())
-                    .any(|n| n == feature_name)
-                    .then_some(cl.level)
-            })
-            .unwrap_or(0)
+        resolve::feature_class_level_from_classes(classes, feature_name, &class_cache).unwrap_or(0)
     }
 
     // ---- Fill / Clear ----

@@ -10,7 +10,9 @@ use crate::{
         icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
-    model::{Character, CharacterStoreFields, FeatureOption, FeatureValue, Translatable},
+    model::{
+        Character, CharacterStoreFields, FeatureOption, FeatureValue, Translatable, short_name,
+    },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
 
@@ -154,10 +156,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                 let Some(info) = fields.get(&field.name) else {
                     continue;
                 };
-                let short = info
-                    .cost
-                    .as_deref()
-                    .and_then(|c| registry.get_points_short(&id, c));
+                let short = info.cost.as_deref().map(short_name);
                 let points = info.points;
 
                 let spend_cost =

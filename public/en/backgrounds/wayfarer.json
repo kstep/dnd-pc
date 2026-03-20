@@ -7,8 +7,5 @@
   },
   "feature.Lucky": {
     "description": "You have a number of Luck Points equal to your Proficiency Bonus. Before or after you roll a d20 for a d20 Test, you can spend a Luck Point to give yourself Advantage on that roll."
-  },
-  "feature.Lucky.field.Luck Points": {
-    "short": "LP"
   }
 }

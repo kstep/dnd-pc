@@ -35,7 +35,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let label = feat.label().to_string();
                         let (cost_name, cost_short) = feat
                             .cost_info()
-                            .map(|(name, short)| (name.to_string(), short.to_string()))
+                            .map(|(name, short)| (name.to_string(), short))
                             .unwrap_or_default();
                         (label, cost_name, cost_short)
                     })

@@ -164,8 +164,6 @@ pub struct LocaleText {
     pub label: Option<String>,
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(default)]
-    pub short: Option<String>,
 }
 
 impl LocaleText {
@@ -183,11 +181,6 @@ impl LocaleText {
         self
     }
 
-    pub fn with_short(mut self, short: impl Into<String>) -> Self {
-        self.short = Some(short.into());
-        self
-    }
-
     /// Always assign label (clears to None if locale doesn't have one).
     pub fn apply_label(&self, target: &mut Option<String>) {
         *target = self.label.clone();
@@ -201,14 +194,9 @@ impl LocaleText {
         }
     }
 
-    /// Always assign short (clears to None if locale doesn't have one).
-    pub fn apply_short(&self, target: &mut Option<String>) {
-        *target = self.short.clone();
-    }
-
     /// Returns true if all fields are None/empty.
     pub fn is_empty(&self) -> bool {
-        self.label.is_none() && self.description.is_none() && self.short.is_none()
+        self.label.is_none() && self.description.is_none()
     }
 }
 
@@ -244,18 +232,13 @@ impl serde::Serialize for LocaleText {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap;
         // Count non-None fields
-        let count = self.label.is_some() as usize
-            + self.description.is_some() as usize
-            + self.short.is_some() as usize;
+        let count = self.label.is_some() as usize + self.description.is_some() as usize;
         let mut map = serializer.serialize_map(Some(count))?;
         if let Some(label) = &self.label {
             map.serialize_entry("label", label)?;
         }
         if let Some(desc) = &self.description {
             map.serialize_entry("description", desc)?;
-        }
-        if let Some(short) = &self.short {
-            map.serialize_entry("short", short)?;
         }
         map.end()
     }
@@ -345,10 +328,6 @@ fn apply_locale_to_feature(
         if let Some(text) = locale.get(&field_key) {
             text.apply_label(&mut field_def.label);
             text.apply_description(&mut field_def.description);
-            // Apply short to Points fields
-            if let FieldKind::Points { short, .. } = &mut field_def.kind {
-                text.apply_short(short);
-            }
         }
 
         // Choice option labels/descriptions
@@ -502,17 +481,6 @@ impl LocaleText {
         }
         text
     }
-
-    /// Extract label, description, and short from a Points field.
-    pub fn extract_with_short(
-        label: &mut Option<String>,
-        description: &mut String,
-        short: &mut Option<String>,
-    ) -> Self {
-        let mut text = Self::extract(label, description);
-        text.short = short.take();
-        text
-    }
 }
 
 /// Extract locale text from a `ClassDefinition`, returning the locale map
@@ -610,11 +578,7 @@ fn extract_feature_locale(
     }
 
     for (field_name, field_def) in &mut feat.fields {
-        let field_text = if let FieldKind::Points { short, .. } = &mut field_def.kind {
-            LocaleText::extract_with_short(&mut field_def.label, &mut field_def.description, short)
-        } else {
-            LocaleText::extract(&mut field_def.label, &mut field_def.description)
-        };
+        let field_text = LocaleText::extract(&mut field_def.label, &mut field_def.description);
         if !field_text.is_empty() {
             map.insert(make_field_key(feat_name, field_name), field_text);
         }

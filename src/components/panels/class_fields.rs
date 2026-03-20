@@ -198,7 +198,6 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                 let feature_data = store.feature_data().read();
                                 let (cost_label, all_options) = fname.with_value(|key| {
                                     let cost_label = registry.get_choice_cost_label(
-                                        &classes,
                                         key,
                                         &field_name,
                                     );
