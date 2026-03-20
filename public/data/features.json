@@ -11057,5 +11057,119 @@
   },
   {
     "name": "Song of Victory"
+  },
+  {
+    "name": "Improved Duplicity",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Improved Duplicity",
+            "action": "BonusAction"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Cosmic Omen",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "6": "PROF_BONUS"
+        }
+      },
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Free Uses",
+        "options": [
+          {
+            "name": "Cosmic Omen",
+            "action": "Reaction",
+            "cost": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Star Map",
+    "spells": {
+      "casting_ability": 4,
+      "list": [
+        {
+          "name": "Guidance",
+          "level": 0
+        },
+        {
+          "name": "Guiding Bolt",
+          "level": 1,
+          "sticky": true,
+          "min_level": 3
+        }
+      ]
+    }
+  },
+  {
+    "name": "Bonus Proficiencies",
+    "languages": [
+      "Giant"
+    ]
+  },
+  {
+    "name": "Guided Strike",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Channel Divinity",
+        "options": [
+          {
+            "name": "Guided Strike",
+            "cost": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Psychic Blades",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Psychic Blades",
+            "action": "BonusAction"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Spell Breaker",
+    "spells": {
+      "casting_ability": 3,
+      "list": [
+        {
+          "name": "Counterspell",
+          "level": 3,
+          "sticky": true,
+          "min_level": 10
+        },
+        {
+          "name": "Dispel Magic",
+          "level": 3,
+          "sticky": true,
+          "min_level": 10
+        }
+      ]
+    }
   }
 ]

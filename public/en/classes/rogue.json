@@ -32,13 +32,7 @@
   "subclass.Soulknife": {
     "description": "Strike Foes with Psionic Blades A Soulknife strikes with the mind, cutting through barriers both physical and psychic. These Rogues discover psionic power within themselves and channel it to do their roguish work."
   },
-  "subclass.Soulknife.feature.Psychic Blades": {
-    "description": "You can manifest shimmering blades of psychic energy. Whenever you take the Attack action or make an Opportunity Attack, you can manifest a Psychic Blade in your free hand and make the attack with that blade. The magic blade has the following traits: The blade vanishes immediately after it hits or misses its target, and it leaves no mark if it deals damage. After you attack with the blade on your turn, you can make a melee or ranged attack with a second psychic blade as a Bonus Action on the same turn. The damage die of the second blade is 1d4 instead of 1d6. The blade has the Finesse and Thrown properties, with a normal range of 60 feet and no long range."
-  },
   "subclass.Scion of the Three": {
     "description": "When an enemy you can see within 30 feet of yourself takes damage and is Bloodied after taking that damage but not killed outright, you can take a Reaction and Teleportation to an unoccupied space you can see within 5 feet of that enemy. You can then make one melee attack."
-  },
-  "subclass.Soulknife.feature.Psychic Blades.field.Actions.option.Psychic Blades": {
-    "description": "After attacking with a Psychic Blade (1d6), attack with a second one (1d4); Finesse, Thrown 60 ft, Psychic damage"
   }
 }

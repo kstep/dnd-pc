@@ -35,9 +35,6 @@
   "subclass.Rune Knight": {
     "description": "Rune Knights enhance their martial prowess using the supernatural power of runes, an ancient practice that originated with giants. Rune cutters can be found among any family of giants, and you likely learned your methods first or second hand from such a mystical artisan."
   },
-  "subclass.Rune Knight.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with smith's tools, and you learn to speak, read, and write Giant."
-  },
   "subclass.Banneret": {
     "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn."
   }

@@ -14,9 +14,6 @@
   "subclass.Way of the Drunken Master": {
     "description": "The Way of the Drunken Master teaches its students to move with the jerky, unpredictable movements of a drunkard. A drunken master sways, tottering on unsteady feet, to present what seems like an incompetent combatant who proves frustrating to engage."
   },
-  "subclass.Way of the Drunken Master.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency in the Performance skill if you don't already have it. Your martial arts technique mixes combat training with the precision of a dancer and the antics of a jester. You also gain proficiency with brewer's supplies if you don't already have it."
-  },
   "subclass.Way of the Kensei": {
     "description": "If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated."
   },

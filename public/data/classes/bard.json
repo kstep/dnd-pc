@@ -108,11 +108,6 @@
   "subclasses": [
     {
       "name": "College of Lore",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -188,11 +183,6 @@
     },
     {
       "name": "College of Swords",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -222,11 +212,6 @@
     },
     {
       "name": "College of Whispers",
-      "features": [
-        {
-          "name": "Psychic Blades"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

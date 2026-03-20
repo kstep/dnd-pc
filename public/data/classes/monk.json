@@ -155,11 +155,6 @@
     },
     {
       "name": "Way of the Drunken Master",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

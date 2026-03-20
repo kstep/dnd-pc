@@ -303,11 +303,6 @@
     },
     {
       "name": "Tempest Domain",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "1": {
           "level": 1,
@@ -353,11 +348,6 @@
     },
     {
       "name": "Trickery Domain",
-      "features": [
-        {
-          "name": "Improved Duplicity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -384,11 +374,6 @@
     },
     {
       "name": "War Domain",
-      "features": [
-        {
-          "name": "Guided Strike"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
@@ -460,11 +445,6 @@
     },
     {
       "name": "Arcana Domain",
-      "features": [
-        {
-          "name": "Spell Breaker"
-        }
-      ],
       "levels": {
         "1": {
           "level": 1,
@@ -529,21 +509,6 @@
                   "name": "Warding Flare",
                   "action": "Reaction",
                   "cost": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Improved Duplicity",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Improved Duplicity",
-                  "action": "BonusAction"
                 }
               ]
             }
@@ -701,11 +666,6 @@
     },
     {
       "name": "Zeal Domain (PSA)",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "1": {
           "level": 1,
@@ -841,11 +801,6 @@
     },
     {
       "name": "Order Domain",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "1": {
           "level": 1,
@@ -936,11 +891,6 @@
     },
     {
       "name": "Twilight Domain",
-      "features": [
-        {
-          "name": "Bonus Proficiencies"
-        }
-      ],
       "levels": {
         "1": {
           "level": 1,

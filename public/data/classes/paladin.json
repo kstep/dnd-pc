@@ -311,22 +311,6 @@
       "features": [
         {
           "name": "Channel Divinity"
-        },
-        {
-          "name": "Guided Strike",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Channel Divinity",
-              "options": [
-                {
-                  "name": "Guided Strike",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
         }
       ],
       "levels": {

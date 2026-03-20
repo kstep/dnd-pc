@@ -35,20 +35,11 @@
   "subclass.Tempest Domain": {
     "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
   },
-  "subclass.Tempest Domain.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with martial weapons and heavy armor."
-  },
   "subclass.Trickery Domain": {
     "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions."
   },
-  "subclass.Trickery Domain.feature.Improved Duplicity": {
-    "description": "The illusion of your Invoke Duplicity has grown more powerful in the following ways. Shared Distraction: When you and your allies make attack rolls against a creature within 5 feet of the illusion, the attack rolls have Advantage. Healing Illusion: When the illusion ends, you or a creature of your choice within 5 feet of it regains a number of Hit Points equal to your Cleric level."
-  },
   "subclass.War Domain": {
     "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage."
-  },
-  "subclass.War Domain.feature.Guided Strike": {
-    "description": "When you or a creature within 30 feet of you misses with an attack roll, you can expend one use of your Channel Divinity and give that roll a +10 bonus, potentially causing it to hit. When you use this feature to benefit another creature's attack roll, you must take a Reaction to do so."
   },
   "subclass.Death Domain": {
     "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires."
@@ -56,17 +47,11 @@
   "subclass.Arcana Domain": {
     "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately."
   },
-  "subclass.Arcana Domain.feature.Spell Breaker": {
-    "description": "When you restore hit points to an ally with a spell of 1st level or higher, you can also end one spell of your choice on that creature. The level of the spell you end must be equal to or lower than the level of the spell slot you use to cast the healing spell."
-  },
   "subclass.Ambition Domain (PSA)": {
     "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
   },
   "subclass.Ambition Domain (PSA).feature.Warding Flare": {
     "description": "You can interpose divine light between yourself and an attacking enemy. When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. An attacker that can't be blinded is immune to this feature."
-  },
-  "subclass.Ambition Domain (PSA).feature.Improved Duplicity": {
-    "description": "You can create up to four duplicates of yourself, instead of one, when you use Invoke Duplicity. As a bonus action on your turn, you can move any number of them up to 30 feet, to a maximum range of 120 feet."
   },
   "subclass.Knowledge Domain (PSA)": {
     "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh."
@@ -80,9 +65,6 @@
   "subclass.Zeal Domain (PSA)": {
     "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions."
   },
-  "subclass.Zeal Domain (PSA).feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with martial weapons and heavy armor."
-  },
   "subclass.Forge Domain": {
     "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords."
   },
@@ -92,17 +74,11 @@
   "subclass.Order Domain": {
     "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain."
   },
-  "subclass.Order Domain.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with heavy armor. You also gain proficiency in the Intimidation or Persuasion skill (your choice)."
-  },
   "subclass.Peace Domain": {
     "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing."
   },
   "subclass.Twilight Domain": {
     "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
-  },
-  "subclass.Twilight Domain.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with martial weapons and heavy armor."
   },
   "subclass.Light Domain.feature.Warding Flare.field.Free Uses": {
     "label": "Free Uses"
@@ -115,8 +91,5 @@
   },
   "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Actions.option.Warding Flare": {
     "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
-  },
-  "subclass.Ambition Domain (PSA).feature.Improved Duplicity.field.Actions.option.Improved Duplicity": {
-    "description": "Up to 4 duplicates instead of 1; Bonus Action to move any number up to 30 ft each (max 120 ft from you)"
   }
 }

@@ -5248,5 +5248,53 @@
   },
   "Bladesong.field.Actions.option.Bladesong": {
     "description": "Invoke Bladesong for 1 min (no armor/shield): +INT mod to AC, +10 ft speed, advantage on Acrobatics, CON saves to maintain concentration."
+  },
+  "Bonus Proficiencies": {
+    "description": "You gain proficiency in the Performance skill if you don't already have it. Your martial arts technique mixes combat training with the precision of a dancer and the antics of a jester. You also gain proficiency with brewer's supplies if you don't already have it."
+  },
+  "Psychic Blades": {
+    "description": "You can manifest shimmering blades of psychic energy. Whenever you take the Attack action or make an Opportunity Attack, you can manifest a Psychic Blade in your free hand and make the attack with that blade. The magic blade has the following traits: The blade vanishes immediately after it hits or misses its target, and it leaves no mark if it deals damage. After you attack with the blade on your turn, you can make a melee or ranged attack with a second psychic blade as a Bonus Action on the same turn. The damage die of the second blade is 1d4 instead of 1d6. The blade has the Finesse and Thrown properties, with a normal range of 60 feet and no long range."
+  },
+  "Improved Duplicity": {
+    "description": "You can create up to four duplicates of yourself, instead of one, when you use Invoke Duplicity. As a bonus action on your turn, you can move any number of them up to 30 feet, to a maximum range of 120 feet."
+  },
+  "Guided Strike": {
+    "description": "You can use your Channel Divinity to strike with supernatural accuracy. When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
+  },
+  "Spell Breaker": {
+    "description": "You always have the Counterspell and Dispel Magic spells prepared. In addition, you can cast Dispel Magic as a Bonus Action, and you can add your Proficiency to its ability check. When you cast either spell with a spell slot, that slot isn't expended if the spell fails to stop a spell."
+  },
+  "Improved Duplicity.field.Actions.option.Improved Duplicity": {
+    "description": "Up to 4 duplicates instead of 1; Bonus Action to move any number up to 30 ft each (max 120 ft from you)"
+  },
+  "Cosmic Omen.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "Star Map": {
+    "description": "You've created a star chart as part of your heavenly studies. It is a Tiny object, and you can use it as a Spellcasting Focus for your Druid spells. You determine its form by rolling on the Star Map table or by choosing one. While holding the map, you have the Guidance and Guiding Bolt spells prepared, and you can cast Guiding Bolt without expending a spell slot."
+  },
+  "Cosmic Omen": {
+    "description": "Whenever you finish a Long Rest, you can consult your Star Map for omens and roll a die. Until you finish your next Long Rest, you gain access to a special Reaction based on whether you rolled an even or an odd number on the die: Weal (even): Whenever a creature you can see within 30 feet of you is about to make a D20 Test, you can take a Reaction to roll 1d6 and add the number rolled to the total. Woe (odd): Whenever a creature you can see within 30 feet of you is about to make a D20 Test, you can take a Reaction to roll 1d6 and subtract the number rolled from the total. You can use this Reaction a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+  },
+  "Star Map.spell.Guidance": {
+    "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
+  },
+  "Star Map.spell.Guiding Bolt": {
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+  },
+  "Cosmic Omen.field.Actions.option.Cosmic Omen": {
+    "description": "Reaction: Weal (even) — add 1d6 to a creature's d20 test within 30 ft; Woe (odd) — subtract 1d6 from a creature's d20 test within 30 ft"
+  },
+  "Guided Strike.field.Actions.option.Guided Strike": {
+    "description": "On an attack roll: +10 to the roll"
+  },
+  "Psychic Blades.field.Actions.option.Psychic Blades": {
+    "description": "After attacking with a Psychic Blade (1d6), attack with a second one (1d4); Finesse, Thrown 60 ft, Psychic damage"
+  },
+  "Spell Breaker.spell.Counterspell": {
+    "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
+  },
+  "Spell Breaker.spell.Dispel Magic": {
+    "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
   }
 }

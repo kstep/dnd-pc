@@ -41,9 +41,6 @@
   "subclass.Oath of Conquest.feature.Channel Divinity": {
     "description": "You gain the following two Channel Divinity options."
   },
-  "subclass.Oath of Conquest.feature.Guided Strike": {
-    "description": "You can use your Channel Divinity to strike with supernatural accuracy. When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
-  },
   "subclass.Oath of Redemption": {
     "description": "The Oath of Redemption sets a paladin on a difficult path, one that requires a holy warrior to use violence only as a last resort. Paladins who dedicate themselves to this oath believe that any person can be redeemed and that the path of benevolence and justice is one that anyone can walk."
   },
@@ -61,8 +58,5 @@
   },
   "subclass.Oath of the Noble Genies": {
     "description": "Earth rises up around the target of your Divine Smite. The target has the Grappled condition (escape DC equal to your spell save DC). While Grappled, the target has the Restrained condition."
-  },
-  "subclass.Oath of Conquest.feature.Guided Strike.field.Actions.option.Guided Strike": {
-    "description": "On an attack roll: +10 to the roll"
   }
 }

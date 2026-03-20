@@ -280,35 +280,6 @@
     },
     {
       "name": "Circle of Stars",
-      "features": [
-        {
-          "name": "Star Map"
-        },
-        {
-          "name": "Cosmic Omen",
-          "fields": [
-            {
-              "name": "Free Uses",
-              "kind": "FreeUses",
-              "levels": {
-                "6": "PROF_BONUS"
-              }
-            },
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "cost": "Free Uses",
-              "options": [
-                {
-                  "name": "Cosmic Omen",
-                  "action": "Reaction",
-                  "cost": 1
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "2": {
           "level": 2,
@@ -417,29 +388,6 @@
     },
     {
       "name": "Circle of the Stars",
-      "features": [
-        {
-          "name": "Star Map",
-          "spells": {
-            "casting_ability": 4,
-            "list": [
-              {
-                "name": "Guidance",
-                "level": 0
-              },
-              {
-                "name": "Guiding Bolt",
-                "level": 1,
-                "sticky": true,
-                "min_level": 3
-              }
-            ]
-          }
-        },
-        {
-          "name": "Cosmic Omen"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

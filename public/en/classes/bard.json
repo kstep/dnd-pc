@@ -8,9 +8,6 @@
   "subclass.College of Lore": {
     "description": "Plumb the Depths of Magical Knowledge Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college's members gather in libraries and universities to share their lore with one another."
   },
-  "subclass.College of Lore.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with three skills of your choice."
-  },
   "subclass.College of Valor": {
     "description": "Sing the Deeds of Ancient Heroes Bards of the College of Valor are daring storytellers whose tales preserve the memory of the great heroes of the past. These Bards sing the deeds of the mighty in vaulted halls or to crowds gathered around great bonfires."
   },
@@ -20,14 +17,8 @@
   "subclass.College of Swords": {
     "description": "Bards of the College of Swords are called blades, and they entertain through daring feats of weapon prowess. Blades perform stunts such as sword swallowing, knife throwing and juggling, and mock combats."
   },
-  "subclass.College of Swords.feature.Bonus Proficiencies": {
-    "description": "You gain proficiency with medium armor and the scimitar. If you're proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells."
-  },
   "subclass.College of Whispers": {
     "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather."
-  },
-  "subclass.College of Whispers.feature.Psychic Blades": {
-    "description": "You gain the ability to make your weapon attacks magically toxic to a creature's mind. When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an extra 2d6 psychic damage to that target. You can do so only once per round on your turn."
   },
   "subclass.College of Creation": {
     "description": "Bards believe the cosmos is a work of art-the creation of the first dragons and gods. That creative work included harmonies that continue to resound through existence today, a power known as the Song of Creation."

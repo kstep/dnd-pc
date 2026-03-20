@@ -367,23 +367,6 @@
     },
     {
       "name": "Soulknife",
-      "features": [
-        {
-          "name": "Psychic Blades",
-          "fields": [
-            {
-              "name": "Actions",
-              "kind": "Choice",
-              "options": [
-                {
-                  "name": "Psychic Blades",
-                  "action": "BonusAction"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,

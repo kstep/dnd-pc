@@ -32,15 +32,6 @@
   "subclass.Abjurer": {
     "description": "Shield Companions and Banish Foes Your study of magic is focused on spells that block, banish, or protect—ending harmful effects, banishing evil influences, and protecting the weak."
   },
-  "subclass.Abjurer.feature.Spell Breaker": {
-    "description": "You always have the Counterspell and Dispel Magic spells prepared. In addition, you can cast Dispel Magic as a Bonus Action, and you can add your Proficiency to its ability check. When you cast either spell with a spell slot, that slot isn't expended if the spell fails to stop a spell."
-  },
-  "subclass.Abjurer.feature.Spell Breaker.spell.Counterspell": {
-    "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted."
-  },
-  "subclass.Abjurer.feature.Spell Breaker.spell.Dispel Magic": {
-    "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
-  },
   "subclass.Diviner": {
     "description": "Learn the Secrets of the Multiverse The counsel of a Diviner is sought by those who want a clearer understanding of the past, present, and future. As a Diviner, you strive to part the veils of space, time, and consciousness."
   },

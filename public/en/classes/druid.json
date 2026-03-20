@@ -11,9 +11,6 @@
   "subclass.Circle of the Moon": {
     "description": "You can channel lunar magic when you assume a Wild Shape form, granting you the benefits below. Challenge Rating: The maximum Challenge Rating for the form equals your Druid level divided by 3 (round down)."
   },
-  "subclass.Circle of Stars.feature.Cosmic Omen.field.Free Uses": {
-    "label": "Free Uses"
-  },
   "subclass.Circle of Dreams": {
     "description": "Druids who are members of the Circle of Dreams hail from regions that have strong ties to the Feywild and its dreamlike realms. The druids' guardianship of the natural world makes for a natural alliance between them and good-aligned fey. These druids seek to fill the world with dreamy wonder."
   },
@@ -26,12 +23,6 @@
   "subclass.Circle of Stars": {
     "description": "The Circle of Stars allows druids to draw on the power of starlight. These druids have tracked heavenly patterns since time immemorial, discovering secrets hidden amid the constellations."
   },
-  "subclass.Circle of Stars.feature.Star Map": {
-    "description": "You've created a star chart as part of your heavenly studies. It is a Tiny object and can serve as a spellcasting focus for your druid spells. You determine its form by rolling on the Star Map table or by choosing one. While holding this map, you have these benefits: You know the guidance cantrip. You have the guiding bolt spell prepared. You can cast Guiding Bolt in that way a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest. If you lose the map, you can perform a 1-hour ceremony to magically create a replacement."
-  },
-  "subclass.Circle of Stars.feature.Cosmic Omen": {
-    "description": "Whenever you finish a long rest, you can consult your Star Map for omens. When you do so, roll a die. Until you finish your next long rest, you gain access to a special reaction based on whether you rolled an even or an odd number on the die: Weal (even): Whenever a creature you can see within 30 feet of you is about to make an attack roll, a saving throw, or an ability check, you can use your reaction to roll a d6 and add the number rolled to the total. Woe (odd): Whenever a creature you can see within 30 feet of you is about to make an attack roll, a saving throw, or an ability check, you can use your reaction to roll a d6 and subtract the number rolled from the total. You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
-  },
   "subclass.Circle of Wildfire": {
     "description": "Druids within the Circle of Wildfire understand that destruction is sometimes the precursor of creation, such as when a forest fire promotes later growth."
   },
@@ -40,20 +31,5 @@
   },
   "subclass.Circle of the Stars": {
     "description": "Harness Secrets Hidden in Constellations The Circle of the Stars has tracked heavenly patterns since time immemorial, discovering secrets hidden amid the constellations. By understanding these secrets, the Druids of this circle seek to harness the powers of the cosmos."
-  },
-  "subclass.Circle of the Stars.feature.Star Map": {
-    "description": "You've created a star chart as part of your heavenly studies. It is a Tiny object, and you can use it as a Spellcasting Focus for your Druid spells. You determine its form by rolling on the Star Map table or by choosing one. While holding the map, you have the Guidance and Guiding Bolt spells prepared, and you can cast Guiding Bolt without expending a spell slot."
-  },
-  "subclass.Circle of the Stars.feature.Star Map.spell.Guidance": {
-    "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
-  },
-  "subclass.Circle of the Stars.feature.Star Map.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
-  },
-  "subclass.Circle of the Stars.feature.Cosmic Omen": {
-    "description": "Whenever you finish a Long Rest, you can consult your Star Map for omens and roll a die. Until you finish your next Long Rest, you gain access to a special Reaction based on whether you rolled an even or an odd number on the die: Weal (even): Whenever a creature you can see within 30 feet of you is about to make a D20 Test, you can take a Reaction to roll 1d6 and add the number rolled to the total. Woe (odd): Whenever a creature you can see within 30 feet of you is about to make a D20 Test, you can take a Reaction to roll 1d6 and subtract the number rolled from the total. You can use this Reaction a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
-  },
-  "subclass.Circle of Stars.feature.Cosmic Omen.field.Actions.option.Cosmic Omen": {
-    "description": "Reaction: Weal (even) — add 1d6 to a creature's d20 test within 30 ft; Woe (odd) — subtract 1d6 from a creature's d20 test within 30 ft"
   }
 }
