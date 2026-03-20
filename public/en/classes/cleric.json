@@ -2,18 +2,6 @@
   "": {
     "description": "A priestly champion who wields divine magic in service of a higher power."
   },
-  "feature.Channel Divinity": {
-    "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
-  },
-  "feature.Channel Divinity.field.Channel Divinity": {
-    "short": "CD"
-  },
-  "feature.Channel Divinity.field.Actions.option.Divine Spark": {
-    "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18"
-  },
-  "feature.Channel Divinity.field.Actions.option.Turn Undead": {
-    "description": "Each Undead within 30 ft makes WIS save or is Frightened and Incapacitated for 1 minute"
-  },
   "subclass.Knowledge Domain": {
     "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention."
   },
@@ -22,9 +10,6 @@
   },
   "subclass.Light Domain": {
     "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal."
-  },
-  "subclass.Light Domain.feature.Warding Flare": {
-    "description": "When a creature that you can see within 30 feet of yourself makes an attack roll, you can take a Reaction to impose Disadvantage on the attack roll, causing light to flare before it hits or misses. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Long Rest."
   },
   "subclass.Nature Domain": {
     "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath)."
@@ -46,9 +31,6 @@
   },
   "subclass.Ambition Domain (PSA)": {
     "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
-  },
-  "subclass.Ambition Domain (PSA).feature.Warding Flare": {
-    "description": "You can interpose divine light between yourself and an attacking enemy. When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. An attacker that can't be blinded is immune to this feature."
   },
   "subclass.Knowledge Domain (PSA)": {
     "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh."
@@ -76,17 +58,5 @@
   },
   "subclass.Twilight Domain": {
     "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
-  },
-  "subclass.Light Domain.feature.Warding Flare.field.Free Uses": {
-    "label": "Free Uses"
-  },
-  "subclass.Light Domain.feature.Warding Flare.field.Actions.option.Warding Flare": {
-    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
-  },
-  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Free Uses": {
-    "label": "Free Uses"
-  },
-  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Actions.option.Warding Flare": {
-    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
   }
 }

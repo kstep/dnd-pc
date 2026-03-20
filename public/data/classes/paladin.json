@@ -1,33 +1,6 @@
 {
   "name": "Paladin",
   "hit_die": 10,
-  "features": [
-    {
-      "name": "Channel Divinity",
-      "fields": [
-        {
-          "name": "Channel Divinity",
-          "kind": "Points",
-          "levels": {
-            "3": 2,
-            "11": 3
-          }
-        },
-        {
-          "name": "Actions",
-          "kind": "Choice",
-          "cost": "Channel Divinity",
-          "options": [
-            {
-              "name": "Divine Sense",
-              "action": "BonusAction",
-              "cost": 1
-            }
-          ]
-        }
-      ]
-    }
-  ],
   "levels": [
     {
       "features": [
@@ -45,7 +18,7 @@
     },
     {
       "features": [
-        "Channel Divinity",
+        "Channel Divinity (Paladin)",
         "Paladin Subclass"
       ]
     },
@@ -219,16 +192,10 @@
     },
     {
       "name": "Oathbreaker",
-      "features": [
-        {
-          "name": "Channel Divinity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity",
             "Control Undead",
             "Dreadful Aspect",
             "Oathbreaker Spells"
@@ -256,17 +223,11 @@
     },
     {
       "name": "Oath of the Crown",
-      "features": [
-        {
-          "name": "Channel Divinity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
           "features": [
             "Champion Challenge",
-            "Channel Divinity",
             "Oath Spells",
             "Tenets of the Crown",
             "Turn the Tide"
@@ -294,16 +255,10 @@
     },
     {
       "name": "Oath of Conquest",
-      "features": [
-        {
-          "name": "Channel Divinity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity",
             "Conquering Presence",
             "Guided Strike",
             "Oath Spells",
@@ -332,16 +287,10 @@
     },
     {
       "name": "Oath of Redemption",
-      "features": [
-        {
-          "name": "Channel Divinity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity",
             "Emissary of Peace",
             "Oath Spells",
             "Rebuke the Violent",
@@ -401,16 +350,10 @@
     },
     {
       "name": "Oath of the Watchers",
-      "features": [
-        {
-          "name": "Channel Divinity"
-        }
-      ],
       "levels": {
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity",
             "Oath Spells",
             "Tenets of the Watchers",
             "Abjure the Extraplanar",

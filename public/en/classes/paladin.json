@@ -2,15 +2,6 @@
   "": {
     "description": "A holy warrior bound to a sacred oath."
   },
-  "feature.Channel Divinity": {
-    "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11 (three uses). The DC for Channel Divinity saving throws equals your spell save DC."
-  },
-  "feature.Channel Divinity.field.Channel Divinity": {
-    "short": "CD"
-  },
-  "feature.Channel Divinity.field.Actions.option.Divine Sense": {
-    "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes"
-  },
   "subclass.Oath of Devotion": {
     "description": "Uphold the Ideals of Justice and Order The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor."
   },
@@ -23,35 +14,20 @@
   "subclass.Oathbreaker": {
     "description": "An Oathbreaker is a paladin who breaks his or her sacred oaths to pursue some dark ambition or serve an evil power. Whatever light burned in the paladin's heart has been extinguished. Only darkness remains. A paladin must be evil and at least 3rd level to become an Oathbreaker."
   },
-  "subclass.Oathbreaker.feature.Channel Divinity": {
-    "description": "An Oathbreaker paladin of 3rd level or higher gains the following two Channel Divinity options."
-  },
   "subclass.Oath of the Crown": {
     "description": "The Oath of the Crown is sworn to the ideals of civilization, be it the spirit of a nation, fealty to a sovereign, or service to a deity of law and rulership. The paladins who swear this oath dedicate themselves to serving society and, in particular, the laws that hold society together."
-  },
-  "subclass.Oath of the Crown.feature.Channel Divinity": {
-    "description": "You gain the following two Channel Divinity options."
   },
   "subclass.Oath of Conquest": {
     "description": "The Oath of Conquest calls to paladins who seek glory in battle and the subjugation of their enemies. It isn't enough for these paladins to establish order. They must crush the forces of chaos."
   },
-  "subclass.Oath of Conquest.feature.Channel Divinity": {
-    "description": "You gain the following two Channel Divinity options."
-  },
   "subclass.Oath of Redemption": {
     "description": "The Oath of Redemption sets a paladin on a difficult path, one that requires a holy warrior to use violence only as a last resort. Paladins who dedicate themselves to this oath believe that any person can be redeemed and that the path of benevolence and justice is one that anyone can walk."
-  },
-  "subclass.Oath of Redemption.feature.Channel Divinity": {
-    "description": "You gain the following two Channel Divinity options."
   },
   "subclass.Oath of Glory": {
     "description": "Paladins who take the Oath of Glory believe they and their companions are destined to achieve glory through deeds of heroism. They train diligently and encourage their companions so they're all ready when destiny calls."
   },
   "subclass.Oath of the Watchers": {
     "description": "The Oath of the Watchers binds paladins to protect mortal realms from the predations of extraplanar creatures, many of which can lay waste to mortal soldiers. Thus, the Watchers hone their minds, spirits, and bodies to be the ultimate weapons against such threats."
-  },
-  "subclass.Oath of the Watchers.feature.Channel Divinity": {
-    "description": "You gain the following Channel Divinity options. See the Sacred Oath class feature for how Channel Divinity works."
   },
   "subclass.Oath of the Noble Genies": {
     "description": "Earth rises up around the target of your Divine Smite. The target has the Grappled condition (escape DC equal to your spell save DC). While Grappled, the target has the Restrained condition."

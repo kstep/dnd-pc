@@ -4942,5 +4942,44 @@
   },
   "Class Proficiencies (Wizard)": {
     "description": "Saving throw and equipment proficiencies granted by this class."
+  },
+  "Channel Divinity (Cleric)": {
+    "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
+  },
+  "Channel Divinity (Cleric).field.Channel Divinity (Cleric)": {
+    "short": "CD"
+  },
+  "Channel Divinity (Cleric).field.Actions.option.Divine Spark": {
+    "description": "30 ft range: roll 1d8 + WIS mod to heal or deal Necrotic/Radiant damage (CON save for half). Extra d8 at levels 7, 13, 18"
+  },
+  "Channel Divinity (Cleric).field.Actions.option.Turn Undead": {
+    "description": "Each Undead within 30 ft makes WIS save or is Frightened and Incapacitated for 1 minute"
+  },
+  "Channel Divinity (Paladin)": {
+    "description": "You can channel divine energy directly from the Outer Planes, using it to fuel magical effects. You start with one such effect: Divine Sense, which is described below. Other Paladin features give additional Channel Divinity effect options. Each time you use this class's Channel Divinity, you choose which effect from this class to create. You can use this class's Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11 (three uses). The DC for Channel Divinity saving throws equals your spell save DC."
+  },
+  "Channel Divinity (Paladin).field.Channel Divinity (Paladin)": {
+    "short": "CD"
+  },
+  "Channel Divinity (Paladin).field.Actions.option.Divine Sense": {
+    "description": "Detect Celestials, Fiends, and Undead within 60 ft for 10 minutes"
+  },
+  "Warding Flare (Light Domain)": {
+    "description": "When a creature that you can see within 30 feet of yourself makes an attack roll, you can take a Reaction to impose Disadvantage on the attack roll, causing light to flare before it hits or misses. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Long Rest."
+  },
+  "Warding Flare (Light Domain).field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "Warding Flare (Light Domain).field.Actions.option.Warding Flare": {
+    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
+  },
+  "Warding Flare (Ambition Domain)": {
+    "description": "You can interpose divine light between yourself and an attacking enemy. When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. An attacker that can't be blinded is immune to this feature."
+  },
+  "Warding Flare (Ambition Domain).field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "Warding Flare (Ambition Domain).field.Actions.option.Warding Flare": {
+    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
   }
 }
