@@ -1,10 +1,8 @@
 use std::collections::BTreeMap;
 
 use super::{
-    background::BackgroundDefinition,
     class::ClassDefinition,
     feature::{FeatureDefinition, FieldKind},
-    race::RaceDefinition,
     resolve::find_feature,
     spells::{SpellDefinition, SpellList, SpellMap},
 };
@@ -41,8 +39,6 @@ pub(super) fn sync_labels(
     character: &mut Character,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    bg_cache: &BTreeMap<Box<str>, BackgroundDefinition>,
-    race_cache: &BTreeMap<Box<str>, RaceDefinition>,
     spell_list_cache: &BTreeMap<Box<str>, SpellMap>,
     mut set_label: impl FnMut(&mut Option<String>, Option<&str>),
     mut set_desc: impl FnMut(&mut String, &str),
@@ -68,13 +64,7 @@ pub(super) fn sync_labels(
         if feature.name.is_empty() {
             continue;
         }
-        if let Some(feat_def) = find_feature(
-            &character.identity,
-            &feature.name,
-            features_index,
-            bg_cache,
-            race_cache,
-        ) {
+        if let Some(feat_def) = find_feature(&feature.name, features_index) {
             set_label(&mut feature.label, feat_def.label.as_deref());
             set_desc(&mut feature.description, &feat_def.description);
         }
@@ -89,26 +79,14 @@ pub(super) fn sync_labels(
         .feature_data
         .keys()
         .filter_map(|key| {
-            let feat_def = find_feature(
-                &character.identity,
-                key,
-                features_index,
-                bg_cache,
-                race_cache,
-            )?;
+            let feat_def = find_feature(key, features_index)?;
             let max = feat_def.free_uses_max(char_level, character);
             (max > 0).then(|| (key.clone(), max))
         })
         .collect();
 
     for (key, entry) in &mut character.feature_data {
-        let Some(feat_def) = find_feature(
-            &character.identity,
-            key,
-            features_index,
-            bg_cache,
-            race_cache,
-        ) else {
+        let Some(feat_def) = find_feature(key, features_index) else {
             continue;
         };
 
@@ -161,19 +139,15 @@ pub(super) fn sync_labels(
                     continue;
                 }
                 // Two-tier: fill from spellbook entry first, registry fallback
+                let spell_def = resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
                 let known_entry = known_spells.iter().find(|s| s.name == spell.name);
                 if let Some(known) = known_entry {
                     set_label(&mut spell.label, known.label.as_deref());
                     set_desc(&mut spell.description, &known.description);
-                } else {
-                    let spell_def =
-                        resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
-                    if let Some(def) = spell_def {
-                        set_label(&mut spell.label, def.label.as_deref());
-                        set_desc(&mut spell.description, &def.description);
-                    }
+                } else if let Some(def) = spell_def {
+                    set_label(&mut spell.label, def.label.as_deref());
+                    set_desc(&mut spell.description, &def.description);
                 }
-                let spell_def = resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
                 on_spell_extra(spell, spell_def, free_uses_max);
             }
         }

@@ -7,13 +7,9 @@ use super::{
 use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
 
 /// Find a feature definition by name in the global features catalog.
-/// Falls back to background/race inline features if not in catalog.
 pub(super) fn find_feature<'a>(
-    _identity: &CharacterIdentity,
     name: &str,
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-    _bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-    _race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<&'a FeatureDefinition> {
     features_index.get(name)
 }
@@ -64,10 +60,8 @@ pub(super) fn find_feature_with_class_level<'a>(
     name: &str,
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
-    bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-    race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
 ) -> Option<(&'a FeatureDefinition, u32)> {
-    let feat = find_feature(identity, name, features_index, bg_cache, race_cache)?;
+    let feat = find_feature(name, features_index)?;
 
     for cl in &identity.classes {
         if let Some(def) = class_cache.get(cl.class.as_str())

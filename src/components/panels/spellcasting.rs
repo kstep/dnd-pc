@@ -8,8 +8,8 @@ use crate::{
         datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
     },
     model::{
-        Ability, Character, CharacterIdentity, CharacterStoreFields, Spell, SpellData,
-        SpellSlotPool, Translatable, format_bonus,
+        Ability, Character, CharacterStoreFields, Spell, SpellData, SpellSlotPool, Translatable,
+        format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -103,12 +103,11 @@ fn FeatureSpellcastingSection(
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     // Resolve feature name → label and cost suffix for display
-    let identity = store.get_untracked().identity.clone();
     let panel_title = registry
-        .with_feature(&identity, &feature_name, |f| f.label().to_string())
+        .with_feature(&feature_name, |f| f.label().to_string())
         .unwrap_or_else(|| feature_name.clone());
     let cost_short: String = registry
-        .with_feature(&identity, &feature_name, |feat| {
+        .with_feature(&feature_name, |feat| {
             feat.cost_info().map(|(_, short)| short.to_string())
         })
         .flatten()
@@ -147,8 +146,7 @@ fn FeatureSpellcastingSection(
         std::array::from_fn(|_| RwSignal::new(Vec::new()));
     Effect::new(move || {
         registry.track_spell_cache();
-        let mut data = fname
-            .with_value(|key| resolve_feature_spell_list(&registry, &store.read().identity, key));
+        let mut data = fname.with_value(|key| resolve_feature_spell_list(&registry, key));
         for (level, signal) in spell_suggestions.iter().enumerate() {
             signal.set(std::mem::take(&mut data[level]));
         }
@@ -572,11 +570,10 @@ fn FeatureSpellcastingSection(
 /// Resolve the spell list for a given feature into per-level buckets.
 fn resolve_feature_spell_list(
     registry: &RulesRegistry,
-    identity: &CharacterIdentity,
     feature_name: &str,
 ) -> [Vec<(String, String, String)>; 10] {
     registry
-        .with_feature(identity, feature_name, |feat| {
+        .with_feature(feature_name, |feat| {
             let spells_def = feat.spells.as_ref()?;
             Some(registry.with_spell_list(&spells_def.list, |spells| {
                 let mut by_level: [Vec<(String, String, String)>; 10] = Default::default();

@@ -18,12 +18,10 @@ pub fn SpellsBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
-    let identity = store.identity();
     let spell_slots = store.spell_slots();
     let feature_data = store.feature_data();
 
     move || {
-        let id = identity.read();
         feature_data
             .read()
             .iter()
@@ -31,7 +29,7 @@ pub fn SpellsBlock() -> impl IntoView {
                 let spell_data = entry.spells.as_ref()?;
 
                 let (feature_label, cost_field_name, cost_short) = registry
-                    .with_feature(&id, name, |feat| {
+                    .with_feature(name, |feat| {
                         let label = feat.label().to_string();
                         let (cost_name, cost_short) = feat
                             .cost_info()

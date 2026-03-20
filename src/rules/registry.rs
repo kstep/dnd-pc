@@ -468,21 +468,11 @@ impl RulesRegistry {
 
     pub fn with_feature<R>(
         &self,
-        identity: &CharacterIdentity,
         feature_name: &str,
         f: impl FnOnce(&FeatureDefinition) -> R,
     ) -> Option<R> {
         self.with_features_index_untracked(|features_index| {
-            let bg_cache = self.background_cache.read_untracked();
-            let race_cache = self.race_cache.read_untracked();
-            resolve::find_feature(
-                identity,
-                feature_name,
-                features_index,
-                &bg_cache,
-                &race_cache,
-            )
-            .map(f)
+            resolve::find_feature(feature_name, features_index).map(f)
         })
     }
 
@@ -612,97 +602,75 @@ impl RulesRegistry {
     /// arrive or locale changes.
     pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
-        let features_guard = self.features_index.read();
-        let features_index = features_guard
-            .as_ref()
-            .and_then(|r| r.as_ref().ok())
-            .map(|idx| &idx.0)
-            .unwrap_or_else(|| {
-                static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-                &EMPTY
-            });
-        let bg_cache = self.background_cache.read();
-        let race_cache = self.race_cache.read();
-        let spell_list_cache = self.spell_list_cache.read();
+        self.with_features_index(|features_index| {
+            let spell_list_cache = self.spell_list_cache.read();
 
-        labels::sync_labels(
-            character,
-            &class_cache,
-            features_index,
-            &bg_cache,
-            &race_cache,
-            &spell_list_cache,
-            // Fill: always overwrite label from definition (supports locale
-            // switching without a separate clear_all_labels step).
-            |target, source| {
-                *target = source.map(String::from);
-            },
-            // Fill: always overwrite description from definition.
-            |target, source| {
-                if !source.is_empty() {
-                    source.clone_into(target);
-                }
-            },
-            // Fill: set cost and free_uses from definition
-            |spell, spell_def, free_uses_max| {
-                if let Some(def) = spell_def {
-                    spell.cost = def.cost;
-                    if def.cost > 0 && free_uses_max > 0 {
-                        match &mut spell.free_uses {
-                            Some(fu) => fu.max = free_uses_max,
-                            None => {
-                                spell.free_uses = Some(FreeUses {
-                                    used: 0,
-                                    max: free_uses_max,
-                                });
+            labels::sync_labels(
+                character,
+                &class_cache,
+                features_index,
+                &spell_list_cache,
+                // Fill: always overwrite label from definition (supports locale
+                // switching without a separate clear_all_labels step).
+                |target, source| {
+                    *target = source.map(String::from);
+                },
+                // Fill: always overwrite description from definition.
+                |target, source| {
+                    if !source.is_empty() {
+                        source.clone_into(target);
+                    }
+                },
+                // Fill: set cost and free_uses from definition
+                |spell, spell_def, free_uses_max| {
+                    if let Some(def) = spell_def {
+                        spell.cost = def.cost;
+                        if def.cost > 0 && free_uses_max > 0 {
+                            match &mut spell.free_uses {
+                                Some(fu) => fu.max = free_uses_max,
+                                None => {
+                                    spell.free_uses = Some(FreeUses {
+                                        used: 0,
+                                        max: free_uses_max,
+                                    });
+                                }
                             }
                         }
                     }
-                }
-            },
-        );
+                },
+            );
+        });
     }
 
     pub fn clear_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read_untracked();
-        let features_guard = self.features_index.read_untracked();
-        let features_index = features_guard
-            .as_ref()
-            .and_then(|r| r.as_ref().ok())
-            .map(|idx| &idx.0)
-            .unwrap_or_else(|| {
-                static EMPTY: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-                &EMPTY
-            });
-        let bg_cache = self.background_cache.read_untracked();
-        let race_cache = self.race_cache.read_untracked();
-        let spell_list_cache = self.spell_list_cache.read_untracked();
+        self.with_features_index_untracked(|features_index| {
+            let spell_list_cache = self.spell_list_cache.read_untracked();
 
-        labels::sync_labels(
-            character,
-            &class_cache,
-            features_index,
-            &bg_cache,
-            &race_cache,
-            &spell_list_cache,
-            // Clear: clear label if matches
-            |target, source| {
-                if target.as_deref() == source {
-                    *target = None;
-                }
-            },
-            // Clear: clear description if matches
-            |target, source| {
-                if *target == source {
-                    target.clear();
-                }
-            },
-            // Clear: zero cost and remove free_uses
-            |spell, _, _| {
-                spell.cost = 0;
-                spell.free_uses = None;
-            },
-        );
+            labels::sync_labels(
+                character,
+                &class_cache,
+                features_index,
+                &spell_list_cache,
+                // Clear: clear label if matches
+                |target, source| {
+                    if target.as_deref() == source {
+                        *target = None;
+                    }
+                },
+                // Clear: clear description if matches
+                |target, source| {
+                    if *target == source {
+                        target.clear();
+                    }
+                },
+                // Clear: zero cost and remove free_uses
+                |spell, _, _| {
+                    spell.cost = 0;
+                    spell.free_uses = None;
+                },
+            );
+        });
     }
 }
 

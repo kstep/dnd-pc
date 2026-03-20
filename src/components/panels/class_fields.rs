@@ -30,13 +30,12 @@ pub fn ClassFieldsPanels() -> impl IntoView {
             .map(|(name, e)| (name.clone(), e.fields.clone()))
             .collect();
 
-        let identity = store.get_untracked().identity.clone();
         entries
             .into_iter()
             .map(|(feature_name, fields)| {
                 // Resolve feature name → label for panel title
                 let title = registry
-                    .with_feature(&identity, &feature_name, |f| f.label().to_string())
+                    .with_feature(&feature_name, |f| f.label().to_string())
                     .unwrap_or_else(|| feature_name.clone());
                 let fname = StoredValue::new(feature_name);
 

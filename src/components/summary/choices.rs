@@ -86,7 +86,6 @@ pub fn ChoicesBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let i18n = expect_context::<I18n>();
 
-    let identity = store.identity();
     let feature_data = store.feature_data();
 
     move || {
@@ -101,14 +100,13 @@ pub fn ChoicesBlock() -> impl IntoView {
             .collect::<BTreeMap<_, _>>();
 
         let char_level = store.read().level();
-        let id = identity.read();
 
         // Collect grouped choice items and standalone ref-based views
         let mut groups: BTreeMap<String, ChoiceGroup> = BTreeMap::new();
         let mut ref_views: Vec<AnyView> = Vec::new();
 
         for (feat_name, entry) in features.iter() {
-            let Some(fields) = registry.with_feature(&id, feat_name, |feat| {
+            let Some(fields) = registry.with_feature(feat_name, |feat| {
                 feat.fields
                     .iter()
                     .filter_map(|(name, def)| {
