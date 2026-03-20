@@ -111,15 +111,12 @@
         "1": {
           "level": 1,
           "features": [
-            "The Undying",
             "Among the Dead"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "The Undying"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -147,16 +144,13 @@
         "1": {
           "level": 1,
           "features": [
-            "The Hexblade",
             "Hex Warrior",
             "Hexblade's Curse"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "The Hexblade"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -184,16 +178,13 @@
         "1": {
           "level": 1,
           "features": [
-            "The Fathomless",
             "Gift of the Sea",
             "Tentacle of the Deeps"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "The Fathomless"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -224,15 +215,12 @@
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "The Genie",
             "Genie's Vessel"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "The Genie"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -260,15 +248,12 @@
         "1": {
           "level": 1,
           "features": [
-            "The Undead",
             "Form of Dread"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "The Undead"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -296,7 +281,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Archfey Patron",
             "Archfey Spells",
             "Steps of the Fey"
           ]
@@ -327,7 +311,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Celestial Patron",
             "Celestial Spells",
             "Healing Light"
           ]
@@ -358,7 +341,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Fiend Patron",
             "Dark One's Blessing",
             "Fiend Spells"
           ]
@@ -389,7 +371,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Great Old One Patron",
             "Awakened Mind",
             "Great Old One Spells",
             "Psychic Spells"

@@ -142,7 +142,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of Devotion",
             "Oath of Devotion Spells",
             "Sacred Weapon"
           ]
@@ -174,7 +173,6 @@
           "level": 3,
           "features": [
             "Nature's Wrath",
-            "Oath of the Ancients",
             "Oath of the Ancients Spells"
           ]
         },
@@ -204,7 +202,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of Vengeance",
             "Oath of Vengeance Spells",
             "Vow of Enmity"
           ]
@@ -240,7 +237,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oathbreaker",
             "Channel Divinity",
             "Control Undead",
             "Dreadful Aspect",
@@ -278,7 +274,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of the Crown",
             "Champion Challenge",
             "Channel Divinity",
             "Oath Spells",
@@ -317,7 +312,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of Conquest",
             "Channel Divinity",
             "Conquering Presence",
             "Guided Strike",
@@ -356,7 +350,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of Redemption",
             "Channel Divinity",
             "Emissary of Peace",
             "Oath Spells",
@@ -391,7 +384,6 @@
           "level": 3,
           "features": [
             "Inspiring Smite",
-            "Oath of Glory",
             "Oath of Glory Spells",
             "Peerless Athlete"
           ]
@@ -427,7 +419,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Oath of the Watchers",
             "Channel Divinity",
             "Oath Spells",
             "Tenets of the Watchers",
@@ -467,8 +458,7 @@
             "Elemental Smite",
             "Genie Spells",
             "Genie's Splendor",
-            "Marid's Surge",
-            "Oath of the Noble Genies"
+            "Marid's Surge"
           ]
         },
         "7": {

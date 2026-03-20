@@ -117,7 +117,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Battle Master",
             "Combat Superiority",
             "Maneuver Options",
             "Student of War"
@@ -155,7 +154,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Champion",
             "Improved Critical",
             "Remarkable Athlete"
           ]
@@ -192,7 +190,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Eldritch Knight",
             "Spellcasting (Eldritch Knight)",
             "War Bond"
           ]
@@ -229,7 +226,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Purple Dragon Knight (Banneret)",
             "Rallying Cry",
             "Restriction: Knighthood"
           ]
@@ -266,7 +262,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Arcane Archer",
             "Arcane Archer Lore",
             "Arcane Shot",
             "Arcane Shot Options"
@@ -307,7 +302,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Cavalier",
             "Bonus Proficiency",
             "Born to the Saddle",
             "Unwavering Mark"
@@ -345,7 +339,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Samurai",
             "Bonus Proficiency",
             "Fighting Spirit"
           ]
@@ -382,7 +375,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Echo Knight",
             "Manifest Echo",
             "Unleash Incarnation"
           ]
@@ -419,7 +411,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Psi Warrior",
             "Psionic Power",
             "Protective Field",
             "Psionic Strike",
@@ -460,7 +451,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Rune Knight",
             "Bonus Proficiencies",
             "Giant's Might",
             "Rune Carver"
@@ -501,7 +491,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Banneret",
             "Group Recovery",
             "Knightly Envoy"
           ]

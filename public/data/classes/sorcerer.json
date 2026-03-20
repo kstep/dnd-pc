@@ -111,15 +111,12 @@
         "1": {
           "level": 1,
           "features": [
-            "Pyromancer (PSK)",
             "Heart of Fire"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Pyromancer (PSK)"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -147,16 +144,13 @@
         "1": {
           "level": 1,
           "features": [
-            "Divine Soul",
             "Divine Magic",
             "Favored by the Gods"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Divine Soul"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -184,16 +178,13 @@
         "1": {
           "level": 1,
           "features": [
-            "Shadow Magic",
             "Eyes of the Dark",
             "Strength of the Grave"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Shadow Magic"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -221,16 +212,13 @@
         "1": {
           "level": 1,
           "features": [
-            "Storm Sorcery",
             "Tempestuous Magic",
             "Wind Speaker"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Storm Sorcery"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -259,16 +247,13 @@
         "1": {
           "level": 1,
           "features": [
-            "Lunar Sorcery",
             "Lunar Embodiment",
             "Moon Fire"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Lunar Sorcery"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -297,7 +282,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Aberrant Sorcery",
             "Psionic Spells",
             "Telepathic Speech"
           ]
@@ -329,7 +313,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Clockwork Sorcery",
             "Clockwork Spells",
             "Restore Balance"
           ]
@@ -360,7 +343,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Draconic Sorcery",
             "Draconic Spells",
             "Draconic Resilience"
           ]
@@ -391,7 +373,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Wild Magic Sorcery",
             "Tides of Chaos",
             "Wild Magic Surge"
           ]
@@ -425,7 +406,6 @@
             "Bolstering Flames",
             "Radiant Fire",
             "Spellfire Burst",
-            "Spellfire Sorcery",
             "Spellfire Spells"
           ]
         },

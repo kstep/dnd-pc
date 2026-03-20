@@ -122,7 +122,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Arcane Trickster",
             "Mage Hand Legerdemain",
             "Spellcasting (Arcane Trickster)"
           ]
@@ -153,7 +152,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Assassin",
             "Assassin's Tools",
             "Assassinate"
           ]
@@ -185,8 +183,7 @@
           "level": 3,
           "features": [
             "Fast Hands",
-            "Second-Story Work",
-            "Thief"
+            "Second-Story Work"
           ]
         },
         "9": {
@@ -215,7 +212,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Inquisitive",
             "Ear for Deceit",
             "Eye for Detail",
             "Insightful Fighting"
@@ -247,7 +243,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Mastermind",
             "Master of Intrigue",
             "Master of Tactics"
           ]
@@ -278,7 +273,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Scout",
             "Skirmisher",
             "Survivalist"
           ]
@@ -309,7 +303,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Swashbuckler",
             "Fancy Footwork",
             "Rakish Audacity"
           ]
@@ -340,7 +333,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Phantom",
             "Wails from the Grave",
             "Whispers of the Dead"
           ]
@@ -371,7 +363,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Soulknife",
             "Psionic Power",
             "Psychic Blades",
             "Psi-Bolstered Knack",
@@ -407,8 +398,7 @@
           "level": 3,
           "features": [
             "Bloodthirst",
-            "Dread Allegiance",
-            "Scion of the Three"
+            "Dread Allegiance"
           ]
         },
         "9": {

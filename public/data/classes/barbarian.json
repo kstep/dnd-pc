@@ -126,7 +126,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Berserker",
             "Frenzy"
           ]
         },
@@ -156,7 +155,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Battlerager",
             "Battlerager Armor",
             "Restriction—Dwarves Only"
           ]
@@ -187,7 +185,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Ancestral Guardian",
             "Ancestral Protectors"
           ]
         },
@@ -218,7 +215,6 @@
           "level": 3,
           "features": [
             "Desert",
-            "Path of the Storm Herald",
             "Sea",
             "Tundra",
             "Storm Aura"
@@ -256,7 +252,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Zealot",
             "Divine Fury",
             "Warrior of the Gods"
           ]
@@ -287,7 +282,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Beast",
             "Form of the Beast"
           ]
         },
@@ -317,7 +311,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of Wild Magic",
             "Magic Awareness",
             "Wild Surge"
           ]
@@ -349,8 +342,7 @@
           "level": 3,
           "features": [
             "Giant Power",
-            "Giant's Havoc",
-            "Path of the Giant"
+            "Giant's Havoc"
           ]
         },
         "6": {
@@ -379,7 +371,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the Wild Heart",
             "Animal Speaker",
             "Rage of the Wilds"
           ]
@@ -410,7 +401,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Path of the World Tree",
             "Vitality of the Tree"
           ]
         },

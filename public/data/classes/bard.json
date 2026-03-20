@@ -112,7 +112,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Lore",
             "Bonus Proficiencies",
             "Cutting Words"
           ]
@@ -137,7 +136,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Valor",
             "Combat Inspiration",
             "Martial Training"
           ]
@@ -162,7 +160,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Glamour",
             "Beguiling Magic",
             "Mantle of Inspiration"
           ]
@@ -187,7 +184,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Swords",
             "Defensive Flourish",
             "Mobile Flourish",
             "Slashing Flourish",
@@ -216,7 +212,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Whispers",
             "Psychic Blades",
             "Words of Terror"
           ]
@@ -241,7 +236,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Creation",
             "Mote of Potential",
             "Performance of Creation"
           ]
@@ -266,7 +260,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Eloquence",
             "Silver Tongue",
             "Unsettling Words"
           ]
@@ -292,7 +285,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Spirits",
             "Guiding Whispers",
             "Spiritual Focus",
             "Tales from Beyond"
@@ -324,7 +316,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of Dance",
             "Agile Strikes",
             "Bardic Damage",
             "Dance Virtuoso",
@@ -353,7 +344,6 @@
         "3": {
           "level": 3,
           "features": [
-            "College of the Moon",
             "Moon's Inspiration",
             "Primal Lore"
           ]

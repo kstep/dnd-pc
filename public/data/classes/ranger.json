@@ -119,7 +119,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Beast Master",
             "Primal Companion"
           ]
         },
@@ -149,7 +148,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Hunter",
             "Hunter's Lore",
             "Hunter's Prey"
           ]
@@ -181,7 +179,6 @@
           "level": 3,
           "features": [
             "Dread Ambusher",
-            "Gloom Stalker",
             "Gloom Stalker Spells",
             "Umbral Sight"
           ]
@@ -212,7 +209,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Horizon Walker",
             "Detect Portal",
             "Horizon Walker Magic",
             "Planar Warrior"
@@ -244,7 +240,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Monster Slayer",
             "Hunter's Sense",
             "Monster Slayer Magic",
             "Slayer's Prey"
@@ -276,7 +271,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Fey Wanderer",
             "Dreadful Strikes",
             "Fey Wanderer Spells",
             "Otherworldly Glamour"
@@ -308,7 +302,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Swarmkeeper",
             "Gathered Swarm",
             "Swarmkeeper Magic"
           ]
@@ -339,7 +332,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Drakewarden",
             "Draconic Gift",
             "Drake Companion"
           ]
@@ -372,7 +364,6 @@
           "features": [
             "Frigid Explorer",
             "Hunter's Rime",
-            "Winter Walker",
             "Winter Walker Spells"
           ]
         },

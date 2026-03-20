@@ -909,9 +909,6 @@
     "name": "Soul of Artifice"
   },
   {
-    "name": "Alchemist"
-  },
-  {
     "name": "Alchemist Spells",
     "spells": {
       "casting_ability": 3,
@@ -1030,9 +1027,6 @@
     "name": "Armor Model"
   },
   {
-    "name": "Armorer"
-  },
-  {
     "name": "Armorer Spells",
     "spells": {
       "casting_ability": 3,
@@ -1119,9 +1113,6 @@
     "name": "Perfected Armor"
   },
   {
-    "name": "Artillerist"
-  },
-  {
     "name": "Artillerist Spells",
     "spells": {
       "casting_ability": 3,
@@ -1205,9 +1196,6 @@
     "name": "Battle Ready"
   },
   {
-    "name": "Battle Smith"
-  },
-  {
     "name": "Battle Smith Spells",
     "spells": {
       "casting_ability": 3,
@@ -1286,9 +1274,6 @@
   },
   {
     "name": "Adventurer's Atlas"
-  },
-  {
-    "name": "Cartographer"
   },
   {
     "name": "Cartographer Spells",
@@ -1510,9 +1495,6 @@
     "name": "Primal Champion"
   },
   {
-    "name": "Path of the Berserker"
-  },
-  {
     "name": "Frenzy"
   },
   {
@@ -1535,9 +1517,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Path of the Battlerager"
   },
   {
     "name": "Battlerager Armor",
@@ -1567,9 +1546,6 @@
     "name": "Spiked Retribution"
   },
   {
-    "name": "Path of the Ancestral Guardian"
-  },
-  {
     "name": "Ancestral Protectors"
   },
   {
@@ -1597,9 +1573,6 @@
     "name": "Desert"
   },
   {
-    "name": "Path of the Storm Herald"
-  },
-  {
     "name": "Sea"
   },
   {
@@ -1616,9 +1589,6 @@
   },
   {
     "name": "Raging Storm"
-  },
-  {
-    "name": "Path of the Zealot"
   },
   {
     "name": "Divine Fury"
@@ -1681,9 +1651,6 @@
     "name": "Rage of the Gods"
   },
   {
-    "name": "Path of the Beast"
-  },
-  {
     "name": "Form of the Beast"
   },
   {
@@ -1694,9 +1661,6 @@
   },
   {
     "name": "Call the Hunt"
-  },
-  {
-    "name": "Path of Wild Magic"
   },
   {
     "name": "Magic Awareness"
@@ -1735,9 +1699,6 @@
     "name": "Giant's Havoc"
   },
   {
-    "name": "Path of the Giant"
-  },
-  {
     "name": "Elemental Cleaver"
   },
   {
@@ -1759,9 +1720,6 @@
     "name": "Demiurgic Colossus"
   },
   {
-    "name": "Path of the Wild Heart"
-  },
-  {
     "name": "Animal Speaker"
   },
   {
@@ -1775,9 +1733,6 @@
   },
   {
     "name": "Power of the Wilds"
-  },
-  {
-    "name": "Path of the World Tree"
   },
   {
     "name": "Vitality of the Tree"
@@ -2067,9 +2022,6 @@
     "name": "Words of Creation"
   },
   {
-    "name": "College of Lore"
-  },
-  {
     "name": "Cutting Words"
   },
   {
@@ -2079,9 +2031,6 @@
     "name": "Peerless Skill"
   },
   {
-    "name": "College of Valor"
-  },
-  {
     "name": "Combat Inspiration"
   },
   {
@@ -2089,9 +2038,6 @@
   },
   {
     "name": "Battle Magic"
-  },
-  {
-    "name": "College of Glamour"
   },
   {
     "name": "Beguiling Magic",
@@ -2170,9 +2116,6 @@
     ]
   },
   {
-    "name": "College of Swords"
-  },
-  {
     "name": "Defensive Flourish"
   },
   {
@@ -2191,9 +2134,6 @@
     "name": "Master's Flourish"
   },
   {
-    "name": "College of Whispers"
-  },
-  {
     "name": "Words of Terror"
   },
   {
@@ -2201,9 +2141,6 @@
   },
   {
     "name": "Shadow Lore"
-  },
-  {
-    "name": "College of Creation"
   },
   {
     "name": "Mote of Potential"
@@ -2216,9 +2153,6 @@
   },
   {
     "name": "Creative Crescendo"
-  },
-  {
-    "name": "College of Eloquence"
   },
   {
     "name": "Silver Tongue"
@@ -2271,9 +2205,6 @@
     ]
   },
   {
-    "name": "College of Spirits"
-  },
-  {
     "name": "Guiding Whispers"
   },
   {
@@ -2303,9 +2234,6 @@
     "name": "Mystical Connection"
   },
   {
-    "name": "College of Dance"
-  },
-  {
     "name": "Agile Strikes"
   },
   {
@@ -2325,9 +2253,6 @@
   },
   {
     "name": "Leading Evasion"
-  },
-  {
-    "name": "College of the Moon"
   },
   {
     "name": "Moon's Inspiration"
@@ -2585,9 +2510,6 @@
     "name": "Greater Divine Intervention"
   },
   {
-    "name": "Knowledge Domain"
-  },
-  {
     "name": "Blessings of Knowledge"
   },
   {
@@ -2629,9 +2551,6 @@
   },
   {
     "name": "Visions of the Past"
-  },
-  {
-    "name": "Life Domain"
   },
   {
     "name": "Disciple of Life"
@@ -2726,9 +2645,6 @@
   },
   {
     "name": "Supreme Healing"
-  },
-  {
-    "name": "Light Domain"
   },
   {
     "name": "Light Domain Spells",
@@ -2843,9 +2759,6 @@
     ]
   },
   {
-    "name": "Nature Domain"
-  },
-  {
     "name": "Acolyte of Nature"
   },
   {
@@ -2902,9 +2815,6 @@
     ]
   },
   {
-    "name": "Tempest Domain"
-  },
-  {
     "name": "Wrath of the Storm",
     "fields": [
       {
@@ -2949,9 +2859,6 @@
   },
   {
     "name": "Stormborn"
-  },
-  {
-    "name": "Trickery Domain"
   },
   {
     "name": "Blessing of the Trickster",
@@ -3057,9 +2964,6 @@
     "name": "Trickster's Transposition"
   },
   {
-    "name": "War Domain"
-  },
-  {
     "name": "War Domain Spells",
     "spells": {
       "casting_ability": 4,
@@ -3158,9 +3062,6 @@
     "name": "Avatar of Battle"
   },
   {
-    "name": "Death Domain"
-  },
-  {
     "name": "Reaper"
   },
   {
@@ -3186,9 +3087,6 @@
     "name": "Improved Reaper"
   },
   {
-    "name": "Arcana Domain"
-  },
-  {
     "name": "Arcane Initiate"
   },
   {
@@ -3210,9 +3108,6 @@
   },
   {
     "name": "Arcane Mastery"
-  },
-  {
-    "name": "Ambition Domain (PSA)"
   },
   {
     "name": "Channel Divinity: Invoke Duplicity",
@@ -3247,12 +3142,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Knowledge Domain (PSA)"
-  },
-  {
-    "name": "Solidarity Domain (PSA)"
   },
   {
     "name": "Solidarity's Action",
@@ -3313,9 +3202,6 @@
     ]
   },
   {
-    "name": "Strength Domain (PSA)"
-  },
-  {
     "name": "Acolyte of Strength"
   },
   {
@@ -3350,9 +3236,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Zeal Domain (PSA)"
   },
   {
     "name": "Priest of Zeal",
@@ -3422,9 +3305,6 @@
     ]
   },
   {
-    "name": "Forge Domain"
-  },
-  {
     "name": "Blessing of the Forge"
   },
   {
@@ -3449,9 +3329,6 @@
   },
   {
     "name": "Saint of Forge and Fire"
-  },
-  {
-    "name": "Grave Domain"
   },
   {
     "name": "Circle of Mortality"
@@ -3504,9 +3381,6 @@
     "name": "Keeper of Souls"
   },
   {
-    "name": "Order Domain"
-  },
-  {
     "name": "Voice of Authority"
   },
   {
@@ -3531,9 +3405,6 @@
   },
   {
     "name": "Order's Wrath"
-  },
-  {
-    "name": "Peace Domain"
   },
   {
     "name": "Emboldening Bond"
@@ -3563,9 +3434,6 @@
   },
   {
     "name": "Expansive Bond"
-  },
-  {
-    "name": "Twilight Domain"
   },
   {
     "name": "Eyes of Night"
@@ -3872,9 +3740,6 @@
     "name": "Archdruid"
   },
   {
-    "name": "Circle of the Land"
-  },
-  {
     "name": "Circle of the Land Spells",
     "spells": {
       "casting_ability": 4,
@@ -4062,9 +3927,6 @@
     "name": "Circle Forms"
   },
   {
-    "name": "Circle of the Moon"
-  },
-  {
     "name": "Circle of the Moon Spells",
     "spells": {
       "casting_ability": 4,
@@ -4135,9 +3997,6 @@
   },
   {
     "name": "Lunar Form"
-  },
-  {
-    "name": "Circle of Dreams"
   },
   {
     "name": "Balm of the Summer Court",
@@ -4212,9 +4071,6 @@
     "name": "Walker in Dreams"
   },
   {
-    "name": "Circle of the Shepherd"
-  },
-  {
     "name": "Speech of the Woods",
     "languages": [
       "Sylvan"
@@ -4252,9 +4108,6 @@
   },
   {
     "name": "Faithful Summons"
-  },
-  {
-    "name": "Circle of Spores"
   },
   {
     "name": "Circle Spells"
@@ -4367,9 +4220,6 @@
     "name": "Full of Stars"
   },
   {
-    "name": "Circle of Wildfire"
-  },
-  {
     "name": "Summon Wildfire Spirit"
   },
   {
@@ -4380,9 +4230,6 @@
   },
   {
     "name": "Blazing Revival"
-  },
-  {
-    "name": "Circle of the Sea"
   },
   {
     "name": "Circle of the Sea Spells",
@@ -4472,9 +4319,6 @@
   },
   {
     "name": "Oceanic Gift"
-  },
-  {
-    "name": "Circle of the Stars"
   },
   {
     "name": "Second Wind",
@@ -4590,9 +4434,6 @@
     "name": "Three Extra Attacks"
   },
   {
-    "name": "Battle Master"
-  },
-  {
     "name": "Combat Superiority"
   },
   {
@@ -4635,9 +4476,6 @@
     "name": "Ultimate Combat Superiority"
   },
   {
-    "name": "Champion"
-  },
-  {
     "name": "Improved Critical"
   },
   {
@@ -4654,9 +4492,6 @@
   },
   {
     "name": "Survivor"
-  },
-  {
-    "name": "Eldritch Knight"
   },
   {
     "name": "Spellcasting (Eldritch Knight)",
@@ -4768,9 +4603,6 @@
     "name": "War Bond"
   },
   {
-    "name": "War Magic"
-  },
-  {
     "name": "Eldritch Strike"
   },
   {
@@ -4778,9 +4610,6 @@
   },
   {
     "name": "Improved War Magic"
-  },
-  {
-    "name": "Purple Dragon Knight (Banneret)"
   },
   {
     "name": "Rallying Cry"
@@ -4796,9 +4625,6 @@
   },
   {
     "name": "Bulwark"
-  },
-  {
-    "name": "Arcane Archer"
   },
   {
     "name": "Arcane Archer Lore"
@@ -4832,9 +4658,6 @@
   },
   {
     "name": "Ever-Ready Shot"
-  },
-  {
-    "name": "Cavalier"
   },
   {
     "name": "Born to the Saddle"
@@ -4874,9 +4697,6 @@
   },
   {
     "name": "Vigilant Defender"
-  },
-  {
-    "name": "Samurai"
   },
   {
     "name": "Fighting Spirit",
@@ -4936,9 +4756,6 @@
     ]
   },
   {
-    "name": "Echo Knight"
-  },
-  {
     "name": "Manifest Echo",
     "fields": [
       {
@@ -4988,9 +4805,6 @@
   },
   {
     "name": "Legion of One"
-  },
-  {
-    "name": "Psi Warrior"
   },
   {
     "name": "Psionic Power"
@@ -5089,9 +4903,6 @@
     ]
   },
   {
-    "name": "Rune Knight"
-  },
-  {
     "name": "Giant's Might",
     "fields": [
       {
@@ -5153,9 +4964,6 @@
   },
   {
     "name": "Runic Juggernaut"
-  },
-  {
-    "name": "Banneret"
   },
   {
     "name": "Group Recovery"
@@ -5362,9 +5170,6 @@
     ]
   },
   {
-    "name": "Way of the Long Death"
-  },
-  {
     "name": "Touch of Death"
   },
   {
@@ -5375,9 +5180,6 @@
   },
   {
     "name": "Touch of the Long Death"
-  },
-  {
-    "name": "Way of the Drunken Master"
   },
   {
     "name": "Drunken Technique"
@@ -5430,9 +5232,6 @@
     ]
   },
   {
-    "name": "Way of the Kensei"
-  },
-  {
     "name": "Path of the Kensei"
   },
   {
@@ -5457,9 +5256,6 @@
   },
   {
     "name": "Unerring Accuracy"
-  },
-  {
-    "name": "Way of the Sun Soul"
   },
   {
     "name": "Radiant Sun Bolt"
@@ -5498,9 +5294,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Way of the Astral Self"
   },
   {
     "name": "Arms of the Astral Self",
@@ -5560,9 +5353,6 @@
     ]
   },
   {
-    "name": "Way of the Ascendant Dragon"
-  },
-  {
     "name": "Breath of the Dragon"
   },
   {
@@ -5588,9 +5378,6 @@
   },
   {
     "name": "Ascendant Aspect"
-  },
-  {
-    "name": "Warrior of Mercy"
   },
   {
     "name": "Hand of Harm"
@@ -5640,9 +5427,6 @@
   },
   {
     "name": "Shadow Arts"
-  },
-  {
-    "name": "Warrior of Shadow"
   },
   {
     "name": "Darkness"
@@ -5713,9 +5497,6 @@
     }
   },
   {
-    "name": "Warrior of the Elements"
-  },
-  {
     "name": "Elemental Burst",
     "fields": [
       {
@@ -5740,9 +5521,6 @@
   },
   {
     "name": "Open Hand Technique"
-  },
-  {
-    "name": "Warrior of the Open Hand"
   },
   {
     "name": "Wholeness of Body",
@@ -5947,9 +5725,6 @@
     "name": "Aura Expansion"
   },
   {
-    "name": "Oath of Devotion"
-  },
-  {
     "name": "Oath of Devotion Spells",
     "spells": {
       "casting_ability": 5,
@@ -6082,9 +5857,6 @@
     ]
   },
   {
-    "name": "Oath of the Ancients"
-  },
-  {
     "name": "Oath of the Ancients Spells",
     "spells": {
       "casting_ability": 5,
@@ -6174,9 +5946,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Oath of Vengeance"
   },
   {
     "name": "Oath of Vengeance Spells",
@@ -6294,9 +6063,6 @@
     ]
   },
   {
-    "name": "Oathbreaker"
-  },
-  {
     "name": "Control Undead",
     "fields": [
       {
@@ -6341,9 +6107,6 @@
   },
   {
     "name": "Dread Lord"
-  },
-  {
-    "name": "Oath of the Crown"
   },
   {
     "name": "Champion Challenge",
@@ -6428,9 +6191,6 @@
     ]
   },
   {
-    "name": "Oath of Conquest"
-  },
-  {
     "name": "Conquering Presence",
     "fields": [
       {
@@ -6458,9 +6218,6 @@
   },
   {
     "name": "Invincible Conqueror"
-  },
-  {
-    "name": "Oath of Redemption"
   },
   {
     "name": "Emissary of Peace",
@@ -6535,9 +6292,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Oath of Glory"
   },
   {
     "name": "Oath of Glory Spells",
@@ -6653,9 +6407,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Oath of the Watchers"
   },
   {
     "name": "Tenets of the Watchers"
@@ -6830,9 +6581,6 @@
   },
   {
     "name": "Marid's Surge"
-  },
-  {
-    "name": "Oath of the Noble Genies"
   },
   {
     "name": "Aura of Elemental Shielding"
@@ -7085,9 +6833,6 @@
     "name": "Foe Slayer"
   },
   {
-    "name": "Beast Master"
-  },
-  {
     "name": "Primal Companion"
   },
   {
@@ -7098,9 +6843,6 @@
   },
   {
     "name": "Share Spells"
-  },
-  {
-    "name": "Hunter"
   },
   {
     "name": "Hunter's Lore"
@@ -7145,9 +6887,6 @@
         "when": "OnCompute"
       }
     ]
-  },
-  {
-    "name": "Gloom Stalker"
   },
   {
     "name": "Gloom Stalker Spells",
@@ -7198,9 +6937,6 @@
   },
   {
     "name": "Shadowy Dodge"
-  },
-  {
-    "name": "Horizon Walker"
   },
   {
     "name": "Detect Portal"
@@ -7266,9 +7002,6 @@
     ]
   },
   {
-    "name": "Monster Slayer"
-  },
-  {
     "name": "Hunter's Sense"
   },
   {
@@ -7332,9 +7065,6 @@
     ]
   },
   {
-    "name": "Fey Wanderer"
-  },
-  {
     "name": "Dreadful Strikes"
   },
   {
@@ -7386,9 +7116,6 @@
   },
   {
     "name": "Misty Wanderer"
-  },
-  {
-    "name": "Swarmkeeper"
   },
   {
     "name": "Gathered Swarm"
@@ -7448,9 +7175,6 @@
     ]
   },
   {
-    "name": "Drakewarden"
-  },
-  {
     "name": "Draconic Gift"
   },
   {
@@ -7470,9 +7194,6 @@
   },
   {
     "name": "Hunter's Rime"
-  },
-  {
-    "name": "Winter Walker"
   },
   {
     "name": "Winter Walker Spells",
@@ -7659,9 +7380,6 @@
     "name": "Stroke of Luck"
   },
   {
-    "name": "Arcane Trickster"
-  },
-  {
     "name": "Mage Hand Legerdemain",
     "fields": [
       {
@@ -7792,9 +7510,6 @@
     "name": "Spell Thief"
   },
   {
-    "name": "Assassin"
-  },
-  {
     "name": "Assassin's Tools"
   },
   {
@@ -7828,9 +7543,6 @@
     "name": "Second-Story Work"
   },
   {
-    "name": "Thief"
-  },
-  {
     "name": "Supreme Sneak"
   },
   {
@@ -7838,9 +7550,6 @@
   },
   {
     "name": "Thief's Reflexes"
-  },
-  {
-    "name": "Inquisitive"
   },
   {
     "name": "Ear for Deceit"
@@ -7885,9 +7594,6 @@
     "name": "Eye for Weakness"
   },
   {
-    "name": "Mastermind"
-  },
-  {
     "name": "Master of Intrigue"
   },
   {
@@ -7925,9 +7631,6 @@
   },
   {
     "name": "Soul of Deceit"
-  },
-  {
-    "name": "Scout"
   },
   {
     "name": "Skirmisher",
@@ -7969,9 +7672,6 @@
     ]
   },
   {
-    "name": "Swashbuckler"
-  },
-  {
     "name": "Fancy Footwork"
   },
   {
@@ -7997,9 +7697,6 @@
   },
   {
     "name": "Master Duelist"
-  },
-  {
-    "name": "Phantom"
   },
   {
     "name": "Wails from the Grave"
@@ -8057,9 +7754,6 @@
   },
   {
     "name": "Death's Friend"
-  },
-  {
-    "name": "Soulknife"
   },
   {
     "name": "Psi-Bolstered Knack"
@@ -8132,9 +7826,6 @@
   },
   {
     "name": "Dread Allegiance"
-  },
-  {
-    "name": "Scion of the Three"
   },
   {
     "name": "Strike Fear"
@@ -8471,9 +8162,6 @@
     "name": "Arcane Apotheosis"
   },
   {
-    "name": "Pyromancer (PSK)"
-  },
-  {
     "name": "Heart of Fire"
   },
   {
@@ -8496,9 +8184,6 @@
   },
   {
     "name": "Fiery Soul"
-  },
-  {
-    "name": "Divine Soul"
   },
   {
     "name": "Divine Magic"
@@ -8547,9 +8232,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Shadow Magic"
   },
   {
     "name": "Eyes of the Dark"
@@ -8607,9 +8289,6 @@
     ]
   },
   {
-    "name": "Storm Sorcery"
-  },
-  {
     "name": "Tempestuous Magic",
     "fields": [
       {
@@ -8665,9 +8344,6 @@
   },
   {
     "name": "Wind Soul"
-  },
-  {
-    "name": "Lunar Sorcery"
   },
   {
     "name": "Lunar Embodiment"
@@ -8733,9 +8409,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Aberrant Sorcery"
   },
   {
     "name": "Psionic Spells",
@@ -8883,9 +8556,6 @@
     ]
   },
   {
-    "name": "Clockwork Sorcery"
-  },
-  {
     "name": "Clockwork Spells",
     "spells": {
       "casting_ability": 5,
@@ -9022,9 +8692,6 @@
     ]
   },
   {
-    "name": "Draconic Sorcery"
-  },
-  {
     "name": "Draconic Spells",
     "spells": {
       "casting_ability": 5,
@@ -9133,9 +8800,6 @@
     "name": "Dragon Companion"
   },
   {
-    "name": "Wild Magic Sorcery"
-  },
-  {
     "name": "Tides of Chaos"
   },
   {
@@ -9158,9 +8822,6 @@
   },
   {
     "name": "Spellfire Burst"
-  },
-  {
-    "name": "Spellfire Sorcery"
   },
   {
     "name": "Spellfire Spells",
@@ -9644,9 +9305,6 @@
     "name": "Eldritch Master"
   },
   {
-    "name": "The Undying"
-  },
-  {
     "name": "Among the Dead"
   },
   {
@@ -9678,9 +9336,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "The Hexblade"
   },
   {
     "name": "Hex Warrior"
@@ -9729,9 +9384,6 @@
   },
   {
     "name": "Master of Hexes"
-  },
-  {
-    "name": "The Fathomless"
   },
   {
     "name": "Gift of the Sea"
@@ -9791,9 +9443,6 @@
     "name": "Genie's Wrath"
   },
   {
-    "name": "The Genie"
-  },
-  {
     "name": "Genie's Vessel"
   },
   {
@@ -9837,9 +9486,6 @@
   },
   {
     "name": "Limited Wish"
-  },
-  {
-    "name": "The Undead"
   },
   {
     "name": "Form of Dread",
@@ -9894,9 +9540,6 @@
   },
   {
     "name": "Spirit Projection"
-  },
-  {
-    "name": "Archfey Patron"
   },
   {
     "name": "Archfey Spells",
@@ -9995,9 +9638,6 @@
   },
   {
     "name": "Bewitching Magic"
-  },
-  {
-    "name": "Celestial Patron"
   },
   {
     "name": "Celestial Spells",
@@ -10119,9 +9759,6 @@
     "name": "Searing Vengeance"
   },
   {
-    "name": "Fiend Patron"
-  },
-  {
     "name": "Dark One's Blessing"
   },
   {
@@ -10200,9 +9837,6 @@
   },
   {
     "name": "Hurl Through Hell"
-  },
-  {
-    "name": "Great Old One Patron"
   },
   {
     "name": "Awakened Mind",
@@ -10590,9 +10224,6 @@
     "name": "Signature Spells"
   },
   {
-    "name": "School of Conjuration"
-  },
-  {
     "name": "Conjuration Savant"
   },
   {
@@ -10632,9 +10263,6 @@
     "name": "Durable Summons"
   },
   {
-    "name": "School of Enchantment"
-  },
-  {
     "name": "Enchantment Savant"
   },
   {
@@ -10671,9 +10299,6 @@
     "name": "Alter Memories"
   },
   {
-    "name": "School of Necromancy"
-  },
-  {
     "name": "Grim Harvest"
   },
   {
@@ -10687,9 +10312,6 @@
   },
   {
     "name": "Command Undead"
-  },
-  {
-    "name": "School of Transmutation"
   },
   {
     "name": "Minor Alchemy"
@@ -10759,9 +10381,6 @@
   },
   {
     "name": "Deflecting Shroud"
-  },
-  {
-    "name": "Chronurgy Magic"
   },
   {
     "name": "Chronal Shift",
@@ -10839,9 +10458,6 @@
     ]
   },
   {
-    "name": "Graviturgy Magic"
-  },
-  {
     "name": "Adjust Density"
   },
   {
@@ -10873,9 +10489,6 @@
   },
   {
     "name": "Event Horizon"
-  },
-  {
-    "name": "Order of Scribes"
   },
   {
     "name": "Awakened Spellbook"
@@ -10914,9 +10527,6 @@
     "name": "One with the Word"
   },
   {
-    "name": "Abjurer"
-  },
-  {
     "name": "Abjuration Savant"
   },
   {
@@ -10927,9 +10537,6 @@
   },
   {
     "name": "Spell Resistance"
-  },
-  {
-    "name": "Diviner"
   },
   {
     "name": "Divination Savant"
@@ -10958,9 +10565,6 @@
     "name": "Greater Portent"
   },
   {
-    "name": "Evoker"
-  },
-  {
     "name": "Evocation Savant"
   },
   {
@@ -10974,9 +10578,6 @@
   },
   {
     "name": "Overchannel"
-  },
-  {
-    "name": "Illusionist"
   },
   {
     "name": "Illusion Savant"
@@ -11030,9 +10631,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Bladesinger"
   },
   {
     "name": "Bladesong",

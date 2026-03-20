@@ -111,7 +111,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Circle of the Land",
             "Circle of the Land Spells",
             "Land's Aid"
           ]
@@ -143,7 +142,6 @@
           "level": 3,
           "features": [
             "Circle Forms",
-            "Circle of the Moon",
             "Circle of the Moon Spells"
           ]
         },
@@ -173,15 +171,12 @@
         "2": {
           "level": 2,
           "features": [
-            "Circle of Dreams",
             "Balm of the Summer Court"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Circle of Dreams"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -209,16 +204,13 @@
         "2": {
           "level": 2,
           "features": [
-            "Circle of the Shepherd",
             "Speech of the Woods",
             "Spirit Totem"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Circle of the Shepherd"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -246,7 +238,6 @@
         "2": {
           "level": 2,
           "features": [
-            "Circle of Spores",
             "Circle Spells",
             "Halo of Spores",
             "Symbiotic Entity"
@@ -254,9 +245,7 @@
         },
         "3": {
           "level": 3,
-          "features": [
-            "Circle of Spores"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -279,61 +268,18 @@
       }
     },
     {
-      "name": "Circle of Stars",
-      "levels": {
-        "2": {
-          "level": 2,
-          "features": [
-            "Circle of Stars",
-            "Star Map",
-            "Starry Form",
-            "Archer",
-            "Chalice",
-            "Dragon"
-          ]
-        },
-        "3": {
-          "level": 3,
-          "features": [
-            "Circle of Stars"
-          ]
-        },
-        "6": {
-          "level": 6,
-          "features": [
-            "Cosmic Omen"
-          ]
-        },
-        "10": {
-          "level": 10,
-          "features": [
-            "Twinkling Constellations"
-          ]
-        },
-        "14": {
-          "level": 14,
-          "features": [
-            "Full of Stars"
-          ]
-        }
-      }
-    },
-    {
       "name": "Circle of Wildfire",
       "levels": {
         "2": {
           "level": 2,
           "features": [
-            "Circle of Wildfire",
             "Circle Spells",
             "Summon Wildfire Spirit"
           ]
         },
         "3": {
           "level": 3,
-          "features": [
-            "Circle of Wildfire"
-          ]
+          "features": []
         },
         "6": {
           "level": 6,
@@ -361,7 +307,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Circle of the Sea",
             "Circle of the Sea Spells",
             "Wrath of the Sea"
           ]
@@ -392,7 +337,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Circle of the Stars",
             "Star Map",
             "Starry Form",
             "Archer",

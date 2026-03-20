@@ -113,7 +113,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Alchemist",
             "Alchemist Spells",
             "Experimental Elixir",
             "Tools of the Trade"
@@ -147,7 +146,6 @@
           "features": [
             "Arcane Armor",
             "Armor Model",
-            "Armorer",
             "Armorer Spells",
             "Dreadnaught",
             "Guardian",
@@ -181,7 +179,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Artillerist",
             "Artillerist Spells",
             "Eldritch Cannon",
             "Tools of the Trade"
@@ -214,7 +211,6 @@
           "level": 3,
           "features": [
             "Battle Ready",
-            "Battle Smith",
             "Battle Smith Spells",
             "Steel Defender",
             "Tools of the Trade"
@@ -247,7 +243,6 @@
           "level": 3,
           "features": [
             "Adventurer's Atlas",
-            "Cartographer",
             "Cartographer Spells",
             "Mapping Magic",
             "Tools of the Trade"

@@ -140,7 +140,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Knowledge Domain",
             "Blessings of Knowledge"
           ]
         },
@@ -153,8 +152,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Knowledge of the Ages",
-            "Knowledge Domain"
+            "Channel Divinity: Knowledge of the Ages"
           ]
         },
         "6": {
@@ -184,7 +182,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Life Domain",
             "Disciple of Life",
             "Life Domain Spells",
             "Preserve Life"
@@ -236,7 +233,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Light Domain",
             "Light Domain Spells",
             "Radiance of the Dawn",
             "Warding Flare"
@@ -262,7 +258,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Nature Domain",
             "Acolyte of Nature",
             "Bonus Proficiency"
           ]
@@ -276,8 +271,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Charm Animals and Plants",
-            "Nature Domain"
+            "Channel Divinity: Charm Animals and Plants"
           ]
         },
         "6": {
@@ -307,7 +301,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Tempest Domain",
             "Bonus Proficiencies",
             "Wrath of the Storm"
           ]
@@ -321,8 +314,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Destructive Wrath",
-            "Tempest Domain"
+            "Channel Divinity: Destructive Wrath"
           ]
         },
         "6": {
@@ -352,7 +344,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Trickery Domain",
             "Blessing of the Trickster",
             "Invoke Duplicity",
             "Trickery Domain Spells"
@@ -378,7 +369,6 @@
         "3": {
           "level": 3,
           "features": [
-            "War Domain",
             "Guided Strike",
             "War Domain Spells",
             "War Priest"
@@ -404,7 +394,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Death Domain",
             "Bonus Proficiency",
             "Reaper"
           ]
@@ -418,8 +407,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Touch of Death",
-            "Death Domain"
+            "Channel Divinity: Touch of Death"
           ]
         },
         "6": {
@@ -449,7 +437,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Arcana Domain",
             "Arcane Initiate"
           ]
         },
@@ -462,7 +449,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Arcana Domain",
             "Channel Divinity: Arcane Abjuration"
           ]
         },
@@ -519,7 +505,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Ambition Domain (PSA)",
             "Warding Flare"
           ]
         },
@@ -532,7 +517,6 @@
         "3": {
           "level": 3,
           "features": [
-            "Ambition Domain (PSA)",
             "Channel Divinity: Invoke Duplicity"
           ]
         },
@@ -562,15 +546,11 @@
       "levels": {
         "1": {
           "level": 1,
-          "features": [
-            "Knowledge Domain (PSA)"
-          ]
+          "features": []
         },
         "3": {
           "level": 3,
-          "features": [
-            "Knowledge Domain (PSA)"
-          ]
+          "features": []
         }
       }
     },
@@ -580,7 +560,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Solidarity Domain (PSA)",
             "Bonus Proficiency",
             "Solidarity's Action"
           ]
@@ -594,8 +573,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Preserve Life",
-            "Solidarity Domain (PSA)"
+            "Channel Divinity: Preserve Life"
           ]
         },
         "6": {
@@ -625,7 +603,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Strength Domain (PSA)",
             "Acolyte of Strength",
             "Bonus Proficiency"
           ]
@@ -639,8 +616,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Feat of Strength",
-            "Strength Domain (PSA)"
+            "Channel Divinity: Feat of Strength"
           ]
         },
         "6": {
@@ -670,7 +646,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Zeal Domain (PSA)",
             "Bonus Proficiencies",
             "Priest of Zeal"
           ]
@@ -684,8 +659,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Consuming Fervor",
-            "Zeal Domain (PSA)"
+            "Channel Divinity: Consuming Fervor"
           ]
         },
         "6": {
@@ -715,7 +689,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Forge Domain",
             "Blessing of the Forge",
             "Bonus Proficiency"
           ]
@@ -729,8 +702,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Artisan's Blessing",
-            "Forge Domain"
+            "Channel Divinity: Artisan's Blessing"
           ]
         },
         "6": {
@@ -760,7 +732,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Grave Domain",
             "Circle of Mortality",
             "Eyes of the Grave"
           ]
@@ -774,8 +745,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Path to the Grave",
-            "Grave Domain"
+            "Channel Divinity: Path to the Grave"
           ]
         },
         "6": {
@@ -805,7 +775,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Order Domain",
             "Bonus Proficiencies",
             "Voice of Authority"
           ]
@@ -819,8 +788,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Order's Demand",
-            "Order Domain"
+            "Channel Divinity: Order's Demand"
           ]
         },
         "6": {
@@ -850,7 +818,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Peace Domain",
             "Emboldening Bond",
             "Implement of Peace"
           ]
@@ -864,8 +831,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Balm of Peace",
-            "Peace Domain"
+            "Channel Divinity: Balm of Peace"
           ]
         },
         "6": {
@@ -895,7 +861,6 @@
         "1": {
           "level": 1,
           "features": [
-            "Twilight Domain",
             "Bonus Proficiencies",
             "Eyes of Night",
             "Vigilant Blessing"
@@ -910,8 +875,7 @@
         "3": {
           "level": 3,
           "features": [
-            "Channel Divinity: Twilight Sanctuary",
-            "Twilight Domain"
+            "Channel Divinity: Twilight Sanctuary"
           ]
         },
         "6": {
