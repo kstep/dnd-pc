@@ -95,6 +95,19 @@ pub(super) fn sync_labels(
     // 4. Feature data: fields, choices, spells
     let char_level = character.level();
 
+    // Pre-compute free_uses_max for each feature (needs immutable character
+    // borrow, which conflicts with the mutable feature_data iteration below).
+    let free_uses_map: BTreeMap<String, u32> = character
+        .feature_data
+        .keys()
+        .filter_map(|key| {
+            let feat_def =
+                find_feature(&character.identity, key, class_cache, bg_cache, race_cache)?;
+            let max = feat_def.free_uses_max(char_level, character);
+            (max > 0).then(|| (key.clone(), max))
+        })
+        .collect();
+
     for (key, entry) in &mut character.feature_data {
         let Some(feat_def) =
             find_feature(&character.identity, key, class_cache, bg_cache, race_cache)
@@ -127,14 +140,7 @@ pub(super) fn sync_labels(
         if let Some(spells_def) = &feat_def.spells
             && let Some(spell_data) = &mut entry.spells
         {
-            let free_uses_max = feat_def
-                .fields
-                .values()
-                .find_map(|f| match &f.kind {
-                    FieldKind::FreeUses { levels } => Some(levels.get_for_level(char_level)),
-                    _ => None,
-                })
-                .unwrap_or(0);
+            let free_uses_max = free_uses_map.get(key.as_str()).copied().unwrap_or(0);
 
             // Sync spellbook (known) labels from registry first
             if let Some(known) = &mut spell_data.known {

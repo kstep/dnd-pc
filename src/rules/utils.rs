@@ -2,6 +2,8 @@ use std::{collections::BTreeMap, ops::Deref};
 
 use serde::{Deserialize, Deserializer, de};
 
+use crate::{expr, model::Attribute};
+
 /// A newtype around `BTreeMap<u32, T>` for level-based progressions.
 /// Provides `get_for_level()` to find the highest entry at or below a given
 /// level, and custom deserialization accepting both numeric and stringified
@@ -12,6 +14,26 @@ pub struct LevelRules<T>(BTreeMap<u32, T>);
 impl<T> LevelRules<T> {
     pub fn at_level(&self, level: u32) -> Option<&T> {
         self.0.range(..=level).next_back().map(|(_, v)| v)
+    }
+}
+
+impl<T> LevelRules<T>
+where
+    T: expr::Eval<Attribute, i32>,
+    T::Output: Default,
+{
+    pub fn eval_for_level(
+        &self,
+        level: u32,
+        ctx: &impl expr::Context<Attribute, i32>,
+    ) -> T::Output {
+        self.at_level(level)
+            .map(|rule| rule.eval(ctx))
+            .unwrap_or_default()
+    }
+
+    pub fn is_dynamic(&self, level: u32) -> bool {
+        self.at_level(level).is_some_and(|rule| rule.is_dynamic())
     }
 }
 

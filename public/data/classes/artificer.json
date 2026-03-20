@@ -604,7 +604,19 @@
       "stackable": true
     },
     {
-      "name": "Magic Item Tinker"
+      "name": "Magic Item Tinker",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "options": [
+            {
+              "name": "Magic Item Tinker",
+              "action": "BonusAction"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Flash of Genius"

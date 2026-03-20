@@ -41,11 +41,17 @@
   "feature.Tireless": {
     "description": "Primal forces now help fuel you on your journeys, granting you the following benefits. Temporary Hit Points: As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
   },
+  "feature.Tireless.field.Free Uses": {
+    "label": "Free Uses"
+  },
   "feature.Relentless Hunter": {
     "description": "Your Hunter's Mark spell no longer requires Concentration. In addition, the damage of Hunter's Mark increases to 1d10."
   },
   "feature.Nature's Veil": {
     "description": "You invoke spirits of nature to magically hide yourself. As a Bonus Action, you can give yourself the Invisible condition until the end of your next turn. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+  },
+  "feature.Nature's Veil.field.Free Uses": {
+    "label": "Free Uses"
   },
   "feature.Nature's Veil.field.Actions.option.Nature's Veil": {
     "description": "Become Invisible until end of your next turn (WIS mod uses per Long Rest)"
@@ -254,6 +260,9 @@
   "subclass.Swarmkeeper.feature.Writhing Tide": {
     "description": "You can condense part of your swarm into a focused mass that lifts you up. As a bonus action, you gain a flying speed of 10 feet and can hover. This effect lasts for 1 minute or until you are incapacitated. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
   },
+  "subclass.Swarmkeeper.feature.Writhing Tide.field.Free Uses": {
+    "label": "Free Uses"
+  },
   "subclass.Swarmkeeper.feature.Mighty Swarm": {
     "description": "Your Gathered Swarm grows mightier in the following ways: The damage of Gathered Swarm increases to 1d8. If a creature fails its saving throw against being moved by Gathered Swarm, you can also cause the swarm to knock the creature prone. When you are moved by Gathered Swarm, it gives you Cover until the start of your next turn."
   },
@@ -319,5 +328,47 @@
   },
   "subclass.Winter Walker.feature.Frozen Haunt": {
     "description": "When you cast Hunter's Mark, you can adopt a ghostly, snowy form. This form lasts until the spell ends, and while you are in this form, you gain the following benefits. Once you use this feature, you can't use it again until you finish a Long Rest unless you expend a level 4+ spell slot (no action required). Frozen Soul: You have Immunity to Cold damage."
+  },
+  "feature.Tireless.field.Actions.option.Tireless": {
+    "description": "Give yourself 1d8 + WIS mod Temporary HP (WIS mod uses per Long Rest)"
+  },
+  "subclass.Horizon Walker.feature.Planar Warrior.field.Actions.option.Planar Warrior": {
+    "description": "Choose creature within 30 ft; next hit this turn deals all Force damage + extra 1d8 Force"
+  },
+  "subclass.Horizon Walker.feature.Ethereal Step.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Horizon Walker.feature.Ethereal Step.field.Actions.option.Ethereal Step": {
+    "description": "Cast Etherealness for free; ends at end of current turn (1/Short Rest)"
+  },
+  "subclass.Horizon Walker.feature.Spectral Defense.field.Actions.option.Spectral Defense": {
+    "description": "Gain Resistance to all damage from one attack (reaction to taking damage)"
+  },
+  "subclass.Monster Slayer.feature.Slayer's Prey.field.Actions.option.Slayer's Prey": {
+    "description": "Mark creature within 60 ft; first hit each turn deals +1d6 damage (until Short/Long Rest)"
+  },
+  "subclass.Monster Slayer.feature.Magic-User's Nemesis.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Monster Slayer.feature.Magic-User's Nemesis.field.Actions.option.Magic-User's Nemesis": {
+    "description": "60 ft: creature casting/teleporting must succeed WIS save vs spell DC or fail (reaction)"
+  },
+  "subclass.Monster Slayer.feature.Slayer's Counter.field.Actions.option.Slayer's Counter": {
+    "description": "When Slayer's Prey target forces a save, make one weapon attack; hit = auto-pass save (reaction)"
+  },
+  "subclass.Swarmkeeper.feature.Writhing Tide.field.Actions.option.Writhing Tide": {
+    "description": "Gain 10 ft flying speed + hover for 1 minute (Prof bonus uses per Long Rest)"
+  },
+  "subclass.Swarmkeeper.feature.Swarming Dispersal.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Swarmkeeper.feature.Swarming Dispersal.field.Actions.option.Swarming Dispersal": {
+    "description": "Gain Resistance to triggering damage; teleport up to 30 ft (reaction to taking damage)"
+  },
+  "subclass.Winter Walker.feature.Fortifying Soul.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Winter Walker.feature.Fortifying Soul.field.Actions.option.Fortifying Soul": {
+    "description": "WIS mod creatures regain 1d10 + Ranger level HP + Advantage vs Frightened for 1 hour"
   }
 }

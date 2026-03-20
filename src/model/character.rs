@@ -579,7 +579,7 @@ impl Default for Character {
     }
 }
 
-impl expr::Context<Attribute> for Character {
+impl expr::Context<Attribute, i32> for Character {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
             Attribute::Ability(ability) => {
@@ -686,7 +686,7 @@ impl<'a> From<&'a mut Character> for Context<'a> {
     }
 }
 
-impl expr::Context<Attribute> for Context<'_> {
+impl expr::Context<Attribute, i32> for Context<'_> {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         self.character.assign(var, value)
     }

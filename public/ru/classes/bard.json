@@ -352,5 +352,35 @@
   "subclass.College of the Moon.feature.Eventide's Splendor": {
     "label": "Великолепие сумерек",
     "description": "Вы наполняетесь мощью луны, улучшая своё Вдохновение луны следующими способами. Тень новой луны: Когда вы используете Вдохновлённое затмение, существо, получившее кость Бардовского вдохновения, тоже может стать Невидимым и немедленно Реакцией телепортироваться на расстояние до 30 футов на свободное пространство, которое оно видит."
+  },
+  "subclass.College of Glamour.feature.Mantle of Majesty.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.College of Glamour.feature.Mantle of Inspiration.field.Actions.option.Mantle of Inspiration": {
+    "label": "Мантия вдохновения",
+    "description": "Расход Вдохновения: до мод. ХАР существ в пределах 60 фт получают врем. хиты = 2× бросок кости и могут Реакцией переместиться на полную Скорость без Атак по возможности"
+  },
+  "subclass.College of Glamour.feature.Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
+    "label": "Мантия величия",
+    "description": "Наложить Приказ (без ячейки) и принять неземной облик на 1 мин (Концентрация); в это время накладывать Приказ бонусным действием бесплатно каждый ход"
+  },
+  "subclass.College of Glamour.feature.Unbreakable Majesty.field.Actions.option.Unbreakable Majesty": {
+    "label": "Несокрушимое величие",
+    "description": "Принять величественный облик на 1 мин: когда существо впервые за ход попадает по вам, оно должно преуспеть в сп. ХАР против вашей Сл или атака промахивается"
+  },
+  "subclass.College of Eloquence.feature.Unsettling Words.field.Actions.option.Unsettling Words": {
+    "label": "Тревожные слова",
+    "description": "Расход Вдохновения: одно существо в пределах 60 фт должно вычесть результат броска кости из своего следующего спасброска до вашего следующего хода"
+  },
+  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Actions.option.Infectious Inspiration": {
+    "label": "Заразительное вдохновение",
+    "description": "Когда союзник преуспевает в броске с вашей костью Вдохновения, дать другому существу в пределах 60 фт бесплатную кость Вдохновения (без расхода использования)"
+  },
+  "subclass.College of Spirits.feature.Tales from Beyond.field.Actions.option.Tales from Beyond": {
+    "label": "Истории из-за грани",
+    "description": "Расход Вдохновения: бросок по таблице Духовных историй с костью Вдохновения — духи даруют случайный эффект истории"
   }
 }

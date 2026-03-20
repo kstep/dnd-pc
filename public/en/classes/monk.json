@@ -326,5 +326,53 @@
   },
   "subclass.Warrior of the Open Hand.feature.Quivering Palm": {
     "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them."
+  },
+  "subclass.Way of the Drunken Master.feature.Redirect Attack.field.Actions.option.Redirect Attack": {
+    "description": "On missed melee attack: spend 1 ki point to redirect the attack to another creature within 5 ft"
+  },
+  "subclass.Way of the Kensei.feature.Kensei's Shot.field.Actions.option.Kensei's Shot": {
+    "description": "Ranged kensei weapon attacks deal +1d4 damage until end of turn"
+  },
+  "subclass.Way of the Kensei.feature.Sharpen the Blade.field.Actions.option.Sharpen the Blade": {
+    "description": "Spend 1–3 ki points: kensei weapon gains equal bonus to attack and damage rolls for 1 minute"
+  },
+  "subclass.Way of the Sun Soul.feature.Searing Arc Strike.field.Actions.option.Searing Arc Strike": {
+    "description": "After Attack action: spend 2+ ki points to cast Burning Hands (15 ft cone, DEX save, 3d6 fire per 2 ki)"
+  },
+  "subclass.Way of the Sun Soul.feature.Sun Shield.field.Actions.option.Sun Shield": {
+    "description": "Toggle luminous aura: bright light 30 ft, dim 30 ft; reaction on melee hit deals 5 + WIS mod Radiant"
+  },
+  "subclass.Way of the Astral Self.feature.Arms of the Astral Self.field.Actions.option.Arms of the Astral Self": {
+    "description": "Spend 1 ki: summon astral arms; creatures within 10 ft make DEX save or take 2× Martial Arts die Force"
+  },
+  "subclass.Way of the Astral Self.feature.Visage of the Astral Self.field.Actions.option.Visage of the Astral Self": {
+    "description": "Spend 1 ki: summon astral visage for 10 min; gain WIS-based Insight/Intimidation and 60 ft Darkvision"
+  },
+  "subclass.Way of the Astral Self.feature.Awakened Astral Self.field.Actions.option.Awakened Astral Self": {
+    "description": "Spend 5 ki: awaken full astral self for 10 min; +2 to attacks, extra unarmed strike, +WIS mod damage"
+  },
+  "subclass.Way of the Ascendant Dragon.feature.Aspect of the Wyrm.field.Actions.option.Aspect of the Wyrm": {
+    "description": "Create 10 ft draconic aura for 1 min: allies gain damage resistance or enemies make WIS save vs. Frightened"
+  },
+  "subclass.Warrior of Mercy.feature.Hand of Healing.field.Actions.option.Hand of Healing": {
+    "description": "Spend 1 Focus Point: touch a creature to restore Martial Arts die + WIS mod HP"
+  },
+  "subclass.Warrior of Mercy.feature.Hand of Ultimate Mercy.field.Actions.option.Hand of Ultimate Mercy": {
+    "description": "Spend 5 Focus Points: touch corpse dead ≤24 hrs; creature returns to life with 4d10 + WIS mod HP"
+  },
+  "subclass.Warrior of Shadow.feature.Shadow Step.field.Actions.option.Shadow Step": {
+    "description": "In dim light or darkness: teleport up to 60 ft to dim/dark space; Advantage on next melee attack"
+  },
+  "subclass.Warrior of Shadow.feature.Cloak of Shadows.field.Actions.option.Cloak of Shadows": {
+    "description": "In dim light or darkness: spend 3 Focus Points to become Invisible for 1 min (ends in bright light)"
+  },
+  "subclass.Warrior of the Elements.feature.Elemental Burst.field.Actions.option.Elemental Burst": {
+    "description": "Spend 2 Focus Points: 20 ft radius burst within 120 ft; DEX save or full elemental damage (half on save)"
+  },
+  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Actions.option.Wholeness of Body": {
+    "description": "Roll Martial Arts die: regain that many + WIS mod HP (min 1); uses equal to WIS mod per Long Rest"
   }
 }

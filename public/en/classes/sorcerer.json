@@ -425,5 +425,80 @@
   },
   "subclass.Spellfire Sorcery.feature.Crown of Spellfire": {
     "description": "When you use Innate Sorcery, you can alter it and infuse yourself with the essence of spellfire, gaining the following benefits while this use of Innate Sorcery is active. Once you use this feature to alter Innate Sorcery, you can't use it again until you finish a Long Rest unless you spend 5 Sorcery Points (no action required) to restore your use of it."
+  },
+  "subclass.Pyromancer (PSK).feature.Pyromancer's Fury.field.Actions.option.Pyromancer's Fury": {
+    "description": "Reaction when hit by melee attack: deal Fire damage equal to Sorcerer level to attacker (ignores resistance)"
+  },
+  "subclass.Divine Soul.feature.Otherworldly Wings.field.Actions.option.Otherworldly Wings": {
+    "description": "Manifest spectral wings: gain 30 ft fly speed until dismissed (dismiss as Bonus Action)"
+  },
+  "subclass.Divine Soul.feature.Unearthly Recovery.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Divine Soul.feature.Unearthly Recovery.field.Actions.option.Unearthly Recovery": {
+    "description": "When below half HP: regain HP equal to half your HP maximum (once per Long Rest)"
+  },
+  "subclass.Shadow Magic.feature.Hound of Ill Omen.field.Actions.option.Hound of Ill Omen": {
+    "description": "Spend 3 Sorcery Points: summon a Hound of Ill Omen targeting one creature within 120 ft"
+  },
+  "subclass.Shadow Magic.feature.Shadow Walk.field.Actions.option.Shadow Walk": {
+    "description": "While in dim light or darkness: teleport up to 120 ft to another dim/dark unoccupied space you can see"
+  },
+  "subclass.Shadow Magic.feature.Umbral Form.field.Actions.option.Umbral Form": {
+    "description": "Spend 6 Sorcery Points: resistance to all damage except Force/Radiant, pass through creatures/objects for 1 minute"
+  },
+  "subclass.Storm Sorcery.feature.Tempestuous Magic.field.Actions.option.Tempestuous Magic": {
+    "description": "Before or after casting a level 1+ spell: fly up to 10 ft without provoking opportunity attacks"
+  },
+  "subclass.Storm Sorcery.feature.Storm Guide.field.Actions.option.Storm Guide": {
+    "description": "In wind: choose wind direction in 100 ft radius; in rain: stop rain in 20 ft radius (end effect as Bonus Action)"
+  },
+  "subclass.Storm Sorcery.feature.Storm's Fury.field.Actions.option.Storm's Fury": {
+    "description": "Reaction when hit by melee attack: deal Lightning damage equal to Sorcerer level; STR save or attacker pushed 20 ft"
+  },
+  "subclass.Lunar Sorcery.feature.Waxing and Waning.field.Actions.option.Waxing and Waning": {
+    "description": "Spend 1 Sorcery Point: change current Lunar Embodiment phase (Full Moon / New Moon / Crescent Moon)"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Empowerment.field.Actions.option.Lunar Empowerment": {
+    "description": "Full Moon: shed bright/dim light in 10+10 ft radius; New Moon: Advantage on Stealth, see in magical darkness; Crescent: add d6 to one attack or save"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Phenomenon.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Phenomenon.field.Actions.option.Lunar Phenomenon": {
+    "description": "Trigger current phase power — Full Moon: blind creatures within 30 ft (CON save); New Moon: Frighten one creature (WIS save); Crescent: teleport 60 ft"
+  },
+  "subclass.Aberrant Sorcery.feature.Telepathic Speech.field.Actions.option.Telepathic Speech": {
+    "description": "Link minds with one creature within 30 ft: telepathic communication up to CHA mod miles for Sorcerer level minutes"
+  },
+  "subclass.Aberrant Sorcery.feature.Revelation in Flesh.field.Actions.option.Revelation in Flesh": {
+    "description": "Spend 1+ Sorcery Points: alter body for 10 min — each point grants one benefit (swim speed, fly speed, see invisible, squeeze through tiny spaces)"
+  },
+  "subclass.Aberrant Sorcery.feature.Warping Implosion.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Aberrant Sorcery.feature.Warping Implosion.field.Actions.option.Warping Implosion": {
+    "description": "Teleport up to 120 ft; each creature within 30 ft of origin makes STR save or takes 3d10 Force damage and is pulled 30 ft toward origin"
+  },
+  "subclass.Clockwork Sorcery.feature.Bastion of Law.field.Actions.option.Bastion of Law": {
+    "description": "Spend 1–5 Sorcery Points: create a ward of Nd8 (N = points spent) on self or creature within 30 ft that absorbs incoming damage"
+  },
+  "subclass.Clockwork Sorcery.feature.Trance of Order.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Clockwork Sorcery.feature.Trance of Order.field.Actions.option.Trance of Order": {
+    "description": "Enter trance for 1 minute: attacks against you can't have Advantage; treat d20 rolls of 9 or lower as 10"
+  },
+  "subclass.Clockwork Sorcery.feature.Clockwork Cavalcade.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Clockwork Sorcery.feature.Clockwork Cavalcade.field.Actions.option.Clockwork Cavalcade": {
+    "description": "Summon spirits in 30 ft cube: restore up to 100 HP (divided freely), end all spells of level 4 or lower, remove conditions (once per Long Rest)"
+  },
+  "subclass.Draconic Sorcery.feature.Dragon Wings.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Draconic Sorcery.feature.Dragon Wings.field.Actions.option.Dragon Wings": {
+    "description": "Sprout draconic wings: gain 60 ft fly speed for 1 hour (once per Long Rest, or spend 3 Sorcery Points to reuse)"
   }
 }

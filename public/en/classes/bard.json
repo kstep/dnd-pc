@@ -259,5 +259,29 @@
   },
   "subclass.College of the Moon.feature.Eventide's Splendor": {
     "description": "You become suffused with the might of the moon, improving your Moon's Inspiration in the following ways. Shadow of the New Moon: When you use Inspired Eclipse, the creature who received the Bardic Inspiration die can also have the Invisible condition and immediately take a Reaction to teleport up to 30 feet to an unoccupied space it can see."
+  },
+  "subclass.College of Glamour.feature.Mantle of Majesty.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.College of Glamour.feature.Mantle of Inspiration.field.Actions.option.Mantle of Inspiration": {
+    "description": "Expend Bardic Inspiration: up to CHA mod creatures within 60 ft each gain temp HP = 2× die roll and can Reaction-move full Speed without provoking Opportunity Attacks"
+  },
+  "subclass.College of Glamour.feature.Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
+    "description": "Cast Command (no spell slot) and assume unearthly appearance for 1 min (Concentration); during this time cast Command as Bonus Action for free each turn"
+  },
+  "subclass.College of Glamour.feature.Unbreakable Majesty.field.Actions.option.Unbreakable Majesty": {
+    "description": "Assume majestic presence for 1 min: whenever a creature hits you for the first time on a turn, it must succeed on a CHA save vs spell DC or the attack misses"
+  },
+  "subclass.College of Eloquence.feature.Unsettling Words.field.Actions.option.Unsettling Words": {
+    "description": "Expend Bardic Inspiration: one creature within 60 ft must subtract the die roll from its next saving throw before your next turn"
+  },
+  "subclass.College of Eloquence.feature.Infectious Inspiration.field.Actions.option.Infectious Inspiration": {
+    "description": "When an ally succeeds on a roll using your Bardic Inspiration die, give a different creature within 60 ft a free Bardic Inspiration die (no use expended)"
+  },
+  "subclass.College of Spirits.feature.Tales from Beyond.field.Actions.option.Tales from Beyond": {
+    "description": "Expend Bardic Inspiration and roll on the Spirit Tales table using the die to determine which random tale effect the spirits grant"
   }
 }

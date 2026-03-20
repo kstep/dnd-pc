@@ -605,5 +605,74 @@
   "subclass.Great Old One Patron.feature.Create Thrall": {
     "label": "Создание раба",
     "description": "Вы можете заразить разум гуманоида чуждой магией покровителя. Действием вы касаетесь недееспособного гуманоида. Существо очаровано вами, пока с него не будет снято заклинание Снятие проклятия или вы не используете это умение на другом существе."
+  },
+  "subclass.The Undying.feature.Indestructible Life.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Undying.feature.Indestructible Life.field.Actions.option.Indestructible Life": {
+    "label": "Неразрушимая жизнь",
+    "description": "Восстановить 1к8 + уровень колдуна хитов. Отделённая часть тела прирастает при приложении во время использования. Перезаряжается при коротком или продолжительном отдыхе."
+  },
+  "subclass.The Hexblade.feature.Hexblade's Curse.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Hexblade.feature.Hexblade's Curse.field.Actions.option.Hexblade's Curse": {
+    "label": "Проклятие ведьмина клинка",
+    "description": "Проклясть существо в 30 фт на 1 мин: +бонус мастерства к урону, крит на 19–20, восстановить уровень колдуна + мод. ХАР хитов при убийстве цели. Перезаряжается при коротком или продолжительном отдыхе."
+  },
+  "subclass.The Hexblade.feature.Armor of Hexes.field.Actions.option.Armor of Hexes": {
+    "label": "Доспех проклятий",
+    "description": "Когда цель Проклятия ведьмина клинка попадает по вам атакой, бросьте 1к6. При 4+ атака промахивается, независимо от броска."
+  },
+  "subclass.The Fathomless.feature.Tentacle of the Deeps.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Fathomless.feature.Tentacle of the Deeps.field.Actions.option.Tentacle of the Deeps": {
+    "label": "Щупальце глубин",
+    "description": "Призвать 10-футовое щупальце в пределах 60 фт (длится 1 мин). При призыве и каждый ход бонусным действием: атака заклинанием ближнего боя существа в 10 фт — 1к8 урона холодом + снижение скорости на 10 фт до следующего хода."
+  },
+  "subclass.The Fathomless.feature.Guardian Coil.field.Actions.option.Guardian Coil": {
+    "label": "Защитное кольцо",
+    "description": "Когда вы или существо в 10 фт от щупальца получает урон, уменьшить этот урон на 1к8."
+  },
+  "subclass.The Genie.feature.Elemental Gift.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Genie.feature.Elemental Gift.field.Actions.option.Elemental Gift": {
+    "label": "Стихийный дар",
+    "description": "Получить скорость полёта 30 фт с возможностью парить на 10 минут."
+  },
+  "subclass.The Genie.feature.Sanctuary Vessel.field.Actions.option.Sanctuary Vessel": {
+    "label": "Сосуд-убежище",
+    "description": "Изгнать любое количество существ из Сосуда джинна. Все обитатели изгоняются, если вы покидаете сосуд, умираете или сосуд разрушен."
+  },
+  "subclass.The Undead.feature.Form of Dread.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Undead.feature.Form of Dread.field.Actions.option.Form of Dread": {
+    "label": "Форма ужаса",
+    "description": "Преобразиться на 1 мин: получить 1к10 + уровень колдуна врем. хитов, иммунитет к Испуганному. При попадании цель совершает спасбросок МУД или получает Испуганный до конца своего следующего хода. Перезаряжается при коротком или продолжительном отдыхе."
+  },
+  "subclass.The Undead.feature.Necrotic Husk.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.The Undead.feature.Necrotic Husk.field.Actions.option.Necrotic Husk": {
+    "label": "Некротическая оболочка",
+    "description": "При уменьшении хитов до 0 остаться на 1 хите и взорваться некротической энергией: 2к12 урона некротической энергией каждому существу в 10 фт (спасбросок ТЕЛ для половины урона). Перезаряжается при продолжительном отдыхе."
+  },
+  "subclass.Archfey Patron.feature.Misty Escape.field.Actions.option.Misty Escape": {
+    "label": "Туманное бегство",
+    "description": "В ответ на получение урона применить Туманный шаг: телепортироваться на расстояние до 30 фт в видимое незанятое пространство."
+  },
+  "subclass.Celestial Patron.feature.Healing Light.field.Healing Pool": {
+    "label": "Пул исцеления"
+  },
+  "subclass.Celestial Patron.feature.Healing Light.field.Actions.option.Healing Light": {
+    "label": "Целительный свет",
+    "description": "Потратить к6 из запаса (максимум мод. ХАР костей, минимум 1) для исцеления себя или существа в 60 фт. Запас = 1 + уровень колдуна; перезаряжается при продолжительном отдыхе."
+  },
+  "subclass.Great Old One Patron.feature.Awakened Mind.field.Actions.option.Awakened Mind": {
+    "label": "Пробуждённый разум",
+    "description": "Выбрать существо в 30 фт: вы и цель можете общаться телепатически, находясь в пределах мод. ХАР миль (минимум 1 миля). Действует до следующего использования."
   }
 }

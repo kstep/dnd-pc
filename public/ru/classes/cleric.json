@@ -845,5 +845,175 @@
   "subclass.Twilight Domain.feature.Twilight Shroud": {
     "label": "Сумеречный покров",
     "description": "Сумерки, которые вы призываете, предлагают защитные объятия: вы и ваши союзники получают укрытие, находясь в сфере, созданной вашим Сумеречным убежищем."
+  },
+  "subclass.Life Domain.feature.Preserve Life.field.Actions.option.Preserve Life": {
+    "label": "Сохранение жизни",
+    "description": "Распределить хиты между существами с менее чем половиной хитов в 30 фт — пул = 5× уровень жреца, не более половины максимума хитов на существо"
+  },
+  "subclass.Light Domain.feature.Radiance of the Dawn.field.Actions.option.Radiance of the Dawn": {
+    "label": "Сияние рассвета",
+    "description": "30 фт аура: рассеять магическую Тьму; каждое выбранное существо получает 2к10 + уровень жреца урона Излучением (спасбросок ТЕЛ для половины)"
+  },
+  "subclass.Light Domain.feature.Corona of Light.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Light Domain.feature.Corona of Light.field.Actions.option.Corona of Light": {
+    "label": "Корона света",
+    "description": "Испустить ауру солнечного света на 1 мин: яркий свет 60 фт / тусклый 30 фт; враги в ярком свете совершают спасброски против Сияния рассвета и заклинаний огнём/излучением с помехой"
+  },
+  "subclass.Nature Domain.feature.Dampen Elements.field.Actions.option.Dampen Elements": {
+    "label": "Ослабление стихий",
+    "description": "Реакция: дать существу (вам или в 30 фт) сопротивление урону кислотой/холодом/огнём/молнией/громом (один экземпляр)"
+  },
+  "subclass.Nature Domain.feature.Master of Nature.field.Actions.option.Master of Nature": {
+    "label": "Повелитель природы",
+    "description": "Устно приказать каждому существу, очарованному Очарованием зверей и растений, что делать в следующий ход"
+  },
+  "subclass.Light Domain.feature.Warding Flare.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Light Domain.feature.Warding Flare.field.Actions.option.Warding Flare": {
+    "label": "Защитная вспышка",
+    "description": "Реакция: наложить помеху на бросок атаки атакующего в 30 фт; использований = мод. МУД (мин. 1), восстановление после продолжительного отдыха"
+  },
+  "subclass.Tempest Domain.feature.Wrath of the Storm.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Tempest Domain.feature.Wrath of the Storm.field.Actions.option.Wrath of the Storm": {
+    "label": "Гнев бури",
+    "description": "Реакция на попадание по вам существом в 5 фт: спасбросок ЛОВ или 2к8 урона молнией/громом (половина при успехе)"
+  },
+  "subclass.Trickery Domain.feature.Blessing of the Trickster.field.Actions.option.Blessing of the Trickster": {
+    "label": "Благословение обманщика",
+    "description": "Дать себе или согласному существу в 30 фт преимущество на проверки ЛОВ (Скрытность) до продолжительного отдыха или следующего использования"
+  },
+  "subclass.Trickery Domain.feature.Invoke Duplicity.field.Actions.option.Invoke Duplicity": {
+    "label": "Призыв двойника",
+    "description": "Потратить 1 использование CD: создать иллюзию себя в 30 фт на 1 мин; сотворять заклинания из пространства иллюзии, союзники атакуют с преимуществом существ рядом с ней"
+  },
+  "subclass.War Domain.feature.War Priest.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.War Domain.feature.War Priest.field.Actions.option.War Priest": {
+    "label": "Жрец войны",
+    "description": "Совершить одну атаку оружием или безоружный удар; использований = мод. МУД (мин. 1), восстановление после короткого или продолжительного отдыха"
+  },
+  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Actions.option.Warding Flare": {
+    "label": "Защитная вспышка",
+    "description": "Реакция: наложить помеху на бросок атаки атакующего в 30 фт; использований = мод. МУД (мин. 1), восстановление после продолжительного отдыха"
+  },
+  "subclass.Ambition Domain (PSA).feature.Improved Duplicity.field.Actions.option.Improved Duplicity": {
+    "label": "Улучшенный двойник",
+    "description": "До 4 двойников вместо одного; переместить любое количество из них на 30 фт каждого (макс. 120 фт от вас)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity's Action.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity's Action.field.Actions.option.Solidarity's Action": {
+    "label": "Действие единства",
+    "description": "После действия Помощь для поддержки атаки союзника: совершить одну атаку оружием; использований = мод. МУД (мин. 1)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Oketra's Blessing.field.Actions.option.Oketra's Blessing": {
+    "label": "Благословение Окетры",
+    "description": "Реакция: потратить 1 использование CD и дать +10 к броску атаки в 30 фт (после видения броска)"
+  },
+  "subclass.Strength Domain (PSA).feature.Rhonas's Blessing.field.Actions.option.Rhonas's Blessing": {
+    "label": "Благословение Ронаса",
+    "description": "Реакция: потратить 1 использование CD и дать +10 к броску атаки/проверке/спасброску на СИЛ в 30 фт (после видения броска)"
+  },
+  "subclass.Zeal Domain (PSA).feature.Priest of Zeal.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Zeal Domain (PSA).feature.Priest of Zeal.field.Actions.option.Priest of Zeal": {
+    "label": "Жрец рвения",
+    "description": "После действия Атака: совершить одну атаку оружием; использований = мод. МУД (мин. 1), восстановление после продолжительного отдыха"
+  },
+  "subclass.Zeal Domain (PSA).feature.Blaze of Glory.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Zeal Domain (PSA).feature.Blaze of Glory.field.Actions.option.Blaze of Glory": {
+    "label": "Пламя славы",
+    "description": "При снижении до 0 хитов: переместиться на скорость к атакующему и совершить одну рукопашную атаку оружием с преимуществом"
+  },
+  "subclass.Grave Domain.feature.Sentinel at Death's Door.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Grave Domain.feature.Sentinel at Death's Door.field.Actions.option.Sentinel at Death's Door": {
+    "label": "Часовой у врат смерти",
+    "description": "Реакция: превратить критическое попадание в обычное для вас или существа в 30 фт; использований = мод. МУД (мин. 1)"
+  },
+  "subclass.Twilight Domain.feature.Steps of Night.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Twilight Domain.feature.Steps of Night.field.Actions.option.Steps of Night": {
+    "label": "Шаги ночи",
+    "description": "В тусклом свете или темноте: получить скорость полёта = скорость ходьбы на 1 мин; использований = бонус мастерства, восстановление после продолжительного отдыха"
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Knowledge of the Ages.field.Actions.option.Knowledge of the Ages": {
+    "label": "Знание веков",
+    "description": "Выберите один навык или инструмент; получите владение на 10 минут"
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Read Thoughts.field.Actions.option.Read Thoughts": {
+    "label": "Чтение мыслей",
+    "description": "Существо в 60 фт: спасбросок МУД или вы читаете его мысли 1 мин. При провале — можно наложить Внушение (без спасброска)"
+  },
+  "subclass.Nature Domain.feature.Channel Divinity: Charm Animals and Plants.field.Actions.option.Charm Animals and Plants": {
+    "label": "Очарование зверей и растений",
+    "description": "Каждый зверь или растение в 30 фт: спасбросок МУД или Очарован на 1 мин (оканчивается при получении урона)"
+  },
+  "subclass.Tempest Domain.feature.Channel Divinity: Destructive Wrath.field.Actions.option.Destructive Wrath": {
+    "label": "Разрушительный гнев",
+    "description": "При броске урона молнией или громом: нанести максимальный урон вместо броска"
+  },
+  "subclass.Death Domain.feature.Channel Divinity: Touch of Death.field.Actions.option.Touch of Death": {
+    "label": "Касание смерти",
+    "description": "При попадании рукопашной атакой: дополнительно 5 + 2× уровень клирика урона Некротической энергией"
+  },
+  "subclass.Arcana Domain.feature.Channel Divinity: Arcane Abjuration.field.Actions.option.Arcane Abjuration": {
+    "label": "Магическое изгнание",
+    "description": "Одно небесное, элементал, фея или демон в 30 фт: спасбросок МУД или обращён на 1 мин (изгнан на ур. 5+ при ПО ≤ 1/2)"
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Invoke Duplicity.field.Actions.option.Invoke Duplicity": {
+    "label": "Призыв двойника",
+    "description": "Создать иллюзию себя в 30 фт на 1 мин; сотворять заклинания из пространства иллюзии, перемещать её на 30 фт Бонусным действием"
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Cloak of Shadows.field.Actions.option.Cloak of Shadows": {
+    "label": "Плащ теней",
+    "description": "Стать Невидимым до конца следующего хода (оканчивается при атаке или применении заклинания)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Channel Divinity: Preserve Life.field.Actions.option.Preserve Life": {
+    "label": "Сохранение жизни",
+    "description": "Исцелить существ в 30 фт: распределить до 5× уровень клирика хитов (макс. половина макс. хитов каждому)"
+  },
+  "subclass.Strength Domain (PSA).feature.Channel Divinity: Feat of Strength.field.Actions.option.Feat of Strength": {
+    "label": "Подвиг силы",
+    "description": "При броске атаки, проверке или спасброске СИЛ: +10 к результату (после броска)"
+  },
+  "subclass.Zeal Domain (PSA).feature.Channel Divinity: Consuming Fervor.field.Actions.option.Consuming Fervor": {
+    "label": "Испепеляющее рвение",
+    "description": "При броске урона огнём или громом: нанести максимальный урон вместо броска"
+  },
+  "subclass.Forge Domain.feature.Channel Divinity: Artisan's Blessing.field.Actions.option.Artisan's Blessing": {
+    "label": "Благословение мастера",
+    "description": "Ритуал 1 час: создать один немагический металлический предмет (стоимостью до 100 зм)"
+  },
+  "subclass.Grave Domain.feature.Channel Divinity: Path to the Grave.field.Actions.option.Path to the Grave": {
+    "label": "Путь к могиле",
+    "description": "Существо в 30 фт: следующая атака по нему наносит урон с Уязвимостью ко всем типам"
+  },
+  "subclass.Order Domain.feature.Channel Divinity: Order's Demand.field.Actions.option.Order's Demand": {
+    "label": "Требование порядка",
+    "description": "Каждое существо в 30 фт (видит/слышит вас): спасбросок МУД или Очаровано до конца вашего следующего хода (роняет предметы)"
+  },
+  "subclass.Peace Domain.feature.Channel Divinity: Balm of Peace.field.Actions.option.Balm of Peace": {
+    "label": "Бальзам мира",
+    "description": "Переместиться на Скорость без Атак по возможности; каждое существо в 5 фт по пути восстанавливает 2к6 + мод. МУД хитов"
+  },
+  "subclass.Twilight Domain.feature.Channel Divinity: Twilight Sanctuary.field.Actions.option.Twilight Sanctuary": {
+    "label": "Сумеречное убежище",
+    "description": "Сфера сумрака 30 фт на 1 мин; каждый ход существа внутри получают 1к6 + уровень клирика врем. хитов или снимают Очарование/Испуг"
   }
 }

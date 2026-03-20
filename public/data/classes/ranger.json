@@ -245,7 +245,28 @@
       "stackable": true
     },
     {
-      "name": "Tireless"
+      "name": "Tireless",
+      "fields": [
+        {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "10": "max(1, WIS.MOD)"
+          }
+        },
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Free Uses",
+          "options": [
+            {
+              "name": "Tireless",
+              "action": "Action",
+              "cost": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Relentless Hunter"
@@ -254,12 +275,21 @@
       "name": "Nature's Veil",
       "fields": [
         {
+          "name": "Free Uses",
+          "kind": "FreeUses",
+          "levels": {
+            "14": "max(1, WIS.MOD)"
+          }
+        },
+        {
           "name": "Actions",
           "kind": "Choice",
+          "cost": "Free Uses",
           "options": [
             {
               "name": "Nature's Veil",
-              "action": "BonusAction"
+              "action": "BonusAction",
+              "cost": 1
             }
           ]
         }
@@ -616,16 +646,61 @@
           "name": "Horizon Walker Magic"
         },
         {
-          "name": "Planar Warrior"
+          "name": "Planar Warrior",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Planar Warrior",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Ethereal Step"
+          "name": "Ethereal Step",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Ethereal Step",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Distant Strike"
         },
         {
-          "name": "Spectral Defense"
+          "name": "Spectral Defense",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Spectral Defense",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -671,16 +746,61 @@
           "name": "Monster Slayer Magic"
         },
         {
-          "name": "Slayer's Prey"
+          "name": "Slayer's Prey",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Slayer's Prey",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Supernatural Defense"
         },
         {
-          "name": "Magic-User's Nemesis"
+          "name": "Magic-User's Nemesis",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Magic-User's Nemesis",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Slayer's Counter"
+          "name": "Slayer's Counter",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Slayer's Counter",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -816,13 +936,55 @@
           "name": "Swarmkeeper Magic"
         },
         {
-          "name": "Writhing Tide"
+          "name": "Writhing Tide",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Writhing Tide",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Mighty Swarm"
         },
         {
-          "name": "Swarming Dispersal"
+          "name": "Swarming Dispersal",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "11": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Swarming Dispersal",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -956,7 +1118,28 @@
           }
         },
         {
-          "name": "Fortifying Soul"
+          "name": "Fortifying Soul",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "11": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Fortifying Soul",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Chilling Retribution"

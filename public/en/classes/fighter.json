@@ -288,6 +288,9 @@
   "subclass.Psi Warrior.feature.Psi-Powered Leap": {
     "description": "As a Bonus Action, you gain a Fly Speed equal to twice your Speed until the end of the current turn. Once you take this Bonus Action, you can't do so again until you finish a Short Rest or Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it."
   },
+  "subclass.Psi Warrior.feature.Psi-Powered Leap.field.Free Uses": {
+    "label": "Free Uses"
+  },
   "subclass.Psi Warrior.feature.Telekinetic Adept": {
     "description": "You have mastered new ways to use your telekinetic abilities, detailed below."
   },
@@ -299,6 +302,9 @@
   },
   "subclass.Psi Warrior.feature.Bulwark of Force": {
     "description": "You can shield yourself and others with telekinetic force. As a Bonus Action, you can choose creatures, including yourself, within 30 feet of yourself, up to a number of creatures equal to your Intelligence modifier (minimum of one creature). Each of the chosen creatures has Half Cover for 1 minute or until you have the Incapacitated condition. Once you use this feature, you can't do so again until you finish a Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it."
+  },
+  "subclass.Psi Warrior.feature.Bulwark of Force.field.Free Uses": {
+    "label": "Free Uses"
   },
   "subclass.Psi Warrior.feature.Telekinetic Master": {
     "description": "You always have the Telekinesis spell prepared. With this feature, you can cast it without a spell slot or components, and your spellcasting ability for it is Intelligence. On each of your turns while you maintain Concentration on it, including the turn when you cast it, you can make one attack with a weapon as a Bonus Action."
@@ -323,6 +329,9 @@
   },
   "subclass.Rune Knight.feature.Runic Shield": {
     "description": "You learn to invoke your rune magic to protect your allies. When another creature you can see within 60 feet of you is hit by an attack roll, you can use your reaction to force the attacker to reroll the d20 and use the new roll. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+  },
+  "subclass.Rune Knight.feature.Runic Shield.field.Free Uses": {
+    "label": "Free Uses"
   },
   "subclass.Rune Knight.feature.Great Stature": {
     "description": "The magic of your runes permanently alters you. When you gain this feature, roll 3d4. You grow a number of inches in height equal to the roll. Moreover, the extra damage you deal with your Giant's Might feature increases to 1d8."
@@ -356,5 +365,62 @@
   },
   "subclass.Banneret.feature.Inspiring Commander": {
     "description": "You gain the following benefits. Bolstered Rally: The area of effect for both Group Recovery and Rallying Surge is now a 60-foot Emanation [Area of Effect]. Unshakable Bravery: You have Immunity to the Charmed and Frightened conditions."
+  },
+  "subclass.Battle Master.feature.Know Your Enemy.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Battle Master.feature.Know Your Enemy.field.Actions.option.Know Your Enemy": {
+    "description": "30 ft range: learn all Immunities, Resistances, and Vulnerabilities of a visible creature"
+  },
+  "subclass.Arcane Archer.feature.Curving Shot.field.Actions.option.Curving Shot": {
+    "description": "On a miss with a magic arrow, reroll the attack against a different target within 60 ft of the original"
+  },
+  "subclass.Cavalier.feature.Warding Maneuver.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Cavalier.feature.Warding Maneuver.field.Actions.option.Warding Maneuver": {
+    "description": "When you or a creature within 5 ft is hit: roll 1d8 and add the result to the target's AC against that attack"
+  },
+  "subclass.Samurai.feature.Fighting Spirit.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Samurai.feature.Fighting Spirit.field.Actions.option.Fighting Spirit": {
+    "description": "Gain Advantage on weapon attack rolls until end of turn, and gain 5 temporary HP"
+  },
+  "subclass.Samurai.feature.Strength before Death.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Samurai.feature.Strength before Death.field.Actions.option.Strength before Death": {
+    "description": "When reduced to 0 HP (not outright killed): delay unconscious and immediately take an extra turn"
+  },
+  "subclass.Echo Knight.feature.Manifest Echo.field.Actions.option.Manifest Echo": {
+    "description": "Summon a translucent echo of yourself in an unoccupied space within 15 ft; dismiss with another Bonus Action"
+  },
+  "subclass.Echo Knight.feature.Shadow Martyr.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Echo Knight.feature.Shadow Martyr.field.Actions.option.Shadow Martyr": {
+    "description": "Before an attack roll targeting an ally: teleport your echo within 5 ft of that ally and redirect the attack to the echo"
+  },
+  "subclass.Psi Warrior.feature.Telekinetic Movement.field.Actions.option.Telekinetic Movement": {
+    "description": "30 ft range: telekinetically move a Large-or-smaller loose object or a willing creature up to 30 ft"
+  },
+  "subclass.Psi Warrior.feature.Psi-Powered Leap.field.Actions.option.Psi-Powered Leap": {
+    "description": "Gain Fly Speed equal to twice your Speed until end of turn"
+  },
+  "subclass.Psi Warrior.feature.Bulwark of Force.field.Actions.option.Bulwark of Force": {
+    "description": "Up to INT mod creatures within 30 ft gain Half Cover for 1 minute"
+  },
+  "subclass.Psi Warrior.feature.Telekinetic Master.field.Actions.option.Telekinetic Master": {
+    "description": "Cast Telekinesis (no slot, INT-based); each turn while concentrating, make one weapon attack as a Bonus Action"
+  },
+  "subclass.Rune Knight.feature.Giant's Might.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Rune Knight.feature.Giant's Might.field.Actions.option.Giant's Might": {
+    "description": "Become Large (if possible), gain Advantage on STR checks and STR saves for 1 minute"
+  },
+  "subclass.Rune Knight.feature.Runic Shield.field.Actions.option.Runic Shield": {
+    "description": "60 ft range: force an attacker to reroll their d20 after hitting an ally; use the new roll"
   }
 }

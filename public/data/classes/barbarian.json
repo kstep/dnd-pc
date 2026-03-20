@@ -280,7 +280,19 @@
           "name": "Retaliation"
         },
         {
-          "name": "Intimidating Presence"
+          "name": "Intimidating Presence",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Intimidating Presence",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -318,7 +330,19 @@
           "name": "Path of the Battlerager"
         },
         {
-          "name": "Battlerager Armor"
+          "name": "Battlerager Armor",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Battlerager Armor",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Restriction—Dwarves Only"
@@ -372,7 +396,19 @@
           "name": "Ancestral Protectors"
         },
         {
-          "name": "Spirit Shield"
+          "name": "Spirit Shield",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Spirit Shield",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Consult the Spirits"
@@ -484,13 +520,58 @@
           "name": "Divine Fury"
         },
         {
-          "name": "Warrior of the Gods"
+          "name": "Warrior of the Gods",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "Die",
+              "levels": {
+                "3": "4d12",
+                "6": "5d12",
+                "12": "6d12",
+                "17": "7d12"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Warrior of the Gods",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Fanatical Focus"
         },
         {
-          "name": "Zealous Presence"
+          "name": "Zealous Presence",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Zealous Presence",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Rage of the Gods"
@@ -588,7 +669,19 @@
           "name": "Bolstering Magic"
         },
         {
-          "name": "Unstable Backlash"
+          "name": "Unstable Backlash",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Unstable Backlash",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Controlled Surge"
@@ -642,7 +735,19 @@
           "name": "Elemental Cleaver"
         },
         {
-          "name": "Mighty Impel"
+          "name": "Mighty Impel",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Mighty Impel",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Demiurgic Colossus"
@@ -744,7 +849,19 @@
           "name": "Battering Roots"
         },
         {
-          "name": "Travel Along the Tree"
+          "name": "Travel Along the Tree",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Travel Along the Tree",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {

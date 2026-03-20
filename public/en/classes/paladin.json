@@ -487,5 +487,101 @@
   },
   "subclass.Oath of the Noble Genies.feature.Noble Scion": {
     "description": "As a Bonus Action, you gain the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can't use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required). Flight: You have a Fly Speed of 60 feet and can hover."
+  },
+  "feature.Abjure Foes.field.Actions.option.Abjure Foes": {
+    "description": "Expend CD: up to CHA mod targets within 60 ft, WIS save or Frightened 1 min (speed 0; can only move, take an action, or take a Bonus Action)"
+  },
+  "subclass.Oath of Devotion.feature.Holy Nimbus.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of Devotion.feature.Holy Nimbus.field.Actions.option.Holy Nimbus": {
+    "description": "10 min: Adv on saves vs Fiends/Undead; enemies starting turn in aura take Radiant damage = CHA mod + prof bonus; aura fills with Bright sunlight"
+  },
+  "subclass.Oath of the Ancients.feature.Nature's Wrath.field.Actions.option.Nature's Wrath": {
+    "description": "Expend CD: chosen creatures within 15 ft make STR save or Restrained 1 min (repeat save at end of each turn to end)"
+  },
+  "subclass.Oath of the Ancients.feature.Elder Champion.field.Actions.option.Elder Champion": {
+    "description": "1 min: enemies in aura have Disadv on saves vs your spells/CD; regain 10 HP at start of each turn; cast Action-time spells as a Bonus Action instead"
+  },
+  "subclass.Oath of Vengeance.feature.Avenging Angel.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of Vengeance.feature.Avenging Angel.field.Actions.option.Avenging Angel": {
+    "description": "10 min: Fly Speed 60 ft + hover; enemies starting turn in your aura make WIS save or Frightened 1 min (attack rolls vs Frightened have Adv)"
+  },
+  "subclass.Oath of the Crown.feature.Champion Challenge.field.Actions.option.Champion Challenge": {
+    "description": "Chosen targets within 30 ft make WIS save or can't willingly move more than 30 ft from you (ends if you're incapacitated or die)"
+  },
+  "subclass.Oath of the Crown.feature.Turn the Tide.field.Actions.option.Turn the Tide": {
+    "description": "Expend CD: chosen creatures within 30 ft that can hear you and have ≤ half HP regain 1d6 + CHA mod HP"
+  },
+  "subclass.Oath of the Crown.feature.Divine Allegiance.field.Actions.option.Divine Allegiance": {
+    "description": "When a creature within 5 ft takes damage, you take that damage instead (can't be reduced or prevented)"
+  },
+  "subclass.Oath of the Crown.feature.Exalted Champion.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of the Crown.feature.Exalted Champion.field.Actions.option.Exalted Champion": {
+    "description": "1 hour: resistance to nonmagical Bludgeoning/Piercing/Slashing damage; allies within 30 ft have Adv on death saving throws"
+  },
+  "subclass.Oath of Redemption.feature.Emissary of Peace.field.Actions.option.Emissary of Peace": {
+    "description": "Expend CD: gain +5 to CHA (Persuasion) checks for 10 minutes"
+  },
+  "subclass.Oath of Redemption.feature.Rebuke the Violent.field.Actions.option.Rebuke the Violent": {
+    "description": "Expend CD: when an attacker within 30 ft damages a creature (not you), force WIS save — fail: Radiant = damage dealt; success: half"
+  },
+  "subclass.Oath of Redemption.feature.Aura of the Guardian.field.Actions.option.Aura of the Guardian": {
+    "description": "When a creature within 10 ft takes damage, you take that damage instead (can't be reduced); no other effects transfer"
+  },
+  "subclass.Oath of Glory.feature.Peerless Athlete.field.Actions.option.Peerless Athlete": {
+    "description": "Expend CD: 1 hour — Adv on STR (Athletics) and DEX (Acrobatics) checks; Long and High Jump distance +10 ft"
+  },
+  "subclass.Oath of Glory.feature.Living Legend.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of Glory.feature.Living Legend.field.Actions.option.Living Legend": {
+    "description": "10 min: Adv on all CHA checks; Reaction to reroll any failed save (must use new roll); once per turn a missed weapon attack hits instead"
+  },
+  "subclass.Oath of the Watchers.feature.Vigilant Rebuke.field.Actions.option.Vigilant Rebuke": {
+    "description": "When you or a creature you see within 30 ft succeeds on an INT/WIS/CHA save, deal 2d8 + CHA mod Force damage to the creature that forced the save"
+  },
+  "subclass.Oath of the Watchers.feature.Mortal Bulwark.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of the Watchers.feature.Mortal Bulwark.field.Actions.option.Mortal Bulwark": {
+    "description": "1 min: truesight 120 ft; Adv on attack rolls vs aberrations, celestials, elementals, fey, and fiends"
+  },
+  "subclass.Oath of the Noble Genies.feature.Noble Scion.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Oath of the Noble Genies.feature.Noble Scion.field.Actions.option.Noble Scion": {
+    "description": "10 min: Fly Speed 60 ft + hover (1/Long Rest; restore by expending a level 5 spell slot)"
+  },
+  "subclass.Oath of Devotion.feature.Sacred Weapon.field.Actions.option.Sacred Weapon": {
+    "description": "Imbue one Melee weapon with positive energy for 10 min: +CHA mod to attack rolls, emit bright light 20 ft/dim 20 ft"
+  },
+  "subclass.Oath of Vengeance.feature.Vow of Enmity.field.Actions.option.Vow of Enmity": {
+    "description": "Gain Advantage on attack rolls against one creature within 30 ft for 1 min"
+  },
+  "subclass.Oath of Conquest.feature.Conquering Presence.field.Actions.option.Conquering Presence": {
+    "description": "Each creature within 30 ft: WIS save or Frightened for 1 min (save at end of each turn)"
+  },
+  "subclass.Oath of Conquest.feature.Guided Strike.field.Actions.option.Guided Strike": {
+    "description": "On an attack roll: +10 to the roll"
+  },
+  "subclass.Oath of Glory.feature.Inspiring Smite.field.Actions.option.Inspiring Smite": {
+    "description": "After casting Divine Smite: distribute 2d8 + Paladin level temp HP among creatures within 30 ft"
+  },
+  "subclass.Oath of the Watchers.feature.Abjure the Extraplanar.field.Actions.option.Abjure the Extraplanar": {
+    "description": "Each aberration, celestial, elemental, fey, or fiend within 30 ft: WIS save or turned for 1 min"
+  },
+  "subclass.Oath of the Noble Genies.feature.Elemental Smite.field.Actions.option.Elemental Smite": {
+    "description": "After casting Divine Smite: invoke an elemental effect (choose Acid, Cold, Fire, Lightning, or Thunder)"
+  },
+  "subclass.Oathbreaker.feature.Control Undead.field.Actions.option.Control Undead": {
+    "description": "One undead within 30 ft: WIS save or obeys you for 24 hours (CR must be less than your level)"
+  },
+  "subclass.Oathbreaker.feature.Dreadful Aspect.field.Actions.option.Dreadful Aspect": {
+    "description": "Each creature within 30 ft: WIS save or Frightened for 1 min (save at end of each turn, must be out of sight)"
   }
 }

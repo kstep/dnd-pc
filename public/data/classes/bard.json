@@ -17,11 +17,11 @@
               "sides": 8,
               "amount": "max(1, CHA.MOD)"
             },
-            "9": {
+            "10": {
               "sides": 10,
               "amount": "max(1, CHA.MOD)"
             },
-            "13": {
+            "15": {
               "sides": 12,
               "amount": "max(1, CHA.MOD)"
             }
@@ -527,13 +527,58 @@
           }
         },
         {
-          "name": "Mantle of Inspiration"
+          "name": "Mantle of Inspiration",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Bardic Inspiration",
+              "options": [
+                {
+                  "name": "Mantle of Inspiration",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Mantle of Majesty"
+          "name": "Mantle of Majesty",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "6": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Mantle of Majesty",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Unbreakable Majesty"
+          "name": "Unbreakable Majesty",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Unbreakable Majesty",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -711,7 +756,21 @@
           "name": "Silver Tongue"
         },
         {
-          "name": "Unsettling Words"
+          "name": "Unsettling Words",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Bardic Inspiration",
+              "options": [
+                {
+                  "name": "Unsettling Words",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Unfailing Inspiration"
@@ -720,7 +779,26 @@
           "name": "Universal Speech"
         },
         {
-          "name": "Infectious Inspiration"
+          "name": "Infectious Inspiration",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "14": "max(1, CHA.MOD)" }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Infectious Inspiration",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -760,7 +838,21 @@
           "name": "Spiritual Focus"
         },
         {
-          "name": "Tales from Beyond"
+          "name": "Tales from Beyond",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Bardic Inspiration",
+              "options": [
+                {
+                  "name": "Tales from Beyond",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Spirit Session"

@@ -298,5 +298,59 @@
   },
   "subclass.Scion of the Three.feature.Dread Incarnate": {
     "description": "You gain the following benefits. Cutthroat: You regain one expended use of Bloodthirst when you finish a Short Rest. Murderous Intent: When you roll for your Sneak Attack damage, you can treat a roll of a 1 or 2 on the die as a 3."
+  },
+  "subclass.Arcane Trickster.feature.Mage Hand Legerdemain.field.Actions.option.Mage Hand Legerdemain": {
+    "description": "Cast Mage Hand as a Bonus Action with an Invisible spectral hand; control it as a Bonus Action to make Sleight of Hand checks"
+  },
+  "subclass.Thief.feature.Fast Hands.field.Actions.option.Fast Hands": {
+    "description": "Make a Sleight of Hand check to pick a lock, disarm a trap, or pickpocket; or take the Utilize/Magic action to use a magic item"
+  },
+  "subclass.Inquisitive.feature.Eye for Detail.field.Actions.option.Eye for Detail": {
+    "description": "Make a WIS (Perception) check to spot a hidden creature or object, or an INT (Investigation) check to uncover or decipher clues"
+  },
+  "subclass.Inquisitive.feature.Insightful Fighting.field.Actions.option.Insightful Fighting": {
+    "description": "WIS (Insight) vs. target's CHA (Deception); on success, use Sneak Attack against that target without needing Advantage"
+  },
+  "subclass.Mastermind.feature.Master of Tactics.field.Actions.option.Master of Tactics": {
+    "description": "Use the Help action; when aiding an ally's attack, the target can be within 30 ft (not 5 ft) if it can see or hear you"
+  },
+  "subclass.Mastermind.feature.Misdirection.field.Actions.option.Misdirection": {
+    "description": "When targeted by an attack, redirect it to a creature within 5 ft that is granting you cover against that attack"
+  },
+  "subclass.Scout.feature.Skirmisher.field.Actions.option.Skirmisher": {
+    "description": "When an enemy ends its turn within 5 ft of you, move up to half your Speed without provoking opportunity attacks"
+  },
+  "subclass.Scout.feature.Sudden Strike.field.Actions.option.Sudden Strike": {
+    "description": "After taking the Attack action, make one additional attack; this attack can apply Sneak Attack even if already used this turn (different target only)"
+  },
+  "subclass.Swashbuckler.feature.Elegant Maneuver.field.Actions.option.Elegant Maneuver": {
+    "description": "Gain Advantage on your next DEX (Acrobatics) or STR (Athletics) check made this same turn"
+  },
+  "subclass.Phantom.feature.Tokens of the Departed.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Phantom.feature.Tokens of the Departed.field.Actions.option.Tokens of the Departed": {
+    "description": "When a creature you can see dies within 30 ft, open your free hand to receive a Tiny soul trinket"
+  },
+  "subclass.Phantom.feature.Ghost Walk.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Phantom.feature.Ghost Walk.field.Actions.option.Ghost Walk": {
+    "description": "Assume spectral form: gain 10 ft fly speed with hover, and attack rolls against you have Disadvantage"
+  },
+  "subclass.Soulknife.feature.Psychic Blades.field.Actions.option.Psychic Blades": {
+    "description": "After attacking with a Psychic Blade (1d6), attack with a second one (1d4); Finesse, Thrown 60 ft, Psychic damage"
+  },
+  "subclass.Soulknife.feature.Psychic Whispers.field.Actions.option.Psychic Whispers": {
+    "description": "Choose up to Proficiency creatures you can see; roll a Psionic Energy Die — establish telepathy for that many hours"
+  },
+  "subclass.Soulknife.feature.Psychic Teleportation.field.Actions.option.Psychic Teleportation": {
+    "description": "Expend a Psionic Energy Die and roll it; teleport up to 10× the rolled number in feet to an unoccupied space you can see"
+  },
+  "subclass.Soulknife.feature.Psychic Veil.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Soulknife.feature.Psychic Veil.field.Actions.option.Psychic Veil": {
+    "description": "Gain Invisible for 1 hour (ends early if you deal damage or force a saving throw); once per Long Rest, or expend a Psionic Die"
   }
 }

@@ -490,7 +490,19 @@
           "name": "Fire in the Veins"
         },
         {
-          "name": "Pyromancer's Fury"
+          "name": "Pyromancer's Fury",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Pyromancer's Fury",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Fiery Soul"
@@ -546,10 +558,41 @@
           "name": "Empowered Healing"
         },
         {
-          "name": "Otherworldly Wings"
+          "name": "Otherworldly Wings",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Otherworldly Wings",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Unearthly Recovery"
+          "name": "Unearthly Recovery",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "18": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Unearthly Recovery",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -600,13 +643,53 @@
           "name": "Strength of the Grave"
         },
         {
-          "name": "Hound of Ill Omen"
+          "name": "Hound of Ill Omen",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Sorcery Points",
+              "options": [
+                {
+                  "name": "Hound of Ill Omen",
+                  "action": "BonusAction",
+                  "cost": 3
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Shadow Walk"
+          "name": "Shadow Walk",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Shadow Walk",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Umbral Form"
+          "name": "Umbral Form",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Sorcery Points",
+              "options": [
+                {
+                  "name": "Umbral Form",
+                  "action": "BonusAction",
+                  "cost": 6
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -651,7 +734,19 @@
           "name": "Storm Sorcery"
         },
         {
-          "name": "Tempestuous Magic"
+          "name": "Tempestuous Magic",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Tempestuous Magic",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Wind Speaker",
@@ -663,10 +758,34 @@
           "name": "Heart of the Storm"
         },
         {
-          "name": "Storm Guide"
+          "name": "Storm Guide",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Storm Guide",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Storm's Fury"
+          "name": "Storm's Fury",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Storm's Fury",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Wind Soul"
@@ -724,13 +843,60 @@
           "name": "Lunar Boons"
         },
         {
-          "name": "Waxing and Waning"
+          "name": "Waxing and Waning",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Sorcery Points",
+              "options": [
+                {
+                  "name": "Waxing and Waning",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Lunar Empowerment"
+          "name": "Lunar Empowerment",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Lunar Empowerment",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Lunar Phenomenon"
+          "name": "Lunar Phenomenon",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "14": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Lunar Phenomenon",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -859,7 +1025,19 @@
           }
         },
         {
-          "name": "Telepathic Speech"
+          "name": "Telepathic Speech",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Telepathic Speech",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Psionic Sorcery"
@@ -868,10 +1046,45 @@
           "name": "Psychic Defenses"
         },
         {
-          "name": "Revelation in Flesh"
+          "name": "Revelation in Flesh",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Sorcery Points",
+              "options": [
+                {
+                  "name": "Revelation in Flesh",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Warping Implosion"
+          "name": "Warping Implosion",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "18": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Warping Implosion",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -982,13 +1195,69 @@
           "name": "Restore Balance"
         },
         {
-          "name": "Bastion of Law"
+          "name": "Bastion of Law",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Sorcery Points",
+              "options": [
+                {
+                  "name": "Bastion of Law",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Trance of Order"
+          "name": "Trance of Order",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "14": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Trance of Order",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Clockwork Cavalcade"
+          "name": "Clockwork Cavalcade",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "18": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Clockwork Cavalcade",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1108,7 +1377,26 @@
           "name": "Elemental Affinity"
         },
         {
-          "name": "Dragon Wings"
+          "name": "Dragon Wings",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "14": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Dragon Wings",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Dragon Companion"

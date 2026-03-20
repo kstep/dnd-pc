@@ -15,18 +15,21 @@
         "levels": {
           "1": {
             "cantrips": 3,
+            "spells": 4,
             "slots": [
               2
             ]
           },
           "2": {
             "cantrips": 3,
+            "spells": 5,
             "slots": [
               3
             ]
           },
           "3": {
             "cantrips": 3,
+            "spells": 6,
             "slots": [
               4,
               2
@@ -34,6 +37,7 @@
           },
           "4": {
             "cantrips": 4,
+            "spells": 7,
             "slots": [
               4,
               3
@@ -41,6 +45,7 @@
           },
           "5": {
             "cantrips": 4,
+            "spells": 9,
             "slots": [
               4,
               3,
@@ -49,6 +54,7 @@
           },
           "6": {
             "cantrips": 4,
+            "spells": 10,
             "slots": [
               4,
               3,
@@ -57,6 +63,7 @@
           },
           "7": {
             "cantrips": 4,
+            "spells": 11,
             "slots": [
               4,
               3,
@@ -66,6 +73,7 @@
           },
           "8": {
             "cantrips": 4,
+            "spells": 12,
             "slots": [
               4,
               3,
@@ -75,6 +83,7 @@
           },
           "9": {
             "cantrips": 4,
+            "spells": 14,
             "slots": [
               4,
               3,
@@ -85,6 +94,7 @@
           },
           "10": {
             "cantrips": 5,
+            "spells": 15,
             "slots": [
               4,
               3,
@@ -95,6 +105,7 @@
           },
           "11": {
             "cantrips": 5,
+            "spells": 16,
             "slots": [
               4,
               3,
@@ -106,6 +117,7 @@
           },
           "12": {
             "cantrips": 5,
+            "spells": 16,
             "slots": [
               4,
               3,
@@ -117,6 +129,7 @@
           },
           "13": {
             "cantrips": 5,
+            "spells": 17,
             "slots": [
               4,
               3,
@@ -129,6 +142,7 @@
           },
           "14": {
             "cantrips": 5,
+            "spells": 17,
             "slots": [
               4,
               3,
@@ -141,6 +155,7 @@
           },
           "15": {
             "cantrips": 5,
+            "spells": 18,
             "slots": [
               4,
               3,
@@ -154,6 +169,7 @@
           },
           "16": {
             "cantrips": 5,
+            "spells": 18,
             "slots": [
               4,
               3,
@@ -167,6 +183,7 @@
           },
           "17": {
             "cantrips": 5,
+            "spells": 19,
             "slots": [
               4,
               3,
@@ -181,6 +198,7 @@
           },
           "18": {
             "cantrips": 5,
+            "spells": 20,
             "slots": [
               4,
               3,
@@ -195,6 +213,7 @@
           },
           "19": {
             "cantrips": 5,
+            "spells": 21,
             "slots": [
               4,
               3,
@@ -209,6 +228,7 @@
           },
           "20": {
             "cantrips": 5,
+            "spells": 22,
             "slots": [
               4,
               3,
@@ -414,10 +434,30 @@
           "name": "Blessings of Knowledge"
         },
         {
-          "name": "Channel Divinity: Knowledge of the Ages"
+          "name": "Channel Divinity: Knowledge of the Ages",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Knowledge of the Ages", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Read Thoughts"
+          "name": "Channel Divinity: Read Thoughts",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Read Thoughts", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -549,7 +589,21 @@
           }
         },
         {
-          "name": "Preserve Life"
+          "name": "Preserve Life",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Preserve Life",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Healer"
@@ -657,16 +711,72 @@
           }
         },
         {
-          "name": "Radiance of the Dawn"
+          "name": "Radiance of the Dawn",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Radiance of the Dawn",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Warding Flare"
+          "name": "Warding Flare",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "3": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Warding Flare",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Improved Warding Flare"
         },
         {
-          "name": "Corona of Light"
+          "name": "Corona of Light",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "17": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Corona of Light",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -706,10 +816,32 @@
           "name": "Bonus Proficiency"
         },
         {
-          "name": "Channel Divinity: Charm Animals and Plants"
+          "name": "Channel Divinity: Charm Animals and Plants",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Charm Animals and Plants", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Dampen Elements"
+          "name": "Dampen Elements",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Dampen Elements",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -718,7 +850,19 @@
           "name": "Divine Strike"
         },
         {
-          "name": "Master of Nature"
+          "name": "Master of Nature",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Master of Nature",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -774,10 +918,41 @@
           "name": "Bonus Proficiencies"
         },
         {
-          "name": "Wrath of the Storm"
+          "name": "Wrath of the Storm",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Wrath of the Storm",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Destructive Wrath"
+          "name": "Channel Divinity: Destructive Wrath",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Destructive Wrath", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Thunderbolt Strike"
@@ -842,10 +1017,36 @@
           "name": "Trickery Domain"
         },
         {
-          "name": "Blessing of the Trickster"
+          "name": "Blessing of the Trickster",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Blessing of the Trickster",
+                  "action": "Action"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Invoke Duplicity"
+          "name": "Invoke Duplicity",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Invoke Duplicity",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Trickery Domain Spells",
@@ -1024,7 +1225,28 @@
           }
         },
         {
-          "name": "War Priest"
+          "name": "War Priest",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "3": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "War Priest",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "War God's Blessing"
@@ -1070,7 +1292,17 @@
           "name": "Reaper"
         },
         {
-          "name": "Channel Divinity: Touch of Death"
+          "name": "Channel Divinity: Touch of Death",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Touch of Death", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Inescapable Destruction"
@@ -1138,7 +1370,17 @@
           "name": "Arcane Initiate"
         },
         {
-          "name": "Channel Divinity: Arcane Abjuration"
+          "name": "Channel Divinity: Arcane Abjuration",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Arcane Abjuration", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Spell Breaker"
@@ -1202,13 +1444,54 @@
           "name": "Ambition Domain (PSA)"
         },
         {
-          "name": "Warding Flare"
+          "name": "Warding Flare",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Warding Flare",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Invoke Duplicity"
+          "name": "Channel Divinity: Invoke Duplicity",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Invoke Duplicity", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Cloak of Shadows"
+          "name": "Channel Divinity: Cloak of Shadows",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Cloak of Shadows", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -1217,7 +1500,19 @@
           "name": "Potent Spellcasting"
         },
         {
-          "name": "Improved Duplicity"
+          "name": "Improved Duplicity",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Improved Duplicity",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1294,13 +1589,58 @@
           "name": "Bonus Proficiency"
         },
         {
-          "name": "Solidarity's Action"
+          "name": "Solidarity's Action",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Solidarity's Action",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Preserve Life"
+          "name": "Channel Divinity: Preserve Life",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Preserve Life", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Oketra's Blessing"
+          "name": "Oketra's Blessing",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Oketra's Blessing",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -1368,10 +1708,34 @@
           "name": "Bonus Proficiency"
         },
         {
-          "name": "Channel Divinity: Feat of Strength"
+          "name": "Channel Divinity: Feat of Strength",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Feat of Strength", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Rhonas's Blessing"
+          "name": "Rhonas's Blessing",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Rhonas's Blessing",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -1436,10 +1800,41 @@
           "name": "Bonus Proficiencies"
         },
         {
-          "name": "Priest of Zeal"
+          "name": "Priest of Zeal",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Priest of Zeal",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Channel Divinity: Consuming Fervor"
+          "name": "Channel Divinity: Consuming Fervor",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Consuming Fervor", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Resounding Strike"
@@ -1451,7 +1846,28 @@
           "name": "Divine Strike"
         },
         {
-          "name": "Blaze of Glory"
+          "name": "Blaze of Glory",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "17": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Blaze of Glory",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1510,7 +1926,17 @@
           "name": "Bonus Proficiency"
         },
         {
-          "name": "Channel Divinity: Artisan's Blessing"
+          "name": "Channel Divinity: Artisan's Blessing",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Artisan's Blessing", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Soul of the Forge"
@@ -1581,10 +2007,41 @@
           "name": "Eyes of the Grave"
         },
         {
-          "name": "Channel Divinity: Path to the Grave"
+          "name": "Channel Divinity: Path to the Grave",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Path to the Grave", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Sentinel at Death's Door"
+          "name": "Sentinel at Death's Door",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Sentinel at Death's Door",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"
@@ -1652,7 +2109,17 @@
           "name": "Voice of Authority"
         },
         {
-          "name": "Channel Divinity: Order's Demand"
+          "name": "Channel Divinity: Order's Demand",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Order's Demand", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Embodiment of the Law"
@@ -1723,7 +2190,17 @@
           "name": "Implement of Peace"
         },
         {
-          "name": "Channel Divinity: Balm of Peace"
+          "name": "Channel Divinity: Balm of Peace",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Balm of Peace", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Protective Bond"
@@ -1797,10 +2274,41 @@
           "name": "Vigilant Blessing"
         },
         {
-          "name": "Channel Divinity: Twilight Sanctuary"
+          "name": "Channel Divinity: Twilight Sanctuary",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Twilight Sanctuary", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Steps of Night"
+          "name": "Steps of Night",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Steps of Night",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Blessed Strikes"

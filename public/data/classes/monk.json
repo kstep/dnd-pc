@@ -383,7 +383,21 @@
           "name": "Leap to Your Feet"
         },
         {
-          "name": "Redirect Attack"
+          "name": "Redirect Attack",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Redirect Attack",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Tipsy Sway"
@@ -433,7 +447,19 @@
           "name": "Agile Parry"
         },
         {
-          "name": "Kensei's Shot"
+          "name": "Kensei's Shot",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Kensei's Shot",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Way of the Kensei"
@@ -445,7 +471,21 @@
           "name": "One with the Blade"
         },
         {
-          "name": "Sharpen the Blade"
+          "name": "Sharpen the Blade",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Sharpen the Blade",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Unerring Accuracy"
@@ -491,13 +531,39 @@
           "name": "Radiant Sun Bolt"
         },
         {
-          "name": "Searing Arc Strike"
+          "name": "Searing Arc Strike",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Searing Arc Strike",
+                  "action": "BonusAction",
+                  "cost": 2
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Searing Sunburst"
         },
         {
-          "name": "Sun Shield"
+          "name": "Sun Shield",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Sun Shield",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -535,19 +601,61 @@
           "name": "Way of the Astral Self"
         },
         {
-          "name": "Arms of the Astral Self"
+          "name": "Arms of the Astral Self",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Arms of the Astral Self",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Forms of Your Astral Self"
         },
         {
-          "name": "Visage of the Astral Self"
+          "name": "Visage of the Astral Self",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Visage of the Astral Self",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Body of the Astral Self"
         },
         {
-          "name": "Awakened Astral Self"
+          "name": "Awakened Astral Self",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Awakened Astral Self",
+                  "action": "BonusAction",
+                  "cost": 5
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -595,7 +703,19 @@
           "name": "Wings Unfurled"
         },
         {
-          "name": "Aspect of the Wyrm"
+          "name": "Aspect of the Wyrm",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Aspect of the Wyrm",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Ascendant Aspect"
@@ -640,7 +760,21 @@
           "name": "Hand of Harm"
         },
         {
-          "name": "Hand of Healing"
+          "name": "Hand of Healing",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Hand of Healing",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Implements of Mercy"
@@ -652,7 +786,21 @@
           "name": "Flurry of Healing and Harm"
         },
         {
-          "name": "Hand of Ultimate Mercy"
+          "name": "Hand of Ultimate Mercy",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Hand of Ultimate Mercy",
+                  "action": "Action",
+                  "cost": 5
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -713,13 +861,39 @@
           }
         },
         {
-          "name": "Shadow Step"
+          "name": "Shadow Step",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Shadow Step",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Improved Shadow Step"
         },
         {
-          "name": "Cloak of Shadows"
+          "name": "Cloak of Shadows",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Cloak of Shadows",
+                  "action": "Action",
+                  "cost": 3
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -775,7 +949,21 @@
           "name": "Warrior of the Elements"
         },
         {
-          "name": "Elemental Burst"
+          "name": "Elemental Burst",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Focus Points",
+              "options": [
+                {
+                  "name": "Elemental Burst",
+                  "action": "Action",
+                  "cost": 2
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Stride of the Elements"
@@ -823,7 +1011,28 @@
           "name": "Warrior of the Open Hand"
         },
         {
-          "name": "Wholeness of Body"
+          "name": "Wholeness of Body",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Wholeness of Body",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Fleet Step"

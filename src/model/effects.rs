@@ -140,7 +140,7 @@ impl ActiveEffects {
             scoped: Option<&'a mut BTreeMap<Attribute, i32>>,
             casting_ability: Option<Ability>,
         }
-        impl Context<Attribute> for Ctx<'_> {
+        impl Context<Attribute, i32> for Ctx<'_> {
             fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
                 let value = if var.is_advantage() {
                     let current = self.resolve(var).unwrap_or(0);

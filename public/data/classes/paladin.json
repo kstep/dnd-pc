@@ -249,7 +249,21 @@
       "name": "Aura of Protection"
     },
     {
-      "name": "Abjure Foes"
+      "name": "Abjure Foes",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Channel Divinity",
+          "options": [
+            {
+              "name": "Abjure Foes",
+              "action": "Action",
+              "cost": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Aura of Courage"
@@ -451,7 +465,17 @@
           }
         },
         {
-          "name": "Sacred Weapon"
+          "name": "Sacred Weapon",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Sacred Weapon", "action": "BonusAction", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Aura of Devotion"
@@ -460,7 +484,26 @@
           "name": "Smite of Protection"
         },
         {
-          "name": "Holy Nimbus"
+          "name": "Holy Nimbus",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "20": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Holy Nimbus",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -496,7 +539,21 @@
       "name": "Oath of the Ancients",
       "features": [
         {
-          "name": "Nature's Wrath"
+          "name": "Nature's Wrath",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Nature's Wrath",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Oath of the Ancients"
@@ -576,7 +633,21 @@
           "name": "Undying Sentinel"
         },
         {
-          "name": "Elder Champion"
+          "name": "Elder Champion",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Elder Champion",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -683,7 +754,17 @@
           }
         },
         {
-          "name": "Vow of Enmity"
+          "name": "Vow of Enmity",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Vow of Enmity", "action": "BonusAction", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Relentless Avenger"
@@ -692,7 +773,26 @@
           "name": "Soul of Vengeance"
         },
         {
-          "name": "Avenging Angel"
+          "name": "Avenging Angel",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "20": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Avenging Angel",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -734,10 +834,30 @@
           "name": "Channel Divinity"
         },
         {
-          "name": "Control Undead"
+          "name": "Control Undead",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Control Undead", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Dreadful Aspect"
+          "name": "Dreadful Aspect",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Dreadful Aspect", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Oathbreaker Spells"
@@ -790,7 +910,21 @@
           "name": "Oath of the Crown"
         },
         {
-          "name": "Champion Challenge"
+          "name": "Champion Challenge",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Champion Challenge",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Channel Divinity"
@@ -802,16 +936,63 @@
           "name": "Tenets of the Crown"
         },
         {
-          "name": "Turn the Tide"
+          "name": "Turn the Tide",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Turn the Tide",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Divine Allegiance"
+          "name": "Divine Allegiance",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Divine Allegiance",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Unyielding Spirit"
         },
         {
-          "name": "Exalted Champion"
+          "name": "Exalted Champion",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "20": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Exalted Champion",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -856,10 +1037,30 @@
           "name": "Channel Divinity"
         },
         {
-          "name": "Conquering Presence"
+          "name": "Conquering Presence",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Conquering Presence", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
-          "name": "Guided Strike"
+          "name": "Guided Strike",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Guided Strike", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Oath Spells"
@@ -919,19 +1120,59 @@
           "name": "Channel Divinity"
         },
         {
-          "name": "Emissary of Peace"
+          "name": "Emissary of Peace",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Emissary of Peace",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Oath Spells"
         },
         {
-          "name": "Rebuke the Violent"
+          "name": "Rebuke the Violent",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Rebuke the Violent",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Tenets of Redemption"
         },
         {
-          "name": "Aura of the Guardian"
+          "name": "Aura of the Guardian",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Aura of the Guardian",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Protective Spirit"
@@ -976,7 +1217,17 @@
       "name": "Oath of Glory",
       "features": [
         {
-          "name": "Inspiring Smite"
+          "name": "Inspiring Smite",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Inspiring Smite", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Oath of Glory"
@@ -1050,7 +1301,21 @@
           }
         },
         {
-          "name": "Peerless Athlete"
+          "name": "Peerless Athlete",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {
+                  "name": "Peerless Athlete",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Aura of Alacrity"
@@ -1059,7 +1324,26 @@
           "name": "Glorious Defense"
         },
         {
-          "name": "Living Legend"
+          "name": "Living Legend",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "20": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Living Legend",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1108,7 +1392,17 @@
           "name": "Tenets of the Watchers"
         },
         {
-          "name": "Abjure the Extraplanar"
+          "name": "Abjure the Extraplanar",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Abjure the Extraplanar", "action": "Action", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Watcher's Will"
@@ -1117,10 +1411,43 @@
           "name": "Aura of the Sentinel"
         },
         {
-          "name": "Vigilant Rebuke"
+          "name": "Vigilant Rebuke",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Vigilant Rebuke",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Mortal Bulwark"
+          "name": "Mortal Bulwark",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "20": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Mortal Bulwark",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1168,7 +1495,17 @@
           "name": "Efreeti's Fury"
         },
         {
-          "name": "Elemental Smite"
+          "name": "Elemental Smite",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Channel Divinity",
+              "options": [
+                {"name": "Elemental Smite", "cost": 1}
+              ]
+            }
+          ]
         },
         {
           "name": "Genie Spells",
@@ -1264,7 +1601,26 @@
           "name": "Elemental Rebuke"
         },
         {
-          "name": "Noble Scion"
+          "name": "Noble Scion",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "20": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Noble Scion",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {

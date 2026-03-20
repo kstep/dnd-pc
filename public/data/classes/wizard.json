@@ -399,10 +399,34 @@
           "name": "Conjuration Savant"
         },
         {
-          "name": "Minor Conjuration"
+          "name": "Minor Conjuration",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Minor Conjuration",
+                  "action": "Action"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Benign Transposition"
+          "name": "Benign Transposition",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Benign Transposition",
+                  "action": "Action"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Focused Conjuration"
@@ -459,7 +483,28 @@
           "name": "Hypnotic Gaze"
         },
         {
-          "name": "Instinctive Charm"
+          "name": "Instinctive Charm",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Instinctive Charm",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Split Enchantment"
@@ -579,7 +624,28 @@
           "name": "Shapechanger"
         },
         {
-          "name": "Master Transmuter"
+          "name": "Master Transmuter",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "14": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Master Transmuter",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -624,7 +690,19 @@
           "name": "War Magic"
         },
         {
-          "name": "Arcane Deflection"
+          "name": "Arcane Deflection",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Arcane Deflection",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Tactical Wit",
@@ -687,7 +765,28 @@
           "name": "Chronurgy Magic"
         },
         {
-          "name": "Chronal Shift"
+          "name": "Chronal Shift",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "2": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Chronal Shift",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Temporal Awareness",
@@ -699,13 +798,46 @@
           ]
         },
         {
-          "name": "Momentary Stasis"
+          "name": "Momentary Stasis",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "max(1, INT.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Momentary Stasis",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Arcane Abeyance"
         },
         {
-          "name": "Convergent Future"
+          "name": "Convergent Future",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Convergent Future",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -756,7 +888,28 @@
           "name": "Gravity Well"
         },
         {
-          "name": "Violent Attraction"
+          "name": "Violent Attraction",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": "max(1, INT.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Violent Attraction",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Event Horizon"
@@ -809,7 +962,28 @@
           "name": "Wizardly Quill"
         },
         {
-          "name": "Manifest Mind"
+          "name": "Manifest Mind",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Manifest Mind",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Master Scrivener"
@@ -1079,7 +1253,19 @@
           "name": "Illusory Self"
         },
         {
-          "name": "Illusory Reality"
+          "name": "Illusory Reality",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Illusory Reality",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -1118,7 +1304,19 @@
           "name": "Bladesinger"
         },
         {
-          "name": "Bladesong"
+          "name": "Bladesong",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Bladesong",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Training in War and Song"

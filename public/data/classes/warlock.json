@@ -631,7 +631,26 @@
           "name": "Undying Nature"
         },
         {
-          "name": "Indestructible Life"
+          "name": "Indestructible Life",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "14": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Indestructible Life",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -678,13 +697,44 @@
           "name": "Hex Warrior"
         },
         {
-          "name": "Hexblade's Curse"
+          "name": "Hexblade's Curse",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "1": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Hexblade's Curse",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Accursed Specter"
         },
         {
-          "name": "Armor of Hexes"
+          "name": "Armor of Hexes",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Armor of Hexes",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Master of Hexes"
@@ -735,10 +785,43 @@
           "name": "Gift of the Sea"
         },
         {
-          "name": "Tentacle of the Deeps"
+          "name": "Tentacle of the Deeps",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Tentacle of the Deeps",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Guardian Coil"
+          "name": "Guardian Coil",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Guardian Coil",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Oceanic Soul"
@@ -802,10 +885,43 @@
           "name": "Genie's Vessel"
         },
         {
-          "name": "Elemental Gift"
+          "name": "Elemental Gift",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Elemental Gift",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Sanctuary Vessel"
+          "name": "Sanctuary Vessel",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Sanctuary Vessel",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Limited Wish"
@@ -854,13 +970,55 @@
           "name": "The Undead"
         },
         {
-          "name": "Form of Dread"
+          "name": "Form of Dread",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "1": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Form of Dread",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Grave Touched"
         },
         {
-          "name": "Necrotic Husk"
+          "name": "Necrotic Husk",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Necrotic Husk",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Spirit Projection"
@@ -984,7 +1142,19 @@
           "name": "Steps of the Fey"
         },
         {
-          "name": "Misty Escape"
+          "name": "Misty Escape",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Misty Escape",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Beguiling Defenses"
@@ -1105,7 +1275,26 @@
           }
         },
         {
-          "name": "Healing Light"
+          "name": "Healing Light",
+          "fields": [
+            {
+              "name": "Healing Pool",
+              "kind": "Points",
+              "levels": { "3": "1 + CLASS_LEVEL" }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Healing Pool",
+              "options": [
+                {
+                  "name": "Healing Light",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Radiant Soul"
@@ -1279,7 +1468,19 @@
           "name": "Great Old One Patron"
         },
         {
-          "name": "Awakened Mind"
+          "name": "Awakened Mind",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Awakened Mind",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Great Old One Spells",

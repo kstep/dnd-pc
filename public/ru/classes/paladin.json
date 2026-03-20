@@ -659,5 +659,127 @@
   "subclass.Oath of the Noble Genies.feature.Noble Scion": {
     "label": "Благородный наследник",
     "description": "Вы получаете преимущества благородного наследника джиннов. Вы получаете иммунитет к одному типу стихийного урона и можете сотворять заклинание «Исполнение желаний» один раз."
+  },
+  "feature.Abjure Foes.field.Actions.option.Abjure Foes": {
+    "label": "Изгнание врагов",
+    "description": "Трата БК: до мод. ХАР целей в 60 фт, спасбросок МУД или Испуган 1 мин (скорость 0; может только двигаться, совершать действие или бонусное действие)"
+  },
+  "subclass.Oath of Devotion.feature.Holy Nimbus.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of Devotion.feature.Holy Nimbus.field.Actions.option.Holy Nimbus": {
+    "label": "Святое сияние",
+    "description": "10 мин: преимущество на спасброски от Исчадий/Нежити; враги в начале хода в ауре получают урон Излучением = мод. ХАР + бонус мастерства; аура заполняется ярким солнечным светом"
+  },
+  "subclass.Oath of the Ancients.feature.Nature's Wrath.field.Actions.option.Nature's Wrath": {
+    "label": "Гнев природы",
+    "description": "Трата БК: выбранные существа в 15 фт совершают спасбросок СИЛ или Обездвижены 1 мин (повтор спасброска в конце хода для снятия)"
+  },
+  "subclass.Oath of the Ancients.feature.Elder Champion.field.Actions.option.Elder Champion": {
+    "label": "Древний чемпион",
+    "description": "1 мин: враги в ауре с помехой на спасброски от ваших заклинаний/БК; восстанавливать 10 хитов в начале каждого хода; заклинания со временем действием можно использовать как бонусное действие"
+  },
+  "subclass.Oath of Vengeance.feature.Avenging Angel.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of Vengeance.feature.Avenging Angel.field.Actions.option.Avenging Angel": {
+    "label": "Ангел мести",
+    "description": "10 мин: скорость полёта 60 фт + парение; враги в начале хода в вашей ауре — спасбросок МУД или Испуган 1 мин (броски атаки по Испуганным с преимуществом)"
+  },
+  "subclass.Oath of the Crown.feature.Champion Challenge.field.Actions.option.Champion Challenge": {
+    "label": "Вызов чемпиона",
+    "description": "Выбранные цели в 30 фт совершают спасбросок МУД или не могут добровольно удалиться более чем на 30 фт от вас (кончается при недееспособности или гибели)"
+  },
+  "subclass.Oath of the Crown.feature.Turn the Tide.field.Actions.option.Turn the Tide": {
+    "label": "Обращение прилива",
+    "description": "Трата БК: выбранные существа в 30 фт, слышащие вас, с ≤ половиной хитов восстанавливают 1к6 + мод. ХАР хитов"
+  },
+  "subclass.Oath of the Crown.feature.Divine Allegiance.field.Actions.option.Divine Allegiance": {
+    "label": "Божественная верность",
+    "description": "Когда существо в 5 фт получает урон, вы принимаете этот урон вместо него (не может быть снижен или предотвращён)"
+  },
+  "subclass.Oath of the Crown.feature.Exalted Champion.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of the Crown.feature.Exalted Champion.field.Actions.option.Exalted Champion": {
+    "label": "Возвышенный чемпион",
+    "description": "1 час: сопротивление немагическому Дроб./Кол./Руб. урону; союзники в 30 фт с преимуществом на спасброски от смерти"
+  },
+  "subclass.Oath of Redemption.feature.Emissary of Peace.field.Actions.option.Emissary of Peace": {
+    "label": "Посланник мира",
+    "description": "Трата БК: +5 к проверкам ХАР (Убеждение) на 10 минут"
+  },
+  "subclass.Oath of Redemption.feature.Rebuke the Violent.field.Actions.option.Rebuke the Violent": {
+    "label": "Отповедь насильнику",
+    "description": "Трата БК: когда атакующий в 30 фт наносит урон (не вам), спасбросок МУД — провал: Излучение = нанесённому урону; успех: половину"
+  },
+  "subclass.Oath of Redemption.feature.Aura of the Guardian.field.Actions.option.Aura of the Guardian": {
+    "label": "Аура хранителя",
+    "description": "Когда существо в 10 фт получает урон, вы принимаете этот урон вместо него (не может быть снижен); другие эффекты не переносятся"
+  },
+  "subclass.Oath of Glory.feature.Peerless Athlete.field.Actions.option.Peerless Athlete": {
+    "label": "Непревзойдённый атлет",
+    "description": "Трата БК: 1 час — преимущество на проверки СИЛ (Атлетика) и ЛОВ (Акробатика); дистанция прыжков +10 фт"
+  },
+  "subclass.Oath of Glory.feature.Living Legend.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of Glory.feature.Living Legend.field.Actions.option.Living Legend": {
+    "label": "Живая легенда",
+    "description": "10 мин: преимущество на все проверки ХАР; реакция для переброса провального спасброска (обязан использовать новый результат); раз в ход промахнувшаяся атака оружием попадает"
+  },
+  "subclass.Oath of the Watchers.feature.Vigilant Rebuke.field.Actions.option.Vigilant Rebuke": {
+    "label": "Бдительная отповедь",
+    "description": "Когда вы или видимое существо в 30 фт преуспевает в спасброске ИНТ/МУД/ХАР, нанести существу, вынудившему спасбросок, 2к8 + мод. ХАР урона Силовым полем"
+  },
+  "subclass.Oath of the Watchers.feature.Mortal Bulwark.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of the Watchers.feature.Mortal Bulwark.field.Actions.option.Mortal Bulwark": {
+    "label": "Смертный оплот",
+    "description": "1 мин: истинное зрение 120 фт; преимущество на броски атаки против аберраций, небожителей, элементалей, фей и исчадий"
+  },
+  "subclass.Oath of the Noble Genies.feature.Noble Scion.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Oath of the Noble Genies.feature.Noble Scion.field.Actions.option.Noble Scion": {
+    "label": "Благородный наследник",
+    "description": "10 мин: скорость полёта 60 фт + парение (1/продолжительный отдых; восстановить тратой ячейки 5-го уровня)"
+  },
+  "subclass.Oath of Devotion.feature.Sacred Weapon.field.Actions.option.Sacred Weapon": {
+    "label": "Священное оружие",
+    "description": "Наделить рукопашное оружие на 10 мин: +мод. ХАР к атаке, яркий свет 20 фт/тусклый 20 фт"
+  },
+  "subclass.Oath of Vengeance.feature.Vow of Enmity.field.Actions.option.Vow of Enmity": {
+    "label": "Обет вражды",
+    "description": "Преимущество на атаки по одному существу в 30 фт на 1 мин"
+  },
+  "subclass.Oath of Conquest.feature.Conquering Presence.field.Actions.option.Conquering Presence": {
+    "label": "Завоевательное присутствие",
+    "description": "Каждое существо в 30 фт: спасбросок МУД или Испугано на 1 мин (спасбросок в конце каждого хода)"
+  },
+  "subclass.Oath of Conquest.feature.Guided Strike.field.Actions.option.Guided Strike": {
+    "label": "Направленный удар",
+    "description": "При броске атаки: +10 к результату"
+  },
+  "subclass.Oath of Glory.feature.Inspiring Smite.field.Actions.option.Inspiring Smite": {
+    "label": "Вдохновляющая кара",
+    "description": "После Божественной кары: распределить 2к8 + уровень паладина врем. хитов среди существ в 30 фт"
+  },
+  "subclass.Oath of the Watchers.feature.Abjure the Extraplanar.field.Actions.option.Abjure the Extraplanar": {
+    "label": "Изгнание иноплановых",
+    "description": "Каждая аберрация, небесное, элементал, фея или демон в 30 фт: спасбросок МУД или обращён на 1 мин"
+  },
+  "subclass.Oath of the Noble Genies.feature.Elemental Smite.field.Actions.option.Elemental Smite": {
+    "label": "Стихийная кара",
+    "description": "После Божественной кары: вызвать стихийный эффект (Кислота, Холод, Огонь, Молния или Гром)"
+  },
+  "subclass.Oathbreaker.feature.Control Undead.field.Actions.option.Control Undead": {
+    "label": "Подчинение нежити",
+    "description": "Нежить в 30 фт: спасбросок МУД или подчиняется на 24 часа (ПО < вашего уровня)"
+  },
+  "subclass.Oathbreaker.feature.Dreadful Aspect.field.Actions.option.Dreadful Aspect": {
+    "label": "Ужасающий облик",
+    "description": "Каждое существо в 30 фт: спасбросок МУД или Испугано на 1 мин (спасбросок в конце хода, вне поля зрения)"
   }
 }

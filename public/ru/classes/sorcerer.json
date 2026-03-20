@@ -569,5 +569,99 @@
   "subclass.Spellfire Sorcery.feature.Crown of Spellfire": {
     "label": "Корона пламени заклинаний",
     "description": "Используя Врождённое чародейство, вы можете изменить его и наполнить себя сущностью пламени заклинаний, получая дополнительные преимущества, пока это использование Врождённого чародейства активно. Использовав это, вы не можете повторить до окончания продолжительного отдыха, если не потратите 5 очков чародейства."
+  },
+  "subclass.Pyromancer (PSK).feature.Pyromancer's Fury.field.Actions.option.Pyromancer's Fury": {
+    "label": "Ярость пироманта",
+    "description": "Реакция при попадании атакой ближнего боя: нанести атакующему урон Огнём, равный уровню чародея (игнорирует сопротивление)"
+  },
+  "subclass.Divine Soul.feature.Otherworldly Wings.field.Actions.option.Otherworldly Wings": {
+    "label": "Потусторонние крылья",
+    "description": "Явить призрачные крылья: скорость полёта 30 фт, пока не уберёте (убрать бонусным действием)"
+  },
+  "subclass.Divine Soul.feature.Unearthly Recovery.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Divine Soul.feature.Unearthly Recovery.field.Actions.option.Unearthly Recovery": {
+    "label": "Сверхъестественное восстановление",
+    "description": "При менее половины хитов: восстановить хиты, равные половине макс. хитов (1 раз в продолжительный отдых)"
+  },
+  "subclass.Shadow Magic.feature.Hound of Ill Omen.field.Actions.option.Hound of Ill Omen": {
+    "label": "Гончая дурного знамения",
+    "description": "Потратить 3 очка чародейства: призвать Гончую дурного знамения, нацеленную на одно существо в 120 фт"
+  },
+  "subclass.Shadow Magic.feature.Shadow Walk.field.Actions.option.Shadow Walk": {
+    "label": "Теневой шаг",
+    "description": "В тусклом свете или темноте: телепортироваться до 120 фт в другое тёмное/тусклое незанятое пространство"
+  },
+  "subclass.Shadow Magic.feature.Umbral Form.field.Actions.option.Umbral Form": {
+    "label": "Теневая форма",
+    "description": "Потратить 6 очков чародейства: сопротивление ко всем видам урона, кроме силового/излучения; проходить сквозь существ/предметы на 1 минуту"
+  },
+  "subclass.Storm Sorcery.feature.Tempestuous Magic.field.Actions.option.Tempestuous Magic": {
+    "label": "Бурная магия",
+    "description": "До или после применения заклинания 1+ уровня: пролететь до 10 фт без провоцирования атак возможности"
+  },
+  "subclass.Storm Sorcery.feature.Storm Guide.field.Actions.option.Storm Guide": {
+    "label": "Повелитель бури",
+    "description": "Ветер: выбирать направление в радиусе 100 фт; дождь: остановить в радиусе 20 фт (завершить бонусным действием)"
+  },
+  "subclass.Storm Sorcery.feature.Storm's Fury.field.Actions.option.Storm's Fury": {
+    "label": "Ярость бури",
+    "description": "Реакция при попадании атакой ближнего боя: нанести урон Молнией, равный уровню чародея; спасбросок СИЛ или атакующий отброшен на 20 фт"
+  },
+  "subclass.Lunar Sorcery.feature.Waxing and Waning.field.Actions.option.Waxing and Waning": {
+    "label": "Прибывание и убывание",
+    "description": "Потратить 1 очко чародейства: сменить текущую фазу Лунного воплощения (Полная / Новая / Серп)"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Empowerment.field.Actions.option.Lunar Empowerment": {
+    "label": "Лунное усиление",
+    "description": "Полная луна: излучать яркий/тусклый свет в радиусе 10+10 фт; Новая луна: Преимущество на Скрытность, видеть в магической тьме; Серп: добавить к6 к броску атаки или спасброска"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Phenomenon.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Lunar Sorcery.feature.Lunar Phenomenon.field.Actions.option.Lunar Phenomenon": {
+    "label": "Лунный феномен",
+    "description": "Использовать силу текущей фазы — Полная луна: ослепить существ в 30 фт (спасбросок ТЕЛ); Новая луна: испугать одно существо (спасбросок МУД); Серп: телепортироваться на 60 фт"
+  },
+  "subclass.Aberrant Sorcery.feature.Telepathic Speech.field.Actions.option.Telepathic Speech": {
+    "label": "Телепатическая речь",
+    "description": "Связать разумы с одним существом в 30 фт: телепатическое общение до мод. ХАР миль в течение уровень чародея минут"
+  },
+  "subclass.Aberrant Sorcery.feature.Revelation in Flesh.field.Actions.option.Revelation in Flesh": {
+    "label": "Откровение во плоти",
+    "description": "Потратить 1+ очков чародейства: преобразить тело на 10 мин — каждое очко даёт одно преимущество (скорость плавания, полёта, видеть невидимое, проходить сквозь щели)"
+  },
+  "subclass.Aberrant Sorcery.feature.Warping Implosion.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Aberrant Sorcery.feature.Warping Implosion.field.Actions.option.Warping Implosion": {
+    "label": "Искривляющая имплозия",
+    "description": "Телепортироваться до 120 фт; каждое существо в 30 фт от точки исхода — спасбросок СИЛ или 3к10 урона Силовым полем и притянуть на 30 фт"
+  },
+  "subclass.Clockwork Sorcery.feature.Bastion of Law.field.Actions.option.Bastion of Law": {
+    "label": "Бастион закона",
+    "description": "Потратить 1–5 очков чародейства: создать магический щит Nк8 (N = потраченные очки) на себя или существо в 30 фт, поглощающий входящий урон"
+  },
+  "subclass.Clockwork Sorcery.feature.Trance of Order.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Clockwork Sorcery.feature.Trance of Order.field.Actions.option.Trance of Order": {
+    "label": "Транс порядка",
+    "description": "Войти в транс на 1 минуту: атаки по вам не имеют Преимущества; броски к20 ниже 10 считаются как 10"
+  },
+  "subclass.Clockwork Sorcery.feature.Clockwork Cavalcade.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Clockwork Sorcery.feature.Clockwork Cavalcade.field.Actions.option.Clockwork Cavalcade": {
+    "label": "Заводная кавалькада",
+    "description": "Призвать духов в кубе 30 фт: восстановить до 100 хитов (распределить свободно), снять заклинания до 4 уровня, снять состояния (1 раз в продолжительный отдых)"
+  },
+  "subclass.Draconic Sorcery.feature.Dragon Wings.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Draconic Sorcery.feature.Dragon Wings.field.Actions.option.Dragon Wings": {
+    "label": "Крылья дракона",
+    "description": "Отрастить драконьи крылья: скорость полёта 60 фт на 1 час (1 раз в продолжительный отдых, или потратить 3 очка чародейства для повторного использования)"
   }
 }

@@ -322,5 +322,59 @@
   },
   "subclass.Bladesinger.feature.Song of Victory": {
     "description": "After you cast a spell that has a casting time of an action, you can make one attack with a weapon as a Bonus Action."
+  },
+  "subclass.School of Conjuration.feature.Minor Conjuration.field.Actions.option.Minor Conjuration": {
+    "description": "Conjure an inanimate object (max 3 ft / 10 lbs) in hand or on ground within 10 ft."
+  },
+  "subclass.School of Conjuration.feature.Benign Transposition.field.Actions.option.Benign Transposition": {
+    "description": "Teleport up to 30 ft to an unoccupied space you can see, or swap places with a willing Small/Medium creature within range."
+  },
+  "subclass.School of Enchantment.feature.Instinctive Charm.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.School of Enchantment.feature.Instinctive Charm.field.Actions.option.Instinctive Charm": {
+    "description": "30 ft: when a creature attacks you, redirect the attack — attacker makes WIS save (spell DC) or targets the nearest creature instead."
+  },
+  "subclass.School of Transmutation.feature.Master Transmuter.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.School of Transmutation.feature.Master Transmuter.field.Actions.option.Master Transmuter": {
+    "description": "Consume transmuter's stone (destroyed until Long Rest) for one effect: transmute matter, remove curse/poison/petrification, restore youth, or cast Resurrection."
+  },
+  "subclass.War Magic.feature.Arcane Deflection.field.Actions.option.Arcane Deflection": {
+    "description": "When hit by an attack or fail a save: +2 AC against that attack or +4 to that save. Can't cast non-cantrip spells until end of next turn."
+  },
+  "subclass.Chronurgy Magic.feature.Chronal Shift.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Chronurgy Magic.feature.Chronal Shift.field.Actions.option.Chronal Shift": {
+    "description": "30 ft: after you or a creature makes an attack roll, ability check, or save, force a reroll (decide after seeing the result)."
+  },
+  "subclass.Chronurgy Magic.feature.Momentary Stasis.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Chronurgy Magic.feature.Momentary Stasis.field.Actions.option.Momentary Stasis": {
+    "description": "60 ft: force a Large or smaller creature to make a CON save (spell DC) or be incapacitated and speed 0 until end of your next turn."
+  },
+  "subclass.Chronurgy Magic.feature.Convergent Future.field.Actions.option.Convergent Future": {
+    "description": "60 ft: after an attack roll, check, or save, ignore the die — choose pass or fail. Gain 1 exhaustion (removed only by Long Rest)."
+  },
+  "subclass.Graviturgy Magic.feature.Violent Attraction.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Graviturgy Magic.feature.Violent Attraction.field.Actions.option.Violent Attraction": {
+    "description": "60 ft: when a creature hits with a weapon attack, the target takes +1d10 damage of the weapon's type."
+  },
+  "subclass.Order of Scribes.feature.Manifest Mind.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Order of Scribes.feature.Manifest Mind.field.Actions.option.Manifest Mind": {
+    "description": "Summon a Tiny spectral mind from your spellbook to an unoccupied space within 60 ft (intangible, sheds dim light 10 ft)."
+  },
+  "subclass.Illusionist.feature.Illusory Reality.field.Actions.option.Illusory Reality": {
+    "description": "While an illusion spell is ongoing, make one inanimate nonmagical object within it real until the spell ends."
+  },
+  "subclass.Bladesinger.feature.Bladesong.field.Actions.option.Bladesong": {
+    "description": "Invoke Bladesong for 1 min (no armor/shield): +INT mod to AC, +10 ft speed, advantage on Acrobatics, CON saves to maintain concentration."
   }
 }

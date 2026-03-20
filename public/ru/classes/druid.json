@@ -237,6 +237,9 @@
     "label": "Улучшенные формы круга",
     "description": "Ваша форма «Дикого облика» усиливается."
   },
+  "subclass.Circle of the Moon.feature.Moonlight Step.field.Free Uses": {
+    "label": "Свободные использования"
+  },
   "subclass.Circle of the Moon.feature.Moonlight Step": {
     "label": "Лунный шаг",
     "description": "Вы можете телепортироваться на расстояние до 30 футов в свободное пространство, которое видите, окутываясь лунным светом. Вы можете использовать эту способность число раз, равное вашему бонусу мастерства, и восстанавливаете все использования после продолжительного отдыха. Если у вас не осталось использований, вы можете потратить ячейку заклинания 2-го уровня или выше, чтобы использовать эту способность снова."
@@ -355,6 +358,9 @@
   "subclass.Circle of Stars.feature.Dragon": {
     "label": "Дракон",
     "description": "Когда вы совершаете проверку Интеллекта или Мудрости или спасбросок Телосложения для поддержания концентрации, вы можете бросить 1к10 как бонус."
+  },
+  "subclass.Circle of Stars.feature.Cosmic Omen.field.Free Uses": {
+    "label": "Свободные использования"
   },
   "subclass.Circle of Stars.feature.Cosmic Omen": {
     "label": "Космическое предзнаменование",
@@ -511,5 +517,81 @@
   "subclass.Circle of the Stars.feature.Full of Stars": {
     "label": "Полный звёзд",
     "description": "Находясь в звёздной форме, вы получаете сопротивление дробящему, колющему и рубящему урону."
+  },
+  "feature.Wild Companion.field.Actions.option.Wild Companion": {
+    "label": "Дикий компаньон",
+    "description": "Потратьте ячейку заклинания или «Дикий облик»: сотворите «Поиск фамильяра» без материальных компонентов; фамильяр — Фея, исчезает после продолжительного отдыха"
+  },
+  "subclass.Circle of the Land.feature.Land's Aid.field.Actions.option.Land's Aid": {
+    "label": "Помощь земли",
+    "description": "Потратьте «Дикий облик»: 60 фт, сфера 10 фт — 2к6 некр. (Сл ТЕЛ, половина при успехе) + исцелить одно существо на 2к6 хитов (3к6 на ур. 10, 4к6 на ур. 14)"
+  },
+  "subclass.Circle of the Land.feature.Nature's Sanctuary.field.Actions.option.Nature's Sanctuary": {
+    "label": "Убежище природы",
+    "description": "Потратьте «Дикий облик»: куб 15 фт в пределах 120 фт на 1 мин — союзники получают Частичное укрытие и сопротивление «Оберега природы»; бонусным действием переместить куб на 60 фт"
+  },
+  "subclass.Circle of the Moon.feature.Moonlight Step.field.Actions.option.Moonlight Step": {
+    "label": "Лунный шаг",
+    "description": "Телепортируйтесь на 30 фт в видимое свободное место; преимущество на следующий бросок атаки до конца хода"
+  },
+  "subclass.Circle of Dreams.feature.Balm of the Summer Court.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Circle of Dreams.feature.Balm of the Summer Court.field.Actions.option.Balm of the Summer Court": {
+    "label": "Бальзам Летнего Двора",
+    "description": "Потратьте до половины уровня Друида к6 из запаса фейской энергии: бросьте кости для исцеления союзника в 120 фт + дайте ему временные хиты, равные количеству потраченных к6"
+  },
+  "subclass.Circle of Dreams.feature.Hidden Paths.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Circle of Dreams.feature.Hidden Paths.field.Actions.option.Hidden Paths": {
+    "label": "Скрытые тропы",
+    "description": "Телепортируйтесь на расстояние до 60 фт в видимое свободное место (или действием: телепортируйте согласное существо до 30 фт)"
+  },
+  "subclass.Circle of the Shepherd.feature.Spirit Totem.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Circle of the Shepherd.feature.Spirit Totem.field.Actions.option.Spirit Totem": {
+    "label": "Тотемный дух",
+    "description": "Призовите духа в точку в 60 фт, аура 30 фт — Медведь (врем. хиты + преим. на СИЛ), Ястреб (атаки возможности + преим. на Восприятие) или Единорог (обнаружение магии + исцеление)"
+  },
+  "subclass.Circle of Spores.feature.Halo of Spores.field.Actions.option.Halo of Spores": {
+    "label": "Ореол спор",
+    "description": "Реакция: когда существо входит или начинает ход в 10 фт от вас, нанесите 1к4 некр. урона (Сл ТЕЛ, отменяет); урон растёт с уровнем"
+  },
+  "subclass.Circle of Spores.feature.Fungal Infestation.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Circle of Spores.feature.Fungal Infestation.field.Actions.option.Fungal Infestation": {
+    "label": "Грибковое заражение",
+    "description": "Реакция: когда малый/средний зверь или гуманоид умирает в 10 фт от вас, оживите его как зомби с 1 хитом на 1 час"
+  },
+  "subclass.Circle of Spores.feature.Spreading Spores.field.Actions.option.Spreading Spores": {
+    "label": "Распространяющиеся споры",
+    "description": "Пока «Симбиотическая сущность» активна: бросьте споры на 30 фт — куб 10 фт на 1 мин; существа внутри совершают Сл ТЕЛ или получают урон «Ореола спор»"
+  },
+  "subclass.Circle of Stars.feature.Starry Form.field.Actions.option.Starry Form": {
+    "label": "Звёздная форма",
+    "description": "Потратьте «Дикий облик»: звёздная форма на 10 мин — выберите Лучника (доп. дальние атаки заклинанием), Чашу (доп. исцеление при ячейках) или Дракона (броски концентрации: минимум 10)"
+  },
+  "subclass.Circle of Stars.feature.Archer.field.Actions.option.Archer": {
+    "label": "Лучник",
+    "description": "Дальняя атака заклинанием (60 фт); при попадании — 1к8 + мод. МУД урона излучением"
+  },
+  "subclass.Circle of Stars.feature.Cosmic Omen.field.Actions.option.Cosmic Omen": {
+    "label": "Космическое предзнаменование",
+    "description": "Реакция: Удача (чётный) — добавьте 1к6 к броску к20 существа в 30 фт; Беда (нечётный) — вычтите 1к6 из броска к20 существа в 30 фт"
+  },
+  "subclass.Circle of the Sea.feature.Wrath of the Sea.field.Actions.option.Wrath of the Sea": {
+    "label": "Гнев моря",
+    "description": "Потратьте «Дикий облик»: эманация 5 фт на 10 мин — при активации и каждым последующим бонусным действием одно существо совершает Сл ТЕЛ или получает мод. МУД к6 холода и отталкивается на 15 фт (Большое или меньше)"
+  },
+  "subclass.Circle of the Stars.feature.Starry Form.field.Actions.option.Starry Form": {
+    "label": "Звёздная форма",
+    "description": "Потратьте «Дикий облик»: звёздная форма на 10 мин — выберите Лучника (доп. дальние атаки заклинанием), Чашу (доп. исцеление при ячейках) или Дракона (броски концентрации: минимум 10)"
+  },
+  "subclass.Circle of the Stars.feature.Archer.field.Actions.option.Archer": {
+    "label": "Лучник",
+    "description": "Дальняя атака заклинанием (60 фт); при попадании — 1к8 + мод. МУД урона излучением"
   }
 }

@@ -179,6 +179,12 @@
   "subclass.Circle of the Moon.feature.Moonlight Step": {
     "description": "You magically transport yourself, reappearing amid a burst of moonlight. As a Bonus Action, you teleport up to 30 feet to an unoccupied space you can see, and you have Advantage on the next attack roll you make before the end of this turn. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest. You can also regain uses by expending a level 2+ spell slot for each use you want to restore (no action required)."
   },
+  "subclass.Circle of the Moon.feature.Moonlight Step.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Circle of Stars.feature.Cosmic Omen.field.Free Uses": {
+    "label": "Free Uses"
+  },
   "subclass.Circle of the Moon.feature.Lunar Form": {
     "description": "The power of the moon suffuses you, granting you the following benefits. Improved Lunar Radiance: Once per turn, you can deal an extra 2d10 Radiant damage to a target you hit with a Wild Shape form's attack. Shared Moonlight: Whenever you use Moonlight Step, you can also teleport one willing creature. That creature must be within 10 feet of you, and you teleport it to an unoccupied space you can see within 10 feet of your destination space."
   },
@@ -382,5 +388,65 @@
   },
   "subclass.Circle of the Stars.feature.Full of Stars": {
     "description": "While in your Starry Form, you become partially incorporeal, giving you Resistance to Bludgeoning, Piercing, and Slashing damage."
+  },
+  "feature.Wild Companion.field.Actions.option.Wild Companion": {
+    "description": "Expend a spell slot or Wild Shape use to cast Find Familiar (no Material components); familiar is Fey, vanishes on Long Rest"
+  },
+  "subclass.Circle of the Land.feature.Land's Aid.field.Actions.option.Land's Aid": {
+    "description": "Expend Wild Shape: 60 ft range, 10-ft sphere — 2d6 Necrotic (CON save for half) + heal one creature 2d6 HP (3d6 at lvl 10, 4d6 at lvl 14)"
+  },
+  "subclass.Circle of the Land.feature.Nature's Sanctuary.field.Actions.option.Nature's Sanctuary": {
+    "description": "Expend Wild Shape: 15-ft Cube within 120 ft for 1 min — allies gain Half Cover and Nature's Ward resistance; Bonus Action to move Cube 60 ft"
+  },
+  "subclass.Circle of the Moon.feature.Moonlight Step.field.Actions.option.Moonlight Step": {
+    "description": "Teleport up to 30 ft to a visible unoccupied space; Advantage on next attack roll this turn"
+  },
+  "subclass.Circle of Dreams.feature.Balm of the Summer Court.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Circle of Dreams.feature.Balm of the Summer Court.field.Actions.option.Balm of the Summer Court": {
+    "description": "Spend up to half Druid level in d6s from fey energy pool: roll dice to heal ally within 120 ft + grant Temp HP equal to number of dice spent"
+  },
+  "subclass.Circle of Dreams.feature.Hidden Paths.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Circle of Dreams.feature.Hidden Paths.field.Actions.option.Hidden Paths": {
+    "description": "Teleport up to 60 ft to a visible unoccupied space (or Action: teleport one willing creature you touch up to 30 ft)"
+  },
+  "subclass.Circle of the Shepherd.feature.Spirit Totem.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Circle of the Shepherd.feature.Spirit Totem.field.Actions.option.Spirit Totem": {
+    "description": "Summon spirit within 60 ft, 30-ft aura — Bear (Temp HP + Advantage on STR), Hawk (Opportunity Attacks + Advantage on Perception), or Unicorn (detect magic + heal)"
+  },
+  "subclass.Circle of Spores.feature.Halo of Spores.field.Actions.option.Halo of Spores": {
+    "description": "Reaction: when a creature moves into or starts its turn within 10 ft, deal 1d4 Necrotic (CON save negates); damage increases at higher levels"
+  },
+  "subclass.Circle of Spores.feature.Fungal Infestation.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Circle of Spores.feature.Fungal Infestation.field.Actions.option.Fungal Infestation": {
+    "description": "Reaction: when a Small/Medium beast or humanoid dies within 10 ft, animate it as a zombie with 1 HP for 1 hour"
+  },
+  "subclass.Circle of Spores.feature.Spreading Spores.field.Actions.option.Spreading Spores": {
+    "description": "While Symbiotic Entity active: hurl spores up to 30 ft — 10-ft Cube for 1 min; creatures entering or starting turn inside make CON save or take Halo of Spores damage"
+  },
+  "subclass.Circle of Stars.feature.Starry Form.field.Actions.option.Starry Form": {
+    "description": "Expend Wild Shape: luminous starry form for 10 min — choose Archer (bonus ranged spell attacks), Chalice (bonus healing on spell slots), or Dragon (treat concentration saves ≤9 as 10)"
+  },
+  "subclass.Circle of Stars.feature.Archer.field.Actions.option.Archer": {
+    "description": "Ranged spell attack (60 ft); on hit deal 1d8 + WIS mod Radiant damage"
+  },
+  "subclass.Circle of Stars.feature.Cosmic Omen.field.Actions.option.Cosmic Omen": {
+    "description": "Reaction: Weal (even) — add 1d6 to a creature's d20 test within 30 ft; Woe (odd) — subtract 1d6 from a creature's d20 test within 30 ft"
+  },
+  "subclass.Circle of the Sea.feature.Wrath of the Sea.field.Actions.option.Wrath of the Sea": {
+    "description": "Expend Wild Shape: 5-ft Emanation for 10 min — on activation and each subsequent Bonus Action, one creature makes CON save or takes WIS-mod d6 Cold damage and is pushed 15 ft (Large or smaller)"
+  },
+  "subclass.Circle of the Stars.feature.Starry Form.field.Actions.option.Starry Form": {
+    "description": "Expend Wild Shape: luminous starry form for 10 min — choose Archer (bonus ranged spell attacks), Chalice (bonus healing on spell slots), or Dragon (treat concentration saves ≤9 as 10)"
+  },
+  "subclass.Circle of the Stars.feature.Archer.field.Actions.option.Archer": {
+    "description": "Ranged spell attack (60 ft); on hit deal 1d8 + WIS mod Radiant damage"
   }
 }

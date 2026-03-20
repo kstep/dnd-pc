@@ -6,7 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    model::{Die, Translatable, format_bonus, proficiency_bonus_for_level},
+    model::{Translatable, format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
 };
 
@@ -150,25 +150,19 @@ pub fn ClassReference() -> impl IntoView {
                         let field_values: Vec<String> = field_columns
                             .iter()
                             .map(|fc| match fc.kind {
-                                FieldKind::Points { levels, .. } => {
+                                FieldKind::Points { levels, .. }
+                                | FieldKind::FreeUses { levels } => {
                                     match levels.at_level(level) {
-                                        Some(ValueOrExpr::Value(n)) if *n > 0 => n.to_string(),
-                                        Some(ValueOrExpr::Expr(expr)) => expr.to_string(),
+                                        Some(v @ ValueOrExpr::Value(1..)) | Some(v @ ValueOrExpr::Expr(_)) => v.to_string(),
                                         _ => "\u{2014}".into(),
                                     }
                                 }
                                 FieldKind::Die { levels } => {
                                     match levels.at_level(level) {
-                                        Some(de) => match &de.amount {
-                                            ValueOrExpr::Value(0) => "\u{2014}".into(),
-                                            ValueOrExpr::Value(n) => {
-                                                Die { amount: *n, sides: de.sides }.to_string()
-                                            }
-                                            ValueOrExpr::Expr(expr) => {
-                                                format!("({})d{}", expr, de.sides)
-                                            }
-                                        },
-                                        None => "\u{2014}".into(),
+                                        Some(de) if !matches!(de.amount, ValueOrExpr::Value(0)) => {
+                                            de.to_string()
+                                        }
+                                        _ => "\u{2014}".into(),
                                     }
                                 }
                                 FieldKind::Choice { levels, .. } => {
@@ -183,14 +177,6 @@ pub fn ClassReference() -> impl IntoView {
                                     let v: i32 = levels.get_for_level(level);
                                     if v != 0 {
                                         format_bonus(v)
-                                    } else {
-                                        "\u{2014}".into()
-                                    }
-                                }
-                                FieldKind::FreeUses { levels } => {
-                                    let v: u32 = levels.get_for_level(level);
-                                    if v > 0 {
-                                        v.to_string()
                                     } else {
                                         "\u{2014}".into()
                                     }

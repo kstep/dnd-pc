@@ -254,7 +254,28 @@
           "name": "Student of War"
         },
         {
-          "name": "Know Your Enemy"
+          "name": "Know Your Enemy",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Know Your Enemy",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Improved Combat Superiority"
@@ -659,7 +680,19 @@
           "name": "Additional Arcane Shot Option"
         },
         {
-          "name": "Curving Shot"
+          "name": "Curving Shot",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Curving Shot",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Magic Arrow"
@@ -723,7 +756,28 @@
           "name": "Unwavering Mark"
         },
         {
-          "name": "Warding Maneuver"
+          "name": "Warding Maneuver",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": "max(1, CON.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Warding Maneuver",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Hold the Line"
@@ -781,7 +835,28 @@
           "name": "Bonus Proficiency"
         },
         {
-          "name": "Fighting Spirit"
+          "name": "Fighting Spirit",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "3": 3
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Fighting Spirit",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Elegant Courtier"
@@ -793,7 +868,28 @@
           "name": "Rapid Strike"
         },
         {
-          "name": "Strength before Death"
+          "name": "Strength before Death",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "18": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Strength before Death",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -838,7 +934,19 @@
           "name": "Echo Knight"
         },
         {
-          "name": "Manifest Echo"
+          "name": "Manifest Echo",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Manifest Echo",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Unleash Incarnation"
@@ -847,7 +955,28 @@
           "name": "Echo Avatar"
         },
         {
-          "name": "Shadow Martyr"
+          "name": "Shadow Martyr",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Shadow Martyr",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Reclaim Potential"
@@ -907,10 +1036,43 @@
           "name": "Psionic Strike"
         },
         {
-          "name": "Telekinetic Movement"
+          "name": "Telekinetic Movement",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Telekinetic Movement",
+                  "action": "Action"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Psi-Powered Leap"
+          "name": "Psi-Powered Leap",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Psi-Powered Leap",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Telekinetic Adept"
@@ -922,10 +1084,43 @@
           "name": "Guarded Mind"
         },
         {
-          "name": "Bulwark of Force"
+          "name": "Bulwark of Force",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "15": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Bulwark of Force",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Telekinetic Master"
+          "name": "Telekinetic Master",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Telekinetic Master",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -980,7 +1175,28 @@
           ]
         },
         {
-          "name": "Giant's Might"
+          "name": "Giant's Might",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "3": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Giant's Might",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Rune Carver"
@@ -989,7 +1205,28 @@
           "name": "Additional Rune Known"
         },
         {
-          "name": "Runic Shield"
+          "name": "Runic Shield",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "7": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Runic Shield",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Great Stature"

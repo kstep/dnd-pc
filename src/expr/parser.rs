@@ -1,4 +1,4 @@
-use std::{iter::Peekable, marker::PhantomData, str::FromStr};
+use std::{iter::Peekable, marker::PhantomData, ops::Neg, str::FromStr};
 
 use crate::expr::{
     Op,
@@ -6,12 +6,12 @@ use crate::expr::{
     tokenizer::{Token, Tokenizer},
 };
 
-pub(super) struct Parser<'a, Var> {
+pub(super) struct Parser<'a, Var, Val> {
     tokens: Peekable<Tokenizer<'a>>,
-    _var: PhantomData<Var>,
+    _var: PhantomData<(Var, Val)>,
 }
 
-impl<'a, Var: FromStr + Copy> From<Tokenizer<'a>> for Parser<'a, Var> {
+impl<'a, Var, Val> From<Tokenizer<'a>> for Parser<'a, Var, Val> {
     fn from(tokens: Tokenizer<'a>) -> Self {
         Self {
             tokens: tokens.peekable(),
@@ -20,18 +20,18 @@ impl<'a, Var: FromStr + Copy> From<Tokenizer<'a>> for Parser<'a, Var> {
     }
 }
 
-impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
+impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a, Var, Val> {
     pub fn new(expr: &'a str) -> Self {
         Self::from(Tokenizer::new(expr))
     }
 
-    pub fn parse(&mut self) -> Result<Vec<Op<Var>>, Error> {
+    pub fn parse(&mut self) -> Result<Vec<Op<Var, Val>>, Error> {
         let mut ops = Vec::new();
         self.parse_into(&mut ops)?;
         Ok(ops)
     }
 
-    pub fn parse_into(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    pub fn parse_into(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         if self.peek().is_none() {
             return Err(Error::EmptyExpression);
         }
@@ -62,7 +62,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     // Continue parsing +/- after the first term has been parsed
-    fn parse_expr_tail(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_expr_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         loop {
             match self.peek() {
                 Some(Token::Plus) => {
@@ -82,13 +82,13 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     // expr = term (('+' | '-') term)*
-    fn parse_expr(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_expr(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.parse_term(ops)?;
         self.parse_expr_tail(ops)
     }
 
     // term = unary (('*' | '/' | '\') unary)*
-    fn parse_term(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_term(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.parse_unary(ops)?;
         loop {
             match self.peek() {
@@ -119,16 +119,18 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     // unary = '-' unary | dice
-    fn parse_unary(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_unary(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         if let Some(Token::Minus) = self.peek() {
             self.next()?;
-            if let Some(&Token::Num(n)) = self.peek() {
+            if let Some(&Token::Value(n)) = self.peek() {
+                let n = parse_value::<Val>(n)?;
                 self.next()?;
-                ops.push(Op::PushConst(-n));
+                ops.push(Op::PushConst(n.neg()));
                 Ok(())
             } else {
                 self.parse_unary(ops)?;
-                ops.push(Op::PushConst(-1));
+                let n = parse_value::<Val>("-1")?;
+                ops.push(Op::PushConst(n));
                 ops.push(Op::Mul);
                 Ok(())
             }
@@ -139,10 +141,11 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
 
     // dice = atom ('d' atom ('kh' num | 'kl' num)?)?
     // Also handle bare 'd' with implicit 1: d20 = 1d20
-    fn parse_dice(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_dice(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         if let Some(Token::D) = self.peek() {
             self.next()?;
-            ops.push(Op::PushConst(1));
+            let n = parse_value("1")?;
+            ops.push(Op::PushConst(n));
             self.parse_atom(ops)?;
             ops.push(Op::Roll);
             self.parse_keep(ops)?;
@@ -160,40 +163,44 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
         Ok(())
     }
 
-    fn parse_keep(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_keep(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         match self.peek() {
             Some(Token::Kh) => {
                 self.next()?;
-                if let Some(&Token::Num(n)) = self.peek() {
+                if let Some(&Token::Value(n)) = self.peek() {
+                    let n = parse_value(n)?;
                     self.next()?;
-                    ops.push(Op::KeepMax(n as u32));
+                    ops.push(Op::KeepMax(n));
                 } else {
                     ops.push(Op::Sum);
                 }
             }
             Some(Token::Kl) => {
                 self.next()?;
-                if let Some(&Token::Num(n)) = self.peek() {
+                if let Some(&Token::Value(n)) = self.peek() {
+                    let n = parse_value(n)?;
                     self.next()?;
-                    ops.push(Op::KeepMin(n as u32));
+                    ops.push(Op::KeepMin(n));
                 } else {
                     ops.push(Op::Sum);
                 }
             }
             Some(Token::Dh) => {
                 self.next()?;
-                if let Some(&Token::Num(n)) = self.peek() {
+                if let Some(&Token::Value(n)) = self.peek() {
+                    let n = parse_value(n)?;
                     self.next()?;
-                    ops.push(Op::DropMax(n as u32));
+                    ops.push(Op::DropMax(n));
                 } else {
                     ops.push(Op::Sum);
                 }
             }
             Some(Token::Dl) => {
                 self.next()?;
-                if let Some(&Token::Num(n)) = self.peek() {
+                if let Some(&Token::Value(n)) = self.peek() {
+                    let n = parse_value(n)?;
                     self.next()?;
-                    ops.push(Op::DropMin(n as u32));
+                    ops.push(Op::DropMin(n));
                 } else {
                     ops.push(Op::Sum);
                 }
@@ -204,9 +211,10 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     // atom = num | var | func '(' args ')' | '(' expr ')'
-    fn parse_atom(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_atom(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         match self.next()? {
-            Some(Token::Num(n)) => {
+            Some(Token::Value(n)) => {
+                let n = parse_value(n)?;
                 ops.push(Op::PushConst(n));
                 Ok(())
             }
@@ -228,7 +236,11 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
         }
     }
 
-    fn parse_function_call(&mut self, name: &str, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_function_call(
+        &mut self,
+        name: &str,
+        ops: &mut Vec<Op<Var, Val>>,
+    ) -> Result<(), Error> {
         match name {
             "min" => {
                 self.parse_binary_function_call(ops)?;
@@ -248,7 +260,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
         Ok(())
     }
 
-    fn parse_binary_function_call(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_binary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
         self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::Comma))?;
@@ -257,14 +269,14 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
         Ok(())
     }
 
-    fn parse_unary_function_call(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_unary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
         self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::RParen))?;
         Ok(())
     }
 
-    fn compound_op(token: &Token) -> Option<Op<Var>> {
+    fn compound_op(token: &Token) -> Option<Op<Var, Val>> {
         match token {
             Token::PlusEq => Some(Op::Add),
             Token::MinusEq => Some(Op::Sub),
@@ -277,7 +289,7 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
     }
 
     // assignment = IDENT '=' expr | IDENT op= expr | expr
-    fn parse_assignment(&mut self, ops: &mut Vec<Op<Var>>) -> Result<(), Error> {
+    fn parse_assignment(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         loop {
             if let Some(&Token::Ident(name)) = self.peek()
                 && let Ok(var) = name.parse::<Var>()
@@ -315,4 +327,8 @@ impl<'a, Var: FromStr + Copy> Parser<'a, Var> {
 
         Ok(())
     }
+}
+
+fn parse_value<Val: FromStr>(token: &str) -> Result<Val, Error> {
+    token.parse().map_err(|_| Error::unexpected_token(token))
 }

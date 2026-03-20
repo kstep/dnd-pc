@@ -21,7 +21,7 @@ use crate::{
 #[serde(untagged)]
 pub enum ValueOrExpr {
     Value(u32),
-    Expr(Expr<Attribute>),
+    Expr(Expr<Attribute, i32>),
 }
 
 impl Default for ValueOrExpr {
@@ -30,12 +30,27 @@ impl Default for ValueOrExpr {
     }
 }
 
-impl ValueOrExpr {
-    pub fn eval(&self, ctx: &impl expr::Context<Attribute>) -> u32 {
+impl fmt::Display for ValueOrExpr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::Value(v) => write!(f, "{v}"),
+            Self::Expr(expr) => write!(f, "{expr}"),
+        }
+    }
+}
+
+impl expr::Eval<Attribute, i32> for ValueOrExpr {
+    type Output = u32;
+
+    fn eval(&self, ctx: &impl expr::Context<Attribute, i32>) -> u32 {
         match self {
             Self::Value(v) => *v,
             Self::Expr(expr) => expr.eval(ctx).unwrap_or(0).max(0) as u32,
         }
+    }
+
+    fn is_dynamic(&self) -> bool {
+        matches!(self, Self::Expr(_))
     }
 }
 
@@ -57,12 +72,34 @@ impl Default for DieOrExpr {
     }
 }
 
-impl DieOrExpr {
-    pub fn eval(&self, ctx: &impl expr::Context<Attribute>) -> Die {
+impl fmt::Display for DieOrExpr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self.amount {
+            ValueOrExpr::Value(n) => write!(
+                f,
+                "{}",
+                Die {
+                    amount: *n,
+                    sides: self.sides
+                }
+            ),
+            ValueOrExpr::Expr(expr) => write!(f, "({expr})d{}", self.sides),
+        }
+    }
+}
+
+impl expr::Eval<Attribute, i32> for DieOrExpr {
+    type Output = Die;
+
+    fn eval(&self, ctx: &impl expr::Context<Attribute, i32>) -> Die {
         Die {
             amount: self.amount.eval(ctx),
             sides: self.sides,
         }
+    }
+
+    fn is_dynamic(&self) -> bool {
+        self.amount.is_dynamic()
     }
 }
 
@@ -254,7 +291,7 @@ impl FeatureDefinition {
         character.languages.extend(self.languages.iter().cloned());
 
         let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
-            let free_uses_max = self.free_uses_max(level);
+            let free_uses_max = self.free_uses_max(level, character);
             spells_def.apply(level, character, &self.name, source, free_uses_max);
             (
                 character.caster_level(spells_def.pool) as i32,
@@ -295,11 +332,11 @@ impl FeatureDefinition {
         }
     }
 
-    fn free_uses_max(&self, level: u32) -> u32 {
+    pub(super) fn free_uses_max(&self, level: u32, character: &Character) -> u32 {
         self.fields
             .values()
             .find_map(|field_def| match &field_def.kind {
-                FieldKind::FreeUses { levels } => Some(levels.get_for_level(level)),
+                FieldKind::FreeUses { levels } => Some(levels.eval_for_level(level, character)),
                 _ => None,
             })
             .unwrap_or_default()
@@ -385,8 +422,12 @@ impl FeatureDefinition {
                                 *max = *new_max;
                             }
                         }
-                        (FieldKind::FreeUses { levels }, FeatureValue::Points { max, .. }) => {
-                            *max = levels.get_for_level(level);
+                        (FieldKind::FreeUses { .. }, FeatureValue::Points { max, .. }) => {
+                            if let Some((_, FeatureValue::Points { max: new_max, .. })) =
+                                evaluated.iter().find(|(n, _)| n == &field.name)
+                            {
+                                *max = *new_max;
+                            }
                         }
                         _ => {}
                     }
@@ -506,7 +547,7 @@ pub enum FieldKind {
     },
     FreeUses {
         #[serde(default)]
-        levels: LevelRules<u32>,
+        levels: LevelRules<ValueOrExpr>,
     },
 }
 
@@ -524,10 +565,7 @@ impl FieldKind {
     pub fn to_value(&self, level: u32, character: &Character) -> FeatureValue {
         match self {
             Self::Die { levels } => FeatureValue::Die {
-                die: levels
-                    .at_level(level)
-                    .map(|v| v.eval(character))
-                    .unwrap_or_default(),
+                die: levels.eval_for_level(level, character),
                 used: 0,
             },
             Self::Choice { levels, .. } => FeatureValue::Choice {
@@ -536,14 +574,11 @@ impl FieldKind {
             Self::Bonus { levels } => FeatureValue::Bonus(levels.get_for_level(level)),
             Self::Points { levels, .. } => FeatureValue::Points {
                 used: 0,
-                max: levels
-                    .at_level(level)
-                    .map(|v| v.eval(character))
-                    .unwrap_or(0),
+                max: levels.eval_for_level(level, character),
             },
             Self::FreeUses { levels } => FeatureValue::Points {
                 used: 0,
-                max: levels.get_for_level(level),
+                max: levels.eval_for_level(level, character),
             },
         }
     }
@@ -554,12 +589,13 @@ impl FieldKind {
     pub fn recompute_dynamic(&self, level: u32, character: &Character) -> Option<FeatureValue> {
         match self {
             Self::Points { levels, .. } => levels
-                .at_level(level)
-                .is_some_and(|v| matches!(v, ValueOrExpr::Expr(_)))
+                .is_dynamic(level)
                 .then(|| self.to_value(level, character)),
             Self::Die { levels } => levels
-                .at_level(level)
-                .is_some_and(|v| matches!(v.amount, ValueOrExpr::Expr(_)))
+                .is_dynamic(level)
+                .then(|| self.to_value(level, character)),
+            Self::FreeUses { levels } => levels
+                .is_dynamic(level)
                 .then(|| self.to_value(level, character)),
             _ => None,
         }

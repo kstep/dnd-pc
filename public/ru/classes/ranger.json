@@ -58,6 +58,9 @@
     "label": "Неутомимый",
     "description": "Ваша подготовка в дикой природе закалила вашу выносливость. Действием вы можете дать себе временные хиты, равные 1к8 + ваш модификатор Мудрости (минимум 1). Вы можете использовать это действие число раз, равное вашему бонусу мастерства, и восстанавливаете все использования после продолжительного отдыха."
   },
+  "feature.Tireless.field.Free Uses": {
+    "label": "Свободные использования"
+  },
   "feature.Relentless Hunter": {
     "label": "Неумолимый охотник",
     "description": "Ваше заклинание «Метка охотника» больше не требует вашей концентрации. Кроме того, урон «Метки охотника» увеличивается до 1к10."
@@ -65,6 +68,9 @@
   "feature.Nature's Veil": {
     "label": "Завеса природы",
     "description": "Вы можете потратить ячейку заклинания, чтобы бонусным действием магически стать невидимым вместе со всем, что несёте и носите, до начала вашего следующего хода."
+  },
+  "feature.Nature's Veil.field.Free Uses": {
+    "label": "Свободные использования"
   },
   "feature.Nature's Veil.field.Actions": {
     "label": "Действия"
@@ -348,6 +354,9 @@
     "label": "Извивающийся прилив",
     "description": "Бонусным действием вы можете заставить рой нести вас, получая скорость полёта 10 футов на 1 минуту."
   },
+  "subclass.Swarmkeeper.feature.Writhing Tide.field.Free Uses": {
+    "label": "Свободные использования"
+  },
   "subclass.Swarmkeeper.feature.Mighty Swarm": {
     "label": "Могучий рой",
     "description": "Ваш рой становится мощнее. Существо, сбитое с ног «Собранным роем», получает помеху на все броски атаки до начала своего следующего хода."
@@ -435,5 +444,57 @@
   "subclass.Winter Walker.feature.Frozen Haunt": {
     "label": "Замёрзший призрак",
     "description": "Вы окутаны аурой мороза. Существа по вашему выбору, начинающие свой ход в пределах 10 футов от вас, получают урон холодом и их скорость уменьшается на 10 футов до начала их следующего хода."
+  },
+  "feature.Tireless.field.Actions.option.Tireless": {
+    "label": "Неутомимый",
+    "description": "Дать себе 1к8 + мод. МУД временных хитов (мод. МУД использований за Продолжительный отдых)"
+  },
+  "subclass.Horizon Walker.feature.Planar Warrior.field.Actions.option.Planar Warrior": {
+    "label": "Планарный воин",
+    "description": "Выбрать существо в 30 фт; следующее попадание в этом ходу: весь урон — Силовое поле + доп. 1к8"
+  },
+  "subclass.Horizon Walker.feature.Ethereal Step.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Horizon Walker.feature.Ethereal Step.field.Actions.option.Ethereal Step": {
+    "label": "Эфирный шаг",
+    "description": "Сотворить «Эфирность» без ячейки; заканчивается в конце хода (1/Короткий отдых)"
+  },
+  "subclass.Horizon Walker.feature.Spectral Defense.field.Actions.option.Spectral Defense": {
+    "label": "Призрачная защита",
+    "description": "Получить Сопротивление ко всему урону одной атаки (реакция на получение урона)"
+  },
+  "subclass.Monster Slayer.feature.Slayer's Prey.field.Actions.option.Slayer's Prey": {
+    "label": "Добыча убийцы",
+    "description": "Отметить существо в 60 фт; первое попадание каждого хода: +1к6 урона (до Короткого/Продолжительного отдыха)"
+  },
+  "subclass.Monster Slayer.feature.Magic-User's Nemesis.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Monster Slayer.feature.Magic-User's Nemesis.field.Actions.option.Magic-User's Nemesis": {
+    "label": "Немезида чародея",
+    "description": "60 фт: существо при сотворении заклинания/телепортации — Сл МУД или провал (реакция)"
+  },
+  "subclass.Monster Slayer.feature.Slayer's Counter.field.Actions.option.Slayer's Counter": {
+    "label": "Контрудар убийцы",
+    "description": "Когда «Добыча» вынуждает к спасброску — атака оружием; при попадании спасбросок проходит автоматически (реакция)"
+  },
+  "subclass.Swarmkeeper.feature.Writhing Tide.field.Actions.option.Writhing Tide": {
+    "label": "Извивающийся прилив",
+    "description": "Получить скорость полёта 10 фт + парение на 1 минуту (бонус мастерства использований за Продолжительный отдых)"
+  },
+  "subclass.Swarmkeeper.feature.Swarming Dispersal.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Swarmkeeper.feature.Swarming Dispersal.field.Actions.option.Swarming Dispersal": {
+    "label": "Роевое рассеивание",
+    "description": "Получить Сопротивление к урону; телепортироваться до 30 фт (реакция на получение урона)"
+  },
+  "subclass.Winter Walker.feature.Fortifying Soul.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Winter Walker.feature.Fortifying Soul.field.Actions.option.Fortifying Soul": {
+    "label": "Укрепляющая душа",
+    "description": "Мод. МУД существ восстанавливают 1к10 + уровень Следопыта хитов + Преимущество от Испуга на 1 час"
   }
 }

@@ -232,7 +232,21 @@
       }
     },
     {
-      "name": "Wild Companion"
+      "name": "Wild Companion",
+      "fields": [
+        {
+          "name": "Actions",
+          "kind": "Choice",
+          "cost": "Free Uses",
+          "options": [
+            {
+              "name": "Wild Companion",
+              "action": "Action",
+              "cost": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Wild Shape",
@@ -540,7 +554,21 @@
           }
         },
         {
-          "name": "Land's Aid"
+          "name": "Land's Aid",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Land's Aid",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Natural Recovery"
@@ -549,7 +577,21 @@
           "name": "Nature's Ward"
         },
         {
-          "name": "Nature's Sanctuary"
+          "name": "Nature's Sanctuary",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Nature's Sanctuary",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -636,7 +678,28 @@
           "name": "Improved Circle Forms"
         },
         {
-          "name": "Moonlight Step"
+          "name": "Moonlight Step",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Moonlight Step",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Lunar Form"
@@ -678,13 +741,73 @@
           "name": "Circle of Dreams"
         },
         {
-          "name": "Balm of the Summer Court"
+          "name": "Balm of the Summer Court",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "Die",
+              "levels": {
+                "2": "2d6",
+                "3": "3d6",
+                "4": "4d6",
+                "5": "5d6",
+                "6": "6d6",
+                "7": "7d6",
+                "8": "8d6",
+                "9": "9d6",
+                "10": "10d6",
+                "11": "11d6",
+                "12": "12d6",
+                "13": "13d6",
+                "14": "14d6",
+                "15": "15d6",
+                "16": "16d6",
+                "17": "17d6",
+                "18": "18d6",
+                "19": "19d6",
+                "20": "20d6"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Balm of the Summer Court",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Hearth of Moonlight and Shadow"
         },
         {
-          "name": "Hidden Paths"
+          "name": "Hidden Paths",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "10": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Hidden Paths",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Walker in Dreams"
@@ -737,7 +860,28 @@
           ]
         },
         {
-          "name": "Spirit Totem"
+          "name": "Spirit Totem",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "2": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Spirit Totem",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Mighty Summoner"
@@ -794,16 +938,61 @@
           "name": "Circle Spells"
         },
         {
-          "name": "Halo of Spores"
+          "name": "Halo of Spores",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Halo of Spores",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Symbiotic Entity"
         },
         {
-          "name": "Fungal Infestation"
+          "name": "Fungal Infestation",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "max(1, WIS.MOD)"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Fungal Infestation",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Spreading Spores"
+          "name": "Spreading Spores",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Spreading Spores",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Fungal Body"
@@ -855,10 +1044,36 @@
           "name": "Star Map"
         },
         {
-          "name": "Starry Form"
+          "name": "Starry Form",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Starry Form",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Archer"
+          "name": "Archer",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Archer",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Chalice"
@@ -867,7 +1082,28 @@
           "name": "Dragon"
         },
         {
-          "name": "Cosmic Omen"
+          "name": "Cosmic Omen",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "6": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Cosmic Omen",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Twinkling Constellations"
@@ -1044,7 +1280,21 @@
           }
         },
         {
-          "name": "Wrath of the Sea"
+          "name": "Wrath of the Sea",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Wrath of the Sea",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Aquatic Affinity"
@@ -1110,10 +1360,36 @@
           }
         },
         {
-          "name": "Starry Form"
+          "name": "Starry Form",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Starry Form",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Archer"
+          "name": "Archer",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Archer",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Chalice"

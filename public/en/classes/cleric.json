@@ -631,5 +631,140 @@
   },
   "subclass.Twilight Domain.feature.Twilight Shroud": {
     "description": "The twilight that you summon offers a protective embrace: you and your allies have Cover while in the sphere created by your Twilight Sanctuary."
+  },
+  "subclass.Life Domain.feature.Preserve Life.field.Actions.option.Preserve Life": {
+    "description": "Distribute HP among Bloodied creatures within 30 ft — pool = 5× Cleric level, max half HP max per creature"
+  },
+  "subclass.Light Domain.feature.Radiance of the Dawn.field.Actions.option.Radiance of the Dawn": {
+    "description": "30 ft aura: dispel magical Darkness; each chosen creature takes 2d10 + Cleric level Radiant damage (CON save for half)"
+  },
+  "subclass.Light Domain.feature.Corona of Light.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Light Domain.feature.Corona of Light.field.Actions.option.Corona of Light": {
+    "description": "Emit sunlight aura for 1 min: 60 ft Bright / 30 ft Dim Light; enemies in Bright Light have Disadvantage on saves vs. your Radiance of the Dawn and Fire/Radiant spells"
+  },
+  "subclass.Nature Domain.feature.Dampen Elements.field.Actions.option.Dampen Elements": {
+    "description": "React: grant Resistance to acid/cold/fire/lightning/thunder damage to you or a creature within 30 ft (one instance)"
+  },
+  "subclass.Nature Domain.feature.Master of Nature.field.Actions.option.Master of Nature": {
+    "description": "Verbally command each creature charmed by Charm Animals and Plants, dictating its next turn's actions"
+  },
+  "subclass.Light Domain.feature.Warding Flare.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Tempest Domain.feature.Wrath of the Storm.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Tempest Domain.feature.Wrath of the Storm.field.Actions.option.Wrath of the Storm": {
+    "description": "React when hit by a creature within 5 ft: DEX save or 2d8 Lightning/Thunder damage (half on success)"
+  },
+  "subclass.Trickery Domain.feature.Blessing of the Trickster.field.Actions.option.Blessing of the Trickster": {
+    "description": "Grant yourself or a willing creature within 30 ft Advantage on DEX (Stealth) checks until Long Rest or next use"
+  },
+  "subclass.Trickery Domain.feature.Invoke Duplicity.field.Actions.option.Invoke Duplicity": {
+    "description": "Spend 1 CD use: create illusion of yourself within 30 ft for 1 min; cast spells as if from illusion's space, allies get Advantage vs. creatures near it"
+  },
+  "subclass.War Domain.feature.War Priest.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.War Domain.feature.War Priest.field.Actions.option.War Priest": {
+    "description": "Make one weapon or Unarmed Strike attack; uses = WIS mod (min 1), recharge on Short or Long Rest"
+  },
+  "subclass.Light Domain.feature.Warding Flare.field.Actions.option.Warding Flare": {
+    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
+  },
+  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Ambition Domain (PSA).feature.Warding Flare.field.Actions.option.Warding Flare": {
+    "description": "React to impose Disadvantage on an attacker's roll within 30 ft; uses = WIS mod (min 1), recharge Long Rest"
+  },
+  "subclass.Ambition Domain (PSA).feature.Improved Duplicity.field.Actions.option.Improved Duplicity": {
+    "description": "Up to 4 duplicates instead of 1; Bonus Action to move any number up to 30 ft each (max 120 ft from you)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity's Action.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Solidarity's Action.field.Actions.option.Solidarity's Action": {
+    "description": "After using Help to aid an ally's attack: make one weapon attack as Bonus Action; uses = WIS mod (min 1)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Oketra's Blessing.field.Actions.option.Oketra's Blessing": {
+    "description": "React: spend 1 CD use to grant +10 to an attack roll within 30 ft (decided after seeing the roll)"
+  },
+  "subclass.Strength Domain (PSA).feature.Rhonas's Blessing.field.Actions.option.Rhonas's Blessing": {
+    "description": "React: spend 1 CD use to grant +10 to a STR attack/check/save within 30 ft (decided after seeing the roll)"
+  },
+  "subclass.Zeal Domain (PSA).feature.Priest of Zeal.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Zeal Domain (PSA).feature.Priest of Zeal.field.Actions.option.Priest of Zeal": {
+    "description": "After Attack action: make one weapon attack as Bonus Action; uses = WIS mod (min 1), recharge Long Rest"
+  },
+  "subclass.Zeal Domain (PSA).feature.Blaze of Glory.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Zeal Domain (PSA).feature.Blaze of Glory.field.Actions.option.Blaze of Glory": {
+    "description": "When reduced to 0 HP: move up to your speed toward the attacker and make one melee weapon attack with Advantage"
+  },
+  "subclass.Grave Domain.feature.Sentinel at Death's Door.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Grave Domain.feature.Sentinel at Death's Door.field.Actions.option.Sentinel at Death's Door": {
+    "description": "React to turn a critical hit into a normal hit for you or a creature within 30 ft; uses = WIS mod (min 1)"
+  },
+  "subclass.Twilight Domain.feature.Steps of Night.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Twilight Domain.feature.Steps of Night.field.Actions.option.Steps of Night": {
+    "description": "In dim light or darkness: gain flying speed equal to walking speed for 1 min; uses = proficiency bonus, recharge Long Rest"
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Knowledge of the Ages.field.Actions.option.Knowledge of the Ages": {
+    "description": "Choose one skill or tool; gain proficiency for 10 minutes"
+  },
+  "subclass.Knowledge Domain.feature.Channel Divinity: Read Thoughts.field.Actions.option.Read Thoughts": {
+    "description": "Choose creature within 60 ft: WIS save or you read its surface thoughts for 1 min. On fail, cast Suggestion on it (no save)"
+  },
+  "subclass.Nature Domain.feature.Channel Divinity: Charm Animals and Plants.field.Actions.option.Charm Animals and Plants": {
+    "description": "Each beast or plant creature within 30 ft: WIS save or Charmed for 1 min (ends on damage)"
+  },
+  "subclass.Tempest Domain.feature.Channel Divinity: Destructive Wrath.field.Actions.option.Destructive Wrath": {
+    "description": "When rolling lightning or thunder damage: deal maximum damage instead of rolling"
+  },
+  "subclass.Death Domain.feature.Channel Divinity: Touch of Death.field.Actions.option.Touch of Death": {
+    "description": "On melee hit: deal extra 5 + 2× Cleric level Necrotic damage"
+  },
+  "subclass.Arcana Domain.feature.Channel Divinity: Arcane Abjuration.field.Actions.option.Arcane Abjuration": {
+    "description": "One celestial, elemental, fey, or fiend within 30 ft: WIS save or turned for 1 min (banished at level 5+ if CR ≤ 1/2)"
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Invoke Duplicity.field.Actions.option.Invoke Duplicity": {
+    "description": "Create a perfect illusion of yourself within 30 ft for 1 min; cast spells as if in its space, move it 30 ft as Bonus Action"
+  },
+  "subclass.Ambition Domain (PSA).feature.Channel Divinity: Cloak of Shadows.field.Actions.option.Cloak of Shadows": {
+    "description": "Become Invisible until end of your next turn (ends if you attack or cast a spell)"
+  },
+  "subclass.Solidarity Domain (PSA).feature.Channel Divinity: Preserve Life.field.Actions.option.Preserve Life": {
+    "description": "Heal creatures within 30 ft: distribute up to 5× Cleric level HP (max half HP each)"
+  },
+  "subclass.Strength Domain (PSA).feature.Channel Divinity: Feat of Strength.field.Actions.option.Feat of Strength": {
+    "description": "On a STR attack roll, check, or save: add +10 to the roll (after seeing it)"
+  },
+  "subclass.Zeal Domain (PSA).feature.Channel Divinity: Consuming Fervor.field.Actions.option.Consuming Fervor": {
+    "description": "When rolling fire or thunder damage: deal maximum damage instead of rolling"
+  },
+  "subclass.Forge Domain.feature.Channel Divinity: Artisan's Blessing.field.Actions.option.Artisan's Blessing": {
+    "description": "1-hour ritual: create one nonmagical metal item (up to 100 gp value, including copies of metal keys/ammunition)"
+  },
+  "subclass.Grave Domain.feature.Channel Divinity: Path to the Grave.field.Actions.option.Path to the Grave": {
+    "description": "Choose creature within 30 ft: next attack against it has Vulnerability to all damage types"
+  },
+  "subclass.Order Domain.feature.Channel Divinity: Order's Demand.field.Actions.option.Order's Demand": {
+    "description": "Each creature within 30 ft that can see/hear you: WIS save or Charmed until end of your next turn (drops held items)"
+  },
+  "subclass.Peace Domain.feature.Channel Divinity: Balm of Peace.field.Actions.option.Balm of Peace": {
+    "description": "Move up to Speed without Opportunity Attacks; each creature within 5 ft during move regains 2d6 + WIS mod HP"
+  },
+  "subclass.Twilight Domain.feature.Channel Divinity: Twilight Sanctuary.field.Actions.option.Twilight Sanctuary": {
+    "description": "Create 30 ft radius twilight sphere centered on you for 1 min; each turn, creatures inside gain 1d6 + Cleric level temp HP or end Charmed/Frightened"
   }
 }

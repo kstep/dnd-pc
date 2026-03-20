@@ -391,6 +391,9 @@
     "label": "Псионический прыжок",
     "description": "Бонусным действием вы получаете скорость полёта, равную удвоенной вашей Скорости, до конца текущего хода. Совершив это Бонусное действие, вы не можете сделать это снова до завершения Короткого или Длительного отдыха, если не израсходуете Кость псионической энергии (не требует действия) для восстановления."
   },
+  "subclass.Psi Warrior.feature.Psi-Powered Leap.field.Free Uses": {
+    "label": "Свободные использования"
+  },
   "subclass.Psi Warrior.feature.Telekinetic Adept": {
     "label": "Телекинетический адепт",
     "description": "Вы овладели новыми способами использования своих телекинетических способностей, описанными ниже."
@@ -406,6 +409,9 @@
   "subclass.Psi Warrior.feature.Bulwark of Force": {
     "label": "Оплот силы",
     "description": "Вы можете защитить себя и других телекинетической силой. Бонусным действием вы можете выбрать существ, включая себя, в пределах 30 футов от себя, до числа, равного вашему модификатору Интеллекта (минимум одно существо). Каждое из выбранных существ получает Частичное укрытие на 1 минуту или пока вы не получите состояние Недееспособный. Использовав это умение, вы не можете сделать это снова до окончания Длительного отдыха, если только не израсходуете Кость псионической энергии для восстановления использования (не требует действия)."
+  },
+  "subclass.Psi Warrior.feature.Bulwark of Force.field.Free Uses": {
+    "label": "Свободные использования"
   },
   "subclass.Psi Warrior.feature.Telekinetic Master": {
     "label": "Телекинетический мастер",
@@ -438,6 +444,9 @@
   "subclass.Rune Knight.feature.Runic Shield": {
     "label": "Рунический щит",
     "description": "Вы учитесь призывать свою рунную магию для защиты союзников. Когда по другому существу, которое вы видите в пределах 60 футов от вас, попадает бросок атаки, вы можете Реакцией заставить атакующего перебросить к20 и использовать новый результат. Вы можете использовать это умение количество раз, равное вашему бонусу мастерства, и восстанавливаете все использования при завершении длительного отдыха."
+  },
+  "subclass.Rune Knight.feature.Runic Shield.field.Free Uses": {
+    "label": "Свободные использования"
   },
   "subclass.Rune Knight.feature.Great Stature": {
     "label": "Великий рост",
@@ -482,5 +491,75 @@
   "subclass.Banneret.feature.Inspiring Commander": {
     "label": "Вдохновляющий командир",
     "description": "Вы получаете следующие преимущества. Усиленное сплочение: Область действия Группового восстановления и Воодушевляющего натиска теперь составляет 60-футовую Эманацию. Несокрушимая храбрость: Вы обладаете Иммунитетом к состояниям Очарованный и Испуганный."
+  },
+  "subclass.Battle Master.feature.Know Your Enemy.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Battle Master.feature.Know Your Enemy.field.Actions.option.Know Your Enemy": {
+    "label": "Знай своего врага",
+    "description": "30 фт: узнать все Иммунитеты, Сопротивления и Уязвимости видимого существа"
+  },
+  "subclass.Arcane Archer.feature.Curving Shot.field.Actions.option.Curving Shot": {
+    "label": "Искривлённый выстрел",
+    "description": "При промахе магической стрелой: перебросить атаку по другой цели в пределах 60 фт от первоначальной"
+  },
+  "subclass.Cavalier.feature.Warding Maneuver.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Cavalier.feature.Warding Maneuver.field.Actions.option.Warding Maneuver": {
+    "label": "Защитный манёвр",
+    "description": "Когда по вам или существу в 5 фт попадают атакой: бросить 1к8 и прибавить к КЗ цели против этой атаки"
+  },
+  "subclass.Samurai.feature.Fighting Spirit.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Samurai.feature.Fighting Spirit.field.Actions.option.Fighting Spirit": {
+    "label": "Боевой дух",
+    "description": "Получить Преимущество на броски атаки оружием до конца хода и 5 временных хитов"
+  },
+  "subclass.Samurai.feature.Strength before Death.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Samurai.feature.Strength before Death.field.Actions.option.Strength before Death": {
+    "label": "Сила перед смертью",
+    "description": "При снижении до 0 хитов (без мгновенной смерти): отсрочить потерю сознания и немедленно совершить дополнительный ход"
+  },
+  "subclass.Echo Knight.feature.Manifest Echo.field.Actions.option.Manifest Echo": {
+    "label": "Проявление эха",
+    "description": "Призвать полупрозрачное эхо на свободном пространстве в пределах 15 фт; развеять повторным Бонусным действием"
+  },
+  "subclass.Echo Knight.feature.Shadow Martyr.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Echo Knight.feature.Shadow Martyr.field.Actions.option.Shadow Martyr": {
+    "label": "Теневой мученик",
+    "description": "До броска атаки по союзнику: телепортировать эхо в пределах 5 фт от него и перенаправить атаку на эхо"
+  },
+  "subclass.Psi Warrior.feature.Telekinetic Movement.field.Actions.option.Telekinetic Movement": {
+    "label": "Телекинетическое перемещение",
+    "description": "30 фт: телекинетически переместить объект Большого или меньшего размера либо согласное существо на 30 фт"
+  },
+  "subclass.Psi Warrior.feature.Psi-Powered Leap.field.Actions.option.Psi-Powered Leap": {
+    "label": "Псионический прыжок",
+    "description": "Получить скорость полёта, равную удвоенной Скорости, до конца хода"
+  },
+  "subclass.Psi Warrior.feature.Bulwark of Force.field.Actions.option.Bulwark of Force": {
+    "label": "Оплот силы",
+    "description": "До мод. ИНТ существ в 30 фт получают Частичное укрытие на 1 минуту"
+  },
+  "subclass.Psi Warrior.feature.Telekinetic Master.field.Actions.option.Telekinetic Master": {
+    "label": "Телекинетический мастер",
+    "description": "Наложить Телекинез (без ячейки, хар-ка ИНТ); каждый ход при Концентрации — одна атака оружием Бонусным действием"
+  },
+  "subclass.Rune Knight.feature.Giant's Might.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Rune Knight.feature.Giant's Might.field.Actions.option.Giant's Might": {
+    "label": "Мощь великана",
+    "description": "Стать Большим (если возможно), Преимущество на проверки СИЛ и спасброски СИЛ на 1 минуту"
+  },
+  "subclass.Rune Knight.feature.Runic Shield.field.Actions.option.Runic Shield": {
+    "label": "Рунический щит",
+    "description": "60 фт: заставить атакующего перебросить к20 после попадания по союзнику; использовать новый результат"
   }
 }

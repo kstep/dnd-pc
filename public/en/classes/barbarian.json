@@ -180,13 +180,16 @@
     "description": "You can channel divine power into your strikes. On each of your turns while your Rage is active, the first creature you hit with a weapon or an Unarmed Strike takes extra damage equal to 1d6 plus half your Barbarian level (round down). The extra damage is Necrotic or Radiant; you choose the type each time you deal the damage."
   },
   "subclass.Path of the Zealot.feature.Warrior of the Gods": {
-    "description": "A divine entity helps ensure you can continue the fight. You have a pool of four d12s that you can spend to heal yourself. As a Bonus Action, you can expend dice from the pool, roll them, and regain a number of Hit Points equal to the roll's total. Your pool regains all expended dice when you finish a Long Rest."
+    "description": "A divine entity helps ensure you can continue the fight. You have a pool of d12s that you can spend to heal yourself. As a Bonus Action, you can expend dice from the pool, roll them, and regain a number of Hit Points equal to the roll's total. Your pool regains all expended dice when you finish a Long Rest. The pool starts at four d12s and increases by one at Barbarian levels 6 (5), 12 (6), and 17 (7)."
   },
   "subclass.Path of the Zealot.feature.Fanatical Focus": {
     "description": "Once per active Rage, if you fail a saving throw, you can reroll it with a bonus equal to your Rage Damage bonus, and you must use the new roll."
   },
   "subclass.Path of the Zealot.feature.Zealous Presence": {
     "description": "As a Bonus Action, you unleash a battle cry infused with divine energy. Up to ten other creatures of your choice within 60 feet of you gain Advantage on attack rolls and saving throws until the start of your next turn. Once you use this feature, you can't use it again until you finish a Long Rest unless you expend a use of your Rage (no action required) to restore your use of it."
+  },
+  "subclass.Path of the Zealot.feature.Zealous Presence.field.Free Uses": {
+    "label": "Free Uses"
   },
   "subclass.Path of the Zealot.feature.Rage of the Gods": {
     "description": "When you activate your Rage, you can assume the form of a divine warrior. This form lasts for 1 minute or until you drop to 0 Hit Points. Once you use this feature, you can't do so again until you finish a Long Rest. While in this form, you gain the benefits below. Flight. You have a Fly Speed equal to your Speed and can hover. Necrotic and Radiant Resistance. You have Resistance to Necrotic and Radiant damage. Revivification. When a creature within 30 feet of you would be reduced to 0 Hit Points, you can take a Reaction to expend a use of your Rage to instead change that creature's Hit Points to a number equal to your Barbarian level."
@@ -289,5 +292,32 @@
   },
   "subclass.Path of the World Tree.feature.Travel Along the Tree": {
     "description": "When you activate your Rage and as a Bonus Action while your Rage is active, you can teleport up to 60 feet to an unoccupied space you can see. In addition, once per Rage, you can increase the range of that teleport to 150 feet. When you do so, you can also bring up to six willing creatures who are within 10 feet of you."
+  },
+  "subclass.Path of the Berserker.feature.Intimidating Presence.field.Actions.option.Intimidating Presence": {
+    "description": "30 ft emanation: each chosen creature makes a WIS save (DC 8+STR mod+Prof) or gains Frightened for 1 minute"
+  },
+  "subclass.Path of the Battlerager.feature.Battlerager Armor.field.Actions.option.Battlerager Armor": {
+    "description": "While raging, melee attack with armor spikes: 1d4 piercing damage + STR mod (target within 5 ft)"
+  },
+  "subclass.Path of the Ancestral Guardian.feature.Spirit Shield.field.Actions.option.Spirit Shield": {
+    "description": "While raging, reduce damage to an ally within 30 ft by 2d6 (3d6 at level 10, 4d6 at level 14)"
+  },
+  "subclass.Path of the Zealot.feature.Warrior of the Gods.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.Path of the Zealot.feature.Warrior of the Gods.field.Actions.option.Warrior of the Gods": {
+    "description": "Expend any number of d12s from your pool, roll them, and regain that many HP (pool restored on Long Rest)"
+  },
+  "subclass.Path of the Zealot.feature.Zealous Presence.field.Actions.option.Zealous Presence": {
+    "description": "60 ft: up to 10 chosen creatures gain Advantage on attack rolls and saving throws until start of your next turn"
+  },
+  "subclass.Path of Wild Magic.feature.Unstable Backlash.field.Actions.option.Unstable Backlash": {
+    "description": "After taking damage or failing a save while raging, roll on the Wild Magic table and immediately produce that effect"
+  },
+  "subclass.Path of the Giant.feature.Mighty Impel.field.Actions.option.Mighty Impel": {
+    "description": "While raging, move one Medium or smaller creature within reach to any unoccupied space within 30 ft"
+  },
+  "subclass.Path of the World Tree.feature.Travel Along the Tree.field.Actions.option.Travel Along the Tree": {
+    "description": "Teleport up to 60 ft to a visible unoccupied space; once per Rage, extend to 150 ft and bring up to 6 willing creatures within 10 ft"
   }
 }

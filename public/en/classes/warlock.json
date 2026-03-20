@@ -451,5 +451,62 @@
   },
   "subclass.Great Old One Patron.feature.Create Thrall": {
     "description": "When you cast Summon Aberration, you can modify it so that it doesn't require Concentration. If you do so, the spell's duration becomes 1 minute for that casting, and when summoned, the Aberration has a number of Temporary Hit Points equal to your Warlock level plus your Charisma modifier."
+  },
+  "subclass.The Undying.feature.Indestructible Life.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Undying.feature.Indestructible Life.field.Actions.option.Indestructible Life": {
+    "description": "Regain 1d8 + Warlock level HP. Severed body part reattaches if held in place on use. Recharges on Short or Long Rest."
+  },
+  "subclass.The Hexblade.feature.Hexblade's Curse.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Hexblade.feature.Hexblade's Curse.field.Actions.option.Hexblade's Curse": {
+    "description": "Curse one creature within 30 ft for 1 min: +Prof bonus damage, crit on 19–20, regain Warlock level + CHA mod HP on kill. Recharges on Short or Long Rest."
+  },
+  "subclass.The Hexblade.feature.Armor of Hexes.field.Actions.option.Armor of Hexes": {
+    "description": "When the Hexblade's Curse target hits you with an attack, roll 1d6. On 4+, the attack misses regardless of the roll."
+  },
+  "subclass.The Fathomless.feature.Tentacle of the Deeps.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Fathomless.feature.Tentacle of the Deeps.field.Actions.option.Tentacle of the Deeps": {
+    "description": "Summon a 10 ft spectral tentacle within 60 ft (lasts 1 min). On summon and each turn as a Bonus Action: melee spell attack within 10 ft of tentacle for 1d8 Cold damage + 10 ft speed reduction until next turn."
+  },
+  "subclass.The Fathomless.feature.Guardian Coil.field.Actions.option.Guardian Coil": {
+    "description": "When you or a creature within 10 ft of the tentacle takes damage, reduce that damage by 1d8."
+  },
+  "subclass.The Genie.feature.Elemental Gift.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Genie.feature.Elemental Gift.field.Actions.option.Elemental Gift": {
+    "description": "Gain flying speed 30 ft with hover for 10 minutes."
+  },
+  "subclass.The Genie.feature.Sanctuary Vessel.field.Actions.option.Sanctuary Vessel": {
+    "description": "Eject any number of creatures from the Genie's Vessel. All occupants are ejected if you leave, die, or the vessel is destroyed."
+  },
+  "subclass.The Undead.feature.Form of Dread.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Undead.feature.Form of Dread.field.Actions.option.Form of Dread": {
+    "description": "Transform for 1 min: gain 1d10 + Warlock level temp HP, become immune to Frightened. On a hit, force WIS save or target is Frightened until end of its next turn. Recharges on Short or Long Rest."
+  },
+  "subclass.The Undead.feature.Necrotic Husk.field.Free Uses": {
+    "label": "Free Uses"
+  },
+  "subclass.The Undead.feature.Necrotic Husk.field.Actions.option.Necrotic Husk": {
+    "description": "When reduced to 0 HP, drop to 1 HP instead and erupt with deathly energy: 2d12 Necrotic damage to each creature within 10 ft (CON save for half). Recharges on Long Rest."
+  },
+  "subclass.Archfey Patron.feature.Misty Escape.field.Actions.option.Misty Escape": {
+    "description": "In response to taking damage, cast Misty Step: teleport up to 30 ft to an unoccupied space you can see."
+  },
+  "subclass.Celestial Patron.feature.Healing Light.field.Healing Pool": {
+    "label": "Healing Pool"
+  },
+  "subclass.Celestial Patron.feature.Healing Light.field.Actions.option.Healing Light": {
+    "description": "Expend d6s from your pool (max CHA mod dice, min 1) to heal yourself or one creature within 60 ft. Pool = 1 + Warlock level; recharges on Long Rest."
+  },
+  "subclass.Great Old One Patron.feature.Awakened Mind.field.Actions.option.Awakened Mind": {
+    "description": "Choose one creature within 30 ft. You and the target can communicate telepathically while within CHA mod miles of each other (min 1 mile). Lasts until you use it again."
   }
 }

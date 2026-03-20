@@ -449,5 +449,68 @@
   "subclass.Warrior of the Open Hand.feature.Quivering Palm": {
     "label": "Дрожащая ладонь",
     "description": "Вы получаете способность запускать смертоносные вибрации в чьём-то теле. Когда вы попадаете по существу безоружным ударом, вы можете потратить 4 очка Концентрации, чтобы запустить незаметные вибрации, длящиеся число дней, равное вашему уровню Монаха. Вибрации безвредны, пока вы не совершите действие, чтобы их прервать."
+  },
+  "subclass.Way of the Drunken Master.feature.Redirect Attack.field.Actions.option.Redirect Attack": {
+    "label": "Перенаправление атаки",
+    "description": "При промахе рукопашной атакой: потратить 1 очко ки, чтобы перенаправить удар на другое существо в 5 фт"
+  },
+  "subclass.Way of the Kensei.feature.Kensei's Shot.field.Actions.option.Kensei's Shot": {
+    "label": "Выстрел кенсея",
+    "description": "Дальнобойные атаки оружием Кенсея наносят +1к4 урона до конца хода"
+  },
+  "subclass.Way of the Kensei.feature.Sharpen the Blade.field.Actions.option.Sharpen the Blade": {
+    "label": "Заточка клинка",
+    "description": "Потратить 1–3 очка ки: оружие Кенсея получает равный бонус к атаке и урону на 1 минуту"
+  },
+  "subclass.Way of the Sun Soul.feature.Searing Arc Strike.field.Actions.option.Searing Arc Strike": {
+    "label": "Обжигающая дуга",
+    "description": "После действия Атака: потратить 2+ очка ки для «Огненных ладоней» (конус 15 фт, сп. ЛОВ, 3к6 огня за 2 ки)"
+  },
+  "subclass.Way of the Sun Soul.feature.Sun Shield.field.Actions.option.Sun Shield": {
+    "label": "Солнечный щит",
+    "description": "Переключить ауру: яркий свет 30 фт, тусклый 30 фт; реакция при рукопашном попадании — 5 + мод. МУД урона излучением"
+  },
+  "subclass.Way of the Astral Self.feature.Arms of the Astral Self.field.Actions.option.Arms of the Astral Self": {
+    "label": "Руки Астрального Я",
+    "description": "Потратить 1 ки: призвать астральные руки; существа в 10 фт совершают сп. ЛОВ или получают 2× кость БИ урона силовым полем"
+  },
+  "subclass.Way of the Astral Self.feature.Visage of the Astral Self.field.Actions.option.Visage of the Astral Self": {
+    "label": "Лик Астрального Я",
+    "description": "Потратить 1 ки: призвать лик на 10 мин; Проницательность/Запугивание от МУД и тёмное зрение 60 фт"
+  },
+  "subclass.Way of the Astral Self.feature.Awakened Astral Self.field.Actions.option.Awakened Astral Self": {
+    "label": "Пробуждённое Астральное Я",
+    "description": "Потратить 5 ки: пробудить полное астральное «я» на 10 мин; +2 к атаке, доп. удар, +мод. МУД к урону"
+  },
+  "subclass.Way of the Ascendant Dragon.feature.Aspect of the Wyrm.field.Actions.option.Aspect of the Wyrm": {
+    "label": "Облик вирма",
+    "description": "Создать ауру 10 фт на 1 мин: союзники получают сопротивление урону или враги проходят сп. МУД против «Испуган»"
+  },
+  "subclass.Warrior of Mercy.feature.Hand of Healing.field.Actions.option.Hand of Healing": {
+    "label": "Рука исцеления",
+    "description": "Потратить 1 очко Концентрации: касание восстанавливает кость БИ + мод. МУД хитов"
+  },
+  "subclass.Warrior of Mercy.feature.Hand of Ultimate Mercy.field.Actions.option.Hand of Ultimate Mercy": {
+    "label": "Рука абсолютного милосердия",
+    "description": "Потратить 5 очков Концентрации: коснуться тела (умер ≤24 ч) — существо возвращается с 4к10 + мод. МУД хитов"
+  },
+  "subclass.Warrior of Shadow.feature.Shadow Step.field.Actions.option.Shadow Step": {
+    "label": "Шаг сквозь тень",
+    "description": "В тусклом свете или темноте: телепортация до 60 фт в тёмное место; преимущество на следующую рукопашную атаку"
+  },
+  "subclass.Warrior of Shadow.feature.Cloak of Shadows.field.Actions.option.Cloak of Shadows": {
+    "label": "Плащ теней",
+    "description": "В тусклом свете или темноте: потратить 3 очка Концентрации — стать Невидимым на 1 мин (кончается на ярком свету)"
+  },
+  "subclass.Warrior of the Elements.feature.Elemental Burst.field.Actions.option.Elemental Burst": {
+    "label": "Стихийный взрыв",
+    "description": "Потратить 2 очка Концентрации: сфера 20 фт в 120 фт; сп. ЛОВ — полный стихийный урон (половина при успехе)"
+  },
+  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Warrior of the Open Hand.feature.Wholeness of Body.field.Actions.option.Wholeness of Body": {
+    "label": "Целостность тела",
+    "description": "Бросить кость БИ: восстановить результат + мод. МУД хитов (мин. 1); использований = мод. МУД за продолжительный отдых"
   }
 }

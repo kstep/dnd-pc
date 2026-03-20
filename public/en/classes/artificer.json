@@ -601,5 +601,8 @@
   },
   "subclass.Cartographer.feature.Superior Atlas": {
     "description": "Your Adventurer's Atlas improves, gaining the following benefits. Safe Haven: When a map holder would be reduced to 0 Hit Points but not killed outright, that creature can destroy its map. The creature's Hit Points instead change to a number equal to twice your Artificer level, and the creature is teleported to an unoccupied space within 5 feet of you or another map holder of its choice."
+  },
+  "feature.Magic Item Tinker.field.Actions.option.Magic Item Tinker": {
+    "description": "Touch a replicated magic item with charges within 5 ft — expend a spell slot (level 1+) to restore charges equal to the slot level."
   }
 }

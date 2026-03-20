@@ -2,12 +2,12 @@ use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 
 use crate::expr::{Context, Error, Op, avg_hp, stack::Stack};
 
-pub trait Interpreter<Var> {
+pub trait Interpreter<Var, Val> {
     type Output;
-    fn exec(&mut self, op: Op<Var>) -> Result<(), Error>;
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error>;
     fn finish(self) -> Result<Self::Output, Error>;
 
-    fn run(mut self, ops: impl Iterator<Item = Op<Var>>) -> Result<Self::Output, Error>
+    fn run(mut self, ops: impl Iterator<Item = Op<Var, Val>>) -> Result<Self::Output, Error>
     where
         Self: Sized,
     {
@@ -20,13 +20,13 @@ pub trait Interpreter<Var> {
 
 // --- Evaluator (apply mode, mutable context) ---
 
-pub(super) struct Evaluator<'a, Var, Ctx: Context<Var>> {
+pub(super) struct Evaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a mut Ctx,
     _var: PhantomData<Var>,
 }
 
-impl<'a, Var, Ctx: Context<Var>> Evaluator<'a, Var, Ctx> {
+impl<'a, Var, Ctx> Evaluator<'a, Var, Ctx> {
     pub fn new(ctx: &'a mut Ctx) -> Self {
         Self {
             stack: Stack::new(),
@@ -36,10 +36,12 @@ impl<'a, Var, Ctx: Context<Var>> Evaluator<'a, Var, Ctx> {
     }
 }
 
-impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var> for Evaluator<'_, Var, Ctx> {
+impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
+    for Evaluator<'_, Var, Ctx>
+{
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
@@ -57,13 +59,13 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var> for Evaluator
 
 // --- ReadOnlyEvaluator (eval mode, immutable context) ---
 
-pub(super) struct ReadOnlyEvaluator<'a, Var, Ctx: Context<Var>> {
+pub(super) struct ReadOnlyEvaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a Ctx,
     _var: PhantomData<Var>,
 }
 
-impl<'a, Var, Ctx: Context<Var>> ReadOnlyEvaluator<'a, Var, Ctx> {
+impl<'a, Var, Ctx> ReadOnlyEvaluator<'a, Var, Ctx> {
     pub fn new(ctx: &'a Ctx) -> Self {
         Self {
             stack: Stack::new(),
@@ -73,12 +75,12 @@ impl<'a, Var, Ctx: Context<Var>> ReadOnlyEvaluator<'a, Var, Ctx> {
     }
 }
 
-impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
+impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
     for ReadOnlyEvaluator<'_, Var, Ctx>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
@@ -105,7 +107,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
     Ok((n % sides as u32 + 1) as i32)
 }
 
-fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var>) -> Result<(), Error> {
+fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
     match op {
         Op::PushConst(n) => stack.push(n),
         Op::Add => {
@@ -250,14 +252,14 @@ impl DicePoolIter<'_> {
     }
 }
 
-pub(super) struct DicePoolEvaluator<'a, 'p, Var, Ctx: Context<Var>> {
+pub(super) struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a mut Ctx,
     pool: &'a mut DicePoolIter<'p>,
     _var: PhantomData<Var>,
 }
 
-impl<'a, 'p, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, 'p, Var, Ctx> {
+impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePoolIter<'p>) -> Self {
         Self {
             stack: Stack::new(),
@@ -268,12 +270,12 @@ impl<'a, 'p, Var, Ctx: Context<Var>> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     }
 }
 
-impl<Var: Copy + fmt::Display, Ctx: Context<Var>> Interpreter<Var>
+impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
     for DicePoolEvaluator<'_, '_, Var, Ctx>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
@@ -390,10 +392,10 @@ impl Formatter {
     }
 }
 
-impl<Var: Copy + fmt::Display> Interpreter<Var> for Formatter {
+impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Var>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error> {
         match op {
             Op::PushConst(n) => {
                 self.push(n.to_string(), 3);

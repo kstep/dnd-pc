@@ -254,7 +254,19 @@
           "name": "Arcane Trickster"
         },
         {
-          "name": "Mage Hand Legerdemain"
+          "name": "Mage Hand Legerdemain",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Mage Hand Legerdemain",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Spellcasting (Arcane Trickster)",
@@ -514,7 +526,19 @@
       "name": "Thief",
       "features": [
         {
-          "name": "Fast Hands"
+          "name": "Fast Hands",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Fast Hands",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Second-Story Work"
@@ -571,10 +595,34 @@
           "name": "Ear for Deceit"
         },
         {
-          "name": "Eye for Detail"
+          "name": "Eye for Detail",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Eye for Detail",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Insightful Fighting"
+          "name": "Insightful Fighting",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Insightful Fighting",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Steady Eye"
@@ -626,13 +674,37 @@
           "name": "Master of Intrigue"
         },
         {
-          "name": "Master of Tactics"
+          "name": "Master of Tactics",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Master of Tactics",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Insightful Manipulator"
         },
         {
-          "name": "Misdirection"
+          "name": "Misdirection",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Misdirection",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Soul of Deceit"
@@ -674,7 +746,19 @@
           "name": "Scout"
         },
         {
-          "name": "Skirmisher"
+          "name": "Skirmisher",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Skirmisher",
+                  "action": "Reaction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Survivalist"
@@ -686,7 +770,19 @@
           "name": "Ambush Master"
         },
         {
-          "name": "Sudden Strike"
+          "name": "Sudden Strike",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Sudden Strike",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         }
       ],
       "levels": {
@@ -734,7 +830,19 @@
           "name": "Panache"
         },
         {
-          "name": "Elegant Maneuver"
+          "name": "Elegant Maneuver",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Elegant Maneuver",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Master Duelist"
@@ -782,10 +890,52 @@
           "name": "Whispers of the Dead"
         },
         {
-          "name": "Tokens of the Departed"
+          "name": "Tokens of the Departed",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "9": "PROF_BONUS"
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Tokens of the Departed",
+                  "action": "Reaction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
-          "name": "Ghost Walk"
+          "name": "Ghost Walk",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": {
+                "13": 1
+              }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Ghost Walk",
+                  "action": "BonusAction",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Death's Friend"
@@ -830,25 +980,80 @@
           "name": "Psionic Power"
         },
         {
-          "name": "Psychic Blades"
+          "name": "Psychic Blades",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Psychic Blades",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Psi-Bolstered Knack"
         },
         {
-          "name": "Psychic Whispers"
+          "name": "Psychic Whispers",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Psychic Whispers",
+                  "action": "Action"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Homing Strikes"
         },
         {
-          "name": "Psychic Teleportation"
+          "name": "Psychic Teleportation",
+          "fields": [
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "options": [
+                {
+                  "name": "Psychic Teleportation",
+                  "action": "BonusAction"
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Soul Blades"
         },
         {
-          "name": "Psychic Veil"
+          "name": "Psychic Veil",
+          "fields": [
+            {
+              "name": "Free Uses",
+              "kind": "FreeUses",
+              "levels": { "13": 1 }
+            },
+            {
+              "name": "Actions",
+              "kind": "Choice",
+              "cost": "Free Uses",
+              "options": [
+                {
+                  "name": "Psychic Veil",
+                  "action": "Action",
+                  "cost": 1
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Rend Mind"

@@ -430,5 +430,71 @@
   "subclass.Bladesinger.feature.Song of Victory": {
     "label": "Песнь победы",
     "description": "Вы добавляете модификатор Интеллекта (минимум +1) к урону атак оружием ближнего боя, пока Боевая песнь активна."
+  },
+  "subclass.School of Conjuration.feature.Minor Conjuration.field.Actions.option.Minor Conjuration": {
+    "label": "Малый вызов",
+    "description": "Создать неодушевлённый предмет (макс. 3 фт / 10 фунтов) в руке или на земле в пределах 10 фт."
+  },
+  "subclass.School of Conjuration.feature.Benign Transposition.field.Actions.option.Benign Transposition": {
+    "label": "Безвредное перемещение",
+    "description": "Телепортироваться до 30 фт в видимое незанятое место или поменяться местами с согласным Маленьким/Средним существом."
+  },
+  "subclass.School of Enchantment.feature.Instinctive Charm.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.School of Enchantment.feature.Instinctive Charm.field.Actions.option.Instinctive Charm": {
+    "label": "Инстинктивное очарование",
+    "description": "30 фт: когда существо атакует вас — перенаправить атаку: атакующий совершает Сл спасбросок МУД или атакует ближайшее к нему существо."
+  },
+  "subclass.School of Transmutation.feature.Master Transmuter.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.School of Transmutation.feature.Master Transmuter.field.Actions.option.Master Transmuter": {
+    "label": "Мастер преобразования",
+    "description": "Израсходовать камень преобразователя (до продолжительного отдыха) для одного эффекта: превратить вещество, снять проклятие/яд/окаменение, омолодить или применить Воскрешение."
+  },
+  "subclass.War Magic.feature.Arcane Deflection.field.Actions.option.Arcane Deflection": {
+    "label": "Мистическое отклонение",
+    "description": "При попадании атаки или провале спасброска: +2 КЗ против этой атаки или +4 к спасброску. До конца следующего хода — только заговоры."
+  },
+  "subclass.Chronurgy Magic.feature.Chronal Shift.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Chronurgy Magic.feature.Chronal Shift.field.Actions.option.Chronal Shift": {
+    "label": "Хрональный сдвиг",
+    "description": "30 фт: после броска атаки, проверки или спасброска вас или существа — заставить перебросить (решение после результата)."
+  },
+  "subclass.Chronurgy Magic.feature.Momentary Stasis.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Chronurgy Magic.feature.Momentary Stasis.field.Actions.option.Momentary Stasis": {
+    "label": "Мгновенный стазис",
+    "description": "60 фт: Большое или меньшее существо — спасбросок ТЕЛ (Сл закл.) или недееспособно и скорость 0 до конца вашего следующего хода."
+  },
+  "subclass.Chronurgy Magic.feature.Convergent Future.field.Actions.option.Convergent Future": {
+    "label": "Сходящееся будущее",
+    "description": "60 фт: после броска атаки, проверки или спасброска — проигнорировать кубик и выбрать успех или провал. Получить 1 уровень истощения (снимается только продолжительным отдыхом)."
+  },
+  "subclass.Graviturgy Magic.feature.Violent Attraction.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Graviturgy Magic.feature.Violent Attraction.field.Actions.option.Violent Attraction": {
+    "label": "Насильственное притяжение",
+    "description": "60 фт: когда существо попадает атакой оружием — цель получает +1к10 урона типа оружия."
+  },
+  "subclass.Order of Scribes.feature.Manifest Mind.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Order of Scribes.feature.Manifest Mind.field.Actions.option.Manifest Mind": {
+    "label": "Проявление разума",
+    "description": "Вызвать Крошечный призрачный разум из книги заклинаний в незанятое пространство в пределах 60 фт (нематериален, тусклый свет 10 фт)."
+  },
+  "subclass.Illusionist.feature.Illusory Reality.field.Actions.option.Illusory Reality": {
+    "label": "Иллюзорная реальность",
+    "description": "Пока заклинание иллюзий активно — сделать один неодушевлённый немагический объект иллюзии реальным до конца заклинания."
+  },
+  "subclass.Bladesinger.feature.Bladesong.field.Actions.option.Bladesong": {
+    "label": "Боевая песнь",
+    "description": "Начать Боевую песнь на 1 мин (без доспехов/щита): +мод. ИНТ к КЗ, +10 фт скорости, преим. на Акробатику и спасброски ТЕЛ для концентрации."
   }
 }

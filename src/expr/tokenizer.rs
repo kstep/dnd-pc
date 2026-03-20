@@ -2,7 +2,7 @@ use crate::expr::error::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum Token<'a> {
-    Num(i32),
+    Value(&'a str),
     Ident(&'a str),
     Plus,
     Minus,
@@ -49,12 +49,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                 let len = self.rest.bytes().take_while(|b| b.is_ascii_digit()).count();
                 let (digits, rest) = self.rest.split_at(len);
                 self.rest = rest;
-                Some(
-                    digits
-                        .parse()
-                        .map(Token::Num)
-                        .map_err(|_| Error::unexpected_token(digits)),
-                )
+                Some(Ok(Token::Value(digits)))
             }
             b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
                 let len = self

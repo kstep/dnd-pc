@@ -413,5 +413,74 @@
   "subclass.Scion of the Three.feature.Dread Incarnate": {
     "label": "Воплощение ужаса",
     "description": "Вы получаете следующие преимущества. Головорез: Вы восстанавливаете одно израсходованное использование Жажды крови при завершении Короткого отдыха. Убийственный умысел: Когда вы бросаете кости урона Скрытой атаки, вы можете считать результат 1 или 2 на кости за 3."
+  },
+  "subclass.Arcane Trickster.feature.Mage Hand Legerdemain.field.Actions.option.Mage Hand Legerdemain": {
+    "label": "Ловкость волшебной руки",
+    "description": "Наложить Волшебную руку Бонусным действием с Невидимой рукой; управлять ею Бонусным действием для проверок Ловкости рук"
+  },
+  "subclass.Thief.feature.Fast Hands.field.Actions.option.Fast Hands": {
+    "label": "Быстрые руки",
+    "description": "Проверка Ловкости рук для вскрытия замка, обезвреживания ловушки или кражи из кармана; или действие Использование/Магическое для магического предмета"
+  },
+  "subclass.Inquisitive.feature.Eye for Detail.field.Actions.option.Eye for Detail": {
+    "label": "Глаз на детали",
+    "description": "Проверка МУД (Восприятие) для обнаружения спрятанного существа или объекта, или ИНТ (Расследование) для обнаружения/расшифровки улик"
+  },
+  "subclass.Inquisitive.feature.Insightful Fighting.field.Actions.option.Insightful Fighting": {
+    "label": "Проницательный бой",
+    "description": "МУД (Проницательность) против ХАР (Обман) цели; при успехе — применять Скрытую атаку против этой цели без Преимущества"
+  },
+  "subclass.Mastermind.feature.Master of Tactics.field.Actions.option.Master of Tactics": {
+    "label": "Мастер тактики",
+    "description": "Действие Помощь; при помощи атаке союзника цель может быть в пределах 30 фт (не 5 фт), если видит или слышит вас"
+  },
+  "subclass.Mastermind.feature.Misdirection.field.Actions.option.Misdirection": {
+    "label": "Перенаправление",
+    "description": "При нацеленной на вас атаке перенаправить её на существо в 5 фт, которое обеспечивает вам укрытие от этой атаки"
+  },
+  "subclass.Scout.feature.Skirmisher.field.Actions.option.Skirmisher": {
+    "label": "Застрельщик",
+    "description": "Когда враг заканчивает ход в 5 фт от вас, переместиться на расстояние до половины Скорости без провоцированных атак"
+  },
+  "subclass.Scout.feature.Sudden Strike.field.Actions.option.Sudden Strike": {
+    "label": "Внезапный удар",
+    "description": "После действия Атака совершить одну дополнительную атаку; она может применить Скрытую атаку, даже если уже использована (только другая цель)"
+  },
+  "subclass.Swashbuckler.feature.Elegant Maneuver.field.Actions.option.Elegant Maneuver": {
+    "label": "Изящный манёвр",
+    "description": "Получить Преимущество на следующую проверку ЛОВ (Акробатика) или СИЛ (Атлетика) в этот же ход"
+  },
+  "subclass.Phantom.feature.Tokens of the Departed.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Phantom.feature.Tokens of the Departed.field.Actions.option.Tokens of the Departed": {
+    "label": "Знаки ушедших",
+    "description": "Когда существо в пределах 30 фт погибает, раскрыть свободную руку — получить в ней Крошечную душевную безделушку"
+  },
+  "subclass.Phantom.feature.Ghost Walk.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Phantom.feature.Ghost Walk.field.Actions.option.Ghost Walk": {
+    "label": "Призрачная ходьба",
+    "description": "Принять призрачную форму: скорость полёта 10 фт с зависанием, броски атаки против вас совершаются с Помехой"
+  },
+  "subclass.Soulknife.feature.Psychic Blades.field.Actions.option.Psychic Blades": {
+    "label": "Психические клинки",
+    "description": "После атаки Психическим клинком (1к6) совершить вторую атаку клинком (1к4); Фехтовальное, Метательное 60 фт, Психический урон"
+  },
+  "subclass.Soulknife.feature.Psychic Whispers.field.Actions.option.Psychic Whispers": {
+    "label": "Психические шёпоты",
+    "description": "Выбрать до БМ существ в поле зрения; бросить Кость псионической энергии — установить телепатию на столько часов"
+  },
+  "subclass.Soulknife.feature.Psychic Teleportation.field.Actions.option.Psychic Teleportation": {
+    "label": "Психическая телепортация",
+    "description": "Потратить Кость псионической энергии и бросить её; телепортироваться на расстояние до 10× выпавшее число фт"
+  },
+  "subclass.Soulknife.feature.Psychic Veil.field.Free Uses": {
+    "label": "Свободные использования"
+  },
+  "subclass.Soulknife.feature.Psychic Veil.field.Actions.option.Psychic Veil": {
+    "label": "Психическая завеса",
+    "description": "Получить Невидимый на 1 час (заканчивается, если вы наносите урон или заставляете совершить спасбросок); раз за Длинный отдых или кость псионической энергии"
   }
 }

@@ -1,4 +1,11 @@
-use std::{collections::BTreeMap, fmt, marker::PhantomData, ops::Deref, str::FromStr, sync::Arc};
+use std::{
+    collections::BTreeMap,
+    fmt,
+    marker::PhantomData,
+    ops::{Deref, Neg},
+    str::FromStr,
+    sync::Arc,
+};
 
 use serde::{Deserialize, Deserializer, Serialize, de};
 
@@ -22,49 +29,56 @@ pub const fn avg_hp(sides: i32) -> i32 {
     sides / 2 + 1
 }
 
-pub trait Context<Var> {
-    fn assign(&mut self, var: Var, value: i32) -> Result<(), Error>;
-    fn resolve(&self, var: Var) -> Result<i32, Error>;
+pub trait Context<Var, Val> {
+    fn assign(&mut self, var: Var, value: Val) -> Result<(), Error>;
+    fn resolve(&self, var: Var) -> Result<Val, Error>;
+}
+
+pub trait Eval<Var, Val> {
+    type Output;
+
+    fn eval(&self, ctx: &impl Context<Var, Val>) -> Self::Output;
+    fn is_dynamic(&self) -> bool;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(transparent)]
-pub struct Expr<Var>(Arc<[Op<Var>]>);
+pub struct Expr<Var, Val = i32>(Arc<[Op<Var, Val>]>);
 
-impl<Var> Deref for Expr<Var> {
-    type Target = [Op<Var>];
+impl<Var, Val> Deref for Expr<Var, Val> {
+    type Target = [Op<Var, Val>];
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl<Var: Copy> Expr<Var> {
-    pub fn run<I: Interpreter<Var>>(&self, interp: I) -> Result<I::Output, Error> {
+impl<Var: Copy, Val: Copy> Expr<Var, Val> {
+    pub fn run<I: Interpreter<Var, Val>>(&self, interp: I) -> Result<I::Output, Error> {
         interp.run(self.iter().copied())
     }
 }
 
-impl<Var: Copy + fmt::Display> Expr<Var> {
-    pub fn apply(&self, ctx: &mut impl Context<Var>) -> Result<i32, Error> {
+impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+    pub fn apply(&self, ctx: &mut impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(Evaluator::new(ctx))
     }
 
     pub fn apply_with_dice(
         &self,
-        ctx: &mut impl Context<Var>,
+        ctx: &mut impl Context<Var, i32>,
         pool: &DicePool,
     ) -> Result<i32, Error> {
         let mut iter = pool.iter();
         self.run(DicePoolEvaluator::new(ctx, &mut iter))
     }
 
-    pub fn eval(&self, ctx: &impl Context<Var>) -> Result<i32, Error> {
+    pub fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::new(ctx))
     }
 }
 
-impl<Var: Copy> Expr<Var> {
+impl<Var: Copy> Expr<Var, i32> {
     /// Scans the ops for `[PushConst(count), PushConst(sides), Roll]` patterns
     /// and returns a map of die sides to total number of rolls needed.
     pub fn dice_rolls(&self) -> BTreeMap<u32, u32> {
@@ -81,7 +95,7 @@ impl<Var: Copy> Expr<Var> {
     }
 }
 
-impl<Var: FromStr + Copy> FromStr for Expr<Var> {
+impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for Expr<Var, Val> {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -89,31 +103,39 @@ impl<Var: FromStr + Copy> FromStr for Expr<Var> {
     }
 }
 
-impl<'de, Var: FromStr + Copy + Deserialize<'de>> Deserialize<'de> for Expr<Var> {
+impl<'de, Var, Val> Deserialize<'de> for Expr<Var, Val>
+where
+    Var: FromStr + Copy + Deserialize<'de>,
+    Val: FromStr + Copy + Neg<Output = Val> + Deserialize<'de>,
+{
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct ExprVisitor<Var>(PhantomData<Var>);
+        struct ExprVisitor<Var, Val>(PhantomData<(Var, Val)>);
 
-        impl<'de, Var: FromStr + Copy + Deserialize<'de>> de::Visitor<'de> for ExprVisitor<Var> {
-            type Value = Expr<Var>;
+        impl<'de, Var, Val> de::Visitor<'de> for ExprVisitor<Var, Val>
+        where
+            Var: FromStr + Copy + Deserialize<'de>,
+            Val: FromStr + Copy + Neg<Output = Val> + Deserialize<'de>,
+        {
+            type Value = Expr<Var, Val>;
 
             fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 f.write_str("an expression string or a sequence of ops")
             }
 
-            fn visit_str<E: de::Error>(self, s: &str) -> Result<Expr<Var>, E> {
+            fn visit_str<E: de::Error>(self, s: &str) -> Result<Expr<Var, Val>, E> {
                 s.parse().map_err(de::Error::custom)
             }
 
-            fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var>, A::Error> {
-                let ops: Vec<Op<Var>> =
+            fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var, Val>, A::Error> {
+                let ops: Vec<Op<Var, Val>> =
                     Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
                 Ok(Expr(ops.into()))
             }
 
-            fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Expr<Var>, A::Error> {
+            fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Expr<Var, Val>, A::Error> {
                 #[derive(serde::Deserialize)]
-                struct ExprFields<Var> {
-                    ops: Vec<Op<Var>>,
+                struct ExprFields<Var, Val> {
+                    ops: Vec<Op<Var, Val>>,
                 }
                 let fields = ExprFields::deserialize(de::value::MapAccessDeserializer::new(map))?;
                 Ok(Expr(fields.ops.into()))
@@ -125,9 +147,9 @@ impl<'de, Var: FromStr + Copy + Deserialize<'de>> Deserialize<'de> for Expr<Var>
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Op<Var> {
+pub enum Op<Var, Val> {
     PushVar(Var),
-    PushConst(i32),
+    PushConst(Val),
     Add,      // +
     Sub,      // -
     Mul,      // *
@@ -137,16 +159,16 @@ pub enum Op<Var> {
     Max,
     AvgHp,
     Roll,         // 2d20 -> 2 20 Roll Sum
-    KeepMax(u32), // 2d20kh1 -> 2 20 Roll KeepMax(1)
-    KeepMin(u32),
-    DropMax(u32),
-    DropMin(u32),
+    KeepMax(Val), // 2d20kh1 -> 2 20 Roll KeepMax(1)
+    KeepMin(Val),
+    DropMax(Val),
+    DropMin(Val),
     Sum,
     Assign(Var),
     Mod, // %
 }
 
-impl<Var: Copy + fmt::Display> fmt::Display for Expr<Var> {
+impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<Var, Val> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = self.run(Formatter::new()).map_err(|_| fmt::Error)?;
         f.write_str(&s)
@@ -221,7 +243,7 @@ mod tests {
         }
     }
 
-    impl Context<Var> for Character {
+    impl Context<Var, i32> for Character {
         fn assign(&mut self, var: Var, value: i32) -> Result<(), Error> {
             match var {
                 Var::Ac => {
