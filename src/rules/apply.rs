@@ -199,13 +199,19 @@ impl RulesRegistry {
             .and_then(|sc| sc.levels.get(&level));
 
         let features_guard = self.features_index.read_untracked();
-        let features_catalog = features_guard
+        let Some(features_catalog) = features_guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
-            .map(|idx| &idx.0);
+            .map(|idx| &idx.0)
+        else {
+            log::warn!("Features catalog not loaded yet, skipping level-up");
+            class_level.applied_levels.remove(&level);
+            return;
+        };
 
         for feat_name in def.feature_names(subclass.as_deref()) {
-            let Some(feat) = features_catalog.and_then(|c| c.get(feat_name)) else {
+            let Some(feat) = features_catalog.get(feat_name) else {
+                log::warn!("Feature '{feat_name}' not found in catalog");
                 continue;
             };
             let feat_name_string = feat_name.to_string();
@@ -230,7 +236,7 @@ impl RulesRegistry {
         if let Some(race_def) = race_cache.get(character.identity.race.as_str()) {
             let source = FeatureSource::Race(character.identity.race.clone());
             for feat_name in &race_def.features {
-                if let Some(feat) = features_catalog.and_then(|f| f.get(feat_name.as_str())) {
+                if let Some(feat) = features_catalog.get(feat_name.as_str()) {
                     feat.apply(total_level, character, &source);
                 }
             }
@@ -240,7 +246,7 @@ impl RulesRegistry {
         if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
             let source = FeatureSource::Background(character.identity.background.clone());
             for feat_name in &bg_def.features {
-                if let Some(feat) = features_catalog.and_then(|f| f.get(feat_name.as_str())) {
+                if let Some(feat) = features_catalog.get(feat_name.as_str()) {
                     feat.apply(total_level, character, &source);
                 }
             }
