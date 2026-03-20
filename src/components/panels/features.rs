@@ -26,25 +26,18 @@ pub fn FeaturesPanel() -> impl IntoView {
     };
 
     let feature_options = Memo::new(move |_| {
-        let classes = store.identity().classes().read();
+        let character = store.read();
         registry.with_features_index(|features_index| {
-            classes
-                .iter()
-                .filter_map(|cl| {
-                    registry.classes().with(&cl.class, |def| {
-                        def.feature_names(cl.subclass.as_deref())
-                            .filter_map(|feat_name| {
-                                let feat = features_index.get(feat_name)?;
-                                Some((
-                                    feat.name.clone(),
-                                    feat.label().to_string(),
-                                    feat.description.clone(),
-                                ))
-                            })
-                            .collect::<Vec<_>>()
-                    })
+            features_index
+                .values()
+                .filter(|feat| feat.meets_prerequisites(&character))
+                .map(|feat| {
+                    (
+                        feat.name.clone(),
+                        feat.label().to_string(),
+                        feat.description.clone(),
+                    )
                 })
-                .flatten()
                 .collect::<Vec<_>>()
         })
     });
