@@ -32,10 +32,6 @@ impl LocaleKey {
         match kind {
             "feature" => parse_feature(rest.unwrap_or("")),
             "subclass" => parse_subclass(rest.unwrap_or("")),
-            "trait" => match rest {
-                Some(name) => LocalePath::Trait(name),
-                None => LocalePath::Unknown,
-            },
             _ => LocalePath::Unknown,
         }
     }
@@ -43,7 +39,7 @@ impl LocaleKey {
 
 /// Split `s` at the first `.` that separates a keyword from the rest.
 /// For keywords like "feature", "subclass", "field", "option", "spell",
-/// "trait", the split is at the first dot after the keyword.
+/// the split is at the first dot after the keyword.
 fn split_first(s: &str) -> (&str, Option<&str>) {
     match s.find('.') {
         Some(pos) => (&s[..pos], Some(&s[pos + 1..])),
@@ -151,8 +147,6 @@ pub enum LocalePath<'a> {
     SubclassFeatureField(&'a str, &'a str, &'a str),
     /// `"subclass.X.feature.Y.field.Z.option.W"`
     SubclassFeatureFieldOption(&'a str, &'a str, &'a str, &'a str),
-    /// `"trait.X"` (for races)
-    Trait(&'a str),
     /// Unrecognized path
     Unknown,
 }
@@ -305,10 +299,6 @@ impl LocaleKey {
     pub fn subclass_feature_field_option(sc: &str, feat: &str, field: &str, option: &str) -> Self {
         Self(format!("subclass.{sc}.feature.{feat}.field.{field}.option.{option}").into_boxed_str())
     }
-
-    pub fn race_trait(name: &str) -> Self {
-        Self(format!("trait.{name}").into_boxed_str())
-    }
 }
 
 // --- Application to definition types ---
@@ -386,18 +376,9 @@ pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
 /// Apply a locale map to a `RaceDefinition`.
 pub fn apply_race_locale(def: &mut RaceDefinition, locale: &LocaleMap) {
     for (key, text) in locale {
-        match key.parse() {
-            LocalePath::Root => {
-                text.apply_label(&mut def.label);
-                text.apply_description(&mut def.description);
-            }
-            LocalePath::Trait(name) => {
-                if let Some(rt) = def.traits.get_mut(name) {
-                    text.apply_label(&mut rt.label);
-                    text.apply_description(&mut rt.description);
-                }
-            }
-            _ => {}
+        if key.parse() == LocalePath::Root {
+            text.apply_label(&mut def.label);
+            text.apply_description(&mut def.description);
         }
     }
 }
@@ -469,13 +450,6 @@ pub fn extract_race_locale(def: &mut RaceDefinition) -> LocaleMap {
     let root = LocaleText::extract(&mut def.label, &mut def.description);
     if !root.is_empty() {
         map.insert(LocaleKey::root(), root);
-    }
-
-    for (trait_name, rt) in &mut def.traits {
-        let text = LocaleText::extract(&mut rt.label, &mut rt.description);
-        if !text.is_empty() {
-            map.insert(LocaleKey::race_trait(trait_name), text);
-        }
     }
 
     map

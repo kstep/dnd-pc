@@ -139,23 +139,3 @@ impl FeatureOption {
         self.label = Some(value);
     }
 }
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct RacialTrait {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-}
-
-impl RacialTrait {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
-    pub fn set_label(&mut self, value: String) {
-        self.label = Some(value);
-    }
-}

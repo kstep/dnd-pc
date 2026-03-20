@@ -8,7 +8,6 @@ use crate::{
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
-        RacialTrait,
     },
     rules::{DefinitionStore, RulesRegistry},
 };
@@ -19,7 +18,6 @@ pub fn FeaturesPanel() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
 
     let features = store.features();
-    let racial_traits = store.racial_traits();
 
     let add_feature = move |_| {
         features.write().push(Feature::default());
@@ -169,65 +167,6 @@ pub fn FeaturesPanel() -> impl IntoView {
             </div>
             <button class="btn-add" on:click=add_feature>
                 {move_tr!("btn-add-feature")}
-            </button>
-
-            <h4>{move_tr!("racial-traits")}</h4>
-            <div class="entry-list">
-                {move || {
-                    racial_traits
-                        .read()
-                        .iter()
-                        .enumerate()
-                        .map(|(i, rt)| {
-                            let name = rt.label().to_string();
-                            let desc = rt.description.clone();
-                            view! {
-                                <div class="entry-item">
-                                    <ToggleButton />
-                                    <div class="entry-content">
-                                        <input
-                                            type="text"
-                                            class="entry-name"
-                                            placeholder=move_tr!("trait-name")
-                                            prop:value=name
-                                            on:change=move |e| {
-                                                racial_traits.write()[i].set_label(event_target_value(&e));
-                                            }
-                                        />
-                                    </div>
-                                    <div class="entry-actions">
-                                        <button
-                                            class="btn-remove"
-                                            on:click=move |_| {
-                                                if i < racial_traits.read().len() {
-                                                    racial_traits.write().remove(i);
-                                                }
-                                            }
-                                        >
-                                            <Icon name="x" size=14 />
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        class="entry-desc"
-                                        placeholder=move_tr!("description")
-                                        prop:value=desc.clone()
-                                        on:change=move |e| {
-                                            racial_traits.write()[i].description = event_target_value(&e);
-                                        }
-                                    />
-                                </div>
-                            }
-                        })
-                        .collect_view()
-                }}
-            </div>
-            <button
-                class="btn-add"
-                on:click=move |_| {
-                    racial_traits.write().push(RacialTrait::default());
-                }
-            >
-                {move_tr!("btn-add-racial-trait")}
             </button>
         </Panel>
     }

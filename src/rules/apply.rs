@@ -92,12 +92,11 @@ impl RulesRegistry {
         }
     }
 
-    /// Evaluate assignment expressions across all racial traits and features
-    /// for the given condition.
+    /// Evaluate assignment expressions across all features for the given
+    /// condition.
     ///
-    /// Racial traits are evaluated first (flat Character context), then
-    /// features with per-feature `Context` providing `CLASS_LEVEL`,
-    /// `CASTER_LEVEL`, and `CASTER_MODIFIER`.
+    /// Features are evaluated with per-feature `Context` providing
+    /// `CLASS_LEVEL`, `CASTER_LEVEL`, and `CASTER_MODIFIER`.
     pub fn assign(&self, character: &mut Character, when: WhenCondition) {
         let class_cache = self.class_cache.read_untracked();
         let bg_cache = self.background_cache.read_untracked();
@@ -112,23 +111,6 @@ impl RulesRegistry {
                     BTreeMap::new();
                 &EMPTY
             });
-
-        // Racial traits first (e.g. speed override, Dwarf Toughness)
-        let trait_exprs: Vec<_> = race_cache
-            .get(character.identity.race.as_str())
-            .into_iter()
-            .flat_map(|race_def| race_def.traits.values())
-            .filter_map(|racial_trait| racial_trait.assign.as_ref())
-            .flat_map(|assignments| assignments.iter())
-            .filter(|a| a.when == when)
-            .map(|a| a.expr.clone())
-            .collect();
-
-        for expr in trait_exprs {
-            if let Err(error) = expr.apply(character) {
-                log::error!("Failed to apply trait assignment: {error:?}");
-            }
-        }
 
         // Collect per-feature info: (expressions, class_level, caster_level,
         // caster_modifier). Uses find_feature_with_class_level for a single-pass

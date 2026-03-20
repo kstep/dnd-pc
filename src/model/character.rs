@@ -11,7 +11,7 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, Equipment, Feature, FeatureData,
-        FeatureValue, Personality, RacialTrait, SpellSlotLevel, enums::*,
+        FeatureValue, Personality, SpellSlotLevel, enums::*,
     },
     vecset::VecSet,
 };
@@ -109,8 +109,6 @@ pub struct Character {
     pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
     pub languages: VecSet<String>,
-    #[serde(default)]
-    pub racial_traits: Vec<RacialTrait>,
     #[serde(default)]
     pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
     #[serde(default)]
@@ -507,10 +505,6 @@ impl Character {
             feature.label = None;
             feature.description.clear();
         }
-        for racial_trait in &mut self.racial_traits {
-            racial_trait.label = None;
-            racial_trait.description.clear();
-        }
         for entry in self.feature_data.values_mut() {
             for field in &mut entry.fields {
                 field.label = None;
@@ -571,7 +565,6 @@ impl Default for Character {
             spell_slots: BTreeMap::new(),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            racial_traits: Vec::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
@@ -787,7 +780,6 @@ impl Character {
             )]),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            racial_traits: Vec::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
@@ -875,7 +867,6 @@ pub mod tests {
             .into_iter()
             .collect(),
             languages: VecSet::new(),
-            racial_traits: Vec::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,

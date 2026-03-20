@@ -20,7 +20,7 @@ pub use feature::{
     FieldDefinition, FieldKind, ValueOrExpr, WhenCondition,
 };
 pub use index::{BackgroundIndexEntry, ClassIndexEntry, RaceIndexEntry, SpellIndexEntry};
-pub use race::{RaceDefinition, RaceTrait};
+pub use race::RaceDefinition;
 pub use registry::RulesRegistry;
 pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellsDefinition};
 pub use utils::LevelRules;

@@ -223,9 +223,9 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                         fetch=move |name: &str| registry.races().fetch(name)
                         has=move |name: &str| registry.races().has(name)
-                        apply=move |name: &str| {
-                            registry.races().with(name, |def| {
-                                store.update(|c| def.apply(c));
+                        apply=move |_name: &str| {
+                            store.update(|c| {
+                                c.identity.race_applied = true;
                             });
                         }
                     />

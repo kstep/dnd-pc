@@ -1,52 +1,6 @@
-use std::collections::BTreeMap;
-
 use serde::Deserialize;
 
-use super::feature::{Assignment, WhenCondition};
-use crate::{
-    demap::Named,
-    model::{Character, RacialTrait},
-    vecset::VecSet,
-};
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct RaceTrait {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
-    pub languages: VecSet<String>,
-    #[serde(default)]
-    pub assign: Option<Vec<Assignment>>,
-}
-
-impl RaceTrait {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
-    pub fn assign(&self, character: &mut Character, when: WhenCondition) {
-        let Some(assignments) = &self.assign else {
-            return;
-        };
-        for a in assignments.iter().filter(|a| a.when == when) {
-            if let Err(error) = a.expr.apply(character) {
-                log::error!(
-                    "Failed to apply racial trait assignment for '{}': {error:?}",
-                    self.name,
-                );
-            }
-        }
-    }
-}
-
-impl Named for RaceTrait {
-    fn name(&self) -> &str {
-        &self.name
-    }
-}
+use crate::vecset::VecSet;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct RaceDefinition {
@@ -55,8 +9,6 @@ pub struct RaceDefinition {
     pub label: Option<String>,
     #[serde(default)]
     pub description: String,
-    #[serde(default, deserialize_with = "crate::demap::named_map")]
-    pub traits: BTreeMap<Box<str>, RaceTrait>,
     #[serde(default)]
     pub features: VecSet<String>,
 }
@@ -64,23 +16,5 @@ pub struct RaceDefinition {
 impl RaceDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
-    }
-
-    pub fn apply(&self, character: &mut Character) {
-        if !character.identity.race_applied {
-            character.identity.race_applied = true;
-
-            for racial_trait in self.traits.values() {
-                character.racial_traits.push(RacialTrait {
-                    name: racial_trait.name.clone(),
-                    label: racial_trait.label.clone(),
-                    description: racial_trait.description.clone(),
-                });
-                character
-                    .languages
-                    .extend(racial_trait.languages.iter().cloned());
-                racial_trait.assign(character, WhenCondition::OnFeatureAdd);
-            }
-        }
     }
 }

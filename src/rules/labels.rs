@@ -80,20 +80,7 @@ pub(super) fn sync_labels(
         }
     }
 
-    // 3. Racial trait labels/descriptions
-    if let Some(race_def) = race_cache.get(character.identity.race.as_str()) {
-        for racial_trait in &mut character.racial_traits {
-            if racial_trait.name.is_empty() {
-                continue;
-            }
-            if let Some(def_trait) = race_def.traits.get(racial_trait.name.as_str()) {
-                set_label(&mut racial_trait.label, def_trait.label.as_deref());
-                set_desc(&mut racial_trait.description, &def_trait.description);
-            }
-        }
-    }
-
-    // 4. Feature data: fields, choices, spells
+    // 3. Feature data: fields, choices, spells
     let char_level = character.level();
 
     // Pre-compute free_uses_max for each feature (needs immutable character

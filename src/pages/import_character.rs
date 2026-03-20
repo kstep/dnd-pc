@@ -388,12 +388,6 @@ impl Character {
             truncate(&imported.personality.flaws, 50),
         );
 
-        // --- Racial Traits (names only, descriptions stripped during sharing) ---
-        let sec = "racial-traits";
-        let local_val = format_names(&self.racial_traits, |t| &t.name);
-        let imported_val = format_names(&imported.racial_traits, |t| &t.name);
-        push_if_diff(&mut rows, sec, "racial-traits", local_val, imported_val);
-
         // --- Notes ---
         let sec = "panel-notes";
         push_if_diff(
@@ -474,14 +468,6 @@ impl Character {
                 );
             }
         }
-
-        restore_description_by_name(
-            &mut self.racial_traits,
-            &local.racial_traits,
-            |t| &t.name,
-            |t| &mut t.description,
-            |t| &t.description,
-        );
     }
 }
 
