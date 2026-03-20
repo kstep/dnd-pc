@@ -1,25 +1,11 @@
 {
   "name": "Aasimar",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Celestial Resistance"
-    },
-    {
-      "name": "Healing Hands"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Celestial"
-      ]
-    }
-  ],
   "features": [
     "Light Bearer",
-    "Celestial Revelation"
+    "Celestial Revelation",
+    "Darkvision",
+    "Celestial Resistance",
+    "Healing Hands",
+    "Languages"
   ]
 }

@@ -1,23 +1,5 @@
 {
   "": {
     "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests."
-  },
-  "trait.Speed": {
-    "description": "Your base walking speed is 35 feet."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Fey Ancestry": {
-    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
-  },
-  "trait.Keen Senses": {
-    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
-  },
-  "trait.Trance": {
-    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Elvish."
   }
 }

@@ -1,27 +1,11 @@
 {
   "name": "Drow",
-  "traits": [
-    {
-      "name": "Superior Darkvision"
-    },
-    {
-      "name": "Fey Ancestry"
-    },
-    {
-      "name": "Keen Senses"
-    },
-    {
-      "name": "Trance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Elvish"
-      ]
-    }
-  ],
   "features": [
-    "Drow Magic"
+    "Drow Magic",
+    "Superior Darkvision",
+    "Fey Ancestry",
+    "Keen Senses",
+    "Trance",
+    "Languages"
   ]
 }

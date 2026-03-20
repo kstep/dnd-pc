@@ -1,17 +1,5 @@
 {
   "": {
     "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Draconic Ancestry": {
-    "description": "Choose a dragon type: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), White (Cold). This determines your Breath Weapon damage type and Damage Resistance."
-  },
-  "trait.Damage Resistance": {
-    "description": "You have resistance to the damage type determined by your Draconic Ancestry."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Draconic."
   }
 }

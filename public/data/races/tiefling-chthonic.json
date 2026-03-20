@@ -1,21 +1,9 @@
 {
   "name": "Tiefling (Chthonic)",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Chthonic Resistance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Sylvan"
-      ]
-    }
-  ],
   "features": [
-    "Chthonic Legacy"
+    "Chthonic Legacy",
+    "Darkvision",
+    "Chthonic Resistance",
+    "Languages"
   ]
 }

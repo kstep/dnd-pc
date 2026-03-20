@@ -1,20 +1,5 @@
 {
   "": {
     "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Fey Ancestry": {
-    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
-  },
-  "trait.Keen Senses": {
-    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
-  },
-  "trait.Trance": {
-    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Elvish."
   }
 }

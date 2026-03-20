@@ -1,18 +1,8 @@
 {
   "name": "Tiefling",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Otherworldly Presence"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Infernal"
-      ]
-    }
+  "features": [
+    "Darkvision",
+    "Otherworldly Presence",
+    "Languages"
   ]
 }

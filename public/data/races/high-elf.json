@@ -1,27 +1,11 @@
 {
   "name": "High Elf",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Fey Ancestry"
-    },
-    {
-      "name": "Keen Senses"
-    },
-    {
-      "name": "Trance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Elvish"
-      ]
-    }
-  ],
   "features": [
-    "Elven Lineage"
+    "Elven Lineage",
+    "Darkvision",
+    "Fey Ancestry",
+    "Keen Senses",
+    "Trance",
+    "Languages"
   ]
 }

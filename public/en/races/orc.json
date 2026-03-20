@@ -1,11 +1,5 @@
 {
   "": {
     "description": "Orcs are hardy, powerful people who trace their creation to Gruumsh. They are known for their endurance and ferocity."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 120 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Orc."
   }
 }

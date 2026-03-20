@@ -1,17 +1,5 @@
 {
   "": {
     "description": "Dwarves are solidly built, with broad shoulders and thick frames. They are known for their resilience, craftsmanship, and connection to stone."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 120 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Dwarven Resilience": {
-    "description": "You have resistance to Poison damage. You have advantage on saving throws you make to avoid or end the Poisoned condition."
-  },
-  "trait.Dwarven Toughness": {
-    "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Dwarvish."
   }
 }

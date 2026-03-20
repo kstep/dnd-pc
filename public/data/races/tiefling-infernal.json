@@ -1,21 +1,9 @@
 {
   "name": "Tiefling (Infernal)",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Hellish Resistance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Infernal"
-      ]
-    }
-  ],
   "features": [
-    "Infernal Legacy"
+    "Infernal Legacy",
+    "Darkvision",
+    "Hellish Resistance",
+    "Languages"
   ]
 }

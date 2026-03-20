@@ -1,17 +1,5 @@
 {
   "": {
     "description": "Aasimar bear within their souls the light of the heavens, granting them celestial power and a touch of the divine."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Celestial Resistance": {
-    "description": "You have resistance to Necrotic damage and Radiant damage."
-  },
-  "trait.Healing Hands": {
-    "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains hit points equal to the total. Once per Long Rest."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Celestial."
   }
 }

@@ -11438,5 +11438,102 @@
         }
       }
     ]
+  },
+  {
+    "name": "Celestial Resistance"
+  },
+  {
+    "name": "Healing Hands"
+  },
+  {
+    "name": "Languages",
+    "languages": [
+      "Common",
+      "Celestial"
+    ]
+  },
+  {
+    "name": "Draconic Ancestry"
+  },
+  {
+    "name": "Damage Resistance"
+  },
+  {
+    "name": "Superior Darkvision"
+  },
+  {
+    "name": "Fey Ancestry"
+  },
+  {
+    "name": "Keen Senses"
+  },
+  {
+    "name": "Trance"
+  },
+  {
+    "name": "Dwarven Resilience"
+  },
+  {
+    "name": "Dwarven Toughness",
+    "assign": [
+      {
+        "expr": "MAX_HP += LEVEL",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Gnomish Cunning"
+  },
+  {
+    "name": "Speed",
+    "assign": [
+      {
+        "expr": "SPEED = 35",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Powerful Build"
+  },
+  {
+    "name": "Brave"
+  },
+  {
+    "name": "Halfling Nimbleness"
+  },
+  {
+    "name": "Luck"
+  },
+  {
+    "name": "Naturally Stealthy"
+  },
+  {
+    "name": "Resourceful",
+    "assign": [
+      {
+        "expr": "INSPIRATION = 1",
+        "when": "OnLongRest"
+      }
+    ]
+  },
+  {
+    "name": "Skillful"
+  },
+  {
+    "name": "Versatile"
+  },
+  {
+    "name": "Abyssal Resistance"
+  },
+  {
+    "name": "Chthonic Resistance"
+  },
+  {
+    "name": "Hellish Resistance"
+  },
+  {
+    "name": "Otherworldly Presence"
   }
 ]

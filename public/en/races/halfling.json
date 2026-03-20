@@ -1,20 +1,5 @@
 {
   "": {
     "description": "Halflings are small, practical folk who enjoy the comforts of home but can rise to remarkable bravery when called upon."
-  },
-  "trait.Brave": {
-    "description": "You have advantage on saving throws you make to avoid or end the Frightened condition."
-  },
-  "trait.Halfling Nimbleness": {
-    "description": "You can move through the space of any creature that is a size larger than you, but you can't stop in the same space."
-  },
-  "trait.Luck": {
-    "description": "When you roll a 1 on the d20 of a D20 Test, you can reroll the die, and you must use the new roll."
-  },
-  "trait.Naturally Stealthy": {
-    "description": "You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Halfling."
   }
 }

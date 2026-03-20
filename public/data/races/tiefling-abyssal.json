@@ -1,21 +1,9 @@
 {
   "name": "Tiefling (Abyssal)",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Abyssal Resistance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Abyssal"
-      ]
-    }
-  ],
   "features": [
-    "Abyssal Legacy"
+    "Abyssal Legacy",
+    "Darkvision",
+    "Abyssal Resistance",
+    "Languages"
   ]
 }

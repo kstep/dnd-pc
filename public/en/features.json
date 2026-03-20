@@ -2565,7 +2565,7 @@
     "description": "You can expend 1 Focus Point to cast the Darkness spell without spell components. You can see within the spell's area when you cast it with this feature. While the spell persists, you can move its area of Darkness to a space within 60 feet of yourself at the start of each of your turns."
   },
   "Darkvision": {
-    "description": "You gain Darkvision with a range of 60 feet. If you already have Darkvision, its range increases by 60 feet."
+    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
   },
   "Shadowy Figments": {
     "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it."
@@ -5098,5 +5098,80 @@
   },
   "Elven Lineage.spell.Pass without Trace": {
     "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial)."
+  },
+  "Celestial Resistance": {
+    "description": "You have resistance to Necrotic damage and Radiant damage."
+  },
+  "Healing Hands": {
+    "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains hit points equal to the total. Once per Long Rest."
+  },
+  "Languages": {
+    "description": "You can speak, read, and write Common and Elvish."
+  },
+  "Draconic Ancestry": {
+    "description": "Choose a dragon type: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), White (Cold). This determines your Breath Weapon damage type and Damage Resistance."
+  },
+  "Damage Resistance": {
+    "description": "You have resistance to the damage type determined by your Draconic Ancestry."
+  },
+  "Superior Darkvision": {
+    "description": "Your darkvision has a radius of 120 feet."
+  },
+  "Fey Ancestry": {
+    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
+  },
+  "Keen Senses": {
+    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
+  },
+  "Trance": {
+    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
+  },
+  "Dwarven Resilience": {
+    "description": "You have resistance to Poison damage. You have advantage on saving throws you make to avoid or end the Poisoned condition."
+  },
+  "Dwarven Toughness": {
+    "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+  },
+  "Gnomish Cunning": {
+    "description": "You have advantage on Intelligence, Wisdom, and Charisma saving throws."
+  },
+  "Speed": {
+    "description": "Your base walking speed is 35 feet."
+  },
+  "Powerful Build": {
+    "description": "You have advantage on saving throws to end the Grappled condition. You count as one size larger for carrying capacity."
+  },
+  "Brave": {
+    "description": "You have advantage on saving throws you make to avoid or end the Frightened condition."
+  },
+  "Halfling Nimbleness": {
+    "description": "You can move through the space of any creature that is a size larger than you, but you can't stop in the same space."
+  },
+  "Luck": {
+    "description": "When you roll a 1 on the d20 of a D20 Test, you can reroll the die, and you must use the new roll."
+  },
+  "Naturally Stealthy": {
+    "description": "You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you."
+  },
+  "Resourceful": {
+    "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+  },
+  "Skillful": {
+    "description": "You gain proficiency in one skill of your choice."
+  },
+  "Versatile": {
+    "description": "You gain an Origin feat of your choice."
+  },
+  "Abyssal Resistance": {
+    "description": "You have resistance to Poison damage."
+  },
+  "Chthonic Resistance": {
+    "description": "You have resistance to Necrotic damage."
+  },
+  "Hellish Resistance": {
+    "description": "You have resistance to Fire damage."
+  },
+  "Otherworldly Presence": {
+    "description": "You know the Thaumaturgy cantrip. It uses the same spellcasting ability as your Fiendish Legacy."
   }
 }

@@ -1,14 +1,5 @@
 {
   "": {
     "description": "Your fiendish legacy connects you to the Abyss, granting poison resistance and toxic spellcasting."
-  },
-  "trait.Darkvision": {
-    "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light."
-  },
-  "trait.Abyssal Resistance": {
-    "description": "You have resistance to Poison damage."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Abyssal."
   }
 }

@@ -1,19 +1,9 @@
 {
   "name": "Orc",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Orc"
-      ]
-    }
-  ],
   "features": [
     "Adrenaline Rush",
-    "Relentless Endurance"
+    "Relentless Endurance",
+    "Darkvision",
+    "Languages"
   ]
 }

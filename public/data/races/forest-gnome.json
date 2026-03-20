@@ -1,21 +1,9 @@
 {
   "name": "Forest Gnome",
-  "traits": [
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Gnomish Cunning"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Gnomish"
-      ]
-    }
-  ],
   "features": [
-    "Gnomish Lineage"
+    "Gnomish Lineage",
+    "Darkvision",
+    "Gnomish Cunning",
+    "Languages"
   ]
 }

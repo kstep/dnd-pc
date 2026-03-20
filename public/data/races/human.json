@@ -1,26 +1,9 @@
 {
   "name": "Human",
-  "traits": [
-    {
-      "name": "Resourceful",
-      "assign": [
-        {
-          "expr": "INSPIRATION = 1",
-          "when": "OnLongRest"
-        }
-      ]
-    },
-    {
-      "name": "Skillful"
-    },
-    {
-      "name": "Versatile"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common"
-      ]
-    }
+  "features": [
+    "Resourceful",
+    "Skillful",
+    "Versatile",
+    "Languages"
   ]
 }

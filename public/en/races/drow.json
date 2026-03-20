@@ -1,20 +1,5 @@
 {
   "": {
     "description": "Drow are elves of the Underdark, known for their innate magic and superior darkvision."
-  },
-  "trait.Superior Darkvision": {
-    "description": "Your darkvision has a radius of 120 feet."
-  },
-  "trait.Fey Ancestry": {
-    "description": "You have advantage on saving throws you make to avoid or end the Charmed condition."
-  },
-  "trait.Keen Senses": {
-    "description": "You have proficiency in the Insight, Perception, or Survival skill (choose one)."
-  },
-  "trait.Trance": {
-    "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation."
-  },
-  "trait.Languages": {
-    "description": "You can speak, read, and write Common and Elvish."
   }
 }

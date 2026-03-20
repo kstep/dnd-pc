@@ -1,36 +1,12 @@
 {
   "name": "Wood Elf",
-  "traits": [
-    {
-      "name": "Speed",
-      "assign": [
-        {
-          "expr": "SPEED = 35",
-          "when": "OnCompute"
-        }
-      ]
-    },
-    {
-      "name": "Darkvision"
-    },
-    {
-      "name": "Fey Ancestry"
-    },
-    {
-      "name": "Keen Senses"
-    },
-    {
-      "name": "Trance"
-    },
-    {
-      "name": "Languages",
-      "languages": [
-        "Common",
-        "Elvish"
-      ]
-    }
-  ],
   "features": [
-    "Elven Lineage"
+    "Elven Lineage",
+    "Speed",
+    "Darkvision",
+    "Fey Ancestry",
+    "Keen Senses",
+    "Trance",
+    "Languages"
   ]
 }
