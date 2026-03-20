@@ -10,41 +10,41 @@ use crate::{
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
-struct RaceRefParams {
+struct SpeciesRefParams {
     name: Option<String>,
 }
 
 #[component]
-pub fn RaceReference() -> impl IntoView {
+pub fn SpeciesReference() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
-    let params = use_params::<RaceRefParams>();
+    let params = use_params::<SpeciesRefParams>();
 
-    let race_name = move || params.get().ok().and_then(|p| p.name).unwrap_or_default();
+    let species_name = move || params.get().ok().and_then(|p| p.name).unwrap_or_default();
 
     Effect::new(move || {
-        let name = race_name();
+        let name = species_name();
         if !name.is_empty() {
-            registry.races().fetch_tracked(&name);
+            registry.species().fetch_tracked(&name);
         }
     });
 
-    let current_label = Signal::derive(move || registry.race_label_by_name(&race_name()));
+    let current_label = Signal::derive(move || registry.species_label_by_name(&species_name()));
 
     let detail = move || {
-        let name = race_name();
+        let name = species_name();
 
         if name.is_empty() {
             return view! {
                 <div class="reference-empty">
-                    <p>{move_tr!("ref-select-race")}</p>
+                    <p>{move_tr!("ref-select-species")}</p>
                 </div>
             }
             .into_any();
         }
 
         registry
-            .races()
+            .species()
             .with_tracked(&name, |def| {
                 let title = def.label().to_string();
                 let description = def.description.clone();
@@ -78,16 +78,16 @@ pub fn RaceReference() -> impl IntoView {
     };
 
     view! {
-        <Title text=Signal::derive(move || i18n.tr("ref-races")) />
+        <Title text=Signal::derive(move || i18n.tr("ref-species")) />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || registry.with_race_entries(|entries| {
+                    {move || registry.with_species_entries(|entries| {
                         entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {
-                                <A href=format!("{BASE_URL}/r/race/{name}") attr:class="reference-nav-item">
+                                <A href=format!("{BASE_URL}/r/species/{name}") attr:class="reference-nav-item">
                                     {label}
                                 </A>
                             }

@@ -41,7 +41,7 @@ use pages::{
     import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
     reference::{
-        background::BackgroundReference, class::ClassReference, race::RaceReference,
+        background::BackgroundReference, class::ClassReference, species::SpeciesReference,
         spell::SpellReference,
     },
 };
@@ -104,8 +104,8 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/r/class") view=ClassReference />
                 <Route path=path!("/r/class/:name") view=ClassReference />
                 <Route path=path!("/r/class/:name/:subname") view=ClassReference />
-                <Route path=path!("/r/race") view=RaceReference />
-                <Route path=path!("/r/race/:name") view=RaceReference />
+                <Route path=path!("/r/species") view=SpeciesReference />
+                <Route path=path!("/r/species/:name") view=SpeciesReference />
                 <Route path=path!("/r/background") view=BackgroundReference />
                 <Route path=path!("/r/background/:name") view=BackgroundReference />
                 <Route path=path!("/r/spell") view=SpellReference />

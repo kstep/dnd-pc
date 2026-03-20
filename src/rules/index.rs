@@ -11,8 +11,8 @@ use crate::{
 pub(super) struct Index {
     #[serde(deserialize_with = "demap::named_map")]
     pub classes: BTreeMap<Box<str>, ClassIndexEntry>,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub races: BTreeMap<Box<str>, RaceIndexEntry>,
+    #[serde(default, alias = "races", deserialize_with = "demap::named_map")]
+    pub species: BTreeMap<Box<str>, SpeciesIndexEntry>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub backgrounds: BTreeMap<Box<str>, BackgroundIndexEntry>,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -44,7 +44,7 @@ impl ClassIndexEntry {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct RaceIndexEntry {
+pub struct SpeciesIndexEntry {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
@@ -53,13 +53,13 @@ pub struct RaceIndexEntry {
     pub description: String,
 }
 
-impl Named for RaceIndexEntry {
+impl Named for SpeciesIndexEntry {
     fn name(&self) -> &str {
         &self.name
     }
 }
 
-impl RaceIndexEntry {
+impl SpeciesIndexEntry {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }

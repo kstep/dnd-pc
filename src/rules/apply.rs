@@ -143,7 +143,7 @@ impl RulesRegistry {
 
     /// Apply class level-up logic. Applies all unapplied levels from last
     /// applied+1 through the current class level. Handles saving throws,
-    /// proficiencies, spell slots, class/race/background features, and HP.
+    /// proficiencies, spell slots, class/species/background features, and HP.
     pub fn apply_class_level(&self, character: &mut Character, class_idx: usize, level: u32) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -203,14 +203,14 @@ impl RulesRegistry {
             }
         }
 
-        // Re-apply race and background features at new total level
+        // Re-apply species and background features at new total level
         // (unlocks level-gated spells, e.g. Tiefling's Infernal Legacy)
         let total_level = character.level();
 
-        let race_cache = self.race_cache.read_untracked();
-        if let Some(race_def) = race_cache.get(character.identity.race.as_str()) {
-            let source = FeatureSource::Race(character.identity.race.clone());
-            for feat_name in &race_def.features {
+        let species_cache = self.species_cache.read_untracked();
+        if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
+            let source = FeatureSource::Species(character.identity.species.clone());
+            for feat_name in &species_def.features {
                 if let Some(feat) = features_catalog.get(feat_name.as_str()) {
                     feat.apply(total_level, character, Some(&source));
                 }
@@ -256,17 +256,17 @@ impl RulesRegistry {
         });
     }
 
-    /// Apply race features from the global catalog.
-    pub fn apply_race(&self, character: &mut Character) {
-        character.identity.race_applied = true;
+    /// Apply species features from the global catalog.
+    pub fn apply_species(&self, character: &mut Character) {
+        character.identity.species_applied = true;
         let total_level = character.level().max(1);
-        let race_cache = self.race_cache.read_untracked();
-        let Some(race_def) = race_cache.get(character.identity.race.as_str()) else {
+        let species_cache = self.species_cache.read_untracked();
+        let Some(species_def) = species_cache.get(character.identity.species.as_str()) else {
             return;
         };
-        let source = FeatureSource::Race(character.identity.race.clone());
+        let source = FeatureSource::Species(character.identity.species.clone());
         self.with_features_index_untracked(|features_index| {
-            for feat_name in &race_def.features {
+            for feat_name in &species_def.features {
                 if let Some(feat) = features_index.get(feat_name.as_str()) {
                     feat.apply(total_level, character, Some(&source));
                 }

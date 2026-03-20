@@ -51,67 +51,67 @@
     "label": "Волшебник",
     "description": "Учёный маг, способный управлять структурами реальности."
   },
-  "race.Aasimar": {
+  "species.Aasimar": {
     "label": "Аасимар",
     "description": "Отмеченный небожителями, с целительным прикосновением и божественным преображением."
   },
-  "race.Dragonborn": {
+  "species.Dragonborn": {
     "label": "Драконорождённый",
     "description": "Потомок драконов с оружием дыхания, сопротивлением урону и драконьим полётом."
   },
-  "race.Drow": {
+  "species.Drow": {
     "label": "Дроу",
     "description": "Эльфы Подземья с превосходным тёмным зрением и врождённой магией."
   },
-  "race.Dwarf": {
+  "species.Dwarf": {
     "label": "Дварф",
     "description": "Стойкий и крепкий, с сопротивлением яду и знанием камня."
   },
-  "race.Forest Gnome": {
+  "species.Forest Gnome": {
     "label": "Лесной гном",
     "description": "Маленький и хитроумный, со склонностью к иллюзиям и общению с животными."
   },
-  "race.Goliath": {
+  "species.Goliath": {
     "label": "Голиаф",
     "description": "Могучий потомок великанов с мощным телосложением и наследием гигантов."
   },
-  "race.Halfling": {
+  "species.Halfling": {
     "label": "Полурослик",
     "description": "Маленький, храбрый и удачливый, с природной скрытностью."
   },
-  "race.High Elf": {
+  "species.High Elf": {
     "label": "Высший эльф",
     "description": "Эльф с магическим талантом и заговором волшебника на выбор."
   },
-  "race.Human": {
+  "species.Human": {
     "label": "Человек",
     "description": "Находчивый, умелый и разносторонний — самый приспособляемый вид."
   },
-  "race.Orc": {
+  "species.Orc": {
     "label": "Орк",
     "description": "Выносливый и свирепый, с приливом адреналина и неукротимой стойкостью."
   },
-  "race.Rock Gnome": {
+  "species.Rock Gnome": {
     "label": "Скальный гном",
     "description": "Артифакторный и хитроумный, с магией ремесленника."
   },
-  "race.Tiefling": {
+  "species.Tiefling": {
     "label": "Тифлинг",
     "description": "Отмеченный нечистью, с Чудотворством. Выберите наследие для полных свойств."
   },
-  "race.Tiefling (Abyssal)": {
+  "species.Tiefling (Abyssal)": {
     "label": "Тифлинг (Бездны)",
     "description": "Наследие Бездны: сопротивление яду, Ядовитые брызги, Луч болезни, Удержание личности."
   },
-  "race.Tiefling (Chthonic)": {
+  "species.Tiefling (Chthonic)": {
     "label": "Тифлинг (Хтонический)",
     "description": "Хтоническое наследие: сопротивление некротической энергии, Леденящее прикосновение, Псевдожизнь, Луч слабости."
   },
-  "race.Tiefling (Infernal)": {
+  "species.Tiefling (Infernal)": {
     "label": "Тифлинг (Инфернальный)",
     "description": "Инфернальное наследие: сопротивление огню, Огненный снаряд, Адское возмездие, Тьма."
   },
-  "race.Wood Elf": {
+  "species.Wood Elf": {
     "label": "Лесной эльф",
     "description": "Быстроногие эльфы с Искусством друидов и лесной магией."
   },

@@ -26,14 +26,15 @@ impl Feature {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum FeatureSource {
     Class(String),
-    Race(String),
+    #[serde(alias = "Race")]
+    Species(String),
     Background(String),
 }
 
 impl FeatureSource {
     pub fn name(&self) -> &str {
         match self {
-            Self::Class(name) | Self::Race(name) | Self::Background(name) => name,
+            Self::Class(name) | Self::Species(name) | Self::Background(name) => name,
         }
     }
 

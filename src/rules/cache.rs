@@ -153,7 +153,7 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
     }
 }
 
-/// Trait for unified access to definition caches (class, race, background).
+/// Trait for unified access to definition caches (class, species, background).
 pub trait DefinitionStore {
     type Definition: Clone + for<'de> serde::Deserialize<'de> + Send + Sync + 'static;
     type Locale: for<'de> serde::Deserialize<'de> + 'static;

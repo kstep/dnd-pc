@@ -123,9 +123,9 @@ impl Character {
         push_if_diff(
             &mut rows,
             sec,
-            "race",
-            self.identity.race.clone(),
-            imported.identity.race.clone(),
+            "species",
+            self.identity.species.clone(),
+            imported.identity.species.clone(),
         );
         push_if_diff(
             &mut rows,

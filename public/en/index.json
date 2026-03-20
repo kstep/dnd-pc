@@ -38,52 +38,52 @@
   "class.Wizard": {
     "description": "A scholarly magic-user capable of manipulating the structures of reality."
   },
-  "race.Aasimar": {
+  "species.Aasimar": {
     "description": "Celestial-touched with healing hands and divine transformation."
   },
-  "race.Dragonborn": {
+  "species.Dragonborn": {
     "description": "Dragon-kin with a breath weapon, damage resistance, and draconic flight."
   },
-  "race.Drow": {
+  "species.Drow": {
     "description": "Elves of the Underdark with superior darkvision and innate magic."
   },
-  "race.Dwarf": {
+  "species.Dwarf": {
     "description": "Resilient and tough, with poison resistance and stonecunning."
   },
-  "race.Forest Gnome": {
+  "species.Forest Gnome": {
     "description": "Small and cunning, with a knack for illusion and speaking with beasts."
   },
-  "race.Goliath": {
+  "species.Goliath": {
     "description": "Towering giant-kin with powerful build and giant ancestry."
   },
-  "race.Halfling": {
+  "species.Halfling": {
     "description": "Small, brave, and lucky, with natural stealth."
   },
-  "race.High Elf": {
+  "species.High Elf": {
     "description": "Elves with arcane talent and a flexible wizard cantrip."
   },
-  "race.Human": {
+  "species.Human": {
     "description": "Resourceful, skillful, and versatile — the most adaptable species."
   },
-  "race.Orc": {
+  "species.Orc": {
     "description": "Hardy and fierce, with adrenaline rush and relentless endurance."
   },
-  "race.Rock Gnome": {
+  "species.Rock Gnome": {
     "description": "Inventive and cunning, with tinker's magic."
   },
-  "race.Tiefling": {
+  "species.Tiefling": {
     "description": "Fiend-touched with Thaumaturgy. Choose a legacy for full traits."
   },
-  "race.Tiefling (Abyssal)": {
+  "species.Tiefling (Abyssal)": {
     "description": "Abyssal legacy: poison resistance, Poison Spray, Ray of Sickness, Hold Person."
   },
-  "race.Tiefling (Chthonic)": {
+  "species.Tiefling (Chthonic)": {
     "description": "Chthonic legacy: necrotic resistance, Chill Touch, False Life, Ray of Enfeeblement."
   },
-  "race.Tiefling (Infernal)": {
+  "species.Tiefling (Infernal)": {
     "description": "Infernal legacy: fire resistance, Fire Bolt, Hellish Rebuke, Darkness."
   },
-  "race.Wood Elf": {
+  "species.Wood Elf": {
     "description": "Fleet-footed elves with Druidcraft and woodland magic."
   },
   "background.Acolyte": {

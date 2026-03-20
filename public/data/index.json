@@ -92,70 +92,70 @@
       ]
     }
   ],
-  "races": [
+  "species": [
     {
       "name": "Aasimar",
-      "url": "races/aasimar.json"
+      "url": "species/aasimar.json"
     },
     {
       "name": "Dragonborn",
-      "url": "races/dragonborn.json"
+      "url": "species/dragonborn.json"
     },
     {
       "name": "Drow",
-      "url": "races/drow.json"
+      "url": "species/drow.json"
     },
     {
       "name": "Dwarf",
-      "url": "races/dwarf.json"
+      "url": "species/dwarf.json"
     },
     {
       "name": "Forest Gnome",
-      "url": "races/forest-gnome.json"
+      "url": "species/forest-gnome.json"
     },
     {
       "name": "Goliath",
-      "url": "races/goliath.json"
+      "url": "species/goliath.json"
     },
     {
       "name": "Halfling",
-      "url": "races/halfling.json"
+      "url": "species/halfling.json"
     },
     {
       "name": "High Elf",
-      "url": "races/high-elf.json"
+      "url": "species/high-elf.json"
     },
     {
       "name": "Human",
-      "url": "races/human.json"
+      "url": "species/human.json"
     },
     {
       "name": "Orc",
-      "url": "races/orc.json"
+      "url": "species/orc.json"
     },
     {
       "name": "Rock Gnome",
-      "url": "races/rock-gnome.json"
+      "url": "species/rock-gnome.json"
     },
     {
       "name": "Tiefling",
-      "url": "races/tiefling.json"
+      "url": "species/tiefling.json"
     },
     {
       "name": "Tiefling (Abyssal)",
-      "url": "races/tiefling-abyssal.json"
+      "url": "species/tiefling-abyssal.json"
     },
     {
       "name": "Tiefling (Chthonic)",
-      "url": "races/tiefling-chthonic.json"
+      "url": "species/tiefling-chthonic.json"
     },
     {
       "name": "Tiefling (Infernal)",
-      "url": "races/tiefling-infernal.json"
+      "url": "species/tiefling-infernal.json"
     },
     {
       "name": "Wood Elf",
-      "url": "races/wood-elf.json"
+      "url": "species/wood-elf.json"
     }
   ],
   "backgrounds": [

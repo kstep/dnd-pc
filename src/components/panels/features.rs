@@ -72,11 +72,11 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                 .unwrap_or_else(|| class_name.clone());
                                             (tr!("source-class"), label)
                                         }
-                                        FeatureSource::Race(race_name) => {
-                                            let label = registry.races().with(race_name, |d| {
+                                        FeatureSource::Species(species_name) => {
+                                            let label = registry.species().with(species_name, |d| {
                                                 d.label.as_deref().unwrap_or(&d.name).to_string()
-                                            }).unwrap_or_else(|| race_name.clone());
-                                            (tr!("source-race"), label)
+                                            }).unwrap_or_else(|| species_name.clone());
+                                            (tr!("source-species"), label)
                                         }
                                         FeatureSource::Background(bg_name) => {
                                             let label = registry.backgrounds().with(bg_name, |d| {

@@ -9,15 +9,15 @@ pub struct CharacterIdentity {
     pub name: String,
     #[serde(default)]
     pub classes: Vec<ClassLevel>,
-    #[serde(default)]
-    pub race: String,
+    #[serde(default, alias = "race")]
+    pub species: String,
     #[serde(default)]
     pub background: String,
     pub alignment: Alignment,
     #[serde(default)]
     pub experience_points: u32,
-    #[serde(default)]
-    pub race_applied: bool,
+    #[serde(default, alias = "race_applied")]
+    pub species_applied: bool,
     #[serde(default)]
     pub background_applied: bool,
 }
@@ -27,11 +27,11 @@ impl Default for CharacterIdentity {
         Self {
             name: "New Character".to_string(),
             classes: vec![ClassLevel::default()],
-            race: String::new(),
+            species: String::new(),
             background: String::new(),
             alignment: Alignment::TrueNeutral,
             experience_points: 0,
-            race_applied: false,
+            species_applied: false,
             background_applied: false,
         }
     }

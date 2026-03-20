@@ -16,7 +16,7 @@ use crate::{
     vecset::VecSet,
 };
 
-/// Default walking speed in feet (most races).
+/// Default walking speed in feet (most species).
 const DEFAULT_SPEED: u32 = 30;
 
 /// Proficiency bonus for a given character level (D&D 5e standard
@@ -718,11 +718,11 @@ impl Character {
                     hit_dice_used: 0,
                     applied_levels: VecSet::new(),
                 }],
-                race: "Elf".to_string(),
+                species: "Elf".to_string(),
                 background: "Entertainer".to_string(),
                 alignment: Alignment::ChaoticGood,
                 experience_points: 900,
-                race_applied: true,
+                species_applied: true,
                 background_applied: true,
             },
             abilities: AbilityScores {
@@ -820,11 +820,11 @@ pub mod tests {
                     hit_dice_used: 0,
                     applied_levels: VecSet::new(),
                 }],
-                race: "Human".to_string(),
+                species: "Human".to_string(),
                 background: "Soldier".to_string(),
                 alignment: Alignment::TrueNeutral,
                 experience_points: 0,
-                race_applied: false,
+                species_applied: false,
                 background_applied: false,
             },
             abilities: AbilityScores {

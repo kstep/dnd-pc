@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use super::{
     background::BackgroundDefinition, class::ClassDefinition, feature::FeatureDefinition,
-    race::RaceDefinition,
+    species::SpeciesDefinition,
 };
 use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
 
@@ -14,18 +14,18 @@ pub(super) fn find_feature<'a>(
     features_index.get(name)
 }
 
-/// Find a feature and determine its source (Class/Background/Race).
+/// Find a feature and determine its source (Class/Background/Species).
 pub(super) fn find_feature_with_source<'a>(
     identity: &CharacterIdentity,
     name: &str,
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
     bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-    race_cache: &'a BTreeMap<Box<str>, RaceDefinition>,
+    species_cache: &'a BTreeMap<Box<str>, SpeciesDefinition>,
 ) -> Option<(&'a FeatureDefinition, Option<FeatureSource>)> {
     let feat = features_index.get(name)?;
 
-    // Determine source by checking which class/bg/race references this feature
+    // Determine source by checking which class/bg/species references this feature
     for cl in &identity.classes {
         if let Some(def) = class_cache.get(cl.class.as_str())
             && def.feature_names(cl.subclass.as_deref()).any(|n| n == name)
@@ -43,14 +43,14 @@ pub(super) fn find_feature_with_source<'a>(
         ));
     }
 
-    if let Some(race) = race_cache.get(identity.race.as_str())
-        && race.features.iter().any(|n| n == name)
+    if let Some(species_def) = species_cache.get(identity.species.as_str())
+        && species_def.features.iter().any(|n| n == name)
     {
-        return Some((feat, Some(FeatureSource::Race(identity.race.clone()))));
+        return Some((feat, Some(FeatureSource::Species(identity.species.clone()))));
     }
 
-    // Feature exists in catalog but not referenced by any class/race/background —
-    // manually-added feats (e.g. "Lucky", "Tough").
+    // Feature exists in catalog but not referenced by any class/species/background
+    // — manually-added feats (e.g. "Lucky", "Tough").
     Some((feat, None))
 }
 

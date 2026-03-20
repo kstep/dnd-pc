@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::vecset::VecSet;
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct RaceDefinition {
+pub struct SpeciesDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
@@ -13,7 +13,7 @@ pub struct RaceDefinition {
     pub features: VecSet<String>,
 }
 
-impl RaceDefinition {
+impl SpeciesDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
     }

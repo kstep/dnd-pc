@@ -7,11 +7,11 @@ use super::{
     cache::{DefinitionStore, FetchCache},
     class::ClassDefinition,
     feature::{ChoiceOption, FeatureDefinition, FeaturesIndex, FieldKind},
-    index::{BackgroundIndexEntry, ClassIndexEntry, Index, RaceIndexEntry, SpellIndexEntry},
+    index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry},
     labels,
     locale::{self, LocaleMap, SpellLocaleMap},
-    race::RaceDefinition,
     resolve,
+    species::SpeciesDefinition,
     spells::{SpellDefinition, SpellList, SpellMap},
     utils::fetch_json,
 };
@@ -26,7 +26,7 @@ use crate::{
 // ---- DefinitionStore newtype wrappers ----
 
 pub struct ClassDefs(RulesRegistry);
-pub struct RaceDefs(RulesRegistry);
+pub struct SpeciesDefs(RulesRegistry);
 pub struct BackgroundDefs(RulesRegistry);
 
 macro_rules! impl_definition_store {
@@ -102,13 +102,13 @@ impl_definition_store!(
     "class definition"
 );
 impl_definition_store!(
-    RaceDefs,
-    RaceDefinition,
+    SpeciesDefs,
+    SpeciesDefinition,
     LocaleMap,
-    race_cache,
-    races,
-    locale::apply_race_locale,
-    "race definition"
+    species_cache,
+    species,
+    locale::apply_species_locale,
+    "species definition"
 );
 impl_definition_store!(
     BackgroundDefs,
@@ -145,7 +145,7 @@ pub struct RulesRegistry {
     locale: Signal<String>,
     class_index: LocalResource<Result<Index, String>>,
     pub(super) class_cache: FetchCache<ClassDefinition>,
-    pub(super) race_cache: FetchCache<RaceDefinition>,
+    pub(super) species_cache: FetchCache<SpeciesDefinition>,
     pub(super) background_cache: FetchCache<BackgroundDefinition>,
     spell_list_cache: FetchCache<SpellMap>,
     effects_index: LocalResource<Result<EffectsIndex, String>>,
@@ -157,7 +157,7 @@ impl RulesRegistry {
 
     index_accessors! {
         with_class_entries,      class_label_by_name,      classes,      ClassIndexEntry;
-        with_race_entries,       race_label_by_name,       races,        RaceIndexEntry;
+        with_species_entries,    species_label_by_name,     species,      SpeciesIndexEntry;
         with_background_entries, background_label_by_name,  backgrounds,  BackgroundIndexEntry;
         with_spell_entries,      spell_label_by_name,       spells,       SpellIndexEntry;
     }
@@ -250,7 +250,7 @@ impl RulesRegistry {
         });
 
         let class_cache = FetchCache::new();
-        let race_cache = FetchCache::new();
+        let species_cache = FetchCache::new();
         let background_cache = FetchCache::new();
         let spell_list_cache = FetchCache::new();
 
@@ -261,7 +261,7 @@ impl RulesRegistry {
             async move {
                 futures::join!(
                     class_cache.fetch_locale::<LocaleMap>(&current),
-                    race_cache.fetch_locale::<LocaleMap>(&current),
+                    species_cache.fetch_locale::<LocaleMap>(&current),
                     background_cache.fetch_locale::<LocaleMap>(&current),
                     spell_list_cache.fetch_locale::<SpellLocaleMap>(&current),
                 )
@@ -279,7 +279,7 @@ impl RulesRegistry {
                 return;
             };
             class_cache.apply_locale_batch(class_results, locale::apply_class_locale, false);
-            race_cache.apply_locale_batch(race_results, locale::apply_race_locale, false);
+            species_cache.apply_locale_batch(race_results, locale::apply_species_locale, false);
             background_cache.apply_locale_batch(bg_results, locale::apply_background_locale, false);
             spell_list_cache.apply_locale_batch(
                 spell_results,
@@ -288,7 +288,7 @@ impl RulesRegistry {
             );
             // Notify all at once — Leptos batches these so effects run once.
             class_cache.notify();
-            race_cache.notify();
+            species_cache.notify();
             background_cache.notify();
             spell_list_cache.notify();
         });
@@ -299,7 +299,7 @@ impl RulesRegistry {
             effects_index,
             features_index,
             class_cache,
-            race_cache,
+            species_cache,
             background_cache,
             spell_list_cache,
         }
@@ -311,8 +311,8 @@ impl RulesRegistry {
         ClassDefs(*self)
     }
 
-    pub fn races(&self) -> RaceDefs {
-        RaceDefs(*self)
+    pub fn species(&self) -> SpeciesDefs {
+        SpeciesDefs(*self)
     }
 
     pub fn backgrounds(&self) -> BackgroundDefs {
@@ -485,14 +485,14 @@ impl RulesRegistry {
         self.with_features_index_untracked(|features_index| {
             let class_cache = self.class_cache.read_untracked();
             let bg_cache = self.background_cache.read_untracked();
-            let race_cache = self.race_cache.read_untracked();
+            let species_cache = self.species_cache.read_untracked();
             resolve::find_feature_with_source(
                 identity,
                 feature_name,
                 features_index,
                 &class_cache,
                 &bg_cache,
-                &race_cache,
+                &species_cache,
             )
             .map(|(feat, source)| f(feat, source))
         })
@@ -568,16 +568,16 @@ impl RulesRegistry {
                     );
                 }
             }
-            if !character.identity.race.is_empty()
-                && let Some(entry) = idx.races.get(character.identity.race.as_str())
+            if !character.identity.species.is_empty()
+                && let Some(entry) = idx.species.get(character.identity.species.as_str())
             {
-                self.race_cache.fetch_with_initial_locale(
-                    &character.identity.race,
+                self.species_cache.fetch_with_initial_locale(
+                    &character.identity.species,
                     &entry.url,
                     Self::data_url(&entry.url),
                     self.localized_url(&entry.url),
-                    locale::apply_race_locale,
-                    "race definition",
+                    locale::apply_species_locale,
+                    "species definition",
                 );
             }
             if !character.identity.background.is_empty()
@@ -701,7 +701,7 @@ macro_rules! impl_index_entry_traits {
 }
 
 impl_index_entry_traits!(ClassIndexEntry);
-impl_index_entry_traits!(RaceIndexEntry);
+impl_index_entry_traits!(SpeciesIndexEntry);
 impl_index_entry_traits!(BackgroundIndexEntry);
 impl_index_entry_traits!(SpellIndexEntry);
 

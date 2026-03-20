@@ -7,7 +7,7 @@ use super::{
     class::ClassDefinition,
     feature::{ChoiceOptions, FeaturesIndex, FieldKind},
     index::Index,
-    race::RaceDefinition,
+    species::SpeciesDefinition,
     spells::SpellMap,
 };
 use crate::model::EffectsIndex;
@@ -144,8 +144,8 @@ pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
     }
 }
 
-/// Apply a locale map to a `RaceDefinition`.
-pub fn apply_race_locale(def: &mut RaceDefinition, locale: &LocaleMap) {
+/// Apply a locale map to a `SpeciesDefinition`.
+pub fn apply_species_locale(def: &mut SpeciesDefinition, locale: &LocaleMap) {
     for (key, text) in locale {
         if key.parse() == LocalePath::Root {
             text.apply_label(&mut def.label);
@@ -177,7 +177,7 @@ pub fn apply_spell_locale(spells: &mut SpellMap, locale: &BTreeMap<Box<str>, Loc
 
 // --- Index and effects locale application ---
 
-/// Index locale map: keys like "class.Wizard", "race.Tiefling", etc.
+/// Index locale map: keys like "class.Wizard", "species.Tiefling", etc.
 pub type IndexLocaleMap = BTreeMap<Box<str>, LocaleText>;
 
 /// Effects locale map: keys are effect names.
@@ -200,8 +200,8 @@ pub(super) fn apply_index_locale(index: &mut Index, locale: &IndexLocaleMap) {
                     text.apply_description(&mut entry.description);
                 }
             }
-            "race" => {
-                if let Some(entry) = index.races.get_mut(name) {
+            "species" | "race" => {
+                if let Some(entry) = index.species.get_mut(name) {
                     text.apply_label(&mut entry.label);
                     text.apply_description(&mut entry.description);
                 }

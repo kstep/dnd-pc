@@ -1,7 +1,7 @@
 pub mod background;
 pub mod class;
-pub mod race;
 pub mod sidebar;
+pub mod species;
 pub mod spell;
 use std::collections::BTreeMap;
 

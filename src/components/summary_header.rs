@@ -20,18 +20,18 @@ pub fn SummaryHeader() -> impl IntoView {
 
     let name = Memo::new(move |_| store.identity().name().get());
 
-    let race_display = Memo::new(move |_| {
-        let race_name = store.identity().race().get();
-        if race_name.is_empty() {
+    let species_display = Memo::new(move |_| {
+        let species_name = store.identity().species().get();
+        if species_name.is_empty() {
             return String::new();
         }
         registry
-            .with_race_entries(|entries| {
+            .with_species_entries(|entries| {
                 entries
-                    .get(race_name.as_str())
+                    .get(species_name.as_str())
                     .map(|e| e.label().to_string())
             })
-            .unwrap_or(race_name)
+            .unwrap_or(species_name)
     });
 
     let class_summary = Memo::new(move |_| store.read().class_summary());
@@ -42,7 +42,7 @@ pub fn SummaryHeader() -> impl IntoView {
         <div class="panel summary-header">
             <div class="summary-header-info">
                 <span class="summary-header-name">{name}</span>
-                <span class="summary-header-detail">{race_display}</span>
+                <span class="summary-header-detail">{species_display}</span>
                 <span class="summary-header-detail">{class_summary}</span>
                 <span class="summary-header-stat">
                     {move_tr!("total-level")} ": " <strong>{total_level}</strong>

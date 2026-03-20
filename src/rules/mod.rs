@@ -6,9 +6,9 @@ pub mod feature;
 mod index;
 mod labels;
 pub mod locale;
-pub mod race;
 mod registry;
 mod resolve;
+pub mod species;
 pub mod spells;
 mod utils;
 
@@ -19,8 +19,8 @@ pub use feature::{
     ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition,
     FieldDefinition, FieldKind, ValueOrExpr, WhenCondition,
 };
-pub use index::{BackgroundIndexEntry, ClassIndexEntry, RaceIndexEntry, SpellIndexEntry};
-pub use race::RaceDefinition;
+pub use index::{BackgroundIndexEntry, ClassIndexEntry, SpeciesIndexEntry, SpellIndexEntry};
 pub use registry::RulesRegistry;
+pub use species::SpeciesDefinition;
 pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellsDefinition};
 pub use utils::LevelRules;

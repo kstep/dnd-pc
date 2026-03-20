@@ -173,8 +173,8 @@ pub fn CharacterHeader() -> impl IntoView {
 
     let char_id = store.read_untracked().id;
 
-    let race_options = Memo::new(move |_| {
-        registry.with_race_entries(|entries| {
+    let species_options = Memo::new(move |_| {
+        registry.with_species_entries(|entries| {
             entries
                 .values()
                 .map(|e| (e.name.clone(), e.label().to_string(), e.description.clone()))
@@ -204,27 +204,27 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     />
                 </div>
-                <div class="header-field race-field">
-                    <label>{move_tr!("race")}</label>
+                <div class="header-field species-field">
+                    <label>{move_tr!("species")}</label>
                     <EntityField
-                        name=move || store.identity().race().get()
-                        applied=move || store.identity().race_applied().get()
-                        options=race_options
-                        ref_prefix="race"
-                        apply_title=move_tr!("btn-apply-race")
-                        placeholder=move_tr!("race")
+                        name=move || store.identity().species().get()
+                        applied=move || store.identity().species_applied().get()
+                        options=species_options
+                        ref_prefix="species"
+                        apply_title=move_tr!("btn-apply-species")
+                        placeholder=move_tr!("species")
                         on_input=move |name: String| {
-                            let old = store.identity().race().get_untracked();
-                            store.identity().race().set(name.clone());
+                            let old = store.identity().species().get_untracked();
+                            store.identity().species().set(name.clone());
                             if name != old {
-                                store.identity().race_applied().set(false);
+                                store.identity().species_applied().set(false);
                             }
-                            registry.races().fetch(&name);
+                            registry.species().fetch(&name);
                         }
-                        fetch=move |name: &str| registry.races().fetch(name)
-                        has=move |name: &str| registry.races().has(name)
+                        fetch=move |name: &str| registry.species().fetch(name)
+                        has=move |name: &str| registry.species().has(name)
                         apply=move |_name: &str| {
-                            store.update(|c| registry.apply_race(c));
+                            store.update(|c| registry.apply_species(c));
                         }
                     />
                 </div>
