@@ -344,6 +344,13 @@ impl FeatureDefinition {
     }
 
     fn apply_fields(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
+        // Always ensure feature_data entry exists with source, even for field-less
+        // features
+        let entry = character.feature_data.entry(self.name.clone()).or_default();
+        if entry.source.is_none() {
+            entry.source = source.cloned();
+        }
+
         if self.fields.is_empty() {
             return;
         }
