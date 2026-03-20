@@ -123,7 +123,10 @@ fn attr_display_name(attr: Attribute, i18n: &leptos_fluent::I18n) -> String {
         Attribute::ProfBonus => i18n.tr("proficiency-bonus"),
         Attribute::Level => i18n.tr("level"),
         Attribute::ClassLevel => i18n.tr("class-level"),
-        Attribute::CasterLevel => i18n.tr("caster-level"),
+        Attribute::CasterLevel(None) => i18n.tr("caster-level"),
+        Attribute::CasterLevel(Some(pool)) => {
+            format!("{} ({})", i18n.tr("caster-level"), i18n.tr(pool.tr_key()))
+        }
         Attribute::SkillProficiency(s) => i18n.tr(s.tr_key()),
         Attribute::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
         Attribute::EquipmentProficiency(p) => i18n.tr(p.tr_key()),

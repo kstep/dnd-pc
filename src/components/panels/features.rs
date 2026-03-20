@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 
@@ -56,6 +56,10 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
+                            let has_source = feature_data
+                                .get(&feature.name)
+                                .and_then(|fd| fd.source.as_ref())
+                                .is_some();
                             let source_text = feature_data.get(&feature.name).and_then(|fd| {
                                 fd.source.as_ref().map(|src| {
                                     let (prefix, label) = match src {
@@ -86,22 +90,30 @@ pub fn FeaturesPanel() -> impl IntoView {
                                 <div class="entry-item">
                                     <ToggleButton />
                                     <div class="entry-content">
-                                        <DatalistInput
-                                            value=name
-                                            placeholder=move_tr!("feature-name")
-                                            class="entry-name"
-                                            options=options
-                                            on_input=move |input, resolved| {
-                                                let mut w = features.write();
-                                                if let Some(key) = resolved {
-                                                    w[i].name = key;
-                                                    w[i].label = None;
-                                                } else {
-                                                    w[i].set_label(input);
-                                                }
-                                                w[i].description.clear();
-                                            }
-                                        />
+                                        {if has_source {
+                                            Either::Left(view! {
+                                                <span class="entry-name entry-name-readonly">{name.clone()}</span>
+                                            })
+                                        } else {
+                                            Either::Right(view! {
+                                                <DatalistInput
+                                                    value=name
+                                                    placeholder=move_tr!("feature-name")
+                                                    class="entry-name"
+                                                    options=options
+                                                    on_input=move |input, resolved| {
+                                                        let mut w = features.write();
+                                                        if let Some(key) = resolved {
+                                                            w[i].name = key;
+                                                            w[i].label = None;
+                                                        } else {
+                                                            w[i].set_label(input);
+                                                        }
+                                                        w[i].description.clear();
+                                                    }
+                                                />
+                                            })
+                                        }}
                                     </div>
                                     <div class="entry-actions">
                                         <button

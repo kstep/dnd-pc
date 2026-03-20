@@ -656,10 +656,11 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
-            Attribute::CasterLevel => Ok(self
+            Attribute::CasterLevel(None) => Ok(self
                 .caster_level(SpellSlotPool::Arcane)
                 .max(self.caster_level(SpellSlotPool::Pact))
                 as i32),
+            Attribute::CasterLevel(Some(pool)) => Ok(self.caster_level(pool) as i32),
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Initiative => Ok(self.initiative()),
@@ -697,7 +698,8 @@ impl expr::Context<Attribute, i32> for Context<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
             Attribute::ClassLevel => Ok(self.class_level),
-            Attribute::CasterLevel => Ok(self.caster_level),
+            Attribute::CasterLevel(None) => Ok(self.caster_level),
+            Attribute::CasterLevel(Some(pool)) => Ok(self.character.caster_level(pool) as i32),
             Attribute::CasterModifier => Ok(self.caster_modifier),
             _ => self.character.resolve(var),
         }

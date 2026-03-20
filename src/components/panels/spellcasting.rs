@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -268,36 +268,45 @@ fn FeatureSpellcastingSection(
                                     <div class="entry-item">
                                         <ToggleButton />
                                         <div class="entry-content">
-                                            <DatalistInput
-                                                value=spell_name
-                                                placeholder=move_tr!("spell-name")
-                                                class="entry-name"
-                                                options=options
-                                                on_input=move |input, resolved| {
-                                                    let desc = resolved.as_ref().and_then(|name| {
-                                                        options.with(|opts| {
-                                                            opts.iter()
-                                                                .find(|(n, _, _)| n == name)
-                                                                .map(|(_, _, d)| d.clone())
-                                                        })
-                                                    }).unwrap_or_default();
-                                                    update_known_spell(fname, store, i, |spell| {
-                                                        if let Some(name) = resolved {
-                                                            spell.name = name;
-                                                            spell.label = Some(input);
-                                                        } else {
-                                                            spell.set_label(input);
+                                            {if spell_sticky {
+                                                Either::Left(view! {
+                                                    <span class="entry-name entry-name-readonly">{spell_name.clone()}</span>
+                                                })
+                                            } else {
+                                                Either::Right(view! {
+                                                    <DatalistInput
+                                                        value=spell_name
+                                                        placeholder=move_tr!("spell-name")
+                                                        class="entry-name"
+                                                        options=options
+                                                        on_input=move |input, resolved| {
+                                                            let desc = resolved.as_ref().and_then(|name| {
+                                                                options.with(|opts| {
+                                                                    opts.iter()
+                                                                        .find(|(n, _, _)| n == name)
+                                                                        .map(|(_, _, d)| d.clone())
+                                                                })
+                                                            }).unwrap_or_default();
+                                                            update_known_spell(fname, store, i, |spell| {
+                                                                if let Some(name) = resolved {
+                                                                    spell.name = name;
+                                                                    spell.label = Some(input);
+                                                                } else {
+                                                                    spell.set_label(input);
                                                         }
                                                         spell.description = desc;
                                                     });
                                                 }
                                             />
+                                                })
+                                            }}
                                             <input
                                                 type="number"
                                                 class="short-input"
                                                 min="0"
                                                 max="9"
                                                 placeholder="Lv"
+                                                disabled=spell_sticky
                                                 prop:value=spell_level
                                                 on:change=move |e| {
                                                     if let Ok(value) = event_target_value(&e).parse::<u32>() {
@@ -400,47 +409,54 @@ fn FeatureSpellcastingSection(
                                 <div class="entry-item">
                                     <ToggleButton />
                                     <div class="entry-content">
-                                        <DatalistInput
-                                            value=spell_name
-                                            placeholder=move_tr!("spell-name")
-                                            class="entry-name"
-                                            options=options
-                                            on_input=move |input, resolved| {
-                                                // Look up description from suggestions
-                                                let desc = resolved.as_ref().and_then(|name| {
-                                                    options.with(|opts| {
-                                                        opts.iter()
-                                                            .find(|(n, _, _)| n == name)
-                                                            .map(|(_, _, d)| d.clone())
-                                                    })
-                                                }).unwrap_or_default();
-                                                update_spells(fname, store, |sc| {
-                                                    let Some(spell) = sc.spells.get_mut(i) else { return };
-                                                    if let Some(name) = resolved {
-                                                        // Prefer spellbook description, fall back to registry
-                                                        let known_spell = sc.known.as_ref()
-                                                            .and_then(|k| k.iter().find(|s| s.name == name));
-                                                        spell.description = known_spell
-                                                            .map(|s| s.description.clone())
-                                                            .filter(|d| !d.is_empty())
-                                                            .unwrap_or(desc);
-                                                        spell.label = known_spell
-                                                            .and_then(|s| s.label.clone())
-                                                            .or(Some(input));
-                                                        spell.name = name;
-                                                    } else {
-                                                        spell.set_label(input);
-                                                        spell.description.clear();
+                                        {if spell_sticky {
+                                            Either::Left(view! {
+                                                <span class="entry-name entry-name-readonly">{spell_name.clone()}</span>
+                                            })
+                                        } else {
+                                            Either::Right(view! {
+                                                <DatalistInput
+                                                    value=spell_name
+                                                    placeholder=move_tr!("spell-name")
+                                                    class="entry-name"
+                                                    options=options
+                                                    on_input=move |input, resolved| {
+                                                        let desc = resolved.as_ref().and_then(|name| {
+                                                            options.with(|opts| {
+                                                                opts.iter()
+                                                                    .find(|(n, _, _)| n == name)
+                                                                    .map(|(_, _, d)| d.clone())
+                                                            })
+                                                        }).unwrap_or_default();
+                                                        update_spells(fname, store, |sc| {
+                                                            let Some(spell) = sc.spells.get_mut(i) else { return };
+                                                            if let Some(name) = resolved {
+                                                                let known_spell = sc.known.as_ref()
+                                                                    .and_then(|k| k.iter().find(|s| s.name == name));
+                                                                spell.description = known_spell
+                                                                    .map(|s| s.description.clone())
+                                                                    .filter(|d| !d.is_empty())
+                                                                    .unwrap_or(desc);
+                                                                spell.label = known_spell
+                                                                    .and_then(|s| s.label.clone())
+                                                                    .or(Some(input));
+                                                                spell.name = name;
+                                                            } else {
+                                                                spell.set_label(input);
+                                                                spell.description.clear();
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
-                                        />
+                                                />
+                                            })
+                                        }}
                                         <input
                                             type="number"
                                             class="short-input"
                                             min="0"
                                             max="9"
                                             placeholder="Lv"
+                                            disabled=spell_sticky
                                             prop:value=spell_level
                                             on:change=move |e| {
                                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
