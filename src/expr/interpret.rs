@@ -238,6 +238,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
             let cond = stack.pop()?;
             stack.push(if cond != 0 { then_val } else { else_val });
         }
+        Op::Eval(_) => {} // noop
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
     Ok(())
@@ -522,6 +523,7 @@ impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
                 };
                 self.push(text, 0);
             }
+            Op::Eval(_) => {} // noop
         }
         Ok(())
     }

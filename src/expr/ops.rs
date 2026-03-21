@@ -29,5 +29,6 @@ pub enum Op<Var, Val> {
     Ge,    // >=
     CmpEq, // ==
     CmpNe, // !=
-    If,    // if(cond, then, else)
+    If,      // if(cond, then, else)
+    Eval(u8), // noop placeholder
 }
