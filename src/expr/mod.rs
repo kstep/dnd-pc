@@ -6,7 +6,7 @@ use std::{
     sync::Arc,
 };
 
-use serde::Serialize;
+use serde::{Serialize, Serializer, ser::SerializeSeq};
 
 mod de;
 mod error;
@@ -33,21 +33,46 @@ pub const fn avg_hp(sides: i32) -> i32 {
     sides / 2 + 1
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(transparent)]
-pub struct Expr<Var, Val = i32>(Arc<[Op<Var, Val>]>);
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[allow(clippy::type_complexity)]
+pub struct Expr<Var, Val = i32>(Arc<[Box<[Op<Var, Val>]>]>);
+
+impl<Var: Serialize, Val: Serialize> Serialize for Expr<Var, Val> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
+        for block in self.0.iter() {
+            seq.serialize_element(&block)?;
+        }
+        seq.end()
+    }
+}
 
 impl<Var, Val> Deref for Expr<Var, Val> {
     type Target = [Op<Var, Val>];
 
     fn deref(&self) -> &Self::Target {
-        &self.0
+        &self.0[0]
     }
 }
 
 impl<Var: Copy, Val: Copy> Expr<Var, Val> {
-    pub fn run<I: Interpreter<Var, Val>>(&self, interp: I) -> Result<I::Output, Error> {
-        interp.run(self.iter().copied())
+    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
+        self.run_block(&mut interp, 0)?;
+        interp.finish()
+    }
+
+    fn run_block<I: Interpreter<Var, Val>>(
+        &self,
+        interp: &mut I,
+        block: usize,
+    ) -> Result<(), Error> {
+        for &op in self.0[block].iter() {
+            match op {
+                Op::Eval(idx) => self.run_block(interp, idx as usize + 1)?,
+                op => interp.exec(op)?,
+            }
+        }
+        Ok(())
     }
 }
 
@@ -83,7 +108,7 @@ impl<Var: Copy> Expr<Var, i32> {
     /// and returns a map of die sides to total number of rolls needed.
     pub fn dice_rolls(&self) -> BTreeMap<u32, u32> {
         let mut result = BTreeMap::new();
-        for window in self.0.windows(3) {
+        for window in self.0[0].windows(3) {
             if let [Op::PushConst(count), Op::PushConst(sides), Op::Roll] = window
                 && *count > 0
                 && *sides > 0
@@ -99,13 +124,16 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Parser::new(s).parse().map(Vec::into).map(Self)
+        let ops: Box<[Op<Var, Val>]> = Parser::new(s).parse().map(Vec::into)?;
+        Ok(Self(Arc::from([ops])))
     }
 }
 
 impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<Var, Val> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = self.run(Formatter::new()).map_err(|_| fmt::Error)?;
+        let s = Formatter::new()
+            .run(self.0[0].iter().copied())
+            .map_err(|_| fmt::Error)?;
         f.write_str(&s)
     }
 }
@@ -415,7 +443,7 @@ mod tests {
         // Desugars to same ops as expanded form
         let compound: Expr = "AC -= 3".parse().unwrap();
         let expanded: Expr = "AC = AC - 3".parse().unwrap();
-        assert_eq!(compound.0, expanded.0);
+        assert_eq!(*compound, *expanded);
 
         // All compound operators
         ch.ac = 10;
