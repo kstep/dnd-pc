@@ -29,6 +29,6 @@ pub enum Op<Var, Val> {
     Ge,    // >=
     CmpEq, // ==
     CmpNe, // !=
-    If,      // if(cond, then, else)
-    Eval(u8), // noop placeholder
+    EvalIf(u8, u8), // if(cond, then_block, else_block) — pop cond, branch to block
+    Eval(u8),       // evaluate sub-block
 }

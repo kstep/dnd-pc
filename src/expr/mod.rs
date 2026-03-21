@@ -69,7 +69,11 @@ impl<Var: Copy, Val: Copy> Expr<Var, Val> {
         for &op in self.0[block].iter() {
             match op {
                 Op::Eval(idx) => self.run_block(interp, idx as usize + 1)?,
-                op => interp.exec(op)?,
+                op => {
+                    if let Some(sub_block) = interp.exec(op)? {
+                        self.run_block(interp, sub_block)?;
+                    }
+                }
             }
         }
         Ok(())
@@ -124,16 +128,43 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let ops: Box<[Op<Var, Val>]> = Parser::new(s).parse().map(Vec::into)?;
-        Ok(Self(Arc::from([ops])))
+        #[allow(clippy::type_complexity)]
+        let blocks: Arc<[Box<[Op<Var, Val>]>]> = Parser::new(s)
+            .parse()?
+            .into_iter()
+            .map(Vec::into_boxed_slice)
+            .collect();
+        Ok(Self(blocks))
+    }
+}
+
+impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
+    fn format_block(&self, block: usize) -> Result<String, Error> {
+        let mut fmt = Formatter::new();
+        for &op in self.0[block].iter() {
+            match op {
+                Op::Eval(idx) => {
+                    let text = self.format_block(idx as usize + 1)?;
+                    fmt.push_atom(text);
+                }
+                Op::EvalIf(then_idx, else_idx) => {
+                    let cond = fmt.pop_text()?;
+                    let then_text = self.format_block(then_idx as usize + 1)?;
+                    let else_text = self.format_block(else_idx as usize + 1)?;
+                    fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
+                }
+                op => {
+                    fmt.exec(op)?;
+                }
+            }
+        }
+        <Formatter as Interpreter<Var, Val>>::finish(fmt)
     }
 }
 
 impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<Var, Val> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = Formatter::new()
-            .run(self.0[0].iter().copied())
-            .map_err(|_| fmt::Error)?;
+        let s = self.format_block(0).map_err(|_| fmt::Error)?;
         f.write_str(&s)
     }
 }

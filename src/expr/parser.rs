@@ -8,6 +8,9 @@ use crate::expr::{
 
 pub(super) struct Parser<'a, Var, Val> {
     tokens: Peekable<Tokenizer<'a>>,
+    /// Extra blocks for sub-expressions (if branches, etc.).
+    /// Block indices are offset by 1 (block 0 is the main expression).
+    blocks: Vec<Vec<Op<Var, Val>>>,
     _var: PhantomData<(Var, Val)>,
 }
 
@@ -15,6 +18,7 @@ impl<'a, Var, Val> From<Tokenizer<'a>> for Parser<'a, Var, Val> {
     fn from(tokens: Tokenizer<'a>) -> Self {
         Self {
             tokens: tokens.peekable(),
+            blocks: Vec::new(),
             _var: PhantomData,
         }
     }
@@ -25,10 +29,13 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Self::from(Tokenizer::new(expr))
     }
 
-    pub fn parse(&mut self) -> Result<Vec<Op<Var, Val>>, Error> {
+    pub fn parse(&mut self) -> Result<Vec<Vec<Op<Var, Val>>>, Error> {
         let mut ops = Vec::new();
         self.parse_into(&mut ops)?;
-        Ok(ops)
+        let mut blocks = Vec::with_capacity(1 + self.blocks.len());
+        blocks.push(ops);
+        blocks.append(&mut self.blocks);
+        Ok(blocks)
     }
 
     pub fn parse_into(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
@@ -315,8 +322,7 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 ops.push(if name == "not" { Op::Not } else { Op::AvgHp });
             }
             "if" => {
-                self.parse_ternary_function_call(ops)?;
-                ops.push(Op::If);
+                self.parse_if(ops)?;
             }
             _ => return Err(Error::unexpected_token(name)),
         }
@@ -333,15 +339,28 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Ok(())
     }
 
-    fn parse_ternary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+    fn parse_if(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
+        // Parse condition into current block
         self.parse_or(ops)?;
         self.expect(|token| matches!(token, Token::Comma))?;
-        self.parse_or(ops)?;
+        // Parse then-branch into a new sub-block
+        let then_block = self.parse_sub_block()?;
         self.expect(|token| matches!(token, Token::Comma))?;
-        self.parse_or(ops)?;
+        // Parse else-branch into a new sub-block
+        let else_block = self.parse_sub_block()?;
         self.expect(|token| matches!(token, Token::RParen))?;
+        ops.push(Op::EvalIf(then_block, else_block));
         Ok(())
+    }
+
+    fn parse_sub_block(&mut self) -> Result<u8, Error> {
+        let mut block_ops = Vec::new();
+        self.parse_or(&mut block_ops)?;
+        // Block index is offset by 1 (block 0 = main)
+        let idx = self.blocks.len() as u8;
+        self.blocks.push(block_ops);
+        Ok(idx)
     }
 
     fn parse_unary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
