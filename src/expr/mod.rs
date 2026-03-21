@@ -67,13 +67,8 @@ impl<Var: Copy, Val: Copy> Expr<Var, Val> {
         block: usize,
     ) -> Result<(), Error> {
         for &op in self.0[block].iter() {
-            match op {
-                Op::Eval(idx) => self.run_block(interp, idx as usize + 1)?,
-                op => {
-                    if let Some(sub_block) = interp.exec(op)? {
-                        self.run_block(interp, sub_block)?;
-                    }
-                }
+            if let Some(sub_block) = interp.exec(op)? {
+                self.run_block(interp, sub_block)?;
             }
         }
         Ok(())

@@ -54,11 +54,6 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
             }
-            Op::EvalIf(then_idx, else_idx) => {
-                let cond = self.stack.pop()?;
-                let block = if cond != 0 { then_idx } else { else_idx };
-                Ok(Some(block as usize + 1))
-            }
             op => eval_op(&mut self.stack, op),
         }
     }
@@ -98,11 +93,6 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                 Ok(None)
             }
             Op::Assign(var) => Err(Error::assign_at_eval(var)),
-            Op::EvalIf(then_idx, else_idx) => {
-                let cond = self.stack.pop()?;
-                let block = if cond != 0 { then_idx } else { else_idx };
-                Ok(Some(block as usize + 1))
-            }
             op => eval_op(&mut self.stack, op),
         }
     }
@@ -248,7 +238,13 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
             let (a, b) = stack.pop2()?;
             stack.push((a != b) as i32);
         }
-        Op::EvalIf(_, _) | Op::Eval(_) | Op::PushVar(_) | Op::Assign(_) => unreachable!(),
+        Op::Eval(idx) => return Ok(Some(idx as usize + 1)),
+        Op::EvalIf(then_idx, else_idx) => {
+            let cond = stack.pop()?;
+            let block = if cond != 0 { then_idx } else { else_idx };
+            return Ok(Some(block as usize + 1));
+        }
+        Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
     Ok(None)
 }
@@ -336,11 +332,6 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
             Op::Assign(var) => {
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
-            }
-            Op::EvalIf(then_idx, else_idx) => {
-                let cond = self.stack.pop()?;
-                let block = if cond != 0 { then_idx } else { else_idx };
-                Ok(Some(block as usize + 1))
             }
             Op::Roll => {
                 let (count, sides) = self.stack.pop2()?;
@@ -539,7 +530,8 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 };
                 self.push(text, 0);
             }
-            Op::EvalIf(_, _) | Op::Eval(_) => {} // intercepted by run_block
+            Op::Eval(idx) => return Ok(Some(idx as usize + 1)),
+            Op::EvalIf(_, _) => {} // intercepted by format_block
         }
         Ok(None)
     }
