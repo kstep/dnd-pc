@@ -42,6 +42,23 @@ pub fn EffectsBlock() -> impl IntoView {
     let reroll_index = RwSignal::new(Option::<usize>::None);
     let pending_rolls = RwSignal::new(BTreeMap::<u32, u32>::new());
 
+    let open_dice_modal = move |index: Option<usize>, rolls: BTreeMap<u32, u32>| {
+        reroll_index.set(index);
+        pending_rolls.set(rolls);
+        show_dice_pool.set(true);
+    };
+
+    let commit_effect = move |effect: ActiveEffect| {
+        effects.update(|active| active.add(effect, &store.read()));
+        effect_label.set(String::new());
+        effect_key.set(None);
+        effect_desc.set(String::new());
+        effect_scope.set(None);
+        if let Some(el) = expr_input.get() {
+            el.set_value("");
+        }
+    };
+
     let effect_options = Signal::derive(move || {
         registry.with_effects_index(|index| {
             index
@@ -97,18 +114,11 @@ pub fn EffectsBlock() -> impl IntoView {
                         // Check if expression has dice rolls
                         let rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
                         if rolls.is_empty() {
-                            effects.update(|e| e.add(effect, &store.read()));
+                            commit_effect(effect);
                         } else {
                             pending_effect.set(Some(effect));
-                            pending_rolls.set(rolls);
-                            show_dice_pool.set(true);
+                            open_dice_modal(None, rolls);
                         }
-
-                        effect_label.set(String::new());
-                        effect_key.set(None);
-                        effect_desc.set(String::new());
-                        effect_scope.set(None);
-                        expr_el.set_value("");
                     }
                 ><Icon name="circle-plus" size=14 /></button>
                 <div class="entry-content">
@@ -208,10 +218,17 @@ pub fn EffectsBlock() -> impl IntoView {
                                                     let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
                                                         return;
                                                     };
+                                                    let rolls = expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
                                                     effects.update(|effects| {
-                                                        effects.update_field(i, |eff| eff.expr = expr);
+                                                        effects.update_field(i, |eff| {
+                                                            eff.pool = None;
+                                                            eff.expr = expr;
+                                                        });
                                                         effects.recompute(&store.read());
                                                     });
+                                                    if !rolls.is_empty() {
+                                                        open_dice_modal(Some(i), rolls);
+                                                    }
                                                 }
                                             />
                                             {(!dice_rolls.is_empty()).then(|| {
@@ -221,9 +238,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                         class="btn-icon"
                                                         title=move_tr!("effect-reroll")
                                                         on:click=move |_| {
-                                                            reroll_index.set(Some(i));
-                                                            pending_rolls.set(rolls.clone());
-                                                            show_dice_pool.set(true);
+                                                            open_dice_modal(Some(i), rolls.clone());
                                                         }
                                                     >
                                                         <Icon name="dices" size=14 />
@@ -272,10 +287,10 @@ pub fn EffectsBlock() -> impl IntoView {
                                 reroll_index.set(None);
                             } else {
                                 // New effect
-                                pending_effect.update(|pe| {
-                                    if let Some(mut effect) = pe.take() {
+                                pending_effect.update(|pending| {
+                                    if let Some(mut effect) = pending.take() {
                                         effect.pool = Some(pool);
-                                        effects.update(|e| e.add(effect, &store.read()));
+                                        commit_effect(effect);
                                     }
                                 });
                             }
