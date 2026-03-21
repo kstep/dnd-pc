@@ -158,91 +158,91 @@ impl FromStr for Attribute {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Dotted forms: STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV,
         // SKILL.ACRO, SKILL.ACRO.ADV, ATK.ADV
-        if let Some((prefix, rest)) = s.split_once('.') {
-            if prefix == "SKILL" {
+        let Some((prefix, rest)) = s.split_once('.') else {
+            return match s {
+                "MAX_HP" => Ok(Self::MaxHp),
+                "HP" => Ok(Self::Hp),
+                "TEMP_HP" => Ok(Self::TempHp),
+                "LEVEL" => Ok(Self::Level),
+                "AC" => Ok(Self::Ac),
+                "SPEED" => Ok(Self::Speed),
+                "CLASS_LEVEL" => Ok(Self::ClassLevel),
+                "CASTER_LEVEL" => Ok(Self::CasterLevel(None)),
+                "CASTER_MODIFIER" => Ok(Self::CasterModifier),
+                "PROF_BONUS" => Ok(Self::ProfBonus),
+                "ATK" => Ok(Self::AttackBonus),
+                "INITIATIVE" => Ok(Self::Initiative),
+                "INSPIRATION" => Ok(Self::Inspiration),
+                other => {
+                    // Bare ability names => ability score
+                    parse_ability(other)
+                        .map(Self::Ability)
+                        .ok_or("unknown attribute")
+                }
+            };
+        };
+
+        match prefix {
+            "SKILL" => {
                 // SKILL.ACRO or SKILL.ACRO.ADV
-                if let Some((skill_str, suffix)) = rest.split_once('.') {
-                    return match suffix {
-                        "ADV" => parse_skill(skill_str)
-                            .map(Self::SkillAdvantage)
-                            .ok_or("unknown skill"),
-                        "PROF" => parse_skill(skill_str)
-                            .map(Self::SkillProficiency)
-                            .ok_or("unknown skill"),
-                        _ => Err("unknown skill suffix (expected ADV or PROF)"),
-                    };
+                let Some((skill_str, suffix)) = rest.split_once('.') else {
+                    return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
+                };
+                match suffix {
+                    "ADV" => parse_skill(skill_str)
+                        .map(Self::SkillAdvantage)
+                        .ok_or("unknown skill"),
+                    "PROF" => parse_skill(skill_str)
+                        .map(Self::SkillProficiency)
+                        .ok_or("unknown skill"),
+                    _ => Err("unknown skill suffix (expected ADV or PROF)"),
                 }
-                return parse_skill(rest).map(Self::Skill).ok_or("unknown skill");
             }
-            if prefix == "PROF" {
-                return parse_proficiency(rest)
-                    .map(Self::EquipmentProficiency)
-                    .ok_or("unknown proficiency");
-            }
-            if prefix == "INITIATIVE" {
-                return match rest {
-                    "BONUS" => Ok(Self::InitiativeBonus),
-                    _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
+            "PROF" => parse_proficiency(rest)
+                .map(Self::EquipmentProficiency)
+                .ok_or("unknown proficiency"),
+            "INITIATIVE" => match rest {
+                "BONUS" => Ok(Self::InitiativeBonus),
+                _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
+            },
+            "ATK" => match rest {
+                "ADV" => Ok(Self::AttackAdvantage),
+                _ => Err("unknown ATK suffix (expected ADV)"),
+            },
+            "SPELL" => match rest {
+                "DC" => Ok(Self::SpellDc),
+                "ATK" => Ok(Self::SpellAttack),
+                "ATK.ADV" => Ok(Self::SpellAttackAdvantage),
+                _ => Err("unknown SPELL suffix (expected DC, ATK, or ATK.ADV)"),
+            },
+            "CASTER_LEVEL" => match rest {
+                "ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
+                "PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
+                _ => Err("unknown CASTER_LEVEL suffix (expected ARCANE or PACT)"),
+            },
+            prefix => {
+                let Some(ability) = parse_ability(prefix) else {
+                    return Err("unknown attribute");
                 };
-            }
-            if prefix == "ATK" {
-                return match rest {
-                    "ADV" => Ok(Self::AttackAdvantage),
-                    _ => Err("unknown ATK suffix (expected ADV)"),
-                };
-            }
-            if prefix == "SPELL" {
-                return match rest {
-                    "DC" => Ok(Self::SpellDc),
-                    "ATK" => Ok(Self::SpellAttack),
-                    "ATK.ADV" => Ok(Self::SpellAttackAdvantage),
-                    _ => Err("unknown SPELL suffix (expected DC, ATK, or ATK.ADV)"),
-                };
-            }
-            if let Some(ability) = parse_ability(prefix) {
+
                 // STR.MOD, STR.SAVE, STR.ADV, STR.SAVE.ADV
-                if let Some((middle, suffix)) = rest.split_once('.') {
-                    if middle == "SAVE" {
-                        return match suffix {
-                            "ADV" => Ok(Self::SaveAdvantage(ability)),
-                            "PROF" => Ok(Self::SaveProficiency(ability)),
-                            _ => Err("unknown SAVE suffix (expected ADV or PROF)"),
-                        };
-                    }
-                    return Err("unknown ability suffix");
-                }
-                return match rest {
-                    "MOD" => Ok(Self::Modifier(ability)),
-                    "SAVE" => Ok(Self::SavingThrow(ability)),
-                    "ADV" => Ok(Self::AbilityAdvantage(ability)),
-                    _ => Err("unknown ability suffix (expected MOD, SAVE, or ADV)"),
+                let Some((middle, suffix)) = rest.split_once('.') else {
+                    return match rest {
+                        "MOD" => Ok(Self::Modifier(ability)),
+                        "SAVE" => Ok(Self::SavingThrow(ability)),
+                        "ADV" => Ok(Self::AbilityAdvantage(ability)),
+                        _ => Err("unknown ability suffix (expected MOD, SAVE, or ADV)"),
+                    };
                 };
+                if middle != "SAVE" {
+                    return Err("unknown ability suffix");
+                };
+                match suffix {
+                    "ADV" => Ok(Self::SaveAdvantage(ability)),
+                    "PROF" => Ok(Self::SaveProficiency(ability)),
+                    _ => Err("unknown SAVE suffix (expected ADV or PROF)"),
+                }
             }
-            return Err("unknown attribute");
-        }
-
-        // Bare ability names => ability score
-        if let Some(ability) = parse_ability(s) {
-            return Ok(Self::Ability(ability));
-        }
-
-        match s {
-            "MAX_HP" => Ok(Self::MaxHp),
-            "HP" => Ok(Self::Hp),
-            "TEMP_HP" => Ok(Self::TempHp),
-            "LEVEL" => Ok(Self::Level),
-            "AC" => Ok(Self::Ac),
-            "SPEED" => Ok(Self::Speed),
-            "CLASS_LEVEL" => Ok(Self::ClassLevel),
-            "CASTER_LEVEL" => Ok(Self::CasterLevel(None)),
-            "CASTER_LEVEL.ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
-            "CASTER_LEVEL.PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
-            "CASTER_MODIFIER" => Ok(Self::CasterModifier),
-            "PROF_BONUS" => Ok(Self::ProfBonus),
-            "ATK" => Ok(Self::AttackBonus),
-            "INITIATIVE" => Ok(Self::Initiative),
-            "INSPIRATION" => Ok(Self::Inspiration),
-            _ => Err("unknown attribute"),
         }
     }
 }
