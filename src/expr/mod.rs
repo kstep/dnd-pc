@@ -139,14 +139,18 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
         for &op in self.0[block].iter() {
             match op {
                 Op::Eval(idx) => {
-                    let text = self.format_block(idx as usize + 1)?;
+                    let text = self.format_block(idx as usize)?;
                     fmt.push_atom(text);
                 }
                 Op::EvalIf(then_idx, else_idx) => {
                     let cond = fmt.pop_text()?;
-                    let then_text = self.format_block(then_idx as usize + 1)?;
-                    let else_text = self.format_block(else_idx as usize + 1)?;
-                    fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
+                    let then_text = self.format_block(then_idx as usize)?;
+                    if else_idx == 0 {
+                        fmt.push_atom(format!("if({cond}, {then_text})"));
+                    } else {
+                        let else_text = self.format_block(else_idx as usize)?;
+                        fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
+                    }
                 }
                 op => {
                     fmt.exec(op)?;

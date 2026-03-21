@@ -9,7 +9,7 @@ use crate::expr::{
 pub(super) struct Parser<'a, Var, Val> {
     tokens: Peekable<Tokenizer<'a>>,
     /// Extra blocks for sub-expressions (if branches, etc.).
-    /// Block indices are offset by 1 (block 0 is the main expression).
+    /// Block indices are 1-based (0 = main block / "no block").
     blocks: Vec<Vec<Op<Var, Val>>>,
     _var: PhantomData<(Var, Val)>,
 }
@@ -346,9 +346,13 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         self.expect(|token| matches!(token, Token::Comma))?;
         // Parse then-branch into a new sub-block
         let then_block = self.parse_sub_block()?;
-        self.expect(|token| matches!(token, Token::Comma))?;
-        // Parse else-branch into a new sub-block
-        let else_block = self.parse_sub_block()?;
+        // Optional else-branch (0 means no else)
+        let else_block = if let Some(Token::Comma) = self.peek() {
+            self.next()?;
+            self.parse_sub_block()?
+        } else {
+            0
+        };
         self.expect(|token| matches!(token, Token::RParen))?;
         ops.push(Op::EvalIf(then_block, else_block));
         Ok(())
@@ -357,8 +361,8 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
     fn parse_sub_block(&mut self) -> Result<u8, Error> {
         let mut block_ops = Vec::new();
         self.parse_or(&mut block_ops)?;
-        // Block index is offset by 1 (block 0 = main)
-        let idx = self.blocks.len() as u8;
+        // 1-based: block 0 is reserved (main block / "no block")
+        let idx = self.blocks.len() as u8 + 1;
         self.blocks.push(block_ops);
         Ok(idx)
     }

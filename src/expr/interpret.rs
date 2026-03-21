@@ -238,11 +238,11 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
             let (a, b) = stack.pop2()?;
             stack.push((a != b) as i32);
         }
-        Op::Eval(idx) => return Ok(Some(idx as usize + 1)),
+        Op::Eval(idx) => return Ok(Some(idx as usize)),
         Op::EvalIf(then_idx, else_idx) => {
             let cond = stack.pop()?;
             let block = if cond != 0 { then_idx } else { else_idx };
-            return Ok(Some(block as usize + 1));
+            return Ok(if block == 0 { None } else { Some(block as usize) });
         }
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
@@ -530,7 +530,7 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 };
                 self.push(text, 0);
             }
-            Op::Eval(idx) => return Ok(Some(idx as usize + 1)),
+            Op::Eval(idx) => return Ok(Some(idx as usize)),
             Op::EvalIf(_, _) => {} // intercepted by format_block
         }
         Ok(None)
