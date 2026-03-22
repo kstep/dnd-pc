@@ -56,47 +56,19 @@ impl<Var, Val> Deref for Expr<Var, Val> {
 }
 
 impl<Var: Copy, Val: Copy> Expr<Var, Val> {
-    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error>
-    where
-        Val: Default + PartialEq,
-    {
+    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
         self.run_block(&mut interp, 0)?;
         interp.finish()
     }
 
-    fn eval_block<I: Interpreter<Var, Val>>(&self, interp: &mut I, block: u8) -> Result<(), Error>
-    where
-        Val: Default + PartialEq,
-    {
-        match block {
-            0 => Ok(()),
-            255 => Err(Error::InvalidBlock(block)),
-            _ => self.run_block(interp, block as usize),
-        }
-    }
-
-    fn run_block<I: Interpreter<Var, Val>>(&self, interp: &mut I, block: usize) -> Result<(), Error>
-    where
-        Val: Default + PartialEq,
-    {
+    fn run_block<I: Interpreter<Var, Val>>(
+        &self,
+        interp: &mut I,
+        block: usize,
+    ) -> Result<(), Error> {
         for &op in self.0[block].iter() {
-            match op {
-                Op::EvalIf(cond_idx, then_idx, else_idx) => {
-                    self.eval_block(interp, cond_idx)?;
-                    let cond = interp.pop()?;
-                    let branch = if cond != Val::default() {
-                        then_idx
-                    } else {
-                        else_idx
-                    };
-                    self.eval_block(interp, branch)?;
-                }
-                Op::Eval(idx) => {
-                    self.eval_block(interp, idx)?;
-                }
-                _ => {
-                    interp.exec(op)?;
-                }
+            if let Some(sub_block) = interp.exec(op)? {
+                self.run_block(interp, sub_block)?;
             }
         }
         Ok(())
@@ -170,8 +142,8 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
                     let text = self.format_block(idx as usize)?;
                     fmt.push_atom(text);
                 }
-                Op::EvalIf(cond_idx, then_idx, else_idx) => {
-                    let cond = self.format_block(cond_idx as usize)?;
+                Op::EvalIf(then_idx, else_idx) => {
+                    let cond = fmt.pop_text()?;
                     let then_text = self.format_block(then_idx as usize)?;
                     if else_idx == 0 {
                         fmt.push_atom(format!("if({cond}, {then_text})"));
