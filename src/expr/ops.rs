@@ -29,5 +29,7 @@ pub enum Op<Var, Val> {
     Ge,    // >=
     CmpEq, // ==
     CmpNe, // !=
-    If,    // if(cond, then, else)
+    EvalIf(u8, u8), /* if: pop cond, branch to then/else — 1-based block indices, 0 = noop, 255
+            * = error */
+    Eval(u8), // evaluate sub-block — 1-based index, 0 = noop, 255 = error
 }

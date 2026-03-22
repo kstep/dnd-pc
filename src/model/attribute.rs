@@ -44,6 +44,7 @@ pub enum Attribute {
     SpellDc,
     SpellAttack,
     SpellAttackAdvantage,
+    Arg(u8),
 }
 
 impl Attribute {
@@ -205,6 +206,10 @@ impl FromStr for Attribute {
                 "BONUS" => Ok(Self::InitiativeBonus),
                 _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
             },
+            "ARG" => rest
+                .parse::<u8>()
+                .map(Self::Arg)
+                .map_err(|_| "invalid ARG index (expected integer 0-255)"),
             "ATK" => match rest {
                 "ADV" => Ok(Self::AttackAdvantage),
                 _ => Err("unknown ATK suffix (expected ADV)"),
@@ -280,6 +285,7 @@ impl fmt::Display for Attribute {
             Self::SpellDc => f.write_str("SPELL.DC"),
             Self::SpellAttack => f.write_str("SPELL.ATK"),
             Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
+            Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
 }

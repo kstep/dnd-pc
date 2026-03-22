@@ -1,4 +1,4 @@
-use std::{fmt, marker::PhantomData, ops::Neg, str::FromStr};
+use std::{fmt, marker::PhantomData, ops::Neg, str::FromStr, sync::Arc};
 
 use serde::{Deserialize, Deserializer, de};
 
@@ -28,18 +28,24 @@ where
             }
 
             fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var, Val>, A::Error> {
-                let ops: Vec<Op<Var, Val>> =
+                let blocks: Vec<Vec<Op<Var, Val>>> =
                     Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
-                Ok(Expr(ops.into()))
+                #[allow(clippy::type_complexity)]
+                let blocks: Arc<[Box<[Op<Var, Val>]>]> =
+                    blocks.into_iter().map(Vec::into_boxed_slice).collect();
+                Ok(Expr(blocks))
             }
 
             fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Expr<Var, Val>, A::Error> {
                 #[derive(serde::Deserialize)]
                 struct ExprFields<Var, Val> {
-                    ops: Vec<Op<Var, Val>>,
+                    ops: Vec<Vec<Op<Var, Val>>>,
                 }
                 let fields = ExprFields::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                Ok(Expr(fields.ops.into()))
+                #[allow(clippy::type_complexity)]
+                let blocks: Arc<[Box<[Op<Var, Val>]>]> =
+                    fields.ops.into_iter().map(Vec::into_boxed_slice).collect();
+                Ok(Expr(blocks))
             }
         }
 
