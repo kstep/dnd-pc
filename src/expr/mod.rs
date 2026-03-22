@@ -56,19 +56,37 @@ impl<Var, Val> Deref for Expr<Var, Val> {
 }
 
 impl<Var: Copy, Val: Copy> Expr<Var, Val> {
-    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
+    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error>
+    where
+        Val: Default + PartialEq,
+    {
         self.run_block(&mut interp, 0)?;
         interp.finish()
     }
 
-    fn run_block<I: Interpreter<Var, Val>>(
-        &self,
-        interp: &mut I,
-        block: usize,
-    ) -> Result<(), Error> {
+    fn run_block<I: Interpreter<Var, Val>>(&self, interp: &mut I, block: usize) -> Result<(), Error>
+    where
+        Val: Default + PartialEq,
+    {
         for &op in self.0[block].iter() {
-            if let Some(sub_block) = interp.exec(op)? {
-                self.run_block(interp, sub_block)?;
+            match op {
+                Op::EvalIf(cond_idx, then_idx, else_idx) => {
+                    self.run_block(interp, cond_idx as usize)?;
+                    let cond = interp.pop()?;
+                    let branch = if cond != Val::default() {
+                        then_idx
+                    } else {
+                        else_idx
+                    };
+                    if branch != 0 {
+                        self.run_block(interp, branch as usize)?;
+                    }
+                }
+                _ => {
+                    if let Some(sub_block) = interp.exec(op)? {
+                        self.run_block(interp, sub_block)?;
+                    }
+                }
             }
         }
         Ok(())
@@ -142,8 +160,8 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
                     let text = self.format_block(idx as usize)?;
                     fmt.push_atom(text);
                 }
-                Op::EvalIf(then_idx, else_idx) => {
-                    let cond = fmt.pop_text()?;
+                Op::EvalIf(cond_idx, then_idx, else_idx) => {
+                    let cond = self.format_block(cond_idx as usize)?;
                     let then_text = self.format_block(then_idx as usize)?;
                     if else_idx == 0 {
                         fmt.push_atom(format!("if({cond}, {then_text})"));

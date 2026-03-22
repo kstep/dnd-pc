@@ -19,16 +19,16 @@ pub enum Op<Var, Val> {
     DropMin(Val),
     Sum,
     Assign(Var),
-    Mod,   // %
-    And,   // logical and (0/1)
-    Or,    // logical or (0/1)
-    Not,   // logical not (0/1)
-    Lt,    // <
-    Gt,    // >
-    Le,    // <=
-    Ge,    // >=
-    CmpEq, // ==
-    CmpNe, // !=
-    EvalIf(u8, u8), // if(cond, then, else) — 1-based block indices, 0 = no else
-    Eval(u8),       // evaluate sub-block (1-based index)
+    Mod,                // %
+    And,                // logical and (0/1)
+    Or,                 // logical or (0/1)
+    Not,                // logical not (0/1)
+    Lt,                 // <
+    Gt,                 // >
+    Le,                 // <=
+    Ge,                 // >=
+    CmpEq,              // ==
+    CmpNe,              // !=
+    EvalIf(u8, u8, u8), // if(cond, then, else) — 1-based block indices, 0 = noop, 255 = error
+    Eval(u8),           // evaluate sub-block (1-based index)
 }

@@ -8,6 +8,8 @@ pub trait Interpreter<Var, Val> {
     /// Execute a single op. Returns `None` to continue, or `Some(block_idx)`
     /// to tell `run_block` to evaluate that sub-block next.
     fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<usize>, Error>;
+    /// Pop the top value from the stack (used by `run_block` for EvalIf cond).
+    fn pop(&mut self) -> Result<Val, Error>;
     fn finish(self) -> Result<Self::Output, Error>;
 
     fn run(mut self, ops: impl Iterator<Item = Op<Var, Val>>) -> Result<Self::Output, Error>
@@ -58,6 +60,10 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
         }
     }
 
+    fn pop(&mut self) -> Result<i32, Error> {
+        self.stack.pop()
+    }
+
     fn finish(self) -> Result<i32, Error> {
         self.stack.result()
     }
@@ -95,6 +101,10 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
             Op::Assign(var) => Err(Error::assign_at_eval(var)),
             op => eval_op(&mut self.stack, op),
         }
+    }
+
+    fn pop(&mut self) -> Result<i32, Error> {
+        self.stack.pop()
     }
 
     fn finish(self) -> Result<i32, Error> {
@@ -239,11 +249,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
             stack.push((a != b) as i32);
         }
         Op::Eval(idx) => return Ok(Some(idx as usize)),
-        Op::EvalIf(then_idx, else_idx) => {
-            let cond = stack.pop()?;
-            let block = if cond != 0 { then_idx } else { else_idx };
-            return Ok(if block == 0 { None } else { Some(block as usize) });
-        }
+        Op::EvalIf(_, _, _) => unreachable!("EvalIf handled by run_block"),
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
     Ok(None)
@@ -350,6 +356,10 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
         }
     }
 
+    fn pop(&mut self) -> Result<i32, Error> {
+        self.stack.pop()
+    }
+
     fn finish(self) -> Result<i32, Error> {
         self.stack.result()
     }
@@ -442,10 +452,6 @@ impl Formatter {
         Ok(())
     }
 
-    pub fn pop_text(&mut self) -> Result<String, Error> {
-        Ok(self.stack.pop()?.text)
-    }
-
     pub fn push_atom(&mut self, text: String) {
         self.push(text, 7);
     }
@@ -531,9 +537,13 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 self.push(text, 0);
             }
             Op::Eval(idx) => return Ok(Some(idx as usize)),
-            Op::EvalIf(_, _) => {} // intercepted by format_block
+            Op::EvalIf(_, _, _) => {} // intercepted by format_block
         }
         Ok(None)
+    }
+
+    fn pop(&mut self) -> Result<Val, Error> {
+        unreachable!("Formatter uses format_block, not run_block")
     }
 
     fn finish(self) -> Result<String, Error> {

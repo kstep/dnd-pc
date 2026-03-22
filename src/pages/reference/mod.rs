@@ -291,6 +291,10 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
         Ok(None)
     }
 
+    fn pop(&mut self) -> Result<i32, crate::expr::Error> {
+        Ok(self.stack.pop().map_or(0, |e| e.num.unwrap_or(0)))
+    }
+
     fn finish(self) -> Result<Self::Output, crate::expr::Error> {
         let mut parts = Vec::new();
         if !self.abilities.is_empty() {

@@ -341,12 +341,10 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
 
     fn parse_if(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
-        // Parse condition into current block
-        self.parse_or(ops)?;
+        let cond_block = self.parse_sub_block()?;
         self.expect(|token| matches!(token, Token::Comma))?;
-        // Parse then-branch into a new sub-block
         let then_block = self.parse_sub_block()?;
-        // Optional else-branch (0 means no else)
+        // Optional else-branch (0 = noop)
         let else_block = if let Some(Token::Comma) = self.peek() {
             self.next()?;
             self.parse_sub_block()?
@@ -354,7 +352,7 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
             0
         };
         self.expect(|token| matches!(token, Token::RParen))?;
-        ops.push(Op::EvalIf(then_block, else_block));
+        ops.push(Op::EvalIf(cond_block, then_block, else_block));
         Ok(())
     }
 
