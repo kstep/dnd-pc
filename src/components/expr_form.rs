@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use leptos::prelude::*;
 use reactive_stores::Store;
@@ -12,17 +12,13 @@ use crate::{
 
 struct ArgContext<'a> {
     character: &'a Character,
-    args: &'a [(u8, RwSignal<i32>)],
+    args: &'a [Signal<i32>],
 }
 
 impl Context<Attribute, i32> for ArgContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
-            Attribute::Arg(n) => Ok(self
-                .args
-                .iter()
-                .find(|(k, _)| *k == n)
-                .map_or(0, |(_, s)| s.get())),
+            Attribute::Arg(n) => Ok(self.args.get(n as usize).map_or(0, |s| s.get())),
             other => self.character.resolve(other),
         }
     }
@@ -156,14 +152,18 @@ impl FormBuilder {
 fn form_block(
     expr: &Expr<Attribute, i32>,
     block: usize,
-    args: &mut BTreeMap<u8, RwSignal<i32>>,
+    args: &mut Vec<RwSignal<i32>>,
     seen: &mut BTreeSet<u8>,
 ) -> Result<AnyView, expr::Error> {
     let mut fb = FormBuilder::new();
     for &op in expr.block(block) {
         match op {
             Op::PushVar(Attribute::Arg(n)) => {
-                let signal = *args.entry(n).or_insert_with(|| RwSignal::new(0));
+                let idx = n as usize;
+                if args.len() <= idx {
+                    args.resize_with(idx + 1, || RwSignal::new(0));
+                }
+                let signal = args[idx];
                 if seen.insert(n) {
                     fb.push_view(
                         view! {
@@ -229,33 +229,31 @@ pub fn ExprForm(
     };
 
     // Build the formula view from the then-block
-    let mut args = BTreeMap::new();
+    let mut args = Vec::new();
     let mut seen = BTreeSet::new();
     let formula_view = form_block(&expr, then_id, &mut args, &mut seen)
         .unwrap_or_else(|e| format!("Error: {e}").into_any());
 
-    let arg_signals: Vec<(u8, RwSignal<i32>)> = args.into_iter().collect();
-    let arg_signals_memo = StoredValue::new(arg_signals.clone());
+    let arg_signals: Vec<Signal<i32>> = args.iter().map(|s| (*s).into()).collect();
+    let arg_signals = StoredValue::new(arg_signals);
+    let rw_signals = StoredValue::new(args);
 
     // Reactive validation: evaluate cond block whenever arg signals change
     let is_valid = Memo::new(move |_| {
         let character = store.read();
-        let sigs = arg_signals.clone();
-        let ctx = ArgContext {
-            character: &character,
-            args: &sigs,
-        };
-        expr.eval_block(cond_id, &ctx).is_ok_and(|v| v != 0)
+        arg_signals.with_value(|sigs| {
+            let ctx = ArgContext {
+                character: &character,
+                args: sigs,
+            };
+            expr.eval_block(cond_id, &ctx).is_ok_and(|v| v != 0)
+        })
     });
 
     let submit = move |ev: web_sys::SubmitEvent| {
         ev.prevent_default();
-        arg_signals_memo.with_value(|sigs| {
-            let max_n = sigs.iter().map(|(k, _)| *k).max().unwrap_or(0);
-            let mut values = vec![0i32; max_n as usize + 1];
-            for &(k, sig) in sigs {
-                values[k as usize] = sig.get_untracked();
-            }
+        rw_signals.with_value(|sigs| {
+            let values: Vec<i32> = sigs.iter().map(|s| s.get_untracked()).collect();
             on_submit.with_value(|cb| cb(values));
         });
     };
