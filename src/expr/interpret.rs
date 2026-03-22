@@ -5,9 +5,8 @@ use crate::expr::{Context, Error, Op, avg_hp, stack::Stack};
 pub trait Interpreter<Var, Val> {
     type Output;
 
-    /// Execute a single op. Returns `None` to continue, or `Some(block_idx)`
-    /// to tell `run_block` to evaluate that sub-block next.
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<usize>, Error>;
+    /// Execute a single op (Eval/EvalIf are handled by `run_block`).
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error>;
     /// Pop the top value from the stack (used by `run_block` for EvalIf cond).
     fn pop(&mut self) -> Result<Val, Error>;
     fn finish(self) -> Result<Self::Output, Error>;
@@ -46,15 +45,15 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
+                Ok(())
             }
             Op::Assign(var) => {
                 self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
+                Ok(())
             }
             op => eval_op(&mut self.stack, op),
         }
@@ -92,11 +91,11 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
+                Ok(())
             }
             Op::Assign(var) => Err(Error::assign_at_eval(var)),
             op => eval_op(&mut self.stack, op),
@@ -123,7 +122,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
     Ok((n % sides as u32 + 1) as i32)
 }
 
-fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
+fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
     match op {
         Op::PushConst(n) => stack.push(n),
         Op::Add => {
@@ -248,11 +247,10 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
             let (a, b) = stack.pop2()?;
             stack.push((a != b) as i32);
         }
-        Op::Eval(idx) => return Ok(Some(idx as usize)),
-        Op::EvalIf(_, _, _) => unreachable!("EvalIf handled by run_block"),
+        Op::Eval(_) | Op::EvalIf(_, _, _) => unreachable!("handled by run_block"),
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
-    Ok(None)
+    Ok(())
 }
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
@@ -329,15 +327,15 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
+                Ok(())
             }
             Op::Assign(var) => {
                 self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
+                Ok(())
             }
             Op::Roll => {
                 let (count, sides) = self.stack.pop2()?;
@@ -350,7 +348,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                     self.stack.push(value as i32);
                 }
                 self.stack.push(count);
-                Ok(None)
+                Ok(())
             }
             op => eval_op(&mut self.stack, op),
         }
@@ -460,7 +458,7 @@ impl Formatter {
 impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> for Formatter {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<usize>, Error> {
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error> {
         match op {
             Op::PushConst(n) => {
                 self.push(n.to_string(), 7);
@@ -536,10 +534,9 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 };
                 self.push(text, 0);
             }
-            Op::Eval(idx) => return Ok(Some(idx as usize)),
-            Op::EvalIf(_, _, _) => {} // intercepted by format_block
+            Op::Eval(_) | Op::EvalIf(_, _, _) => {} // intercepted by format_block
         }
-        Ok(None)
+        Ok(())
     }
 
     fn pop(&mut self) -> Result<Val, Error> {

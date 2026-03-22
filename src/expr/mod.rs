@@ -64,6 +64,17 @@ impl<Var: Copy, Val: Copy> Expr<Var, Val> {
         interp.finish()
     }
 
+    fn eval_block<I: Interpreter<Var, Val>>(&self, interp: &mut I, block: u8) -> Result<(), Error>
+    where
+        Val: Default + PartialEq,
+    {
+        match block {
+            0 => Ok(()),
+            255 => Err(Error::InvalidBlock(block)),
+            _ => self.run_block(interp, block as usize),
+        }
+    }
+
     fn run_block<I: Interpreter<Var, Val>>(&self, interp: &mut I, block: usize) -> Result<(), Error>
     where
         Val: Default + PartialEq,
@@ -71,21 +82,20 @@ impl<Var: Copy, Val: Copy> Expr<Var, Val> {
         for &op in self.0[block].iter() {
             match op {
                 Op::EvalIf(cond_idx, then_idx, else_idx) => {
-                    self.run_block(interp, cond_idx as usize)?;
+                    self.eval_block(interp, cond_idx)?;
                     let cond = interp.pop()?;
                     let branch = if cond != Val::default() {
                         then_idx
                     } else {
                         else_idx
                     };
-                    if branch != 0 {
-                        self.run_block(interp, branch as usize)?;
-                    }
+                    self.eval_block(interp, branch)?;
+                }
+                Op::Eval(idx) => {
+                    self.eval_block(interp, idx)?;
                 }
                 _ => {
-                    if let Some(sub_block) = interp.exec(op)? {
-                        self.run_block(interp, sub_block)?;
-                    }
+                    interp.exec(op)?;
                 }
             }
         }

@@ -224,7 +224,7 @@ impl<'a> AssignmentSummarizer<'a> {
 impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Attribute, i32>) -> Result<Option<usize>, crate::expr::Error> {
+    fn exec(&mut self, op: Op<Attribute, i32>) -> Result<(), crate::expr::Error> {
         match op {
             Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
             Op::PushVar(var) => {
@@ -288,7 +288,7 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             }
             _ => return Err(crate::expr::Error::EmptyExpression),
         }
-        Ok(None)
+        Ok(())
     }
 
     fn pop(&mut self) -> Result<i32, crate::expr::Error> {
