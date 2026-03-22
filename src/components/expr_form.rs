@@ -171,7 +171,7 @@ fn form_block(
                                 type="number"
                                 class="expr-form-input"
                                 prop:value=move || signal.get()
-                                on:input=move |ev| {
+                                on:change=move |ev| {
                                     if let Ok(v) = event_target_value(&ev).parse::<i32>() {
                                         signal.set(v);
                                     }
