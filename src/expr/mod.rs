@@ -47,6 +47,12 @@ impl<Var: Serialize, Val: Serialize> Serialize for Expr<Var, Val> {
     }
 }
 
+impl<Var, Val> Expr<Var, Val> {
+    pub fn block(&self, idx: usize) -> &[Op<Var, Val>] {
+        &self.0[idx]
+    }
+}
+
 impl<Var, Val> Deref for Expr<Var, Val> {
     type Target = [Op<Var, Val>];
 
@@ -87,6 +93,14 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
     ) -> Result<i32, Error> {
         let mut iter = pool.iter();
         self.run(DicePoolEvaluator::new(ctx, &mut iter))
+    }
+}
+
+impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+    pub fn eval_block(&self, block: usize, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+        let mut interp = ReadOnlyEvaluator::new(ctx);
+        self.run_block(&mut interp, block)?;
+        interp.finish()
     }
 }
 

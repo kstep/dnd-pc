@@ -5,6 +5,7 @@ pub mod character_header;
 pub mod datalist_input;
 pub mod dice_pool_input;
 pub mod entity_field;
+pub mod expr_form;
 pub mod icon;
 pub mod language_switcher;
 pub mod panel;
