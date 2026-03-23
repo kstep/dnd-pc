@@ -292,7 +292,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                         on_input=move |input, resolved| {
                                                             fname.with_value(|key| {
                                                                 fld_name.with_value(|fld| {
-                                                                    let (cost, opt_label) = resolved
+                                                                    let (cost, opt_label, opt_description) = resolved
                                                                         .as_ref()
                                                                         .map(|name| {
                                                                             let classes = store.identity().classes().read();
@@ -304,10 +304,11 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                                                 .get_choice_options(&classes, key, fld, char_fields)
                                                                                 .into_iter()
                                                                                 .find(|o| o.name == *name)
-                                                                                .map(|o| (o.cost, o.label))
-                                                                                .unzip()
+                                                                                .map(|o| (o.cost, o.label, o.description))
+                                                                                .map(|(c, l, d)| (Some(c), Some(l), Some(d)))
+                                                                                .unwrap_or_default()
                                                                         })
-                                                                        .unwrap_or((None, None));
+                                                                        .unwrap_or_default();
                                                                     store.feature_data().update(|m| {
                                                                         if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
                                                                             && let Some(f) = fields.get_mut(field_idx)
@@ -320,7 +321,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                                                             } else {
                                                                                 opt.set_label(input);
                                                                             }
-                                                                            opt.description.clear();
+                                                                            opt.description = opt_description.unwrap_or_default();
                                                                             if let Some(cost) = cost {
                                                                                 opt.cost = cost;
                                                                             }

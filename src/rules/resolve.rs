@@ -6,7 +6,7 @@ use super::{
 };
 use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
 
-/// Find a feature definition by name in the global features catalog.
+/// Find a feature definition by name in the global features index.
 pub(super) fn find_feature<'a>(
     name: &str,
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
@@ -49,7 +49,7 @@ pub(super) fn find_feature_with_source<'a>(
         return Some((feat, Some(FeatureSource::Species(identity.species.clone()))));
     }
 
-    // Feature exists in catalog but not referenced by any class/species/background
+    // Feature exists in index but not referenced by any class/species/background
     // — manually-added feats (e.g. "Lucky", "Tough").
     Some((feat, None))
 }

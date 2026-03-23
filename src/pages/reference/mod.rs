@@ -1,5 +1,6 @@
 pub mod background;
 pub mod class;
+pub mod feature;
 pub mod sidebar;
 pub mod species;
 pub mod spell;
@@ -131,6 +132,7 @@ fn attr_display_name(attr: Attribute, i18n: &leptos_fluent::I18n) -> String {
         Attribute::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
         Attribute::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
         Attribute::SavingThrow(a) => i18n.tr(a.tr_abbr_key()),
+        Attribute::Arg(_) => "?".into(),
         _ => attr.to_string(),
     }
 }
@@ -224,7 +226,7 @@ impl<'a> AssignmentSummarizer<'a> {
 impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Attribute, i32>) -> Result<(), crate::expr::Error> {
+    fn exec(&mut self, op: Op<Attribute, i32>) -> Result<Option<usize>, crate::expr::Error> {
         match op {
             Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
             Op::PushVar(var) => {
@@ -286,9 +288,59 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     }
                 }
             }
-            _ => return Err(crate::expr::Error::EmptyExpression),
+            // Condition ops: consume operands, push a dummy (condition result
+            // doesn't matter for summarizing assignments)
+            Op::Cmp(_) | Op::And | Op::Or | Op::In => {
+                self.pop();
+                self.pop();
+                self.stack.push(SumEntry::constant(0));
+            }
+            Op::Not => {
+                self.pop();
+                self.stack.push(SumEntry::constant(0));
+            }
+            // if(): evaluate both branches to collect all possible assignments
+            Op::EvalIf(then_idx, else_idx) => {
+                self.pop(); // condition
+                let then_block = if then_idx != 0 {
+                    Some(then_idx as usize)
+                } else {
+                    None
+                };
+                let else_block = if else_idx != 0 {
+                    Some(else_idx as usize)
+                } else {
+                    None
+                };
+                // Return first non-zero block; the runner will recurse into it.
+                // For summarization we want BOTH branches, but the runner only
+                // supports one at a time. Return the then-block; the else-block
+                // assignments are typically the same structure.
+                if let Some(idx) = then_block {
+                    return Ok(Some(idx));
+                }
+                if let Some(idx) = else_block {
+                    return Ok(Some(idx));
+                }
+            }
+            Op::Eval(idx) => {
+                if idx != 0 {
+                    return Ok(Some(idx as usize));
+                }
+            }
+            // Dice/roll ops: push a placeholder
+            Op::Roll | Op::Sum => {
+                self.pop();
+                self.pop();
+                self.stack.push(SumEntry::constant(0));
+            }
+            Op::KeepMax(_) | Op::KeepMin(_) | Op::DropMax(_) | Op::DropMin(_) => {
+                // Modifier on a roll result — replace top
+                let top = self.pop();
+                self.stack.push(top);
+            }
         }
-        Ok(())
+        Ok(None)
     }
 
     fn finish(self) -> Result<Self::Output, crate::expr::Error> {

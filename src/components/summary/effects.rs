@@ -75,7 +75,7 @@ pub fn EffectsBlock() -> impl IntoView {
     });
 
     view! {
-        <div class="summary-section summary-section-effects">
+        <div class="summary-section summary-section-effects" id="summary-effects">
             <h3 class="summary-section-title">{move_tr!("summary-effects")}</h3>
 
             // -- Add effect form --

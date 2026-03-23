@@ -46,7 +46,7 @@ pub fn StatsBlock() -> impl IntoView {
 
     move || {
         view! {
-            <div class="summary-section summary-section-stats">
+            <div class="summary-section summary-section-stats" id="summary-stats">
                 <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
 
                 // -- HP --

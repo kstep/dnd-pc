@@ -33,6 +33,13 @@ impl<T> Stack<T> {
         Ok((a, b))
     }
 
+    pub fn pop3(&mut self) -> Result<(T, T, T), Error> {
+        let c = self.pop()?;
+        let b = self.pop()?;
+        let a = self.pop()?;
+        Ok((a, b, c))
+    }
+
     pub fn result(mut self) -> Result<T, Error> {
         self.pop()
     }

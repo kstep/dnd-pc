@@ -2,7 +2,10 @@ use std::collections::BTreeMap;
 
 use leptos::{html, prelude::*};
 
-use crate::{components::icon::Icon, expr::DicePool};
+use crate::{
+    components::{icon::Icon, modal::Modal},
+    expr::DicePool,
+};
 
 #[component]
 pub fn DicePoolInput(
@@ -23,18 +26,13 @@ pub fn DicePoolInput(
 
     let groups = StoredValue::new(groups);
 
-    // Reset all fields and focus first input when opened
+    // Reset all fields when opened (autofocus handled by Modal)
     Effect::new(move || {
         if show.get() {
             groups.with_value(|groups| {
-                let mut first = true;
                 for node_ref in groups.values().flatten() {
                     if let Some(input) = node_ref.get() {
                         input.set_value("");
-                        if first {
-                            let _ = input.focus();
-                            first = false;
-                        }
                     }
                 }
             });
@@ -65,19 +63,23 @@ pub fn DicePoolInput(
     };
 
     // Build group views eagerly to avoid ownership issues
-    let group_views = groups.with_value(|groups| {
+    let group_views = StoredValue::new(groups.with_value(|groups| {
+        let mut first = true;
         groups
             .iter()
             .map(|(&sides, refs)| {
                 let input_views = refs
                     .iter()
                     .map(|&node_ref| {
+                        let is_first = first;
+                        first = false;
                         view! {
                             <input
                                 type="number"
                                 min=1
                                 max=sides
                                 required
+                                autofocus=is_first
                                 class="dice-pool-value"
                                 node_ref=node_ref
                             />
@@ -92,28 +94,12 @@ pub fn DicePoolInput(
                 }
             })
             .collect_view()
-    });
+    }));
 
     view! {
-        <div class="datalist-modal-overlay" class:hidden=move || !show.get() on:click=move |_| show.set(false)>
-            <form
-                class="datalist-modal dice-pool-form"
-                on:click=move |event: web_sys::MouseEvent| {
-                    event.stop_propagation();
-                }
-                on:submit=confirm
-            >
-                <div class="datalist-modal-header">
-                    <span>"Dice Rolls"</span>
-                    <button
-                        type="button"
-                        class="datalist-modal-close"
-                        on:click=move |_| show.set(false)
-                    >
-                        <Icon name="x" size=20 />
-                    </button>
-                </div>
-                <div class="dice-pool-groups">{group_views}</div>
+        <Modal show=show title="Dice Rolls">
+            <form class="dice-pool-form" on:submit=confirm>
+                <div class="dice-pool-groups">{group_views.get_value()}</div>
                 <div class="dice-pool-footer">
                     <button type="submit" class="btn-confirm">
                         <Icon name="check" size=16 />
@@ -121,6 +107,6 @@ pub fn DicePoolInput(
                     </button>
                 </div>
             </form>
-        </div>
+        </Modal>
     }
 }

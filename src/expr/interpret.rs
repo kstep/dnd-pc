@@ -4,7 +4,10 @@ use crate::expr::{Context, Error, Op, avg_hp, stack::Stack};
 
 pub trait Interpreter<Var, Val> {
     type Output;
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error>;
+
+    /// Execute a single op. Returns `None` to continue, or `Some(block_idx)`
+    /// to tell `run_block` to evaluate that sub-block next.
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<usize>, Error>;
     fn finish(self) -> Result<Self::Output, Error>;
 
     fn run(mut self, ops: impl Iterator<Item = Op<Var, Val>>) -> Result<Self::Output, Error>
@@ -41,13 +44,16 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(())
+                Ok(None)
             }
-            Op::Assign(var) => self.ctx.assign(var, *self.stack.top()?),
+            Op::Assign(var) => {
+                self.ctx.assign(var, *self.stack.top()?)?;
+                Ok(None)
+            }
             op => eval_op(&mut self.stack, op),
         }
     }
@@ -80,11 +86,11 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(())
+                Ok(None)
             }
             Op::Assign(var) => Err(Error::assign_at_eval(var)),
             op => eval_op(&mut self.stack, op),
@@ -107,7 +113,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
     Ok((n % sides as u32 + 1) as i32)
 }
 
-fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
+fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
     match op {
         Op::PushConst(n) => stack.push(n),
         Op::Add => {
@@ -208,39 +214,31 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<(), Error> {
             let a = stack.pop()?;
             stack.push((a == 0) as i32);
         }
-        Op::Lt => {
+        Op::Cmp(cmp) => {
             let (a, b) = stack.pop2()?;
-            stack.push((a < b) as i32);
+            stack.push(cmp.eval(a, b) as i32);
         }
-        Op::Gt => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a > b) as i32);
+        Op::In => {
+            let (a, b, c) = stack.pop3()?;
+            stack.push((b <= a && a <= c) as i32);
         }
-        Op::Le => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a <= b) as i32);
-        }
-        Op::Ge => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a >= b) as i32);
-        }
-        Op::CmpEq => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a == b) as i32);
-        }
-        Op::CmpNe => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a != b) as i32);
-        }
-        Op::If => {
-            let else_val = stack.pop()?;
-            let then_val = stack.pop()?;
+        Op::Eval(idx) => return eval_block(idx),
+        Op::EvalIf(then_idx, else_idx) => {
             let cond = stack.pop()?;
-            stack.push(if cond != 0 { then_val } else { else_val });
+            return eval_block(if cond != 0 { then_idx } else { else_idx });
         }
         Op::PushVar(_) | Op::Assign(_) => unreachable!(),
     }
-    Ok(())
+    Ok(None)
+}
+
+/// Resolve a block index: 0 = noop, 255 = error, otherwise run block.
+fn eval_block(idx: u8) -> Result<Option<usize>, Error> {
+    match idx {
+        0 => Ok(None),
+        255 => Err(Error::InvalidBlock(idx)),
+        _ => Ok(Some(idx as usize)),
+    }
 }
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
@@ -317,13 +315,16 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
-                Ok(())
+                Ok(None)
             }
-            Op::Assign(var) => self.ctx.assign(var, *self.stack.top()?),
+            Op::Assign(var) => {
+                self.ctx.assign(var, *self.stack.top()?)?;
+                Ok(None)
+            }
             Op::Roll => {
                 let (count, sides) = self.stack.pop2()?;
                 let sides_u32 = sides as u32;
@@ -335,7 +336,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                     self.stack.push(value as i32);
                 }
                 self.stack.push(count);
-                Ok(())
+                Ok(None)
             }
             op => eval_op(&mut self.stack, op),
         }
@@ -351,10 +352,6 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 struct Frag {
     text: String,
     prec: u8, // 0=assign, 1=or, 2=and, 3=cmp, 4=add/sub, 5=mul/div, 6=unary, 7=atom
-    /// If this frag is a binary op where the left operand was an atom,
-    /// stores (left_text, op_symbol, rhs_text) for compound assignment
-    /// detection.
-    compound: Option<(String, String, String)>,
 }
 
 pub(super) struct Formatter {
@@ -369,19 +366,7 @@ impl Formatter {
     }
 
     fn push(&mut self, text: String, prec: u8) {
-        self.stack.push(Frag {
-            text,
-            prec,
-            compound: None,
-        });
-    }
-
-    fn wrap_ref(frag: &Frag, min_prec: u8) -> String {
-        if frag.prec < min_prec {
-            format!("({})", frag.text)
-        } else {
-            frag.text.clone()
-        }
+        self.stack.push(Frag { text, prec });
     }
 
     fn wrap(frag: Frag, min_prec: u8) -> String {
@@ -396,33 +381,9 @@ impl Formatter {
         let b = self.stack.pop()?;
         let a = self.stack.pop()?;
         let right_min = if right_strict { prec + 1 } else { prec };
-        let compound = if a.prec == 7 && a.compound.is_none() {
-            // Direct: left operand is a plain atom (variable or constant).
-            // Store b.text without wrapping — compound assignment implicitly
-            // groups the entire RHS, so outer parens are unnecessary.
-            Some((a.text.clone(), sym.to_string(), b.text.clone()))
-        } else if let Some((ref left_var, ref first_op, ref prev_rhs)) = a.compound {
-            // Propagate through addition chains: x + (a ± b) = (x + a) ± b
-            if *first_op == "+" && prec == 4 {
-                let right = Self::wrap_ref(&b, right_min);
-                Some((
-                    left_var.clone(),
-                    first_op.clone(),
-                    format!("{prev_rhs} {sym} {right}"),
-                ))
-            } else {
-                None
-            }
-        } else {
-            None
-        };
         let left = Self::wrap(a, prec);
         let right = Self::wrap(b, right_min);
-        self.stack.push(Frag {
-            text: format!("{left} {sym} {right}"),
-            prec,
-            compound,
-        });
+        self.push(format!("{left} {sym} {right}"), prec);
         Ok(())
     }
 
@@ -432,12 +393,20 @@ impl Formatter {
         self.push(format!("{name}({}, {})", a.text, b.text), 3);
         Ok(())
     }
+
+    pub fn pop_text(&mut self) -> Result<String, Error> {
+        Ok(self.stack.pop()?.text)
+    }
+
+    pub fn push_atom(&mut self, text: String) {
+        self.push(text, 7);
+    }
 }
 
-impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
+impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> for Formatter {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<(), Error> {
+    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<usize>, Error> {
         match op {
             Op::PushConst(n) => {
                 self.push(n.to_string(), 7);
@@ -493,37 +462,20 @@ impl<Var: fmt::Display, Val: fmt::Display> Interpreter<Var, Val> for Formatter {
                 let text = Self::wrap(a, 6);
                 self.push(format!("not {text}"), 6);
             }
-            Op::Lt => self.binary_op("<", 3, false)?,
-            Op::Gt => self.binary_op(">", 3, false)?,
-            Op::Le => self.binary_op("<=", 3, false)?,
-            Op::Ge => self.binary_op(">=", 3, false)?,
-            Op::CmpEq => self.binary_op("==", 3, false)?,
-            Op::CmpNe => self.binary_op("!=", 3, false)?,
-            Op::If => {
-                let else_val = self.stack.pop()?;
-                let then_val = self.stack.pop()?;
-                let cond = self.stack.pop()?;
-                self.push(
-                    format!("if({}, {}, {})", cond.text, then_val.text, else_val.text),
-                    7,
-                );
-            }
+            Op::Cmp(cmp) => self.binary_op(cmp.symbol(), 3, false)?,
             Op::Assign(var) => {
                 let val = self.stack.pop()?;
-                let var_str = var.to_string();
-                let text = if let Some((ref left_var, ref op, ref rhs)) = val.compound {
-                    if *left_var == var_str {
-                        format!("{var} {op}= {rhs}")
-                    } else {
-                        format!("{var} = {}", val.text)
-                    }
-                } else {
-                    format!("{var} = {}", val.text)
-                };
-                self.push(text, 0);
+                self.push(format!("{var} = {}", val.text), 0);
             }
+            Op::In => {
+                let c = self.stack.pop()?;
+                let b = self.stack.pop()?;
+                let a = self.stack.pop()?;
+                self.push(format!("in({}, {}, {})", a.text, b.text, c.text), 3);
+            }
+            Op::Eval(_) | Op::EvalIf(_, _) => {} // intercepted by format_block
         }
-        Ok(())
+        Ok(None)
     }
 
     fn finish(self) -> Result<String, Error> {

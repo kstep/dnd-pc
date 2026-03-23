@@ -10,6 +10,7 @@ use crate::{
             StatsBlock, WeaponsBlock,
         },
         summary_header::SummaryHeader,
+        summary_nav::SummaryNav,
     },
     model::Character,
     rules::RulesRegistry,
@@ -26,7 +27,7 @@ pub fn CharacterSummary() -> impl IntoView {
 
             <div class="summary-top-row">
             // === Section: What Can I Do? ===
-            <div class="summary-section summary-section-actions">
+            <div class="summary-section summary-section-actions" id="summary-actions">
                 <h3 class="summary-section-title">{move_tr!("summary-actions")}</h3>
                 <div class="summary-rest-actions">
                     <button class="summary-rest-btn" title=move_tr!("short-rest")
@@ -56,6 +57,8 @@ pub fn CharacterSummary() -> impl IntoView {
 
             // === Section: Backpack ===
             <BackpackBlock />
+
+            <SummaryNav />
         </div>
     }
 }

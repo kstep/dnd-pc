@@ -76,6 +76,7 @@ pub fn CharacterList() -> impl IntoView {
                                 <A href=format!("{BASE_URL}/r/species")>{move_tr!("ref-species")}</A>
                                 <A href=format!("{BASE_URL}/r/background")>{move_tr!("ref-backgrounds")}</A>
                                 <A href=format!("{BASE_URL}/r/spell")>{move_tr!("ref-spells")}</A>
+                                <A href=format!("{BASE_URL}/r/feature")>{move_tr!("ref-features")}</A>
                             </nav>
                         </div>
                     </div>

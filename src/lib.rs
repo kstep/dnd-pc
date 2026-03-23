@@ -13,6 +13,7 @@ mod demap;
 mod effective;
 mod expr;
 mod firebase;
+mod hooks;
 mod model;
 mod pages;
 pub mod rules;
@@ -33,6 +34,7 @@ static_loader! {
 }
 
 use components::{language_switcher::LanguageSwitcher, sync_indicator::SyncIndicator};
+use hooks::use_theme;
 use pages::{
     character::{
         layout::CharacterLayout, list::CharacterList, sheet::CharacterSheet,
@@ -41,37 +43,11 @@ use pages::{
     import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
     reference::{
-        background::BackgroundReference, class::ClassReference, species::SpeciesReference,
-        spell::SpellReference,
+        background::BackgroundReference, class::ClassReference, feature::FeatureReference,
+        species::SpeciesReference, spell::SpellReference,
     },
 };
 use rules::RulesRegistry;
-use wasm_bindgen::JsCast;
-
-/// Returns a reactive signal that tracks the current theme name.
-/// Seeds from `window.matchMedia("(prefers-color-scheme: dark)")` and
-/// updates in real time via a `change` event listener.
-fn use_theme() -> ReadSignal<&'static str> {
-    let mql = leptos::prelude::window()
-        .match_media("(prefers-color-scheme: dark)")
-        .ok()
-        .flatten();
-    let theme = RwSignal::new(if mql.as_ref().map(|m| m.matches()).unwrap_or(false) {
-        "dark"
-    } else {
-        "light"
-    });
-    if let Some(mql) = mql {
-        let closure = wasm_bindgen::closure::Closure::<dyn Fn()>::new({
-            let mql = mql.clone();
-            move || theme.set(if mql.matches() { "dark" } else { "light" })
-        });
-        let _ = mql.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref());
-        // Keep the closure alive for the entire app lifetime without leaking.
-        closure.into_js_value();
-    }
-    theme.read_only()
-}
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -108,6 +84,7 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/r/species/:name") view=SpeciesReference />
                 <Route path=path!("/r/background") view=BackgroundReference />
                 <Route path=path!("/r/background/:name") view=BackgroundReference />
+                <Route path=path!("/r/feature") view=FeatureReference />
                 <Route path=path!("/r/spell") view=SpellReference />
                 <Route path=path!("/r/spell/:list") view=SpellReference />
             </Routes>

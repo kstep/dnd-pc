@@ -187,7 +187,7 @@ pub fn ResourcesBlock() -> impl IntoView {
     };
 
     view! {
-        <div class="summary-section summary-section-resources">
+        <div class="summary-section summary-section-resources" id="summary-resources">
             <h3 class="summary-section-title">{move_tr!("summary-resources")}</h3>
             {spell_slots}
             {hit_dice}

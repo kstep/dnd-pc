@@ -7,8 +7,8 @@ use crate::{
     demap::{self, Named},
     expr::{self, Eval as _, Expr},
     model::{
-        Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField, FeatureSource,
-        FeatureValue, Translatable,
+        ArgsContext, Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField,
+        FeatureSource, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
     vecset::VecSet,
@@ -212,7 +212,7 @@ impl Named for FeatureDefinition {
     }
 }
 
-/// Global features catalog, loaded from `features.json`.
+/// Global features index, loaded from `features.json`.
 #[derive(Clone)]
 pub struct FeaturesIndex(pub BTreeMap<Box<str>, FeatureDefinition>);
 
@@ -264,11 +264,30 @@ impl FeatureDefinition {
         }
     }
 
-    pub fn assign<'a>(&self, mut context: Context<'a>, when: WhenCondition) {
+    /// Returns `true` if any assignment for the given condition references
+    /// `ARG.n` variables (meaning the user must supply arguments before apply).
+    pub fn needs_args(&self, when: WhenCondition) -> bool {
+        self.assign.as_ref().is_some_and(|assignments| {
+            assignments
+                .iter()
+                .any(|a| a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
+        })
+    }
+
+    /// Returns the first assignment expression for the given condition that
+    /// uses `ARG.n` variables. Used to build the `ExprArgsInput` UI.
+    pub fn args_expr(&self, when: WhenCondition) -> Option<&Expr<Attribute>> {
+        self.assign.as_ref()?.iter().find_map(|a| {
+            (a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
+                .then_some(&a.expr)
+        })
+    }
+
+    pub fn assign(&self, context: &mut impl expr::Context<Attribute, i32>, when: WhenCondition) {
         let Some(assign) = &self.assign else { return };
 
         assign.iter().filter(|a| a.when == when).for_each(|a| {
-            if let Err(error) = a.expr.apply(&mut context) {
+            if let Err(error) = a.expr.apply(context) {
                 log::error!(
                     "Failed to apply assignment for feature '{}': {error:?}",
                     self.name,
@@ -278,6 +297,16 @@ impl FeatureDefinition {
     }
 
     pub fn apply(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
+        self.apply_with_args(level, character, source, None);
+    }
+
+    pub fn apply_with_args(
+        &self,
+        level: u32,
+        character: &mut Character,
+        source: Option<&FeatureSource>,
+        args: Option<Vec<i32>>,
+    ) {
         let when = if character.features.iter().any(|f| f.name == self.name) {
             WhenCondition::OnLevelUp
         } else {
@@ -302,15 +331,23 @@ impl FeatureDefinition {
             (0, 0)
         };
 
-        self.assign(
-            Context {
-                character,
-                class_level: level as i32,
-                caster_level,
-                caster_modifier,
-            },
-            when,
-        );
+        let mut context = Context {
+            character,
+            class_level: level as i32,
+            caster_level,
+            caster_modifier,
+        };
+        if let Some(args) = args {
+            self.assign(
+                &mut ArgsContext {
+                    inner: context,
+                    args,
+                },
+                when,
+            );
+        } else {
+            self.assign(&mut context, when);
+        }
 
         self.apply_fields(level, character, source);
 
@@ -639,5 +676,22 @@ pub struct ChoiceOption {
 impl ChoiceOption {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_features_json() {
+        let data = include_str!("../../public/data/features.json");
+        let index: FeaturesIndex = serde_json::from_str(data)
+            .expect("features.json should deserialize into FeaturesIndex");
+        assert!(
+            index.0.len() > 900,
+            "expected 900+ features, got {}",
+            index.0.len()
+        );
     }
 }

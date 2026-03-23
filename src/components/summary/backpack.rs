@@ -26,7 +26,7 @@ pub fn BackpackBlock() -> impl IntoView {
     };
 
     view! {
-        <div class="summary-section">
+        <div class="summary-section" id="summary-backpack">
             <h3 class="summary-section-title">{move_tr!("summary-backpack")}</h3>
 
             // -- Currency --

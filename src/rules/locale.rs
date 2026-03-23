@@ -105,7 +105,7 @@ impl LocaleKey {
         &self.0
     }
 
-    /// Flat key for the features catalog (no "feature." prefix).
+    /// Flat key for the features index (no "feature." prefix).
     pub fn flat_field(feat: &str, field: &str) -> Self {
         Self(format!("{feat}.field.{field}").into_boxed_str())
     }
@@ -122,7 +122,7 @@ impl LocaleKey {
 // --- Application to definition types ---
 
 /// Apply a locale map to a `ClassDefinition`.
-/// Features are now in the global features catalog, so only root and subclass
+/// Features are now in the global features index, so only root and subclass
 /// labels are handled here.
 pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
     for (key, text) in locale {
@@ -137,7 +137,7 @@ pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
                     text.apply_description(&mut sc.description);
                 }
             }
-            // Features are now in the global features catalog — locale is
+            // Features are now in the global features index — locale is
             // applied via apply_features_locale instead.
             _ => {}
         }

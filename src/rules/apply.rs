@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use leptos::prelude::*;
 
 use super::{
@@ -6,9 +8,18 @@ use super::{
     spells::SpellList,
 };
 use crate::{
-    model::{Character, Context, FeatureSource, FeatureValue},
+    expr::Expr,
+    model::{Attribute, Character, Context, FeatureSource, FeatureValue},
     rules::RulesRegistry,
 };
+
+/// A feature whose assignment expression requires user-supplied ARG values.
+#[derive(Clone, PartialEq)]
+pub struct PendingArgs {
+    pub feature_name: String,
+    pub feature_label: String,
+    pub expr: Expr<Attribute>,
+}
 
 impl RulesRegistry {
     pub fn long_rest(&self, character: &mut Character) {
@@ -174,19 +185,19 @@ impl RulesRegistry {
             .and_then(|sc| sc.levels.get(&level));
 
         let features_guard = self.features_index.read_untracked();
-        let Some(features_catalog) = features_guard
+        let Some(features_index) = features_guard
             .as_ref()
             .and_then(|r| r.as_ref().ok())
             .map(|idx| &idx.0)
         else {
-            log::warn!("Features catalog not loaded yet, skipping level-up");
+            log::warn!("Features index not loaded yet, skipping level-up");
             class_level.applied_levels.remove(&level);
             return;
         };
 
         for feat_name in def.feature_names(subclass.as_deref()) {
-            let Some(feat) = features_catalog.get(feat_name) else {
-                log::warn!("Feature '{feat_name}' not found in catalog");
+            let Some(feat) = features_index.get(feat_name) else {
+                log::warn!("Feature '{feat_name}' not found in index");
                 continue;
             };
             let feat_name_string = feat_name.to_string();
@@ -211,7 +222,7 @@ impl RulesRegistry {
         if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
             let source = FeatureSource::Species(character.identity.species.clone());
             for feat_name in &species_def.features {
-                if let Some(feat) = features_catalog.get(feat_name.as_str()) {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
                     feat.apply(total_level, character, Some(&source));
                 }
             }
@@ -221,7 +232,7 @@ impl RulesRegistry {
         if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
             let source = FeatureSource::Background(character.identity.background.clone());
             for feat_name in &bg_def.features {
-                if let Some(feat) = features_catalog.get(feat_name.as_str()) {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
                     feat.apply(total_level, character, Some(&source));
                 }
             }
@@ -240,6 +251,183 @@ impl RulesRegistry {
         }
     }
 
+    /// Like `apply_class_level`, but passes user-supplied args to features
+    /// that need them. The `args_map` maps feature name → collected arg values.
+    pub fn apply_class_level_with_args(
+        &self,
+        character: &mut Character,
+        class_idx: usize,
+        level: u32,
+        args_map: &BTreeMap<String, Vec<i32>>,
+    ) {
+        let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
+            return;
+        };
+
+        if class_level.applied_levels.contains(&level) {
+            return;
+        }
+
+        let class_cache = self.class_cache.read_untracked();
+        let Some(def) = class_cache.get(class_level.class.as_str()) else {
+            return;
+        };
+
+        class_level.applied_levels.insert(level);
+        let subclass = class_level.subclass.clone();
+        let source = FeatureSource::Class(def.name.clone());
+        class_level.hit_die_sides = def.hit_die;
+
+        let rules = def.levels.get(level as usize - 1);
+        let subclass_rules = subclass
+            .as_deref()
+            .and_then(|sc| def.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
+        let features_guard = self.features_index.read_untracked();
+        let Some(features_index) = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+        else {
+            log::warn!("Features index not loaded yet, skipping level-up");
+            character.identity.classes[class_idx]
+                .applied_levels
+                .remove(&level);
+            return;
+        };
+
+        for feat_name in def.feature_names(subclass.as_deref()) {
+            let Some(feat) = features_index.get(feat_name) else {
+                log::warn!("Feature '{feat_name}' not found in index");
+                continue;
+            };
+            let feat_name_string = feat_name.to_string();
+            let is_new = rules.is_some_and(|r| r.features.contains(&feat_name_string))
+                || subclass_rules.is_some_and(|r| r.features.contains(&feat_name_string));
+            let already_has = character.features.iter().any(|f| f.name == feat_name);
+
+            if is_new && already_has && !feat.stackable {
+                continue;
+            }
+
+            if is_new || already_has {
+                let args = args_map.get(feat_name).cloned();
+                feat.apply_with_args(level, character, Some(&source), args);
+            }
+        }
+
+        // Re-apply species and background features at new total level
+        let total_level = character.level();
+
+        let species_cache = self.species_cache.read_untracked();
+        if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
+            let source = FeatureSource::Species(character.identity.species.clone());
+            for feat_name in &species_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        }
+
+        let bg_cache = self.background_cache.read_untracked();
+        if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
+            let source = FeatureSource::Background(character.identity.background.clone());
+            for feat_name in &bg_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        }
+
+        let old_hp_max = character.hp_max();
+        self.compute(character);
+        let hp_delta = character.hp_max().saturating_sub(old_hp_max);
+        character.combat.hp_current += hp_delta;
+
+        let xp_threshold = character.xp_threshold();
+        if character.identity.experience_points < xp_threshold {
+            character.identity.experience_points = xp_threshold;
+        }
+    }
+
+    /// Scan features that would be applied at a given class level and return
+    /// those whose assignments require user-supplied ARG values.
+    pub fn features_needing_args(
+        &self,
+        character: &Character,
+        class_idx: usize,
+        level: u32,
+    ) -> Vec<PendingArgs> {
+        let Some(class_level) = character.identity.classes.get(class_idx) else {
+            return Vec::new();
+        };
+
+        let class_cache = self.class_cache.read_untracked();
+        let Some(def) = class_cache.get(class_level.class.as_str()) else {
+            return Vec::new();
+        };
+
+        let rules = def.levels.get(level as usize - 1);
+        let subclass_rules = class_level
+            .subclass
+            .as_deref()
+            .and_then(|sc| def.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
+        let mut result = Vec::new();
+        self.with_features_index_untracked(|features_index| {
+            // Only check features introduced at this specific level
+            let level_features = rules
+                .into_iter()
+                .flat_map(|r| r.features.iter())
+                .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
+
+            for feat_name in level_features {
+                let Some(feat) = features_index.get(feat_name.as_str()) else {
+                    continue;
+                };
+                let already_has = character.features.iter().any(|f| f.name == *feat_name);
+
+                if already_has && !feat.stackable {
+                    continue;
+                }
+
+                let when = if already_has {
+                    WhenCondition::OnLevelUp
+                } else {
+                    WhenCondition::OnFeatureAdd
+                };
+
+                if let Some(expr) = feat.args_expr(when) {
+                    result.push(PendingArgs {
+                        feature_name: feat_name.to_string(),
+                        feature_label: feat.label().to_string(),
+                        expr: expr.clone(),
+                    });
+                }
+            }
+        });
+        result
+    }
+
+    /// Check if a single feature (by name) needs ARG values for its apply.
+    pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingArgs> {
+        self.with_features_index_untracked(|features_index| {
+            let feat = features_index.get(name)?;
+            let when = if character.feature_data.contains_key(name) {
+                WhenCondition::OnLevelUp
+            } else {
+                WhenCondition::OnFeatureAdd
+            };
+            feat.args_expr(when).map(|expr| PendingArgs {
+                feature_name: name.to_string(),
+                feature_label: feat.label().to_string(),
+                expr: expr.clone(),
+            })
+        })
+    }
+
     /// Trigger spell list fetches for all feature data entries that reference
     /// external spell lists. Used by `fill_from_registry` before acquiring
     /// the spell list cache read guard.
@@ -256,7 +444,7 @@ impl RulesRegistry {
         });
     }
 
-    /// Apply species features from the global catalog.
+    /// Apply species features from the global index.
     pub fn apply_species(&self, character: &mut Character) {
         character.identity.species_applied = true;
         let total_level = character.level().max(1);
@@ -275,7 +463,7 @@ impl RulesRegistry {
         self.compute(character);
     }
 
-    /// Apply background features from the global catalog.
+    /// Apply background features from the global index.
     pub fn apply_background(&self, character: &mut Character) {
         character.identity.background_applied = true;
         let total_level = character.level().max(1);

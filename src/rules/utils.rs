@@ -115,6 +115,12 @@ impl<'de> Deserialize<'de> for FlexU32 {
 }
 
 pub async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
+    do_fetch_json(url).await.inspect_err(|error| {
+        log::error!("fetch_json {url} failed: {error}");
+    })
+}
+
+async fn do_fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
     let resp = gloo_net::http::Request::get(url)
         .send()
         .await

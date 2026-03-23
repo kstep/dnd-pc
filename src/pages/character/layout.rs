@@ -7,6 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     BASE_URL,
+    components::args_modal::{ArgsModal, ArgsModalCtx},
     effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
@@ -44,6 +45,10 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     // Provide context first so child components can access the store.
     provide_context(store);
+
+    // Provide args-modal context for features that need user input during apply.
+    let args_modal_ctx = ArgsModalCtx::new();
+    provide_context(args_modal_ctx);
 
     // Load and provide active effects (separate from character, not synced).
     let char_id = store.read_untracked().id;
@@ -117,6 +122,7 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         <Title text=title />
         <div class="character-sheet">
             <Outlet />
+            <ArgsModal />
         </div>
     }
 }

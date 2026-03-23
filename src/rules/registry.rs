@@ -379,7 +379,7 @@ impl RulesRegistry {
         f(index.map_or(&EMPTY, |idx| &idx.0))
     }
 
-    // ---- Features catalog ----
+    // ---- Features index ----
 
     pub fn with_features_index<R>(
         &self,

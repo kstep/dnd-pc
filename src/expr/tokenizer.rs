@@ -65,9 +65,27 @@ impl<'a> Iterator for Tokenizer<'a> {
                 let len = self
                     .rest
                     .bytes()
-                    .take_while(|b| b.is_ascii_alphabetic() || *b == b'_' || *b == b'.')
+                    .take_while(|b| b.is_ascii_alphanumeric() || *b == b'_' || *b == b'.')
                     .count();
                 let (ident, rest) = self.rest.split_at(len);
+                // Dice keywords glued to digits ("d6", "kh3", "dl1") must be
+                // split: emit the keyword token now and leave the digits for the
+                // next iteration.
+                let (dice_tok, dice_len) = match ident.as_bytes() {
+                    [b'k', b'h', b'0'..=b'9', ..] => (Some(Token::Kh), 2),
+                    [b'k', b'l', b'0'..=b'9', ..] => (Some(Token::Kl), 2),
+                    [b'd', b'h', b'0'..=b'9', ..] => (Some(Token::Dh), 2),
+                    [b'd', b'l', b'0'..=b'9', ..] => (Some(Token::Dl), 2),
+                    [b'd', b'0'..=b'9', ..] => (Some(Token::D), 1),
+                    _ => (None, 0),
+                };
+                if let Some(tok) = dice_tok {
+                    // Advance past keyword only, leaving digits + remaining input.
+                    // self.rest still points to the full input before split_at,
+                    // so skip just the keyword length.
+                    self.rest = &self.rest[dice_len..];
+                    return Some(Ok(tok));
+                }
                 self.rest = rest;
                 Some(Ok(match ident {
                     "d" => Token::D,
