@@ -341,6 +341,13 @@ mod tests {
 
         let expr: Expr = "AC + 5; AC - 5; (AC - 5) * 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC + 5; AC - 5; (AC - 5) * 2");
+
+        // Dice with complex amount/sides must keep parentheses
+        let expr: Expr = "(SLOT_LEVEL + 2)d6".parse().unwrap();
+        assert_eq!(expr.to_string(), "(SLOT_LEVEL + 2)d6");
+
+        let expr: Expr = "(CLASS_LEVEL / 2)d8".parse().unwrap();
+        assert_eq!(expr.to_string(), "(CLASS_LEVEL / 2)d8");
     }
 
     #[wasm_bindgen_test]

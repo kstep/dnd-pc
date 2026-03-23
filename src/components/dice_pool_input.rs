@@ -39,8 +39,15 @@ pub fn DicePoolInput(
         }
     });
 
+    let form_ref = NodeRef::<html::Form>::new();
+
     let confirm = move |ev: web_sys::SubmitEvent| {
         ev.prevent_default();
+        if let Some(form) = form_ref.get()
+            && !form.report_validity()
+        {
+            return;
+        }
         let pool = groups.with_value(|groups| {
             groups
                 .iter()
@@ -98,7 +105,7 @@ pub fn DicePoolInput(
 
     view! {
         <Modal show=show title="Dice Rolls">
-            <form class="dice-pool-form" on:submit=confirm>
+            <form class="dice-pool-form" on:submit=confirm node_ref=form_ref>
                 <div class="dice-pool-groups">{group_views.get_value()}</div>
                 <div class="dice-pool-footer">
                     <button type="submit" class="btn-confirm">
