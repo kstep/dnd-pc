@@ -37,13 +37,25 @@ pub const fn avg_hp(sides: i32) -> i32 {
 #[allow(clippy::type_complexity)]
 pub struct Expr<Var, Val = i32>(Arc<[Box<[Op<Var, Val>]>]>);
 
-impl<Var: Serialize, Val: Serialize> Serialize for Expr<Var, Val> {
+impl<Var, Val> Serialize for Expr<Var, Val>
+where
+    Var: Serialize + Copy + PartialEq + fmt::Display,
+    Val: Serialize + Copy + fmt::Display,
+{
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
-        for block in self.0.iter() {
-            seq.serialize_element(&block)?;
+        if serializer.is_human_readable() {
+            // JSON/Firestore: serialize as infix string (avoids nested arrays
+            // which Firestore rejects).
+            let s = self.format_block(0).map_err(serde::ser::Error::custom)?;
+            serializer.serialize_str(&s)
+        } else {
+            // postcard (binary): serialize as ops for compact sharing URLs.
+            let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
+            for block in self.0.iter() {
+                seq.serialize_element(&block)?;
+            }
+            seq.end()
         }
-        seq.end()
     }
 }
 
