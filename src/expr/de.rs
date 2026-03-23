@@ -28,8 +28,19 @@ where
             }
 
             fn visit_seq<A: de::SeqAccess<'de>>(self, seq: A) -> Result<Expr<Var, Val>, A::Error> {
-                let blocks: Vec<Vec<Op<Var, Val>>> =
-                    Vec::deserialize(de::value::SeqAccessDeserializer::new(seq))?;
+                // Try Vec<Vec<Op>> (current format) first, fall back to
+                // Vec<Op> (legacy flat format before multi-block expressions).
+                #[derive(Deserialize)]
+                #[serde(untagged)]
+                enum BlocksOrOps<Var, Val> {
+                    Blocks(Vec<Vec<Op<Var, Val>>>),
+                    Ops(Vec<Op<Var, Val>>),
+                }
+                let blocks =
+                    match BlocksOrOps::deserialize(de::value::SeqAccessDeserializer::new(seq))? {
+                        BlocksOrOps::Blocks(blocks) => blocks,
+                        BlocksOrOps::Ops(ops) => vec![ops],
+                    };
                 #[allow(clippy::type_complexity)]
                 let blocks: Arc<[Box<[Op<Var, Val>]>]> =
                     blocks.into_iter().map(Vec::into_boxed_slice).collect();
