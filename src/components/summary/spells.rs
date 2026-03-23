@@ -157,7 +157,9 @@ fn SpellEffectsModal(
                                         let values: Vec<u32> = refs
                                             .iter()
                                             .filter_map(|r| {
-                                                r.get().and_then(|el| el.value().parse().ok())
+                                                r.get()
+                                                    .and_then(|el| el.value().parse().ok())
+                                                    .filter(|&v: &u32| v >= 1 && v <= sides)
                                             })
                                             .collect();
                                         (sides, values)
@@ -165,7 +167,7 @@ fn SpellEffectsModal(
                                     .collect::<BTreeMap<u32, Vec<u32>>>()
                             });
 
-                            // Only evaluate if all inputs are filled
+                            // Only evaluate if all inputs are filled and valid
                             let total_filled: u32 =
                                 pool_map.values().map(|v| v.len() as u32).sum();
 
@@ -193,6 +195,7 @@ fn SpellEffectsModal(
                                                     type="number"
                                                     min=1
                                                     max=sides
+                                                    required
                                                     autofocus=is_first
                                                     class="dice-pool-value"
                                                     node_ref=node_ref
