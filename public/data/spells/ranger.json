@@ -1,7 +1,13 @@
 [
   {
     "name": "Absorb Elements",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Alarm",
@@ -17,7 +23,13 @@
   },
   {
     "name": "Cure Wounds",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Detect Magic",
@@ -29,7 +41,13 @@
   },
   {
     "name": "Ensnaring Strike",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Entangle",
@@ -41,15 +59,33 @@
   },
   {
     "name": "Goodberry",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "10"
+      }
+    ]
   },
   {
     "name": "Hail of Thorns",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "SLOT_LEVEL d10"
+      }
+    ]
   },
   {
     "name": "Hunter's Mark",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "1d6"
+      }
+    ]
   },
   {
     "name": "Jump",
@@ -61,7 +97,13 @@
   },
   {
     "name": "Searing Smite",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Snare",
@@ -77,7 +119,13 @@
   },
   {
     "name": "Aid",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Max HP Bonus",
+        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+      }
+    ]
   },
   {
     "name": "Air Bubble",
@@ -89,7 +137,13 @@
   },
   {
     "name": "Barkskin",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 17)"
+      }
+    ]
   },
   {
     "name": "Beast Sense",
@@ -117,7 +171,13 @@
   },
   {
     "name": "Healing Spirit",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "1d6 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Lesser Restoration",
@@ -133,7 +193,13 @@
   },
   {
     "name": "Magic Weapon",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Attack Bonus",
+        "expr": "ATK += SLOT_LEVEL / 2"
+      }
+    ]
   },
   {
     "name": "Pass without Trace",
@@ -165,7 +231,13 @@
   },
   {
     "name": "Conjure Barrage",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "3d8"
+      }
+    ]
   },
   {
     "name": "Daylight",
@@ -177,7 +249,13 @@
   },
   {
     "name": "Elemental Weapon",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Damage Bonus",
+        "expr": "(SLOT_LEVEL - 1)d4"
+      }
+    ]
   },
   {
     "name": "Flame Arrows",
@@ -185,7 +263,13 @@
   },
   {
     "name": "Lightning Arrow",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Meld into Stone",
@@ -269,7 +353,13 @@
   },
   {
     "name": "Conjure Volley",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "8d8"
+      }
+    ]
   },
   {
     "name": "Greater Restoration",
@@ -277,7 +367,13 @@
   },
   {
     "name": "Steel Wind Strike",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "6d10"
+      }
+    ]
   },
   {
     "name": "Swift Quiver",

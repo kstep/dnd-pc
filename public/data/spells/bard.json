@@ -37,19 +37,23 @@
   },
   {
     "name": "Starry Wisp",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
   },
   {
     "name": "Thunderclap",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Thunder Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "True Strike",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Vicious Mockery",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Psychic Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d4"}]
   },
   {
     "name": "Animal Friendship",
@@ -57,7 +61,8 @@
   },
   {
     "name": "Bane",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Penalty", "expr": "1d4"}]
   },
   {
     "name": "Charm Person",
@@ -65,7 +70,8 @@
   },
   {
     "name": "Color Spray",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "HP Affected", "expr": "(SLOT_LEVEL + 5)d10"}]
   },
   {
     "name": "Command",
@@ -77,7 +83,8 @@
   },
   {
     "name": "Cure Wounds",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -89,7 +96,8 @@
   },
   {
     "name": "Dissonant Whispers",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Psychic Damage", "expr": "(SLOT_LEVEL + 2)d6"}]
   },
   {
     "name": "Distort Value",
@@ -97,7 +105,8 @@
   },
   {
     "name": "Earth Tremor",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Bludgeoning Damage", "expr": "SLOT_LEVEL d6"}]
   },
   {
     "name": "Faerie Fire",
@@ -109,11 +118,13 @@
   },
   {
     "name": "Healing Word",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Heroism",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Temp HP", "expr": "CASTER_MODIFIER"}]
   },
   {
     "name": "Identify",
@@ -149,7 +160,8 @@
   },
   {
     "name": "Thunderwave",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Thunder Damage", "expr": "(SLOT_LEVEL + 1)d8"}]
   },
   {
     "name": "Unseen Servant",
@@ -161,7 +173,8 @@
   },
   {
     "name": "Aid",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Max HP Bonus", "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"}]
   },
   {
     "name": "Animal Messenger",
@@ -181,7 +194,8 @@
   },
   {
     "name": "Cloud of Daggers",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Slashing Damage", "expr": "(SLOT_LEVEL * 2)d4"}]
   },
   {
     "name": "Crown of Madness",
@@ -197,7 +211,8 @@
   },
   {
     "name": "Enlarge/Reduce",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Damage Bonus", "expr": "1d4"}]
   },
   {
     "name": "Enthrall",
@@ -209,7 +224,8 @@
   },
   {
     "name": "Heat Metal",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d8"}]
   },
   {
     "name": "Hold Person",
@@ -253,7 +269,8 @@
   },
   {
     "name": "Phantasmal Force",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Psychic Damage", "expr": "1d6"}]
   },
   {
     "name": "Pyrotechnics",
@@ -265,7 +282,8 @@
   },
   {
     "name": "Shatter",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Thunder Damage", "expr": "(SLOT_LEVEL + 1)d8"}]
   },
   {
     "name": "Silence",
@@ -357,7 +375,8 @@
   },
   {
     "name": "Mass Healing Word",
-    "level": 3
+    "level": 3,
+    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Motivational Speech",
@@ -441,7 +460,8 @@
   },
   {
     "name": "Phantasmal Killer",
-    "level": 4
+    "level": 4,
+    "effects": [{"name": "Psychic Damage", "expr": "SLOT_LEVEL d10"}]
   },
   {
     "name": "Polymorph",
@@ -449,7 +469,8 @@
   },
   {
     "name": "Raulothim's Psychic Lance",
-    "level": 4
+    "level": 4,
+    "effects": [{"name": "Psychic Damage", "expr": "(SLOT_LEVEL + 3)d6"}]
   },
   {
     "name": "Alustriel's Mooncloak",
@@ -489,7 +510,8 @@
   },
   {
     "name": "Mass Cure Wounds",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Mislead",
@@ -525,7 +547,8 @@
   },
   {
     "name": "Synaptic Static",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Psychic Damage", "expr": "8d6"}]
   },
   {
     "name": "Teleportation Circle",
@@ -593,15 +616,18 @@
   },
   {
     "name": "Mordenkainen's Sword",
-    "level": 7
+    "level": 7,
+    "effects": [{"name": "Force Damage", "expr": "3d10"}]
   },
   {
     "name": "Power Word Fortify",
-    "level": 7
+    "level": 7,
+    "effects": [{"name": "Temp HP", "expr": "120"}]
   },
   {
     "name": "Prismatic Spray",
-    "level": 7
+    "level": 7,
+    "effects": [{"name": "Damage", "expr": "10d6"}]
   },
   {
     "name": "Project Image",
@@ -657,11 +683,13 @@
   },
   {
     "name": "Power Word Heal",
-    "level": 9
+    "level": 9,
+    "effects": [{"name": "Healing", "expr": "700"}]
   },
   {
     "name": "Power Word Kill",
-    "level": 9
+    "level": 9,
+    "effects": [{"name": "Damage", "expr": "100"}]
   },
   {
     "name": "Prismatic Wall",
@@ -669,7 +697,8 @@
   },
   {
     "name": "Psychic Scream",
-    "level": 9
+    "level": 9,
+    "effects": [{"name": "Psychic Damage", "expr": "14d6"}]
   },
   {
     "name": "True Polymorph",

@@ -1252,25 +1252,49 @@
           "name": "Healing Word",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Ray of Sickness",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Poison Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Flaming Sphere",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Melf's Acid Arrow",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Acid Damage",
+              "expr": "(SLOT_LEVEL + 2)d4"
+            }
+          ]
         },
         {
           "name": "Gaseous Form",
@@ -1282,7 +1306,13 @@
           "name": "Mass Healing Word",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Death Ward",
@@ -1294,13 +1324,25 @@
           "name": "Vitriolic Sphere",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Acid Damage",
+              "expr": "(SLOT_LEVEL + 6)d4"
+            }
+          ]
         },
         {
           "name": "Cloudkill",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Poison Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Raise Dead",
@@ -1370,13 +1412,25 @@
           "name": "Magic Missile",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Force Damage",
+              "expr": "(SLOT_LEVEL + 2)d4 + SLOT_LEVEL + 2"
+            }
+          ]
         },
         {
           "name": "Thunderwave",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Mirror Image",
@@ -1388,7 +1442,13 @@
           "name": "Shatter",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Hypnotic Pattern",
@@ -1400,13 +1460,25 @@
           "name": "Lightning Bolt",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Lightning Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Fire Shield",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Fire/Cold Damage",
+              "expr": "2d8"
+            }
+          ]
         },
         {
           "name": "Greater Invisibility",
@@ -1456,31 +1528,61 @@
           "name": "Shield",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "AC Bonus",
+              "expr": "AC += 5"
+            }
+          ]
         },
         {
           "name": "Thunderwave",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Scorching Ray",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Shatter",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Fireball",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Wind Wall",
@@ -1492,19 +1594,41 @@
           "name": "Ice Storm",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "2d8"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Wall of Fire",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Cone of Cold",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Cold Damage",
+              "expr": "(SLOT_LEVEL + 3)d8"
+            }
+          ]
         },
         {
           "name": "Wall of Force",
@@ -1539,37 +1663,73 @@
           "name": "Heroism",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Temp HP",
+              "expr": "CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Shield",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "AC Bonus",
+              "expr": "AC += 5"
+            }
+          ]
         },
         {
           "name": "Shining Smite",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Warding Bond",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "AC/Save Bonus",
+              "expr": "AC += 1"
+            }
+          ]
         },
         {
           "name": "Aura of Vitality",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Conjure Barrage",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "3d8"
+            }
+          ]
         },
         {
           "name": "Aura of Purity",
@@ -1581,19 +1741,37 @@
           "name": "Fire Shield",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Fire/Cold Damage",
+              "expr": "2d8"
+            }
+          ]
         },
         {
           "name": "Banishing Smite",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Force Damage",
+              "expr": "5d10"
+            }
+          ]
         },
         {
           "name": "Mass Cure Wounds",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"
+            }
+          ]
         }
       ]
     }
@@ -1625,13 +1803,25 @@
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         },
         {
           "name": "Healing Word",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Locate Object",
@@ -1643,13 +1833,25 @@
           "name": "Mind Spike",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Call Lightning",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Lightning Damage",
+              "expr": "SLOT_LEVEL d10"
+            }
+          ]
         },
         {
           "name": "Clairvoyance",
@@ -2899,19 +3101,37 @@
           "name": "Bless",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Bonus",
+              "expr": "1d4"
+            }
+          ]
         },
         {
           "name": "Cure Wounds",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Aid",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Max HP Bonus",
+              "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+            }
+          ]
         },
         {
           "name": "Lesser Restoration",
@@ -2923,7 +3143,13 @@
           "name": "Mass Healing Word",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Revivify",
@@ -2953,7 +3179,13 @@
           "name": "Mass Cure Wounds",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"
+            }
+          ]
         }
       ]
     }
@@ -2990,7 +3222,13 @@
           "name": "Burning Hands",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 2)d6"
+            }
+          ]
         },
         {
           "name": "Faerie Fire",
@@ -3002,7 +3240,13 @@
           "name": "Scorching Ray",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "See Invisibility",
@@ -3020,7 +3264,13 @@
           "name": "Fireball",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Arcane Eye",
@@ -3032,13 +3282,29 @@
           "name": "Wall of Fire",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Flame Strike",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "4d6"
+            },
+            {
+              "name": "Radiant Damage",
+              "expr": "4d6"
+            }
+          ]
         },
         {
           "name": "Scrying",
@@ -3307,43 +3573,85 @@
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         },
         {
           "name": "Shield of Faith",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "AC Bonus",
+              "expr": "AC += 2"
+            }
+          ]
         },
         {
           "name": "Magic Weapon",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Attack Bonus",
+              "expr": "ATK += SLOT_LEVEL / 2"
+            }
+          ]
         },
         {
           "name": "Spiritual Weapon",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Force Damage",
+              "expr": "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Crusader's Mantle",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "1d4"
+            }
+          ]
         },
         {
           "name": "Spirit Guardians",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Radiant/Necrotic Damage",
+              "expr": "SLOT_LEVEL d8"
+            }
+          ]
         },
         {
           "name": "Fire Shield",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire/Cold Damage",
+              "expr": "2d8"
+            }
+          ]
         },
         {
           "name": "Freedom of Movement",
@@ -3361,7 +3669,13 @@
           "name": "Steel Wind Strike",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Force Damage",
+              "expr": "6d10"
+            }
+          ]
         }
       ]
     }
@@ -4102,7 +4416,13 @@
         },
         {
           "name": "Fire Bolt",
-          "level": 0
+          "level": 0,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+            }
+          ]
         },
         {
           "name": "Ray of Frost",
@@ -4116,7 +4436,13 @@
           "name": "Burning Hands",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 2)d6"
+            }
+          ]
         },
         {
           "name": "Fog Cloud",
@@ -4128,7 +4454,13 @@
           "name": "Ray of Sickness",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Poison Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Sleep",
@@ -4164,13 +4496,25 @@
           "name": "Fireball",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Lightning Bolt",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Lightning Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Sleet Storm",
@@ -4188,7 +4532,13 @@
           "name": "Blight",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Necrotic Damage",
+              "expr": "(SLOT_LEVEL + 4)d8"
+            }
+          ]
         },
         {
           "name": "Freedom of Movement",
@@ -4200,7 +4550,17 @@
           "name": "Ice Storm",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "2d8"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Polymorph",
@@ -4212,13 +4572,25 @@
           "name": "Cone of Cold",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Cold Damage",
+              "expr": "(SLOT_LEVEL + 3)d8"
+            }
+          ]
         },
         {
           "name": "Insect Plague",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Piercing Damage",
+              "expr": "(SLOT_LEVEL - 1)d10"
+            }
+          ]
         },
         {
           "name": "Tree Stride",
@@ -4291,13 +4663,25 @@
           "name": "Cure Wounds",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Moonbeam",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "SLOT_LEVEL d10"
+            }
+          ]
         },
         {
           "name": "Conjure Animals",
@@ -4309,13 +4693,25 @@
           "name": "Fount of Moonlight",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Mass Cure Wounds",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"
+            }
+          ]
         }
       ]
     }
@@ -4599,7 +4995,13 @@
           "name": "Thunderwave",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Gust of Wind",
@@ -4611,7 +5013,13 @@
           "name": "Lightning Bolt",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Lightning Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Water Breathing",
@@ -4629,7 +5037,17 @@
           "name": "Ice Storm",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "2d8"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Conjure Elemental",
@@ -6088,13 +6506,25 @@
           "name": "Shield of Faith",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "AC Bonus",
+              "expr": "AC += 2"
+            }
+          ]
         },
         {
           "name": "Aid",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Max HP Bonus",
+              "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+            }
+          ]
         },
         {
           "name": "Zone of Truth",
@@ -6124,7 +6554,13 @@
           "name": "Guardian of Faith",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "20"
+            }
+          ]
         },
         {
           "name": "Commune",
@@ -6136,7 +6572,17 @@
           "name": "Flame Strike",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "4d6"
+            },
+            {
+              "name": "Radiant Damage",
+              "expr": "4d6"
+            }
+          ]
         }
       ]
     }
@@ -6214,7 +6660,13 @@
           "name": "Ensnaring Strike",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Piercing Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Speak with Animals",
@@ -6232,7 +6684,13 @@
           "name": "Moonbeam",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "SLOT_LEVEL d10"
+            }
+          ]
         },
         {
           "name": "Plant Growth",
@@ -6250,7 +6708,17 @@
           "name": "Ice Storm",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "2d8"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Stoneskin",
@@ -6305,13 +6773,25 @@
           "name": "Bane",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Penalty",
+              "expr": "1d4"
+            }
+          ]
         },
         {
           "name": "Hunter's Mark",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "1d6"
+            }
+          ]
         },
         {
           "name": "Hold Person",
@@ -6329,7 +6809,13 @@
           "name": "Haste",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Buff",
+              "expr": "AC += 2; SPEED += SPEED"
+            }
+          ]
         },
         {
           "name": "Protection from Energy",
@@ -6651,13 +7137,25 @@
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         },
         {
           "name": "Heroism",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Temp HP",
+              "expr": "CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Enhance Ability",
@@ -6669,13 +7167,25 @@
           "name": "Magic Weapon",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Attack Bonus",
+              "expr": "ATK += SLOT_LEVEL / 2"
+            }
+          ]
         },
         {
           "name": "Haste",
           "level": 3,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Buff",
+              "expr": "AC += 2; SPEED += SPEED"
+            }
+          ]
         },
         {
           "name": "Protection from Energy",
@@ -6860,13 +7370,25 @@
           "name": "Chromatic Orb",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "(SLOT_LEVEL + 2)d8"
+            }
+          ]
         },
         {
           "name": "Thunderous Smite",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Thunder Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Mirror Image",
@@ -6878,7 +7400,13 @@
           "name": "Phantasmal Force",
           "level": 2,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "1d6"
+            }
+          ]
         },
         {
           "name": "Fly",
@@ -6908,7 +7436,13 @@
           "name": "Banishing Smite",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Force Damage",
+              "expr": "5d10"
+            }
+          ]
         },
         {
           "name": "Contact Other Plane",
@@ -6971,7 +7505,13 @@
           "name": "Hunter's Mark",
           "level": 1,
           "cost": 1,
-          "sticky": true
+          "sticky": true,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "1d6"
+            }
+          ]
         }
       ],
       "caster_coef": 2
@@ -7553,7 +8093,17 @@
           "name": "Ice Knife",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Piercing Damage",
+              "expr": "1d10"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "(SLOT_LEVEL + 1)d6"
+            }
+          ]
         },
         {
           "name": "Hold Person",
@@ -7571,13 +8121,29 @@
           "name": "Ice Storm",
           "level": 4,
           "sticky": true,
-          "min_level": 13
+          "min_level": 13,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "2d8"
+            },
+            {
+              "name": "Cold Damage",
+              "expr": "SLOT_LEVEL d6"
+            }
+          ]
         },
         {
           "name": "Cone of Cold",
           "level": 5,
           "sticky": true,
-          "min_level": 17
+          "min_level": 17,
+          "effects": [
+            {
+              "name": "Cold Damage",
+              "expr": "(SLOT_LEVEL + 3)d8"
+            }
+          ]
         }
       ]
     }
@@ -8774,14 +9340,26 @@
           "level": 1,
           "sticky": true,
           "min_level": 3,
-          "cost": 1
+          "cost": 1,
+          "effects": [
+            {
+              "name": "Necrotic Damage",
+              "expr": "(SLOT_LEVEL + 1)d6"
+            }
+          ]
         },
         {
           "name": "Dissonant Whispers",
           "level": 1,
           "sticky": true,
           "min_level": 3,
-          "cost": 1
+          "cost": 1,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "(SLOT_LEVEL + 2)d6"
+            }
+          ]
         },
         {
           "name": "Calm Emotions",
@@ -8802,7 +9380,13 @@
           "level": 3,
           "sticky": true,
           "min_level": 5,
-          "cost": 3
+          "cost": 3,
+          "effects": [
+            {
+              "name": "Cold Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Sending",
@@ -8816,7 +9400,13 @@
           "level": 4,
           "sticky": true,
           "min_level": 7,
-          "cost": 4
+          "cost": 4,
+          "effects": [
+            {
+              "name": "Bludgeoning Damage",
+              "expr": "3d6"
+            }
+          ]
         },
         {
           "name": "Summon Aberration",
@@ -8925,7 +9515,13 @@
           "name": "Aid",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Max HP Bonus",
+              "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+            }
+          ]
         },
         {
           "name": "Lesser Restoration",
@@ -9049,7 +9645,13 @@
           "name": "Chromatic Orb",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "(SLOT_LEVEL + 2)d8"
+            }
+          ]
         },
         {
           "name": "Command",
@@ -9067,7 +9669,13 @@
           "name": "Dragon's Breath",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Damage",
+              "expr": "(SLOT_LEVEL + 1)d6"
+            }
+          ]
         },
         {
           "name": "Fear",
@@ -9181,13 +9789,25 @@
           "name": "Cure Wounds",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         },
         {
           "name": "Lesser Restoration",
@@ -9199,13 +9819,25 @@
           "name": "Scorching Ray",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Aura of Vitality",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Counterspell",
@@ -9223,19 +9855,41 @@
           "name": "Fire Shield",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire/Cold Damage",
+              "expr": "2d8"
+            }
+          ]
         },
         {
           "name": "Wall of Fire",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Flame Strike",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "4d6"
+            },
+            {
+              "name": "Radiant Damage",
+              "expr": "4d6"
+            }
+          ]
         },
         {
           "name": "Greater Restoration",
@@ -9923,7 +10577,13 @@
           "name": "Phantasmal Force",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "1d6"
+            }
+          ]
         },
         {
           "name": "Blink",
@@ -10005,19 +10665,37 @@
           "name": "Cure Wounds",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Healing",
+              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+            }
+          ]
         },
         {
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         },
         {
           "name": "Aid",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Max HP Bonus",
+              "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+            }
+          ]
         },
         {
           "name": "Lesser Restoration",
@@ -10041,13 +10719,25 @@
           "name": "Guardian of Faith",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "20"
+            }
+          ]
         },
         {
           "name": "Wall of Fire",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Greater Restoration",
@@ -10119,7 +10809,13 @@
           "name": "Burning Hands",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 2)d6"
+            }
+          ]
         },
         {
           "name": "Command",
@@ -10131,7 +10827,13 @@
           "name": "Scorching Ray",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Suggestion",
@@ -10143,7 +10845,13 @@
           "name": "Fireball",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 5)d6"
+            }
+          ]
         },
         {
           "name": "Stinking Cloud",
@@ -10155,13 +10863,25 @@
           "name": "Fire Shield",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire/Cold Damage",
+              "expr": "2d8"
+            }
+          ]
         },
         {
           "name": "Wall of Fire",
           "level": 4,
           "sticky": true,
-          "min_level": 7
+          "min_level": 7,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "5d8"
+            }
+          ]
         },
         {
           "name": "Geas",
@@ -10173,7 +10893,13 @@
           "name": "Insect Plague",
           "level": 5,
           "sticky": true,
-          "min_level": 9
+          "min_level": 9,
+          "effects": [
+            {
+              "name": "Piercing Damage",
+              "expr": "(SLOT_LEVEL - 1)d10"
+            }
+          ]
         }
       ]
     }
@@ -10211,13 +10937,25 @@
           "name": "Dissonant Whispers",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "(SLOT_LEVEL + 2)d6"
+            }
+          ]
         },
         {
           "name": "Hex",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Necrotic Damage",
+              "expr": "1d6"
+            }
+          ]
         },
         {
           "name": "Tasha's Hideous Laughter",
@@ -10235,7 +10973,13 @@
           "name": "Phantasmal Force",
           "level": 2,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Psychic Damage",
+              "expr": "1d6"
+            }
+          ]
         },
         {
           "name": "Clairvoyance",
@@ -10247,7 +10991,13 @@
           "name": "Hunger of Hadar",
           "level": 3,
           "sticky": true,
-          "min_level": 5
+          "min_level": 5,
+          "effects": [
+            {
+              "name": "Cold Damage",
+              "expr": "2d6"
+            }
+          ]
         },
         {
           "name": "Confusion",
@@ -11057,7 +11807,13 @@
           "name": "Guiding Bolt",
           "level": 1,
           "sticky": true,
-          "min_level": 3
+          "min_level": 3,
+          "effects": [
+            {
+              "name": "Radiant Damage",
+              "expr": "(SLOT_LEVEL + 3)d6"
+            }
+          ]
         }
       ]
     }
@@ -11576,14 +12332,26 @@
         {
           "name": "Poison Spray",
           "level": 0,
-          "sticky": true
+          "sticky": true,
+          "effects": [
+            {
+              "name": "Poison Damage",
+              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"
+            }
+          ]
         },
         {
           "name": "Ray of Sickness",
           "level": 1,
           "sticky": true,
           "min_level": 3,
-          "cost": 1
+          "cost": 1,
+          "effects": [
+            {
+              "name": "Poison Damage",
+              "expr": "(SLOT_LEVEL + 1)d8"
+            }
+          ]
         },
         {
           "name": "Hold Person",
@@ -11619,14 +12387,26 @@
         {
           "name": "Chill Touch",
           "level": 0,
-          "sticky": true
+          "sticky": true,
+          "effects": [
+            {
+              "name": "Necrotic Damage",
+              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+            }
+          ]
         },
         {
           "name": "False Life",
           "level": 1,
           "sticky": true,
           "min_level": 3,
-          "cost": 1
+          "cost": 1,
+          "effects": [
+            {
+              "name": "Temp HP",
+              "expr": "1d4 + 4 + 5 * (SLOT_LEVEL - 1)"
+            }
+          ]
         },
         {
           "name": "Ray of Enfeeblement",
@@ -11662,14 +12442,26 @@
         {
           "name": "Fire Bolt",
           "level": 0,
-          "sticky": true
+          "sticky": true,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+            }
+          ]
         },
         {
           "name": "Hellish Rebuke",
           "level": 1,
           "sticky": true,
           "min_level": 3,
-          "cost": 1
+          "cost": 1,
+          "effects": [
+            {
+              "name": "Fire Damage",
+              "expr": "(SLOT_LEVEL + 1)d10"
+            }
+          ]
         },
         {
           "name": "Darkness",

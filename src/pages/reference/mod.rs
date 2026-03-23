@@ -24,6 +24,7 @@ pub struct InlineSpell {
     pub min_level: u32,
     pub sticky: bool,
     pub description: String,
+    pub effects: Vec<(String, String)>,
 }
 
 pub enum FeatureSpells {
@@ -48,6 +49,11 @@ impl FeatureSpells {
                         min_level: s.min_level,
                         sticky: s.sticky,
                         description: s.description.clone(),
+                        effects: s
+                            .effects
+                            .iter()
+                            .map(|e| (e.label().to_string(), e.expr.to_string()))
+                            .collect(),
                     })
                     .collect(),
             ),
@@ -560,6 +566,15 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                             {")"}
                             {(!spell.description.is_empty()).then(|| view! {
                                 <p>{spell.description}</p>
+                            })}
+                            {(!spell.effects.is_empty()).then(|| view! {
+                                <p class="spell-effects">
+                                    {spell.effects.into_iter().map(|(name, expr)| view! {
+                                        <span class="spell-effect">
+                                            <strong>{name}</strong>{": "}<code>{expr}</code>
+                                        </span>
+                                    }).collect_view()}
+                                </p>
                             })}
                         </div>
                     }

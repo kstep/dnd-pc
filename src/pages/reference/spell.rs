@@ -64,6 +64,7 @@ pub fn SpellReference() -> impl IntoView {
                     description: String,
                     min_level: u32,
                     sticky: bool,
+                    effects: Vec<(String, String)>,
                 }
                 struct SpellGroup {
                     level: u32,
@@ -81,6 +82,11 @@ pub fn SpellReference() -> impl IntoView {
                             description: spell.description.clone(),
                             min_level: spell.min_level,
                             sticky: spell.sticky,
+                            effects: spell
+                                .effects
+                                .iter()
+                                .map(|e| (e.label().to_string(), e.expr.to_string()))
+                                .collect(),
                         });
                 }
                 let by_level: Vec<SpellGroup> = by_level_map
@@ -129,6 +135,15 @@ pub fn SpellReference() -> impl IntoView {
                                                     })}
                                                 </h3>
                                                 <p>{spell.description}</p>
+                                                {(!spell.effects.is_empty()).then(|| view! {
+                                                    <p class="spell-effects">
+                                                        {spell.effects.into_iter().map(|(name, expr)| view! {
+                                                            <span class="spell-effect">
+                                                                <strong>{name}</strong>{": "}<code>{expr}</code>
+                                                            </span>
+                                                        }).collect_view()}
+                                                    </p>
+                                                })}
                                             </div>
                                         }
                                     }).collect_view()}

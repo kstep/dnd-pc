@@ -1,15 +1,18 @@
 [
   {
     "name": "Acid Splash",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Acid Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "Booming Blade",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Thunder Damage", "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d8"}]
   },
   {
     "name": "Create Bonfire",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Fire Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
   },
   {
     "name": "Dancing Lights",
@@ -21,15 +24,18 @@
   },
   {
     "name": "Fire Bolt",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Fire Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"}]
   },
   {
     "name": "Frostbite",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Cold Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "Green-Flame Blade",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Fire Damage", "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d8 + if(LEVEL >= 5, CASTER_MODIFIER, 0)"}]
   },
   {
     "name": "Guidance",
@@ -41,7 +47,8 @@
   },
   {
     "name": "Lightning Lure",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Lightning Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
   },
   {
     "name": "Mage Hand",
@@ -49,7 +56,8 @@
   },
   {
     "name": "Magic Stone",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Bludgeoning Damage", "expr": "1d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Mending",
@@ -61,7 +69,8 @@
   },
   {
     "name": "Poison Spray",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Poison Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"}]
   },
   {
     "name": "Prestidigitation",
@@ -69,7 +78,8 @@
   },
   {
     "name": "Ray of Frost",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Cold Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
   },
   {
     "name": "Resistance",
@@ -77,7 +87,8 @@
   },
   {
     "name": "Shocking Grasp",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Lightning Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
   },
   {
     "name": "Spare the Dying",
@@ -85,23 +96,28 @@
   },
   {
     "name": "Sword Burst",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Force Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "Thorn Whip",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Piercing Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "Thunderclap",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Thunder Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "True Strike",
-    "level": 0
+    "level": 0,
+    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Absorb Elements",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Damage", "expr": "SLOT_LEVEL d6"}]
   },
   {
     "name": "Alarm",
@@ -109,11 +125,13 @@
   },
   {
     "name": "Catapult",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL + 2)d8"}]
   },
   {
     "name": "Cure Wounds",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -133,7 +151,8 @@
   },
   {
     "name": "False Life",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Temp HP", "expr": "1d4 + 4 + 5 * (SLOT_LEVEL - 1)"}]
   },
   {
     "name": "Feather Fall",
@@ -169,11 +188,13 @@
   },
   {
     "name": "Tasha's Caustic Brew",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Acid Damage", "expr": "2d4"}]
   },
   {
     "name": "Aid",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Max HP Bonus", "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"}]
   },
   {
     "name": "Air Bubble",
@@ -189,7 +210,8 @@
   },
   {
     "name": "Arcane Vigor",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8"}]
   },
   {
     "name": "Blur",
@@ -205,7 +227,8 @@
   },
   {
     "name": "Dragon's Breath",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL + 1)d6"}]
   },
   {
     "name": "Enhance Ability",
@@ -217,7 +240,8 @@
   },
   {
     "name": "Heat Metal",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d8"}]
   },
   {
     "name": "Homunculus Servant",
@@ -245,7 +269,8 @@
   },
   {
     "name": "Magic Weapon",
-    "level": 2
+    "level": 2,
+    "effects": [{"name": "Attack Bonus", "expr": "ATK += SLOT_LEVEL / 2"}]
   },
   {
     "name": "Protection from Poison",
@@ -301,7 +326,8 @@
   },
   {
     "name": "Elemental Weapon",
-    "level": 3
+    "level": 3,
+    "effects": [{"name": "Damage Bonus", "expr": "(SLOT_LEVEL - 1)d4"}]
   },
   {
     "name": "Flame Arrows",
@@ -317,7 +343,8 @@
   },
   {
     "name": "Haste",
-    "level": 3
+    "level": 3,
+    "effects": [{"name": "Buff", "expr": "AC += 2; SPEED += SPEED"}]
   },
   {
     "name": "Intellect Fortress",
@@ -353,7 +380,8 @@
   },
   {
     "name": "Elemental Bane",
-    "level": 4
+    "level": 4,
+    "effects": [{"name": "Damage Bonus", "expr": "2d6"}]
   },
   {
     "name": "Fabricate",
@@ -397,7 +425,8 @@
   },
   {
     "name": "Bigby's Hand",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Force Damage", "expr": "4d8"}]
   },
   {
     "name": "Circle of Power",
