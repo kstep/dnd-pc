@@ -325,7 +325,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "1d4 + 4 + 5 * (SLOT_LEVEL - 1)"
+        "expr": "2d4 + 4 + 5 * (SLOT_LEVEL - 1)"
       }
     ]
   },
@@ -469,7 +469,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d8"
+        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
       }
     ]
   },
@@ -533,7 +533,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL)d8"
+        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
       }
     ]
   },
@@ -695,7 +695,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL)d8"
+        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
       }
     ]
   },

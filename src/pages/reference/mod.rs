@@ -568,13 +568,14 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                                 <p>{spell.description}</p>
                             })}
                             {(!spell.effects.is_empty()).then(|| view! {
-                                <p class="spell-effects">
+                                <div class="spell-effects">
                                     {spell.effects.into_iter().map(|(name, expr)| view! {
-                                        <span class="spell-effect">
-                                            <strong>{name}</strong>{": "}<code>{expr}</code>
-                                        </span>
+                                        <div class="spell-effect">
+                                            <strong>{name}</strong>
+                                            <pre><code>{expr}</code></pre>
+                                        </div>
                                     }).collect_view()}
-                                </p>
+                                </div>
                             })}
                         </div>
                     }
