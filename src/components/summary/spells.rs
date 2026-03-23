@@ -438,7 +438,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let spell_name = StoredValue::new(spell.name.clone());
                         let spell_level = spell.level;
                         let can_cast = !cast_options.is_empty();
-                        let cast_button = (spell.level > 0 && can_cast).then(|| {
+                        let cast_button = (can_cast || spell.level == 0).then(|| {
                             view! {
                                 <CastButton
                                     options=cast_options

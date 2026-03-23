@@ -477,10 +477,12 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
             Op::Roll => {
                 let sides = self.stack.pop()?;
                 let count = self.stack.pop()?;
+                let sides = Self::wrap(sides, 7);
                 let text = if count.text == "1" {
-                    format!("d{}", sides.text)
+                    format!("d{sides}")
                 } else {
-                    format!("{}d{}", count.text, sides.text)
+                    let count = Self::wrap(count, 7);
+                    format!("{count}d{sides}")
                 };
                 self.push(text, 7);
             }
