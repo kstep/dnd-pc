@@ -1,7 +1,13 @@
 [
   {
     "name": "Acid Splash",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Acid Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Blade Ward",
@@ -9,11 +15,23 @@
   },
   {
     "name": "Booming Blade",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d8"
+      }
+    ]
   },
   {
     "name": "Chill Touch",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Control Flames",
@@ -21,7 +39,13 @@
   },
   {
     "name": "Create Bonfire",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Dancing Lights",
@@ -33,7 +57,13 @@
   },
   {
     "name": "Fire Bolt",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+      }
+    ]
   },
   {
     "name": "Friends",
@@ -41,11 +71,23 @@
   },
   {
     "name": "Frostbite",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Green-Flame Blade",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d8 + if(LEVEL >= 5, CASTER_MODIFIER, 0)"
+      }
+    ]
   },
   {
     "name": "Gust",
@@ -53,7 +95,13 @@
   },
   {
     "name": "Infestation",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Light",
@@ -61,7 +109,13 @@
   },
   {
     "name": "Lightning Lure",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Mage Hand",
@@ -77,7 +131,13 @@
   },
   {
     "name": "Mind Sliver",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Minor Illusion",
@@ -89,7 +149,13 @@
   },
   {
     "name": "Poison Spray",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"
+      }
+    ]
   },
   {
     "name": "Prestidigitation",
@@ -97,11 +163,23 @@
   },
   {
     "name": "Ray of Frost",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Sapping Sting",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d4"
+      }
+    ]
   },
   {
     "name": "Shape Water",
@@ -109,27 +187,63 @@
   },
   {
     "name": "Shocking Grasp",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Sword Burst",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Thunderclap",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Toll the Dead",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "True Strike",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Absorb Elements",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Alarm",
@@ -137,11 +251,23 @@
   },
   {
     "name": "Burning Hands",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL + 2)d6"
+      }
+    ]
   },
   {
     "name": "Catapult",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "(SLOT_LEVEL + 2)d8"
+      }
+    ]
   },
   {
     "name": "Cause Fear",
@@ -153,11 +279,23 @@
   },
   {
     "name": "Chromatic Orb",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "(SLOT_LEVEL + 2)d8"
+      }
+    ]
   },
   {
     "name": "Color Spray",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "HP Affected",
+        "expr": "(SLOT_LEVEL + 5)d10"
+      }
+    ]
   },
   {
     "name": "Comprehend Languages",
@@ -177,7 +315,13 @@
   },
   {
     "name": "Earth Tremor",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Expeditious Retreat",
@@ -185,7 +329,13 @@
   },
   {
     "name": "False Life",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Temp HP",
+        "expr": "1d4 + 4 + 5 * (SLOT_LEVEL - 1)"
+      }
+    ]
   },
   {
     "name": "Feather Fall",
@@ -201,7 +351,13 @@
   },
   {
     "name": "Frost Fingers",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Grease",
@@ -209,7 +365,17 @@
   },
   {
     "name": "Ice Knife",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "1d10"
+      },
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d6"
+      }
+    ]
   },
   {
     "name": "Identify",
@@ -221,7 +387,13 @@
   },
   {
     "name": "Jim's Magic Missile",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL + 2)d4 + SLOT_LEVEL + 2"
+      }
+    ]
   },
   {
     "name": "Jump",
@@ -233,15 +405,33 @@
   },
   {
     "name": "Mage Armor",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 13 + DEX.MOD)"
+      }
+    ]
   },
   {
     "name": "Magic Missile",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL + 2)d4 + SLOT_LEVEL + 2"
+      }
+    ]
   },
   {
     "name": "Magnify Gravity",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL)d8"
+      }
+    ]
   },
   {
     "name": "Protection from Evil and Good",
@@ -249,11 +439,23 @@
   },
   {
     "name": "Ray of Sickness",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Shield",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "AC Bonus",
+        "expr": "AC += 5"
+      }
+    ]
   },
   {
     "name": "Silent Image",
@@ -277,7 +479,13 @@
   },
   {
     "name": "Tasha's Caustic Brew",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Acid Damage",
+        "expr": "2d4"
+      }
+    ]
   },
   {
     "name": "Tasha's Hideous Laughter",
@@ -289,7 +497,13 @@
   },
   {
     "name": "Thunderwave",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Unseen Servant",
@@ -301,11 +515,23 @@
   },
   {
     "name": "Witch Bolt",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "SLOT_LEVEL d12"
+      }
+    ]
   },
   {
     "name": "Aganazzar's Scorcher",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Air Bubble",
@@ -321,7 +547,13 @@
   },
   {
     "name": "Arcane Vigor",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "SLOT_LEVEL d8"
+      }
+    ]
   },
   {
     "name": "Augury",
@@ -341,7 +573,13 @@
   },
   {
     "name": "Cloud of Daggers",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Slashing Damage",
+        "expr": "(SLOT_LEVEL * 2)d4"
+      }
+    ]
   },
   {
     "name": "Continual Flame",
@@ -361,7 +599,13 @@
   },
   {
     "name": "Death Armor",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "1d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Deryan's Helpful Homunculi",
@@ -373,11 +617,23 @@
   },
   {
     "name": "Dragon's Breath",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "(SLOT_LEVEL + 1)d6"
+      }
+    ]
   },
   {
     "name": "Dust Devil",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "SLOT_LEVEL d8"
+      }
+    ]
   },
   {
     "name": "Earthbind",
@@ -393,11 +649,23 @@
   },
   {
     "name": "Enlarge/Reduce",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Damage Bonus",
+        "expr": "1d4"
+      }
+    ]
   },
   {
     "name": "Flaming Sphere",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Flock of Familiars",
@@ -425,7 +693,13 @@
   },
   {
     "name": "Icingdeath's Frost",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Immovable Object",
@@ -461,19 +735,43 @@
   },
   {
     "name": "Magic Weapon",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Attack Bonus",
+        "expr": "ATK += SLOT_LEVEL / 2"
+      }
+    ]
   },
   {
     "name": "Maximillian's Earthen Grasp",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "Melf's Acid Arrow",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Acid Damage",
+        "expr": "(SLOT_LEVEL + 2)d4"
+      }
+    ]
   },
   {
     "name": "Mind Spike",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Mirror Image",
@@ -493,7 +791,13 @@
   },
   {
     "name": "Phantasmal Force",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "1d6"
+      }
+    ]
   },
   {
     "name": "Pyrotechnics",
@@ -505,7 +809,13 @@
   },
   {
     "name": "Rime's Binding Ice",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Rope Trick",
@@ -513,7 +823,13 @@
   },
   {
     "name": "Scorching Ray",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "See Invisibility",
@@ -521,11 +837,23 @@
   },
   {
     "name": "Shadow Blade",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "SLOT_LEVEL d8"
+      }
+    ]
   },
   {
     "name": "Shatter",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Skywrite",
@@ -533,7 +861,13 @@
   },
   {
     "name": "Snilloc's Snowball Swarm",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d6"
+      }
+    ]
   },
   {
     "name": "Spider Climb",
@@ -549,7 +883,13 @@
   },
   {
     "name": "Tasha's Mind Whip",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "(SLOT_LEVEL + 1)d6"
+      }
+    ]
   },
   {
     "name": "Vortex Warp",
@@ -569,7 +909,13 @@
   },
   {
     "name": "Wither and Bloom",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Animate Dead",
@@ -581,7 +927,13 @@
   },
   {
     "name": "Ashardalon's Stride",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Bestow Curse",
@@ -621,7 +973,13 @@
   },
   {
     "name": "Erupting Earth",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "SLOT_LEVEL d12"
+      }
+    ]
   },
   {
     "name": "Fast Friends",
@@ -637,7 +995,13 @@
   },
   {
     "name": "Fireball",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL + 5)d6"
+      }
+    ]
   },
   {
     "name": "Flame Arrows",
@@ -661,7 +1025,13 @@
   },
   {
     "name": "Haste",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Buff",
+        "expr": "AC += 2; SPEED += SPEED"
+      }
+    ]
   },
   {
     "name": "Hypnotic Pattern",
@@ -677,7 +1047,13 @@
   },
   {
     "name": "Laeral's Silver Lance",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Leomund's Tiny Hut",
@@ -685,11 +1061,23 @@
   },
   {
     "name": "Life Transference",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Lightning Bolt",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "(SLOT_LEVEL + 5)d6"
+      }
+    ]
   },
   {
     "name": "Linked Glyphs",
@@ -705,7 +1093,13 @@
   },
   {
     "name": "Melf's Minute Meteors",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "Nondetection",
@@ -741,7 +1135,13 @@
   },
   {
     "name": "Spirit Shroud",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "SLOT_LEVEL / 3 d8"
+      }
+    ]
   },
   {
     "name": "Stinking Cloud",
@@ -769,11 +1169,23 @@
   },
   {
     "name": "Thunder Step",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "SLOT_LEVEL d10"
+      }
+    ]
   },
   {
     "name": "Tidal Wave",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Tiny Servant",
@@ -785,7 +1197,13 @@
   },
   {
     "name": "Vampiric Touch",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Wall of Sand",
@@ -813,7 +1231,13 @@
   },
   {
     "name": "Blight",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 4)d8"
+      }
+    ]
   },
   {
     "name": "Charm Monster",
@@ -845,7 +1269,13 @@
   },
   {
     "name": "Evard's Black Tentacles",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "3d6"
+      }
+    ]
   },
   {
     "name": "Fabricate",
@@ -853,7 +1283,13 @@
   },
   {
     "name": "Fire Shield",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Fire/Cold Damage",
+        "expr": "2d8"
+      }
+    ]
   },
   {
     "name": "Galder's Speedy Courier",
@@ -865,7 +1301,13 @@
   },
   {
     "name": "Gravity Sinkhole",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL + 1)d10"
+      }
+    ]
   },
   {
     "name": "Greater Invisibility",
@@ -877,7 +1319,17 @@
   },
   {
     "name": "Ice Storm",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "2d8"
+      },
+      {
+        "name": "Cold Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Leomund's Secret Chest",
@@ -901,7 +1353,13 @@
   },
   {
     "name": "Phantasmal Killer",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "SLOT_LEVEL d10"
+      }
+    ]
   },
   {
     "name": "Polymorph",
@@ -909,11 +1367,23 @@
   },
   {
     "name": "Raulothim's Psychic Lance",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "(SLOT_LEVEL + 3)d6"
+      }
+    ]
   },
   {
     "name": "Sickening Radiance",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "4d10"
+      }
+    ]
   },
   {
     "name": "Spellfire Storm",
@@ -933,7 +1403,13 @@
   },
   {
     "name": "Storm Sphere",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Summon Aberration",
@@ -953,11 +1429,23 @@
   },
   {
     "name": "Vitriolic Sphere",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Acid Damage",
+        "expr": "(SLOT_LEVEL + 6)d4"
+      }
+    ]
   },
   {
     "name": "Wall of Fire",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "5d8"
+      }
+    ]
   },
   {
     "name": "Watery Sphere",
@@ -973,7 +1461,13 @@
   },
   {
     "name": "Bigby's Hand",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Circle of Power",
@@ -981,11 +1475,23 @@
   },
   {
     "name": "Cloudkill",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "5d8"
+      }
+    ]
   },
   {
     "name": "Cone of Cold",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 3)d8"
+      }
+    ]
   },
   {
     "name": "Conjure Elemental",
@@ -1013,7 +1519,13 @@
   },
   {
     "name": "Dawn",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "4d10"
+      }
+    ]
   },
   {
     "name": "Dominate Person",
@@ -1025,7 +1537,13 @@
   },
   {
     "name": "Enervation",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL - 1)d8"
+      }
+    ]
   },
   {
     "name": "Far Step",
@@ -1041,7 +1559,13 @@
   },
   {
     "name": "Immolation",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL + 3)d6"
+      }
+    ]
   },
   {
     "name": "Infernal Calling",
@@ -1049,7 +1573,17 @@
   },
   {
     "name": "Jallarzi's Storm of Radiance",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "2d10"
+      },
+      {
+        "name": "Thunder Damage",
+        "expr": "2d10"
+      }
+    ]
   },
   {
     "name": "Legend Lore",
@@ -1065,7 +1599,13 @@
   },
   {
     "name": "Negative Energy Flood",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "5d12"
+      }
+    ]
   },
   {
     "name": "Passwall",
@@ -1093,11 +1633,23 @@
   },
   {
     "name": "Songal's Elemental Suffusion",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Steel Wind Strike",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "6d10"
+      }
+    ]
   },
   {
     "name": "Summon Draconic Spirit",
@@ -1109,7 +1661,13 @@
   },
   {
     "name": "Synaptic Static",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "8d6"
+      }
+    ]
   },
   {
     "name": "Telekinesis",
@@ -1133,7 +1691,13 @@
   },
   {
     "name": "Wall of Light",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Wall of Stone",
@@ -1149,11 +1713,23 @@
   },
   {
     "name": "Chain Lightning",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "10d8"
+      }
+    ]
   },
   {
     "name": "Circle of Death",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 2)d6"
+      }
+    ]
   },
   {
     "name": "Contingency",
@@ -1169,7 +1745,13 @@
   },
   {
     "name": "Disintegrate",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL + 4)d6 + 40"
+      }
+    ]
   },
   {
     "name": "Drawmij's Instant Summons",
@@ -1177,7 +1759,13 @@
   },
   {
     "name": "Elminster's Effulgent Spheres",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "4d10"
+      }
+    ]
   },
   {
     "name": "Eyebite",
@@ -1197,7 +1785,13 @@
   },
   {
     "name": "Gravity Fissure",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "8d8"
+      }
+    ]
   },
   {
     "name": "Guards and Wards",
@@ -1229,7 +1823,13 @@
   },
   {
     "name": "Mental Prison",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "(SLOT_LEVEL + 4)d10"
+      }
+    ]
   },
   {
     "name": "Move Earth",
@@ -1237,7 +1837,13 @@
   },
   {
     "name": "Otiluke's Freezing Sphere",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 4)d6"
+      }
+    ]
   },
   {
     "name": "Otto's Irresistible Dance",
@@ -1261,7 +1867,13 @@
   },
   {
     "name": "Sunbeam",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "6d8"
+      }
+    ]
   },
   {
     "name": "Tasha's Bubbling Cauldron",
@@ -1281,7 +1893,13 @@
   },
   {
     "name": "Wall of Ice",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "10d6"
+      }
+    ]
   },
   {
     "name": "Create Magen",
@@ -1289,11 +1907,23 @@
   },
   {
     "name": "Crown of Stars",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "4d12"
+      }
+    ]
   },
   {
     "name": "Delayed Blast Fireball",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL + 5)d6"
+      }
+    ]
   },
   {
     "name": "Draconic Transformation",
@@ -1309,7 +1939,13 @@
   },
   {
     "name": "Finger of Death",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "7d8 + 30"
+      }
+    ]
   },
   {
     "name": "Forcecage",
@@ -1325,7 +1961,13 @@
   },
   {
     "name": "Mordenkainen's Sword",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "3d10"
+      }
+    ]
   },
   {
     "name": "Plane Shift",
@@ -1337,7 +1979,13 @@
   },
   {
     "name": "Prismatic Spray",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "10d6"
+      }
+    ]
   },
   {
     "name": "Project Image",
@@ -1373,11 +2021,23 @@
   },
   {
     "name": "Whirlwind",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "10d6"
+      }
+    ]
   },
   {
     "name": "Abi-Dalzim's Horrid Wilting",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "12d8"
+      }
+    ]
   },
   {
     "name": "Antimagic Field",
@@ -1401,7 +2061,13 @@
   },
   {
     "name": "Dark Star",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "8d10"
+      }
+    ]
   },
   {
     "name": "Demiplane",
@@ -1421,11 +2087,23 @@
   },
   {
     "name": "Incendiary Cloud",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "10d8"
+      }
+    ]
   },
   {
     "name": "Maddening Darkness",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "8d8"
+      }
+    ]
   },
   {
     "name": "Maze",
@@ -1449,7 +2127,13 @@
   },
   {
     "name": "Sunburst",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "12d6"
+      }
+    ]
   },
   {
     "name": "Telepathy",
@@ -1461,7 +2145,13 @@
   },
   {
     "name": "Blade of Disaster",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "4d12"
+      }
+    ]
   },
   {
     "name": "Foresight",
@@ -1485,11 +2175,27 @@
   },
   {
     "name": "Meteor Swarm",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "20d6"
+      },
+      {
+        "name": "Fire Damage",
+        "expr": "20d6"
+      }
+    ]
   },
   {
     "name": "Power Word Kill",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "100"
+      }
+    ]
   },
   {
     "name": "Prismatic Wall",
@@ -1497,11 +2203,23 @@
   },
   {
     "name": "Psychic Scream",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "14d6"
+      }
+    ]
   },
   {
     "name": "Ravenous Void",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "5d10"
+      }
+    ]
   },
   {
     "name": "Shapechange",
