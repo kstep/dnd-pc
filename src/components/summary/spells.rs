@@ -114,9 +114,7 @@ fn SpellEffectsModal(
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
                                     <code class="spell-effect-formula">{formula_str}</code>
-                                </div>
-                                <div class="spell-effect-result">
-                                    <strong>{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
+                                    <strong class="spell-effect-result">{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
                                 </div>
                             </div>
                         }
@@ -219,13 +217,11 @@ fn SpellEffectsModal(
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
                                     <code class="spell-effect-formula">{formula_str}</code>
-                                </div>
-                                <div class="dice-pool-groups">{group_views}</div>
-                                <div class="spell-effect-result">
                                     {move || result.get().map(|v| view! {
-                                        <strong>{v}</strong>
+                                        <strong class="spell-effect-result">{v}</strong>
                                     })}
                                 </div>
+                                <div class="dice-pool-groups">{group_views}</div>
                             </div>
                         }
                         .into_any()
