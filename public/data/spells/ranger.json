@@ -5,7 +5,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -27,7 +27,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
       }
     ]
   },
@@ -45,7 +45,7 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -73,7 +73,7 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "SLOT_LEVEL d10"
+        "expr": "(SLOT_LEVEL)d10"
       }
     ]
   },
@@ -101,7 +101,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },

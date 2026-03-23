@@ -1,17 +1,247 @@
-use leptos::prelude::*;
+use std::collections::BTreeMap;
+
+use leptos::{html, prelude::*};
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        modal::Modal,
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     effective::EffectiveCharacter,
-    model::{Character, CharacterStoreFields, FeatureValue, SpellSlotLevel, format_bonus},
+    expr::{self, DicePool, Eval},
+    model::{
+        Ability, Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureValue,
+        SpellSlotLevel, SpellSlotPool, format_bonus,
+    },
     rules::RulesRegistry,
 };
+
+// --- Read-only context for spell effect calculation ---
+
+struct SpellCalcContext<'a> {
+    character: &'a Character,
+    slot_level: i32,
+    caster_level: i32,
+    caster_modifier: i32,
+}
+
+impl expr::Context<Attribute, i32> for SpellCalcContext<'_> {
+    fn assign(&mut self, var: Attribute, _value: i32) -> Result<(), expr::Error> {
+        Err(expr::Error::read_only_var(var))
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::SlotLevel => Ok(self.slot_level),
+            Attribute::CasterLevel(None) => Ok(self.caster_level),
+            Attribute::CasterModifier => Ok(self.caster_modifier),
+            _ => self.character.resolve(var),
+        }
+    }
+}
+
+// --- Spell calc info passed to the modal ---
+
+struct SpellCalcInfo {
+    spell_label: String,
+    effects: Vec<EffectDefinition>,
+    slot_level: u32,
+    casting_ability: Ability,
+    caster_level: u32,
+}
+
+// --- Effects calculator modal ---
+
+#[component]
+fn SpellEffectsModal(
+    show: RwSignal<bool>,
+    info: StoredValue<Option<SpellCalcInfo>>,
+) -> impl IntoView {
+    let store = expect_context::<Store<Character>>();
+
+    let title = Signal::derive(move || {
+        info.with_value(|info| {
+            info.as_ref()
+                .map(|i| {
+                    if i.slot_level > 0 {
+                        format!(
+                            "{} ({})",
+                            i.spell_label,
+                            tr!("slot-level", {"level" => i.slot_level.to_string()})
+                        )
+                    } else {
+                        i.spell_label.clone()
+                    }
+                })
+                .unwrap_or_default()
+        })
+    });
+
+    // Build effect views when modal opens
+    let content = move || {
+        if !show.get() {
+            return None;
+        }
+
+        info.with_value(|info| {
+            let info = info.as_ref()?;
+            let character = store.read();
+
+            let ctx = SpellCalcContext {
+                character: &character,
+                slot_level: info.slot_level as i32,
+                caster_level: info.caster_level as i32,
+                caster_modifier: character.ability_modifier(info.casting_ability),
+            };
+
+            let effect_views = info
+                .effects
+                .iter()
+                .map(|effect| {
+                    let formula_str = format!("{}", effect.expr);
+                    let label = effect.label().to_string();
+                    let rolls = effect.expr.dice_rolls(&ctx);
+
+                    if rolls.is_empty() {
+                        // No dice — evaluate immediately
+                        let result = effect.expr.eval(&ctx).ok();
+                        view! {
+                            <div class="spell-effect-row">
+                                <div class="spell-effect-header">
+                                    <span class="spell-effect-label">{label}</span>
+                                    <code class="spell-effect-formula">{formula_str}</code>
+                                </div>
+                                <div class="spell-effect-result">
+                                    <strong>{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
+                                </div>
+                            </div>
+                        }
+                        .into_any()
+                    } else {
+                        // Has dice — build inputs and live result
+                        let result = RwSignal::new(None::<i32>);
+                        let expr = effect.expr.clone();
+                        let slot_level = info.slot_level;
+                        let caster_level = info.caster_level;
+                        let casting_ability = info.casting_ability;
+
+                        // Create NodeRef groups per die type
+                        let groups: BTreeMap<u32, Vec<NodeRef<html::Input>>> = rolls
+                            .iter()
+                            .map(|(&sides, &count)| {
+                                let refs: Vec<_> =
+                                    (0..count).map(|_| NodeRef::<html::Input>::new()).collect();
+                                (sides, refs)
+                            })
+                            .collect();
+                        let groups = StoredValue::new(groups);
+
+                        let total_needed: u32 = rolls.values().copied().sum();
+                        let recalc = StoredValue::new(move || {
+                            let character = store.read_untracked();
+                            let mut ctx = SpellCalcContext {
+                                character: &character,
+                                slot_level: slot_level as i32,
+                                caster_level: caster_level as i32,
+                                caster_modifier: character.ability_modifier(casting_ability),
+                            };
+
+                            let pool_map = groups.with_value(|groups| {
+                                groups
+                                    .iter()
+                                    .map(|(&sides, refs)| {
+                                        let values: Vec<u32> = refs
+                                            .iter()
+                                            .filter_map(|r| {
+                                                r.get().and_then(|el| el.value().parse().ok())
+                                            })
+                                            .collect();
+                                        (sides, values)
+                                    })
+                                    .collect::<BTreeMap<u32, Vec<u32>>>()
+                            });
+
+                            // Only evaluate if all inputs are filled
+                            let total_filled: u32 =
+                                pool_map.values().map(|v| v.len() as u32).sum();
+
+                            if total_filled == total_needed {
+                                let pool: DicePool = pool_map.into();
+                                result.set(expr.apply_with_dice(&mut ctx, &pool).ok());
+                            } else {
+                                result.set(None);
+                            }
+                        });
+
+                        // Build grouped input views
+                        let mut first_input = true;
+                        let group_views = groups.with_value(|groups| {
+                            groups
+                                .iter()
+                                .map(|(&sides, refs)| {
+                                    let input_views = refs
+                                        .iter()
+                                        .map(|&node_ref| {
+                                            let is_first = first_input;
+                                            first_input = false;
+                                            view! {
+                                                <input
+                                                    type="number"
+                                                    min=1
+                                                    max=sides
+                                                    autofocus=is_first
+                                                    class="dice-pool-value"
+                                                    node_ref=node_ref
+                                                    on:input=move |_| recalc.with_value(|f| f())
+                                                />
+                                            }
+                                        })
+                                        .collect_view();
+                                    view! {
+                                        <div class="dice-pool-group">
+                                            <span class="dice-pool-label">"d" {sides}</span>
+                                            <div class="dice-pool-inputs">{input_views}</div>
+                                        </div>
+                                    }
+                                })
+                                .collect_view()
+                        });
+
+                        view! {
+                            <div class="spell-effect-row">
+                                <div class="spell-effect-header">
+                                    <span class="spell-effect-label">{label}</span>
+                                    <code class="spell-effect-formula">{formula_str}</code>
+                                </div>
+                                <div class="dice-pool-groups">{group_views}</div>
+                                <div class="spell-effect-result">
+                                    {move || result.get().map(|v| view! {
+                                        <strong>{v}</strong>
+                                    })}
+                                </div>
+                            </div>
+                        }
+                        .into_any()
+                    }
+                })
+                .collect_view();
+
+            Some(effect_views)
+        })
+    };
+
+    view! {
+        <Modal show=show title=title>
+            <div class="spell-effects-calc">
+                {content}
+            </div>
+        </Modal>
+    }
+}
 
 #[component]
 pub fn SpellsBlock() -> impl IntoView {
@@ -21,7 +251,58 @@ pub fn SpellsBlock() -> impl IntoView {
     let spell_slots = store.spell_slots();
     let feature_data = store.feature_data();
 
-    move || {
+    // Modal state
+    let show_calc = RwSignal::new(false);
+    let calc_info = StoredValue::new(None::<SpellCalcInfo>);
+
+    let open_calc = move |spell_name: &str,
+                          spell_level: u32,
+                          fname: &str,
+                          pool: SpellSlotPool,
+                          casting_ability: Ability,
+                          opt: &CastOption| {
+        let slot_level = match opt {
+            CastOption::SpellSlot { level, .. } => *level,
+            _ => spell_level,
+        };
+
+        let effects = registry
+            .with_feature(fname, |feat| {
+                feat.spells.as_ref().map(|spells_def| {
+                    registry.with_spell_list(&spells_def.list, |spell_map| {
+                        spell_map
+                            .get(spell_name)
+                            .map(|sd| sd.effects.clone())
+                            .unwrap_or_default()
+                    })
+                })
+            })
+            .flatten()
+            .unwrap_or_default();
+
+        if !effects.is_empty() {
+            let character = store.read_untracked();
+            let caster_level = character.caster_level(pool);
+            let spell_label = character
+                .feature_data
+                .get(fname)
+                .and_then(|e| e.spells.as_ref())
+                .and_then(|sd| sd.spells.iter().find(|s| s.name == spell_name))
+                .map(|s| s.label().to_string())
+                .unwrap_or_else(|| spell_name.to_string());
+
+            calc_info.set_value(Some(SpellCalcInfo {
+                spell_label,
+                effects,
+                slot_level,
+                casting_ability,
+                caster_level,
+            }));
+            show_calc.set(true);
+        }
+    };
+
+    let spells_view = move || {
         feature_data
             .read()
             .iter()
@@ -45,6 +326,7 @@ pub fn SpellsBlock() -> impl IntoView {
                 let pool = spell_data.pool;
                 let pool_slots = spell_slots_map.get(&pool);
                 let fname = StoredValue::new(name.clone());
+                let casting_ability = spell_data.casting_ability;
                 let all_spells = spell_data
                     .spells
                     .iter()
@@ -153,12 +435,22 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         }
 
+                        let spell_name = StoredValue::new(spell.name.clone());
+                        let spell_level = spell.level;
                         let can_cast = !cast_options.is_empty();
                         let cast_button = (spell.level > 0 && can_cast).then(|| {
                             view! {
                                 <CastButton
                                     options=cast_options
                                     on_cast=Callback::new(move |opt: CastOption| {
+                                        // Open effects calculator (before deducting — we need the original state for display)
+                                        fname.with_value(|key| {
+                                            spell_name.with_value(|sname| {
+                                                open_calc(sname, spell_level, key, pool, casting_ability, &opt);
+                                            });
+                                        });
+
+                                        // Deduct resources
                                         match opt {
                                             CastOption::FreeUse { .. } => {
                                                 fname.with_value(|key| {
@@ -251,5 +543,10 @@ pub fn SpellsBlock() -> impl IntoView {
                 })
             })
             .collect_view()
+    };
+
+    view! {
+        {spells_view}
+        <SpellEffectsModal show=show_calc info=calc_info />
     }
 }

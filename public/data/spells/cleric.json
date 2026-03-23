@@ -63,7 +63,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Evil and Good",
@@ -85,7 +85,7 @@
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Inflict Wounds",
@@ -169,7 +169,7 @@
   {
     "name": "Prayer of Healing",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Protection from Poison",
@@ -182,7 +182,7 @@
   {
     "name": "Spiritual Weapon",
     "level": 2,
-    "effects": [{"name": "Force Damage", "expr": "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Force Damage", "expr": "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Warding Bond",
@@ -263,7 +263,7 @@
   {
     "name": "Mass Healing Word",
     "level": 3,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Meld into Stone",
@@ -296,12 +296,12 @@
   {
     "name": "Spirit Guardians",
     "level": 3,
-    "effects": [{"name": "Radiant/Necrotic Damage", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Radiant/Necrotic Damage", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Spirit Shroud",
     "level": 3,
-    "effects": [{"name": "Damage", "expr": "SLOT_LEVEL / 3 d8"}]
+    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL / 3)d8"}]
   },
   {
     "name": "Tongues",

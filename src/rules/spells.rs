@@ -258,3 +258,101 @@ pub struct SpellLevelRules {
     #[serde(default)]
     pub known: Option<u32>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse_spell_list(name: &str) -> SpellMap {
+        let path = format!("../../public/data/spells/{name}.json");
+        let data = std::fs::read_to_string(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("public/data/spells")
+                .join(format!("{name}.json")),
+        )
+        .unwrap_or_else(|e| panic!("failed to read {path}: {e}"));
+        serde_json::from_str::<SpellMap>(&data)
+            .unwrap_or_else(|e| panic!("failed to parse {path}: {e}"))
+    }
+
+    #[test]
+    fn parse_expr_with_mul_dice() {
+        use crate::{expr::Expr, model::Attribute};
+        let cases = [
+            "(SLOT_LEVEL * 2)d4",
+            "(SLOT_LEVEL + 2)d6",
+            "(SLOT_LEVEL)d8",
+            "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER",
+            "ATK += SLOT_LEVEL / 2",
+            "AC += 2",
+            "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6",
+            // These use implicit dice after a bare variable (space before d)
+            "SLOT_LEVEL d6",
+            "SLOT_LEVEL d4 + CASTER_MODIFIER",
+            "2d8 + SLOT_LEVEL d6",
+            "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER",
+        ];
+        for expr_str in cases {
+            let result = expr_str.parse::<Expr<Attribute>>();
+            assert!(
+                result.is_ok(),
+                "failed to parse '{expr_str}': {:?}",
+                result.err()
+            );
+        }
+    }
+
+    #[test]
+    fn deserialize_all_spell_lists() {
+        let lists = [
+            "artificer",
+            "bard",
+            "cleric",
+            "druid",
+            "paladin",
+            "ranger",
+            "sorcerer",
+            "warlock",
+            "wizard",
+        ];
+        for name in lists {
+            let map = parse_spell_list(name);
+            assert!(!map.0.is_empty(), "{name}.json should have spells");
+        }
+    }
+
+    #[test]
+    fn all_spell_effects_have_valid_expressions() {
+        let lists = [
+            "artificer",
+            "bard",
+            "cleric",
+            "druid",
+            "paladin",
+            "ranger",
+            "sorcerer",
+            "warlock",
+            "wizard",
+        ];
+        let mut total_effects = 0;
+        for name in lists {
+            let map = parse_spell_list(name);
+            for (spell_name, spell) in map.0.iter() {
+                for effect in &spell.effects {
+                    total_effects += 1;
+                    // Verify the expression can be displayed (round-trip check)
+                    let display = format!("{}", effect.expr);
+                    assert!(
+                        !display.is_empty(),
+                        "{name}/{spell_name}: effect '{}' has empty expression display",
+                        effect.name
+                    );
+                }
+            }
+        }
+        assert!(
+            total_effects > 100,
+            "expected 100+ spell effects across all lists, got {total_effects}"
+        );
+    }
+}

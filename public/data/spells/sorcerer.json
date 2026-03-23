@@ -231,7 +231,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -261,7 +261,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "2d8 + SLOT_LEVEL d6"
+        "expr": "2d8 + (SLOT_LEVEL)d6"
       }
     ]
   },
@@ -311,7 +311,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -441,7 +441,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "SLOT_LEVEL d12"
+        "expr": "(SLOT_LEVEL)d12"
       }
     ]
   },
@@ -469,7 +469,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8"
+        "expr": "(SLOT_LEVEL)d8"
       }
     ]
   },
@@ -533,7 +533,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "SLOT_LEVEL d8"
+        "expr": "(SLOT_LEVEL)d8"
       }
     ]
   },
@@ -571,7 +571,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -695,7 +695,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "SLOT_LEVEL d8"
+        "expr": "(SLOT_LEVEL)d8"
       }
     ]
   },
@@ -763,7 +763,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -777,7 +777,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -923,7 +923,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "SLOT_LEVEL d10"
+        "expr": "(SLOT_LEVEL)d10"
       }
     ]
   },
@@ -947,7 +947,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -1025,7 +1025,7 @@
       },
       {
         "name": "Cold Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },
@@ -1071,7 +1071,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "(SLOT_LEVEL)d6"
       }
     ]
   },

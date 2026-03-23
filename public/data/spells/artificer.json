@@ -117,7 +117,7 @@
   {
     "name": "Absorb Elements",
     "level": 1,
-    "effects": [{"name": "Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Alarm",
@@ -131,7 +131,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -211,7 +211,7 @@
   {
     "name": "Arcane Vigor",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Blur",
@@ -241,7 +241,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Homunculus Servant",
