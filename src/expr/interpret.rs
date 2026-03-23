@@ -347,6 +347,58 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
     }
 }
 
+// --- DiceRollsCollector (collects dice requirements without rolling) ---
+
+pub(super) struct DiceRollsCollector<'a, Var, Ctx> {
+    stack: Stack<i32>,
+    ctx: &'a Ctx,
+    rolls: BTreeMap<u32, u32>,
+    _var: PhantomData<Var>,
+}
+
+impl<'a, Var, Ctx> DiceRollsCollector<'a, Var, Ctx> {
+    pub fn new(ctx: &'a Ctx) -> Self {
+        Self {
+            stack: Stack::new(),
+            ctx,
+            rolls: BTreeMap::new(),
+            _var: PhantomData,
+        }
+    }
+}
+
+impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
+    for DiceRollsCollector<'_, Var, Ctx>
+{
+    type Output = BTreeMap<u32, u32>;
+
+    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<usize>, Error> {
+        match op {
+            Op::PushVar(var) => {
+                self.stack.push(self.ctx.resolve(var)?);
+                Ok(None)
+            }
+            Op::Assign(_) => Ok(None),
+            Op::Roll => {
+                let (count, sides) = self.stack.pop2()?;
+                if count > 0 && sides > 0 {
+                    *self.rolls.entry(sides as u32).or_insert(0) += count as u32;
+                }
+                for _ in 0..count {
+                    self.stack.push(avg_hp(sides));
+                }
+                self.stack.push(count);
+                Ok(None)
+            }
+            op => eval_op(&mut self.stack, op),
+        }
+    }
+
+    fn finish(self) -> Result<BTreeMap<u32, u32>, Error> {
+        Ok(self.rolls)
+    }
+}
+
 // --- Formatter (Display interpreter) ---
 
 struct Frag {

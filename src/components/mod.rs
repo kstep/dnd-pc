@@ -16,7 +16,7 @@ pub mod resource_slot;
 pub mod skill_row;
 pub mod summary;
 pub mod summary_header;
-pub mod summary_nav;
 pub mod summary_list;
+pub mod summary_nav;
 pub mod sync_indicator;
 pub mod toggle_button;

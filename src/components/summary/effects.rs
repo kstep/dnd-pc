@@ -112,7 +112,7 @@ pub fn EffectsBlock() -> impl IntoView {
                         };
 
                         // Check if expression has dice rolls
-                        let rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
+                        let rolls = effect.expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
                         if rolls.is_empty() {
                             commit_effect(effect);
                         } else {
@@ -164,7 +164,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             let name = effect.label().to_owned();
                             let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
                             let pool_str = effect.pool.as_ref().map(ToString::to_string);
-                            let dice_rolls = effect.expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
+                            let dice_rolls = effect.expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
                             let description = effect.description.clone();
                             let scope = effect.scope.clone();
                             let enabled = effect.enabled;
@@ -218,7 +218,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                     let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
                                                         return;
                                                     };
-                                                    let rolls = expr.as_ref().map(|e| e.dice_rolls()).unwrap_or_default();
+                                                    let rolls = expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
                                                     effects.update(|effects| {
                                                         effects.update_field(i, |eff| {
                                                             eff.pool = None;
