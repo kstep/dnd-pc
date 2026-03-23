@@ -24,7 +24,7 @@ pub use crate::expr::{
     traits::{Context, Eval},
 };
 use crate::expr::{
-    interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
+    interpret::{DicePoolEvaluator, DiceRollsCollector, Evaluator, Formatter, ReadOnlyEvaluator},
     parser::Parser,
 };
 
@@ -140,20 +140,13 @@ impl<Var: Copy + fmt::Display> Eval<Var, i32> for Expr<Var, i32> {
     }
 }
 
-impl<Var: Copy> Expr<Var, i32> {
-    /// Scans the ops for `[PushConst(count), PushConst(sides), Roll]` patterns
-    /// and returns a map of die sides to total number of rolls needed.
-    pub fn dice_rolls(&self) -> BTreeMap<u32, u32> {
-        let mut result = BTreeMap::new();
-        for window in self.0[0].windows(3) {
-            if let [Op::PushConst(count), Op::PushConst(sides), Op::Roll] = window
-                && *count > 0
-                && *sides > 0
-            {
-                *result.entry(*sides as u32).or_insert(0) += *count as u32;
-            }
-        }
-        result
+impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+    /// Evaluates the expression against the context to determine dice roll
+    /// requirements. Returns a map of die sides to total number of rolls
+    /// needed. Supports both static (`2d6`) and dynamic (`(LEVEL / 5 + 1)d6`)
+    /// dice counts.
+    pub fn dice_rolls(&self, ctx: &impl Context<Var, i32>) -> BTreeMap<u32, u32> {
+        self.run(DiceRollsCollector::new(ctx)).unwrap_or_default()
     }
 }
 
@@ -484,19 +477,36 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn dice_rolls_analysis() {
+        let ch = test_character();
+
         let expr: Expr = "2d6 + 1d20".parse().unwrap();
-        let rolls = expr.dice_rolls();
+        let rolls = expr.dice_rolls(&ch);
         assert_eq!(rolls[&6], 2);
         assert_eq!(rolls[&20], 1);
 
         // Multiple dice of same type are summed
         let expr: Expr = "2d6 + 3d6".parse().unwrap();
-        let rolls = expr.dice_rolls();
+        let rolls = expr.dice_rolls(&ch);
         assert_eq!(rolls[&6], 5);
 
         // No dice
         let expr: Expr = "10 + AC".parse().unwrap();
-        let rolls = expr.dice_rolls();
+        let rolls = expr.dice_rolls(&ch);
+        assert!(rolls.is_empty());
+
+        // Dynamic dice count: AC is 15, so (AC - 13)d8 = 2d8
+        let expr: Expr = "(AC - 13)d8".parse().unwrap();
+        let rolls = expr.dice_rolls(&ch);
+        assert_eq!(rolls[&8], 2);
+
+        // Assignment with dice: AC += 2d6
+        let expr: Expr = "AC += 2d6".parse().unwrap();
+        let rolls = expr.dice_rolls(&ch);
+        assert_eq!(rolls[&6], 2);
+
+        // Dynamic count evaluating to zero
+        let expr: Expr = "(AC - 15)d6".parse().unwrap();
+        let rolls = expr.dice_rolls(&ch);
         assert!(rolls.is_empty());
     }
 
