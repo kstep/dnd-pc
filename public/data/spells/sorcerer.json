@@ -325,7 +325,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "1d4 + 4 + 5 * (SLOT_LEVEL - 1)"
+        "expr": "2d4 + 4 + 5 * (SLOT_LEVEL - 1)"
       }
     ]
   },
