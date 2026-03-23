@@ -150,6 +150,75 @@ fn migrate_v4(value: &mut serde_json::Value) {
     }
 }
 
+/// Migrate broken "Languages" feature to per-species "Languages ({species})".
+/// The global features index consolidation incorrectly merged all species'
+/// Languages traits into one entry. Fix by looking up the species name and
+/// replacing the feature + languages with the correct per-species version.
+fn migrate_v5(value: &mut serde_json::Value) {
+    // Check if character has a bare "Languages" feature
+    let has_bare_languages = value
+        .get("features")
+        .and_then(|v| v.as_array())
+        .is_some_and(|feats| {
+            feats
+                .iter()
+                .any(|f| f.get("name").and_then(|n| n.as_str()) == Some("Languages"))
+        });
+
+    if !has_bare_languages {
+        return;
+    }
+
+    // Get the species name
+    let species = value
+        .get("identity")
+        .and_then(|id| id.get("species"))
+        .and_then(|s| s.as_str())
+        .unwrap_or("")
+        .to_string();
+
+    if species.is_empty() {
+        return;
+    }
+
+    // Map species → (correct language feature name, correct languages)
+    let (lang_feat, correct_langs): (&str, &[&str]) = match species.as_str() {
+        "Aasimar" => ("Languages (Aasimar)", &["Common", "Celestial"]),
+        "Dragonborn" => ("Languages (Dragonborn)", &["Common", "Draconic"]),
+        "Drow" | "High Elf" | "Wood Elf" | "Khoravar" => ("Languages (Elf)", &["Common", "Elvish"]),
+        "Dwarf" => ("Languages (Dwarf)", &["Common", "Dwarvish"]),
+        "Forest Gnome" | "Rock Gnome" => ("Languages (Gnome)", &["Common", "Gnomish"]),
+        "Goliath" => ("Languages (Goliath)", &["Common", "Giant"]),
+        "Halfling" => ("Languages (Halfling)", &["Common", "Halfling"]),
+        "Human" | "Shifter" | "Warforged" | "Dhampir" => ("Languages (Human)", &["Common"]),
+        "Orc" => ("Languages (Orc)", &["Common", "Orc"]),
+        "Tiefling" | "Tiefling (Infernal)" => ("Languages (Tiefling)", &["Common", "Infernal"]),
+        "Tiefling (Abyssal)" => ("Languages (Tiefling (Abyssal))", &["Common", "Abyssal"]),
+        "Tiefling (Chthonic)" => ("Languages (Tiefling (Chthonic))", &["Common", "Sylvan"]),
+        "Changeling" => ("Languages (Changeling)", &["Common", "Sylvan"]),
+        "Kalashtar" => ("Languages (Kalashtar)", &["Common", "Quori"]),
+        "Boggart" => ("Languages (Boggart)", &["Common", "Sylvan"]),
+        "Faerie" => ("Languages (Faerie)", &["Common", "Sylvan"]),
+        "Flamekin" => ("Languages (Flamekin)", &["Common", "Primordial"]),
+        "Lorwyn Changeling" => ("Languages (Lorwyn Changeling)", &["Common", "Sylvan"]),
+        "Rimekin" => ("Languages (Rimekin)", &["Common", "Primordial"]),
+        _ => return,
+    };
+
+    // Remove "Languages" feature, add correct one
+    if let Some(features) = value.get_mut("features").and_then(|v| v.as_array_mut()) {
+        features.retain(|f| f.get("name").and_then(|n| n.as_str()) != Some("Languages"));
+        features.push(serde_json::json!({"name": lang_feat}));
+    }
+
+    // Replace languages array with correct values
+    let langs: Vec<serde_json::Value> = correct_langs
+        .iter()
+        .map(|l| serde_json::Value::String(l.to_string()))
+        .collect();
+    value["languages"] = serde_json::Value::Array(langs);
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
@@ -157,6 +226,7 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v2(&mut value);
     migrate_v3(&mut value);
     migrate_v4(&mut value);
+    migrate_v5(&mut value);
     serde_json::from_value(value).ok()
 }
 

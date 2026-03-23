@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
 
-use crate::components::icon::Icon;
+use crate::components::{icon::Icon, modal::Modal};
 
 static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -61,16 +61,6 @@ pub fn DatalistInput(
     });
     let on_input = StoredValue::new(on_input);
     let focused = RwSignal::new(false);
-
-    let search_ref = NodeRef::<leptos::html::Input>::new();
-
-    Effect::new(move || {
-        if show_modal.get()
-            && let Some(input) = search_ref.get()
-        {
-            let _ = input.focus();
-        }
-    });
 
     let filtered_options = move || {
         let query = search_query.get().to_lowercase();
@@ -135,60 +125,40 @@ pub fn DatalistInput(
                 <Icon name="chevron-down" size=14 />
             </button>
         </div>
-        <Show when=move || show_modal.get()>
-            <div
-                class="datalist-modal-overlay"
-                on:click=move |_| show_modal.set(false)
-            >
-                <div
-                    class="datalist-modal"
-                    on:click=move |event| event.stop_propagation()
-                >
-                    <div class="datalist-modal-header">
-                        <span>{move || placeholder.get()}</span>
-                        <button
-                            type="button"
-                            class="datalist-modal-close"
-                            on:click=move |_| show_modal.set(false)
-                        >
-                            <Icon name="x" size=20 />
-                        </button>
-                    </div>
-                    <input
-                        node_ref=search_ref
-                        type="search"
-                        class="datalist-modal-search"
-                        placeholder=move || move_tr!("search").get()
-                        prop:value=move || search_query.get()
-                        on:input=move |event| search_query.set(event_target_value(&event))
-                    />
-                    <div class="datalist-modal-list">
-                        <For
-                            each=filtered_options
-                            key=|(name, _, _)| name.clone()
-                            children=move |(name, label, description)| {
-                                let selected_label = label.clone();
-                                let selected_name = name.clone();
-                                view! {
-                                    <button
-                                        type="button"
-                                        class="datalist-option"
-                                        on:click=move |_| {
-                                            let label = selected_label.clone();
-                                            display_value.set(label.clone());
-                                            on_input.with_value(|callback| callback(label, Some(selected_name.clone())));
-                                            show_modal.set(false);
-                                        }
-                                    >
-                                        <span class="datalist-option-value">{label}</span>
-                                        <span class="datalist-option-label">{description}</span>
-                                    </button>
+        <Modal show=show_modal title=placeholder>
+            <input
+                autofocus
+                type="search"
+                class="datalist-modal-search"
+                placeholder=move || move_tr!("search").get()
+                prop:value=move || search_query.get()
+                on:input=move |event| search_query.set(event_target_value(&event))
+            />
+            <div class="datalist-modal-list">
+                <For
+                    each=filtered_options
+                    key=|(name, _, _)| name.clone()
+                    children=move |(name, label, description)| {
+                        let selected_label = label.clone();
+                        let selected_name = name.clone();
+                        view! {
+                            <button
+                                type="button"
+                                class="datalist-option"
+                                on:click=move |_| {
+                                    let label = selected_label.clone();
+                                    display_value.set(label.clone());
+                                    on_input.with_value(|callback| callback(label, Some(selected_name.clone())));
+                                    show_modal.set(false);
                                 }
-                            }
-                        />
-                    </div>
-                </div>
+                            >
+                                <span class="datalist-option-value">{label}</span>
+                                <span class="datalist-option-label">{description}</span>
+                            </button>
+                        }
+                    }
+                />
             </div>
-        </Show>
+        </Modal>
     }
 }

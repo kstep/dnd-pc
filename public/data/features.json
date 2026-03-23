@@ -11,7 +11,6 @@
   },
   {
     "name": "Crafter",
-    "stackable": true,
     "selectable": true
   },
   {
@@ -62,7 +61,13 @@
     "name": "Ability Score Improvement",
     "stackable": true,
     "prerequisites": "LEVEL >= 4",
-    "selectable": true
+    "selectable": true,
+    "assign": [
+      {
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and in(ARG.3, 0, 2) and in(ARG.4, 0, 2) and in(ARG.5, 0, 2) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "when": "OnFeatureAdd"
+      }
+    ]
   },
   {
     "name": "Actor",
@@ -107,12 +112,6 @@
   {
     "name": "Durable",
     "prerequisites": "LEVEL >= 4 and CON >= 13",
-    "selectable": true
-  },
-  {
-    "name": "Elemental Adept",
-    "stackable": true,
-    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "selectable": true
   },
   {
@@ -4260,9 +4259,6 @@
   },
   {
     "name": "Fungal Body"
-  },
-  {
-    "name": "Circle of Stars"
   },
   {
     "name": "Starry Form",
@@ -11459,13 +11455,6 @@
     ]
   },
   {
-    "name": "Languages",
-    "languages": [
-      "Common",
-      "Celestial"
-    ]
-  },
-  {
     "name": "Draconic Ancestry"
   },
   {
@@ -11553,7 +11542,7 @@
     "name": "Background Abilities (Acolyte)",
     "assign": [
       {
-        "expr": "WIS += 2; INT += 1; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11562,7 +11551,7 @@
     "name": "Background Abilities (Artisan)",
     "assign": [
       {
-        "expr": "INT += 2; CHA += 1; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and INT + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; INT += ARG.2; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11571,7 +11560,7 @@
     "name": "Background Abilities (Charlatan)",
     "assign": [
       {
-        "expr": "CHA += 2; DEX += 1; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and CHA + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; CHA += ARG.2; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11580,7 +11569,7 @@
     "name": "Background Abilities (Criminal)",
     "assign": [
       {
-        "expr": "DEX += 2; INT += 1; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and INT + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; INT += ARG.2; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11589,7 +11578,7 @@
     "name": "Background Abilities (Entertainer)",
     "assign": [
       {
-        "expr": "CHA += 2; DEX += 1; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CHA + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; CHA += ARG.2; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11598,7 +11587,7 @@
     "name": "Background Abilities (Farmer)",
     "assign": [
       {
-        "expr": "CON += 2; WIS += 1; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; CON += ARG.1; WIS += ARG.2; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11607,7 +11596,7 @@
     "name": "Background Abilities (Guard)",
     "assign": [
       {
-        "expr": "STR += 2; WIS += 1; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11616,7 +11605,7 @@
     "name": "Background Abilities (Guide)",
     "assign": [
       {
-        "expr": "WIS += 2; DEX += 1; SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; WIS += ARG.2; SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11625,7 +11614,7 @@
     "name": "Background Abilities (Hermit)",
     "assign": [
       {
-        "expr": "WIS += 2; CON += 1; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (CON += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11634,7 +11623,7 @@
     "name": "Background Abilities (Merchant)",
     "assign": [
       {
-        "expr": "CHA += 2; INT += 1; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, (CON += ARG.0; INT += ARG.1; CHA += ARG.2; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11643,7 +11632,7 @@
     "name": "Background Abilities (Noble)",
     "assign": [
       {
-        "expr": "CHA += 2; INT += 1; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, (STR += ARG.0; INT += ARG.1; CHA += ARG.2; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11652,7 +11641,7 @@
     "name": "Background Abilities (Sage)",
     "assign": [
       {
-        "expr": "INT += 2; WIS += 1; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (CON += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11661,7 +11650,7 @@
     "name": "Background Abilities (Sailor)",
     "assign": [
       {
-        "expr": "DEX += 2; WIS += 1; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; WIS += ARG.2; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11670,7 +11659,7 @@
     "name": "Background Abilities (Scribe)",
     "assign": [
       {
-        "expr": "INT += 2; WIS += 1; SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (DEX += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11679,7 +11668,7 @@
     "name": "Background Abilities (Soldier)",
     "assign": [
       {
-        "expr": "STR += 2; CON += 1; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -11688,9 +11677,792 @@
     "name": "Background Abilities (Wayfarer)",
     "assign": [
       {
-        "expr": "WIS += 2; CON += 1; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (DEX += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1))",
         "when": "OnFeatureAdd"
       }
     ]
+  },
+  {
+    "name": "Languages (Aasimar)",
+    "languages": [
+      "Common",
+      "Celestial"
+    ]
+  },
+  {
+    "name": "Languages (Boggart)",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ]
+  },
+  {
+    "name": "Languages (Changeling)",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ]
+  },
+  {
+    "name": "Languages (Dragonborn)",
+    "languages": [
+      "Common",
+      "Draconic"
+    ]
+  },
+  {
+    "name": "Languages (Dwarf)",
+    "languages": [
+      "Common",
+      "Dwarvish"
+    ]
+  },
+  {
+    "name": "Languages (Elf)",
+    "languages": [
+      "Common",
+      "Elvish"
+    ]
+  },
+  {
+    "name": "Languages (Faerie)",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ]
+  },
+  {
+    "name": "Languages (Flamekin)",
+    "languages": [
+      "Common",
+      "Primordial"
+    ]
+  },
+  {
+    "name": "Languages (Gnome)",
+    "languages": [
+      "Common",
+      "Gnomish"
+    ]
+  },
+  {
+    "name": "Languages (Goliath)",
+    "languages": [
+      "Common",
+      "Giant"
+    ]
+  },
+  {
+    "name": "Languages (Halfling)",
+    "languages": [
+      "Common",
+      "Halfling"
+    ]
+  },
+  {
+    "name": "Languages (Human)",
+    "languages": [
+      "Common"
+    ]
+  },
+  {
+    "name": "Languages (Kalashtar)",
+    "languages": [
+      "Common",
+      "Quori"
+    ]
+  },
+  {
+    "name": "Languages (Lorwyn Changeling)",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ]
+  },
+  {
+    "name": "Languages (Orc)",
+    "languages": [
+      "Common",
+      "Orc"
+    ]
+  },
+  {
+    "name": "Languages (Rimekin)",
+    "languages": [
+      "Common",
+      "Primordial"
+    ]
+  },
+  {
+    "name": "Languages (Tiefling (Abyssal))",
+    "languages": [
+      "Common",
+      "Abyssal"
+    ]
+  },
+  {
+    "name": "Languages (Tiefling (Chthonic))",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ]
+  },
+  {
+    "name": "Languages (Tiefling)",
+    "languages": [
+      "Common",
+      "Infernal"
+    ]
+  },
+  {
+    "name": "Changeling Instincts",
+    "fields": [
+      {
+        "name": "Skills",
+        "kind": "Choice",
+        "levels": {
+          "1": 2
+        },
+        "options": [
+          {
+            "name": "Deception"
+          },
+          {
+            "name": "Insight"
+          },
+          {
+            "name": "Intimidation"
+          },
+          {
+            "name": "Performance"
+          },
+          {
+            "name": "Persuasion"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Shape-Shifter"
+  },
+  {
+    "name": "Dual Mind"
+  },
+  {
+    "name": "Mental Discipline"
+  },
+  {
+    "name": "Mind Link"
+  },
+  {
+    "name": "Severed from Dreams"
+  },
+  {
+    "name": "Fey Gift"
+  },
+  {
+    "name": "Lethargy Resilience"
+  },
+  {
+    "name": "Skill Versatility"
+  },
+  {
+    "name": "Bestial Instincts",
+    "fields": [
+      {
+        "name": "Skill",
+        "kind": "Choice",
+        "levels": {
+          "1": 1
+        },
+        "options": [
+          {
+            "name": "Acrobatics"
+          },
+          {
+            "name": "Athletics"
+          },
+          {
+            "name": "Intimidation"
+          },
+          {
+            "name": "Survival"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Shifting",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "1": "PROF_BONUS"
+        }
+      },
+      {
+        "name": "Shifting Option",
+        "kind": "Choice",
+        "levels": {
+          "1": 1
+        },
+        "options": [
+          {
+            "name": "Beasthide"
+          },
+          {
+            "name": "Longtooth"
+          },
+          {
+            "name": "Swiftstride"
+          },
+          {
+            "name": "Wildhunt"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Construct Resilience"
+  },
+  {
+    "name": "Integrated Protection"
+  },
+  {
+    "name": "Sentry's Rest"
+  },
+  {
+    "name": "Specialized Design"
+  },
+  {
+    "name": "Fury of the Small",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "1": "PROF_BONUS"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Nimble Escape"
+  },
+  {
+    "name": "Fairy Magic"
+  },
+  {
+    "name": "Flight"
+  },
+  {
+    "name": "Fire Resistance"
+  },
+  {
+    "name": "Reach to the Blaze"
+  },
+  {
+    "name": "Shape Self"
+  },
+  {
+    "name": "Delightful Imitator"
+  },
+  {
+    "name": "Unpredictable Movement"
+  },
+  {
+    "name": "Cold Fire Magic"
+  },
+  {
+    "name": "Cold Resistance"
+  },
+  {
+    "name": "Spider Climb"
+  },
+  {
+    "name": "Trace of Undeath"
+  },
+  {
+    "name": "Vampiric Bite",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "1": "PROF_BONUS"
+        }
+      },
+      {
+        "name": "Empower",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Drain"
+          },
+          {
+            "name": "Strengthen"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Elemental Adept (Acid)",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, INT += ARG.0; WIS += ARG.1; CHA += ARG.2)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Elemental Adept (Cold)",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, INT += ARG.0; WIS += ARG.1; CHA += ARG.2)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Elemental Adept (Fire)",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, INT += ARG.0; WIS += ARG.1; CHA += ARG.2)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Elemental Adept (Lightning)",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, INT += ARG.0; WIS += ARG.1; CHA += ARG.2)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Elemental Adept (Thunder)",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, INT += ARG.0; WIS += ARG.1; CHA += ARG.2)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Aberrant Dragonmark",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Bloodlust",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Bomber",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Boon of Blazing Dawn",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Bloodshed",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Bountiful Health",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Communication",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Desperate Resilience",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Exquisite Radiance",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Fluid Forms",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Fortune's Favor",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Looming Shadows",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Misty Escape",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Poison Mastery",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Revelry",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Siberys",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of Terror",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of the Bright Sun",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of the Furious Storm",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Boon of the Soul Drinker",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 19"
+  },
+  {
+    "name": "Child of the Sun",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Cloying Mists",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Cold Caster",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Cult of the Dragon Initiate",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Delicious Pain",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Dragonscarred",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Emerald Enclave Fledgling",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Enclave Magic",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Fairy Trickster",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Genie Magic",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Greater Aberrant Mark",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Detection",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Finding",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Handling",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Healing",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Hospitality",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Making",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Passage",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Scribing",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Sentinel",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Shadow",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Storm",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Greater Mark of Warding",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 8"
+  },
+  {
+    "name": "Harper Agent",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Harper Teamwork",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Light Bringer",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Lordly Resolve",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Lords' Alliance Agent",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Love Bites",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Detection",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Finding",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Handling",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Healing",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Hospitality",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Making",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Passage",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Scribing",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Sentinel",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Shadow",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Storm",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mark of Warding",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Mythal Touched",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Order's Resilience",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Potent Dragonmark",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Purple Dragon Commandant",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Purple Dragon Rook",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Putrefy",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Rebuke",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Shadowmoor Hexer",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Spellfire Adept",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Spellfire Spark",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Street Justice",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Tireless Reveler",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Treacherous Allure",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Tyro of the Gauntlet",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Vampire Hunter",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Vampire Touched",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
+  },
+  {
+    "name": "Vampire's Plaything",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Zhentarim Ruffian",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1"
+  },
+  {
+    "name": "Zhentarim Tactics",
+    "selectable": true,
+    "prerequisites": "LEVEL >= 4"
   }
 ]

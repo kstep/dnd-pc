@@ -133,5 +133,38 @@
   },
   "background.Wayfarer": {
     "description": "Wanderer who survives by luck and wits. Feat: Lucky."
+  },
+  "species.Boggart": {
+    "description": "Squat goblinoids from Lorwyn with bestial features, natural magic, and a knack for potions."
+  },
+  "species.Changeling": {
+    "description": "Fey shapeshifters who can alter their appearance at will, with innate social instincts."
+  },
+  "species.Dhampir": {
+    "description": "Living beings with vampiric prowess, possessing a life-draining bite and spider-like climbing."
+  },
+  "species.Faerie": {
+    "description": "Mischievous insectoid fey with innate magic and the gift of flight."
+  },
+  "species.Flamekin": {
+    "description": "Elemental people of fire and stone with innate flame magic and fire resistance."
+  },
+  "species.Kalashtar": {
+    "description": "Aberration-touched beings with dual minds, telepathy, and psychic resilience."
+  },
+  "species.Khoravar": {
+    "description": "Half-elves with fey ancestry, darkvision, and versatile magical and skill aptitude."
+  },
+  "species.Lorwyn Changeling": {
+    "description": "Fey shapeshifters who can assume humanoid or beast forms, with superior darkvision."
+  },
+  "species.Rimekin": {
+    "description": "Ice-touched kin of flamekin with cold magic, cold resistance, and darkvision."
+  },
+  "species.Shifter": {
+    "description": "Humanoids with bestial instincts who can temporarily shift into a more feral form."
+  },
+  "species.Warforged": {
+    "description": "Living constructs with integrated protection, poison resistance, and tireless endurance."
   }
 }

@@ -98,6 +98,18 @@
       "url": "species/aasimar.json"
     },
     {
+      "name": "Boggart",
+      "url": "species/boggart.json"
+    },
+    {
+      "name": "Changeling",
+      "url": "species/changeling.json"
+    },
+    {
+      "name": "Dhampir",
+      "url": "species/dhampir.json"
+    },
+    {
       "name": "Dragonborn",
       "url": "species/dragonborn.json"
     },
@@ -108,6 +120,14 @@
     {
       "name": "Dwarf",
       "url": "species/dwarf.json"
+    },
+    {
+      "name": "Faerie",
+      "url": "species/faerie.json"
+    },
+    {
+      "name": "Flamekin",
+      "url": "species/flamekin.json"
     },
     {
       "name": "Forest Gnome",
@@ -130,12 +150,32 @@
       "url": "species/human.json"
     },
     {
+      "name": "Kalashtar",
+      "url": "species/kalashtar.json"
+    },
+    {
+      "name": "Khoravar",
+      "url": "species/khoravar.json"
+    },
+    {
+      "name": "Lorwyn Changeling",
+      "url": "species/lorwyn-changeling.json"
+    },
+    {
       "name": "Orc",
       "url": "species/orc.json"
     },
     {
+      "name": "Rimekin",
+      "url": "species/rimekin.json"
+    },
+    {
       "name": "Rock Gnome",
       "url": "species/rock-gnome.json"
+    },
+    {
+      "name": "Shifter",
+      "url": "species/shifter.json"
     },
     {
       "name": "Tiefling",
@@ -152,6 +192,10 @@
     {
       "name": "Tiefling (Infernal)",
       "url": "species/tiefling-infernal.json"
+    },
+    {
+      "name": "Warforged",
+      "url": "species/warforged.json"
     },
     {
       "name": "Wood Elf",

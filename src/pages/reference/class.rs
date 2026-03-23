@@ -47,6 +47,10 @@ pub fn ClassReference() -> impl IntoView {
             .into_any();
         }
 
+        // Track features_index at top level so we re-render when it loads
+        // (nested LocalResource reads inside with_tracked don't reliably track)
+        registry.with_features_index(|_| {});
+
         let prerequisites = registry.with_class_entries(|entries| {
             entries
                 .get(name.as_str())
@@ -74,7 +78,7 @@ pub fn ClassReference() -> impl IntoView {
                 let description = def.description.clone();
                 let hit_die = format!("d{}", def.hit_die);
 
-                // Resolve features from the global features catalog
+                // Resolve features from the global features index
                 let spells_def = registry.with_features_index(|features_index| {
                     def.feature_names(subname.as_deref())
                         .find_map(|feat_name| {

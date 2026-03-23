@@ -43,38 +43,38 @@ pub fn SpeciesReference() -> impl IntoView {
             .into_any();
         }
 
-        registry
-            .species()
-            .with_tracked(&name, |def| {
-                let title = def.label().to_string();
-                let description = def.description.clone();
-
-                let features = registry.with_features_index(|features_index| {
-                    let resolved: Vec<_> = def
-                        .features
-                        .iter()
-                        .filter_map(|name| features_index.get(name.as_str()))
-                        .collect();
-                    collect_feature_views(resolved.into_iter())
-                });
-
-                view! {
-                    <Title text=title.clone() />
-                    <div class="reference-detail">
-                        <h1>{title}</h1>
-                        <p class="reference-description">{description}</p>
-
-                        {(!features.is_empty()).then(|| view! {
-                            <h2>{move_tr!("ref-features")}</h2>
-                            <ReferenceFeaturesView features />
-                        })}
-                    </div>
-                }
-                .into_any()
+        let Some((title, description, feature_names)) =
+            registry.species().with_tracked(&name, |def| {
+                (
+                    def.label().to_string(),
+                    def.description.clone(),
+                    def.features.clone(),
+                )
             })
-            .unwrap_or_else(|| {
-                view! { <p class="reference-loading">{move_tr!("ref-loading")}</p> }.into_any()
-            })
+        else {
+            return view! { <p class="reference-loading">{move_tr!("ref-loading")}</p> }.into_any();
+        };
+
+        let features = registry.with_features_index(|features_index| {
+            let iter = feature_names
+                .iter()
+                .filter_map(|name| features_index.get(name.as_str()));
+            collect_feature_views(iter)
+        });
+
+        view! {
+            <Title text=title.clone() />
+            <div class="reference-detail">
+                <h1>{title}</h1>
+                <p class="reference-description">{description}</p>
+
+                {(!features.is_empty()).then(|| view! {
+                    <h2>{move_tr!("ref-features")}</h2>
+                    <ReferenceFeaturesView features />
+                })}
+            </div>
+        }
+        .into_any()
     };
 
     view! {

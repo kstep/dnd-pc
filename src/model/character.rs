@@ -699,6 +699,28 @@ impl expr::Context<Attribute, i32> for Context<'_> {
     }
 }
 
+pub struct ArgsContext<'a> {
+    pub inner: Context<'a>,
+    pub args: Vec<i32>,
+}
+
+impl expr::Context<Attribute, i32> for ArgsContext<'_> {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        self.inner.assign(var, value)
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Arg(n) => self
+                .args
+                .get(n as usize)
+                .copied()
+                .ok_or_else(|| expr::Error::unsupported_var(var)),
+            other => self.inner.resolve(other),
+        }
+    }
+}
+
 #[cfg(test)]
 impl Character {
     pub fn test_character() -> Character {

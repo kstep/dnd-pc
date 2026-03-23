@@ -10,7 +10,10 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     BASE_URL,
-    components::{datalist_input::DatalistInput, entity_field::EntityField, icon::Icon},
+    components::{
+        args_modal::ArgsModalCtx, datalist_input::DatalistInput, entity_field::EntityField,
+        icon::Icon,
+    },
     firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel,
@@ -83,9 +86,17 @@ fn import_character(store: Store<Character>) {
 }
 
 fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
-    store.update(|character| {
-        registry.apply_class_level(character, class_index, level);
-    });
+    let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
+    if pending.is_empty() {
+        store.update(|c| registry.apply_class_level(c, class_index, level));
+    } else {
+        let ctx = expect_context::<ArgsModalCtx>();
+        ctx.open(pending, move |args_map| {
+            store.update(|c| {
+                registry.apply_class_level_with_args(c, class_index, level, &args_map);
+            });
+        });
+    }
 }
 
 #[component]

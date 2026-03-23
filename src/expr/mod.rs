@@ -6,7 +6,7 @@ use std::{
     sync::Arc,
 };
 
-use serde::Serialize;
+use serde::{Serialize, Serializer, ser::SerializeSeq};
 
 mod de;
 mod error;
@@ -33,21 +33,63 @@ pub const fn avg_hp(sides: i32) -> i32 {
     sides / 2 + 1
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(transparent)]
-pub struct Expr<Var, Val = i32>(Arc<[Op<Var, Val>]>);
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[allow(clippy::type_complexity)]
+pub struct Expr<Var, Val = i32>(Arc<[Box<[Op<Var, Val>]>]>);
+
+impl<Var: Serialize, Val: Serialize> Serialize for Expr<Var, Val> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
+        for block in self.0.iter() {
+            seq.serialize_element(&block)?;
+        }
+        seq.end()
+    }
+}
+
+impl<Var, Val> Expr<Var, Val> {
+    pub fn block(&self, idx: usize) -> &[Op<Var, Val>] {
+        &self.0[idx]
+    }
+
+    /// Returns true if any block in this expression contains a variable
+    /// matching the predicate (e.g. `expr.has_var(|v| matches!(v,
+    /// Attribute::Arg(_)))`).
+    pub fn has_var(&self, pred: impl Fn(&Var) -> bool) -> bool {
+        self.0.iter().any(|block| {
+            block.iter().any(|op| match op {
+                Op::PushVar(v) | Op::Assign(v) => pred(v),
+                _ => false,
+            })
+        })
+    }
+}
 
 impl<Var, Val> Deref for Expr<Var, Val> {
     type Target = [Op<Var, Val>];
 
     fn deref(&self) -> &Self::Target {
-        &self.0
+        &self.0[0]
     }
 }
 
 impl<Var: Copy, Val: Copy> Expr<Var, Val> {
-    pub fn run<I: Interpreter<Var, Val>>(&self, interp: I) -> Result<I::Output, Error> {
-        interp.run(self.iter().copied())
+    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
+        self.run_block(&mut interp, 0)?;
+        interp.finish()
+    }
+
+    fn run_block<I: Interpreter<Var, Val>>(
+        &self,
+        interp: &mut I,
+        block: usize,
+    ) -> Result<(), Error> {
+        for &op in self.0[block].iter() {
+            if let Some(sub_block) = interp.exec(op)? {
+                self.run_block(interp, sub_block)?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -63,6 +105,14 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
     ) -> Result<i32, Error> {
         let mut iter = pool.iter();
         self.run(DicePoolEvaluator::new(ctx, &mut iter))
+    }
+}
+
+impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+    pub fn eval_block(&self, block: usize, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+        let mut interp = ReadOnlyEvaluator::new(ctx);
+        self.run_block(&mut interp, block)?;
+        interp.finish()
     }
 }
 
@@ -83,7 +133,7 @@ impl<Var: Copy> Expr<Var, i32> {
     /// and returns a map of die sides to total number of rolls needed.
     pub fn dice_rolls(&self) -> BTreeMap<u32, u32> {
         let mut result = BTreeMap::new();
-        for window in self.0.windows(3) {
+        for window in self.0[0].windows(3) {
             if let [Op::PushConst(count), Op::PushConst(sides), Op::Roll] = window
                 && *count > 0
                 && *sides > 0
@@ -99,13 +149,83 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Parser::new(s).parse().map(Vec::into).map(Self)
+        #[allow(clippy::type_complexity)]
+        let blocks: Arc<[Box<[Op<Var, Val>]>]> = Parser::new(s)
+            .parse()?
+            .into_iter()
+            .map(Vec::into_boxed_slice)
+            .collect();
+        Ok(Self(blocks))
     }
 }
 
-impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> fmt::Display for Expr<Var, Val> {
+impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
+    fn format_block(&self, block: usize) -> Result<String, Error> {
+        let ops = &self.0[block];
+
+        // Split ops into statements at Assign boundaries.
+        let mut stmts: Vec<&[Op<Var, Val>]> = Vec::new();
+        let mut start = 0;
+        for (i, op) in ops.iter().enumerate() {
+            if matches!(op, Op::Assign(_)) {
+                stmts.push(&ops[start..=i]);
+                start = i + 1;
+            }
+        }
+        if start < ops.len() {
+            stmts.push(&ops[start..]);
+        }
+
+        let mut results: Vec<String> = Vec::new();
+        for stmt in stmts {
+            if let Some(ca) = Op::detect_compound(stmt) {
+                // Compound: format only the RHS ops, then emit "VAR sym= rhs".
+                let var = match stmt.last() {
+                    Some(Op::Assign(v)) => v,
+                    _ => unreachable!(),
+                };
+                let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end])?;
+                results.push(format!("{var} {sym}= {rhs}", sym = ca.sym));
+            } else {
+                let text = self.format_ops(stmt)?;
+                results.push(text);
+            }
+        }
+        Ok(results.join("; "))
+    }
+
+    fn format_ops(&self, ops: &[Op<Var, Val>]) -> Result<String, Error> {
+        let mut fmt = Formatter::new();
+        for &op in ops {
+            match op {
+                Op::Eval(idx) => {
+                    let text = self.format_block(idx as usize)?;
+                    fmt.push_atom(text);
+                }
+                Op::EvalIf(then_idx, else_idx) => {
+                    let cond = fmt.pop_text()?;
+                    let then_text = self.format_block(then_idx as usize)?;
+                    if else_idx == 0 {
+                        fmt.push_atom(format!("if({cond}, {then_text})"));
+                    } else {
+                        let else_text = self.format_block(else_idx as usize)?;
+                        fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
+                    }
+                }
+                op => {
+                    fmt.exec(op)?;
+                }
+            }
+        }
+        <Formatter as Interpreter<Var, Val>>::finish(fmt)
+    }
+}
+
+impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> fmt::Display
+    for Expr<Var, Val>
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = self.run(Formatter::new()).map_err(|_| fmt::Error)?;
+        let s = self.format_block(0).map_err(|_| fmt::Error)?;
         f.write_str(&s)
     }
 }
@@ -313,6 +433,13 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn dice_in_function_call() {
+        let expr: Expr = "max(AC, 1d4 + 4)".parse().unwrap();
+        // Should parse without error — dice inside function args
+        assert!(!expr.is_empty());
+    }
+
+    #[wasm_bindgen_test]
     fn ability_modifiers() {
         let ch = test_character();
         // STR 10 -> mod 0, DEX 14 -> mod 2, CON 12 -> mod 1
@@ -415,7 +542,7 @@ mod tests {
         // Desugars to same ops as expanded form
         let compound: Expr = "AC -= 3".parse().unwrap();
         let expanded: Expr = "AC = AC - 3".parse().unwrap();
-        assert_eq!(compound.0, expanded.0);
+        assert_eq!(*compound, *expanded);
 
         // All compound operators
         ch.ac = 10;

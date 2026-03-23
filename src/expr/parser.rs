@@ -3,11 +3,15 @@ use std::{iter::Peekable, marker::PhantomData, ops::Neg, str::FromStr};
 use crate::expr::{
     Op,
     error::Error,
+    ops::Cmp,
     tokenizer::{Token, Tokenizer},
 };
 
 pub(super) struct Parser<'a, Var, Val> {
     tokens: Peekable<Tokenizer<'a>>,
+    /// Extra blocks for sub-expressions (if branches, etc.).
+    /// Block indices are 1-based (0 = main block / "no block").
+    blocks: Vec<Vec<Op<Var, Val>>>,
     _var: PhantomData<(Var, Val)>,
 }
 
@@ -15,6 +19,7 @@ impl<'a, Var, Val> From<Tokenizer<'a>> for Parser<'a, Var, Val> {
     fn from(tokens: Tokenizer<'a>) -> Self {
         Self {
             tokens: tokens.peekable(),
+            blocks: Vec::new(),
             _var: PhantomData,
         }
     }
@@ -25,10 +30,13 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Self::from(Tokenizer::new(expr))
     }
 
-    pub fn parse(&mut self) -> Result<Vec<Op<Var, Val>>, Error> {
+    pub fn parse(&mut self) -> Result<Vec<Vec<Op<Var, Val>>>, Error> {
         let mut ops = Vec::new();
         self.parse_into(&mut ops)?;
-        Ok(ops)
+        let mut blocks = Vec::with_capacity(1 + self.blocks.len());
+        blocks.push(ops);
+        blocks.append(&mut self.blocks);
+        Ok(blocks)
     }
 
     pub fn parse_into(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
@@ -99,12 +107,12 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
 
     fn parse_comparison_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         let cmp_op = match self.peek() {
-            Some(Token::Lt) => Some(Op::Lt),
-            Some(Token::Gt) => Some(Op::Gt),
-            Some(Token::Le) => Some(Op::Le),
-            Some(Token::Ge) => Some(Op::Ge),
-            Some(Token::EqEq) => Some(Op::CmpEq),
-            Some(Token::NotEq) => Some(Op::CmpNe),
+            Some(Token::Lt) => Some(Op::Cmp(Cmp::Lt)),
+            Some(Token::Gt) => Some(Op::Cmp(Cmp::Gt)),
+            Some(Token::Le) => Some(Op::Cmp(Cmp::Le)),
+            Some(Token::Ge) => Some(Op::Cmp(Cmp::Ge)),
+            Some(Token::EqEq) => Some(Op::Cmp(Cmp::Eq)),
+            Some(Token::NotEq) => Some(Op::Cmp(Cmp::Ne)),
             _ => None,
         };
         if let Some(op) = cmp_op {
@@ -287,7 +295,7 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 Ok(())
             }
             Some(Token::LParen) => {
-                self.parse_or(ops)?;
+                self.parse_assignment(ops)?;
                 self.expect(|token| matches!(token, Token::RParen))?;
                 Ok(())
             }
@@ -314,9 +322,11 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                 self.parse_unary_function_call(ops)?;
                 ops.push(if name == "not" { Op::Not } else { Op::AvgHp });
             }
+            "in" => {
+                self.parse_in(ops)?;
+            }
             "if" => {
-                self.parse_ternary_function_call(ops)?;
-                ops.push(Op::If);
+                self.parse_if(ops)?;
             }
             _ => return Err(Error::unexpected_token(name)),
         }
@@ -333,15 +343,46 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Ok(())
     }
 
-    fn parse_ternary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+    /// `in(a, b, c)` → `b <= a and a <= c`
+    fn parse_in(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
-        self.parse_or(ops)?;
+        self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::Comma))?;
-        self.parse_or(ops)?;
+        self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::Comma))?;
-        self.parse_or(ops)?;
+        self.parse_expr(ops)?;
         self.expect(|token| matches!(token, Token::RParen))?;
+        ops.push(Op::In);
         Ok(())
+    }
+
+    fn parse_if(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        // Condition → Eval(cond_block) pushes result onto stack
+        let cond_block = self.parse_sub_block()?;
+        ops.push(Op::Eval(cond_block));
+        self.expect(|token| matches!(token, Token::Comma))?;
+        let then_block = self.parse_sub_block()?;
+        // Optional else-branch (0 = noop)
+        let else_block = if let Some(Token::Comma) = self.peek() {
+            self.next()?;
+            self.parse_sub_block()?
+        } else {
+            0
+        };
+        self.expect(|token| matches!(token, Token::RParen))?;
+        // EvalIf pops cond, branches to then or else block
+        ops.push(Op::EvalIf(then_block, else_block));
+        Ok(())
+    }
+
+    fn parse_sub_block(&mut self) -> Result<u8, Error> {
+        let mut block_ops = Vec::new();
+        self.parse_assignment(&mut block_ops)?;
+        // 1-based: block 0 is reserved (main block / "no block")
+        let idx = self.blocks.len() as u8 + 1;
+        self.blocks.push(block_ops);
+        Ok(idx)
     }
 
     fn parse_unary_function_call(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {

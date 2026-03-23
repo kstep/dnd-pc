@@ -4,7 +4,8 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::DatalistInput, icon::Icon, panel::Panel, toggle_button::ToggleButton,
+        args_modal::ArgsModalCtx, datalist_input::DatalistInput, icon::Icon, panel::Panel,
+        toggle_button::ToggleButton,
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
@@ -129,10 +130,19 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                         .unwrap_or_else(|| c.level());
                                                     (level, c.identity.clone())
                                                 });
-                                                if registry.with_feature_source(&identity, &name, |feat_def, source| {
+                                                if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name)) {
+                                                    let args_ctx = expect_context::<ArgsModalCtx>();
+                                                    let name = name.clone();
+                                                    args_ctx.open(vec![pending], move |args_map| {
+                                                        registry.with_feature_source(&identity, &name, |feat_def, source| {
+                                                            let args = args_map.get(name.as_str()).cloned();
+                                                            store.update(|c| feat_def.apply_with_args(level, c, source.as_ref(), args));
+                                                        });
+                                                    });
+                                                } else if registry.with_feature_source(&identity, &name, |feat_def, source| {
                                                     store.update(|c| feat_def.apply(level, c, source.as_ref()));
                                                 }).is_none() {
-                                                    log::warn!("Feature {name} not found in catalog, registry may not be loaded yet");
+                                                    log::warn!("Feature {name} not found in index, registry may not be loaded yet");
                                                 }
                                             }
                                         >
