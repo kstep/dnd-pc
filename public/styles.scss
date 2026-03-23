@@ -2770,6 +2770,10 @@ select.entry-name {
 .dice-pool-value {
   width: 3rem;
   text-align: center;
+
+  &:invalid {
+    outline: 2px solid var(--red-6);
+  }
 }
 
 .dice-pool-footer {
