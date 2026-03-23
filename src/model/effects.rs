@@ -8,6 +8,23 @@ use crate::{
     model::{Ability, Attribute, Character},
 };
 
+/// A lightweight effect definition carrying a name and expression.
+/// Used on `SpellDefinition` for damage/healing formulas; designed to be
+/// reusable for feature effects, weapon effects, etc.
+#[derive(Debug, Clone, Deserialize)]
+pub struct EffectDefinition {
+    pub name: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    pub expr: Expr<Attribute>,
+}
+
+impl EffectDefinition {
+    pub fn label(&self) -> &str {
+        self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActiveEffect {
     pub name: String,

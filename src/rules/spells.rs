@@ -5,7 +5,10 @@ use serde::Deserialize;
 use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
-    model::{Ability, Character, FeatureSource, FreeUses, Spell, SpellData, SpellSlotPool},
+    model::{
+        Ability, Character, EffectDefinition, FeatureSource, FreeUses, Spell, SpellData,
+        SpellSlotPool,
+    },
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -23,6 +26,8 @@ pub struct SpellDefinition {
     pub min_level: u32,
     #[serde(default)]
     pub cost: u32,
+    #[serde(default)]
+    pub effects: Vec<EffectDefinition>,
 }
 
 impl SpellDefinition {

@@ -44,6 +44,7 @@ pub enum Attribute {
     SpellDc,
     SpellAttack,
     SpellAttackAdvantage,
+    SlotLevel,
     Arg(u8),
 }
 
@@ -174,6 +175,7 @@ impl FromStr for Attribute {
                 "ATK" => Ok(Self::AttackBonus),
                 "INITIATIVE" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
+                "SLOT_LEVEL" => Ok(Self::SlotLevel),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -285,6 +287,7 @@ impl fmt::Display for Attribute {
             Self::SpellDc => f.write_str("SPELL.DC"),
             Self::SpellAttack => f.write_str("SPELL.ATK"),
             Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
+            Self::SlotLevel => f.write_str("SLOT_LEVEL"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
@@ -414,6 +417,16 @@ mod tests {
             let parsed: Attribute = s.parse().unwrap();
             assert_eq!(parsed, attr, "round-trip failed for {s}");
         }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_slot_level() {
+        assert_eq!(
+            "SLOT_LEVEL".parse::<Attribute>().unwrap(),
+            Attribute::SlotLevel
+        );
+        // Round-trip
+        assert_eq!(Attribute::SlotLevel.to_string(), "SLOT_LEVEL");
     }
 
     #[wasm_bindgen_test]
