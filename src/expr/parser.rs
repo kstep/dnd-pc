@@ -152,6 +152,10 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
     // term = unary (('*' | '/' | '\') unary)*
     fn parse_term(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         self.parse_unary(ops)?;
+        self.parse_term_tail(ops)
+    }
+
+    fn parse_term_tail(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
         loop {
             match self.peek() {
                 Some(Token::Star) => {
@@ -423,9 +427,17 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                     ops.push(arith_op);
                     ops.push(Op::Assign(var));
                 } else {
-                    // Not an assignment — push var, finish expr, then
-                    // handle comparison/boolean tail
+                    // Not an assignment — push var, finish expr from
+                    // atom level up: dice → term → expr → cmp → bool
                     ops.push(Op::PushVar(var));
+                    // dice tail: var may be followed by 'd' (e.g. SLOT_LEVEL d6)
+                    if let Some(Token::D) = self.peek() {
+                        self.next()?;
+                        self.parse_atom(ops)?;
+                        ops.push(Op::Roll);
+                        self.parse_keep(ops)?;
+                    }
+                    self.parse_term_tail(ops)?;
                     self.parse_expr_tail(ops)?;
                     self.parse_comparison_tail(ops)?;
                     self.parse_and_tail(ops)?;

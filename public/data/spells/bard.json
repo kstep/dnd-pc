@@ -84,7 +84,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -106,7 +106,7 @@
   {
     "name": "Earth Tremor",
     "level": 1,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Faerie Fire",
@@ -119,7 +119,7 @@
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Heroism",
@@ -225,7 +225,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Hold Person",
@@ -376,7 +376,7 @@
   {
     "name": "Mass Healing Word",
     "level": 3,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Motivational Speech",
@@ -461,7 +461,7 @@
   {
     "name": "Phantasmal Killer",
     "level": 4,
-    "effects": [{"name": "Psychic Damage", "expr": "SLOT_LEVEL d10"}]
+    "effects": [{"name": "Psychic Damage", "expr": "(SLOT_LEVEL)d10"}]
   },
   {
     "name": "Polymorph",

@@ -101,7 +101,7 @@
   {
     "name": "Absorb Elements",
     "level": 1,
-    "effects": [{"name": "Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Animal Friendship",
@@ -122,7 +122,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -135,7 +135,7 @@
   {
     "name": "Earth Tremor",
     "level": 1,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Entangle",
@@ -157,7 +157,7 @@
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Ice Knife",
@@ -229,7 +229,7 @@
   {
     "name": "Dust Devil",
     "level": 2,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Earthbind",
@@ -256,7 +256,7 @@
   {
     "name": "Flaming Sphere",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Gust of Wind",
@@ -270,7 +270,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "SLOT_LEVEL d8"}]
+    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d8"}]
   },
   {
     "name": "Hold Person",
@@ -291,7 +291,7 @@
   {
     "name": "Moonbeam",
     "level": 2,
-    "effects": [{"name": "Radiant Damage", "expr": "SLOT_LEVEL d10"}]
+    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL)d10"}]
   },
   {
     "name": "Pass without Trace",
@@ -320,7 +320,7 @@
   {
     "name": "Wither and Bloom",
     "level": 2,
-    "effects": [{"name": "Necrotic Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Necrotic Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Aura of Vitality",
@@ -330,7 +330,7 @@
   {
     "name": "Call Lightning",
     "level": 3,
-    "effects": [{"name": "Lightning Damage", "expr": "SLOT_LEVEL d10"}]
+    "effects": [{"name": "Lightning Damage", "expr": "(SLOT_LEVEL)d10"}]
   },
   {
     "name": "Conjure Animals",
@@ -352,7 +352,7 @@
   {
     "name": "Erupting Earth",
     "level": 3,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "SLOT_LEVEL d12"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d12"}]
   },
   {
     "name": "Feign Death",
@@ -483,7 +483,7 @@
   {
     "name": "Ice Storm",
     "level": 4,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "2d8"}, {"name": "Cold Damage", "expr": "SLOT_LEVEL d6"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "2d8"}, {"name": "Cold Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Locate Creature",

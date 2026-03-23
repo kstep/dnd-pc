@@ -1256,7 +1256,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"
             }
           ]
         },
@@ -1280,7 +1280,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -1310,7 +1310,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"
             }
           ]
         },
@@ -1602,7 +1602,7 @@
             },
             {
               "name": "Cold Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -1691,7 +1691,7 @@
           "effects": [
             {
               "name": "Radiant Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -1819,7 +1819,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"
             }
           ]
         },
@@ -1849,7 +1849,7 @@
           "effects": [
             {
               "name": "Lightning Damage",
-              "expr": "SLOT_LEVEL d10"
+              "expr": "(SLOT_LEVEL)d10"
             }
           ]
         },
@@ -3117,7 +3117,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
             }
           ]
         },
@@ -3147,7 +3147,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d4 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"
             }
           ]
         },
@@ -3613,7 +3613,7 @@
           "effects": [
             {
               "name": "Force Damage",
-              "expr": "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER"
             }
           ]
         },
@@ -3637,7 +3637,7 @@
           "effects": [
             {
               "name": "Radiant/Necrotic Damage",
-              "expr": "SLOT_LEVEL d8"
+              "expr": "(SLOT_LEVEL)d8"
             }
           ]
         },
@@ -4558,7 +4558,7 @@
             },
             {
               "name": "Cold Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -4667,7 +4667,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
             }
           ]
         },
@@ -4679,7 +4679,7 @@
           "effects": [
             {
               "name": "Radiant Damage",
-              "expr": "SLOT_LEVEL d10"
+              "expr": "(SLOT_LEVEL)d10"
             }
           ]
         },
@@ -5045,7 +5045,7 @@
             },
             {
               "name": "Cold Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -6664,7 +6664,7 @@
           "effects": [
             {
               "name": "Piercing Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -6688,7 +6688,7 @@
           "effects": [
             {
               "name": "Radiant Damage",
-              "expr": "SLOT_LEVEL d10"
+              "expr": "(SLOT_LEVEL)d10"
             }
           ]
         },
@@ -6716,7 +6716,7 @@
             },
             {
               "name": "Cold Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -8129,7 +8129,7 @@
             },
             {
               "name": "Cold Damage",
-              "expr": "SLOT_LEVEL d6"
+              "expr": "(SLOT_LEVEL)d6"
             }
           ]
         },
@@ -9793,7 +9793,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
             }
           ]
         },
@@ -10669,7 +10669,7 @@
           "effects": [
             {
               "name": "Healing",
-              "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+              "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
             }
           ]
         },
