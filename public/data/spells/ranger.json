@@ -27,7 +27,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
       }
     ]
   },
@@ -123,7 +123,7 @@
     "effects": [
       {
         "name": "Max HP Bonus",
-        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+        "expr": "5 * (SLOT_LEVEL - 1)"
       }
     ]
   },
@@ -137,13 +137,7 @@
   },
   {
     "name": "Barkskin",
-    "level": 2,
-    "effects": [
-      {
-        "name": "AC",
-        "expr": "AC = max(AC, 17)"
-      }
-    ]
+    "level": 2
   },
   {
     "name": "Beast Sense",
@@ -197,7 +191,7 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "ATK += SLOT_LEVEL / 2"
+        "expr": "SLOT_LEVEL / 2"
       }
     ]
   },

@@ -131,7 +131,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -194,7 +194,7 @@
   {
     "name": "Aid",
     "level": 2,
-    "effects": [{"name": "Max HP Bonus", "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"}]
+    "effects": [{"name": "Max HP Bonus", "expr": "5 * (SLOT_LEVEL - 1)"}]
   },
   {
     "name": "Air Bubble",
@@ -211,7 +211,7 @@
   {
     "name": "Arcane Vigor",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d12 + CASTER_MODIFIER"}]
   },
   {
     "name": "Blur",
@@ -241,7 +241,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Fire Damage", "expr": "2d8"}]
   },
   {
     "name": "Homunculus Servant",
@@ -270,7 +270,7 @@
   {
     "name": "Magic Weapon",
     "level": 2,
-    "effects": [{"name": "Attack Bonus", "expr": "ATK += SLOT_LEVEL / 2"}]
+    "effects": [{"name": "Attack Bonus", "expr": "SLOT_LEVEL / 2"}]
   },
   {
     "name": "Protection from Poison",
@@ -339,12 +339,12 @@
   },
   {
     "name": "Glyph of Warding",
-    "level": 3
+    "level": 3,
+    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL + 2)d8"}]
   },
   {
     "name": "Haste",
-    "level": 3,
-    "effects": [{"name": "Buff", "expr": "AC += 2; SPEED += SPEED"}]
+    "level": 3
   },
   {
     "name": "Intellect Fortress",
@@ -426,7 +426,7 @@
   {
     "name": "Bigby's Hand",
     "level": 5,
-    "effects": [{"name": "Force Damage", "expr": "4d8"}]
+    "effects": [{"name": "Clenched Fist", "expr": "4d8"}, {"name": "Grasping Hand", "expr": "2d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Circle of Power",

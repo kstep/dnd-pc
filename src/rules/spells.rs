@@ -283,8 +283,7 @@ mod tests {
             "(SLOT_LEVEL + 2)d6",
             "(SLOT_LEVEL)d8",
             "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER",
-            "ATK += SLOT_LEVEL / 2",
-            "AC += 2",
+            "SLOT_LEVEL / 2",
             "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6",
             // These use implicit dice after a bare variable (space before d)
             "SLOT_LEVEL d6",

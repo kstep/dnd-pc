@@ -21,7 +21,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
       }
     ]
   },
@@ -91,7 +91,7 @@
     "effects": [
       {
         "name": "AC Bonus",
-        "expr": "AC += 2"
+        "expr": "2"
       }
     ]
   },
@@ -107,7 +107,8 @@
   },
   {
     "name": "Wardaway",
-    "level": 1
+    "level": 1,
+    "effects": [{"name": "Force Damage", "expr": "2d4"}]
   },
   {
     "name": "Wrathful Smite",
@@ -125,7 +126,7 @@
     "effects": [
       {
         "name": "Max HP Bonus",
-        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1)"
+        "expr": "5 * (SLOT_LEVEL - 1)"
       }
     ]
   },
@@ -151,7 +152,7 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "ATK += SLOT_LEVEL / 2"
+        "expr": "SLOT_LEVEL / 2"
       }
     ]
   },
@@ -161,7 +162,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "((SLOT_LEVEL - 1) * 2)d8"
       }
     ]
   },
@@ -185,7 +186,7 @@
     "effects": [
       {
         "name": "AC/Save Bonus",
-        "expr": "AC += 1"
+        "expr": "1"
       }
     ]
   },
@@ -263,7 +264,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL / 3)d8"
+        "expr": "((SLOT_LEVEL - 1) / 2)d8"
       }
     ]
   },
@@ -335,7 +336,8 @@
   },
   {
     "name": "Geas",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Psychic Damage", "expr": "5d10"}]
   },
   {
     "name": "Greater Restoration",
@@ -346,8 +348,12 @@
     "level": 5,
     "effects": [
       {
-        "name": "Radiant Damage",
+        "name": "Radiant Damage (Hit)",
         "expr": "2d8"
+      },
+      {
+        "name": "Radiant Damage (Burst)",
+        "expr": "4d8"
       }
     ]
   },
