@@ -100,7 +100,6 @@ impl fmt::Display for Money {
 
         write_part!(f, CP_PER_PP, "pp", remaining_cp);
         write_part!(f, CP_PER_GP, "gp", remaining_cp);
-        write_part!(f, CP_PER_EP, "ep", remaining_cp);
         write_part!(f, CP_PER_SP, "sp", remaining_cp);
 
         if remaining_cp > 0 {
