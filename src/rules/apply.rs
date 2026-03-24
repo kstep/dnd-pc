@@ -444,8 +444,66 @@ impl RulesRegistry {
         });
     }
 
+    /// Scan a list of feature names for those whose assignments require
+    /// user-supplied ARG values.
+    pub fn pending_args_for_features<'a>(
+        &self,
+        character: &Character,
+        feature_names: impl Iterator<Item = &'a str>,
+    ) -> Vec<PendingArgs> {
+        let mut result = Vec::new();
+        self.with_features_index_untracked(|features_index| {
+            for feat_name in feature_names {
+                let Some(feat) = features_index.get(feat_name) else {
+                    continue;
+                };
+                let already_has = character.features.iter().any(|f| f.name == feat_name);
+                if already_has && !feat.stackable {
+                    continue;
+                }
+                let when = if already_has {
+                    WhenCondition::OnLevelUp
+                } else {
+                    WhenCondition::OnFeatureAdd
+                };
+                if let Some(expr) = feat.args_expr(when) {
+                    result.push(PendingArgs {
+                        feature_name: feat_name.to_string(),
+                        feature_label: feat.label().to_string(),
+                        expr: expr.clone(),
+                    });
+                }
+            }
+        });
+        result
+    }
+
+    /// Apply a list of features by name with optional user-supplied args.
+    fn apply_features(
+        &self,
+        character: &mut Character,
+        feature_names: &[impl AsRef<str>],
+        source: &FeatureSource,
+        level: u32,
+        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+    ) {
+        self.with_features_index_untracked(|features_index| {
+            for feat_name in feature_names {
+                let feat_name = feat_name.as_ref();
+                if let Some(feat) = features_index.get(feat_name) {
+                    let args = args_map.and_then(|m| m.get(feat_name)).cloned();
+                    feat.apply_with_args(level, character, Some(source), args);
+                }
+            }
+        });
+    }
+
     /// Apply species features from the global index.
-    pub fn apply_species(&self, character: &mut Character) {
+    pub fn apply_species(
+        &self,
+        character: &mut Character,
+        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+    ) {
         character.identity.species_applied = true;
         let total_level = character.level().max(1);
         let species_cache = self.species_cache.read_untracked();
@@ -453,18 +511,22 @@ impl RulesRegistry {
             return;
         };
         let source = FeatureSource::Species(character.identity.species.clone());
-        self.with_features_index_untracked(|features_index| {
-            for feat_name in &species_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
-                }
-            }
-        });
+        self.apply_features(
+            character,
+            &species_def.features,
+            &source,
+            total_level,
+            args_map,
+        );
         self.compute(character);
     }
 
     /// Apply background features from the global index.
-    pub fn apply_background(&self, character: &mut Character) {
+    pub fn apply_background(
+        &self,
+        character: &mut Character,
+        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+    ) {
         character.identity.background_applied = true;
         let total_level = character.level().max(1);
         let bg_cache = self.background_cache.read_untracked();
@@ -472,13 +534,7 @@ impl RulesRegistry {
             return;
         };
         let source = FeatureSource::Background(character.identity.background.clone());
-        self.with_features_index_untracked(|features_index| {
-            for feat_name in &bg_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
-                }
-            }
-        });
+        self.apply_features(character, &bg_def.features, &source, total_level, args_map);
         self.compute(character);
     }
 }

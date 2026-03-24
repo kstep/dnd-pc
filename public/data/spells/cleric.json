@@ -18,7 +18,12 @@
   {
     "name": "Sacred Flame",
     "level": 0,
-    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Spare the Dying",
@@ -31,22 +36,42 @@
   {
     "name": "Toll the Dead",
     "level": 0,
-    "effects": [{"name": "Necrotic Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Word of Radiance",
     "level": 0,
-    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Bane",
     "level": 1,
-    "effects": [{"name": "Penalty", "expr": "1d4"}]
+    "effects": [
+      {
+        "name": "Penalty",
+        "expr": "1d4"
+      }
+    ]
   },
   {
     "name": "Bless",
     "level": 1,
-    "effects": [{"name": "Bonus", "expr": "1d4"}]
+    "effects": [
+      {
+        "name": "Bonus",
+        "expr": "1d4"
+      }
+    ]
   },
   {
     "name": "Ceremony",
@@ -63,7 +88,12 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Detect Evil and Good",
@@ -80,17 +110,32 @@
   {
     "name": "Guiding Bolt",
     "level": 1,
-    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL * 4)d6"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "(SLOT_LEVEL + 3)d6"
+      }
+    ]
   },
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Inflict Wounds",
     "level": 1,
-    "effects": [{"name": "Necrotic Damage", "expr": "(SLOT_LEVEL * 2)d10"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 1)d10"
+      }
+    ]
   },
   {
     "name": "Protection from Evil and Good",
@@ -107,17 +152,32 @@
   {
     "name": "Shield of Faith",
     "level": 1,
-    "effects": [{"name": "AC Bonus", "expr": "2"}]
+    "effects": [
+      {
+        "name": "AC Bonus",
+        "expr": "2"
+      }
+    ]
   },
   {
     "name": "Wardaway",
     "level": 1,
-    "effects": [{"name": "Force Damage", "expr": "2d4"}]
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "2d4"
+      }
+    ]
   },
   {
     "name": "Aid",
     "level": 2,
-    "effects": [{"name": "Max HP Bonus", "expr": "5 * (SLOT_LEVEL - 1)"}]
+    "effects": [
+      {
+        "name": "Max HP Bonus",
+        "expr": "5 * (SLOT_LEVEL - 1)"
+      }
+    ]
   },
   {
     "name": "Augury",
@@ -170,7 +230,12 @@
   {
     "name": "Prayer of Healing",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "((SLOT_LEVEL - 1) * 2)d8"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "SLOT_LEVEL d8"
+      }
+    ]
   },
   {
     "name": "Protection from Poison",
@@ -183,12 +248,22 @@
   {
     "name": "Spiritual Weapon",
     "level": 2,
-    "effects": [{"name": "Force Damage", "expr": "1d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "1d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Warding Bond",
     "level": 2,
-    "effects": [{"name": "AC/Save Bonus", "expr": "1"}]
+    "effects": [
+      {
+        "name": "AC/Save Bonus",
+        "expr": "1"
+      }
+    ]
   },
   {
     "name": "Zone of Truth",
@@ -201,7 +276,12 @@
   {
     "name": "Aura of Vitality",
     "level": 3,
-    "effects": [{"name": "Healing", "expr": "2d6"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "Beacon of Hope",
@@ -238,7 +318,12 @@
   {
     "name": "Glyph of Warding",
     "level": 3,
-    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL + 2)d8"}]
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "(SLOT_LEVEL + 2)d8"
+      }
+    ]
   },
   {
     "name": "Incite Greed",
@@ -247,12 +332,22 @@
   {
     "name": "Laeral's Silver Lance",
     "level": 3,
-    "effects": [{"name": "Force Damage", "expr": "(SLOT_LEVEL)d10"}]
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL)d10"
+      }
+    ]
   },
   {
     "name": "Life Transference",
     "level": 3,
-    "effects": [{"name": "Necrotic Damage", "expr": "(SLOT_LEVEL + 1)d8"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Linked Glyphs",
@@ -265,7 +360,12 @@
   {
     "name": "Mass Healing Word",
     "level": 3,
-    "effects": [{"name": "Healing", "expr": "((SLOT_LEVEL - 2) * 2)d4 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL - 1)d4 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Meld into Stone",
@@ -298,12 +398,22 @@
   {
     "name": "Spirit Guardians",
     "level": 3,
-    "effects": [{"name": "Radiant/Necrotic Damage", "expr": "(SLOT_LEVEL)d8"}]
+    "effects": [
+      {
+        "name": "Radiant/Necrotic Damage",
+        "expr": "(SLOT_LEVEL)d8"
+      }
+    ]
   },
   {
     "name": "Spirit Shroud",
     "level": 3,
-    "effects": [{"name": "Damage", "expr": "((SLOT_LEVEL - 1) / 2)d8"}]
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "((SLOT_LEVEL - 1) / 2)d8"
+      }
+    ]
   },
   {
     "name": "Tongues",
@@ -348,7 +458,12 @@
   {
     "name": "Guardian of Faith",
     "level": 4,
-    "effects": [{"name": "Radiant Damage", "expr": "20"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "20"
+      }
+    ]
   },
   {
     "name": "Locate Creature",
@@ -373,7 +488,12 @@
   {
     "name": "Dawn",
     "level": 5,
-    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL - 1)d10"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "(SLOT_LEVEL - 1)d10"
+      }
+    ]
   },
   {
     "name": "Dispel Evil and Good",
@@ -382,12 +502,26 @@
   {
     "name": "Flame Strike",
     "level": 5,
-    "effects": [{"name": "Fire Damage", "expr": "((SLOT_LEVEL - 4) * 5)d6"}, {"name": "Radiant Damage", "expr": "((SLOT_LEVEL - 4) * 5)d6"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "SLOT_LEVEL d6"
+      },
+      {
+        "name": "Radiant Damage",
+        "expr": "SLOT_LEVEL d6"
+      }
+    ]
   },
   {
     "name": "Geas",
     "level": 5,
-    "effects": [{"name": "Psychic Damage", "expr": "5d10"}]
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "5d10"
+      }
+    ]
   },
   {
     "name": "Greater Restoration",
@@ -400,12 +534,26 @@
   {
     "name": "Holy Weapon",
     "level": 5,
-    "effects": [{"name": "Radiant Damage (Hit)", "expr": "2d8"}, {"name": "Radiant Damage (Burst)", "expr": "4d8"}]
+    "effects": [
+      {
+        "name": "Radiant Damage (Hit)",
+        "expr": "2d8"
+      },
+      {
+        "name": "Radiant Damage (Burst)",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Insect Plague",
     "level": 5,
-    "effects": [{"name": "Piercing Damage", "expr": "(SLOT_LEVEL - 1)d10"}]
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "(SLOT_LEVEL - 1)d10"
+      }
+    ]
   },
   {
     "name": "Legend Lore",
@@ -414,7 +562,12 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(5 * (SLOT_LEVEL - 4))d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Planar Binding",
@@ -435,7 +588,12 @@
   {
     "name": "Blade Barrier",
     "level": 6,
-    "effects": [{"name": "Slashing Damage", "expr": "6d10"}]
+    "effects": [
+      {
+        "name": "Slashing Damage",
+        "expr": "6d10"
+      }
+    ]
   },
   {
     "name": "Create Undead",
@@ -456,12 +614,22 @@
   {
     "name": "Harm",
     "level": 6,
-    "effects": [{"name": "Necrotic Damage", "expr": "14d6"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "14d6"
+      }
+    ]
   },
   {
     "name": "Heal",
     "level": 6,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 5) * 70"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL - 5) * 70"
+      }
+    ]
   },
   {
     "name": "Heroes' Feast",
@@ -474,7 +642,12 @@
   {
     "name": "Sunbeam",
     "level": 6,
-    "effects": [{"name": "Radiant Damage", "expr": "6d8"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "6d8"
+      }
+    ]
   },
   {
     "name": "True Seeing",
@@ -499,7 +672,12 @@
   {
     "name": "Fire Storm",
     "level": 7,
-    "effects": [{"name": "Fire Damage", "expr": "7d10"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "7d10"
+      }
+    ]
   },
   {
     "name": "Plane Shift",
@@ -512,7 +690,12 @@
   {
     "name": "Regenerate",
     "level": 7,
-    "effects": [{"name": "Healing", "expr": "4d8 + 15"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "4d8 + 15"
+      }
+    ]
   },
   {
     "name": "Resurrection",
@@ -521,7 +704,12 @@
   {
     "name": "Symbol",
     "level": 7,
-    "effects": [{"name": "Necrotic Damage (Death)", "expr": "10d10"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage (Death)",
+        "expr": "10d10"
+      }
+    ]
   },
   {
     "name": "Temple of the Gods",
@@ -534,7 +722,12 @@
   {
     "name": "Control Weather",
     "level": 8,
-    "effects": [{"name": "Duration (minutes)", "expr": "1d4 * 10"}]
+    "effects": [
+      {
+        "name": "Duration (minutes)",
+        "expr": "1d4 * 10"
+      }
+    ]
   },
   {
     "name": "Earthquake",
@@ -551,7 +744,12 @@
   {
     "name": "Sunburst",
     "level": 8,
-    "effects": [{"name": "Radiant Damage", "expr": "12d6"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "12d6"
+      }
+    ]
   },
   {
     "name": "Astral Projection",
@@ -564,7 +762,12 @@
   {
     "name": "Mass Heal",
     "level": 9,
-    "effects": [{"name": "Healing", "expr": "700"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "700"
+      }
+    ]
   },
   {
     "name": "Power Word Heal",

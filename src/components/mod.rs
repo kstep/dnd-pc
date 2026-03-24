@@ -5,6 +5,7 @@ pub mod character_card;
 pub mod character_header;
 pub mod datalist_input;
 pub mod dice_pool_input;
+pub mod effects_calc_modal;
 pub mod entity_field;
 pub mod expr_args_input;
 pub mod expr_view;

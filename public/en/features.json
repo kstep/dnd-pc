@@ -5605,5 +5605,26 @@
   },
   "Elemental Adept (Thunder)": {
     "description": "Spells you cast ignore Resistance to Thunder damage. When you roll damage for a spell that deals Thunder damage, you can treat any 1 on a damage die as a 2."
+  },
+  "Cunning Strike.field.Actions.option.Disarm": {
+    "description": "Cost: 1d6. The attack's target must succeed on a Dexterity saving throw, or it drops one item of your choice that it's holding."
+  },
+  "Cunning Strike.field.Actions.option.Poison": {
+    "description": "Cost: 1d6. The target must make a Constitution saving throw. On a failed save, the target has the Poisoned condition for 1 minute. Requires Poisoner's Kit."
+  },
+  "Cunning Strike.field.Actions.option.Trip": {
+    "description": "Cost: 1d6. If the target is Large or smaller, it must succeed on a Dexterity saving throw or have the Prone condition."
+  },
+  "Cunning Strike.field.Actions.option.Withdraw": {
+    "description": "Cost: 1d6. Immediately after the attack, you move up to half your Speed without provoking Opportunity Attacks."
+  },
+  "Devious Strikes.field.Actions.option.Daze": {
+    "description": "Cost: 2d6. The target must succeed on a Constitution saving throw, or on its next turn, it can do only one of: move, take an action, or a Bonus Action."
+  },
+  "Devious Strikes.field.Actions.option.Knock Out": {
+    "description": "Cost: 6d6. The target must succeed on a Constitution saving throw, or it has the Unconscious condition for 1 minute or until it takes damage."
+  },
+  "Devious Strikes.field.Actions.option.Obscure": {
+    "description": "Cost: 3d6. The target must succeed on a Dexterity saving throw, or it has the Blinded condition until the end of its next turn."
   }
 }

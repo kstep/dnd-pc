@@ -6,7 +6,12 @@
   {
     "name": "Create Bonfire",
     "level": 0,
-    "effects": [{"name": "Fire Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Druidcraft",
@@ -19,7 +24,12 @@
   {
     "name": "Frostbite",
     "level": 0,
-    "effects": [{"name": "Cold Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Guidance",
@@ -32,12 +42,22 @@
   {
     "name": "Infestation",
     "level": 0,
-    "effects": [{"name": "Poison Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Magic Stone",
     "level": 0,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "1d6 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "1d6 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Mending",
@@ -54,17 +74,32 @@
   {
     "name": "Poison Spray",
     "level": 0,
-    "effects": [{"name": "Poison Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"}]
+    "effects": [
+      {
+        "name": "Poison Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"
+      }
+    ]
   },
   {
     "name": "Primal Savagery",
     "level": 0,
-    "effects": [{"name": "Acid Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"}]
+    "effects": [
+      {
+        "name": "Acid Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+      }
+    ]
   },
   {
     "name": "Produce Flame",
     "level": 0,
-    "effects": [{"name": "Fire Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Resistance",
@@ -77,7 +112,12 @@
   {
     "name": "Shillelagh",
     "level": 0,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "1d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "1d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Spare the Dying",
@@ -86,22 +126,42 @@
   {
     "name": "Starry Wisp",
     "level": 0,
-    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+      }
+    ]
   },
   {
     "name": "Thorn Whip",
     "level": 0,
-    "effects": [{"name": "Piercing Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Thunderclap",
     "level": 0,
-    "effects": [{"name": "Thunder Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+      }
+    ]
   },
   {
     "name": "Absorb Elements",
     "level": 1,
-    "effects": [{"name": "Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "(SLOT_LEVEL)d6"
+      }
+    ]
   },
   {
     "name": "Animal Friendship",
@@ -122,7 +182,12 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Detect Magic",
@@ -135,7 +200,12 @@
   {
     "name": "Earth Tremor",
     "level": 1,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "(SLOT_LEVEL)d6"
+      }
+    ]
   },
   {
     "name": "Entangle",
@@ -152,17 +222,36 @@
   {
     "name": "Goodberry",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "10"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "10"
+      }
+    ]
   },
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Ice Knife",
     "level": 1,
-    "effects": [{"name": "Piercing Damage", "expr": "1d10"}, {"name": "Cold Damage", "expr": "(SLOT_LEVEL + 1)d6"}]
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "1d10"
+      },
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 1)d6"
+      }
+    ]
   },
   {
     "name": "Jump",
@@ -191,7 +280,12 @@
   {
     "name": "Thunderwave",
     "level": 1,
-    "effects": [{"name": "Thunder Damage", "expr": "(SLOT_LEVEL + 1)d8"}]
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "(SLOT_LEVEL + 1)d8"
+      }
+    ]
   },
   {
     "name": "Aid",
@@ -228,7 +322,12 @@
   {
     "name": "Dust Devil",
     "level": 2,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL - 1)d8"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "(SLOT_LEVEL - 1)d8"
+      }
+    ]
   },
   {
     "name": "Earthbind",
@@ -241,7 +340,12 @@
   {
     "name": "Enlarge/Reduce",
     "level": 2,
-    "effects": [{"name": "Damage Bonus", "expr": "1d4"}]
+    "effects": [
+      {
+        "name": "Damage Bonus",
+        "expr": "1d4"
+      }
+    ]
   },
   {
     "name": "Find Traps",
@@ -250,12 +354,22 @@
   {
     "name": "Flame Blade",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL / 2 + 2)d6 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL / 2 + 2)d6 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Flaming Sphere",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "(SLOT_LEVEL)d6"
+      }
+    ]
   },
   {
     "name": "Gust of Wind",
@@ -264,12 +378,22 @@
   {
     "name": "Healing Spirit",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 1)d6"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL - 1)d6"
+      }
+    ]
   },
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "2d8"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "2d8"
+      }
+    ]
   },
   {
     "name": "Hold Person",
@@ -290,7 +414,12 @@
   {
     "name": "Moonbeam",
     "level": 2,
-    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL)d10"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "(SLOT_LEVEL)d10"
+      }
+    ]
   },
   {
     "name": "Pass without Trace",
@@ -319,17 +448,32 @@
   {
     "name": "Wither and Bloom",
     "level": 2,
-    "effects": [{"name": "Necrotic Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL)d6"
+      }
+    ]
   },
   {
     "name": "Aura of Vitality",
     "level": 3,
-    "effects": [{"name": "Healing", "expr": "2d6"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "Call Lightning",
     "level": 3,
-    "effects": [{"name": "Lightning Damage", "expr": "(SLOT_LEVEL)d10"}]
+    "effects": [
+      {
+        "name": "Lightning Damage",
+        "expr": "(SLOT_LEVEL)d10"
+      }
+    ]
   },
   {
     "name": "Conjure Animals",
@@ -346,12 +490,22 @@
   {
     "name": "Elemental Weapon",
     "level": 3,
-    "effects": [{"name": "Damage Bonus", "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"}]
+    "effects": [
+      {
+        "name": "Damage Bonus",
+        "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"
+      }
+    ]
   },
   {
     "name": "Erupting Earth",
     "level": 3,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d12"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "(SLOT_LEVEL)d12"
+      }
+    ]
   },
   {
     "name": "Feign Death",
@@ -396,7 +550,12 @@
   {
     "name": "Tidal Wave",
     "level": 3,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "4d8"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Wall of Water",
@@ -417,7 +576,12 @@
   {
     "name": "Blight",
     "level": 4,
-    "effects": [{"name": "Necrotic Damage", "expr": "(SLOT_LEVEL + 4)d8"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage",
+        "expr": "(SLOT_LEVEL + 4)d8"
+      }
+    ]
   },
   {
     "name": "Charm Monster",
@@ -458,7 +622,12 @@
   {
     "name": "Fount of Moonlight",
     "level": 4,
-    "effects": [{"name": "Radiant Damage", "expr": "2d6"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "Freedom of Movement",
@@ -483,7 +652,16 @@
   {
     "name": "Ice Storm",
     "level": 4,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "2d10"}, {"name": "Cold Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "2d10"
+      },
+      {
+        "name": "Cold Damage",
+        "expr": "4d6"
+      }
+    ]
   },
   {
     "name": "Locate Creature",
@@ -508,7 +686,12 @@
   {
     "name": "Wall of Fire",
     "level": 4,
-    "effects": [{"name": "Fire Damage", "expr": "5d8"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "5d8"
+      }
+    ]
   },
   {
     "name": "Watery Sphere",
@@ -533,7 +716,12 @@
   {
     "name": "Cone of Cold",
     "level": 5,
-    "effects": [{"name": "Cold Damage", "expr": "(SLOT_LEVEL + 3)d8"}]
+    "effects": [
+      {
+        "name": "Cold Damage",
+        "expr": "(SLOT_LEVEL + 3)d8"
+      }
+    ]
   },
   {
     "name": "Conjure Elemental",
@@ -550,7 +738,12 @@
   {
     "name": "Geas",
     "level": 5,
-    "effects": [{"name": "Psychic Damage", "expr": "5d10"}]
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "5d10"
+      }
+    ]
   },
   {
     "name": "Greater Restoration",
@@ -559,7 +752,12 @@
   {
     "name": "Insect Plague",
     "level": 5,
-    "effects": [{"name": "Piercing Damage", "expr": "(SLOT_LEVEL - 1)d10"}]
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "(SLOT_LEVEL - 1)d10"
+      }
+    ]
   },
   {
     "name": "Maelstrom",
@@ -568,7 +766,12 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(5 * (SLOT_LEVEL - 4))d8 + CASTER_MODIFIER"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+      }
+    ]
   },
   {
     "name": "Planar Binding",
@@ -585,7 +788,12 @@
   {
     "name": "Songal's Elemental Suffusion",
     "level": 5,
-    "effects": [{"name": "Damage", "expr": "4d6"}]
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "4d6"
+      }
+    ]
   },
   {
     "name": "Summon Draconic Spirit",
@@ -622,7 +830,12 @@
   {
     "name": "Elminster's Effulgent Spheres",
     "level": 6,
-    "effects": [{"name": "Damage", "expr": "4d8"}]
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Find the Path",
@@ -635,7 +848,12 @@
   {
     "name": "Heal",
     "level": 6,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 5) * 70"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "(SLOT_LEVEL - 5) * 70"
+      }
+    ]
   },
   {
     "name": "Heroes' Feast",
@@ -668,7 +886,12 @@
   {
     "name": "Sunbeam",
     "level": 6,
-    "effects": [{"name": "Radiant Damage", "expr": "6d8"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "6d8"
+      }
+    ]
   },
   {
     "name": "Transport via Plants",
@@ -677,7 +900,12 @@
   {
     "name": "Wall of Thorns",
     "level": 6,
-    "effects": [{"name": "Piercing Damage", "expr": "7d8"}]
+    "effects": [
+      {
+        "name": "Piercing Damage",
+        "expr": "7d8"
+      }
+    ]
   },
   {
     "name": "Wind Walk",
@@ -690,7 +918,12 @@
   {
     "name": "Fire Storm",
     "level": 7,
-    "effects": [{"name": "Fire Damage", "expr": "7d10"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "7d10"
+      }
+    ]
   },
   {
     "name": "Mirage Arcane",
@@ -703,7 +936,12 @@
   {
     "name": "Regenerate",
     "level": 7,
-    "effects": [{"name": "Healing", "expr": "4d8 + 15"}]
+    "effects": [
+      {
+        "name": "Healing",
+        "expr": "4d8 + 15"
+      }
+    ]
   },
   {
     "name": "Reverse Gravity",
@@ -712,12 +950,22 @@
   {
     "name": "Symbol",
     "level": 7,
-    "effects": [{"name": "Necrotic Damage (Death)", "expr": "10d10"}]
+    "effects": [
+      {
+        "name": "Necrotic Damage (Death)",
+        "expr": "10d10"
+      }
+    ]
   },
   {
     "name": "Whirlwind",
     "level": 7,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "10d6"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "10d6"
+      }
+    ]
   },
   {
     "name": "Animal Shapes",
@@ -734,7 +982,12 @@
   {
     "name": "Control Weather",
     "level": 8,
-    "effects": [{"name": "Duration (minutes)", "expr": "1d4 * 10"}]
+    "effects": [
+      {
+        "name": "Duration (minutes)",
+        "expr": "1d4 * 10"
+      }
+    ]
   },
   {
     "name": "Earthquake",
@@ -743,17 +996,32 @@
   {
     "name": "Incendiary Cloud",
     "level": 8,
-    "effects": [{"name": "Fire Damage", "expr": "10d8"}]
+    "effects": [
+      {
+        "name": "Fire Damage",
+        "expr": "10d8"
+      }
+    ]
   },
   {
     "name": "Sunburst",
     "level": 8,
-    "effects": [{"name": "Radiant Damage", "expr": "12d6"}]
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "12d6"
+      }
+    ]
   },
   {
     "name": "Tsunami",
     "level": 8,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "6d10"}]
+    "effects": [
+      {
+        "name": "Bludgeoning Damage",
+        "expr": "6d10"
+      }
+    ]
   },
   {
     "name": "Foresight",
@@ -766,7 +1034,12 @@
   {
     "name": "Storm of Vengeance",
     "level": 9,
-    "effects": [{"name": "Thunder Damage", "expr": "2d6"}]
+    "effects": [
+      {
+        "name": "Thunder Damage",
+        "expr": "2d6"
+      }
+    ]
   },
   {
     "name": "True Resurrection",

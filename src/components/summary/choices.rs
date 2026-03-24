@@ -7,11 +7,13 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
         icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     model::{
-        Character, CharacterStoreFields, FeatureOption, FeatureValue, Translatable, short_name,
+        Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
+        Translatable, short_name,
     },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -25,44 +27,74 @@ struct ChoiceFieldInfo {
     action_options: Vec<ChoiceOption>,
 }
 
+/// Input for a single choice/action item passed to `build_choice_items`.
+struct ChoiceItemInput {
+    name: String,
+    description: String,
+    cost: u32,
+    action: Option<ActionType>,
+    effects: Vec<EffectDefinition>,
+    feature_name: String,
+}
+
 /// Build SummaryListItems from an iterator of choice/action items.
 fn build_choice_items(
-    items: impl Iterator<Item = (String, String, u32, Option<ActionType>)>,
+    items: impl Iterator<Item = ChoiceItemInput>,
     points: u32,
     spend_cost: Option<Callback<u32>>,
+    open_effects: Callback<(String, String, Vec<EffectDefinition>)>,
     i18n: &I18n,
 ) -> Vec<SummaryListItem> {
     items
-        .filter(|(_, _, cost, _)| *cost <= points)
-        .map(|(name, description, cost, action)| {
-            let action_icon = action.map(|a| {
-                let title = i18n.tr(a.tr_key());
+        .filter(|item| item.cost <= points)
+        .map(|item| {
+            let action_icon = item.action.map(|action_type| {
+                let title = untrack(|| i18n.tr(action_type.tr_key()).into_owned());
                 view! {
-                    <Icon name=a.icon_name() size=14 title=title />
+                    <Icon name=action_type.icon_name() size=14 title=title />
                 }
             });
 
-            let cost_badge = (cost > 0).then(|| {
+            let has_effects = !item.effects.is_empty();
+            let show_button = item.cost > 0 || has_effects;
+
+            let cost_badge = (item.cost > 0).then(|| {
                 view! {
-                    <span class="summary-choice-cost">{cost}</span>
-                    {spend_cost.map(|cb| view! {
-                        <CastButton
-                            on_cast={Callback::new(move |_: CastOption| {
-                                cb.run(cost);
-                            })}
-                        />
-                    })}
+                    <span class="summary-choice-cost">{item.cost}</span>
                 }
+            });
+
+            let cast_button = show_button.then(|| {
+                let feature_name = item.feature_name.clone();
+                let option_label = item.name.clone();
+                let effects = item.effects;
+                let cost = item.cost;
+                let on_cast = Callback::new(move |_: CastOption| {
+                    if cost > 0
+                        && let Some(spend) = spend_cost
+                    {
+                        spend.run(cost);
+                    }
+                    if has_effects {
+                        open_effects.run((
+                            feature_name.clone(),
+                            option_label.clone(),
+                            effects.clone(),
+                        ));
+                    }
+                });
+                view! { <CastButton on_cast /> }
             });
 
             SummaryListItem {
-                name,
-                description,
-                badge: if action_icon.is_some() || cost_badge.is_some() {
+                name: item.name,
+                description: item.description,
+                badge: if action_icon.is_some() || cost_badge.is_some() || cast_button.is_some() {
                     Some(
                         view! {
                             {action_icon}
                             {cost_badge}
+                            {cast_button}
                         }
                         .into_any(),
                     )
@@ -88,7 +120,29 @@ pub fn ChoicesBlock() -> impl IntoView {
 
     let feature_data = store.feature_data();
 
-    move || {
+    // Effects calculator modal state
+    let show_calc = RwSignal::new(false);
+    let calc_info = StoredValue::new(None::<EffectsCalcInfo>);
+
+    let open_effects = Callback::new(
+        move |(feature_name, option_label, effects): (String, String, Vec<EffectDefinition>)| {
+            let character = store.read_untracked();
+            let class_level = registry
+                .feature_class_level(&character.identity, &feature_name)
+                .unwrap_or(character.level());
+            let mut extra_vars = BTreeMap::new();
+            extra_vars.insert(Attribute::ClassLevel, class_level as i32);
+
+            calc_info.set_value(Some(EffectsCalcInfo {
+                title: option_label,
+                effects,
+                extra_vars,
+            }));
+            show_calc.set(true);
+        },
+    );
+
+    let choices_view = move || {
         let features = feature_data.read();
         let remaining_points = features
             .values()
@@ -170,10 +224,16 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 .fields
                                                 .iter_mut()
                                                 .find(|f| f.name == *cost_name)
-                                                && let FeatureValue::Points { used, max } =
-                                                    &mut field.value
                                             {
-                                                *used = (*used + opt_cost).min(*max);
+                                                match &mut field.value {
+                                                    FeatureValue::Points { used, max } => {
+                                                        *used = (*used + opt_cost).min(*max);
+                                                    }
+                                                    FeatureValue::Die { die, used } => {
+                                                        *used = (*used + opt_cost).min(die.amount);
+                                                    }
+                                                    _ => continue,
+                                                }
                                                 break;
                                             }
                                         }
@@ -192,16 +252,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                     // Action menu or regular stored choices — group by label
                     None if options.is_empty() && !info.action_options.is_empty() => {
                         let items = build_choice_items(
-                            info.action_options.iter().map(|opt| {
-                                (
-                                    opt.label().to_string(),
-                                    opt.description.clone(),
-                                    opt.cost,
-                                    opt.action,
-                                )
+                            info.action_options.iter().map(|opt| ChoiceItemInput {
+                                name: opt.label().to_string(),
+                                description: opt.description.clone(),
+                                cost: opt.cost,
+                                action: opt.action,
+                                effects: opt.effects.clone(),
+                                feature_name: feat_name.clone(),
                             }),
                             points,
                             spend_cost,
+                            open_effects,
                             &i18n,
                         );
                         let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
@@ -212,16 +273,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                     }
                     None => {
                         let items = build_choice_items(
-                            options.iter().map(|opt| {
-                                (
-                                    opt.label().to_string(),
-                                    opt.description.clone(),
-                                    opt.cost,
-                                    None,
-                                )
+                            options.iter().map(|opt| ChoiceItemInput {
+                                name: opt.label().to_string(),
+                                description: opt.description.clone(),
+                                cost: opt.cost,
+                                action: None,
+                                effects: Vec::new(),
+                                feature_name: feat_name.clone(),
                             }),
                             points,
                             spend_cost,
+                            open_effects,
                             &i18n,
                         );
                         let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
@@ -322,5 +384,10 @@ pub fn ChoicesBlock() -> impl IntoView {
             {grouped_views}
             {ref_views}
         }
+    };
+
+    view! {
+        {choices_view}
+        <EffectsCalcModal show=show_calc info=calc_info />
     }
 }

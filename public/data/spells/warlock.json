@@ -353,7 +353,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "((SLOT_LEVEL - 1) * 3)d8"
+        "expr": "(SLOT_LEVEL + 1)d8"
       }
     ]
   },
@@ -665,7 +665,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 2)d8"
+        "expr": "(2 * SLOT_LEVEL - 4)d8"
       }
     ]
   },
@@ -834,7 +834,12 @@
   {
     "name": "Power Word Kill",
     "level": 9,
-    "effects": [{"name": "Psychic Damage", "expr": "12d12"}]
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "12d12"
+      }
+    ]
   },
   {
     "name": "Psychic Scream",

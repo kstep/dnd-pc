@@ -2094,7 +2094,13 @@
         "options": [
           {
             "name": "Spirit Shield",
-            "action": "Reaction"
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Damage Reduced",
+                "expr": "if(CLASS_LEVEL >= 14, 4, if(CLASS_LEVEL >= 10, 3, 2))d6"
+              }
+            ]
           }
         ]
       }
@@ -2326,7 +2332,13 @@
         "options": [
           {
             "name": "Bardic Inspiration",
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Inspiration Die",
+                "expr": "if(CLASS_LEVEL >= 15, 1d12, if(CLASS_LEVEL >= 10, 1d10, if(CLASS_LEVEL >= 5, 1d8, 1d6)))"
+              }
+            ]
           }
         ]
       }
@@ -2535,7 +2547,13 @@
   },
   {
     "name": "Expertise",
-    "stackable": true
+    "stackable": true,
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 + ARG.11 + ARG.12 + ARG.13 + ARG.14 + ARG.15 + ARG.16 + ARG.17 == 2 and (ARG.0 == 1 and SKILL.ACRO.PROF == 1) or (ARG.1 == 1 and SKILL.ANIM.PROF == 1) or (ARG.2 == 1 and SKILL.ARCA.PROF == 1) or (ARG.3 == 1 and SKILL.ATHL.PROF == 1) or (ARG.4 == 1 and SKILL.DECE.PROF == 1) or (ARG.5 == 1 and SKILL.HIST.PROF == 1) or (ARG.6 == 1 and SKILL.INSI.PROF == 1) or (ARG.7 == 1 and SKILL.INTI.PROF == 1) or (ARG.8 == 1 and SKILL.INVE.PROF == 1) or (ARG.9 == 1 and SKILL.MEDI.PROF == 1) or (ARG.10 == 1 and SKILL.NATU.PROF == 1) or (ARG.11 == 1 and SKILL.PERC.PROF == 1) or (ARG.12 == 1 and SKILL.PERF.PROF == 1) or (ARG.13 == 1 and SKILL.PERS.PROF) or (ARG.14 == 1 and SKILL.RELI.PROF) or (ARG.15 == 1 and SKILL.SLEI.PROF == 1) or (ARG.16 == 1 and SKILL.STEA.PROF) or (ARG.17 == 1 and SKILL.SURV.PROF == 1), (SKILL.ACRO.PROF += ARG.0; SKILL.ANIM.PROF += ARG.1; SKILL.ARCA.PROF += ARG.2; SKILL.ATHL.PROF += ARG.3; SKILL.DECE.PROF += ARG.4; SKILL.HIST.PROF += ARG.5; SKILL.INSI.PROF += ARG.6; SKILL.INTI.PROF += ARG.7; SKILL.INVE.PROF += ARG.8; SKILL.MEDI.PROF += ARG.9; SKILL.NATU.PROF += ARG.10; SKILL.PERC.PROF += ARG.11; SKILL.PERF.PROF += ARG.12; SKILL.PERS.PROF += ARG.13; SKILL.RELI.PROF += ARG.14; SKILL.SLEI.PROF += ARG.15; SKILL.STEA.PROF += ARG.16; SKILL.SURV.PROF += ARG.17))"
+      }
+    ]
   },
   {
     "name": "Jack of All Trades"
@@ -3201,7 +3219,13 @@
           {
             "name": "Preserve Life",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "5 * CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -3326,7 +3350,13 @@
           {
             "name": "Radiance of the Dawn",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Radiant Damage",
+                "expr": "2d10 + CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -3433,7 +3463,13 @@
           {
             "name": "Wrath of the Storm",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Lightning or Thunder Damage",
+                "expr": "2d8"
+              }
+            ]
           }
         ]
       }
@@ -3947,7 +3983,13 @@
           {
             "name": "Blaze of Glory",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Fire or Radiant Damage",
+                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, if(CLASS_LEVEL >= 5, 2, 1)))d8"
+              }
+            ]
           }
         ]
       }
@@ -4101,7 +4143,13 @@
           {
             "name": "Twilight Sanctuary",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Temp HP",
+                "expr": "1d6 + CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -4618,7 +4666,13 @@
           {
             "name": "Land's Aid",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "if(CLASS_LEVEL >= 10, 2, 1)d6 + CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -4782,7 +4836,13 @@
           {
             "name": "Balm of the Summer Court",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "if(CLASS_LEVEL >= 14, 7, if(CLASS_LEVEL >= 10, 5, 3))d6"
+              }
+            ]
           }
         ]
       }
@@ -4869,7 +4929,13 @@
         "options": [
           {
             "name": "Halo of Spores",
-            "action": "Reaction"
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Necrotic Damage",
+                "expr": "if(CLASS_LEVEL >= 14, 4, if(CLASS_LEVEL >= 10, 3, if(CLASS_LEVEL >= 6, 2, 1)))d4"
+              }
+            ]
           }
         ]
       }
@@ -4946,7 +5012,13 @@
         "options": [
           {
             "name": "Archer",
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Radiant Damage",
+                "expr": "1d8 + WIS.MOD"
+              }
+            ]
           }
         ]
       }
@@ -5107,7 +5179,13 @@
           {
             "name": "Second Wind",
             "cost": 1,
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "1d10 + CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -5450,7 +5528,13 @@
           {
             "name": "Warding Maneuver",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "AC Bonus",
+                "expr": "1d8"
+              }
+            ]
           }
         ]
       }
@@ -5483,7 +5567,13 @@
           {
             "name": "Fighting Spirit",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Temp HP",
+                "expr": "if(CLASS_LEVEL >= 15, 15, if(CLASS_LEVEL >= 10, 10, 5))"
+              }
+            ]
           }
         ]
       }
@@ -5687,7 +5777,13 @@
           {
             "name": "Giant's Might",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Damage",
+                "expr": "if(CLASS_LEVEL >= 18, 2, 1)d6"
+              }
+            ]
           }
         ]
       }
@@ -5873,7 +5969,13 @@
         "options": [
           {
             "name": "Deflect Attacks",
-            "action": "Reaction"
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Damage Reduced",
+                "expr": "1d10 + DEX.MOD + CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -5891,7 +5993,13 @@
         "options": [
           {
             "name": "Slow Fall",
-            "action": "Reaction"
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Damage Reduced",
+                "expr": "5 * CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -6160,7 +6268,13 @@
           {
             "name": "Hand of Healing",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "1d6 + WIS.MOD"
+              }
+            ]
           }
         ]
       }
@@ -6274,7 +6388,13 @@
           {
             "name": "Elemental Burst",
             "action": "Action",
-            "cost": 2
+            "cost": 2,
+            "effects": [
+              {
+                "name": "Damage",
+                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, 2))d6"
+              }
+            ]
           }
         ]
       }
@@ -6307,7 +6427,13 @@
           {
             "name": "Wholeness of Body",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "3 * CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -6328,7 +6454,13 @@
         "options": [
           {
             "name": "Lay on Hands",
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Healing Pool",
+                "expr": "5 * CLASS_LEVEL"
+              }
+            ]
           }
         ]
       }
@@ -6977,7 +7109,13 @@
           {
             "name": "Turn the Tide",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "1d6 + CHA.MOD"
+              }
+            ]
           }
         ]
       }
@@ -7082,7 +7220,13 @@
           {
             "name": "Rebuke the Violent",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Radiant Damage",
+                "expr": "2d8 + CHA.MOD"
+              }
+            ]
           }
         ]
       }
@@ -8196,6 +8340,22 @@
           "17": "9d6",
           "19": "10d6"
         }
+      },
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Sneak Attack",
+            "action": "Action",
+            "effects": [
+              {
+                "name": "Extra Damage",
+                "expr": "if(CLASS_LEVEL >= 19, 10, if(CLASS_LEVEL >= 17, 9, if(CLASS_LEVEL >= 15, 8, if(CLASS_LEVEL >= 13, 7, if(CLASS_LEVEL >= 11, 6, if(CLASS_LEVEL >= 9, 5, if(CLASS_LEVEL >= 7, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1)))))))))d6"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -8259,7 +8419,36 @@
     ]
   },
   {
-    "name": "Cunning Strike"
+    "name": "Cunning Strike",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Sneak Attack",
+        "options": [
+          {
+            "name": "Disarm",
+            "action": "Action",
+            "cost": 1
+          },
+          {
+            "name": "Poison",
+            "action": "Action",
+            "cost": 1
+          },
+          {
+            "name": "Trip",
+            "action": "Action",
+            "cost": 1
+          },
+          {
+            "name": "Withdraw",
+            "action": "Action",
+            "cost": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Uncanny Dodge",
@@ -8283,10 +8472,40 @@
     "name": "Improved Cunning Strike"
   },
   {
-    "name": "Devious Strikes"
+    "name": "Devious Strikes",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Sneak Attack",
+        "options": [
+          {
+            "name": "Daze",
+            "action": "Action",
+            "cost": 2
+          },
+          {
+            "name": "Knock Out",
+            "action": "Action",
+            "cost": 6
+          },
+          {
+            "name": "Obscure",
+            "action": "Action",
+            "cost": 3
+          }
+        ]
+      }
+    ]
   },
   {
-    "name": "Slippery Mind"
+    "name": "Slippery Mind",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1"
+      }
+    ]
   },
   {
     "name": "Elusive"
@@ -9582,7 +9801,13 @@
           {
             "name": "Bastion of Law",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Ward",
+                "expr": "if(CLASS_LEVEL >= 14, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 6, 3, if(CLASS_LEVEL >= 3, 2, 1))))d8"
+              }
+            ]
           }
         ]
       }
@@ -10409,7 +10634,13 @@
           {
             "name": "Tentacle of the Deeps",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Cold Damage",
+                "expr": "1d8"
+              }
+            ]
           }
         ]
       }
@@ -10424,7 +10655,13 @@
         "options": [
           {
             "name": "Guardian Coil",
-            "action": "Reaction"
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Damage Reduced",
+                "expr": "1d8"
+              }
+            ]
           }
         ]
       }
@@ -10508,7 +10745,13 @@
           {
             "name": "Form of Dread",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Psychic Damage",
+                "expr": "1d10"
+              }
+            ]
           }
         ]
       }
@@ -10772,7 +11015,13 @@
           {
             "name": "Healing Light",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "if(CLASS_LEVEL >= 15, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1))))d6"
+              }
+            ]
           }
         ]
       }
@@ -11580,7 +11829,13 @@
           {
             "name": "Violent Attraction",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Damage",
+                "expr": "1d10"
+              }
+            ]
           }
         ]
       }
@@ -11788,7 +12043,13 @@
           {
             "name": "Cosmic Omen",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Bonus or Penalty",
+                "expr": "1d6"
+              }
+            ]
           }
         ]
       }
@@ -11849,7 +12110,13 @@
         "options": [
           {
             "name": "Psychic Blades",
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Psychic Damage",
+                "expr": "if(CLASS_LEVEL >= 5, 1d8, 1d6)"
+              }
+            ]
           }
         ]
       }
@@ -12024,7 +12291,13 @@
           {
             "name": "Divine Spark",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing or Radiant Damage",
+                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, if(CLASS_LEVEL >= 5, 2, 1)))d8"
+              }
+            ]
           },
           {
             "name": "Turn Undead",
@@ -12504,7 +12777,13 @@
           {
             "name": "Healing Hands",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "LEVEL d4"
+              }
+            ]
           }
         ]
       }

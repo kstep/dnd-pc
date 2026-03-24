@@ -108,7 +108,12 @@
   {
     "name": "Wardaway",
     "level": 1,
-    "effects": [{"name": "Force Damage", "expr": "2d4"}]
+    "effects": [
+      {
+        "name": "Force Damage",
+        "expr": "2d4"
+      }
+    ]
   },
   {
     "name": "Wrathful Smite",
@@ -162,7 +167,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "((SLOT_LEVEL - 1) * 2)d8"
+        "expr": "SLOT_LEVEL d8"
       }
     ]
   },
@@ -337,7 +342,12 @@
   {
     "name": "Geas",
     "level": 5,
-    "effects": [{"name": "Psychic Damage", "expr": "5d10"}]
+    "effects": [
+      {
+        "name": "Psychic Damage",
+        "expr": "5d10"
+      }
+    ]
   },
   {
     "name": "Greater Restoration",

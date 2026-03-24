@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
@@ -85,18 +85,29 @@ fn import_character(store: Store<Character>) {
     });
 }
 
-fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
-    let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
+fn apply_with_args_modal(
+    pending: Vec<crate::rules::PendingArgs>,
+    apply: impl Fn(Option<&BTreeMap<String, Vec<i32>>>) + Copy + Send + Sync + 'static,
+) {
     if pending.is_empty() {
-        store.update(|c| registry.apply_class_level(c, class_index, level));
+        apply(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(pending, move |args_map| {
-            store.update(|c| {
-                registry.apply_class_level_with_args(c, class_index, level, &args_map);
-            });
-        });
+        ctx.open(pending, move |args_map| apply(Some(&args_map)));
     }
+}
+
+fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
+    let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
+    apply_with_args_modal(pending, move |args_map| {
+        store.update(|c| {
+            if let Some(args_map) = args_map {
+                registry.apply_class_level_with_args(c, class_index, level, args_map);
+            } else {
+                registry.apply_class_level(c, class_index, level);
+            }
+        });
+    });
 }
 
 #[component]
@@ -235,7 +246,20 @@ pub fn CharacterHeader() -> impl IntoView {
                         fetch=move |name: &str| registry.species().fetch(name)
                         has=move |name: &str| registry.species().has_tracked(name)
                         apply=move |_name: &str| {
-                            store.update(|c| registry.apply_species(c));
+                            let pending = store.with_untracked(|character| {
+                                registry.species().with(
+                                    &character.identity.species,
+                                    |species_def| {
+                                        registry.pending_args_for_features(
+                                            character,
+                                            species_def.features.iter().map(String::as_str),
+                                        )
+                                    },
+                                )
+                            }).unwrap_or_default();
+                            apply_with_args_modal(pending, move |args_map| {
+                                store.update(|character| registry.apply_species(character, args_map));
+                            });
                         }
                     />
                 </div>
@@ -259,7 +283,20 @@ pub fn CharacterHeader() -> impl IntoView {
                         fetch=move |name: &str| registry.backgrounds().fetch(name)
                         has=move |name: &str| registry.backgrounds().has_tracked(name)
                         apply=move |_name: &str| {
-                            store.update(|c| registry.apply_background(c));
+                            let pending = store.with_untracked(|character| {
+                                registry.backgrounds().with(
+                                    &character.identity.background,
+                                    |bg_def| {
+                                        registry.pending_args_for_features(
+                                            character,
+                                            bg_def.features.iter().map(String::as_str),
+                                        )
+                                    },
+                                )
+                            }).unwrap_or_default();
+                            apply_with_args_modal(pending, move |args_map| {
+                                store.update(|character| registry.apply_background(character, args_map));
+                            });
                         }
                     />
                 </div>

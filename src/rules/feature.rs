@@ -7,8 +7,8 @@ use crate::{
     demap::{self, Named},
     expr::{self, Eval as _, Expr},
     model::{
-        ArgsContext, Armor, ArmorType, Attribute, Character, Context, Die, Feature, FeatureField,
-        FeatureSource, FeatureValue, Translatable,
+        ArgsContext, Armor, ArmorType, Attribute, Character, Context, Die, EffectDefinition,
+        Feature, FeatureField, FeatureSource, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
     vecset::VecSet,
@@ -553,6 +553,7 @@ impl FieldDefinition {
                     cost: o.cost,
                     level: 0,
                     action: None,
+                    effects: Vec::new(),
                 })
                 .collect(),
         }
@@ -671,6 +672,8 @@ pub struct ChoiceOption {
     pub level: u32,
     #[serde(default)]
     pub action: Option<ActionType>,
+    #[serde(default)]
+    pub effects: Vec<EffectDefinition>,
 }
 
 impl ChoiceOption {
