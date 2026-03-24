@@ -72,7 +72,7 @@ fn SpellEffectsModal(
                         format!(
                             "{} ({})",
                             i.spell_label,
-                            tr!("slot-level", {"level" => i.slot_level.to_string()})
+                            tr!("slot-level", {"level" => i.slot_level})
                         )
                     } else {
                         i.spell_label.clone()
@@ -115,7 +115,7 @@ fn SpellEffectsModal(
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
                                     <ExprView expr />
-                                    <strong class="spell-effect-result">{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
+                                    <strong class="spell-effect-result">{result}</strong>
                                 </div>
                             </div>
                         }
@@ -219,9 +219,9 @@ fn SpellEffectsModal(
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
                                     <ExprView expr=formula_expr />
-                                    {move || result.get().map(|v| view! {
-                                        <strong class="spell-effect-result">{v}</strong>
-                                    })}
+                                    <strong class="spell-effect-result">
+                                        {move || result.get()}
+                                    </strong>
                                 </div>
                                 <div class="dice-pool-groups">{group_views}</div>
                             </div>
