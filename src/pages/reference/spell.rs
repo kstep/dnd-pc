@@ -109,7 +109,7 @@ pub fn SpellReference() -> impl IntoView {
                             let heading = if level == 0 {
                                 move_tr!("ref-cantrips")
                             } else {
-                                move_tr!("ref-spell-level", {"level" => level.to_string()})
+                                move_tr!("ref-spell-level", {"level" => level})
                             };
                             view! {
                                 <h2>{heading}</h2>
@@ -128,7 +128,7 @@ pub fn SpellReference() -> impl IntoView {
                                                             parts.push(move_tr!("ref-spell-always-ready"));
                                                         }
                                                         if min_level > 0 {
-                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level.to_string()}));
+                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level}));
                                                         }
                                                         view! {
                                                             <span class="spell-prereq">

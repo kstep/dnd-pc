@@ -550,7 +550,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                     let level_text = if spell.level == 0 {
                         move_tr!("ref-cantrips-level")
                     } else {
-                        move_tr!("ref-spell-level", {"level" => spell.level.to_string()})
+                        move_tr!("ref-spell-level", {"level" => spell.level})
                     };
                     let min_level = spell.min_level;
                     let sticky = spell.sticky;
@@ -562,7 +562,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                                 {", "}{move_tr!("ref-spell-always-ready")}
                             })}
                             {(min_level > 0).then(|| view! {
-                                {", "}{move_tr!("ref-spell-min-level", {"level" => min_level.to_string()})}
+                                {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
                             })}
                             {")"}
                             {(!spell.description.is_empty()).then(|| view! {

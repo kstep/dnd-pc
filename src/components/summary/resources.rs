@@ -46,7 +46,7 @@ pub fn ResourcesBlock() -> impl IntoView {
                 {many_pools.then(|| view! { <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5> })}
                 <div class="summary-spell-slots">
                     {slots.into_iter().map(|(level, idx, slot)| {
-                        let label = tr!("slot-level", {"level" => level.to_string()});
+                        let label = tr!("slot-level", {"level" => level});
                         view! {
                             <ResourceSlot
                                 label=label

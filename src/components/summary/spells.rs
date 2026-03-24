@@ -220,7 +220,7 @@ fn SpellEffectsModal(
                                     <span class="spell-effect-label">{label}</span>
                                     <ExprView expr=formula_expr />
                                     <strong class="spell-effect-result">
-                                        {move || result.get()}
+                                        {result}
                                     </strong>
                                 </div>
                                 <div class="dice-pool-groups">{group_views}</div>
@@ -358,7 +358,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let level_str = if spell.level == 0 {
                             tr!("summary-cantrips")
                         } else {
-                            tr!("slot-level", {"level" => spell.level.to_string()})
+                            tr!("slot-level", {"level" => spell.level})
                         };
 
                         let free_uses_badge = spell.free_uses.as_ref().map(|fu| {
