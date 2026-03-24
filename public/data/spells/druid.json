@@ -228,7 +228,7 @@
   {
     "name": "Dust Devil",
     "level": 2,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL)d8"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "(SLOT_LEVEL - 1)d8"}]
   },
   {
     "name": "Earthbind",
@@ -250,7 +250,7 @@
   {
     "name": "Flame Blade",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL / 2 + 1)d6"}]
+    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL / 2 + 2)d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Flaming Sphere",
@@ -264,7 +264,7 @@
   {
     "name": "Healing Spirit",
     "level": 2,
-    "effects": [{"name": "Healing", "expr": "1d6 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 1)d6"}]
   },
   {
     "name": "Heat Metal",
@@ -346,7 +346,7 @@
   {
     "name": "Elemental Weapon",
     "level": 3,
-    "effects": [{"name": "Damage Bonus", "expr": "(SLOT_LEVEL - 1)d4"}]
+    "effects": [{"name": "Damage Bonus", "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"}]
   },
   {
     "name": "Erupting Earth",
@@ -483,7 +483,7 @@
   {
     "name": "Ice Storm",
     "level": 4,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "2d8"}, {"name": "Cold Damage", "expr": "(SLOT_LEVEL)d6"}]
+    "effects": [{"name": "Bludgeoning Damage", "expr": "2d10"}, {"name": "Cold Damage", "expr": "(SLOT_LEVEL)d6"}]
   },
   {
     "name": "Locate Creature",
@@ -568,7 +568,7 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(5 * (SLOT_LEVEL - 4))d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Planar Binding",
@@ -584,7 +584,8 @@
   },
   {
     "name": "Songal's Elemental Suffusion",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Damage", "expr": "4d6"}]
   },
   {
     "name": "Summon Draconic Spirit",
@@ -620,7 +621,8 @@
   },
   {
     "name": "Elminster's Effulgent Spheres",
-    "level": 6
+    "level": 6,
+    "effects": [{"name": "Damage", "expr": "4d8"}]
   },
   {
     "name": "Find the Path",

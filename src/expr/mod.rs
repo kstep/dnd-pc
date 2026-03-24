@@ -542,6 +542,59 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn exploding_dice_parse() {
+        let expr: Expr = "3d8!".parse().unwrap();
+        assert_eq!(
+            &*expr,
+            &[Op::PushConst(3), Op::PushConst(8), Op::Roll, Op::Explode]
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn exploding_dice_display() {
+        let expr: Expr = "3d8!".parse().unwrap();
+        assert_eq!(expr.to_string(), "3d8!");
+
+        let expr: Expr = "d20!".parse().unwrap();
+        assert_eq!(expr.to_string(), "d20!");
+
+        use crate::model::Attribute;
+        let expr: super::Expr<Attribute> = "(CASTER_MODIFIER + 1)d8!".parse().unwrap();
+        assert_eq!(expr.to_string(), "(CASTER_MODIFIER + 1)d8!");
+    }
+
+    #[wasm_bindgen_test]
+    fn exploding_dice_pool() {
+        let mut ch = test_character();
+        let expr: Expr = "3d8!".parse().unwrap();
+
+        // All rolls are max (8) — sum all 3
+        let pool: DicePool = BTreeMap::from([(8, vec![8, 8, 8])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
+        assert_eq!(result, 24);
+
+        // First roll is not max — only sum first die
+        let pool: DicePool = BTreeMap::from([(8, vec![5, 8, 8])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
+        assert_eq!(result, 5);
+
+        // First two are max, third is not — sum all 3
+        let pool: DicePool = BTreeMap::from([(8, vec![8, 8, 3])]).into();
+        let result = expr.apply_with_dice(&mut ch, &pool).unwrap();
+        assert_eq!(result, 19);
+    }
+
+    #[wasm_bindgen_test]
+    fn exploding_dice_rolls_analysis() {
+        let ch = test_character();
+
+        // Exploding dice should report full pool
+        let expr: Expr = "3d8!".parse().unwrap();
+        let rolls = expr.dice_rolls(&ch);
+        assert_eq!(rolls[&8], 3);
+    }
+
+    #[wasm_bindgen_test]
     fn dice_pool_exhausted() {
         let mut ch = test_character();
         let expr: Expr = "3d6".parse().unwrap();

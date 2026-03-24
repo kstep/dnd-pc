@@ -336,7 +336,7 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                 }
             }
             // Dice/roll ops: push a placeholder
-            Op::Roll | Op::Sum => {
+            Op::Roll | Op::Sum | Op::Explode => {
                 self.pop();
                 self.pop();
                 self.stack.push(SumEntry::constant(0));

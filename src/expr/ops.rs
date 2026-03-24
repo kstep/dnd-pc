@@ -64,6 +64,7 @@ pub enum Op<Var, Val> {
     DropMax(Val),
     DropMin(Val),
     Sum,
+    Explode, // Nd8! → roll sequentially, sum until a die rolls less than max (sides)
     Assign(Var),
     Mod, // %
     And, // logical and (0/1)
@@ -101,7 +102,12 @@ impl<Var: PartialEq, Val> Op<Var, Val> {
             // We won't encounter Roll in typical assignment expressions, so
             // treat it conservatively.
             Op::Roll => 0,
-            Op::Sum | Op::KeepMax(_) | Op::KeepMin(_) | Op::DropMax(_) | Op::DropMin(_) => 0,
+            Op::Sum
+            | Op::Explode
+            | Op::KeepMax(_)
+            | Op::KeepMin(_)
+            | Op::DropMax(_)
+            | Op::DropMin(_) => 0,
             Op::Assign(_) => -1,
             Op::In => -2, // pop 3, push 1
             Op::Eval(_) => 0,

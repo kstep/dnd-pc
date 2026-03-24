@@ -277,6 +277,10 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
                     ops.push(Op::Sum);
                 }
             }
+            Some(Token::Bang) => {
+                self.next()?;
+                ops.push(Op::Explode);
+            }
             _ => ops.push(Op::Sum),
         }
         Ok(())
