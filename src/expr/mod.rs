@@ -343,10 +343,13 @@ mod tests {
         assert_eq!(expr.to_string(), "AC + 5; AC - 5; (AC - 5) * 2");
 
         // Dice with complex amount/sides must keep parentheses
-        let expr: Expr = "(SLOT_LEVEL + 2)d6".parse().unwrap();
+        // These use Attribute as the Var type since SLOT_LEVEL/CLASS_LEVEL
+        // are not in the local test Var enum.
+        use crate::model::Attribute;
+        let expr: super::Expr<Attribute> = "(SLOT_LEVEL + 2)d6".parse().unwrap();
         assert_eq!(expr.to_string(), "(SLOT_LEVEL + 2)d6");
 
-        let expr: Expr = "(CLASS_LEVEL / 2)d8".parse().unwrap();
+        let expr: super::Expr<Attribute> = "(CLASS_LEVEL / 2)d8".parse().unwrap();
         assert_eq!(expr.to_string(), "(CLASS_LEVEL / 2)d8");
     }
 

@@ -100,6 +100,7 @@ impl fmt::Display for Money {
 
         write_part!(f, CP_PER_PP, "pp", remaining_cp);
         write_part!(f, CP_PER_GP, "gp", remaining_cp);
+        write_part!(f, CP_PER_EP, "ep", remaining_cp);
         write_part!(f, CP_PER_SP, "sp", remaining_cp);
 
         if remaining_cp > 0 {
@@ -220,7 +221,7 @@ mod tests {
         assert_eq!(Money::from_gp(5).to_string(), "5gp");
         assert_eq!(Money::from_cp(0).to_string(), "");
         assert_eq!(Money::from_cp(3).to_string(), "3cp");
-        assert_eq!(Money::from_cp(1050).to_string(), "1pp 5sp");
+        assert_eq!(Money::from_cp(1050).to_string(), "1pp 1ep");
     }
 
     #[test]
