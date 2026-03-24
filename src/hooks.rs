@@ -1,4 +1,7 @@
-use leptos::prelude::*;
+use std::str::FromStr;
+
+use leptos::{prelude::*, reactive::computed::Memo};
+use leptos_router::{NavigateOptions, hooks::query_signal_with_options};
 use wasm_bindgen::{JsCast, prelude::Closure};
 
 pub fn use_debounce(delay_ms: i32) -> impl Fn(Box<dyn FnOnce()>) {
@@ -22,6 +25,22 @@ pub fn use_debounce(delay_ms: i32) -> impl Fn(Box<dyn FnOnce()>) {
         }
         callback.forget();
     }
+}
+
+/// Like `query_signal`, but works correctly with a non-root base URL.
+pub fn use_query_signal<T>(
+    key: impl Into<leptos::oco::Oco<'static, str>>,
+) -> (Memo<Option<T>>, SignalSetter<Option<T>>)
+where
+    T: FromStr + ToString + PartialEq + Send + Sync,
+{
+    query_signal_with_options(
+        key,
+        NavigateOptions {
+            resolve: false,
+            ..Default::default()
+        },
+    )
 }
 
 /// Returns a reactive signal that tracks the current theme name.

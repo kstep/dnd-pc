@@ -1,20 +1,25 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::query_signal};
+use leptos_router::components::A;
 
 use super::{ReferenceFeaturesView, collect_feature_views};
-use crate::{BASE_URL, components::icon::Icon, hooks::use_debounce, rules::RulesRegistry};
+use crate::{
+    BASE_URL,
+    components::icon::Icon,
+    hooks::{use_debounce, use_query_signal},
+    rules::RulesRegistry,
+};
 
 #[component]
 pub fn FeatureReference() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<leptos_fluent::I18n>();
-    let (search, set_search) = query_signal::<String>("q");
+    let (search, set_search) = use_query_signal::<String>("q");
     let debounce = use_debounce(300);
 
     let features_view = move || {
-        let query = search.get().unwrap_or_default().to_lowercase();
+        let query = search.read().as_deref().unwrap_or_default().to_lowercase();
         registry.with_features_index(|idx| {
             let filtered = idx.values().filter(|feat| {
                 if query.is_empty() {
