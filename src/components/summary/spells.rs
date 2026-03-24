@@ -7,6 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        expr_view::ExprView,
         modal::Modal,
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
@@ -71,7 +72,7 @@ fn SpellEffectsModal(
                         format!(
                             "{} ({})",
                             i.spell_label,
-                            tr!("slot-level", {"level" => i.slot_level.to_string()})
+                            tr!("slot-level", {"level" => i.slot_level})
                         )
                     } else {
                         i.spell_label.clone()
@@ -102,7 +103,7 @@ fn SpellEffectsModal(
                 .effects
                 .iter()
                 .map(|effect| {
-                    let formula_str = format!("{}", effect.expr);
+                    let expr = effect.expr.clone();
                     let label = effect.label().to_string();
                     let rolls = effect.expr.dice_rolls(&ctx);
 
@@ -113,8 +114,8 @@ fn SpellEffectsModal(
                             <div class="spell-effect-row">
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
-                                    <code class="spell-effect-formula">{formula_str}</code>
-                                    <strong class="spell-effect-result">{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
+                                    <ExprView expr />
+                                    <strong class="spell-effect-result">{result}</strong>
                                 </div>
                             </div>
                         }
@@ -122,6 +123,7 @@ fn SpellEffectsModal(
                     } else {
                         // Has dice — build inputs and live result
                         let result = RwSignal::new(None::<i32>);
+                        let formula_expr = effect.expr.clone();
                         let expr = effect.expr.clone();
                         let slot_level = info.slot_level;
                         let caster_level = info.caster_level;
@@ -216,10 +218,10 @@ fn SpellEffectsModal(
                             <div class="spell-effect-row">
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
-                                    <code class="spell-effect-formula">{formula_str}</code>
-                                    {move || result.get().map(|v| view! {
-                                        <strong class="spell-effect-result">{v}</strong>
-                                    })}
+                                    <ExprView expr=formula_expr />
+                                    <strong class="spell-effect-result">
+                                        {result}
+                                    </strong>
                                 </div>
                                 <div class="dice-pool-groups">{group_views}</div>
                             </div>
@@ -356,7 +358,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let level_str = if spell.level == 0 {
                             tr!("summary-cantrips")
                         } else {
-                            tr!("slot-level", {"level" => spell.level.to_string()})
+                            tr!("slot-level", {"level" => spell.level})
                         };
 
                         let free_uses_badge = spell.free_uses.as_ref().map(|fu| {

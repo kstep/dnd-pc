@@ -8,6 +8,9 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::ReferenceSidebar;
 use crate::{
     BASE_URL,
+    components::expr_view::ExprView,
+    expr::Expr,
+    model::Attribute,
     rules::{RulesRegistry, SpellList},
 };
 
@@ -64,7 +67,7 @@ pub fn SpellReference() -> impl IntoView {
                     description: String,
                     min_level: u32,
                     sticky: bool,
-                    effects: Vec<(String, String)>,
+                    effects: Vec<(String, Expr<Attribute>)>,
                 }
                 struct SpellGroup {
                     level: u32,
@@ -85,7 +88,7 @@ pub fn SpellReference() -> impl IntoView {
                             effects: spell
                                 .effects
                                 .iter()
-                                .map(|e| (e.label().to_string(), e.expr.to_string()))
+                                .map(|e| (e.label().to_string(), e.expr.clone()))
                                 .collect(),
                         });
                 }
@@ -106,7 +109,7 @@ pub fn SpellReference() -> impl IntoView {
                             let heading = if level == 0 {
                                 move_tr!("ref-cantrips")
                             } else {
-                                move_tr!("ref-spell-level", {"level" => level.to_string()})
+                                move_tr!("ref-spell-level", {"level" => level})
                             };
                             view! {
                                 <h2>{heading}</h2>
@@ -125,7 +128,7 @@ pub fn SpellReference() -> impl IntoView {
                                                             parts.push(move_tr!("ref-spell-always-ready"));
                                                         }
                                                         if min_level > 0 {
-                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level.to_string()}));
+                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level}));
                                                         }
                                                         view! {
                                                             <span class="spell-prereq">
@@ -140,7 +143,7 @@ pub fn SpellReference() -> impl IntoView {
                                                         {spell.effects.into_iter().map(|(name, expr)| view! {
                                                             <div class="spell-effect">
                                                                 <strong>{name}</strong>
-                                                                <pre><code>{expr}</code></pre>
+                                                                <ExprView expr />
                                                             </div>
                                                         }).collect_view()}
                                                     </div>

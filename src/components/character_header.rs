@@ -463,7 +463,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                             </button>
                                         </Show>
                                         {if let Some(lvl) = next_unapplied {
-                                            let title = tr!("btn-apply-level", {"level" => lvl.to_string()});
+                                            let title = tr!("btn-apply-level", {"level" => lvl});
                                             Some(view! {
                                                 <div class="apply-levels">
                                                     <button

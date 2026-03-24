@@ -13,7 +13,8 @@ pub use sidebar::ReferenceSidebar;
 
 use crate::{
     BASE_URL,
-    expr::{Interpreter, Op},
+    components::expr_view::ExprView,
+    expr::{Expr, Interpreter, Op},
     model::{Attribute, Translatable},
     rules::{Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
 };
@@ -24,7 +25,7 @@ pub struct InlineSpell {
     pub min_level: u32,
     pub sticky: bool,
     pub description: String,
-    pub effects: Vec<(String, String)>,
+    pub effects: Vec<(String, Expr<Attribute>)>,
 }
 
 pub enum FeatureSpells {
@@ -52,7 +53,7 @@ impl FeatureSpells {
                         effects: s
                             .effects
                             .iter()
-                            .map(|e| (e.label().to_string(), e.expr.to_string()))
+                            .map(|e| (e.label().to_string(), e.expr.clone()))
                             .collect(),
                     })
                     .collect(),
@@ -549,7 +550,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                     let level_text = if spell.level == 0 {
                         move_tr!("ref-cantrips-level")
                     } else {
-                        move_tr!("ref-spell-level", {"level" => spell.level.to_string()})
+                        move_tr!("ref-spell-level", {"level" => spell.level})
                     };
                     let min_level = spell.min_level;
                     let sticky = spell.sticky;
@@ -561,7 +562,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                                 {", "}{move_tr!("ref-spell-always-ready")}
                             })}
                             {(min_level > 0).then(|| view! {
-                                {", "}{move_tr!("ref-spell-min-level", {"level" => min_level.to_string()})}
+                                {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
                             })}
                             {")"}
                             {(!spell.description.is_empty()).then(|| view! {
@@ -572,7 +573,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                                     {spell.effects.into_iter().map(|(name, expr)| view! {
                                         <div class="spell-effect">
                                             <strong>{name}</strong>
-                                            <pre><code>{expr}</code></pre>
+                                            <ExprView expr />
                                         </div>
                                     }).collect_view()}
                                 </div>

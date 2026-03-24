@@ -7,6 +7,7 @@ pub mod datalist_input;
 pub mod dice_pool_input;
 pub mod entity_field;
 pub mod expr_args_input;
+pub mod expr_view;
 pub mod icon;
 pub mod language_switcher;
 pub mod modal;
