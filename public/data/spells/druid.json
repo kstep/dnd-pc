@@ -568,7 +568,7 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(5 * (SLOT_LEVEL - 4))d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Planar Binding",
