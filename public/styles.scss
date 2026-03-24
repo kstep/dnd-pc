@@ -2831,6 +2831,8 @@ select.entry-name {
 .spell-effect-formula {
   font-size: var(--font-size-0);
   opacity: 0.7;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .spell-effect-result {
