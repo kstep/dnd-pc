@@ -2772,7 +2772,7 @@ select.entry-name {
   text-align: center;
 
   &:invalid {
-    outline: 2px solid var(--red-6);
+    border: 2px solid var(--red-6);
   }
 }
 
