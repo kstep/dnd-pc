@@ -2164,6 +2164,10 @@ select.entry-name {
 
 .expr-form-input {
   width: 4em;
+
+  &:invalid {
+    border: 2px solid var(--danger);
+  }
 }
 
 .expr-formula {
@@ -2196,7 +2200,7 @@ select.entry-name {
   color: var(--text-secondary);
 
   &.invalid {
-    color: var(--red-7);
+    color: var(--danger);
   }
 
   &-result {
@@ -2772,7 +2776,7 @@ select.entry-name {
   text-align: center;
 
   &:invalid {
-    border: 2px solid var(--red-6);
+    border: 2px solid var(--danger);
   }
 }
 
