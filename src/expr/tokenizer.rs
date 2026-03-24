@@ -26,6 +26,7 @@ pub(super) enum Token<'a> {
     RParen,
     Comma,
     Semicolon,
+    Bang,
     // Boolean / comparison
     And,
     Or,
@@ -132,6 +133,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                     b'=' => Token::Eq,
                     b'<' => Token::Lt,
                     b'>' => Token::Gt,
+                    b'!' => Token::Bang,
                     b'(' => Token::LParen,
                     b')' => Token::RParen,
                     b',' => Token::Comma,

@@ -3226,7 +3226,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "(SLOT_LEVEL + 2)d6"
+              "expr": "(SLOT_LEVEL * 3)d6"
             }
           ]
         },
@@ -4440,7 +4440,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "(SLOT_LEVEL + 2)d6"
+              "expr": "(SLOT_LEVEL * 3)d6"
             }
           ]
         },
@@ -10813,7 +10813,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "(SLOT_LEVEL + 2)d6"
+              "expr": "(SLOT_LEVEL * 3)d6"
             }
           ]
         },

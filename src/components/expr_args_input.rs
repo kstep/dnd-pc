@@ -88,6 +88,10 @@ impl FormBuilder {
                 self.0.push(view! { <>{count}"d"{sides}</> }.into_any());
             }
             Op::Sum => {} // follows Roll, already on stack
+            Op::Explode => {
+                let roll = self.pop()?;
+                self.0.push(view! { <>{roll}"!"</> }.into_any());
+            }
             Op::KeepMax(n) => {
                 let roll = self.pop()?;
                 self.0.push(view! { <>{roll}"kh"{n}</> }.into_any());

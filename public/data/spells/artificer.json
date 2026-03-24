@@ -112,7 +112,7 @@
   {
     "name": "True Strike",
     "level": 0,
-    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d6"}]
   },
   {
     "name": "Absorb Elements",
@@ -189,7 +189,7 @@
   {
     "name": "Tasha's Caustic Brew",
     "level": 1,
-    "effects": [{"name": "Acid Damage", "expr": "2d4"}]
+    "effects": [{"name": "Acid Damage", "expr": "(SLOT_LEVEL * 2)d4"}]
   },
   {
     "name": "Aid",
@@ -270,7 +270,7 @@
   {
     "name": "Magic Weapon",
     "level": 2,
-    "effects": [{"name": "Attack Bonus", "expr": "SLOT_LEVEL / 2"}]
+    "effects": [{"name": "Attack Bonus", "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"}]
   },
   {
     "name": "Protection from Poison",
@@ -327,7 +327,7 @@
   {
     "name": "Elemental Weapon",
     "level": 3,
-    "effects": [{"name": "Damage Bonus", "expr": "(SLOT_LEVEL - 1)d4"}]
+    "effects": [{"name": "Damage Bonus", "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"}]
   },
   {
     "name": "Flame Arrows",
@@ -426,7 +426,7 @@
   {
     "name": "Bigby's Hand",
     "level": 5,
-    "effects": [{"name": "Clenched Fist", "expr": "4d8"}, {"name": "Grasping Hand", "expr": "2d6 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Clenched Fist", "expr": "(SLOT_LEVEL * 2 - 6)d8"}, {"name": "Grasping Hand", "expr": "(SLOT_LEVEL * 2 - 8)d6 + CASTER_MODIFIER"}]
   },
   {
     "name": "Circle of Power",

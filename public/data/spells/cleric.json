@@ -80,7 +80,7 @@
   {
     "name": "Guiding Bolt",
     "level": 1,
-    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL + 3)d6"}]
+    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL * 4)d6"}]
   },
   {
     "name": "Healing Word",
@@ -247,7 +247,7 @@
   {
     "name": "Laeral's Silver Lance",
     "level": 3,
-    "effects": [{"name": "Radiant Damage", "expr": "(SLOT_LEVEL + 1)d8"}]
+    "effects": [{"name": "Force Damage", "expr": "(SLOT_LEVEL)d10"}]
   },
   {
     "name": "Life Transference",
@@ -414,7 +414,7 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(5 * (SLOT_LEVEL - 4))d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Planar Binding",

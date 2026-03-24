@@ -169,7 +169,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "1d6 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL - 1)d6"
       }
     ]
   },
@@ -191,7 +191,7 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "SLOT_LEVEL / 2"
+        "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"
       }
     ]
   },
@@ -229,7 +229,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "3d8"
+        "expr": "(SLOT_LEVEL + 2)d8"
       }
     ]
   },
@@ -247,7 +247,7 @@
     "effects": [
       {
         "name": "Damage Bonus",
-        "expr": "(SLOT_LEVEL - 1)d4"
+        "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"
       }
     ]
   },

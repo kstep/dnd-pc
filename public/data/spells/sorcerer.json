@@ -14,8 +14,8 @@
     "level": 0,
     "effects": [
       {
-        "name": "Force Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d4"
+        "name": "Penalty",
+        "expr": "1d4"
       }
     ]
   },
@@ -35,7 +35,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
       }
     ]
   },
@@ -197,7 +197,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+        "expr": "(CASTER_MODIFIER + 1)d8!"
       }
     ]
   },
@@ -227,7 +227,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"
+        "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d6"
       }
     ]
   },
@@ -247,7 +247,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 2)d6"
+        "expr": "(SLOT_LEVEL * 3)d6"
       }
     ]
   },
@@ -415,7 +415,7 @@
     "effects": [
       {
         "name": "Acid Damage",
-        "expr": "2d4"
+        "expr": "(SLOT_LEVEL * 2)d4"
       }
     ]
   },
@@ -435,7 +435,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL)d12"
+        "expr": "(SLOT_LEVEL + 1)d12"
       }
     ]
   },
@@ -463,7 +463,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL)d12 + CASTER_MODIFIER"
       }
     ]
   },
@@ -503,7 +503,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "1d8 + CASTER_MODIFIER"
+        "expr": "2d4"
       }
     ]
   },
@@ -527,7 +527,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL - 1)d8"
       }
     ]
   },
@@ -555,7 +555,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL / 2 + 1)d6"
+        "expr": "(SLOT_LEVEL / 2 + 2)d6 + CASTER_MODIFIER"
       }
     ]
   },
@@ -609,7 +609,7 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "SLOT_LEVEL / 2"
+        "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"
       }
     ]
   },
@@ -689,7 +689,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"
+        "expr": "if(SLOT_LEVEL >= 7, 5, if(SLOT_LEVEL >= 5, 4, if(SLOT_LEVEL >= 3, 3, 2)))d8"
       }
     ]
   },
@@ -731,7 +731,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 1)d6"
+        "expr": "3d6"
       }
     ]
   },
@@ -771,7 +771,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL - 2)d6"
       }
     ]
   },
@@ -860,8 +860,8 @@
     "level": 3,
     "effects": [
       {
-        "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "name": "Force Damage",
+        "expr": "(SLOT_LEVEL)d10"
       }
     ]
   },
@@ -1009,7 +1009,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "2d8"
+        "expr": "2d10"
       },
       {
         "name": "Cold Damage",
@@ -1097,11 +1097,11 @@
     "effects": [
       {
         "name": "Clenched Fist",
-        "expr": "4d8"
+        "expr": "(SLOT_LEVEL * 2 - 6)d8"
       },
       {
         "name": "Grasping Hand",
-        "expr": "2d6 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2 - 8)d6 + CASTER_MODIFIER"
       }
     ]
   },
@@ -1111,7 +1111,7 @@
     "effects": [
       {
         "name": "Poison Damage",
-        "expr": "5d8"
+        "expr": "(SLOT_LEVEL)d8"
       }
     ]
   },
@@ -1179,7 +1179,13 @@
   },
   {
     "name": "Songal's Elemental Suffusion",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "4d6"
+      }
+    ]
   },
   {
     "name": "Summon Draconic Spirit",
@@ -1209,7 +1215,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "4d8"
+        "expr": "(SLOT_LEVEL - 1)d8"
       }
     ]
   },
@@ -1237,7 +1243,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 2)d6"
+        "expr": "(SLOT_LEVEL + 2)d8"
       }
     ]
   },
@@ -1253,7 +1259,13 @@
   },
   {
     "name": "Elminster's Effulgent Spheres",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Damage",
+        "expr": "4d8"
+      }
+    ]
   },
   {
     "name": "Eyebite",
@@ -1297,7 +1309,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 4)d10"
+        "expr": "5d10"
       }
     ]
   },
@@ -1471,7 +1483,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "4d12"
+        "expr": "10d6"
       }
     ]
   },
