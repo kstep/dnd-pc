@@ -7,6 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
+        expr_view::ExprView,
         modal::Modal,
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
@@ -102,7 +103,7 @@ fn SpellEffectsModal(
                 .effects
                 .iter()
                 .map(|effect| {
-                    let formula_str = format!("{}", effect.expr);
+                    let expr = effect.expr.clone();
                     let label = effect.label().to_string();
                     let rolls = effect.expr.dice_rolls(&ctx);
 
@@ -113,7 +114,7 @@ fn SpellEffectsModal(
                             <div class="spell-effect-row">
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
-                                    <code class="spell-effect-formula">{formula_str}</code>
+                                    <ExprView expr />
                                     <strong class="spell-effect-result">{result.map(|v| v.to_string()).unwrap_or_default()}</strong>
                                 </div>
                             </div>
@@ -122,6 +123,7 @@ fn SpellEffectsModal(
                     } else {
                         // Has dice — build inputs and live result
                         let result = RwSignal::new(None::<i32>);
+                        let formula_expr = effect.expr.clone();
                         let expr = effect.expr.clone();
                         let slot_level = info.slot_level;
                         let caster_level = info.caster_level;
@@ -216,7 +218,7 @@ fn SpellEffectsModal(
                             <div class="spell-effect-row">
                                 <div class="spell-effect-header">
                                     <span class="spell-effect-label">{label}</span>
-                                    <code class="spell-effect-formula">{formula_str}</code>
+                                    <ExprView expr=formula_expr />
                                     {move || result.get().map(|v| view! {
                                         <strong class="spell-effect-result">{v}</strong>
                                     })}
