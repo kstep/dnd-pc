@@ -122,7 +122,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Detect Magic",
@@ -157,7 +157,7 @@
   {
     "name": "Healing Word",
     "level": 1,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d4 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"}]
   },
   {
     "name": "Ice Knife",
@@ -211,8 +211,7 @@
   },
   {
     "name": "Barkskin",
-    "level": 2,
-    "effects": [{"name": "AC", "expr": "AC = max(AC, 17)"}]
+    "level": 2
   },
   {
     "name": "Beast Sense",
@@ -270,7 +269,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
-    "effects": [{"name": "Fire Damage", "expr": "(SLOT_LEVEL)d8"}]
+    "effects": [{"name": "Fire Damage", "expr": "2d8"}]
   },
   {
     "name": "Hold Person",
@@ -458,7 +457,8 @@
   },
   {
     "name": "Fount of Moonlight",
-    "level": 4
+    "level": 4,
+    "effects": [{"name": "Radiant Damage", "expr": "2d6"}]
   },
   {
     "name": "Freedom of Movement",
@@ -549,7 +549,8 @@
   },
   {
     "name": "Geas",
-    "level": 5
+    "level": 5,
+    "effects": [{"name": "Psychic Damage", "expr": "5d10"}]
   },
   {
     "name": "Greater Restoration",
@@ -632,7 +633,7 @@
   {
     "name": "Heal",
     "level": 6,
-    "effects": [{"name": "Healing", "expr": "70"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 5) * 70"}]
   },
   {
     "name": "Heroes' Feast",
@@ -699,7 +700,8 @@
   },
   {
     "name": "Regenerate",
-    "level": 7
+    "level": 7,
+    "effects": [{"name": "Healing", "expr": "4d8 + 15"}]
   },
   {
     "name": "Reverse Gravity",
@@ -707,7 +709,8 @@
   },
   {
     "name": "Symbol",
-    "level": 7
+    "level": 7,
+    "effects": [{"name": "Necrotic Damage (Death)", "expr": "10d10"}]
   },
   {
     "name": "Whirlwind",
@@ -728,12 +731,12 @@
   },
   {
     "name": "Control Weather",
-    "level": 8
+    "level": 8,
+    "effects": [{"name": "Duration (minutes)", "expr": "1d4 * 10"}]
   },
   {
     "name": "Earthquake",
-    "level": 8,
-    "effects": [{"name": "Bludgeoning Damage", "expr": "5d6"}]
+    "level": 8
   },
   {
     "name": "Incendiary Cloud",
