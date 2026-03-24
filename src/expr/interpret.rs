@@ -164,10 +164,12 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
             for _ in 0..count {
                 stack.push(roll_die(sides)?);
             }
+            stack.push(sides);
             stack.push(count);
         }
         Op::KeepMax(n) => {
             let count = stack.pop()? as usize;
+            let _sides = stack.pop()?;
             stack.pop_n_reduce(count, |vals| {
                 vals.sort_unstable_by(|a, b| b.cmp(a));
                 vals[..n as usize].iter().sum()
@@ -175,6 +177,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
         }
         Op::KeepMin(n) => {
             let count = stack.pop()? as usize;
+            let _sides = stack.pop()?;
             stack.pop_n_reduce(count, |vals| {
                 vals.sort_unstable();
                 vals[..n as usize].iter().sum()
@@ -182,6 +185,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
         }
         Op::DropMax(n) => {
             let count = stack.pop()? as usize;
+            let _sides = stack.pop()?;
             stack.pop_n_reduce(count, |vals| {
                 vals.sort_unstable_by(|a, b| b.cmp(a));
                 vals[n as usize..].iter().sum()
@@ -189,6 +193,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
         }
         Op::DropMin(n) => {
             let count = stack.pop()? as usize;
+            let _sides = stack.pop()?;
             stack.pop_n_reduce(count, |vals| {
                 vals.sort_unstable();
                 vals[n as usize..].iter().sum()
@@ -196,7 +201,22 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<usize
         }
         Op::Sum => {
             let count = stack.pop()? as usize;
+            let _sides = stack.pop()?;
             stack.pop_n_reduce(count, |vals| vals.iter().sum())?;
+        }
+        Op::Explode => {
+            let count = stack.pop()? as usize;
+            let sides = stack.pop()?;
+            stack.pop_n_reduce(count, |vals| {
+                let mut sum = 0;
+                for &mut v in vals.iter_mut() {
+                    sum += v;
+                    if v < sides {
+                        break;
+                    }
+                }
+                sum
+            })?;
         }
         Op::AvgHp => {
             let sides = stack.pop()?;
@@ -335,6 +355,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                         .ok_or(Error::DicePoolExhausted(sides_u32))?;
                     self.stack.push(value as i32);
                 }
+                self.stack.push(sides);
                 self.stack.push(count);
                 Ok(None)
             }
@@ -387,6 +408,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                 for _ in 0..count {
                     self.stack.push(avg_hp(sides));
                 }
+                self.stack.push(sides);
                 self.stack.push(count);
                 Ok(None)
             }
@@ -488,6 +510,10 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
             }
             Op::Sum => {
                 // Follows Roll; roll fragment is already on stack
+            }
+            Op::Explode => {
+                let roll = self.stack.pop()?;
+                self.push(format!("{}!", roll.text), 7);
             }
             Op::KeepMax(n) => {
                 let roll = self.stack.pop()?;

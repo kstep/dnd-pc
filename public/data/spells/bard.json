@@ -4,8 +4,8 @@
     "level": 0,
     "effects": [
       {
-        "name": "Force Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d4"
+        "name": "Penalty",
+        "expr": "1d4"
       }
     ]
   },
@@ -54,12 +54,12 @@
   {
     "name": "True Strike",
     "level": 0,
-    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Radiant Damage", "expr": "if(LEVEL >= 17, 3, if(LEVEL >= 11, 2, if(LEVEL >= 5, 1, 0)))d6"}]
   },
   {
     "name": "Vicious Mockery",
     "level": 0,
-    "effects": [{"name": "Psychic Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d4"}]
+    "effects": [{"name": "Psychic Damage", "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"}]
   },
   {
     "name": "Animal Friendship",
@@ -520,7 +520,7 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
-    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL - 2)d8 + CASTER_MODIFIER"}]
+    "effects": [{"name": "Healing", "expr": "(SLOT_LEVEL)d8 + CASTER_MODIFIER"}]
   },
   {
     "name": "Mislead",
