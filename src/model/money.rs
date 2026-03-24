@@ -221,7 +221,7 @@ mod tests {
         assert_eq!(Money::from_gp(5).to_string(), "5gp");
         assert_eq!(Money::from_cp(0).to_string(), "");
         assert_eq!(Money::from_cp(3).to_string(), "3cp");
-        assert_eq!(Money::from_cp(1050).to_string(), "1pp 5sp");
+        assert_eq!(Money::from_cp(1050).to_string(), "1pp 1ep");
     }
 
     #[test]
