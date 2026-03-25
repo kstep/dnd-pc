@@ -64,7 +64,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and in(ARG.3, 0, 2) and in(ARG.4, 0, 2) and in(ARG.5, 0, 2) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and in(ARG.3, 0, 2) and in(ARG.4, 0, 2) and in(ARG.5, 0, 2) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -80,7 +80,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -91,7 +91,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -107,7 +107,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(DEX + 1 <= 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -118,7 +118,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and CON + ARG.1 <= 20, (STR += ARG.0; CON += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(CON < 20, CON += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -129,7 +129,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(DEX + 1 <= 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -140,7 +140,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -151,7 +151,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(CON + 1 <= 20, CON += 1)",
+        "expr": "if(CON < 20, CON += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -162,7 +162,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -173,7 +173,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -184,7 +184,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(STR + 1 <= 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -195,7 +195,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(STR + 1 <= 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -206,7 +206,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(STR + 1 <= 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -217,7 +217,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and WIS + ARG.0 <= 20 and CHA + ARG.1 <= 20, (WIS += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(WIS < 20, WIS += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -228,7 +228,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(INT + 1 <= 20, INT += 1)",
+        "expr": "if(INT < 20, INT += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -239,7 +239,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -250,7 +250,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -261,7 +261,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -272,7 +272,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -283,7 +283,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -294,7 +294,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; WIS += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(WIS < 20, WIS += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -305,7 +305,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20, (INT += ARG.0; WIS += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -316,7 +316,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -332,7 +332,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -343,7 +343,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5; STR.SAVE.PROF = max(STR.SAVE.PROF, ARG.0); DEX.SAVE.PROF = max(DEX.SAVE.PROF, ARG.1); CON.SAVE.PROF = max(CON.SAVE.PROF, ARG.2); INT.SAVE.PROF = max(INT.SAVE.PROF, ARG.3); WIS.SAVE.PROF = max(WIS.SAVE.PROF, ARG.4); CHA.SAVE.PROF = max(CHA.SAVE.PROF, ARG.5)))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5); STR.SAVE.PROF = max(STR.SAVE.PROF, ARG.0); DEX.SAVE.PROF = max(DEX.SAVE.PROF, ARG.1); CON.SAVE.PROF = max(CON.SAVE.PROF, ARG.2); INT.SAVE.PROF = max(INT.SAVE.PROF, ARG.3); WIS.SAVE.PROF = max(WIS.SAVE.PROF, ARG.4); CHA.SAVE.PROF = max(CHA.SAVE.PROF, ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -354,7 +354,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -365,7 +365,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -376,7 +376,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -387,7 +387,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(DEX + 1 <= 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -398,7 +398,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(STR + 1 <= 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -409,7 +409,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -420,7 +420,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(DEX + 1 <= 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -431,7 +431,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -458,7 +458,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -469,7 +469,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -550,7 +550,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -561,7 +561,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -572,7 +572,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -592,7 +592,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -614,7 +614,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -634,7 +634,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -645,7 +645,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -667,7 +667,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -678,7 +678,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -689,7 +689,7 @@
     "selectable": true,
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -2551,7 +2551,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "if(ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 + ARG.11 + ARG.12 + ARG.13 + ARG.14 + ARG.15 + ARG.16 + ARG.17 == 2 and (ARG.0 == 1 and SKILL.ACRO.PROF == 1) or (ARG.1 == 1 and SKILL.ANIM.PROF == 1) or (ARG.2 == 1 and SKILL.ARCA.PROF == 1) or (ARG.3 == 1 and SKILL.ATHL.PROF == 1) or (ARG.4 == 1 and SKILL.DECE.PROF == 1) or (ARG.5 == 1 and SKILL.HIST.PROF == 1) or (ARG.6 == 1 and SKILL.INSI.PROF == 1) or (ARG.7 == 1 and SKILL.INTI.PROF == 1) or (ARG.8 == 1 and SKILL.INVE.PROF == 1) or (ARG.9 == 1 and SKILL.MEDI.PROF == 1) or (ARG.10 == 1 and SKILL.NATU.PROF == 1) or (ARG.11 == 1 and SKILL.PERC.PROF == 1) or (ARG.12 == 1 and SKILL.PERF.PROF == 1) or (ARG.13 == 1 and SKILL.PERS.PROF) or (ARG.14 == 1 and SKILL.RELI.PROF) or (ARG.15 == 1 and SKILL.SLEI.PROF == 1) or (ARG.16 == 1 and SKILL.STEA.PROF) or (ARG.17 == 1 and SKILL.SURV.PROF == 1), (SKILL.ACRO.PROF += ARG.0; SKILL.ANIM.PROF += ARG.1; SKILL.ARCA.PROF += ARG.2; SKILL.ATHL.PROF += ARG.3; SKILL.DECE.PROF += ARG.4; SKILL.HIST.PROF += ARG.5; SKILL.INSI.PROF += ARG.6; SKILL.INTI.PROF += ARG.7; SKILL.INVE.PROF += ARG.8; SKILL.MEDI.PROF += ARG.9; SKILL.NATU.PROF += ARG.10; SKILL.PERC.PROF += ARG.11; SKILL.PERF.PROF += ARG.12; SKILL.PERS.PROF += ARG.13; SKILL.RELI.PROF += ARG.14; SKILL.SLEI.PROF += ARG.15; SKILL.STEA.PROF += ARG.16; SKILL.SURV.PROF += ARG.17))"
+        "expr": "if(ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 + ARG.11 + ARG.12 + ARG.13 + ARG.14 + ARG.15 + ARG.16 + ARG.17 == 2 and in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and in(ARG.8, 0, 1) and in(ARG.9, 0, 1) and in(ARG.10, 0, 1) and in(ARG.11, 0, 1) and in(ARG.12, 0, 1) and in(ARG.13, 0, 1) and in(ARG.14, 0, 1) and in(ARG.15, 0, 1) and in(ARG.16, 0, 1) and in(ARG.17, 0, 1), if(SKILL.ACRO.PROF == 1, SKILL.ACRO.PROF += ARG.0); if(SKILL.ANIM.PROF == 1, SKILL.ANIM.PROF += ARG.1); if(SKILL.ARCA.PROF == 1, SKILL.ARCA.PROF += ARG.2); if(SKILL.ATHL.PROF == 1, SKILL.ATHL.PROF += ARG.3); if(SKILL.DECE.PROF == 1, SKILL.DECE.PROF += ARG.4); if(SKILL.HIST.PROF == 1, SKILL.HIST.PROF += ARG.5); if(SKILL.INSI.PROF == 1, SKILL.INSI.PROF += ARG.6); if(SKILL.INTI.PROF == 1, SKILL.INTI.PROF += ARG.7); if(SKILL.INVE.PROF == 1, SKILL.INVE.PROF += ARG.8); if(SKILL.MEDI.PROF == 1, SKILL.MEDI.PROF += ARG.9); if(SKILL.NATU.PROF == 1, SKILL.NATU.PROF += ARG.10); if(SKILL.PERC.PROF == 1, SKILL.PERC.PROF += ARG.11); if(SKILL.PERF.PROF == 1, SKILL.PERF.PROF += ARG.12); if(SKILL.PERS.PROF == 1, SKILL.PERS.PROF += ARG.13); if(SKILL.RELI.PROF == 1, SKILL.RELI.PROF += ARG.14); if(SKILL.SLEI.PROF == 1, SKILL.SLEI.PROF += ARG.15); if(SKILL.STEA.PROF == 1, SKILL.STEA.PROF += ARG.16); if(SKILL.SURV.PROF == 1, SKILL.SURV.PROF += ARG.17))"
       }
     ]
   },
@@ -8344,14 +8344,16 @@
       {
         "name": "Actions",
         "kind": "Choice",
+        "cost": "Sneak Attack",
         "options": [
           {
             "name": "Sneak Attack",
             "action": "Action",
+            "cost": 0,
             "effects": [
               {
                 "name": "Extra Damage",
-                "expr": "if(CLASS_LEVEL >= 19, 10, if(CLASS_LEVEL >= 17, 9, if(CLASS_LEVEL >= 15, 8, if(CLASS_LEVEL >= 13, 7, if(CLASS_LEVEL >= 11, 6, if(CLASS_LEVEL >= 9, 5, if(CLASS_LEVEL >= 7, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1)))))))))d6"
+                "expr": "(POINTS)d6"
               }
             ]
           }
@@ -12877,7 +12879,7 @@
     "name": "Background Abilities (Acolyte)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12886,7 +12888,7 @@
     "name": "Background Abilities (Artisan)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and INT + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; INT += ARG.2; SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and INT + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(INT < 20, INT += ARG.2); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12895,7 +12897,7 @@
     "name": "Background Abilities (Charlatan)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and CHA + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; CHA += ARG.2; SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12904,7 +12906,7 @@
     "name": "Background Abilities (Criminal)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and INT + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; INT += ARG.2; SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and INT + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(INT < 20, INT += ARG.2); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12913,7 +12915,7 @@
     "name": "Background Abilities (Entertainer)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CHA + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; CHA += ARG.2; SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12922,7 +12924,7 @@
     "name": "Background Abilities (Farmer)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; CON += ARG.1; WIS += ARG.2; SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(CON < 20, CON += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12931,7 +12933,7 @@
     "name": "Background Abilities (Guard)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12940,7 +12942,7 @@
     "name": "Background Abilities (Guide)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, (DEX += ARG.0; CON += ARG.1; WIS += ARG.2; SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12949,7 +12951,7 @@
     "name": "Background Abilities (Hermit)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (CON += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12958,7 +12960,7 @@
     "name": "Background Abilities (Merchant)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, (CON += ARG.0; INT += ARG.1; CHA += ARG.2; SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(INT < 20, INT += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12967,7 +12969,7 @@
     "name": "Background Abilities (Noble)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, (STR += ARG.0; INT += ARG.1; CHA += ARG.2; SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(INT < 20, INT += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12976,7 +12978,7 @@
     "name": "Background Abilities (Sage)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (CON += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12985,7 +12987,7 @@
     "name": "Background Abilities (Sailor)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and WIS + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; WIS += ARG.2; SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12994,7 +12996,7 @@
     "name": "Background Abilities (Scribe)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, (DEX += ARG.0; INT += ARG.1; WIS += ARG.2; SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13003,7 +13005,7 @@
     "name": "Background Abilities (Soldier)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13012,7 +13014,7 @@
     "name": "Background Abilities (Wayfarer)",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (DEX += ARG.0; WIS += ARG.1; CHA += ARG.2; SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13361,7 +13363,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13372,7 +13374,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13383,7 +13385,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13394,7 +13396,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13405,7 +13407,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13421,7 +13423,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13432,7 +13434,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(DEX + 1 <= 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13443,7 +13445,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13454,7 +13456,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13465,7 +13467,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13476,7 +13478,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13487,7 +13489,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 30 and CON + ARG.1 <= 30, (STR += ARG.0; CON += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 30, STR += ARG.0); if(CON < 30, CON += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13498,7 +13500,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13509,7 +13511,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13520,7 +13522,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13531,7 +13533,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13542,7 +13544,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13553,7 +13555,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13564,7 +13566,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13575,7 +13577,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13597,7 +13599,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and CON + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (CON += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(CON < 30, CON += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13608,7 +13610,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 30 and WIS + ARG.1 <= 30 and CHA + ARG.2 <= 30, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13619,7 +13621,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 30 and DEX + ARG.1 <= 30 and CON + ARG.2 <= 30 and INT + ARG.3 <= 30 and WIS + ARG.4 <= 30 and CHA + ARG.5 <= 30, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13635,7 +13637,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13646,7 +13648,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13662,7 +13664,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13673,7 +13675,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and CON + ARG.0 <= 20 and CHA + ARG.1 <= 20, (CON += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(CON < 20, CON += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13689,7 +13691,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13700,7 +13702,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and DEX + ARG.0 <= 20 and CHA + ARG.1 <= 20, (DEX += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13711,7 +13713,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13722,7 +13724,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(CON + 1 <= 20, CON += 1)",
+        "expr": "if(CON < 20, CON += 1)",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13733,7 +13735,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13744,7 +13746,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13755,7 +13757,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13766,7 +13768,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13777,7 +13779,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13788,7 +13790,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13799,7 +13801,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13810,7 +13812,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13821,7 +13823,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13832,7 +13834,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13843,7 +13845,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13854,7 +13856,7 @@
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13870,7 +13872,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and DEX + ARG.0 <= 20 and CHA + ARG.1 <= 20, (DEX += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13881,7 +13883,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13892,7 +13894,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and CHA + ARG.1 <= 20, (STR += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13908,7 +13910,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13979,7 +13981,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13990,7 +13992,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and STR + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (STR += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14006,7 +14008,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14022,7 +14024,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14033,7 +14035,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, (STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14049,7 +14051,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14065,7 +14067,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20, (STR += ARG.0; DEX += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14081,7 +14083,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14102,7 +14104,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, (INT += ARG.0; WIS += ARG.1; CHA += ARG.2))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14123,7 +14125,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1 and DEX + ARG.0 <= 20 and CHA + ARG.1 <= 20, (DEX += ARG.0; CHA += ARG.1))",
+        "expr": "if(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
     ]

@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
-        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
+        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal, inject_resource_vars},
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
     },
@@ -84,6 +84,14 @@ pub fn SpellsBlock() -> impl IntoView {
                 Attribute::CasterModifier,
                 character.ability_modifier(casting_ability),
             );
+
+            // Inject resource field values and spell cost
+            if let Some(entry) = character.feature_data.get(fname) {
+                inject_resource_vars(&mut extra_vars, entry);
+            }
+            if let CastOption::PointsCost { cost, .. } = opt {
+                extra_vars.insert(Attribute::Cost, *cost as i32);
+            }
 
             calc_info.set_value(Some(EffectsCalcInfo {
                 title,

@@ -281,3 +281,7 @@ sync-synced = Синхронизировано
 sync-syncing = Синхронизация...
 sync-error = Ошибка синхронизации
 sync-sign-in-google = Войти через Google
+show-expression = Показать выражение
+points = Очки
+points-max = Макс. очков
+reset = Сброс

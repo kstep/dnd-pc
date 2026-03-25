@@ -2,7 +2,7 @@ use std::{fmt, marker::PhantomData, ops::Neg, str::FromStr, sync::Arc};
 
 use serde::{Deserialize, Deserializer, de};
 
-use crate::expr::{Expr, Op};
+use crate::expr::{Block, Expr, Op};
 
 impl<'de, Var, Val> Deserialize<'de> for Expr<Var, Val>
 where
@@ -41,9 +41,7 @@ where
                         BlocksOrOps::Blocks(blocks) => blocks,
                         BlocksOrOps::Ops(ops) => vec![ops],
                     };
-                #[allow(clippy::type_complexity)]
-                let blocks: Arc<[Box<[Op<Var, Val>]>]> =
-                    blocks.into_iter().map(Vec::into_boxed_slice).collect();
+                let blocks: Arc<[Block<Var, Val>]> = blocks.into_iter().map(Block::from).collect();
                 Ok(Expr(blocks))
             }
 
@@ -53,9 +51,8 @@ where
                     ops: Vec<Vec<Op<Var, Val>>>,
                 }
                 let fields = ExprFields::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                #[allow(clippy::type_complexity)]
-                let blocks: Arc<[Box<[Op<Var, Val>]>]> =
-                    fields.ops.into_iter().map(Vec::into_boxed_slice).collect();
+                let blocks: Arc<[Block<Var, Val>]> =
+                    fields.ops.into_iter().map(Block::from).collect();
                 Ok(Expr(blocks))
             }
         }

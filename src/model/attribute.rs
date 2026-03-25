@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, Proficiency, Skill, SpellSlotPool};
+use crate::model::{Ability, Proficiency, Skill, SpellSlotPool, Translatable};
 
 #[derive(
     Debug,
@@ -45,6 +45,9 @@ pub enum Attribute {
     SpellAttack,
     SpellAttackAdvantage,
     SlotLevel,
+    Points,
+    PointsMax,
+    Cost,
     Arg(u8),
 }
 
@@ -96,14 +99,16 @@ fn parse_proficiency(s: &str) -> Option<Proficiency> {
     }
 }
 
-fn proficiency_name(p: Proficiency) -> &'static str {
-    match p {
-        Proficiency::LightArmor => "LIGHT_ARMOR",
-        Proficiency::MediumArmor => "MEDIUM_ARMOR",
-        Proficiency::HeavyArmor => "HEAVY_ARMOR",
-        Proficiency::Shields => "SHIELDS",
-        Proficiency::SimpleWeapons => "SIMPLE_WEAPONS",
-        Proficiency::MartialWeapons => "MARTIAL_WEAPONS",
+impl Proficiency {
+    fn abbr(self) -> &'static str {
+        match self {
+            Self::LightArmor => "LIGHT_ARMOR",
+            Self::MediumArmor => "MEDIUM_ARMOR",
+            Self::HeavyArmor => "HEAVY_ARMOR",
+            Self::Shields => "SHIELDS",
+            Self::SimpleWeapons => "SIMPLE_WEAPONS",
+            Self::MartialWeapons => "MARTIAL_WEAPONS",
+        }
     }
 }
 
@@ -131,26 +136,28 @@ fn parse_skill(s: &str) -> Option<Skill> {
     }
 }
 
-fn skill_abbr(skill: Skill) -> &'static str {
-    match skill {
-        Skill::Acrobatics => "ACRO",
-        Skill::AnimalHandling => "ANIM",
-        Skill::Arcana => "ARCA",
-        Skill::Athletics => "ATHL",
-        Skill::Deception => "DECE",
-        Skill::History => "HIST",
-        Skill::Insight => "INSI",
-        Skill::Intimidation => "INTI",
-        Skill::Investigation => "INVE",
-        Skill::Medicine => "MEDI",
-        Skill::Nature => "NATU",
-        Skill::Perception => "PERC",
-        Skill::Performance => "PERF",
-        Skill::Persuasion => "PERS",
-        Skill::Religion => "RELI",
-        Skill::SleightOfHand => "SLEI",
-        Skill::Stealth => "STEA",
-        Skill::Survival => "SURV",
+impl Skill {
+    fn abbr(self) -> &'static str {
+        match self {
+            Self::Acrobatics => "ACRO",
+            Self::AnimalHandling => "ANIM",
+            Self::Arcana => "ARCA",
+            Self::Athletics => "ATHL",
+            Self::Deception => "DECE",
+            Self::History => "HIST",
+            Self::Insight => "INSI",
+            Self::Intimidation => "INTI",
+            Self::Investigation => "INVE",
+            Self::Medicine => "MEDI",
+            Self::Nature => "NATU",
+            Self::Perception => "PERC",
+            Self::Performance => "PERF",
+            Self::Persuasion => "PERS",
+            Self::Religion => "RELI",
+            Self::SleightOfHand => "SLEI",
+            Self::Stealth => "STEA",
+            Self::Survival => "SURV",
+        }
     }
 }
 
@@ -176,6 +183,9 @@ impl FromStr for Attribute {
                 "INITIATIVE" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
                 "SLOT_LEVEL" => Ok(Self::SlotLevel),
+                "POINTS" => Ok(Self::Points),
+                "POINTS_MAX" => Ok(Self::PointsMax),
+                "COST" => Ok(Self::Cost),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -257,13 +267,13 @@ impl FromStr for Attribute {
 impl fmt::Display for Attribute {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::Ability(ability) => write!(f, "{}", ability_abbr(*ability)),
-            Self::Modifier(ability) => write!(f, "{}.MOD", ability_abbr(*ability)),
-            Self::SavingThrow(ability) => write!(f, "{}.SAVE", ability_abbr(*ability)),
-            Self::Skill(skill) => write!(f, "SKILL.{}", skill_abbr(*skill)),
-            Self::SkillProficiency(skill) => write!(f, "SKILL.{}.PROF", skill_abbr(*skill)),
-            Self::SaveProficiency(ability) => write!(f, "{}.SAVE.PROF", ability_abbr(*ability)),
-            Self::EquipmentProficiency(prof) => write!(f, "PROF.{}", proficiency_name(*prof)),
+            Self::Ability(ability) => write!(f, "{}", ability.abbr()),
+            Self::Modifier(ability) => write!(f, "{}.MOD", ability.abbr()),
+            Self::SavingThrow(ability) => write!(f, "{}.SAVE", ability.abbr()),
+            Self::Skill(skill) => write!(f, "SKILL.{}", skill.abbr()),
+            Self::SkillProficiency(skill) => write!(f, "SKILL.{}.PROF", skill.abbr()),
+            Self::SaveProficiency(ability) => write!(f, "{}.SAVE.PROF", ability.abbr()),
+            Self::EquipmentProficiency(prof) => write!(f, "PROF.{}", prof.abbr()),
             Self::MaxHp => f.write_str("MAX_HP"),
             Self::Hp => f.write_str("HP"),
             Self::TempHp => f.write_str("TEMP_HP"),
@@ -280,27 +290,60 @@ impl fmt::Display for Attribute {
             Self::Initiative => f.write_str("INITIATIVE"),
             Self::InitiativeBonus => f.write_str("INITIATIVE.BONUS"),
             Self::Inspiration => f.write_str("INSPIRATION"),
-            Self::AbilityAdvantage(ability) => write!(f, "{}.ADV", ability_abbr(*ability)),
-            Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill_abbr(*skill)),
-            Self::SaveAdvantage(ability) => write!(f, "{}.SAVE.ADV", ability_abbr(*ability)),
+            Self::AbilityAdvantage(ability) => write!(f, "{}.ADV", ability.abbr()),
+            Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill.abbr()),
+            Self::SaveAdvantage(ability) => write!(f, "{}.SAVE.ADV", ability.abbr()),
             Self::AttackAdvantage => f.write_str("ATK.ADV"),
             Self::SpellDc => f.write_str("SPELL.DC"),
             Self::SpellAttack => f.write_str("SPELL.ATK"),
             Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
             Self::SlotLevel => f.write_str("SLOT_LEVEL"),
+            Self::Points => f.write_str("POINTS"),
+            Self::PointsMax => f.write_str("POINTS_MAX"),
+            Self::Cost => f.write_str("COST"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
 }
 
-fn ability_abbr(ability: Ability) -> &'static str {
-    match ability {
-        Ability::Strength => "STR",
-        Ability::Dexterity => "DEX",
-        Ability::Constitution => "CON",
-        Ability::Intelligence => "INT",
-        Ability::Wisdom => "WIS",
-        Ability::Charisma => "CHA",
+impl Attribute {
+    /// Human-readable translated name for this attribute.
+    pub fn display_name(&self, i18n: &leptos_fluent::I18n) -> String {
+        match self {
+            Self::Ability(a) | Self::Modifier(a) => i18n.tr(a.tr_abbr_key()),
+            Self::Skill(s) | Self::SkillProficiency(s) => i18n.tr(s.tr_key()),
+            Self::SavingThrow(a) | Self::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
+            Self::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
+            Self::MaxHp => i18n.tr("hp-max"),
+            Self::Speed => i18n.tr("speed"),
+            Self::Initiative | Self::InitiativeBonus => i18n.tr("initiative"),
+            Self::Ac => i18n.tr("armor-class"),
+            Self::Inspiration => i18n.tr("inspiration"),
+            Self::ProfBonus => i18n.tr("proficiency-bonus"),
+            Self::Level => i18n.tr("level"),
+            Self::ClassLevel => i18n.tr("class-level"),
+            Self::CasterLevel(None) => i18n.tr("caster-level"),
+            Self::CasterLevel(Some(pool)) => {
+                format!("{} ({})", i18n.tr("caster-level"), i18n.tr(pool.tr_key()))
+            }
+            Self::Points => i18n.tr("points"),
+            Self::PointsMax => i18n.tr("points-max"),
+            Self::Cost => i18n.tr("cost"),
+            _ => self.to_string(),
+        }
+    }
+}
+
+impl Ability {
+    fn abbr(self) -> &'static str {
+        match self {
+            Self::Strength => "STR",
+            Self::Dexterity => "DEX",
+            Self::Constitution => "CON",
+            Self::Intelligence => "INT",
+            Self::Wisdom => "WIS",
+            Self::Charisma => "CHA",
+        }
     }
 }
 

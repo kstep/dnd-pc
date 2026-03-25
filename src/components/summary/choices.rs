@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
-        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
+        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal, inject_resource_vars},
         icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
@@ -132,6 +132,11 @@ pub fn ChoicesBlock() -> impl IntoView {
                 .unwrap_or(character.level());
             let mut extra_vars = BTreeMap::new();
             extra_vars.insert(Attribute::ClassLevel, class_level as i32);
+
+            // Inject Points field values if feature has one
+            if let Some(entry) = character.feature_data.get(&feature_name) {
+                inject_resource_vars(&mut extra_vars, entry);
+            }
 
             calc_info.set_value(Some(EffectsCalcInfo {
                 title: option_label,

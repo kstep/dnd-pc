@@ -14,7 +14,7 @@ pub use sidebar::ReferenceSidebar;
 use crate::{
     BASE_URL,
     components::expr_view::ExprView,
-    expr::{Expr, Interpreter, Op},
+    expr::{BLOCK_ERROR, BLOCK_NOOP, Expr, Interpreter, Op},
     model::{Attribute, Translatable},
     rules::{Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
 };
@@ -118,32 +118,6 @@ pub fn feature_choices(
 }
 
 /// Translate an attribute to a human-readable display name using i18n keys.
-fn attr_display_name(attr: Attribute, i18n: &leptos_fluent::I18n) -> String {
-    match attr {
-        Attribute::Ability(a) => i18n.tr(a.tr_abbr_key()),
-        Attribute::Modifier(a) => i18n.tr(a.tr_abbr_key()),
-        Attribute::Skill(s) => i18n.tr(s.tr_key()),
-        Attribute::MaxHp => i18n.tr("hp-max"),
-        Attribute::Speed => i18n.tr("speed"),
-        Attribute::Initiative | Attribute::InitiativeBonus => i18n.tr("initiative"),
-        Attribute::Ac => i18n.tr("armor-class"),
-        Attribute::Inspiration => i18n.tr("inspiration"),
-        Attribute::ProfBonus => i18n.tr("proficiency-bonus"),
-        Attribute::Level => i18n.tr("level"),
-        Attribute::ClassLevel => i18n.tr("class-level"),
-        Attribute::CasterLevel(None) => i18n.tr("caster-level"),
-        Attribute::CasterLevel(Some(pool)) => {
-            format!("{} ({})", i18n.tr("caster-level"), i18n.tr(pool.tr_key()))
-        }
-        Attribute::SkillProficiency(s) => i18n.tr(s.tr_key()),
-        Attribute::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
-        Attribute::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
-        Attribute::SavingThrow(a) => i18n.tr(a.tr_abbr_key()),
-        Attribute::Arg(_) => "?".into(),
-        _ => attr.to_string(),
-    }
-}
-
 /// An interpreter that produces human-readable translated summaries
 /// of assignment operations in an expression. Categorizes by type
 /// (abilities, skill/save/equipment proficiencies, other effects).
@@ -233,12 +207,15 @@ impl<'a> AssignmentSummarizer<'a> {
 impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
     type Output = String;
 
-    fn exec(&mut self, op: Op<Attribute, i32>) -> Result<Option<usize>, crate::expr::Error> {
+    fn exec(
+        &mut self,
+        op: Op<Attribute, i32>,
+    ) -> Result<Option<crate::expr::BlockIndex>, crate::expr::Error> {
         match op {
             Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
             Op::PushVar(var) => {
                 let raw = var.to_string();
-                let text = attr_display_name(var, self.i18n);
+                let text = var.display_name(self.i18n);
                 self.stack.push(SumEntry::var(text, raw));
             }
             Op::Add => self.binary_op("+", |a, b| a + b),
@@ -290,7 +267,7 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                         self.equipment.push(self.i18n.tr(prof.tr_key()));
                     }
                     _ => {
-                        let label = attr_display_name(attr, self.i18n);
+                        let label = attr.display_name(self.i18n);
                         self.other.push(format!("{label} {prefix}{display}"));
                     }
                 }
@@ -309,30 +286,17 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             // if(): evaluate both branches to collect all possible assignments
             Op::EvalIf(then_idx, else_idx) => {
                 self.pop(); // condition
-                let then_block = if then_idx != 0 {
-                    Some(then_idx as usize)
-                } else {
-                    None
-                };
-                let else_block = if else_idx != 0 {
-                    Some(else_idx as usize)
-                } else {
-                    None
-                };
-                // Return first non-zero block; the runner will recurse into it.
-                // For summarization we want BOTH branches, but the runner only
-                // supports one at a time. Return the then-block; the else-block
-                // assignments are typically the same structure.
-                if let Some(idx) = then_block {
-                    return Ok(Some(idx));
+                // Return first non-noop block; the runner will recurse into it.
+                if then_idx != BLOCK_NOOP && then_idx != BLOCK_ERROR {
+                    return Ok(Some(then_idx));
                 }
-                if let Some(idx) = else_block {
-                    return Ok(Some(idx));
+                if else_idx != BLOCK_NOOP && else_idx != BLOCK_ERROR {
+                    return Ok(Some(else_idx));
                 }
             }
             Op::Eval(idx) => {
-                if idx != 0 {
-                    return Ok(Some(idx as usize));
+                if idx != BLOCK_NOOP {
+                    return Ok(Some(idx));
                 }
             }
             // Dice/roll ops: push a placeholder

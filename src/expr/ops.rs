@@ -46,6 +46,20 @@ pub struct CompoundAssign {
     pub rhs_end: usize,
 }
 
+/// Type alias for block indices in expressions.
+pub type BlockIndex = u8;
+
+/// Block index of the main (entry) block.
+pub const BLOCK_MAIN: BlockIndex = 0;
+
+/// Block index meaning "no block" / no-op. Used as the else-branch of
+/// `EvalIf` when there is no else clause.
+pub const BLOCK_NOOP: BlockIndex = 0;
+
+/// Block index that always triggers an error. Used by `guard()` as the
+/// else-branch of `EvalIf` to signal a failed guard condition.
+pub const BLOCK_ERROR: BlockIndex = BlockIndex::MAX;
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Op<Var, Val> {
     PushVar(Var),
@@ -71,10 +85,9 @@ pub enum Op<Var, Val> {
     Or,  // logical or (0/1)
     Not, // logical not (0/1)
     Cmp(Cmp),
-    In, // in(a, b, c) → b <= a && a <= c
-    EvalIf(u8, u8), /* if: pop cond, branch to then/else — 1-based block indices, 0 = noop, 255
-         * = error */
-    Eval(u8), // evaluate sub-block — 1-based index, 0 = noop, 255 = error
+    In,                             // in(a, b, c) → b <= a && a <= c
+    EvalIf(BlockIndex, BlockIndex), // if: pop cond, branch to then/else block
+    Eval(BlockIndex),               // evaluate sub-block
 }
 
 impl<Var: PartialEq, Val> Op<Var, Val> {
@@ -126,6 +139,48 @@ impl<Var: PartialEq, Val> Op<Var, Val> {
             _ => None,
         }
     }
+}
+
+/// A single block of ops within an expression.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct Block<Var, Val>(Box<[Op<Var, Val>]>);
+
+impl<Var: PartialEq, Val: PartialEq> PartialEq<[Op<Var, Val>]> for Block<Var, Val> {
+    fn eq(&self, other: &[Op<Var, Val>]) -> bool {
+        *self.0 == *other
+    }
+}
+
+impl<Var, Val> std::ops::Deref for Block<Var, Val> {
+    type Target = [Op<Var, Val>];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<Var, Val> From<Vec<Op<Var, Val>>> for Block<Var, Val> {
+    fn from(ops: Vec<Op<Var, Val>>) -> Self {
+        Self(ops.into_boxed_slice())
+    }
+}
+
+impl<Var, Val> Block<Var, Val> {
+    /// Returns true if this block contains any variable matching the predicate.
+    pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool {
+        self.0.iter().any(|op| match op {
+            Op::PushVar(v) | Op::Assign(v) => pred(v),
+            _ => false,
+        })
+    }
+}
+
+impl<Var: PartialEq, Val> Block<Var, Val> {
+    /// Split this block into statements at `Assign` boundaries.
+    pub fn statements(&self) -> impl Iterator<Item = &[Op<Var, Val>]> {
+        self.0.split_inclusive(|op| matches!(op, Op::Assign(_)))
+    }
 
     /// Detect compound assignment pattern in an ops slice (a single statement).
     ///
@@ -133,7 +188,7 @@ impl<Var: PartialEq, Val> Op<Var, Val> {
     /// BinaryOp Assign(X)` — i.e. a compound assignment like `X += rhs`.
     /// The combining op is identified by stack-depth analysis: it's the first
     /// binary op that would consume the initial variable from the stack.
-    pub fn detect_compound(ops: &[Self]) -> Option<CompoundAssign> {
+    pub fn detect_compound(ops: &[Op<Var, Val>]) -> Option<CompoundAssign> {
         if ops.len() < 3 {
             return None;
         }

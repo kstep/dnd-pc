@@ -2155,6 +2155,14 @@ select.entry-name {
   color: var(--panel-header);
 }
 
+.args-modal-description {
+  color: var(--text-secondary);
+  font-size: var(--font-size-1);
+  margin: 0 0 var(--size-3);
+  max-inline-size: none;
+  white-space: pre-line;
+}
+
 .expr-form {
   display: flex;
   flex-wrap: wrap;
@@ -2171,16 +2179,18 @@ select.entry-name {
 }
 
 .expr-formula {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-2);
-  font-family: var(--font-mono);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
+  gap: var(--size-2) var(--size-3);
 
   &-line {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: var(--size-1);
+
+    .expr-form-input {
+      margin-left: auto;
+    }
   }
 }
 
@@ -2836,12 +2846,60 @@ select.entry-name {
   background: var(--surface-2);
   border-radius: var(--radius-2);
   font-size: var(--font-size-0);
+  max-inline-size: unset;
 }
 
 .effects-calc-result {
   font-size: var(--font-size-3);
-  height: 1.09em;
+  color: var(--accent);
   margin-left: auto;
+}
+
+.effects-calc-reset {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-secondary);
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.effects-calc-error {
+  color: var(--danger);
+}
+
+.effects-calc-expr {
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+
+  summary {
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    opacity: 0.6;
+    margin: 0;
+    padding: var(--size-2);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: "+ ";
+    }
+  }
+
+  &[open] summary::before {
+    content: "\2212  ";
+  }
 }
 
 .spell-effects {

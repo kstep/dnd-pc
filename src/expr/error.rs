@@ -14,6 +14,7 @@ pub enum Error {
     DicePoolExhausted(u32),
     InvalidDieSides(i32),
     InvalidBlock(u8),
+    GuardFailed,
     RngFailed,
 }
 
@@ -52,6 +53,7 @@ impl fmt::Display for Error {
             Error::DicePoolExhausted(sides) => write!(f, "dice pool exhausted for d{sides}"),
             Error::InvalidDieSides(sides) => write!(f, "invalid die sides: {sides}"),
             Error::InvalidBlock(idx) => write!(f, "invalid block index: {idx}"),
+            Error::GuardFailed => write!(f, "guard condition failed"),
             Error::RngFailed => write!(f, "random number generation failed"),
         }
     }

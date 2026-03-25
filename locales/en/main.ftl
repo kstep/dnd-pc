@@ -286,3 +286,7 @@ sync-synced = Synced
 sync-syncing = Syncing...
 sync-error = Sync error
 sync-sign-in-google = Sign in with Google
+show-expression = Show expression
+points = Points
+points-max = Max points
+reset = Reset

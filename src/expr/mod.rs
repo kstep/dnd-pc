@@ -19,12 +19,12 @@ mod traits;
 
 pub use crate::expr::{
     error::Error,
-    interpret::{DicePool, Interpreter},
-    ops::Op,
+    interpret::{DicePool, ExprAnalysis, Interpreter},
+    ops::{BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, Block, BlockIndex, Op},
     traits::{Context, Eval},
 };
 use crate::expr::{
-    interpret::{DicePoolEvaluator, DiceRollsCollector, Evaluator, Formatter, ReadOnlyEvaluator},
+    interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
     parser::Parser,
 };
 
@@ -34,8 +34,7 @@ pub const fn avg_hp(sides: i32) -> i32 {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[allow(clippy::type_complexity)]
-pub struct Expr<Var, Val = i32>(Arc<[Box<[Op<Var, Val>]>]>);
+pub struct Expr<Var, Val = i32>(Arc<[Block<Var, Val>]>);
 
 impl<Var, Val> Serialize for Expr<Var, Val>
 where
@@ -46,7 +45,9 @@ where
         if serializer.is_human_readable() {
             // JSON/Firestore: serialize as infix string (avoids nested arrays
             // which Firestore rejects).
-            let s = self.format_block(0).map_err(serde::ser::Error::custom)?;
+            let s = self
+                .format_block(BLOCK_MAIN)
+                .map_err(serde::ser::Error::custom)?;
             serializer.serialize_str(&s)
         } else {
             // postcard (binary): serialize as ops for compact sharing URLs.
@@ -60,43 +61,58 @@ where
 }
 
 impl<Var, Val> Expr<Var, Val> {
-    pub fn block(&self, idx: usize) -> &[Op<Var, Val>] {
-        &self.0[idx]
+    pub fn block(&self, idx: BlockIndex) -> &Block<Var, Val> {
+        &self.0[idx as usize]
     }
 
     /// Returns true if any block in this expression contains a variable
-    /// matching the predicate (e.g. `expr.has_var(|v| matches!(v,
-    /// Attribute::Arg(_)))`).
+    /// matching the predicate.
     pub fn has_var(&self, pred: impl Fn(&Var) -> bool) -> bool {
-        self.0.iter().any(|block| {
-            block.iter().any(|op| match op {
-                Op::PushVar(v) | Op::Assign(v) => pred(v),
+        self.0.iter().any(|block| block.has_var(&pred))
+    }
+
+    /// Returns true if a specific block or any of its sub-blocks contains a
+    /// variable matching the predicate.
+    /// Returns true if `idx` refers to a real sub-block (not a sentinel and
+    /// within bounds).
+    fn is_sub_block(&self, idx: BlockIndex) -> bool {
+        idx != BLOCK_NOOP && idx != BLOCK_ERROR && (idx as usize) < self.0.len()
+    }
+
+    pub fn block_has_var(&self, block: BlockIndex, pred: &impl Fn(&Var) -> bool) -> bool {
+        if !self.is_sub_block(block) {
+            return false;
+        }
+        let blk = &self.0[block as usize];
+        blk.has_var(pred)
+            || blk.iter().any(|op| match op {
+                Op::Eval(idx) => self.block_has_var(*idx, pred),
+                Op::EvalIf(a, b) => self.block_has_var(*a, pred) || self.block_has_var(*b, pred),
                 _ => false,
             })
-        })
     }
 }
 
 impl<Var, Val> Deref for Expr<Var, Val> {
-    type Target = [Op<Var, Val>];
+    type Target = Block<Var, Val>;
 
     fn deref(&self) -> &Self::Target {
-        &self.0[0]
+        &self.0[BLOCK_MAIN as usize]
     }
 }
 
 impl<Var: Copy, Val: Copy> Expr<Var, Val> {
     pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
-        self.run_block(&mut interp, 0)?;
+        self.run_block(&mut interp, BLOCK_MAIN)?;
         interp.finish()
     }
 
     fn run_block<I: Interpreter<Var, Val>>(
         &self,
         interp: &mut I,
-        block: usize,
+        block: BlockIndex,
     ) -> Result<(), Error> {
-        for &op in self.0[block].iter() {
+        for &op in self.0[block as usize].iter() {
             if let Some(sub_block) = interp.exec(op)? {
                 self.run_block(interp, sub_block)?;
             }
@@ -121,7 +137,11 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
 }
 
 impl<Var: Copy + fmt::Display> Expr<Var, i32> {
-    pub fn eval_block(&self, block: usize, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+    pub fn eval_block(
+        &self,
+        block: BlockIndex,
+        ctx: &impl Context<Var, i32>,
+    ) -> Result<i32, Error> {
         let mut interp = ReadOnlyEvaluator::new(ctx);
         self.run_block(&mut interp, block)?;
         interp.finish()
@@ -141,12 +161,33 @@ impl<Var: Copy + fmt::Display> Eval<Var, i32> for Expr<Var, i32> {
 }
 
 impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+    /// Like `eval`, but silently ignores `Assign` ops instead of erroring.
+    pub fn eval_lenient(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+        self.run(ReadOnlyEvaluator::lenient(ctx))
+    }
+
     /// Evaluates the expression against the context to determine dice roll
     /// requirements. Returns a map of die sides to total number of rolls
     /// needed. Supports both static (`2d6`) and dynamic (`(LEVEL / 5 + 1)d6`)
     /// dice counts.
     pub fn dice_rolls(&self, ctx: &impl Context<Var, i32>) -> BTreeMap<u32, u32> {
-        self.run(DiceRollsCollector::new(ctx)).unwrap_or_default()
+        self.analyze(ctx, |_| None).dice_rolls
+    }
+
+    /// Analyze the expression: collect dice requirements and determine which
+    /// ARG variables are reachable.
+    ///
+    /// `is_arg` returns `Some(index)` for ARG-like variables (resolved as 0
+    /// during analysis), `None` for regular variables.
+    ///
+    /// Guards with non-interactive false conditions prune their ARGs from
+    /// `active_args`.
+    pub fn analyze(
+        &self,
+        ctx: &impl Context<Var, i32>,
+        is_arg: impl Fn(&Var) -> Option<u8> + Copy,
+    ) -> ExprAnalysis {
+        ExprAnalysis::analyze(self, ctx, is_arg)
     }
 }
 
@@ -154,37 +195,21 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        #[allow(clippy::type_complexity)]
-        let blocks: Arc<[Box<[Op<Var, Val>]>]> = Parser::new(s)
+        let blocks: Arc<[Block<Var, Val>]> = Parser::new(s)
             .parse()?
             .into_iter()
-            .map(Vec::into_boxed_slice)
+            .map(Block::from)
             .collect();
         Ok(Self(blocks))
     }
 }
 
 impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
-    fn format_block(&self, block: usize) -> Result<String, Error> {
-        let ops = &self.0[block];
-
-        // Split ops into statements at Assign boundaries.
-        let mut stmts: Vec<&[Op<Var, Val>]> = Vec::new();
-        let mut start = 0;
-        for (i, op) in ops.iter().enumerate() {
-            if matches!(op, Op::Assign(_)) {
-                stmts.push(&ops[start..=i]);
-                start = i + 1;
-            }
-        }
-        if start < ops.len() {
-            stmts.push(&ops[start..]);
-        }
-
+    fn format_block(&self, block: BlockIndex) -> Result<String, Error> {
+        let block = &self.0[block as usize];
         let mut results: Vec<String> = Vec::new();
-        for stmt in stmts {
-            if let Some(ca) = Op::detect_compound(stmt) {
-                // Compound: format only the RHS ops, then emit "VAR sym= rhs".
+        for stmt in block.statements() {
+            if let Some(ca) = Block::detect_compound(stmt) {
                 let var = match stmt.last() {
                     Some(Op::Assign(v)) => v,
                     _ => unreachable!(),
@@ -204,16 +229,21 @@ impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> Expr<Var, V
         for &op in ops {
             match op {
                 Op::Eval(idx) => {
-                    let text = self.format_block(idx as usize)?;
+                    let text = self.format_block(idx)?;
                     fmt.push_atom(text);
+                }
+                Op::EvalIf(then_idx, BLOCK_ERROR) => {
+                    let cond = fmt.pop_text()?;
+                    let then_text = self.format_block(then_idx)?;
+                    fmt.push_atom(format!("guard({cond}, {then_text})"));
                 }
                 Op::EvalIf(then_idx, else_idx) => {
                     let cond = fmt.pop_text()?;
-                    let then_text = self.format_block(then_idx as usize)?;
-                    if else_idx == 0 {
+                    let then_text = self.format_block(then_idx)?;
+                    if else_idx == BLOCK_NOOP {
                         fmt.push_atom(format!("if({cond}, {then_text})"));
                     } else {
-                        let else_text = self.format_block(else_idx as usize)?;
+                        let else_text = self.format_block(else_idx)?;
                         fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
                     }
                 }
@@ -230,7 +260,7 @@ impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> fmt::Displa
     for Expr<Var, Val>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = self.format_block(0).map_err(|_| fmt::Error)?;
+        let s = self.format_block(BLOCK_MAIN).map_err(|_| fmt::Error)?;
         f.write_str(&s)
     }
 }
@@ -249,6 +279,7 @@ mod tests {
     enum Var {
         Modifier(Ability),
         Ac,
+        Arg(u8),
     }
 
     impl fmt::Display for Var {
@@ -261,6 +292,7 @@ mod tests {
                 Var::Modifier(Ability::Wisdom) => write!(f, "WIS"),
                 Var::Modifier(Ability::Charisma) => write!(f, "CHA"),
                 Var::Ac => write!(f, "AC"),
+                Var::Arg(n) => write!(f, "ARG.{n}"),
             }
         }
     }
@@ -277,6 +309,7 @@ mod tests {
                 "WIS" => Ok(Var::Modifier(Ability::Wisdom)),
                 "CHA" => Ok(Var::Modifier(Ability::Charisma)),
                 "AC" => Ok(Var::Ac),
+                _ if s.starts_with("ARG.") => s[4..].parse::<u8>().map(Var::Arg).map_err(|_| ()),
                 _ => Err(()),
             }
         }
@@ -324,6 +357,7 @@ mod tests {
                 Var::Modifier(Ability::Wisdom) => Ok(1),
                 Var::Modifier(Ability::Charisma) => Ok(4),
                 Var::Ac => Ok(self.ac),
+                Var::Arg(_) => Ok(0),
             }
         }
     }
@@ -360,7 +394,7 @@ mod tests {
         // 10 + CHA + DEX
         let expr: Expr = "10 + CHA + DEX".parse().unwrap();
         assert_eq!(
-            &*expr,
+            &**expr,
             &[
                 Op::PushConst(10),
                 Op::PushVar(Var::Modifier(Ability::Charisma)),
@@ -380,7 +414,7 @@ mod tests {
 
         let expr: Expr = "AC + 5; AC - 5; (AC - 5) * 2".parse().unwrap();
         assert_eq!(
-            &*expr,
+            &**expr,
             &[
                 Op::PushVar(Var::Ac),
                 Op::PushConst(5),
@@ -436,13 +470,13 @@ mod tests {
     fn dice_parse() {
         let expr: Expr = "2d6".parse().unwrap();
         assert_eq!(
-            &*expr,
+            &**expr,
             &[Op::PushConst(2), Op::PushConst(6), Op::Roll, Op::Sum]
         );
 
         let expr: Expr = "4d6kh3".parse().unwrap();
         assert_eq!(
-            &*expr,
+            &**expr,
             &[Op::PushConst(4), Op::PushConst(6), Op::Roll, Op::KeepMax(3)]
         );
     }
@@ -545,7 +579,7 @@ mod tests {
     fn exploding_dice_parse() {
         let expr: Expr = "3d8!".parse().unwrap();
         assert_eq!(
-            &*expr,
+            &**expr,
             &[Op::PushConst(3), Op::PushConst(8), Op::Roll, Op::Explode]
         );
     }
@@ -832,5 +866,73 @@ mod tests {
                 "avg_hp({sides}) should be {expected}"
             );
         }
+    }
+
+    #[wasm_bindgen_test]
+    fn guard_syntax() {
+        let mut ch = test_character();
+
+        // Display round-trip
+        let expr: Expr = "guard(AC >= 13, AC += 2)".parse().unwrap();
+        assert_eq!(expr.to_string(), "guard(AC >= 13, AC += 2)");
+
+        // Guard passes: AC=15 >= 13 → AC += 2
+        ch.ac = 15;
+        assert_eq!(expr.apply(&mut ch).unwrap(), 17);
+        assert_eq!(ch.ac, 17);
+
+        // Guard fails: AC=10 < 13 → error
+        ch.ac = 10;
+        assert_eq!(expr.apply(&mut ch), Err(Error::GuardFailed));
+
+        // Guard inside if
+        let expr: Expr = "if(1, guard(AC >= 13, AC += 1))".parse().unwrap();
+        assert_eq!(expr.to_string(), "if(1, guard(AC >= 13, AC += 1))");
+    }
+
+    fn is_arg(var: &Var) -> Option<u8> {
+        match var {
+            Var::Arg(n) => Some(*n),
+            _ => None,
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn analyze_guard_prunes_args() {
+        let character = test_character(); // AC=15
+
+        // guard(AC >= 13, AC += ARG.0) — AC=15 >= 13, so ARG.0 is active
+        let expr: Expr = "guard(AC >= 13, AC += ARG.0)".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert_eq!(analysis.active_args, vec![0]);
+
+        // guard(AC >= 20, AC += ARG.0) — AC=15 < 20, so ARG.0 is pruned
+        let expr: Expr = "guard(AC >= 20, AC += ARG.0)".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert!(analysis.active_args.is_empty());
+
+        // Expertise-like pattern: outer if with interactive sum check, inner guards
+        // AC=15 → guard(AC>=13) passes, guard(AC>=20) fails, guard(AC>=10) passes
+        let expr: Expr =
+            "if(ARG.0 + ARG.1 + ARG.2 == 2, guard(AC >= 13, AC += ARG.0); guard(AC >= 20, AC += ARG.1); guard(AC >= 10, AC += ARG.2))"
+                .parse()
+                .unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        // Outer cond ARGs are NOT in active_args (conditions excluded).
+        // Only body ARGs from true guards: AC>=13 → ARG.0, AC>=20 false → pruned,
+        // AC>=10 → ARG.2.
+        let mut active = analysis.active_args.clone();
+        active.sort();
+        assert_eq!(active, vec![0, 2]);
+    }
+
+    #[wasm_bindgen_test]
+    fn analyze_collects_dice() {
+        let character = test_character();
+        let expr: Expr = "2d6 + 1d8".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert_eq!(analysis.dice_rolls.get(&6), Some(&2));
+        assert_eq!(analysis.dice_rolls.get(&8), Some(&1));
+        assert!(analysis.active_args.is_empty());
     }
 }

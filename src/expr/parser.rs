@@ -3,7 +3,7 @@ use std::{iter::Peekable, marker::PhantomData, ops::Neg, str::FromStr};
 use crate::expr::{
     Op,
     error::Error,
-    ops::Cmp,
+    ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex, Cmp},
     tokenizer::{Token, Tokenizer},
 };
 
@@ -336,6 +336,9 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
             "if" => {
                 self.parse_if(ops)?;
             }
+            "guard" => {
+                self.parse_guard(ops)?;
+            }
             _ => return Err(Error::unexpected_token(name)),
         }
 
@@ -371,12 +374,11 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         ops.push(Op::Eval(cond_block));
         self.expect(|token| matches!(token, Token::Comma))?;
         let then_block = self.parse_sub_block()?;
-        // Optional else-branch (0 = noop)
         let else_block = if let Some(Token::Comma) = self.peek() {
             self.next()?;
             self.parse_sub_block()?
         } else {
-            0
+            BLOCK_NOOP
         };
         self.expect(|token| matches!(token, Token::RParen))?;
         // EvalIf pops cond, branches to then or else block
@@ -384,11 +386,21 @@ impl<'a, Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> Parser<'a
         Ok(())
     }
 
-    fn parse_sub_block(&mut self) -> Result<u8, Error> {
+    fn parse_guard(&mut self, ops: &mut Vec<Op<Var, Val>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        let cond_block = self.parse_sub_block()?;
+        ops.push(Op::Eval(cond_block));
+        self.expect(|token| matches!(token, Token::Comma))?;
+        let then_block = self.parse_sub_block()?;
+        self.expect(|token| matches!(token, Token::RParen))?;
+        ops.push(Op::EvalIf(then_block, BLOCK_ERROR));
+        Ok(())
+    }
+
+    fn parse_sub_block(&mut self) -> Result<BlockIndex, Error> {
         let mut block_ops = Vec::new();
         self.parse_assignment(&mut block_ops)?;
-        // 1-based: block 0 is reserved (main block / "no block")
-        let idx = self.blocks.len() as u8 + 1;
+        let idx = self.blocks.len() as BlockIndex + 1;
         self.blocks.push(block_ops);
         Ok(idx)
     }

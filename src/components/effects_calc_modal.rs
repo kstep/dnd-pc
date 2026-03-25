@@ -1,12 +1,13 @@
 use std::collections::BTreeMap;
 
 use leptos::{html, prelude::*};
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{expr_view::ExprView, modal::Modal},
-    expr::{self, DicePool, Eval},
-    model::{Attribute, Character, EffectDefinition},
+    components::{expr_view::ExprView, icon::Icon, modal::Modal},
+    expr::{self, DicePool},
+    model::{Attribute, Character, EffectDefinition, FeatureData, FeatureValue},
 };
 
 // --- Read-only context for effect calculation ---
@@ -17,8 +18,8 @@ struct CalcContext<'a> {
 }
 
 impl expr::Context<Attribute, i32> for CalcContext<'_> {
-    fn assign(&mut self, var: Attribute, _value: i32) -> Result<(), expr::Error> {
-        Err(expr::Error::read_only_var(var))
+    fn assign(&mut self, _var: Attribute, _value: i32) -> Result<(), expr::Error> {
+        Ok(())
     }
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
@@ -35,6 +36,26 @@ pub struct EffectsCalcInfo {
     pub title: String,
     pub effects: Vec<EffectDefinition>,
     pub extra_vars: BTreeMap<Attribute, i32>,
+}
+
+/// Populate `extra_vars` with resource field values (POINTS/POINTS_MAX) from
+/// a feature's data entry. Finds the first Points or Die field.
+pub fn inject_resource_vars(extra_vars: &mut BTreeMap<Attribute, i32>, entry: &FeatureData) {
+    for field in &entry.fields {
+        match &field.value {
+            FeatureValue::Points { used, max } => {
+                extra_vars.insert(Attribute::Points, (*max - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax, *max as i32);
+                return;
+            }
+            FeatureValue::Die { die, used } => {
+                extra_vars.insert(Attribute::Points, (die.amount - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax, die.amount as i32);
+                return;
+            }
+            _ => {}
+        }
+    }
 }
 
 // --- Effects calculator modal ---
@@ -75,14 +96,21 @@ pub fn EffectsCalcModal(
 
                     if rolls.is_empty() {
                         // No dice — evaluate immediately
-                        let result = effect.expr.eval(&ctx).ok();
+                        let result = effect.expr.eval_lenient(&ctx).ok();
+                        let result_view = result.map_or_else(
+                            || view! { <span class="effects-calc-error">"\u{2014}"</span> }.into_any(),
+                            |v| v.into_any(),
+                        );
                         view! {
                             <div class="effects-calc-row">
                                 <div class="effects-calc-header">
                                     <span class="effects-calc-label">{label}</span>
-                                    <ExprView expr />
-                                    <strong class="effects-calc-result">{result}</strong>
+                                    <strong class="effects-calc-result">{result_view}</strong>
                                 </div>
+                                <details class="effects-calc-expr">
+                                    <summary>{move_tr!("show-expression")}</summary>
+                                    <ExprView expr />
+                                </details>
                             </div>
                         }
                         .into_any()
@@ -93,7 +121,8 @@ pub fn EffectsCalcModal(
                         let expr = effect.expr.clone();
                         let extra_vars = info.extra_vars.clone();
 
-                        // Create NodeRef groups per die type
+                        // Create NodeRef groups per die type — also
+                        // collected into all_groups for the reset button
                         let groups: BTreeMap<u32, Vec<NodeRef<html::Input>>> = rolls
                             .iter()
                             .map(|(&sides, &count)| {
@@ -176,15 +205,47 @@ pub fn EffectsCalcModal(
                                 .collect_view()
                         });
 
+                        let reset = move |_: web_sys::MouseEvent| {
+                            groups.with_value(|groups| {
+                                let mut first = true;
+                                for refs in groups.values() {
+                                    for node_ref in refs {
+                                        if let Some(el) = node_ref.get() {
+                                            el.set_value("");
+                                            if first {
+                                                let _ = el.focus();
+                                                first = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            result.set(None);
+                        };
+
                         view! {
                             <div class="effects-calc-row">
                                 <div class="effects-calc-header">
                                     <span class="effects-calc-label">{label}</span>
-                                    <ExprView expr=formula_expr />
                                     <strong class="effects-calc-result">
-                                        {result}
+                                        {move || result.get().map_or_else(
+                                            || view! { <span class="effects-calc-error">"\u{2014}"</span> }.into_any(),
+                                            |v| v.into_any(),
+                                        )}
                                     </strong>
+                                    <button
+                                        type="button"
+                                        class="effects-calc-reset"
+                                        title=move_tr!("reset")
+                                        on:click=reset
+                                    >
+                                        <Icon name="rotate-ccw" size=14 />
+                                    </button>
                                 </div>
+                                <details class="effects-calc-expr">
+                                    <summary>{move_tr!("show-expression")}</summary>
+                                    <ExprView expr=formula_expr />
+                                </details>
                                 <div class="dice-pool-groups">{group_views}</div>
                             </div>
                         }

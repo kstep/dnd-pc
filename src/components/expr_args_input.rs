@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use reactive_stores::Store;
 
 use crate::{
-    expr::{self, Context, Expr, Op},
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, Expr, Op},
     model::{Attribute, Character},
 };
 
@@ -71,10 +71,14 @@ impl FormBuilder {
         Ok(())
     }
 
-    fn exec_op(&mut self, op: Op<Attribute, i32>) -> Result<(), expr::Error> {
+    fn exec_op(
+        &mut self,
+        op: Op<Attribute, i32>,
+        i18n: &leptos_fluent::I18n,
+    ) -> Result<(), expr::Error> {
         match op {
             Op::PushConst(n) => self.push_text(n),
-            Op::PushVar(var) => self.push_text(var),
+            Op::PushVar(var) => self.push_text(var.display_name(i18n)),
             Op::Add => self.binary_op("+")?,
             Op::Sub => self.binary_op("-")?,
             Op::Mul => self.binary_op("*")?,
@@ -121,7 +125,7 @@ impl FormBuilder {
             Op::Cmp(cmp) => self.binary_op(cmp.symbol())?,
             Op::Assign(var) => {
                 let val = self.pop()?;
-                let var_s = var.to_string();
+                let var_s = var.display_name(i18n);
                 self.0.push(view! { <>{var_s}" = "{val}</> }.into_any());
             }
             Op::In => {
@@ -155,42 +159,59 @@ impl FormBuilder {
 
 // --- form_block: recursive block walker producing views ---
 
-fn form_block(
-    expr: &Expr<Attribute, i32>,
-    block: usize,
-    args: &mut Vec<RwSignal<i32>>,
-    seen: &mut BTreeSet<u8>,
-) -> Result<AnyView, expr::Error> {
-    let ops = expr.block(block);
+/// Context for form building: tracks which ARGs are active (from analysis),
+/// which have been seen (first occurrence = input, later = read-only ref),
+/// and the arg signals.
+struct FormCtx {
+    args: Vec<RwSignal<i32>>,
+    seen: BTreeSet<u8>,
+    active_args: BTreeSet<u8>,
+    i18n: leptos_fluent::I18n,
+}
 
-    // Split on statement boundaries (Assign ops) and check each for compound
-    // assignment patterns.
-    let mut stmts: Vec<&[Op<Attribute, i32>]> = Vec::new();
-    let mut start = 0;
-    for (i, op) in ops.iter().enumerate() {
-        if matches!(op, Op::Assign(_)) {
-            stmts.push(&ops[start..=i]);
-            start = i + 1;
+impl FormCtx {
+    fn new(active_args: Vec<u8>, i18n: leptos_fluent::I18n) -> Self {
+        Self {
+            args: Vec::new(),
+            seen: BTreeSet::new(),
+            active_args: active_args.into_iter().collect(),
+            i18n,
         }
     }
-    if start < ops.len() {
-        stmts.push(&ops[start..]);
+
+    fn is_active(&self, n: u8) -> bool {
+        self.active_args.contains(&n)
     }
+}
+
+fn form_block(
+    expr: &Expr<Attribute, i32>,
+    block: expr::BlockIndex,
+    ctx: &mut FormCtx,
+    condition: bool,
+) -> Result<AnyView, expr::Error> {
+    let block = expr.block(block);
 
     let mut fb = FormBuilder::new();
-    for stmt in stmts {
-        if let Some(ca) = Op::detect_compound(stmt) {
+    for stmt in block.statements() {
+        if let Some(ca) = Block::detect_compound(stmt) {
             let assign_var = match stmt.last() {
                 Some(Op::Assign(var)) => *var,
                 _ => unreachable!(),
             };
-            form_block_ops(&mut fb, expr, &stmt[ca.rhs_start..ca.rhs_end], args, seen)?;
+            form_block_ops(
+                &mut fb,
+                expr,
+                &stmt[ca.rhs_start..ca.rhs_end],
+                ctx,
+                condition,
+            )?;
             let rhs = fb.pop()?;
-            let var_s = assign_var.to_string();
+            let var_s = assign_var.display_name(&ctx.i18n);
             let sym = ca.sym;
             fb.push_view(view! { <>{var_s}" "{sym}"= "{rhs}</> }.into_any());
         } else {
-            form_block_ops(&mut fb, expr, stmt, args, seen)?;
+            form_block_ops(&mut fb, expr, stmt, ctx, condition)?;
         }
     }
     fb.finish()
@@ -200,18 +221,20 @@ fn form_block_ops(
     fb: &mut FormBuilder,
     expr: &Expr<Attribute, i32>,
     ops: &[Op<Attribute, i32>],
-    args: &mut Vec<RwSignal<i32>>,
-    seen: &mut BTreeSet<u8>,
+    ctx: &mut FormCtx,
+    condition: bool,
 ) -> Result<(), expr::Error> {
     for &op in ops {
         match op {
             Op::PushVar(Attribute::Arg(n)) => {
                 let idx = n as usize;
-                if args.len() <= idx {
-                    args.resize_with(idx + 1, || RwSignal::new(0));
+                if ctx.args.len() <= idx {
+                    ctx.args.resize_with(idx + 1, || RwSignal::new(0));
                 }
-                let signal = args[idx];
-                if seen.insert(n) {
+                let signal = ctx.args[idx];
+                // In condition context or inactive ARG: always a ref.
+                // In body context + active + first occurrence: input.
+                if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
                     fb.push_view(
                         view! {
                             <input
@@ -234,22 +257,34 @@ fn form_block_ops(
                 }
             }
             Op::Eval(idx) => {
-                let sub = form_block(expr, idx as usize, args, seen)?;
+                let sub = form_block(expr, idx, ctx, true)?;
                 fb.push_view(sub);
             }
             Op::EvalIf(then_idx, else_idx) => {
                 let cond = fb.pop()?;
-                let then_view = form_block(expr, then_idx as usize, args, seen)?;
-                if else_idx == 0 {
-                    fb.push_view(view! { <>"if("{cond}", "{then_view}")"</> }.into_any());
-                } else {
-                    let else_view = form_block(expr, else_idx as usize, args, seen)?;
+                let is_active_arg =
+                    |var: &Attribute| matches!(var, Attribute::Arg(n) if ctx.is_active(*n));
+                let then_has_args = expr.block_has_var(then_idx, &is_active_arg);
+                let else_has_args =
+                    else_idx != BLOCK_NOOP && expr.block_has_var(else_idx, &is_active_arg);
+
+                if !then_has_args && !else_has_args {
+                    continue;
+                }
+
+                let then_view = form_block(expr, then_idx, ctx, false)?;
+                if else_idx == BLOCK_NOOP || else_idx == BLOCK_ERROR {
+                    fb.push_view(then_view);
+                } else if else_has_args {
+                    let else_view = form_block(expr, else_idx, ctx, false)?;
                     fb.push_view(
                         view! { <>"if("{cond}", "{then_view}", "{else_view}")"</> }.into_any(),
                     );
+                } else {
+                    fb.push_view(view! { <>"if("{cond}", "{then_view}")"</> }.into_any());
                 }
             }
-            op => fb.exec_op(op)?,
+            op => fb.exec_op(op, &ctx.i18n)?,
         }
     }
     Ok(())
@@ -265,6 +300,13 @@ pub struct ExprArgsInputParts {
     pub is_valid: Memo<bool>,
 }
 
+fn is_arg(var: &Attribute) -> Option<u8> {
+    match var {
+        Attribute::Arg(n) => Some(*n),
+        _ => None,
+    }
+}
+
 /// Renders the interactive formula with number inputs for `ARG.n` variables.
 /// No submit button — the parent is responsible for submission. Calls
 /// `on_ready` synchronously during build with the signals and validation memo.
@@ -275,56 +317,51 @@ pub fn ExprArgsInput(
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    // Detect if(cond, then) pattern: Eval(cond_id) EvalIf(then_id, 0)
-    let Some((cond_id, then_id)) = expr.windows(2).find_map(|w| match w {
-        [Op::Eval(cond), Op::EvalIf(then, 0)] => Some((*cond as usize, *then as usize)),
-        _ => None,
-    }) else {
+    // Analyze: determine which ARGs are reachable given character state
+    let analysis = {
+        let character = store.read_untracked();
+        expr.analyze(&*character, is_arg)
+    };
+
+    if analysis.active_args.is_empty() {
         on_ready(ExprArgsInputParts {
             rw_signals: Vec::new(),
             is_valid: Memo::new(|_| true),
         });
         return view! { <span class="expr-form-plain">{expr.to_string()}</span> }.into_any();
-    };
+    }
 
-    let mut args = Vec::new();
-    let mut seen = BTreeSet::new();
-    let formula_view = form_block(&expr, then_id, &mut args, &mut seen)
-        .unwrap_or_else(|e| format!("Error: {e}").into_any());
+    let i18n = expect_context::<leptos_fluent::I18n>();
 
-    let arg_signals: Vec<Signal<i32>> = args.iter().map(|s| (*s).into()).collect();
+    // Build form from all blocks, using analysis to filter visible ARGs
+    let mut form_ctx = FormCtx::new(analysis.active_args, i18n);
+    let formula_view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
+        .unwrap_or_else(|err| format!("Error: {err}").into_any());
+
+    let arg_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
     let arg_signals_stored = StoredValue::new(arg_signals);
 
-    let cond_expr = expr.clone();
+    // Validation: evaluate the full expression with current ARG values
+    let eval_expr = expr.clone();
     let is_valid = Memo::new(move |_| {
         let character = store.read();
-        arg_signals_stored.with_value(|sigs| {
+        arg_signals_stored.with_value(|signals| {
             let ctx = ArgContext {
                 character: &character,
-                args: sigs,
+                args: signals,
             };
-            cond_expr.eval_block(cond_id, &ctx).is_ok_and(|v| v != 0)
+            eval_expr.eval_lenient(&ctx).is_ok_and(|v| v != 0)
         })
     });
 
-    // Render condition with same arg signals (all marked seen → read-only spans)
-    let mut cond_args = args.clone();
-    let mut cond_seen = seen;
-    let cond_view = form_block(&expr, cond_id, &mut cond_args, &mut cond_seen)
-        .unwrap_or_else(|e| format!("Error: {e}").into_any());
-
     on_ready(ExprArgsInputParts {
-        rw_signals: args,
+        rw_signals: form_ctx.args,
         is_valid,
     });
 
     view! {
-        <div class="expr-formula">{formula_view}</div>
-        <div class="expr-condition" class:invalid=move || !is_valid.get()>
-            <span class="expr-condition-result">
-                {move || if is_valid.get() { "\u{2713}" } else { "\u{2717}" }}
-            </span>
-            {cond_view}
+        <div class="expr-formula" class:invalid=move || !is_valid.get()>
+            {formula_view}
         </div>
     }
     .into_any()

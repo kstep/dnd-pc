@@ -66,9 +66,14 @@ fn ArgsFeatureInput(
         all_valid.update(|v| v.push(parts.is_valid));
     };
 
+    let description = pa.feature_description.clone();
+    let has_description = !description.is_empty();
     view! {
         <div class="args-modal-feature">
             <h4>{pa.feature_label.clone()}</h4>
+            <Show when=move || has_description>
+                <p class="args-modal-description">{description.clone()}</p>
+            </Show>
             <ExprArgsInput expr=pa.expr.clone() on_ready />
         </div>
     }

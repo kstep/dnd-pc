@@ -18,6 +18,7 @@ use crate::{
 pub struct PendingArgs {
     pub feature_name: String,
     pub feature_label: String,
+    pub feature_description: String,
     pub expr: Expr<Attribute>,
 }
 
@@ -403,6 +404,7 @@ impl RulesRegistry {
                     result.push(PendingArgs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
+                        feature_description: feat.description.clone(),
                         expr: expr.clone(),
                     });
                 }
@@ -423,6 +425,7 @@ impl RulesRegistry {
             feat.args_expr(when).map(|expr| PendingArgs {
                 feature_name: name.to_string(),
                 feature_label: feat.label().to_string(),
+                feature_description: feat.description.clone(),
                 expr: expr.clone(),
             })
         })
@@ -470,6 +473,7 @@ impl RulesRegistry {
                     result.push(PendingArgs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
+                        feature_description: feat.description.clone(),
                         expr: expr.clone(),
                     });
                 }
