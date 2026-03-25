@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Animated dnd-pc logo">
+  <style>
+    .gear {
+      transform-origin: 512px 512px;
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <g class="gear">
+    <path d="M 462 127 L 451 133 L 435 200 L 395 212 L 354 232 L 309 203 L 299 202 L 272 224 L 211 288 L 208 300 L 239 345 L 218 388 L 207 428 L 143 444 L 139 450 L 138 561 L 145 572 L 207 584 L 220 629 L 241 668 L 210 713 L 209 726 L 263 783 L 293 809 L 300 812 L 308 811 L 353 782 L 389 801 L 434 815 L 449 876 L 456 884 L 564 885 L 573 878 L 588 815 L 631 802 L 669 782 L 718 812 L 726 811 L 767 776 L 811 730 L 814 717 L 781 669 L 801 633 L 815 584 L 874 573 L 883 565 L 884 452 L 875 442 L 815 428 L 804 387 L 784 346 L 812 305 L 814 293 L 790 264 L 731 207 L 722 202 L 715 202 L 669 232 L 638 216 L 587 199 L 573 135 L 568 129 Z" fill="#1F2937"/>
+  </g>
+
+  <g class="die">
+    <path d="M 303 601 L 503 742 L 502 612 Z M 719 599 L 520 613 L 520 742 Z M 612 423 L 524 599 L 719 587 Z M 409 423 L 304 588 L 498 599 Z M 421 411 L 511 589 L 600 411 Z M 621 409 L 729 577 L 729 384 Z M 399 409 L 292 384 L 292 577 Z M 427 399 L 594 398 L 510 267 Z M 496 265 L 303 372 L 410 397 Z M 524 263 L 611 397 L 720 372 Z" fill="#F59E0B"/>
+  </g>
+</svg>
