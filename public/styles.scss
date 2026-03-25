@@ -183,7 +183,15 @@ input[type="checkbox"] {
 }
 
 .character-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-3);
   margin: var(--size-4) 0;
+
+  .header-logo {
+    height: 2.5rem;
+    width: auto;
+  }
 }
 
 .character-list-actions {

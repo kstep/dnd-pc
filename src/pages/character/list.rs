@@ -50,6 +50,7 @@ pub fn CharacterList() -> impl IntoView {
             Either::Right(view! {
                     <div class="character-list-page">
                         <div class="character-list-header">
+                            <img src=format!("{BASE_URL}/icons/logo.svg") alt="" class="header-logo" />
                             <h1>{move_tr!("page-characters")}</h1>
                         </div>
                         <div class="character-list-actions">
