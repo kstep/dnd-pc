@@ -17,53 +17,53 @@ html {
 
 /* --------------------- Variables ----------------------------- */
 :root {
-  --panel-bg: var(--gray-1);
-  --panel-border: var(--gray-4);
-  --panel-header: var(--indigo-7);
-  --input-bg: var(--gray-0);
-  --text-primary: var(--gray-9);
-  --text-secondary: var(--gray-6);
-  --accent: var(--indigo-7);
-  --danger: var(--red-7);
-  --success: var(--green-7);
+  --panel-bg: #F3F1EC;
+  --panel-border: #D5D0C8;
+  --panel-header: #1F2937;
+  --input-bg: #FAF9F7;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --accent: #D97706;
+  --danger: #991B1B;
+  --success: #065F46;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --panel-bg: var(--gray-9);
-    --panel-border: var(--gray-7);
-    --panel-header: var(--indigo-4);
-    --input-bg: var(--gray-8);
-    --text-primary: var(--gray-1);
-    --text-secondary: var(--gray-4);
-    --accent: var(--indigo-4);
-    --danger: var(--red-4);
-    --success: var(--green-4);
+    --panel-bg: #1F2937;
+    --panel-border: #374151;
+    --panel-header: #FBBF24;
+    --input-bg: #111827;
+    --text-primary: #F3F1EC;
+    --text-secondary: #9CA3AF;
+    --accent: #FBBF24;
+    --danger: #FCA5A5;
+    --success: #6EE7B7;
   }
 }
 
 [data-theme="dark"] {
-  --panel-bg: var(--gray-9);
-  --panel-border: var(--gray-7);
-  --panel-header: var(--indigo-4);
-  --input-bg: var(--gray-8);
-  --text-primary: var(--gray-1);
-  --text-secondary: var(--gray-4);
-  --accent: var(--indigo-4);
-  --danger: var(--red-4);
-  --success: var(--green-4);
+  --panel-bg: #1F2937;
+  --panel-border: #374151;
+  --panel-header: #FBBF24;
+  --input-bg: #111827;
+  --text-primary: #F3F1EC;
+  --text-secondary: #9CA3AF;
+  --accent: #FBBF24;
+  --danger: #FCA5A5;
+  --success: #6EE7B7;
 }
 
 [data-theme="light"] {
-  --panel-bg: var(--gray-1);
-  --panel-border: var(--gray-4);
-  --panel-header: var(--indigo-7);
-  --input-bg: var(--gray-0);
-  --text-primary: var(--gray-9);
-  --text-secondary: var(--gray-6);
-  --accent: var(--indigo-7);
-  --danger: var(--red-7);
-  --success: var(--green-7);
+  --panel-bg: #F3F1EC;
+  --panel-border: #D5D0C8;
+  --panel-header: #1F2937;
+  --input-bg: #FAF9F7;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --accent: #D97706;
+  --danger: #991B1B;
+  --success: #065F46;
 }
 
 /* --------------------- Base ---------------------------------- */
@@ -1728,8 +1728,8 @@ select.entry-name {
   }
 
   &.natural-level {
-    border-color: var(--indigo-4);
-    color: var(--indigo-4);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .slot-remaining {
