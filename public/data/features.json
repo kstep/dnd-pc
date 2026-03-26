@@ -8546,7 +8546,28 @@
     "name": "Elusive"
   },
   {
-    "name": "Stroke of Luck"
+    "name": "Stroke of Luck",
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "20": 1
+        }
+      },
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Free Uses",
+        "options": [
+          {
+            "name": "Stroke of Luck",
+            "action": "Action",
+            "cost": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Mage Hand Legerdemain",

@@ -90,7 +90,7 @@ fn import_character(store: Store<Character>) {
 
 fn apply_with_args_modal(
     pending: Vec<crate::rules::PendingArgs>,
-    apply: impl Fn(Option<&BTreeMap<String, Vec<i32>>>) + Copy + Send + Sync + 'static,
+    apply: impl Fn(Option<&BTreeMap<String, Vec<Vec<i32>>>>) + Copy + Send + Sync + 'static,
 ) {
     if pending.is_empty() {
         apply(None);
@@ -109,11 +109,7 @@ pub fn apply_level(
     let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
     apply_with_args_modal(pending, move |args_map| {
         store.update(|c| {
-            if let Some(args_map) = args_map {
-                registry.apply_class_level_with_args(c, class_index, level, args_map);
-            } else {
-                registry.apply_class_level(c, class_index, level);
-            }
+            registry.apply_class_level(c, class_index, level, args_map);
         });
     });
 }

@@ -54,7 +54,7 @@ use rules::RulesRegistry;
 
 #[component]
 pub fn App() -> impl IntoView {
-    provide_i18n_context();
+    untrack(provide_i18n_context);
     provide_meta_context();
 
     let theme = use_theme();

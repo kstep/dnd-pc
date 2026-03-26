@@ -7,8 +7,8 @@ use crate::{
     demap::{self, Named},
     expr::{self, Eval as _, Expr},
     model::{
-        ArgsContext, Armor, ArmorType, Attribute, Character, Context, Die, EffectDefinition,
-        Feature, FeatureField, FeatureSource, FeatureValue, Translatable,
+        Armor, ArmorType, AssignArgs, Attribute, Character, Context, Die, EffectDefinition,
+        FeatureField, FeatureSource, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
     vecset::VecSet,
@@ -267,33 +267,71 @@ impl FeatureDefinition {
     /// Returns `true` if any assignment for the given condition references
     /// `ARG.n` variables (meaning the user must supply arguments before apply).
     pub fn needs_args(&self, when: WhenCondition) -> bool {
-        self.assign.as_ref().is_some_and(|assignments| {
-            assignments
-                .iter()
-                .any(|a| a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
-        })
+        self.args_exprs(when).next().is_some()
     }
 
-    /// Returns the first assignment expression for the given condition that
-    /// uses `ARG.n` variables. Used to build the `ExprArgsInput` UI.
-    pub fn args_expr(&self, when: WhenCondition) -> Option<&Expr<Attribute>> {
-        self.assign.as_ref()?.iter().find_map(|a| {
-            (a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
-                .then_some(&a.expr)
-        })
+    /// Returns all assignment expressions for the given condition that use
+    /// `ARG.n` variables. Each gets its own independent ARG context in the UI.
+    pub fn args_exprs(&self, when: WhenCondition) -> impl Iterator<Item = &Expr<Attribute>> + '_ {
+        self.assign
+            .iter()
+            .flatten()
+            .filter(move |a| a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
+            .map(|a| &a.expr)
     }
 
-    pub fn assign(&self, context: &mut impl expr::Context<Attribute, i32>, when: WhenCondition) {
+    pub fn assign(
+        &self,
+        context: &mut impl expr::Context<Attribute, i32>,
+        when: WhenCondition,
+        args: Option<impl Iterator<Item = Vec<i32>>>,
+    ) {
         let Some(assign) = &self.assign else { return };
 
-        assign.iter().filter(|a| a.when == when).for_each(|a| {
-            if let Err(error) = a.expr.apply(context) {
+        struct WithArgs<'a, C> {
+            inner: &'a mut C,
+            args: Vec<i32>,
+        }
+        impl<C: expr::Context<Attribute, i32>> expr::Context<Attribute, i32> for WithArgs<'_, C> {
+            fn assign(&mut self, var: Attribute, val: i32) -> Result<(), expr::Error> {
+                self.inner.assign(var, val)
+            }
+
+            fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+                match var {
+                    Attribute::Arg(n) => self
+                        .args
+                        .get(n as usize)
+                        .copied()
+                        .ok_or_else(|| expr::Error::unsupported_var(var)),
+                    other => self.inner.resolve(other),
+                }
+            }
+        }
+
+        let mut args = args;
+        for a in assign.iter().filter(|a| a.when == when) {
+            let has_args = a.expr.has_var(|v| matches!(v, Attribute::Arg(_)));
+            let result = if has_args {
+                if let Some(arg_values) = args.as_mut().and_then(|iter| iter.next()) {
+                    let mut ctx = WithArgs {
+                        inner: context,
+                        args: arg_values,
+                    };
+                    a.expr.apply(&mut ctx)
+                } else {
+                    continue;
+                }
+            } else {
+                a.expr.apply(context)
+            };
+            if let Err(error) = result {
                 log::error!(
                     "Failed to apply assignment for feature '{}': {error:?}",
                     self.name,
                 );
             }
-        });
+        }
     }
 
     pub fn apply(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
@@ -305,22 +343,29 @@ impl FeatureDefinition {
         level: u32,
         character: &mut Character,
         source: Option<&FeatureSource>,
-        args: Option<Vec<i32>>,
+        args: Option<Vec<Vec<i32>>>,
     ) {
-        let when = if character.feature_data.contains_key(&self.name) {
-            WhenCondition::OnLevelUp
-        } else {
-            if !character.features.iter().any(|f| f.name == self.name) {
-                character.features.push(Feature {
-                    name: self.name.clone(),
-                    label: self.label.clone(),
-                    description: self.description.clone(),
-                });
-            }
+        let is_new = character.mark_feature_applied(
+            &self.name,
+            self.label.clone(),
+            self.description.clone(),
+        );
+        let when = if is_new {
             WhenCondition::OnFeatureAdd
+        } else {
+            WhenCondition::OnLevelUp
         };
 
         character.languages.extend(self.languages.iter().cloned());
+
+        if let Some(ref args) = args {
+            character
+                .feature_data
+                .entry(self.name.clone())
+                .or_default()
+                .args
+                .extend(args.iter().map(|v| AssignArgs { values: v.clone() }));
+        }
 
         let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
             let free_uses_max = self.free_uses_max(level, character);
@@ -339,17 +384,7 @@ impl FeatureDefinition {
             caster_level,
             caster_modifier,
         };
-        if let Some(args) = args {
-            self.assign(
-                &mut ArgsContext {
-                    inner: context,
-                    args,
-                },
-                when,
-            );
-        } else {
-            self.assign(&mut context, when);
-        }
+        self.assign(&mut context, when, args.map(|v| v.into_iter()));
 
         self.apply_fields(level, character, source);
 

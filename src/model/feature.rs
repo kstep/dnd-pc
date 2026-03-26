@@ -11,6 +11,8 @@ pub struct Feature {
     pub label: Option<String>,
     #[serde(default)]
     pub description: String,
+    #[serde(default)]
+    pub applied: bool,
 }
 
 impl Feature {
@@ -47,9 +49,16 @@ impl FeatureSource {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+pub struct AssignArgs {
+    pub values: Vec<i32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct FeatureData {
     #[serde(default)]
     pub source: Option<FeatureSource>,
+    #[serde(default)]
+    pub args: Vec<AssignArgs>,
     #[serde(default)]
     pub fields: Vec<FeatureField>,
     #[serde(default)]

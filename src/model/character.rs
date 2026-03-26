@@ -495,6 +495,53 @@ impl Character {
             .map(|(&pool, _)| pool)
     }
 
+    /// Returns `true` if a feature should use `OnFeatureAdd`: either it has no
+    /// entries at all (brand new) or has at least one unapplied entry.
+    pub fn is_feature_pending(&self, name: &str) -> bool {
+        let mut has_applied = false;
+        let mut has_unapplied = false;
+        for feature in &self.features {
+            if feature.name == name {
+                if feature.applied {
+                    has_applied = true;
+                } else {
+                    has_unapplied = true;
+                }
+            }
+        }
+        !has_applied || has_unapplied
+    }
+
+    /// Find an unapplied feature entry and mark it applied, or push a new one.
+    /// Returns `true` if this is a first-time application (OnFeatureAdd).
+    pub fn mark_feature_applied(
+        &mut self,
+        name: &str,
+        label: Option<String>,
+        description: String,
+    ) -> bool {
+        if let Some(feature) = self
+            .features
+            .iter_mut()
+            .rfind(|f| f.name == name && !f.applied)
+        {
+            feature.applied = true;
+            feature.label = label;
+            feature.description = description;
+            true
+        } else if self.features.iter().any(|f| f.name == name) {
+            false
+        } else {
+            self.features.push(Feature {
+                name: name.to_string(),
+                label,
+                description,
+                applied: true,
+            });
+            true
+        }
+    }
+
     /// Clear all labels and descriptions (blanket clear).
     pub fn clear_all_labels(&mut self) {
         for cl in &mut self.identity.classes {
@@ -699,28 +746,6 @@ impl expr::Context<Attribute, i32> for Context<'_> {
     }
 }
 
-pub struct ArgsContext<'a> {
-    pub inner: Context<'a>,
-    pub args: Vec<i32>,
-}
-
-impl expr::Context<Attribute, i32> for ArgsContext<'_> {
-    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-        self.inner.assign(var, value)
-    }
-
-    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        match var {
-            Attribute::Arg(n) => self
-                .args
-                .get(n as usize)
-                .copied()
-                .ok_or_else(|| expr::Error::unsupported_var(var)),
-            other => self.inner.resolve(other),
-        }
-    }
-}
-
 #[cfg(test)]
 impl Character {
     pub fn test_character() -> Character {
@@ -776,12 +801,14 @@ impl Character {
                 name: "Bardic Inspiration".to_string(),
                 label: None,
                 description: "Use a bonus action...".to_string(),
+                applied: true,
             }],
             equipment: Equipment::default(),
             feature_data: BTreeMap::from([(
                 "Spellcasting (Bard)".to_string(),
                 FeatureData {
                     source: Some(FeatureSource::Class("Bard".to_string())),
+                    args: Vec::new(),
                     fields: Vec::new(),
                     spells: Some(SpellData {
                         casting_ability: Ability::Charisma,

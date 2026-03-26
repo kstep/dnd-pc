@@ -8,8 +8,8 @@ use crate::{
     rules::PendingArgs,
 };
 
-type ArgsCallback = Box<dyn Fn(BTreeMap<String, Vec<i32>>) + Send + Sync>;
-type ArgsSignals = Vec<(String, StoredValue<Vec<RwSignal<i32>>>)>;
+type ArgsCallback = Box<dyn Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync>;
+type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
@@ -31,11 +31,11 @@ impl ArgsModalCtx {
 
     /// Show the modal for a list of features needing args. When the user
     /// submits, `on_complete` is called with a map of feature name → arg
-    /// values.
+    /// values (one inner Vec per assignment expression).
     pub fn open(
         &self,
         pending: Vec<PendingArgs>,
-        on_complete: impl Fn(BTreeMap<String, Vec<i32>>) + Send + Sync + 'static,
+        on_complete: impl Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync + 'static,
     ) {
         self.pending.set(pending);
         self.callback
@@ -43,7 +43,7 @@ impl ArgsModalCtx {
         self.show.set(true);
     }
 
-    fn complete(&self, args_map: BTreeMap<String, Vec<i32>>) {
+    fn complete(&self, args_map: BTreeMap<String, Vec<Vec<i32>>>) {
         self.callback.with_value(|sig| {
             if let Some(cb) = sig.get_untracked() {
                 cb.with_value(|f| f(args_map));
@@ -61,22 +61,45 @@ fn ArgsFeatureInput(
     all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
     let feature_name = pa.feature_name.clone();
-    let on_ready = move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
-        all_signals.update(|v| v.push((feature_name.clone(), StoredValue::new(parts.rw_signals))));
-        all_valid.update(|v| v.push(parts.is_valid));
-    };
-
     let description = pa.feature_description.clone();
     let has_description = !description.is_empty();
-    let expr = pa.expr.clone();
+
+    // Collect signal groups for all exprs of this feature
+    let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
+        StoredValue::new(Vec::new());
+    let name_for_signals = feature_name.clone();
+
+    let expr_views = pa
+        .exprs
+        .into_iter()
+        .map(|expr| {
+            let on_ready = move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
+                signal_groups.update_value(|groups| {
+                    groups.push(StoredValue::new(parts.rw_signals));
+                });
+                all_valid.update(|v| v.push(parts.is_valid));
+            };
+            view! {
+                <ExprDetails expr=expr.clone() />
+                <ExprArgsInput expr on_ready />
+            }
+        })
+        .collect_view();
+
+    // Register all signal groups for this feature after building
+    all_signals.update(|v| {
+        signal_groups.with_value(|groups| {
+            v.push((name_for_signals.clone(), groups.clone()));
+        });
+    });
+
     view! {
         <div class="args-modal-feature">
             <h4>{pa.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
-            <ExprDetails expr=expr.clone() />
-            <ExprArgsInput expr on_ready />
+            {expr_views}
         </div>
     }
 }
@@ -112,14 +135,18 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let on_submit = move |ev: web_sys::SubmitEvent| {
                     ev.prevent_default();
-                    let mut map = BTreeMap::new();
+                    let mut map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
                     all_signals.with_untracked(|entries| {
-                        for (name, sigs) in entries {
-                            sigs.with_value(|sigs| {
-                                let values: Vec<i32> =
-                                    sigs.iter().map(|s| s.get_untracked()).collect();
-                                map.insert(name.clone(), values);
-                            });
+                        for (name, groups) in entries {
+                            let feature_args: Vec<Vec<i32>> = groups
+                                .iter()
+                                .map(|sigs| {
+                                    sigs.with_value(|sigs| {
+                                        sigs.iter().map(|s| s.get_untracked()).collect()
+                                    })
+                                })
+                                .collect();
+                            map.insert(name.clone(), feature_args);
                         }
                     });
                     ctx.complete(map);

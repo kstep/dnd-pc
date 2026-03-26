@@ -9,17 +9,18 @@ use super::{
 };
 use crate::{
     expr::Expr,
-    model::{Attribute, Character, Context, FeatureSource, FeatureValue},
+    model::{Attribute, Character, Context, Feature, FeatureSource, FeatureValue},
     rules::RulesRegistry,
 };
 
-/// A feature whose assignment expression requires user-supplied ARG values.
+/// A feature whose assignment expressions require user-supplied ARG values.
+/// Each expression in `exprs` gets its own independent ARG context.
 #[derive(Clone, PartialEq)]
 pub struct PendingArgs {
     pub feature_name: String,
     pub feature_label: String,
     pub feature_description: String,
-    pub expr: Expr<Attribute>,
+    pub exprs: Vec<Expr<Attribute>>,
 }
 
 impl RulesRegistry {
@@ -153,113 +154,15 @@ impl RulesRegistry {
         });
     }
 
-    /// Apply class level-up logic. Applies all unapplied levels from last
-    /// applied+1 through the current class level. Handles saving throws,
-    /// proficiencies, spell slots, class/species/background features, and HP.
-    pub fn apply_class_level(&self, character: &mut Character, class_idx: usize, level: u32) {
-        let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
-            return;
-        };
-
-        if class_level.applied_levels.contains(&level) {
-            return;
-        }
-
-        let class_cache = self.class_cache.read_untracked();
-        let Some(def) = class_cache.get(class_level.class.as_str()) else {
-            return;
-        };
-
-        // Mark level as applied only after confirming the definition is loaded
-        class_level.applied_levels.insert(level);
-        let subclass = class_level.subclass.clone();
-        let source = FeatureSource::Class(def.name.clone());
-
-        // Record applied level and set hit die
-        class_level.hit_die_sides = def.hit_die;
-
-        // Apply class features: create SpellData, update slots, apply features
-        let rules = def.levels.get(level as usize - 1);
-        let subclass_rules = subclass
-            .as_deref()
-            .and_then(|sc| def.subclasses.get(sc))
-            .and_then(|sc| sc.levels.get(&level));
-
-        let features_guard = self.features_index.read_untracked();
-        let Some(features_index) = features_guard
-            .as_ref()
-            .and_then(|r| r.as_ref().ok())
-            .map(|idx| &idx.0)
-        else {
-            log::warn!("Features index not loaded yet, skipping level-up");
-            class_level.applied_levels.remove(&level);
-            return;
-        };
-
-        for feat_name in def.feature_names(subclass.as_deref()) {
-            let Some(feat) = features_index.get(feat_name) else {
-                log::warn!("Feature '{feat_name}' not found in index");
-                continue;
-            };
-            let feat_name_string = feat_name.to_string();
-            let is_new = rules.is_some_and(|r| r.features.contains(&feat_name_string))
-                || subclass_rules.is_some_and(|r| r.features.contains(&feat_name_string));
-            let already_has = character.features.iter().any(|f| f.name == feat_name);
-
-            if is_new && already_has && !feat.stackable {
-                continue;
-            }
-
-            if is_new || already_has {
-                feat.apply(level, character, Some(&source));
-            }
-        }
-
-        // Re-apply species and background features at new total level
-        // (unlocks level-gated spells, e.g. Tiefling's Infernal Legacy)
-        let total_level = character.level();
-
-        let species_cache = self.species_cache.read_untracked();
-        if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
-            let source = FeatureSource::Species(character.identity.species.clone());
-            for feat_name in &species_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
-                }
-            }
-        }
-
-        let bg_cache = self.background_cache.read_untracked();
-        if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
-            let source = FeatureSource::Background(character.identity.background.clone());
-            for feat_name in &bg_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
-                }
-            }
-        }
-
-        // Recompute all derived stats (HP, AC, speed) + OnCompute assignments
-        let old_hp_max = character.hp_max();
-        self.compute(character);
-        let hp_delta = character.hp_max().saturating_sub(old_hp_max);
-        character.combat.hp_current += hp_delta;
-
-        // Ensure XP meets the threshold for the new total level
-        let xp_threshold = character.xp_threshold();
-        if character.identity.experience_points < xp_threshold {
-            character.identity.experience_points = xp_threshold;
-        }
-    }
-
-    /// Like `apply_class_level`, but passes user-supplied args to features
-    /// that need them. The `args_map` maps feature name → collected arg values.
-    pub fn apply_class_level_with_args(
+    /// Apply class level-up logic. Handles saving throws, proficiencies,
+    /// spell slots, class/species/background features, and HP. Optional
+    /// `args_map` passes user-supplied ARG values to features that need them.
+    pub fn apply_class_level(
         &self,
         character: &mut Character,
         class_idx: usize,
         level: u32,
-        args_map: &BTreeMap<String, Vec<i32>>,
+        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
     ) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -298,24 +201,49 @@ impl RulesRegistry {
             return;
         };
 
-        for feat_name in def.feature_names(subclass.as_deref()) {
-            let Some(feat) = features_index.get(feat_name) else {
+        // Re-apply already applied features at new level (OnLevelUp)
+        let applied: Vec<String> = character
+            .features
+            .iter()
+            .filter(|f| f.applied)
+            .map(|f| f.name.clone())
+            .collect();
+        for feat_name in &applied {
+            if let Some(feat) = features_index.get(feat_name.as_str()) {
+                feat.apply_with_args(level, character, Some(&source), None);
+            }
+        }
+
+        // New features at this level (OnFeatureAdd)
+        let level_features = rules
+            .into_iter()
+            .flat_map(|r| r.features.iter())
+            .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
+
+        for feat_name in level_features {
+            let Some(feat) = features_index.get(feat_name.as_str()) else {
                 log::warn!("Feature '{feat_name}' not found in index");
                 continue;
             };
-            let feat_name_string = feat_name.to_string();
-            let is_new = rules.is_some_and(|r| r.features.contains(&feat_name_string))
-                || subclass_rules.is_some_and(|r| r.features.contains(&feat_name_string));
-            let already_has = character.features.iter().any(|f| f.name == feat_name);
-
-            if is_new && already_has && !feat.stackable {
+            let already_has = character
+                .features
+                .iter()
+                .any(|f| f.name == *feat_name && f.applied);
+            if already_has && !feat.stackable {
                 continue;
             }
-
-            if is_new || already_has {
-                let args = args_map.get(feat_name).cloned();
-                feat.apply_with_args(level, character, Some(&source), args);
+            // For stackable features being added again, pre-push an unapplied
+            // entry so mark_feature_applied() finds it.
+            if already_has && feat.stackable && !character.is_feature_pending(feat_name) {
+                character.features.push(Feature {
+                    name: feat_name.to_string(),
+                    label: feat.label.clone(),
+                    description: feat.description.clone(),
+                    applied: false,
+                });
             }
+            let args = args_map.and_then(|m| m.get(feat_name.as_str())).cloned();
+            feat.apply_with_args(level, character, Some(&source), args);
         }
 
         // Re-apply species and background features at new total level
@@ -378,7 +306,7 @@ impl RulesRegistry {
 
         let mut result = Vec::new();
         self.with_features_index_untracked(|features_index| {
-            // Only check features introduced at this specific level
+            // New features at this level → OnFeatureAdd
             let level_features = rules
                 .into_iter()
                 .flat_map(|r| r.features.iter())
@@ -389,23 +317,42 @@ impl RulesRegistry {
                     continue;
                 };
                 let already_has = character.features.iter().any(|f| f.name == *feat_name);
-
                 if already_has && !feat.stackable {
                     continue;
                 }
-
-                let when = if already_has {
-                    WhenCondition::OnLevelUp
-                } else {
-                    WhenCondition::OnFeatureAdd
-                };
-
-                if let Some(expr) = feat.args_expr(when) {
+                let exprs: Vec<_> = feat
+                    .args_exprs(WhenCondition::OnFeatureAdd)
+                    .cloned()
+                    .collect();
+                if !exprs.is_empty() {
                     result.push(PendingArgs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
-                        expr: expr.clone(),
+                        exprs,
+                    });
+                }
+            }
+
+            // Already applied features → OnLevelUp
+            for feature in &character.features {
+                if !feature.applied {
+                    continue;
+                }
+                let Some(feat) = features_index.get(feature.name.as_str()) else {
+                    continue;
+                };
+                // Skip if already collected as OnFeatureAdd
+                if result.iter().any(|r| r.feature_name == feature.name) {
+                    continue;
+                }
+                let exprs: Vec<_> = feat.args_exprs(WhenCondition::OnLevelUp).cloned().collect();
+                if !exprs.is_empty() {
+                    result.push(PendingArgs {
+                        feature_name: feature.name.clone(),
+                        feature_label: feat.label().to_string(),
+                        feature_description: feat.description.clone(),
+                        exprs,
                     });
                 }
             }
@@ -417,16 +364,17 @@ impl RulesRegistry {
     pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingArgs> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(name)?;
-            let when = if character.feature_data.contains_key(name) {
-                WhenCondition::OnLevelUp
-            } else {
+            let when = if character.is_feature_pending(name) {
                 WhenCondition::OnFeatureAdd
+            } else {
+                WhenCondition::OnLevelUp
             };
-            feat.args_expr(when).map(|expr| PendingArgs {
+            let exprs: Vec<_> = feat.args_exprs(when).cloned().collect();
+            (!exprs.is_empty()).then_some(PendingArgs {
                 feature_name: name.to_string(),
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
-                expr: expr.clone(),
+                exprs,
             })
         })
     }
@@ -464,17 +412,18 @@ impl RulesRegistry {
                 if already_has && !feat.stackable {
                     continue;
                 }
-                let when = if already_has {
-                    WhenCondition::OnLevelUp
-                } else {
+                let when = if character.is_feature_pending(feat_name) {
                     WhenCondition::OnFeatureAdd
+                } else {
+                    WhenCondition::OnLevelUp
                 };
-                if let Some(expr) = feat.args_expr(when) {
+                let exprs: Vec<_> = feat.args_exprs(when).cloned().collect();
+                if !exprs.is_empty() {
                     result.push(PendingArgs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
-                        expr: expr.clone(),
+                        exprs,
                     });
                 }
             }
@@ -489,7 +438,7 @@ impl RulesRegistry {
         feature_names: &[impl AsRef<str>],
         source: &FeatureSource,
         level: u32,
-        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
     ) {
         self.with_features_index_untracked(|features_index| {
             for feat_name in feature_names {
@@ -506,7 +455,7 @@ impl RulesRegistry {
     pub fn apply_species(
         &self,
         character: &mut Character,
-        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
     ) {
         character.identity.species_applied = true;
         let total_level = character.level().max(1);
@@ -529,7 +478,7 @@ impl RulesRegistry {
     pub fn apply_background(
         &self,
         character: &mut Character,
-        args_map: Option<&BTreeMap<String, Vec<i32>>>,
+        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
     ) {
         character.identity.background_applied = true;
         let total_level = character.level().max(1);

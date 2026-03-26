@@ -223,6 +223,17 @@ fn migrate_v5(value: &mut serde_json::Value) {
     value["languages"] = serde_json::Value::Array(langs);
 }
 
+/// Set `applied: true` on all features that lack the field (old characters).
+fn migrate_v6(value: &mut serde_json::Value) {
+    if let Some(features) = value.get_mut("features").and_then(|v| v.as_array_mut()) {
+        for feature in features {
+            if feature.get("applied").is_none() {
+                feature["applied"] = serde_json::Value::Bool(true);
+            }
+        }
+    }
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
@@ -231,6 +242,7 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v3(&mut value);
     migrate_v4(&mut value);
     migrate_v5(&mut value);
+    migrate_v6(&mut value);
     serde_json::from_value(value).ok()
 }
 
