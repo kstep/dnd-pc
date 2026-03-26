@@ -411,10 +411,6 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"
-      },
-      {
-        "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
         "duration": "Forever"
