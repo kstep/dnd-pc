@@ -356,7 +356,7 @@ pub fn ExprArgsInput(
                 character: &character,
                 args: signals,
             };
-            eval_expr.eval_lenient(&ctx).is_ok_and(|v| v != 0)
+            eval_expr.eval_lenient(&ctx).is_ok()
         })
     });
 
