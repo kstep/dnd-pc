@@ -8,49 +8,13 @@ use crate::{
     model::{Ability, Attribute, Character},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
 pub enum EffectRange {
+    #[serde(rename = "self")]
     Caster,
     #[default]
     Touch,
     Feet(u32),
-}
-
-impl<'de> Deserialize<'de> for EffectRange {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct Vis;
-        impl<'de> serde::de::Visitor<'de> for Vis {
-            type Value = EffectRange;
-
-            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                f.write_str(r#""self", "touch", or {"feet": N}"#)
-            }
-
-            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<EffectRange, E> {
-                match value {
-                    "self" => Ok(EffectRange::Caster),
-                    "touch" => Ok(EffectRange::Touch),
-                    _ => Err(E::unknown_variant(value, &["self", "touch"])),
-                }
-            }
-
-            fn visit_map<A: serde::de::MapAccess<'de>>(
-                self,
-                mut map: A,
-            ) -> Result<EffectRange, A::Error> {
-                let key: String = map
-                    .next_key()?
-                    .ok_or_else(|| serde::de::Error::custom("expected `feet` key"))?;
-                if key == "feet" {
-                    let value: u32 = map.next_value()?;
-                    Ok(EffectRange::Feet(value))
-                } else {
-                    Err(serde::de::Error::unknown_field(&key, &["feet"]))
-                }
-            }
-        }
-        deserializer.deserialize_any(Vis)
-    }
 }
 
 /// A lightweight effect definition carrying a name and expression.
