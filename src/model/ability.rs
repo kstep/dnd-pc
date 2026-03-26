@@ -51,12 +51,12 @@ impl AbilityScores {
 impl Default for AbilityScores {
     fn default() -> Self {
         Self {
-            strength: 10,
-            dexterity: 10,
-            constitution: 10,
-            intelligence: 10,
-            wisdom: 10,
-            charisma: 10,
+            strength: 8,
+            dexterity: 8,
+            constitution: 8,
+            intelligence: 8,
+            wisdom: 8,
+            charisma: 8,
         }
     }
 }

@@ -506,6 +506,7 @@ input[type="checkbox"] {
   .btn-level-up {
     --btn-bg: transparent;
     --btn-color: var(--accent);
+    border-color: var(--accent);
     width: 1.5rem;
     height: 1.5rem;
     padding: 0;
@@ -771,6 +772,7 @@ input[type="checkbox"] {
   margin-top: var(--size-1);
   outline: 1px solid transparent;
   outline-offset: -1px;
+  padding: var(--size-1) var(--size-3);
 
   input[type="checkbox"] {
     display: none;

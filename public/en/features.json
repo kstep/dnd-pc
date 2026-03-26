@@ -1,4 +1,13 @@
 {
+  "Generation: Point Buy": {
+    "description": "Distribute 27 points among your ability scores. Each point raises a score by 1 (base 8). Raising a score above 13 costs 2 points per increase. Maximum score is 15."
+  },
+  "Generation: Random": {
+    "description": "Roll 4d6 and keep the highest 3 for each ability score."
+  },
+  "Generation: Preset": {
+    "description": "Assign the standard array (15, 14, 13, 12, 10, 8) to your ability scores. Each value can only be used once."
+  },
   "Alert": {
     "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
   },

@@ -1,5 +1,38 @@
 [
   {
+    "name": "Generation: Point Buy",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
+    "assign": [
+      {
+        "expr": "if(in(ARG.0, 0, 7) and in(ARG.1, 0, 7) and in(ARG.2, 0, 7) and in(ARG.3, 0, 7) and in(ARG.4, 0, 7) and in(ARG.5, 0, 7) and ARG.0 + max(0, ARG.0 - 5) + ARG.1 + max(0, ARG.1 - 5) + ARG.2 + max(0, ARG.2 - 5) + ARG.3 + max(0, ARG.3 - 5) + ARG.4 + max(0, ARG.4 - 5) + ARG.5 + max(0, ARG.5 - 5) == 27, STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Generation: Random",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
+    "assign": [
+      {
+        "expr": "STR = 4d6kh3; DEX = 4d6kh3; CON = 4d6kh3; INT = 4d6kh3; WIS = 4d6kh3; CHA = 4d6kh3",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Generation: Preset",
+    "selectable": true,
+    "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
+    "assign": [
+      {
+        "expr": "if(in(ARG.0, 8, 15) and ARG.0 != 9 and ARG.0 != 11 and in(ARG.1, 8, 15) and ARG.1 != 9 and ARG.1 != 11 and in(ARG.2, 8, 15) and ARG.2 != 9 and ARG.2 != 11 and in(ARG.3, 8, 15) and ARG.3 != 9 and ARG.3 != 11 and in(ARG.4, 8, 15) and ARG.4 != 9 and ARG.4 != 11 and in(ARG.5, 8, 15) and ARG.5 != 9 and ARG.5 != 11 and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 72 and ARG.0 * ARG.0 + ARG.1 * ARG.1 + ARG.2 * ARG.2 + ARG.3 * ARG.3 + ARG.4 * ARG.4 + ARG.5 * ARG.5 == 898, STR = ARG.0; DEX = ARG.1; CON = ARG.2; INT = ARG.3; WIS = ARG.4; CHA = ARG.5)",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
     "name": "Alert",
     "assign": [
       {
