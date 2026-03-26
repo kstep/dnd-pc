@@ -24,17 +24,18 @@ Leptos 0.8 CSR (client-side rendered) PWA targeting `wasm32-unknown-unknown`, bu
 - `/` — Character list (create, delete, select)
 - `/c/:id` — `ParentRoute` → `CharacterLayout` with nested:
   - `""` → `CharacterSheet` (3-column editor grid)
-  - `"/summary"` → `CharacterSummary` (read-only summary view)
+  - `"/summary"` → `CharacterSummary` (game session view)
 - `/s/:user_id/:char_id` — Import shared character from Firestore (UUID-based sharing)
 - `/s/:data` — Import shared character from compressed URL (with conflict detection)
 - `/r/class`, `/r/class/:name`, `/r/class/:name/:subname` → `ClassReference`
-- `/r/race`, `/r/race/:name` → `RaceReference`
+- `/r/species`, `/r/species/:name` → `SpeciesReference`
 - `/r/background`, `/r/background/:name` → `BackgroundReference`
+- `/r/feature` → `FeatureReference`
 - `/r/spell`, `/r/spell/:list` → `SpellReference`
 
-Router uses `option_env!("BASE_URL")` for base path. `lib.rs` also defines `use_theme()` for dark/light mode detection via `window.matchMedia`.
+Router uses `option_env!("BASE_URL")` for base path. `hooks.rs` defines `use_theme()` for dark/light mode detection via `window.matchMedia`.
 
-**Component hierarchy:** `App()` calls `provide_i18n_context()`, `provide_meta_context()`, provides `RulesRegistry::new(i18n)` as context, calls `storage::init_sync()`, and renders `LanguageSwitcher`, `SyncIndicator`, and `Router`.
+**Component hierarchy:** `App()` calls `provide_i18n_context()`, `provide_meta_context()`, provides `RulesRegistry::new(i18n)`, `ActiveCharacterId`, and `IsRouting` as context, calls `storage::init_sync()`, and renders `Navbar` (with language switcher, sync indicator) and `Router`.
 
 **Navigation:** `use_navigate()` from `leptos_router` handles the base URL internally. Always use plain paths like `/c/{id}` — do NOT prepend `{BASE_URL}`. The `BASE_URL` constant is only needed for `<A href=...>` links and manual URL construction (e.g. share links with `window.location.origin`).
 
@@ -99,9 +100,9 @@ Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at
 Import page (`src/pages/import_character.rs`) handles both import types: `ImportCharacter` for compressed URLs, `ImportCloudCharacter` for Firestore UUID imports. Both support conflict detection: if the imported character's UUID already exists locally and the local copy is newer, shows a diff table (`ImportConflict`) instead of auto-importing.
 
 ### Rules Registry (`src/rules/`)
-`RulesRegistry` is provided as context at the App root. `RulesRegistry::new(i18n)` takes `leptos_fluent::I18n` to enable locale-aware data fetching. Structural data (classes, races, backgrounds, features) lives in locale-independent `public/data/` JSON files, fetched once and cached. Locale-specific labels/descriptions live in `public/{locale}/` JSON files, re-fetched when the language changes and overlaid onto the cached structural data. Spell lists (JSON in `public/data/spells/`) are also lazily fetched and cached in a separate `spell_list_cache`.
+`RulesRegistry` is provided as context at the App root. `RulesRegistry::new(i18n)` takes `leptos_fluent::I18n` to enable locale-aware data fetching. Structural data (classes, species, backgrounds, features) lives in locale-independent `public/data/` JSON files, fetched once and cached. Locale-specific labels/descriptions live in `public/{locale}/` JSON files, re-fetched when the language changes and overlaid onto the cached structural data. Spell lists (JSON in `public/data/spells/`) are also lazily fetched and cached in a separate `spell_list_cache`.
 
-**Global Features Catalog:** All features (class, race, background, feats — 984 total) live in a single `public/data/features.json` file. `FeaturesIndex` (newtype around `BTreeMap<Box<str>, FeatureDefinition>`) is loaded at startup via `LocalResource` on `RulesRegistry.features_index`. Class, race, and background definitions reference features by name (`VecSet<String>`) rather than containing inline feature definitions. Feature lookup via `resolve::find_feature()` goes directly to `features_index`.
+**Global Features Catalog:** All features (class, species, background, feats) live in a single `public/data/features.json` file. `FeaturesIndex` (newtype around `BTreeMap<Box<str>, FeatureDefinition>`) is loaded at startup via `LocalResource` on `RulesRegistry.features_index`. Class, species, and background definitions reference features by name (`VecSet<String>`) rather than containing inline feature definitions. Feature lookup via `resolve::find_feature()` goes directly to `features_index`.
 
 **Module structure:**
 - `rules/registry.rs` — `RulesRegistry` struct (Copy), `DefinitionStore` accessor methods, index/cache/spell-list/effects-index/features-index access
@@ -109,10 +110,10 @@ Import page (`src/pages/import_character.rs`) handles both import types: `Import
 - `rules/resolve.rs` — feature lookup from global index: `find_feature()`, `find_feature_with_source()`, `find_feature_with_class_level()`, `feature_class_level()`
 - `rules/labels.rs` — unified `fill_from_registry()` / `clear_from_registry()` via single-traversal `sync_labels()` with closures
 - `rules/cache.rs` — `FetchCache<T>` generic cache backed by `RwSignal<BTreeMap>` with dedup pending tracking; `DefinitionStore` trait + default methods (has/with/with_tracked/fetch/fetch_tracked)
-- `rules/locale.rs` — `LocaleKey`, `LocalePath`, `LocaleMap`, `SpellLocaleMap`, locale overlay functions (`apply_class_locale`, `apply_race_locale`, `apply_background_locale`, `apply_features_locale`, `apply_effects_locale`, `apply_index_locale`, `apply_spell_map_locale`)
-- `rules/index.rs` — `Index` (private), `ClassIndexEntry`, `RaceIndexEntry`, `BackgroundIndexEntry`, `SpellIndexEntry`
+- `rules/locale.rs` — `LocaleKey`, `LocalePath`, `LocaleMap`, `SpellLocaleMap`, locale overlay functions (`apply_class_locale`, `apply_species_locale`, `apply_background_locale`, `apply_features_locale`, `apply_effects_locale`, `apply_index_locale`, `apply_spell_map_locale`)
+- `rules/index.rs` — `Index` (private), `ClassIndexEntry`, `SpeciesIndexEntry`, `BackgroundIndexEntry`, `SpellIndexEntry`
 - `rules/class.rs` — `ClassDefinition`, `SubclassDefinition`, `ClassLevelRules`, `SubclassLevelRules`
-- `rules/race.rs` — `RaceDefinition`
+- `rules/species.rs` — `SpeciesDefinition`
 - `rules/background.rs` — `BackgroundDefinition`
 - `rules/feature.rs` — `FeaturesIndex`, `FeatureDefinition`, `FieldDefinition`, `FieldKind`, `ChoiceOptions`, `ChoiceOption`, `Assignment`, `WhenCondition`, `ValueOrExpr`, `DieOrExpr`, `ActionType`
 - `rules/spells.rs` — `SpellsDefinition`, `SpellDefinition`, `SpellList`, `SpellMap`, `SpellLevelRules`
@@ -139,7 +140,7 @@ Import page (`src/pages/import_character.rs`) handles both import types: `Import
 - `WhenCondition` — enum: `OnFeatureAdd`, `OnLevelUp`, `OnLongRest`, `OnShortRest`, `OnCompute`
 - `ClassDefinition` — `name`, `label`, `description`, `hit_die: u32`, `levels: Vec<ClassLevelRules>`, `subclasses: BTreeMap<Box<str>, SubclassDefinition>`. No inline features — `ClassLevelRules` and `SubclassLevelRules` contain `features: VecSet<String>` referencing the global index. Method `feature_names(subclass)` returns an iterator of feature name strings from class and subclass level tables
 - `SubclassDefinition` — `name`, `label`, `description`, `levels: LevelRules<SubclassLevelRules>`. Method `min_level()` returns lowest level key
-- `RaceDefinition` — `name`, `label`, `description`, `features: VecSet<String>`. No `apply()` method, no traits — racial traits have been converted to features in the global index
+- `SpeciesDefinition` — `name`, `label`, `description`, `features: VecSet<String>`. No `apply()` method, no traits — species traits have been converted to features in the global index
 - `BackgroundDefinition` — `name`, `label`, `description`, `features: VecSet<String>`. No `apply()` method — background features are referenced by name from the global index
 - All definition types have `label` field and `.label()` method returning `label.as_deref().unwrap_or(&name)`
 
@@ -148,17 +149,17 @@ Import page (`src/pages/import_character.rs`) handles both import types: `Import
 **Key patterns:**
 - `with_features_index(|features_map| ...)` — access the global features index (`BTreeMap<Box<str>, FeatureDefinition>`) with tracked read
 - `with_feature(identity, name, |feat| ...)` — finds a `FeatureDefinition` in the global index, calls the callback with a reference (delegates to `resolve::find_feature`)
-- `with_feature_source(identity, name, |feat, source| ...)` — finds a feature and determines its source by checking which class/bg/race references it
+- `with_feature_source(identity, name, |feat, source| ...)` — finds a feature and determines its source by checking which class/bg/species references it
 - `with_spell_list(list, |spells| ...)` — resolves a `SpellList` (inline or fetched ref) and calls the callback with `&SpellMap`
 - `feature_class_level(identity, feature_name)` — returns the class level of the class owning a feature (lives in `resolve.rs`)
 - `get_choice_options(...)` — resolves `ChoiceOptions::List` or `ChoiceOptions::Ref` (dereferences another field's choices)
-- `ensure_definitions_fetched(character)` — triggers fetches for class/race/background definitions and spell lists based on character identity; reads index with tracked read so calling Effect re-runs when data arrives
+- `ensure_definitions_fetched(character)` — triggers fetches for class/species/background definitions and spell lists based on character identity; reads index with tracked read so calling Effect re-runs when data arrives
 - `fill_from_registry(character)` — fills labels, descriptions, spell costs, and free uses from cached definitions (lives in `labels.rs` via `sync_labels()`)
 - `clear_from_registry(character)` — selectively clears only labels/descriptions that match registry definitions (lives in `labels.rs`, inverse of fill)
 - `long_rest(character)` / `short_rest(character)` — rest mechanics with expression evaluation for rest-triggered assignments (lives in `apply.rs`)
 - `assign(character, when)` — evaluates conditional assignment expressions across all features for a given `WhenCondition` (lives in `apply.rs`)
 
-**Level-up (in `apply.rs`):** `RulesRegistry::apply_class_level(character, class_idx, level)` is the single entry point for level-up. It looks up feature names from class/subclass level tables and the global features index, applies each feature via `FeatureDefinition::apply()`, then re-applies race and background features at the new total level (for level-gated spells). The UI's `apply_level()` in `character_header.rs` simply calls `store.update(|c| registry.apply_class_level(c, idx, level))`. `FeatureDefinition::apply(level, character, source)` populates `character.features` list, `character.feature_data` entries with spells (via `SpellsDefinition::apply()`), field values, free uses, natural armor (`ac_expr`), and evaluates assignments. `FeatureDefinition::assign()` evaluates conditional assignment expressions (`when: WhenCondition`) against character attributes via a scoped `Context`. `RulesRegistry::long_rest()` / `short_rest()` call `Character::long_rest()` / `short_rest()` then evaluate rest-triggered assignments via `assign()`.
+**Level-up (in `apply.rs`):** `RulesRegistry::apply_class_level(character, class_idx, level)` is the single entry point for level-up. It looks up feature names from class/subclass level tables and the global features index, applies each feature via `FeatureDefinition::apply()`, then re-applies species and background features at the new total level (for level-gated spells). The UI's `apply_level()` in `character_header.rs` simply calls `store.update(|c| registry.apply_class_level(c, idx, level))`. `FeatureDefinition::apply(level, character, source)` populates `character.features` list, `character.feature_data` entries with spells (via `SpellsDefinition::apply()`), field values, free uses, natural armor (`ac_expr`), and evaluates assignments. `FeatureDefinition::assign()` evaluates conditional assignment expressions (`when: WhenCondition`) against character attributes via a scoped `Context`. `RulesRegistry::long_rest()` / `short_rest()` call `Character::long_rest()` / `short_rest()` then evaluate rest-triggered assignments via `assign()`.
 
 ### Enums (`src/model/enums.rs`)
 All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact serialization (single byte) while accepting legacy string format on deserialization. Enums implement `Translatable` trait for i18n keys. Key enums: `Ability` (6), `Skill` (18), `Alignment` (9), `ProficiencyLevel` (None/Proficient/Expertise with `multiplier()`, `next()`, `symbol()`), `Proficiency` (6 armor/weapon types), `DamageType` (13 — has `from_name()` parser and `Translatable`), `ArmorType` (Light/Medium/Heavy), `SpellSlotPool` (Arcane/Pact with `Translatable`).
@@ -167,18 +168,15 @@ All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact ser
 Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Language detected from browser, persisted in localStorage. Components use `move_tr!("key")` for reactive translations, `tr!("key")` for non-reactive.
 
 ### Pages (`src/pages/`)
-- `character/list.rs` — list/create/delete characters
-- `character/layout.rs` — parent route for `/c/:id`, loads character by UUID, creates `Store`, loads `ActiveEffects`, provides `Store<Character>` and `EffectiveCharacter` as context, runs 6 effects (auto-save, fill, locale, cloud sync, effects recompute, effects save), renders `<Outlet />`
-- `character/sheet.rs` — renders 3-column grid with header and panels (~37 lines)
-- `character/summary.rs` — read-only summary view at `/c/:id/summary` (layout with rest actions), uses components from `components/summary/`
-- `import_character.rs` — handles both share URL types: `ImportCharacter` decodes compressed `/s/:data` URLs, `ImportCloudCharacter` fetches Firestore `/s/:user_id/:char_id` URLs; both use `ImportConflict` for diff table when local copy is newer
-- `reference/` — class, race, background, spell reference browsers (`class.rs`, `race.rs`, `background.rs`, `spell.rs`, `sidebar.rs`); `mod.rs` contains shared view helpers (`ReferenceFeaturesView`, `FeatureChoicesView`, `FeatureSpellsView`, `collect_feature_views()`)
+- `character/` — character CRUD and views. `layout.rs` is the key file: loads character by UUID, creates `Store`, loads `ActiveEffects`, provides `Store<Character>` and `EffectiveCharacter` as context, runs effects (auto-save, fill, locale, cloud sync, effects recompute, effects save), renders `<Outlet />`. `sheet.rs` renders the 3-column character building/editing grid, `summary.rs` the game session view.
+- `import_character.rs` — handles both share URL types (compressed and Firestore UUID) with conflict detection
+- `reference/` — reference browsers for classes, species, backgrounds, features, spells. `mod.rs` contains shared view helpers.
 - `not_found.rs` — 404 page
 
 ### Components (`src/components/`)
-- Top-level: `character_header`, `character_card`, `summary_header`, `summary_list`, `language_switcher`, `sync_indicator`, `datalist_input`, `ability_score_block`, `skill_row`, `toggle_button`, `icon`, `panel`, `cast_button`, `entity_field`, `resource_slot`
-- `panels/`: `ability_scores`, `saving_throws`, `skills`, `combat`, `equipment`, `proficiencies`, `spellcasting`, `class_fields`, `features`, `personality`, `notes`
-- `summary/`: `stats` (HP/AC/abilities/skills), `resources` (spell slots/hit dice/feature resources), `spells` (spell list with cast buttons), `weapons` (equipped weapons), `backpack` (inventory/currency with spend/gain), `choices` (feature choice fields), `languages`, `effects` (transient effects with add/toggle/edit UI)
+- Top-level components: navbar, character header/card, modals, form inputs (datalist, expression, dice pool), display primitives (icon, panel, resource slot). See `mod.rs` for the full list.
+- `panels/` — character sheet panels for building/editing (one per section: abilities, skills, combat, equipment, spellcasting, etc.)
+- `summary/` — game session view sections (stats, resources, spells, weapons, backpack, choices, languages, effects)
 
 ## Formatting Conventions (rustfmt.toml)
 - Edition 2024 formatting rules
@@ -191,18 +189,18 @@ Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Lan
 Data files are split into locale-independent structural data (`public/data/`) and locale-specific labels/descriptions (`public/{en,ru}/`):
 
 **Structural data (locale-independent):**
-- `public/data/features.json` — global features index (984 features with fields, spells, assignments, prerequisites)
-- `public/data/classes/*.json` — 13 class definitions (structure only: hit_die, levels with feature name lists, subclasses)
-- `public/data/races/*.json` — 16 race definitions (feature name lists only, no traits)
-- `public/data/backgrounds/*.json` — 16 background definitions (feature name lists only)
-- `public/data/spells/*.json` — 9 extracted spell lists (referenced via `SpellList::Ref { from }`)
+- `public/data/features.json` — global features index (all features with fields, spells, assignments, prerequisites)
+- `public/data/classes/*.json` — class definitions (structure only: hit_die, levels with feature name lists, subclasses)
+- `public/data/species/*.json` — species definitions (feature name lists only)
+- `public/data/backgrounds/*.json` — background definitions (feature name lists only)
+- `public/data/spells/*.json` — extracted spell lists (referenced via `SpellList::Ref { from }`)
 - `public/data/effects.json` — predefined transient effects index (name, expression)
-- `public/data/index.json` — index of available classes, races, backgrounds, spells
+- `public/data/index.json` — index of available classes, species, backgrounds, spells
 
 **Locale overlays:**
 - `public/{locale}/features.json` — feature labels and descriptions
 - `public/{locale}/classes/*.json` — class/subclass labels and descriptions
-- `public/{locale}/races/*.json` — race labels and descriptions
+- `public/{locale}/species/*.json` — species labels and descriptions
 - `public/{locale}/backgrounds/*.json` — background labels and descriptions
 - `public/{locale}/spells/*.json` — spell labels and descriptions
 - `public/{locale}/effects.json` — effect labels and descriptions
@@ -214,7 +212,7 @@ Both `public/data/` and each locale directory need explicit `<link data-trunk re
 - `ConstVec<T, N>` (`src/constvec.rs`): fixed-size vector that trims trailing defaults on serialization for compact payloads. Used for spell slot levels within each pool.
 - `VecSet<T>` (`src/vecset.rs`): Vec-backed ordered set (maintains insertion order, prevents duplicates). Used for `ClassLevel.applied_levels: VecSet<u32>` and `Character.languages: VecSet<String>`.
 - `Money` (`src/model/money.rs`): copper-based currency value type (`u32` cp internally, 100 cp = 1 gp). Constructors: `from_cp()`, `from_gp()`, `from_gp_cp()`, `from_gp_str()` (parses decimal input). Methods: `as_gp_sp_cp()` → `(gp, sp, cp)`. Implements `Add`, `Sub`, `Display`.
-- `Expr<Var, Val>` (`src/expr/`): generic expression evaluator module using postfix (RPN) operations. `Val` defaults to `i32`. Submodules: `mod.rs` (core API, `Expr<Var, Val>`, Display), `traits.rs` (`Context<Var, Val>` trait, `Eval` trait), `ops.rs` (`Op<Var, Val>` enum), `de.rs` (custom deserialization), `tokenizer.rs` (lexer), `parser.rs` (recursive descent), `interpret.rs` (`Interpreter` trait + `Evaluator`/`ReadOnlyEvaluator`/`DicePoolEvaluator`/`Formatter` implementations), `error.rs` (`Error` enum), `stack.rs` (evaluation stack). Supports arithmetic (`+`, `-`, `*`, `/`, `\` ceiling div, `%` modulo), dice notation (`2d20kh1`, `2d6dl1`), `min`/`max`, boolean/comparison operators (`and`, `or`, `not`, `<`, `>`, `<=`, `>=`, `==`, `!=`), conditional `if(cond, then, else)`, variable resolution via `Context<Var, Val>` trait, assignment (`var = expr`), compound assignment (`+=`, `-=`, `*=`, `/=`, `\=`, `%=`), and multi-statement expressions (semicolon-separated). `Eval` trait: `eval(ctx) -> Output` and `is_dynamic() -> bool` for checking if a value contains expressions. Methods: `apply()` (evaluate with assignment), `eval()` (read-only). `Display` impl round-trips to infix notation via `Formatter` interpreter. Custom deserialization accepts strings (parsed) or postfix `Vec<Op>` (for postcard). Used with `Var = Attribute` for feature prerequisites, assignments, effects, and AC expressions.
+- `Expr<Var, Val>` (`src/expr/`): generic expression evaluator module using postfix (RPN) operations. `Val` defaults to `i32`. Submodules: `mod.rs` (core API, `Expr<Var, Val>`, Display), `traits.rs` (`Context<Var, Val>` trait, `Eval` trait), `ops.rs` (`Op<Var, Val>` enum), `de.rs` (custom deserialization), `tokenizer.rs` (lexer), `parser.rs` (recursive descent), `interpret/` subdirectory (`mod.rs` — `Interpreter` trait, `evaluator.rs` — `Evaluator`/`ReadOnlyEvaluator`, `analyze.rs` — expression analysis, `dice.rs` — `DicePoolEvaluator`, `formatter.rs` — infix `Formatter`), `error.rs` (`Error` enum), `stack.rs` (evaluation stack). Supports arithmetic (`+`, `-`, `*`, `/`, `\` ceiling div, `%` modulo), dice notation (`2d20kh1`, `2d6dl1`), `min`/`max`, boolean/comparison operators (`and`, `or`, `not`, `<`, `>`, `<=`, `>=`, `==`, `!=`), conditional `if(cond, then, else)`, guard blocks (`guard(cond) { ... }`), variable resolution via `Context<Var, Val>` trait, assignment (`var = expr`), compound assignment (`+=`, `-=`, `*=`, `/=`, `\=`, `%=`), and multi-statement expressions (semicolon-separated). `Eval` trait: `eval(ctx) -> Output` and `is_dynamic() -> bool` for checking if a value contains expressions. Methods: `apply()` (evaluate with assignment), `eval()` (read-only). `Display` impl round-trips to infix notation via `Formatter` interpreter. Custom deserialization accepts strings (parsed) or postfix `Vec<Op>` (for postcard). Used with `Var = Attribute` for feature prerequisites, assignments, effects, and AC expressions.
 
 ## Model Essentials (`src/model/`)
 Model is split into focused files: `character.rs` (Character, CharacterIndex, CharacterSummary), `identity.rs` (CharacterIdentity, ClassLevel), `ability.rs` (AbilityScores), `attribute.rs` (Attribute enum), `feature.rs` (Feature, FeatureData, FeatureField, FeatureValue, FeatureSource, FeatureOption, `short_name()`), `combat.rs` (CombatStats, SpellSlotLevel, FreeUses), `equipment.rs` (Equipment, Weapon, Item, Armor), `spell.rs` (Spell, SpellData, SpellSlotPool), `die.rs` (Die), `money.rs` (Money, Currency), `effects.rs` (ActiveEffect, ActiveEffects, EffectsIndex), `enums.rs` (all enums). All re-exported from `model/mod.rs`.
@@ -225,7 +223,7 @@ Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `Par
 
 **Label/description pattern:** `Feature`, `Spell`, `FeatureField`, and `FeatureOption` all have an optional `label: Option<String>` field (with `#[serde(default)]` for backward compatibility) and a `.label()` method that returns `label.as_deref().unwrap_or(&name)`. Labels are locale-specific display names filled from the registry; `name` is the stable key. `ClassLevel` has `class_label: Option<String>` and `subclass_label: Option<String>` with corresponding `.class_label()` / `.subclass_label()` methods. `class_summary()` uses these for display. `clear_all_labels()` blanket-clears all labels and descriptions on the character.
 
-**Spellcasting model:** Per-feature spell data lives in `Character.feature_data: BTreeMap<String, FeatureData>` keyed by feature name (e.g. "Spellcasting (Bard)", "Pact Magic", "Infernal Legacy"). Each `FeatureData` has `source: Option<FeatureSource>`, `fields: Vec<FeatureField>`, and `spells: Option<SpellData>`. `FeatureSource` is an enum: `Class(String)`, `Race(String)`, `Background(String)`. `SpellData` contains `casting_ability: Ability`, `caster_coef: u32`, `pool: SpellSlotPool`, and `spells: Vec<Spell>`. Each `Spell` has an optional `free_uses: Option<FreeUses>` for innate casting without slots (`FreeUses { used, max }` with `available()` and `is_available()` methods). Spell slots are keyed by pool on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>`, rendered per pool in the spellcasting panel. `SpellSlotLevel { total, used }` has `available()`, `is_available()`, `is_empty()` methods.
+**Spellcasting model:** Per-feature spell data lives in `Character.feature_data: BTreeMap<String, FeatureData>` keyed by feature name (e.g. "Spellcasting (Bard)", "Pact Magic", "Infernal Legacy"). Each `FeatureData` has `source: Option<FeatureSource>`, `fields: Vec<FeatureField>`, and `spells: Option<SpellData>`. `FeatureSource` is an enum: `Class(String)`, `Species(String)`, `Background(String)`. `SpellData` contains `casting_ability: Ability`, `caster_coef: u32`, `pool: SpellSlotPool`, and `spells: Vec<Spell>`. Each `Spell` has an optional `free_uses: Option<FreeUses>` for innate casting without slots (`FreeUses { used, max }` with `available()` and `is_available()` methods). Spell slots are keyed by pool on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>`, rendered per pool in the spellcasting panel. `SpellSlotLevel { total, used }` has `available()`, `is_available()`, `is_empty()` methods.
 
 **Feature fields:** `FeatureField { name, label, description, value: FeatureValue }`. `FeatureValue` is an enum: `Points { used, max }` (with `available_points()`), `Choice { options: Vec<FeatureOption> }` (with `choices()`/`choices_mut()`), `Die { die: Die, used: u32 }`, `Bonus(i32)`. `Die { amount, sides }` implements `Display` (e.g. "2d6") and `FromStr`. `short_name(name)` utility derives abbreviation from field names ("Channel Divinity" -> "CD", "Sorcery Points" -> "SP"). Replaces the old `short` field on `FieldKind::Points`.
 
@@ -242,3 +240,16 @@ Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `Par
 **Effects index (`public/data/effects.json` + `public/{locale}/effects.json`):** Predefined effects (e.g. "Shield of Faith" → `AC += 2`, "Bladesong" → `AC += INT.MOD; SPEED += 10`, "Mage Armor" → `AC = max(AC, 13 + DEX.MOD)`). Structural data in `public/data/effects.json`, locale labels/descriptions overlaid from `public/{locale}/effects.json`. Loaded via `LocalResource` in `RulesRegistry` with `with_effects_index(|map| ...)` accessor. Locale-aware, auto-refetches on language change.
 
 **Postcard serialization:** The share pipeline uses `postcard` (positional binary format). `#[serde(flatten)]` and `#[serde(tag = "...")]` are incompatible with postcard. `FeatureField.value` uses the default (externally-tagged) enum representation without flatten, making the `fields` map postcard-compatible and included in shared URLs. Avoid `#[serde(skip_serializing)]` on fields of postcard-serialized structs as it breaks positional alignment. Label fields use `#[serde(default)]` for backward compatibility with older shared URLs.
+
+## Coding Conventions
+
+### Rust style
+- **Closure parameters:** Use descriptive names (`|character|`, `|active|`, `|pending|`), not single-letter abbreviations (`|c|`, `|e|`, `|p|`).
+- **Leptos rendering:** Don't call `.to_string()` on numeric types (`u32`, `i32`) for views or props — they render directly in `view!` macros.
+- **`bind:value`:** Only use when the signal type matches directly (e.g. `RwSignal<String>`). For type mismatches, use `prop:value` + `on:input`. Don't bridge with Effects.
+
+### Locale data
+- **Russian locale:** Never put English placeholder text in `public/ru/` files. The locale overlay system falls back to `en/` automatically for missing entries — omit untranslated content rather than duplicating it in English.
+
+### Git workflow
+- **Commits:** One commit per logical task. Don't micro-commit after every small change.
