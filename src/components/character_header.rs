@@ -562,7 +562,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             .collect_view()
                     }}
                 </div>
-                <button class="btn-add btn-add-class" on:click=add_class>
+                <button class="btn-add" on:click=add_class>
                     {move_tr!("btn-add-class")}
                 </button>
             </div>

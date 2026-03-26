@@ -666,10 +666,6 @@ input[type="checkbox"] {
   }
 }
 
-.btn-add-class {
-  font-size: var(--font-size-0);
-  padding: var(--size-1) var(--size-2);
-}
 
 /* --------------------- Sheet Grid Layout --------------------- */
 .character-sheet {
@@ -2380,7 +2376,7 @@ select.entry-name {
 .args-modal-description {
   color: var(--text-secondary);
   font-size: var(--font-size-1);
-  margin: 0 0 var(--size-3);
+  margin: 0 0 var(--size-2);
   max-inline-size: none;
   white-space: pre-line;
 }
@@ -3079,7 +3075,7 @@ select.entry-name {
   border: none;
   background: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 var(--size-2);
 
   summary {
     cursor: pointer;

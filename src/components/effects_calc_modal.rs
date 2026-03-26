@@ -5,7 +5,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{expr_view::ExprView, icon::Icon, modal::Modal},
+    components::{expr_view::ExprDetails, icon::Icon, modal::Modal},
     expr::{self, DicePool},
     model::{Attribute, Character, EffectDefinition, FeatureData, FeatureValue},
 };
@@ -107,10 +107,7 @@ pub fn EffectsCalcModal(
                                     <span class="effects-calc-label">{label}</span>
                                     <strong class="effects-calc-result">{result_view}</strong>
                                 </div>
-                                <details class="effects-calc-expr">
-                                    <summary>{move_tr!("show-expression")}</summary>
-                                    <ExprView expr />
-                                </details>
+                                <ExprDetails expr />
                             </div>
                         }
                         .into_any()
@@ -242,10 +239,7 @@ pub fn EffectsCalcModal(
                                         <Icon name="rotate-ccw" size=14 />
                                     </button>
                                 </div>
-                                <details class="effects-calc-expr">
-                                    <summary>{move_tr!("show-expression")}</summary>
-                                    <ExprView expr=formula_expr />
-                                </details>
+                                <ExprDetails expr=formula_expr />
                                 <div class="dice-pool-groups">{group_views}</div>
                             </div>
                         }

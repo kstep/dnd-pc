@@ -924,6 +924,17 @@ mod tests {
         let mut active = analysis.active_args.clone();
         active.sort();
         assert_eq!(active, vec![0, 2]);
+
+        // Same pattern with if() instead of guard(): non-interactive false
+        // conditions still prune. AC=15 → if(AC>=20) false → ARG.1 pruned.
+        let expr: Expr =
+            "if(ARG.0 + ARG.1 + ARG.2 == 2, if(AC >= 13, AC += ARG.0); if(AC >= 20, AC += ARG.1); if(AC >= 10, AC += ARG.2))"
+                .parse()
+                .unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        let mut active = analysis.active_args.clone();
+        active.sort();
+        assert_eq!(active, vec![0, 2]);
     }
 
     #[wasm_bindgen_test]

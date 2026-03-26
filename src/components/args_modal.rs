@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
-    components::{expr_args_input::ExprArgsInput, modal::Modal},
+    components::{expr_args_input::ExprArgsInput, expr_view::ExprDetails, modal::Modal},
     rules::PendingArgs,
 };
 
@@ -68,13 +68,15 @@ fn ArgsFeatureInput(
 
     let description = pa.feature_description.clone();
     let has_description = !description.is_empty();
+    let expr = pa.expr.clone();
     view! {
         <div class="args-modal-feature">
             <h4>{pa.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
-            <ExprArgsInput expr=pa.expr.clone() on_ready />
+            <ExprDetails expr=expr.clone() />
+            <ExprArgsInput expr on_ready />
         </div>
     }
 }

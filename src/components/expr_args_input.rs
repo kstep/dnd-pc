@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -324,11 +325,16 @@ pub fn ExprArgsInput(
     };
 
     if analysis.active_args.is_empty() {
+        let has_args = expr.has_var(|v| matches!(v, Attribute::Arg(_)));
         on_ready(ExprArgsInputParts {
             rw_signals: Vec::new(),
-            is_valid: Memo::new(|_| true),
+            is_valid: Memo::new(move |_| !has_args),
         });
-        return view! { <span class="expr-form-plain">{expr.to_string()}</span> }.into_any();
+        return Either::Left(if has_args {
+            Either::Left(view! { <p class="expr-form-empty">{move_tr!("no-eligible-options")}</p> })
+        } else {
+            Either::Right(view! { <span class="expr-form-plain">{expr.to_string()}</span> })
+        });
     }
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -359,10 +365,9 @@ pub fn ExprArgsInput(
         is_valid,
     });
 
-    view! {
+    Either::Right(view! {
         <div class="expr-formula" class:invalid=move || !is_valid.get()>
             {formula_view}
         </div>
-    }
-    .into_any()
+    })
 }
