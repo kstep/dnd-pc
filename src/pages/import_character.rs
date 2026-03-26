@@ -570,8 +570,8 @@ pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView
             }}
 
             <div class="import-conflict-actions">
-                <button class="btn-add" on:click=import_anyway>{move_tr!("import-anyway")}</button>
-                <button class="btn-add" on:click=import_as_copy>{move_tr!("import-as-copy")}</button>
+                <button class="btn-primary" on:click=import_anyway>{move_tr!("import-anyway")}</button>
+                <button class="btn-primary" on:click=import_as_copy>{move_tr!("import-as-copy")}</button>
                 <A href=format!("{BASE_URL}/") attr:class="btn-cancel">{move_tr!("import-cancel")}</A>
             </div>
         </div>

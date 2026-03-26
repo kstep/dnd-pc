@@ -562,7 +562,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             .collect_view()
                     }}
                 </div>
-                <button class="btn-add" on:click=add_class>
+                <button class="btn-primary" on:click=add_class>
                     {move_tr!("btn-add-class")}
                 </button>
             </div>
@@ -578,15 +578,15 @@ pub fn CharacterHeader() -> impl IntoView {
                     />
                     <Icon name="globe" size=18 />
                 </label>
-                <button class="btn-add" title=move_tr!("share-link") on:click=on_share>
+                <button class="btn-primary" title=move_tr!("share-link") on:click=on_share>
                     <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=18 />
                 </button>
-                <button class="btn-add" title=move_tr!("export-json") on:click=on_export><Icon name="download" size=18 /></button>
-                <button class="btn-add" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
-                <button class="btn-add" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
-                <button class="btn-add" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="book-up" size=18 /></button>
+                <button class="btn-primary" title=move_tr!("export-json") on:click=on_export><Icon name="download" size=18 /></button>
+                <button class="btn-primary" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
+                <button class="btn-primary" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
+                <button class="btn-primary" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="book-up" size=18 /></button>
                 <button
-                    class="btn-add btn-danger"
+                    class="btn-primary btn-danger"
                     title=move_tr!("reset-character")
                     on:click=move |_| {
                         let msg = tr!("confirm-reset");

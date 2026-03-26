@@ -92,7 +92,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 }}
             </div>
             <button
-                class="btn-add"
+                class="btn-primary"
                 on:click=move |_| {
                     languages.write().push(String::new());
                 }

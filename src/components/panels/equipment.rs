@@ -130,7 +130,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 }
             }
             <button
-                class="btn-add"
+                class="btn-primary"
                 on:click=move |_| {
                     weapons.write().push(Weapon::default());
                 }
@@ -291,7 +291,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 }
             }
             <button
-                class="btn-add"
+                class="btn-primary"
                 on:click=move |_| {
                     armors.write().push(Armor::default());
                 }
@@ -377,7 +377,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 }
             }
             <button
-                class="btn-add"
+                class="btn-primary"
                 on:click=move |_| {
                     items.write().push(Item { quantity: 1, ..Item::default() });
                 }

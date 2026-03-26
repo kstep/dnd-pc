@@ -29,7 +29,7 @@ pub fn CharacterCard(
                 </p>
             </A>
             <button
-                class="btn-delete"
+                class="btn-danger"
                 on:click=move |e| {
                     e.prevent_default();
                     e.stop_propagation();

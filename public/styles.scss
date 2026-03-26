@@ -237,18 +237,25 @@ html {
 
 /* --------------------- Base ---------------------------------- */
 button {
+  --btn-bg: var(--panel-bg);
+  --btn-color: var(--text-primary);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-weight: normal;
   font-family: inherit;
-  font-size: inherit;
+  font-size: var(--font-size-1);
   text-shadow: none;
   outline: none;
   box-shadow: none;
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--btn-bg);
   border-radius: var(--radius-1);
-  background: var(--panel-bg);
-  color: var(--text-primary);
+  background: var(--btn-bg);
+  color: var(--btn-color);
   cursor: pointer;
-  padding: var(--size-1) var(--size-2);
+  padding: var(--size-1) var(--size-3);
+  width: fit-content;
   line-height: 1.2;
 
   &:hover {
@@ -260,33 +267,13 @@ button {
     cursor: not-allowed;
   }
 
-  &.btn-primary {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
   &.btn-danger {
-    background: var(--danger);
-    color: white;
-    border-color: var(--danger);
+    --btn-bg: var(--danger);
+    --btn-color: white;
   }
 
-  &.btn-ghost {
-    background: none;
-    border-color: transparent;
-    color: var(--text-secondary);
-    padding: 0;
-
-    &:hover {
-      color: var(--accent);
-    }
-  }
 
   &.btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     padding: var(--size-1);
   }
 }
@@ -407,15 +394,6 @@ input[type="checkbox"] {
   gap: var(--size-3);
   margin-bottom: var(--size-4);
 
-  .btn-create,
-  .btn-add {
-    font-size: var(--font-size-2);
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-    padding: var(--size-2) var(--size-4);
-    border-radius: var(--radius-2);
-  }
 }
 
 .character-list {
@@ -453,13 +431,9 @@ input[type="checkbox"] {
     font-size: var(--font-size-1);
   }
 
-  .btn-delete {
+  .btn-danger {
     align-self: flex-end;
     margin-top: auto;
-    background: var(--danger);
-    color: white;
-    border-color: var(--danger);
-    font-size: var(--font-size-0);
   }
 }
 
@@ -529,19 +503,15 @@ input[type="checkbox"] {
   }
 
   .btn-level-up {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    --btn-bg: transparent;
+    --btn-color: var(--accent);
     width: 1.5rem;
     height: 1.5rem;
-    border-color: var(--accent);
-    color: var(--accent);
-    background: none;
     padding: 0;
 
     &:hover {
-      background: var(--accent);
-      color: white;
+      --btn-bg: var(--accent);
+      --btn-color: white;
     }
   }
 
@@ -556,19 +526,6 @@ input[type="checkbox"] {
     margin: var(--size-2) 0 var(--size-1);
     border: none;
     border-top: 1px solid var(--panel-border);
-  }
-
-  .nav-links {
-    display: flex;
-    gap: var(--size-4);
-    align-items: center;
-  }
-
-  .back-link {
-    display: inline-block;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: var(--font-size-1);
   }
 
   .header-actions {
@@ -602,19 +559,6 @@ input[type="checkbox"] {
     font-size: var(--font-size-1);
   }
 
-  .nav-links {
-    display: flex;
-    gap: var(--size-4);
-    align-items: center;
-    margin-top: var(--size-2);
-  }
-
-  .back-link {
-    display: inline-block;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: var(--font-size-1);
-  }
 }
 
 .classes-section {
@@ -819,15 +763,9 @@ input[type="checkbox"] {
 }
 
 .share-toggle {
-  display: inline-flex;
-  align-items: center;
-  background: none;
+  --btn-bg: transparent;
+  --btn-color: var(--text-secondary);
   border: none;
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: var(--size-1) var(--size-3);
-  font-size: var(--font-size-1);
   line-height: 1;
   margin-top: var(--size-1);
   outline: 1px solid transparent;
@@ -996,13 +934,9 @@ input[type="checkbox"] {
 }
 
 .btn-rest {
-  background: var(--success);
-  color: white;
-  border: none;
-  padding: var(--size-1) var(--size-3);
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  font-size: var(--font-size-1);
+  --btn-bg: var(--success);
+  --btn-color: white;
+  width: 100%;
   white-space: nowrap;
 }
 
@@ -1066,18 +1000,12 @@ input[type="checkbox"] {
 
 /* --------------------- Toggle Button ------------------------- */
 .btn-toggle-desc {
-  background: none;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-1);
+  --btn-bg: transparent;
+  --btn-color: var(--text-secondary);
   width: 28px;
   height: 28px;
   padding: 0;
-  cursor: pointer;
   line-height: 1;
-  color: var(--text-secondary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 
   // Plus/minus icons on empty buttons via ::before pseudo-element.
   // Uses mask-image so the icon color follows currentColor (works in dark theme).
@@ -1318,27 +1246,21 @@ select.entry-name {
   font-size: 10px;
   line-height: 1;
   padding: 0;
-  border-radius: var(--radius-1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .btn-convert {
-  background: none;
-  border: 1px solid var(--panel-border);
-  color: var(--text-secondary);
-  cursor: pointer;
+  --btn-bg: transparent;
+  --btn-color: var(--text-secondary);
 
   &:hover {
-    background: var(--panel-border);
-    color: var(--text-primary);
+    --btn-bg: var(--panel-border);
+    --btn-color: var(--text-primary);
   }
 }
 
 .btn-convert-placeholder {
+  --btn-bg: transparent;
   border: none;
-  background: none;
 }
 
 /* --------------------- Spellcasting Panel -------------------- */
@@ -1348,14 +1270,6 @@ select.entry-name {
   &:last-child {
     margin-bottom: 0;
   }
-}
-
-.toggle-row {
-  display: flex;
-  align-items: center;
-  gap: var(--size-2);
-  margin-bottom: var(--size-2);
-  cursor: pointer;
 }
 
 .spell-header {
@@ -1429,29 +1343,6 @@ select.entry-name {
   }
 }
 
-.sorcery-points {
-  display: flex;
-  align-items: center;
-  gap: var(--size-1);
-  font-size: var(--font-size-1);
-  margin-bottom: var(--size-2);
-
-  .slot-level {
-    min-width: 40px;
-    font-weight: var(--font-weight-6);
-  }
-
-  input {
-    width: 50px;
-    text-align: center;
-    padding: var(--size-1);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-1);
-    background: var(--input-bg);
-    color: var(--text-primary);
-  }
-}
-
 .spell-prepared {
   display: inline-flex;
   align-items: center;
@@ -1482,26 +1373,11 @@ select.entry-name {
   }
 }
 
-/* --------------------- Dividers ------------------------------ */
-.section-divider {
-  border: none;
-  border-top: 1px solid var(--panel-border);
-  margin: var(--size-2) 0;
-}
-
 /* --------------------- Buttons ------------------------------- */
-.btn-add {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-  font-size: var(--font-size-1);
+.btn-primary {
+  --btn-bg: var(--accent);
+  --btn-color: white;
   margin-top: var(--size-1);
-  width: fit-content;
-
-  &.btn-danger {
-    background: var(--danger);
-    border-color: var(--danger);
-  }
 }
 
 .icon {
@@ -1512,22 +1388,18 @@ select.entry-name {
 }
 
 .btn-remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --btn-bg: transparent;
+  --btn-color: var(--danger);
   vertical-align: middle;
   width: 28px;
   height: 28px;
   padding: 0;
   border-color: var(--danger);
-  background: none;
-  color: var(--danger);
-  font-size: var(--font-size-1);
   line-height: 1;
 
   &:hover {
-    background: var(--danger);
-    color: white;
+    --btn-bg: var(--danger);
+    --btn-color: white;
   }
 }
 
@@ -1542,24 +1414,18 @@ select.entry-name {
 }
 
 .btn-apply-level {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --btn-bg: transparent;
+  --btn-color: var(--accent);
   gap: 2px;
   padding: 0;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-1);
-  background: none;
-  color: var(--accent);
-  cursor: pointer;
-  font-size: var(--font-size-1);
+  border-color: var(--accent);
   line-height: 1;
 
   &:hover {
-    background: var(--accent);
-    color: white;
+    --btn-bg: var(--accent);
+    --btn-color: white;
   }
 }
 
@@ -1647,13 +1513,9 @@ select.entry-name {
 }
 
 .btn-cancel {
-  background: none;
-  color: var(--text-secondary);
-  border: 1px solid var(--panel-border);
-  padding: var(--size-1) var(--size-3);
-  border-radius: var(--radius-1);
-  cursor: pointer;
-  font-size: var(--font-size-1);
+  --btn-bg: transparent;
+  --btn-color: var(--text-secondary);
+  border-color: var(--panel-border);
   text-decoration: none;
 }
 
@@ -1664,7 +1526,7 @@ select.entry-name {
   gap: var(--size-2);
   margin-top: var(--size-3);
 
-  .btn-add,
+  .btn-primary,
   .btn-cancel {
     margin-top: 0;
     white-space: nowrap;
@@ -1747,25 +1609,6 @@ select.entry-name {
   color: var(--text-secondary);
   font-style: italic;
   margin: var(--size-1) 0;
-}
-
-.summary-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: var(--size-2);
-
-  th,
-  td {
-    padding: var(--size-1) var(--size-2);
-    text-align: left;
-    border-bottom: 1px solid var(--panel-border);
-  }
-
-  th {
-    color: var(--text-secondary);
-    font-size: var(--font-size-1);
-    font-weight: 600;
-  }
 }
 
 .summary-section {
@@ -1929,31 +1772,24 @@ select.entry-name {
 }
 
 .btn-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --btn-bg: transparent;
   vertical-align: middle;
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-1);
-  background: none;
-  cursor: pointer;
-  color: var(--text-primary);
-  font-size: var(--font-size-1);
+  border-color: var(--panel-border);
   line-height: 1;
 
   &--danger {
-    color: var(--danger);
+    --btn-color: var(--danger);
   }
 
   &--success {
-    color: var(--success);
+    --btn-color: var(--success);
   }
 
   &:hover {
-    background: var(--surface-3);
+    --btn-bg: var(--surface-3);
   }
 
   &:disabled {
@@ -2022,14 +1858,6 @@ select.entry-name {
     font-weight: 400;
   }
 
-  .summary-hp-detail {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--size-1);
-    font-size: var(--font-size-1);
-    color: var(--text-secondary);
-  }
-
   .summary-hp-temp-input {
     width: 3em;
     text-align: center;
@@ -2040,18 +1868,6 @@ select.entry-name {
     color: var(--text-primary);
     padding: 0 var(--size-1);
   }
-}
-
-.summary-stat-input {
-  width: 3em;
-  text-align: center;
-  font-size: var(--font-size-3);
-  font-weight: 700;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-1);
-  background: var(--input-bg);
-  color: var(--text-primary);
-  padding: 0 var(--size-1);
 }
 
 .summary-abilities-grid,
@@ -2148,13 +1964,6 @@ select.entry-name {
   font-weight: 600;
   font-size: var(--font-size-1);
   color: var(--text-secondary);
-}
-
-.summary-items-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-1);
-  margin-bottom: var(--size-2);
 }
 
 .summary-item {
@@ -2417,24 +2226,6 @@ select.entry-name {
   color: var(--text-primary);
 }
 
-.expr-condition {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--size-1);
-  margin-top: var(--size-1);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-0);
-  color: var(--text-secondary);
-
-  &.invalid {
-    color: var(--danger);
-  }
-
-  &-result {
-    font-weight: 700;
-  }
-}
 
 .datalist-modal-search {
   margin: var(--size-2) var(--size-3);
@@ -2994,15 +2785,9 @@ select.entry-name {
 }
 
 .btn-confirm {
-  display: inline-flex;
-  align-items: center;
+  --btn-bg: var(--accent);
+  --btn-color: white;
   gap: var(--size-1);
-  padding: var(--size-1) var(--size-3);
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: var(--radius-2);
-  cursor: pointer;
 }
 
 .dice-pool-form:has(:invalid) .btn-confirm {

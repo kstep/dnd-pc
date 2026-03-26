@@ -50,10 +50,10 @@ pub fn CharacterList() -> impl IntoView {
             Either::Right(view! {
                     <div class="character-list-page">
                         <div class="character-list-actions">
-                            <button class="btn-create" on:click=create_character>
+                            <button class="btn-primary" on:click=create_character>
                                 {move_tr!("btn-new-character")}
                             </button>
-                            <button class="btn-add" on:click=load_from_file>
+                            <button class="btn-primary" on:click=load_from_file>
                                 {move_tr!("btn-load-character")}
                             </button>
                         </div>

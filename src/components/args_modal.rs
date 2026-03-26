@@ -129,7 +129,7 @@ pub fn ArgsModal() -> impl IntoView {
                     view! {
                         <form class="args-modal-body" on:submit=on_submit>
                             {feature_views}
-                            <button type="submit" class="btn-add" disabled=move || !is_valid.get()>
+                            <button type="submit" class="btn-primary" disabled=move || !is_valid.get()>
                                 {move_tr!("apply-features-title")}
                             </button>
                         </form>

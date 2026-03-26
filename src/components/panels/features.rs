@@ -179,7 +179,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .collect_view()
                 }}
             </div>
-            <button class="btn-add" on:click=add_feature>
+            <button class="btn-primary" on:click=add_feature>
                 {move_tr!("btn-add-feature")}
             </button>
         </Panel>

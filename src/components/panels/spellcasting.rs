@@ -347,7 +347,7 @@ fn FeatureSpellcastingSection(
                     }}
                 </div>
                 <button
-                    class="btn-add"
+                    class="btn-primary"
                     on:click=move |_| {
                         update_spells(fname, store, |sc| {
                             if let Some(known) = &mut sc.known {
@@ -556,7 +556,7 @@ fn FeatureSpellcastingSection(
                 }}
             </div>
             <button
-                class="btn-add"
+                class="btn-primary"
                 on:click=move |_| {
                     update_spells(fname, store, |sc| sc.spells.push(Spell::default()));
                 }

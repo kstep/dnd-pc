@@ -419,7 +419,7 @@ pub fn ClassFieldsPanels() -> impl IntoView {
                                         </div>
                                     </div>
                                     <button
-                                        class="btn-add"
+                                        class="btn-primary"
                                         on:click=move |_| {
                                             fname.with_value(|key| {
                                                 store.feature_data().update(|m| {
