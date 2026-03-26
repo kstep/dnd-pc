@@ -98,7 +98,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -127,7 +127,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 30",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -138,7 +138,7 @@
       {
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -157,7 +157,7 @@
       {
         "name": "AC",
         "expr": "AC = max(AC, 17)",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -218,7 +218,7 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -229,7 +229,7 @@
       {
         "name": "Stealth",
         "expr": "SKILL.STEA += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -256,7 +256,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 20",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -293,7 +293,7 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -390,7 +390,7 @@
       {
         "name": "AC",
         "expr": "AC += 2",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },

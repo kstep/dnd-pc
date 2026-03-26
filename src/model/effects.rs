@@ -10,7 +10,6 @@ use crate::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
 pub enum EffectRange {
-    #[serde(rename = "self")]
     Caster,
     #[default]
     Touch,

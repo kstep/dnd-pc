@@ -196,7 +196,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -251,7 +251,7 @@
       {
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -336,7 +336,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -463,7 +463,7 @@
       {
         "name": "Feign Death",
         "expr": "SPEED = 0",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -488,7 +488,7 @@
       {
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -521,7 +521,7 @@
       {
         "name": "Motivational Speech",
         "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -544,7 +544,7 @@
       {
         "name": "Slow",
         "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -645,7 +645,7 @@
       {
         "name": "AC",
         "expr": "AC += 2",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -770,7 +770,7 @@
       {
         "name": "Heroes' Feast",
         "expr": "WIS.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -827,7 +827,7 @@
       {
         "name": "Temp HP",
         "expr": "TEMP_HP = max(TEMP_HP, 20)",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -904,7 +904,7 @@
       {
         "name": "Foresight",
         "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },

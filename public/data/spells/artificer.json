@@ -272,7 +272,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -305,7 +305,7 @@
       {
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -386,7 +386,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -413,7 +413,7 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -456,7 +456,7 @@
       {
         "name": "Speed",
         "expr": "SPEED += 20",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -487,7 +487,7 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -516,7 +516,7 @@
       {
         "name": "Haste",
         "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -527,7 +527,7 @@
       {
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
@@ -630,7 +630,7 @@
       {
         "name": "Circle of Power",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "self"
+        "range": "Caster"
       }
     ]
   },
