@@ -386,13 +386,21 @@ pub fn CharacterHeader() -> impl IntoView {
                 <label>{move_tr!("classes")}</label>
                 <div class="classes-list">
                     {
-                        // Memoize class options — only recomputes when abilities change,
-                        // not on every class field edit.
-                        let class_options = Memo::new(move |_| {
-                            let abilities = store.abilities().get();
+                        // All classes (for first class — no prerequisites).
+                        let all_class_options = Memo::new(move |_| {
+                            registry.with_class_entries(|entries| {
+                                entries.values().map(|entry| {
+                                    (entry.name.clone(), entry.label().to_string(), entry.description.clone())
+                                }).collect::<Vec<_>>()
+                            })
+                        });
+                        // Filtered by prerequisites (for multiclassing — all classes
+                        // must meet their prerequisites).
+                        let multiclass_options = Memo::new(move |_| {
+                            let character = store.get();
                             registry.with_class_entries(|entries| {
                                 entries.values().filter(|entry| {
-                                    entry.prerequisites.iter().all(|&ability| abilities.get(ability) >= 13)
+                                    registry.can_multiclass(&character, &entry.name)
                                 }).map(|entry| {
                                     (entry.name.clone(), entry.label().to_string(), entry.description.clone())
                                 }).collect::<Vec<_>>()
@@ -440,13 +448,21 @@ pub fn CharacterHeader() -> impl IntoView {
                                     classes.read().get(i).map_or(8, |cl| cl.hit_die_sides)
                                 });
 
+                                let class_opts = Signal::derive(move || {
+                                    if classes.read().len() <= 1 {
+                                        all_class_options.get()
+                                    } else {
+                                        multiclass_options.get()
+                                    }
+                                });
+
                                 view! {
                                     <div class="class-entry">
                                         <DatalistInput
                                             value=class_name
                                             placeholder=move_tr!("class")
                                             class="class-name"
-                                            options=class_options
+                                            options=class_opts
                                             ref_href=move || {
                                                 (!class_key.is_empty()).then(|| format!("{BASE_URL}/r/class/{class_key}"))
                                             }

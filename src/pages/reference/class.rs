@@ -7,7 +7,7 @@ use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     hooks::use_hash_href,
-    model::{Translatable, format_bonus, proficiency_bonus_for_level},
+    model::{format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
 };
 
@@ -56,13 +56,7 @@ pub fn ClassReference() -> impl IntoView {
         let prerequisites = registry.with_class_entries(|entries| {
             entries
                 .get(name.as_str())
-                .map(|e| {
-                    e.prerequisites
-                        .iter()
-                        .map(|a| i18n.tr(a.tr_key()))
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                })
+                .and_then(|e| e.prerequisites.as_ref().map(|expr| expr.to_string()))
                 .unwrap_or_default()
         });
 

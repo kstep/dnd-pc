@@ -162,6 +162,26 @@ impl RulesRegistry {
         with_spell_entries,      spell_label_by_name,       spells,       SpellIndexEntry;
     }
 
+    /// Checks whether `character` can multiclass into `class_name`.
+    /// All existing classes and the candidate class must meet their
+    /// prerequisites.
+    pub fn can_multiclass(&self, character: &Character, class_name: &str) -> bool {
+        self.with_class_entries(|entries| {
+            // Every existing class must meet its prerequisites.
+            let existing_ok = character.identity.classes.iter().all(|cl| {
+                cl.class.is_empty()
+                    || entries
+                        .get(cl.class.as_str())
+                        .is_none_or(|entry| entry.meets_prerequisites(character))
+            });
+            // The candidate class must also meet its prerequisites.
+            existing_ok
+                && entries
+                    .get(class_name)
+                    .is_none_or(|entry| entry.meets_prerequisites(character))
+        })
+    }
+
     pub fn is_loading(&self) -> bool {
         self.class_cache.is_pending()
             || self.species_cache.is_pending()

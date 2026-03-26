@@ -4,7 +4,8 @@ use serde::Deserialize;
 
 use crate::{
     demap::{self, Named},
-    model::Ability,
+    expr::{Eval as _, Expr},
+    model::{Attribute, Character},
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -28,7 +29,7 @@ pub struct ClassIndexEntry {
     #[serde(default)]
     pub description: String,
     #[serde(default)]
-    pub prerequisites: Vec<Ability>,
+    pub prerequisites: Option<Expr<Attribute>>,
 }
 
 impl Named for ClassIndexEntry {
@@ -40,6 +41,12 @@ impl Named for ClassIndexEntry {
 impl ClassIndexEntry {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+
+    pub fn meets_prerequisites(&self, character: &Character) -> bool {
+        self.prerequisites
+            .as_ref()
+            .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
     }
 }
 

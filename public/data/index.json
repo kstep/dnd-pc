@@ -3,93 +3,67 @@
     {
       "name": "Artificer",
       "url": "classes/artificer.json",
-      "prerequisites": [
-        3
-      ]
+      "prerequisites": "INT >= 13"
     },
     {
       "name": "Barbarian",
       "url": "classes/barbarian.json",
-      "prerequisites": [
-        0
-      ]
+      "prerequisites": "STR >= 13"
     },
     {
       "name": "Bard",
       "url": "classes/bard.json",
-      "prerequisites": [
-        5
-      ]
+      "prerequisites": "CHA >= 13"
     },
     {
       "name": "Cleric",
       "url": "classes/cleric.json",
-      "prerequisites": [
-        4
-      ]
+      "prerequisites": "WIS >= 13"
     },
     {
       "name": "Druid",
       "url": "classes/druid.json",
-      "prerequisites": [
-        4
-      ]
+      "prerequisites": "WIS >= 13"
     },
     {
       "name": "Fighter",
       "url": "classes/fighter.json",
-      "prerequisites": [
-        0
-      ]
+      "prerequisites": "STR >= 13 or DEX >= 13"
     },
     {
       "name": "Monk",
       "url": "classes/monk.json",
-      "prerequisites": [
-        1
-      ]
+      "prerequisites": "DEX >= 13 and WIS >= 13"
     },
     {
       "name": "Paladin",
       "url": "classes/paladin.json",
-      "prerequisites": [
-        5
-      ]
+      "prerequisites": "STR >= 13 and CHA >= 13"
     },
     {
       "name": "Ranger",
       "url": "classes/ranger.json",
-      "prerequisites": [
-        4
-      ]
+      "prerequisites": "DEX >= 13 and WIS >= 13"
     },
     {
       "name": "Rogue",
       "url": "classes/rogue.json",
-      "prerequisites": [
-        1
-      ]
+      "prerequisites": "DEX >= 13"
     },
     {
       "name": "Sorcerer",
       "url": "classes/sorcerer.json",
-      "prerequisites": [
-        5
-      ]
+      "prerequisites": "CHA >= 13"
     },
     {
       "name": "Warlock",
       "url": "classes/warlock.json",
-      "prerequisites": [
-        5
-      ]
+      "prerequisites": "CHA >= 13"
     },
     {
       "name": "Wizard",
       "url": "classes/wizard.json",
-      "prerequisites": [
-        3
-      ]
+      "prerequisites": "INT >= 13"
     }
   ],
   "species": [
