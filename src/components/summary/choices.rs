@@ -7,13 +7,16 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
-        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal, inject_resource_vars},
+        effects_calc_modal::{
+            EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
+            inject_resource_vars,
+        },
         icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     model::{
-        Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
-        Translatable, short_name,
+        Attribute, Character, CharacterStoreFields, EffectDefinition, EffectRange, FeatureOption,
+        FeatureValue, Translatable, short_name,
     },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -116,6 +119,7 @@ struct ChoiceGroup {
 pub fn ChoicesBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<crate::effective::EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
 
     let feature_data = store.feature_data();
@@ -136,6 +140,20 @@ pub fn ChoicesBlock() -> impl IntoView {
             // Inject Points field values if feature has one
             if let Some(entry) = character.feature_data.get(&feature_name) {
                 inject_resource_vars(&mut extra_vars, entry);
+            }
+
+            // All effects are Caster with no dice — apply immediately, skip modal
+            let all_caster = effects.iter().all(|e| e.range == EffectRange::Caster);
+            if all_caster && all_self_effects_diceless(&effects, &character, &extra_vars) {
+                drop(character);
+                apply_self_effects_now(
+                    &effects,
+                    &option_label,
+                    &feature_name,
+                    &store,
+                    eff.effects(),
+                );
+                return;
             }
 
             calc_info.set_value(Some(EffectsCalcInfo {

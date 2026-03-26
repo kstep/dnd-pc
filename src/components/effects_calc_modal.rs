@@ -9,8 +9,8 @@ use crate::{
     effective::EffectiveCharacter,
     expr::{self, DicePool, Expr},
     model::{
-        ActiveEffect, Attribute, Character, EffectDefinition, EffectDuration, EffectRange,
-        FeatureData, FeatureValue,
+        ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration,
+        EffectRange, FeatureData, FeatureValue,
     },
 };
 
@@ -61,6 +61,74 @@ pub fn inject_resource_vars(extra_vars: &mut BTreeMap<Attribute, i32>, entry: &F
             }
             _ => {}
         }
+    }
+}
+
+/// Check whether all Caster effects in the list have no dice rolls.
+/// When true, effects can be applied immediately without showing the modal.
+pub fn all_self_effects_diceless(
+    effects: &[EffectDefinition],
+    character: &Character,
+    extra_vars: &BTreeMap<Attribute, i32>,
+) -> bool {
+    let ctx = CalcContext {
+        character,
+        extra_vars,
+    };
+    effects
+        .iter()
+        .filter(|effect| effect.range == EffectRange::Caster)
+        .all(|effect| effect.expr.dice_rolls(&ctx).is_empty())
+}
+
+/// Apply all Caster effects immediately (no dice, no modal).
+/// Instant effects are applied directly to the character;
+/// persistent effects create an ActiveEffect.
+pub fn apply_self_effects_now(
+    effects: &[EffectDefinition],
+    spell_name: &str,
+    feature_name: &str,
+    store: &Store<Character>,
+    active_effects: RwSignal<ActiveEffects>,
+) {
+    let build_expr = |filter: fn(EffectDuration) -> bool| -> Option<Expr<Attribute>> {
+        let combined = effects
+            .iter()
+            .filter(|effect| effect.range == EffectRange::Caster && filter(effect.duration))
+            .map(|effect| effect.expr.to_string())
+            .collect::<Vec<_>>()
+            .join("; ");
+        if combined.is_empty() {
+            None
+        } else {
+            combined.parse().ok()
+        }
+    };
+
+    if let Some(expr) = build_expr(|duration| duration == EffectDuration::Instant) {
+        store.update(|character| {
+            if let Err(error) = expr.apply(character) {
+                log::error!("Instant effect error: {error}");
+            }
+        });
+    }
+
+    if let Some(expr) = build_expr(|duration| duration != EffectDuration::Instant) {
+        let scope = if feature_name.is_empty() {
+            None
+        } else {
+            Some(feature_name.into())
+        };
+        let effect = ActiveEffect {
+            name: spell_name.to_string(),
+            label: None,
+            description: String::new(),
+            expr: Some(expr),
+            pool: None,
+            enabled: true,
+            scope,
+        };
+        active_effects.update(|active| active.add(effect, &store.read()));
     }
 }
 

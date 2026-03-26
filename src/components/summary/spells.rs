@@ -7,14 +7,17 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::{CastButton, CastOption},
-        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal, inject_resource_vars},
+        effects_calc_modal::{
+            EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
+            inject_resource_vars,
+        },
         summary::adv_icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, Attribute, Character, CharacterStoreFields, FeatureValue, SpellSlotLevel,
-        SpellSlotPool, format_bonus,
+        Ability, Attribute, Character, CharacterStoreFields, EffectRange, FeatureValue,
+        SpellSlotLevel, SpellSlotPool, format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -59,6 +62,31 @@ pub fn SpellsBlock() -> impl IntoView {
         if !effects.is_empty() {
             let character = store.read_untracked();
             let caster_level = character.caster_level(pool);
+
+            let mut extra_vars = BTreeMap::new();
+            extra_vars.insert(Attribute::SlotLevel, slot_level as i32);
+            extra_vars.insert(Attribute::CasterLevel(None), caster_level as i32);
+            extra_vars.insert(
+                Attribute::CasterModifier,
+                character.ability_modifier(casting_ability),
+            );
+
+            // Inject resource field values and spell cost
+            if let Some(entry) = character.feature_data.get(fname) {
+                inject_resource_vars(&mut extra_vars, entry);
+            }
+            if let CastOption::PointsCost { cost, .. } = opt {
+                extra_vars.insert(Attribute::Cost, *cost as i32);
+            }
+
+            // All effects are Caster with no dice — apply immediately, skip modal
+            let all_caster = effects.iter().all(|e| e.range == EffectRange::Caster);
+            if all_caster && all_self_effects_diceless(&effects, &character, &extra_vars) {
+                drop(character);
+                apply_self_effects_now(&effects, spell_name, fname, &store, eff.effects());
+                return;
+            }
+
             let spell_label = character
                 .feature_data
                 .get(fname)
@@ -76,22 +104,6 @@ pub fn SpellsBlock() -> impl IntoView {
             } else {
                 spell_label
             };
-
-            let mut extra_vars = BTreeMap::new();
-            extra_vars.insert(Attribute::SlotLevel, slot_level as i32);
-            extra_vars.insert(Attribute::CasterLevel(None), caster_level as i32);
-            extra_vars.insert(
-                Attribute::CasterModifier,
-                character.ability_modifier(casting_ability),
-            );
-
-            // Inject resource field values and spell cost
-            if let Some(entry) = character.feature_data.get(fname) {
-                inject_resource_vars(&mut extra_vars, entry);
-            }
-            if let CastOption::PointsCost { cost, .. } = opt {
-                extra_vars.insert(Attribute::Cost, *cost as i32);
-            }
 
             calc_info.set_value(Some(EffectsCalcInfo {
                 title,
