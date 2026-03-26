@@ -9,8 +9,8 @@ use crate::{
     effective::EffectiveCharacter,
     expr::{self, DicePool, Expr},
     model::{
-        ActiveEffect, Attribute, Character, EffectDefinition, EffectRange, FeatureData,
-        FeatureValue,
+        ActiveEffect, Attribute, Character, EffectDefinition, EffectDuration, EffectRange,
+        FeatureData, FeatureValue,
     },
 };
 
@@ -123,20 +123,33 @@ pub fn EffectsCalcModal(
             type DiceGroups = Vec<StoredValue<BTreeMap<u32, Vec<NodeRef<html::Input>>>>>;
             let self_dice_groups: StoredValue<DiceGroups> = StoredValue::new(Vec::new());
 
-            // Build combined self-targeting expression
-            let self_expr: Option<Expr<Attribute>> = if has_self_effects {
-                let combined = info
-                    .effects
-                    .iter()
-                    .filter(|effect| effect.range == EffectRange::Caster)
-                    .map(|effect| effect.expr.to_string())
-                    .collect::<Vec<_>>()
-                    .join("; ");
-                combined.parse().ok()
+            // Build separate instant and persistent expressions
+            let (instant_expr, persistent_expr) = if has_self_effects {
+                let build_expr = |filter: fn(EffectDuration) -> bool| -> Option<Expr<Attribute>> {
+                    let combined = info
+                        .effects
+                        .iter()
+                        .filter(|effect| {
+                            effect.range == EffectRange::Caster && filter(effect.duration)
+                        })
+                        .map(|effect| effect.expr.to_string())
+                        .collect::<Vec<_>>()
+                        .join("; ");
+                    if combined.is_empty() {
+                        None
+                    } else {
+                        combined.parse().ok()
+                    }
+                };
+                (
+                    build_expr(|duration| duration == EffectDuration::Instant),
+                    build_expr(|duration| duration != EffectDuration::Instant),
+                )
             } else {
-                None
+                (None, None)
             };
-            let self_expr = StoredValue::new(self_expr);
+            let instant_expr = StoredValue::new(instant_expr);
+            let persistent_expr = StoredValue::new(persistent_expr);
             let spell_name = StoredValue::new(info.spell_name.clone());
             let feature_name = StoredValue::new(info.feature_name.clone());
 
@@ -292,10 +305,6 @@ pub fn EffectsCalcModal(
             // "Apply Effect" button for self-targeting spells
             let apply_button = has_self_effects.then(|| {
                 let apply_effect = move |_: web_sys::MouseEvent| {
-                    let Some(expr) = self_expr.get_value() else {
-                        return;
-                    };
-
                     // Collect dice pool from all self-targeting effect inputs
                     let mut merged_pool = BTreeMap::<u32, Vec<u32>>::new();
                     self_dice_groups.with_value(|dice_groups| {
@@ -314,26 +323,43 @@ pub fn EffectsCalcModal(
                         Some(DicePool::from(merged_pool))
                     };
 
-                    let name = spell_name.get_value();
-                    let scope = feature_name.with_value(|fname| {
-                        if fname.is_empty() {
-                            None
-                        } else {
-                            Some(fname.clone().into_boxed_str())
-                        }
-                    });
+                    // Instant effects: apply directly to character
+                    if let Some(expr) = instant_expr.get_value() {
+                        store.update(|character| {
+                            let result = match &pool {
+                                Some(pool) => expr.apply_with_dice(character, pool),
+                                None => expr.apply(character),
+                            };
+                            if let Err(error) = result {
+                                log::error!("Instant effect error: {error}");
+                            }
+                        });
+                    }
 
-                    let effect = ActiveEffect {
-                        name,
-                        label: None,
-                        description: String::new(),
-                        expr: Some(expr),
-                        pool,
-                        enabled: true,
-                        scope,
-                    };
+                    // Persistent effects: create ActiveEffect
+                    if let Some(expr) = persistent_expr.get_value() {
+                        let name = spell_name.get_value();
+                        let scope = feature_name.with_value(|fname| {
+                            if fname.is_empty() {
+                                None
+                            } else {
+                                Some(fname.clone().into_boxed_str())
+                            }
+                        });
 
-                    effects.update(|active| active.add(effect, &store.read()));
+                        let effect = ActiveEffect {
+                            name,
+                            label: None,
+                            description: String::new(),
+                            expr: Some(expr),
+                            pool,
+                            enabled: true,
+                            scope,
+                        };
+
+                        effects.update(|active| active.add(effect, &store.read()));
+                    }
+
                     show.set(false);
                 };
 

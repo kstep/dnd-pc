@@ -326,7 +326,8 @@
       {
         "name": "Temp HP",
         "expr": "TEMP_HP = max(TEMP_HP, 2d4 + 4 + 5 * (SLOT_LEVEL - 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
@@ -367,7 +368,8 @@
       {
         "name": "AC",
         "expr": "AC = max(AC, 13 + DEX.MOD)",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -398,7 +400,8 @@
       {
         "name": "AC",
         "expr": "AC += 5",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -607,7 +610,8 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -630,7 +634,8 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -797,7 +802,8 @@
       {
         "name": "Speed",
         "expr": "SPEED += 20",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -876,7 +882,8 @@
       {
         "name": "Haste",
         "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -891,7 +898,8 @@
       {
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -944,7 +952,8 @@
       {
         "name": "Slow",
         "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -1325,7 +1334,8 @@
       {
         "name": "AC",
         "expr": "AC += 2",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -1356,7 +1366,8 @@
       {
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -1409,7 +1420,8 @@
       {
         "name": "AC",
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },

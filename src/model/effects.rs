@@ -16,6 +16,14 @@ pub enum EffectRange {
     Feet(u32),
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
+pub enum EffectDuration {
+    #[default]
+    Instant,
+    Rounds(u32),
+    Forever,
+}
+
 /// A lightweight effect definition carrying a name and expression.
 /// Used on `SpellDefinition` for damage/healing formulas; designed to be
 /// reusable for feature effects, weapon effects, etc.
@@ -27,6 +35,8 @@ pub struct EffectDefinition {
     pub expr: Expr<Attribute>,
     #[serde(default)]
     pub range: EffectRange,
+    #[serde(default)]
+    pub duration: EffectDuration,
 }
 
 impl EffectDefinition {

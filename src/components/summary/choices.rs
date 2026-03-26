@@ -139,10 +139,10 @@ pub fn ChoicesBlock() -> impl IntoView {
             }
 
             calc_info.set_value(Some(EffectsCalcInfo {
-                title: option_label,
+                title: option_label.clone(),
                 effects,
                 extra_vars,
-                spell_name: String::new(),
+                spell_name: option_label,
                 feature_name: feature_name.clone(),
             }));
             show_calc.set(true);

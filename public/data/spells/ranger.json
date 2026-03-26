@@ -98,7 +98,8 @@
       {
         "name": "Speed",
         "expr": "SPEED += 10",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -127,7 +128,8 @@
       {
         "name": "Speed",
         "expr": "SPEED += 30",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -138,7 +140,8 @@
       {
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -157,7 +160,8 @@
       {
         "name": "AC",
         "expr": "AC = max(AC, 17)",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -218,7 +222,8 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -229,7 +234,8 @@
       {
         "name": "Stealth",
         "expr": "SKILL.STEA += 10",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -256,7 +262,8 @@
       {
         "name": "Speed",
         "expr": "SPEED += 20",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -293,7 +300,8 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -390,7 +398,8 @@
       {
         "name": "AC",
         "expr": "AC += 2",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },

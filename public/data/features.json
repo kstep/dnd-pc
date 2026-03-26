@@ -3262,7 +3262,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "5 * CLASS_LEVEL"
+                "expr": "HP += 5 * CLASS_LEVEL",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -4186,7 +4188,9 @@
             "effects": [
               {
                 "name": "Temp HP",
-                "expr": "1d6 + CLASS_LEVEL"
+                "expr": "TEMP_HP = max(TEMP_HP, 1d6 + CLASS_LEVEL)",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -4709,7 +4713,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "if(CLASS_LEVEL >= 10, 2, 1)d6 + CLASS_LEVEL"
+                "expr": "HP += if(CLASS_LEVEL >= 10, 2, 1)d6 + CLASS_LEVEL",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -4879,7 +4885,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "if(CLASS_LEVEL >= 14, 7, if(CLASS_LEVEL >= 10, 5, 3))d6"
+                "expr": "HP += if(CLASS_LEVEL >= 14, 7, if(CLASS_LEVEL >= 10, 5, 3))d6",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -5222,7 +5230,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "1d10 + CLASS_LEVEL"
+                "expr": "HP += 1d10 + CLASS_LEVEL",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -5571,7 +5581,9 @@
             "effects": [
               {
                 "name": "AC Bonus",
-                "expr": "1d8"
+                "expr": "AC += 1d8",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -5610,7 +5622,9 @@
             "effects": [
               {
                 "name": "Temp HP",
-                "expr": "if(CLASS_LEVEL >= 15, 15, if(CLASS_LEVEL >= 10, 10, 5))"
+                "expr": "TEMP_HP = max(TEMP_HP, if(CLASS_LEVEL >= 15, 15, if(CLASS_LEVEL >= 10, 10, 5)))",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -6311,7 +6325,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "1d6 + WIS.MOD"
+                "expr": "HP += 1d6 + WIS.MOD",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -6470,7 +6486,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "3 * CLASS_LEVEL"
+                "expr": "HP += 3 * CLASS_LEVEL",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -6497,7 +6515,9 @@
             "effects": [
               {
                 "name": "Healing Pool",
-                "expr": "5 * CLASS_LEVEL"
+                "expr": "HP += 5 * CLASS_LEVEL",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -7152,7 +7172,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "1d6 + CHA.MOD"
+                "expr": "HP += 1d6 + CHA.MOD",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -11081,7 +11103,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "if(CLASS_LEVEL >= 15, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1))))d6"
+                "expr": "HP += if(CLASS_LEVEL >= 15, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1))))d6",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }
@@ -12843,7 +12867,9 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "LEVEL d4"
+                "expr": "HP += LEVEL d4",
+                "range": "Caster",
+                "duration": "Instant"
               }
             ]
           }

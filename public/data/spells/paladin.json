@@ -92,7 +92,8 @@
       {
         "name": "AC",
         "expr": "AC += 2",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -133,7 +134,8 @@
       {
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -164,7 +166,8 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -199,7 +202,8 @@
       {
         "name": "Warding Bond",
         "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -260,7 +264,8 @@
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
@@ -337,7 +342,8 @@
       {
         "name": "Circle of Power",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
-        "range": "Caster"
+        "range": "Caster",
+        "duration": "Forever"
       }
     ]
   },
