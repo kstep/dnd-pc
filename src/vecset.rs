@@ -53,6 +53,10 @@ impl<T> VecSet<T> {
     pub fn remove_at(&mut self, index: usize) -> T {
         self.0.remove(index)
     }
+
+    pub fn clear(&mut self) {
+        self.0.clear();
+    }
 }
 
 impl<T> Deref for VecSet<T> {

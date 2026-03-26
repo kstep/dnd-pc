@@ -231,6 +231,20 @@ pub fn CombatPanel() -> impl IntoView {
                     " "
                     {move_tr!("recalculate")}
                 </button>
+                <button
+                    class="btn-rest"
+                    title=move_tr!("replay")
+                    on:click=move |_| {
+                        let window = web_sys::window().unwrap();
+                        if window.confirm_with_message("Replay will reset and re-apply all features. Continue?").unwrap_or(false) {
+                            store.update(|ch| registry.replay(ch));
+                        }
+                    }
+                >
+                    <Icon name="rotate-ccw" size=14 />
+                    " "
+                    {move_tr!("replay")}
+                </button>
             </div>
             </div>
         </Panel>

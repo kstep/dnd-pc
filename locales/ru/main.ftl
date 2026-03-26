@@ -63,6 +63,7 @@ panel-notes = Заметки
 ## Панель боя
 armor-class = Класс защиты
 recalculate = Пересчитать
+replay = Переприменить
 initiative = Инициатива
 speed = Скорость
 inspiration = Вдохновение

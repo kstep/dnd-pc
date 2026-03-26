@@ -63,6 +63,7 @@ panel-notes = Notes
 ## Combat panel
 armor-class = Armor Class
 recalculate = Recalculate
+replay = Replay
 initiative = Initiative
 speed = Speed
 inspiration = Inspiration

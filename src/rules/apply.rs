@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 
 use leptos::prelude::*;
 
@@ -32,6 +32,82 @@ impl RulesRegistry {
     pub fn short_rest(&self, character: &mut Character) {
         character.short_rest();
         self.assign(character, WhenCondition::OnShortRest);
+    }
+
+    /// Reset character to base state and re-apply all features level by level,
+    /// reusing previously stored ARG values.
+    pub fn replay(&self, character: &mut Character) {
+        // Extract stored args before reset
+        let mut stored_args: BTreeMap<String, VecDeque<Vec<Vec<i32>>>> = BTreeMap::new();
+        for (name, data) in &character.feature_data {
+            if !data.args.is_empty() {
+                let args: VecDeque<Vec<Vec<i32>>> = data
+                    .args
+                    .iter()
+                    .map(|assign_args| vec![assign_args.values.clone()])
+                    .collect();
+                stored_args.insert(name.clone(), args);
+            }
+        }
+
+        character.reset_for_replay();
+
+        // Re-apply level by level for each class
+        let class_count = character.identity.classes.len();
+        for class_idx in 0..class_count {
+            let max_level = character.identity.classes[class_idx].level;
+            for level in 1..=max_level {
+                let args_map =
+                    self.build_replay_args(character, class_idx, level, &mut stored_args);
+                let args_ref = if args_map.is_empty() {
+                    None
+                } else {
+                    Some(&args_map)
+                };
+                self.apply_class_level(character, class_idx, level, args_ref);
+            }
+        }
+    }
+
+    /// Build args_map for a single level's features by popping stored args.
+    fn build_replay_args(
+        &self,
+        character: &Character,
+        class_idx: usize,
+        level: u32,
+        stored_args: &mut BTreeMap<String, VecDeque<Vec<Vec<i32>>>>,
+    ) -> BTreeMap<String, Vec<Vec<i32>>> {
+        let mut args_map = BTreeMap::new();
+
+        let Some(class_level) = character.identity.classes.get(class_idx) else {
+            return args_map;
+        };
+        let class_cache = self.class_cache.read_untracked();
+        let Some(def) = class_cache.get(class_level.class.as_str()) else {
+            return args_map;
+        };
+
+        let rules = def.levels.get(level as usize - 1);
+        let subclass_rules = class_level
+            .subclass
+            .as_deref()
+            .and_then(|sc| def.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
+        let level_features = rules
+            .into_iter()
+            .flat_map(|r| r.features.iter())
+            .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
+
+        for feat_name in level_features {
+            if let Some(queue) = stored_args.get_mut(feat_name.as_str())
+                && let Some(args) = queue.pop_front()
+            {
+                args_map.insert(feat_name.to_string(), args);
+            }
+        }
+
+        args_map
     }
 
     pub fn compute(&self, character: &mut Character) {

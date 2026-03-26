@@ -542,6 +542,25 @@ impl Character {
         }
     }
 
+    /// Reset all derived state for replay. Preserves identity, equipment,
+    /// personality, notes, and feature list (but marks all features unapplied).
+    pub fn reset_for_replay(&mut self) {
+        self.abilities = AbilityScores::default();
+        self.saving_throws.clear();
+        self.skills.clear();
+        self.features.iter_mut().for_each(|f| f.applied = false);
+        self.feature_data.clear();
+        self.proficiencies.clear();
+        self.languages.clear();
+        self.spell_slots.clear();
+        self.combat = CombatStats::default();
+        for class_level in &mut self.identity.classes {
+            class_level.applied_levels.clear();
+        }
+        self.identity.species_applied = false;
+        self.identity.background_applied = false;
+    }
+
     /// Clear all labels and descriptions (blanket clear).
     pub fn clear_all_labels(&mut self) {
         for cl in &mut self.identity.classes {
