@@ -27,6 +27,8 @@ pub struct SpellDefinition {
     #[serde(default)]
     pub cost: u32,
     #[serde(default)]
+    pub ritual: bool,
+    #[serde(default)]
     pub effects: Vec<EffectDefinition>,
 }
 

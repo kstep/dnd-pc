@@ -291,11 +291,13 @@
   },
   {
     "name": "Comprehend Languages",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Disguise Self",
@@ -997,11 +999,13 @@
   },
   {
     "name": "Water Breathing",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Water Walk",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Backlash",

@@ -253,7 +253,8 @@
   },
   {
     "name": "Alarm",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Burning Hands",
@@ -299,11 +300,13 @@
   },
   {
     "name": "Comprehend Languages",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Disguise Self",
@@ -345,7 +348,8 @@
   },
   {
     "name": "Find Familiar",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Fog Cloud",
@@ -381,11 +385,13 @@
   },
   {
     "name": "Identify",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Illusory Script",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Jim's Magic Missile",
@@ -507,7 +513,8 @@
   },
   {
     "name": "Tenser's Floating Disk",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Thunderwave",
@@ -521,7 +528,8 @@
   },
   {
     "name": "Unseen Servant",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Wardaway",
@@ -577,7 +585,8 @@
   },
   {
     "name": "Augury",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Blindness/Deafness",
@@ -697,7 +706,8 @@
   },
   {
     "name": "Gentle Repose",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Gift of Gab",
@@ -759,7 +769,8 @@
   },
   {
     "name": "Magic Mouth",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Magic Weapon",
@@ -887,7 +898,8 @@
   },
   {
     "name": "Skywrite",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Snilloc's Snowball Swarm",
@@ -1035,7 +1047,8 @@
         "range": "Caster",
         "duration": "Forever"
       }
-    ]
+    ],
+    "ritual": true
   },
   {
     "name": "Fireball",
@@ -1117,7 +1130,8 @@
   },
   {
     "name": "Leomund's Tiny Hut",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Life Transference",
@@ -1167,7 +1181,8 @@
   },
   {
     "name": "Phantom Steed",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Protection from Energy",
@@ -1199,7 +1214,8 @@
   },
   {
     "name": "Speak with Dead",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Spirit Shroud",
@@ -1291,7 +1307,8 @@
   },
   {
     "name": "Water Breathing",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Arcane Eye",
@@ -1337,7 +1354,8 @@
   },
   {
     "name": "Divination",
-    "level": 4
+    "level": 4,
+    "ritual": true
   },
   {
     "name": "Elemental Bane",
@@ -1587,7 +1605,8 @@
   },
   {
     "name": "Contact Other Plane",
-    "level": 5
+    "level": 5,
+    "ritual": true
   },
   {
     "name": "Control Winds",
@@ -1711,7 +1730,8 @@
   },
   {
     "name": "Rary's Telepathic Bond",
-    "level": 5
+    "level": 5,
+    "ritual": true
   },
   {
     "name": "Scrying",
@@ -1849,7 +1869,8 @@
   },
   {
     "name": "Drawmij's Instant Summons",
-    "level": 6
+    "level": 6,
+    "ritual": true
   },
   {
     "name": "Elminster's Effulgent Spheres",

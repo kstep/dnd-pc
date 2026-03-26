@@ -201,7 +201,8 @@
   },
   {
     "name": "Alarm",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Catapult",
@@ -225,7 +226,8 @@
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Disguise Self",
@@ -259,7 +261,8 @@
   },
   {
     "name": "Identify",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Jump",
@@ -279,7 +282,8 @@
   },
   {
     "name": "Purify Food and Drink",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Sanctuary",
@@ -403,7 +407,8 @@
   },
   {
     "name": "Magic Mouth",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Magic Weapon",
@@ -435,7 +440,8 @@
   },
   {
     "name": "Skywrite",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Spider Climb",
@@ -553,11 +559,13 @@
   },
   {
     "name": "Water Breathing",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Water Walk",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Arcane Eye",

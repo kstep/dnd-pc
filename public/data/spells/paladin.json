@@ -5,7 +5,8 @@
   },
   {
     "name": "Ceremony",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Command",
@@ -31,11 +32,13 @@
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Detect Poison and Disease",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Divine Favor",
@@ -73,7 +76,8 @@
   },
   {
     "name": "Purify Food and Drink",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Searing Smite",
@@ -145,7 +149,8 @@
   },
   {
     "name": "Gentle Repose",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Lesser Restoration",

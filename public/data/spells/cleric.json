@@ -75,7 +75,8 @@
   },
   {
     "name": "Ceremony",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Command",
@@ -101,11 +102,13 @@
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Detect Poison and Disease",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Guiding Bolt",
@@ -143,7 +146,8 @@
   },
   {
     "name": "Purify Food and Drink",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Sanctuary",
@@ -185,7 +189,8 @@
   },
   {
     "name": "Augury",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Blindness/Deafness",
@@ -217,7 +222,8 @@
   },
   {
     "name": "Gentle Repose",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Hold Person",
@@ -247,7 +253,8 @@
   },
   {
     "name": "Silence",
-    "level": 2
+    "level": 2,
+    "ritual": true
   },
   {
     "name": "Spiritual Weapon",
@@ -335,7 +342,8 @@
         "range": "Caster",
         "duration": "Forever"
       }
-    ]
+    ],
+    "ritual": true
   },
   {
     "name": "Glyph of Warding",
@@ -391,7 +399,8 @@
   },
   {
     "name": "Meld into Stone",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Motivational Speech",
@@ -423,7 +432,8 @@
   },
   {
     "name": "Speak with Dead",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Spirit Guardians",
@@ -451,7 +461,8 @@
   },
   {
     "name": "Water Walk",
-    "level": 3
+    "level": 3,
+    "ritual": true
   },
   {
     "name": "Aura of Life",
@@ -475,7 +486,8 @@
   },
   {
     "name": "Divination",
-    "level": 4
+    "level": 4,
+    "ritual": true
   },
   {
     "name": "Doomtide",
@@ -517,7 +529,8 @@
   },
   {
     "name": "Commune",
-    "level": 5
+    "level": 5,
+    "ritual": true
   },
   {
     "name": "Contagion",
@@ -647,7 +660,8 @@
   },
   {
     "name": "Forbiddance",
-    "level": 6
+    "level": 6,
+    "ritual": true
   },
   {
     "name": "Harm",

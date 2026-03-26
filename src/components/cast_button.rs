@@ -1,4 +1,4 @@
-use leptos::{either::EitherOf3, prelude::*};
+use leptos::{either::EitherOf4, prelude::*};
 use leptos_fluent::move_tr;
 
 use crate::components::icon::Icon;
@@ -16,6 +16,8 @@ pub enum CastOption {
         remaining: u32,
         natural: bool,
     },
+    /// Ritual cast. No slot consumed, uses the spell's native level.
+    Ritual { level: u32 },
 }
 
 impl CastOption {
@@ -25,18 +27,21 @@ impl CastOption {
 
     fn view(self) -> impl IntoView {
         match self {
-            CastOption::FreeUse { available, max } => EitherOf3::A(view! {
+            CastOption::FreeUse { available, max } => EitherOf4::A(view! {
                 <Icon name="gift" size=32 />
                 <sub class="slot-remaining">{available}"/"{max}</sub>
             }),
-            CastOption::PointsCost { cost, suffix } => EitherOf3::B(view! {
+            CastOption::PointsCost { cost, suffix } => EitherOf4::B(view! {
                 {cost}" "{suffix}
             }),
             CastOption::SpellSlot {
                 level, remaining, ..
-            } => EitherOf3::C(view! {
+            } => EitherOf4::C(view! {
                 {level}
                 <sub class="slot-remaining">{remaining}</sub>
+            }),
+            CastOption::Ritual { .. } => EitherOf4::D(view! {
+                <Icon name="book-open" size=32 />
             }),
         }
     }

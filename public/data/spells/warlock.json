@@ -211,11 +211,13 @@
   },
   {
     "name": "Comprehend Languages",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Detect Magic",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Distort Value",
@@ -247,7 +249,8 @@
   },
   {
     "name": "Illusory Script",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Protection from Evil and Good",
@@ -255,7 +258,8 @@
   },
   {
     "name": "Speak with Animals",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Tasha's Hideous Laughter",
@@ -263,7 +267,8 @@
   },
   {
     "name": "Unseen Servant",
-    "level": 1
+    "level": 1,
+    "ritual": true
   },
   {
     "name": "Witch Bolt",
@@ -583,7 +588,8 @@
   },
   {
     "name": "Contact Other Plane",
-    "level": 5
+    "level": 5,
+    "ritual": true
   },
   {
     "name": "Danse Macabre",

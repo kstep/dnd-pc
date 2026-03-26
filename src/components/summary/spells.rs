@@ -41,7 +41,7 @@ pub fn SpellsBlock() -> impl IntoView {
                           casting_ability: Ability,
                           opt: &CastOption| {
         let slot_level = match opt {
-            CastOption::SpellSlot { level, .. } => *level,
+            CastOption::SpellSlot { level, .. } | CastOption::Ritual { level, .. } => *level,
             _ => spell_level,
         };
 
@@ -160,12 +160,26 @@ pub fn SpellsBlock() -> impl IntoView {
                         {
                             return true;
                         }
-                        (spell.level..=9).any(|sl| {
+                        if (spell.level..=9).any(|sl| {
                             let idx = (sl - 1) as usize;
                             pool_slots
                                 .and_then(|slots| slots.get(idx))
                                 .is_some_and(SpellSlotLevel::is_available)
-                        })
+                        }) {
+                            return true;
+                        }
+                        // Show ritual spells even without available slots
+                        fname.with_value(|key| {
+                            registry.with_feature(key, |feat| {
+                                feat.spells.as_ref().is_some_and(|spells_def| {
+                                    registry.with_spell_list(&spells_def.list, |spell_map| {
+                                        spell_map
+                                            .get(spell.name.as_str())
+                                            .is_some_and(|sd| sd.ritual)
+                                    })
+                                })
+                            })
+                        }).unwrap_or(false)
                     })
                     .map(|(spell_idx, spell)| {
                         let level_str = if spell.level == 0 {
@@ -249,6 +263,26 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         }
 
+                        // Ritual option (no slot consumed)
+                        if spell.level > 0 {
+                            let is_ritual = fname.with_value(|key| {
+                                registry.with_feature(key, |feat| {
+                                    feat.spells.as_ref().is_some_and(|spells_def| {
+                                        registry.with_spell_list(&spells_def.list, |spell_map| {
+                                            spell_map
+                                                .get(spell.name.as_str())
+                                                .is_some_and(|sd| sd.ritual)
+                                        })
+                                    })
+                                })
+                            }).unwrap_or(false);
+                            if is_ritual {
+                                cast_options.push(CastOption::Ritual {
+                                    level: spell.level,
+                                });
+                            }
+                        }
+
                         let spell_name = StoredValue::new(spell.name.clone());
                         let spell_level = spell.level;
                         let can_cast = !cast_options.is_empty();
@@ -264,8 +298,9 @@ pub fn SpellsBlock() -> impl IntoView {
                                             });
                                         });
 
-                                        // Deduct resources
+                                        // Deduct resources (Ritual consumes nothing)
                                         match opt {
+                                            CastOption::Ritual { .. } => {}
                                             CastOption::FreeUse { .. } => {
                                                 fname.with_value(|key| {
                                                     feature_data.update(|map| {
