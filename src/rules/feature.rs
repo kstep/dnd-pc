@@ -307,14 +307,16 @@ impl FeatureDefinition {
         source: Option<&FeatureSource>,
         args: Option<Vec<i32>>,
     ) {
-        let when = if character.features.iter().any(|f| f.name == self.name) {
+        let when = if character.feature_data.contains_key(&self.name) {
             WhenCondition::OnLevelUp
         } else {
-            character.features.push(Feature {
-                name: self.name.clone(),
-                label: self.label.clone(),
-                description: self.description.clone(),
-            });
+            if !character.features.iter().any(|f| f.name == self.name) {
+                character.features.push(Feature {
+                    name: self.name.clone(),
+                    label: self.label.clone(),
+                    description: self.description.clone(),
+                });
+            }
             WhenCondition::OnFeatureAdd
         };
 
