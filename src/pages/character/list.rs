@@ -1,10 +1,10 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_navigate};
+use leptos_router::hooks::use_navigate;
 
 use crate::{
-    BASE_URL, components::character_card::CharacterCard, model::Character,
+    components::character_card::CharacterCard, model::Character,
     pages::import_character::import_or_conflict, storage,
 };
 
@@ -49,10 +49,6 @@ pub fn CharacterList() -> impl IntoView {
             }
             Either::Right(view! {
                     <div class="character-list-page">
-                        <div class="character-list-header">
-                            <img src=format!("{BASE_URL}/icons/logo.svg") alt="" class="header-logo" />
-                            <h1>{move_tr!("page-characters")}</h1>
-                        </div>
                         <div class="character-list-actions">
                             <button class="btn-create" on:click=create_character>
                                 {move_tr!("btn-new-character")}
@@ -69,16 +65,6 @@ pub fn CharacterList() -> impl IntoView {
                             >
                                 <CharacterCard summary=character on_delete=delete_character />
                             </For>
-                        </div>
-                        <div class="reference-links">
-                            <h2>{move_tr!("ref-reference")}</h2>
-                            <nav class="reference-links-nav">
-                                <A href=format!("{BASE_URL}/r/class")>{move_tr!("ref-classes")}</A>
-                                <A href=format!("{BASE_URL}/r/species")>{move_tr!("ref-species")}</A>
-                                <A href=format!("{BASE_URL}/r/background")>{move_tr!("ref-backgrounds")}</A>
-                                <A href=format!("{BASE_URL}/r/spell")>{move_tr!("ref-spells")}</A>
-                                <A href=format!("{BASE_URL}/r/feature")>{move_tr!("ref-features")}</A>
-                            </nav>
                         </div>
                     </div>
                 })

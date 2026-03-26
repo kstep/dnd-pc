@@ -2,10 +2,14 @@ use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
     rc::Rc,
+    time::Duration,
 };
 
 use gloo_storage::{LocalStorage, Storage};
-use leptos::prelude::*;
+use leptos::{
+    leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle},
+    prelude::*,
+};
 use reactive_stores::Store;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
@@ -18,7 +22,7 @@ use crate::{
 
 const INDEX_KEY: &str = "dnd_pc_index";
 /// 2 s debounce — balances responsiveness vs. Firestore write-per-second cost.
-const DEBOUNCE_MS: i32 = 2000;
+const DEBOUNCE: Duration = Duration::from_millis(2000);
 
 fn character_key(id: &Uuid) -> String {
     format!("dnd_pc_char_{id}")
@@ -387,7 +391,7 @@ thread_local! {
     /// Maps character UUID to (timer_id, closure JsValue). Storing the JsValue
     /// prevents the closure from leaking — it is dropped when the timer is
     /// cancelled or after it fires.
-    static DEBOUNCE_TIMERS: RefCell<HashMap<Uuid, (i32, JsValue)>> = RefCell::new(HashMap::new());
+    static DEBOUNCE_TIMERS: RefCell<HashMap<Uuid, TimeoutHandle>> = RefCell::new(HashMap::new());
     /// Cached character index to avoid repeated localStorage round-trips on every
     /// save. Lazily populated on first access; kept in sync with localStorage.
     static INDEX_CACHE: RefCell<Option<CharacterIndex>> = const { RefCell::new(None) };
@@ -636,59 +640,55 @@ fn schedule_cloud_push(character: &Character) {
     let char_key = character_key(&char_id);
     let char_id_str = char_id.to_string();
 
-    // Cancel existing debounce timer for this character (drops old closure JsValue)
+    // Cancel existing debounce timer for this character
     DEBOUNCE_TIMERS.with(|timers| {
-        if let Some((old_timer, _)) = timers.borrow_mut().remove(&char_id) {
-            window().clear_timeout_with_handle(old_timer);
+        if let Some(handle) = timers.borrow_mut().remove(&char_id) {
+            handle.clear();
         }
     });
 
     // Defer serialization: read raw JSON from localStorage when the timer fires,
     // parse directly to serde_json::Value, skipping Character deserialization.
-    let closure_js = Closure::once_into_js(move || {
-        DEBOUNCE_TIMERS.with(|timers| {
-            timers.borrow_mut().remove(&char_id);
-        });
-        let state = get_or_init_sync();
-        spawn_local(async move {
-            let Some(uid) = firebase::current_uid() else {
-                return;
-            };
-            let Ok(Some(raw)) = LocalStorage::raw().get_item(&char_key) else {
-                return;
-            };
-            let json: serde_json::Value = match serde_json::from_str(&raw) {
-                Ok(value) => value,
-                Err(error) => {
-                    log::warn!("Failed to parse character JSON for cloud: {error}");
-                    return;
-                }
-            };
-            state.set_ok(SyncStatus::Syncing);
-            match firebase::set_character_doc(&uid, &char_id_str, &json).await {
-                Ok(()) => state.set_ok(SyncStatus::Synced),
-                Err(error) => {
-                    log::warn!("Cloud push failed: {error:?}");
-                    state.set_error(format!(
-                        "Push failed: {}",
-                        firebase::friendly_js_error(&error)
-                    ));
-                }
-            }
-        });
-    });
-
-    match window().set_timeout_with_callback_and_timeout_and_arguments_0(
-        closure_js.unchecked_ref(),
-        DEBOUNCE_MS,
-    ) {
-        Ok(timer_id) => {
+    let Ok(handle) = set_timeout_with_handle(
+        move || {
             DEBOUNCE_TIMERS.with(|timers| {
-                timers.borrow_mut().insert(char_id, (timer_id, closure_js));
+                timers.borrow_mut().remove(&char_id);
             });
-        }
-        Err(error) => log::warn!("set_timeout failed: {error:?}"),
-    }
+            let state = get_or_init_sync();
+            spawn_local(async move {
+                let Some(uid) = firebase::current_uid() else {
+                    return;
+                };
+                let Ok(Some(raw)) = LocalStorage::raw().get_item(&char_key) else {
+                    return;
+                };
+                let json: serde_json::Value = match serde_json::from_str(&raw) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        log::warn!("Failed to parse character JSON for cloud: {error}");
+                        return;
+                    }
+                };
+                state.set_ok(SyncStatus::Syncing);
+                match firebase::set_character_doc(&uid, &char_id_str, &json).await {
+                    Ok(()) => state.set_ok(SyncStatus::Synced),
+                    Err(error) => {
+                        log::warn!("Cloud push failed: {error:?}");
+                        state.set_error(format!(
+                            "Push failed: {}",
+                            firebase::friendly_js_error(&error)
+                        ));
+                    }
+                }
+            });
+        },
+        DEBOUNCE,
+    ) else {
+        return;
+    };
+    DEBOUNCE_TIMERS.with(|timers| {
+        timers.borrow_mut().insert(char_id, handle);
+    });
 }
 
 async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), JsValue> {

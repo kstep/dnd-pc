@@ -44,6 +44,10 @@ impl<T: Clone + Send + Sync + 'static> FetchCache<T> {
         }
     }
 
+    pub fn is_pending(&self) -> bool {
+        !self.pending.read().is_empty()
+    }
+
     pub fn clear(&self) {
         self.raw.update(|m| m.clear());
         self.data.update(|m| m.clear());
@@ -71,7 +75,9 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         }
 
         let name: Box<str> = name.into();
-        self.pending.update_untracked(|s| s.insert(name.clone()));
+        self.pending.update(|s| {
+            s.insert(name.clone());
+        });
 
         let raw = self.raw;
         let data = self.data;
@@ -80,7 +86,7 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         leptos::task::spawn_local(async move {
             let (data_result, locale_result) =
                 futures::join!(fetch_json::<T>(&data_url), fetch_json::<L>(&locale_url));
-            pending.update_untracked(|s| {
+            pending.update(|s| {
                 s.remove(&name);
             });
             match data_result {

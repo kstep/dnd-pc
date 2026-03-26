@@ -1,10 +1,8 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::components::A;
 use reactive_stores::Store;
 
 use crate::{
-    BASE_URL,
     effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
@@ -15,8 +13,6 @@ pub fn SummaryHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
     let registry = expect_context::<RulesRegistry>();
-
-    let char_id = store.read_untracked().id;
 
     let name = Memo::new(move |_| store.identity().name().get());
 
@@ -50,12 +46,6 @@ pub fn SummaryHeader() -> impl IntoView {
                 <span class="summary-header-stat">
                     {move_tr!("prof-bonus")} ": +" <strong>{prof_bonus}</strong>
                 </span>
-            </div>
-            <div class="nav-links">
-                <A href=format!("{BASE_URL}/") attr:class="back-link">{move_tr!("back-to-characters")}</A>
-                <A href=format!("{BASE_URL}/c/{char_id}") attr:class="back-link">
-                    {move_tr!("view-full-sheet")}
-                </A>
             </div>
         </div>
     }

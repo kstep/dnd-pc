@@ -1,8 +1,6 @@
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
-use leptos_router::components::A;
 
-use crate::{BASE_URL, components::icon::Icon};
+use crate::components::icon::Icon;
 
 #[component]
 pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> impl IntoView {
@@ -19,9 +17,6 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
 
     view! {
         <aside class="reference-sidebar" class:open=move || open.get()>
-            <A href=format!("{BASE_URL}/") attr:class="reference-home-link">
-                {"\u{2190} "}{move_tr!("ref-home")}
-            </A>
             {move || (!current_label.read().is_empty()).then(|| view! {
                 <button
                     class="reference-nav-toggle"

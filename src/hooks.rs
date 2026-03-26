@@ -4,29 +4,6 @@ use leptos::{prelude::*, reactive::computed::Memo};
 use leptos_router::{NavigateOptions, hooks::query_signal_with_options};
 use wasm_bindgen::{JsCast, prelude::Closure};
 
-pub fn use_debounce(delay_ms: i32) -> impl Fn(Box<dyn FnOnce()>) {
-    let handle = RwSignal::new(0i32);
-    move |action: Box<dyn FnOnce()>| {
-        let window = window();
-        let prev = handle.get_untracked();
-        if prev != 0 {
-            window.clear_timeout_with_handle(prev);
-        }
-        let callback = Closure::once(move || {
-            action();
-            handle.set(0);
-        });
-        match window.set_timeout_with_callback_and_timeout_and_arguments_0(
-            callback.as_ref().unchecked_ref(),
-            delay_ms,
-        ) {
-            Ok(id) => handle.set(id),
-            Err(error) => log::warn!("set_timeout failed: {error:?}"),
-        }
-        callback.forget();
-    }
-}
-
 /// Like `query_signal`, but works correctly with a non-root base URL.
 pub fn use_query_signal<T>(
     key: impl Into<leptos::oco::Oco<'static, str>>,

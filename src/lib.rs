@@ -33,7 +33,10 @@ static_loader! {
     };
 }
 
-use components::{language_switcher::LanguageSwitcher, sync_indicator::SyncIndicator};
+use components::{
+    logo::IsRouting,
+    navbar::{ActiveCharacterId, Navbar},
+};
 use hooks::use_theme;
 use pages::{
     character::{
@@ -57,6 +60,9 @@ pub fn App() -> impl IntoView {
     let theme = use_theme();
     let i18n = expect_context::<leptos_fluent::I18n>();
     provide_context(RulesRegistry::new(i18n));
+    provide_context(ActiveCharacterId::default());
+    let is_routing = IsRouting::default();
+    provide_context(is_routing);
     storage::init_sync();
 
     view! {
@@ -66,9 +72,8 @@ pub fn App() -> impl IntoView {
         <Link rel="manifest" href=format!("{BASE_URL}/manifest.json") />
         <Link rel="apple-touch-icon" href=format!("{BASE_URL}/icons/icon-192.png") />
 
-        <LanguageSwitcher />
-        <SyncIndicator />
-        <Router base=option_env!("BASE_URL").unwrap_or_default()>
+        <Router base=BASE_URL set_is_routing=is_routing.0>
+            <Navbar />
             <Routes fallback=|| view! { <NotFound /> }>
                 <Route path=path!("/") view=CharacterList />
                 <ParentRoute path=path!("/c/:id") view=CharacterLayout>

@@ -7,7 +7,10 @@ use uuid::Uuid;
 
 use crate::{
     BASE_URL,
-    components::args_modal::{ArgsModal, ArgsModalCtx},
+    components::{
+        args_modal::{ArgsModal, ArgsModalCtx},
+        navbar::ActiveCharacterId,
+    },
     effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::RulesRegistry,
@@ -45,6 +48,11 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     // Provide context first so child components can access the store.
     provide_context(store);
+
+    // Set active character ID for the navbar.
+    let active_id = expect_context::<ActiveCharacterId>().0;
+    active_id.set(Some(store.read_untracked().id));
+    on_cleanup(move || active_id.set(None));
 
     // Provide args-modal context for features that need user input during apply.
     let args_modal_ctx = ArgsModalCtx::new();

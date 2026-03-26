@@ -1,8 +1,8 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{collections::BTreeMap, time::Duration};
 
-use leptos::prelude::*;
+use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::{move_tr, tr};
-use leptos_router::{components::A, hooks::use_navigate};
+use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 use uuid::Uuid;
@@ -11,8 +11,11 @@ use wasm_bindgen::prelude::*;
 use crate::{
     BASE_URL,
     components::{
-        args_modal::ArgsModalCtx, datalist_input::DatalistInput, entity_field::EntityField,
+        args_modal::ArgsModalCtx,
+        datalist_input::DatalistInput,
+        entity_field::EntityField,
         icon::Icon,
+        menu_modal::{MenuItem, MenuModal},
     },
     firebase,
     model::{
@@ -97,7 +100,12 @@ fn apply_with_args_modal(
     }
 }
 
-fn apply_level(store: Store<Character>, registry: RulesRegistry, class_index: usize, level: u32) {
+pub fn apply_level(
+    store: Store<Character>,
+    registry: RulesRegistry,
+    class_index: usize,
+    level: u32,
+) {
     let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
     apply_with_args_modal(pending, move |args_map| {
         store.update(|c| {
@@ -119,6 +127,41 @@ pub fn CharacterHeader() -> impl IntoView {
     let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
 
     let classes = store.identity().classes();
+    let show_level_up = RwSignal::new(false);
+    let i18n = expect_context::<leptos_fluent::I18n>();
+
+    let level_up_class = move |class_idx: usize| {
+        let new_level = classes.read()[class_idx].level + 1;
+        classes.write()[class_idx].level = new_level;
+        apply_level(store, registry, class_idx, new_level);
+    };
+
+    let on_level_up = move |_| {
+        let count = classes.read().len();
+        if count == 1 {
+            level_up_class(0);
+        } else if count > 1 {
+            show_level_up.set(true);
+        }
+    };
+
+    let level_up_items = Signal::derive(move || {
+        let level_label = i18n.tr("level");
+        classes
+            .read()
+            .iter()
+            .map(|class| {
+                let mut label = class.class_label().to_string();
+                if let Some(sub) = class.subclass_label() {
+                    label.push_str(&format!(" ({sub})"));
+                }
+                MenuItem {
+                    label,
+                    detail: format!("{level_label} {}", class.level),
+                }
+            })
+            .collect()
+    });
 
     let add_class = move |_| {
         classes.write().push(ClassLevel::default());
@@ -159,19 +202,7 @@ pub fn CharacterHeader() -> impl IntoView {
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
             share_copied.set(true);
         });
-        // Store the closure so it's freed after the timeout fires (avoids
-        // the Closure::once_into_js memory leak).
-        let handle = Rc::new(RefCell::new(None::<Closure<dyn FnMut()>>));
-        let handle_clone = handle.clone();
-        let cb = Closure::once(move || {
-            share_copied.set(false);
-            drop(handle_clone); // drops the last Rc → frees the Closure
-        });
-        let _ = leptos::prelude::window().set_timeout_with_callback_and_timeout_and_arguments_0(
-            cb.as_ref().unchecked_ref(),
-            2_000,
-        );
-        *handle.borrow_mut() = Some(cb);
+        set_timeout(move || share_copied.set(false), Duration::from_secs(2));
     };
 
     let on_copy = move |_| {
@@ -192,8 +223,6 @@ pub fn CharacterHeader() -> impl IntoView {
     };
 
     let i18n = expect_context::<leptos_fluent::I18n>();
-
-    let char_id = store.read_untracked().id;
 
     let species_options = Memo::new(move |_| {
         registry.with_species_entries(|entries| {
@@ -340,7 +369,16 @@ pub fn CharacterHeader() -> impl IntoView {
                 </div>
                 <div class="header-field level-field">
                     <label>{move_tr!("total-level")}</label>
-                    <span class="computed-value">{total_level}</span>
+                    <div class="level-value-row">
+                        <span class="computed-value">{total_level}</span>
+                        <button
+                            class="btn-level-up"
+                            title=move_tr!("level-up")
+                            on:click=on_level_up
+                        >
+                            <Icon name="arrow-up" size=14 />
+                        </button>
+                    </div>
                 </div>
                 <div class="header-field level-field">
                     <label>{move_tr!("prof-bonus")}</label>
@@ -561,13 +599,12 @@ pub fn CharacterHeader() -> impl IntoView {
                     <Icon name="rotate-ccw" size=18 />
                 </button>
             </div>
-            <hr />
-            <div class="nav-links">
-                <A href=format!("{BASE_URL}/") attr:class="back-link">{move_tr!("back-to-characters")}</A>
-                <A href=format!("{BASE_URL}/c/{char_id}/summary") attr:class="back-link">
-                    {move_tr!("view-summary")}
-                </A>
-            </div>
+            <MenuModal
+                show=show_level_up
+                title=Signal::derive(move || i18n.tr("level-up-choose-class"))
+                items=level_up_items
+                on_select=Callback::new(level_up_class)
+            />
         </div>
     }
 }

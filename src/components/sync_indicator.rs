@@ -43,15 +43,23 @@ pub fn SyncIndicator() -> impl IntoView {
 
     let show_retry_btn = Memo::new(move |_| status.get() == SyncStatus::Error);
 
-    let tooltip = move || last_error.get().unwrap_or_default();
+    let tooltip = move || {
+        let base = status_text();
+        match last_error.get() {
+            Some(err) => format!("{base}: {err}"),
+            None => base,
+        }
+    };
+
+    let tr_sign_in = move_tr!("sync-sign-in-google");
 
     view! {
         <div class="sync-indicator" title=tooltip>
             <span class=dot_class></span>
-            <span class="sync-text">{status_text}</span>
             <Show when=move || show_retry_btn.get()>
                 <button
                     class="sync-retry-btn"
+                    title="Retry"
                     on:click=move |_| storage::retry_sync()
                 >
                     <Icon name="refresh-cw" size=14 />
@@ -60,9 +68,10 @@ pub fn SyncIndicator() -> impl IntoView {
             <Show when=move || show_google_btn.get()>
                 <button
                     class="sync-google-btn"
+                    title=move || tr_sign_in.get()
                     on:click=move |_| storage::sign_in_with_google()
                 >
-                    {move_tr!("sync-sign-in-google")}
+                    <Icon name="log-in" size=14 />
                 </button>
             </Show>
         </div>

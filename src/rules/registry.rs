@@ -162,6 +162,13 @@ impl RulesRegistry {
         with_spell_entries,      spell_label_by_name,       spells,       SpellIndexEntry;
     }
 
+    pub fn is_loading(&self) -> bool {
+        self.class_cache.is_pending()
+            || self.species_cache.is_pending()
+            || self.background_cache.is_pending()
+            || self.spell_list_cache.is_pending()
+    }
+
     pub fn new(i18n: leptos_fluent::I18n) -> Self {
         let locale = Signal::derive(move || i18n.language.get().id.to_string());
 
