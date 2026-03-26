@@ -1,7 +1,10 @@
 use std::str::FromStr;
 
 use leptos::{prelude::*, reactive::computed::Memo};
-use leptos_router::{NavigateOptions, hooks::query_signal_with_options};
+use leptos_router::{
+    NavigateOptions,
+    hooks::{query_signal_with_options, use_location},
+};
 use wasm_bindgen::{JsCast, prelude::Closure};
 
 /// Like `query_signal`, but works correctly with a non-root base URL.
@@ -18,6 +21,15 @@ where
             ..Default::default()
         },
     )
+}
+
+/// Returns a function that builds an absolute hash href from the current
+/// pathname. Works around `<base data-trunk-public-url />` which causes bare
+/// `#hash` links to resolve relative to the base URL instead of the current
+/// page.
+pub fn use_hash_href() -> impl Fn(&str) -> String {
+    let pathname = use_location().pathname;
+    move |hash: &str| pathname.with(|path| format!("{path}#{hash}"))
 }
 
 /// Returns a reactive signal that tracks the current theme name.

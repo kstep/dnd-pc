@@ -6,6 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
+    hooks::use_hash_href,
     model::{Translatable, format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
 };
@@ -33,6 +34,7 @@ pub fn ClassReference() -> impl IntoView {
     });
 
     let current_label = Signal::derive(move || registry.class_label_by_name(&class_name()));
+    let hash_href = use_hash_href();
 
     let detail = move || {
         let name = class_name();
@@ -318,7 +320,7 @@ pub fn ClassReference() -> impl IntoView {
                                                     features.into_iter().enumerate().map(|(i, (feat_name, label))| {
                                                         view! {
                                                             {(i > 0).then_some(", ")}
-                                                            <a href=format!("#feat-{feat_name}")>{label}</a>
+                                                            <a href=hash_href(&format!("feat-{feat_name}")) rel="external">{label}</a>
                                                         }
                                                     }).collect_view()
                                                 }</td>

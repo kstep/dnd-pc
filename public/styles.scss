@@ -2519,6 +2519,8 @@ select.entry-name {
 }
 
 .reference-feature {
+  scroll-margin-top: 3.5rem;
+
   &:target {
     background: var(--panel-bg);
   }
