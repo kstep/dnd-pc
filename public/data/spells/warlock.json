@@ -180,8 +180,9 @@
     "level": 1,
     "effects": [
       {
-        "name": "Temp HP / Cold Damage",
-        "expr": "5 * SLOT_LEVEL"
+        "name": "Temp HP",
+        "expr": "TEMP_HP = max(TEMP_HP, SLOT_LEVEL * 5)",
+        "range": "self"
       }
     ]
   },
@@ -425,7 +426,14 @@
   },
   {
     "name": "Intellect Fortress",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Intellect Fortress",
+        "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Magic Circle",
@@ -699,7 +707,14 @@
   },
   {
     "name": "Investiture of Wind",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Investiture of Wind",
+        "expr": "DEX.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Mass Suggestion",
@@ -729,7 +744,14 @@
   },
   {
     "name": "Tasha's Otherworldly Guise",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "True Seeing",
@@ -821,7 +843,14 @@
   },
   {
     "name": "Foresight",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Foresight",
+        "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Gate",

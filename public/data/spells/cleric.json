@@ -154,8 +154,9 @@
     "level": 1,
     "effects": [
       {
-        "name": "AC Bonus",
-        "expr": "2"
+        "name": "AC",
+        "expr": "AC += 2",
+        "range": "self"
       }
     ]
   },
@@ -174,8 +175,9 @@
     "level": 2,
     "effects": [
       {
-        "name": "Max HP Bonus",
-        "expr": "5 * (SLOT_LEVEL - 1)"
+        "name": "HP Boost",
+        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
+        "range": "self"
       }
     ]
   },
@@ -260,8 +262,9 @@
     "level": 2,
     "effects": [
       {
-        "name": "AC/Save Bonus",
-        "expr": "1"
+        "name": "Warding Bond",
+        "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1",
+        "range": "self"
       }
     ]
   },
@@ -285,7 +288,14 @@
   },
   {
     "name": "Beacon of Hope",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Beacon of Hope",
+        "expr": "WIS.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Bestow Curse",
@@ -313,7 +323,14 @@
   },
   {
     "name": "Feign Death",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Feign Death",
+        "expr": "SPEED = 0",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Glyph of Warding",
@@ -373,7 +390,14 @@
   },
   {
     "name": "Motivational Speech",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Motivational Speech",
+        "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Protection from Energy",
@@ -475,7 +499,14 @@
   },
   {
     "name": "Circle of Power",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Circle of Power",
+        "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Commune",
@@ -633,7 +664,14 @@
   },
   {
     "name": "Heroes' Feast",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Heroes' Feast",
+        "expr": "WIS.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Planar Ally",
@@ -685,7 +723,14 @@
   },
   {
     "name": "Power Word Fortify",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Temp HP",
+        "expr": "TEMP_HP = max(TEMP_HP, 20)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Regenerate",
@@ -735,7 +780,14 @@
   },
   {
     "name": "Holy Aura",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Holy Aura",
+        "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Holy Star of Mystra",

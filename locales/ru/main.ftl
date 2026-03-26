@@ -243,6 +243,7 @@ effect-name = Название эффекта
 effect-expr = Выражение (опционально)
 effect-dice = Кости
 effect-reroll = Перебросить кости
+apply-effect = Применить эффект
 
 ## Справочные страницы
 ref-reference = Справочник

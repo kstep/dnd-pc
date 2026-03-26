@@ -333,7 +333,8 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "2d4 + 4 + 5 * (SLOT_LEVEL - 1)"
+        "expr": "TEMP_HP = max(TEMP_HP, 2d4 + 4 + 5 * (SLOT_LEVEL - 1))",
+        "range": "self"
       }
     ]
   },
@@ -401,11 +402,25 @@
   },
   {
     "name": "Longstrider",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Speed",
+        "expr": "SPEED += 10",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Mage Armor",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 13 + DEX.MOD)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Magic Missile",
@@ -446,8 +461,9 @@
     "level": 1,
     "effects": [
       {
-        "name": "AC Bonus",
-        "expr": "5"
+        "name": "AC",
+        "expr": "AC += 5",
+        "range": "self"
       }
     ]
   },
@@ -715,7 +731,14 @@
   },
   {
     "name": "Kinetic Jaunt",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Speed",
+        "expr": "SPEED += 10",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Knock",
@@ -740,6 +763,11 @@
       {
         "name": "Attack Bonus",
         "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"
+      },
+      {
+        "name": "Attack Bonus",
+        "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
+        "range": "self"
       }
     ]
   },
@@ -932,6 +960,11 @@
       {
         "name": "Fire Damage",
         "expr": "(SLOT_LEVEL - 2)d6"
+      },
+      {
+        "name": "Speed",
+        "expr": "SPEED += 20",
+        "range": "self"
       }
     ]
   },
@@ -991,7 +1024,14 @@
   },
   {
     "name": "Feign Death",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Feign Death",
+        "expr": "SPEED = 0",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Fireball",
@@ -1031,7 +1071,14 @@
   },
   {
     "name": "Haste",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Haste",
+        "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Hypnotic Pattern",
@@ -1043,7 +1090,14 @@
   },
   {
     "name": "Intellect Fortress",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Intellect Fortress",
+        "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Laeral's Silver Lance",
@@ -1127,7 +1181,14 @@
   },
   {
     "name": "Slow",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Slow",
+        "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Speak with Dead",
@@ -1165,7 +1226,14 @@
   },
   {
     "name": "Syluné's Viper",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Temp HP",
+        "expr": "TEMP_HP = max(TEMP_HP, 15)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Thunder Step",
@@ -1453,7 +1521,14 @@
   },
   {
     "name": "Alustriel's Mooncloak",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC += 2",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Animate Objects",
@@ -1783,7 +1858,14 @@
   },
   {
     "name": "Fizban's Platinum Shield",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC += 2",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Flesh to Stone",
@@ -1821,7 +1903,14 @@
   },
   {
     "name": "Investiture of Wind",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Investiture of Wind",
+        "expr": "DEX.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Magic Jar",
@@ -1891,11 +1980,25 @@
   },
   {
     "name": "Tasha's Otherworldly Guise",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Tenser's Transformation",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Tenser's Transformation",
+        "expr": "TEMP_HP = max(TEMP_HP, 50); ATK.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "True Seeing",
@@ -2177,7 +2280,14 @@
   },
   {
     "name": "Foresight",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Foresight",
+        "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Gate",

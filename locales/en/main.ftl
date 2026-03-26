@@ -243,6 +243,7 @@ effect-name = Effect name
 effect-expr = Expression (optional)
 effect-dice = Dice
 effect-reroll = Reroll dice
+apply-effect = Apply Effect
 
 ## Reference pages
 ref-reference = Reference

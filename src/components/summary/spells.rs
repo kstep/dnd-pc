@@ -97,6 +97,8 @@ pub fn SpellsBlock() -> impl IntoView {
                 title,
                 effects,
                 extra_vars,
+                spell_name: spell_name.to_string(),
+                feature_name: fname.to_string(),
             }));
             show_calc.set(true);
         }

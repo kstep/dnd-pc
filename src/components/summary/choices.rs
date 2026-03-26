@@ -142,6 +142,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                 title: option_label,
                 effects,
                 extra_vars,
+                spell_name: String::new(),
+                feature_name: feature_name.clone(),
             }));
             show_calc.set(true);
         },

@@ -93,7 +93,14 @@
   },
   {
     "name": "Longstrider",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Speed",
+        "expr": "SPEED += 10",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Searing Smite",
@@ -115,15 +122,23 @@
   },
   {
     "name": "Zephyr Strike",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Speed",
+        "expr": "SPEED += 30",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Aid",
     "level": 2,
     "effects": [
       {
-        "name": "Max HP Bonus",
-        "expr": "5 * (SLOT_LEVEL - 1)"
+        "name": "HP Boost",
+        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
+        "range": "self"
       }
     ]
   },
@@ -137,7 +152,14 @@
   },
   {
     "name": "Barkskin",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC = max(AC, 17)",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Beast Sense",
@@ -192,12 +214,24 @@
       {
         "name": "Attack Bonus",
         "expr": "if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))"
+      },
+      {
+        "name": "Attack Bonus",
+        "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
+        "range": "self"
       }
     ]
   },
   {
     "name": "Pass without Trace",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Stealth",
+        "expr": "SKILL.STEA += 10",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Protection from Poison",
@@ -217,7 +251,14 @@
   },
   {
     "name": "Ashardalon's Stride",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Speed",
+        "expr": "SPEED += 20",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Conjure Animals",
@@ -248,6 +289,11 @@
       {
         "name": "Damage Bonus",
         "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"
+      },
+      {
+        "name": "Attack Bonus",
+        "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
+        "range": "self"
       }
     ]
   },
@@ -339,7 +385,14 @@
   },
   {
     "name": "Alustriel's Mooncloak",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "AC",
+        "expr": "AC += 2",
+        "range": "self"
+      }
+    ]
   },
   {
     "name": "Commune with Nature",

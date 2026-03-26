@@ -6,8 +6,12 @@ use reactive_stores::Store;
 
 use crate::{
     components::{expr_view::ExprDetails, icon::Icon, modal::Modal},
-    expr::{self, DicePool},
-    model::{Attribute, Character, EffectDefinition, FeatureData, FeatureValue},
+    effective::EffectiveCharacter,
+    expr::{self, DicePool, Expr},
+    model::{
+        ActiveEffect, Attribute, Character, EffectDefinition, EffectRange, FeatureData,
+        FeatureValue,
+    },
 };
 
 // --- Read-only context for effect calculation ---
@@ -36,6 +40,8 @@ pub struct EffectsCalcInfo {
     pub title: String,
     pub effects: Vec<EffectDefinition>,
     pub extra_vars: BTreeMap<Attribute, i32>,
+    pub spell_name: String,
+    pub feature_name: String,
 }
 
 /// Populate `extra_vars` with resource field values (POINTS/POINTS_MAX) from
@@ -58,6 +64,25 @@ pub fn inject_resource_vars(extra_vars: &mut BTreeMap<Attribute, i32>, entry: &F
     }
 }
 
+/// Collect dice values from a set of NodeRef groups into a DicePool.
+fn collect_dice_pool(groups: &BTreeMap<u32, Vec<NodeRef<html::Input>>>) -> BTreeMap<u32, Vec<u32>> {
+    groups
+        .iter()
+        .map(|(&sides, refs)| {
+            let values: Vec<u32> = refs
+                .iter()
+                .filter_map(|node_ref| {
+                    node_ref
+                        .get()
+                        .and_then(|el| el.value().parse().ok())
+                        .filter(|&v: &u32| v >= 1 && v <= sides)
+                })
+                .collect();
+            (sides, values)
+        })
+        .collect()
+}
+
 // --- Effects calculator modal ---
 
 #[component]
@@ -66,6 +91,8 @@ pub fn EffectsCalcModal(
     info: StoredValue<Option<EffectsCalcInfo>>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let eff = expect_context::<EffectiveCharacter>();
+    let effects = eff.effects();
 
     let title = Signal::derive(move || {
         info.with_value(|info| info.as_ref().map(|i| i.title.clone()).unwrap_or_default())
@@ -86,12 +113,40 @@ pub fn EffectsCalcModal(
                 extra_vars: &info.extra_vars,
             };
 
+            // Check if any effect is self-targeting
+            let has_self_effects = info
+                .effects
+                .iter()
+                .any(|effect| effect.range == EffectRange::Caster);
+
+            // Collect self-targeting dice groups for the "Apply Effect" button
+            type DiceGroups = Vec<StoredValue<BTreeMap<u32, Vec<NodeRef<html::Input>>>>>;
+            let self_dice_groups: StoredValue<DiceGroups> = StoredValue::new(Vec::new());
+
+            // Build combined self-targeting expression
+            let self_expr: Option<Expr<Attribute>> = if has_self_effects {
+                let combined = info
+                    .effects
+                    .iter()
+                    .filter(|effect| effect.range == EffectRange::Caster)
+                    .map(|effect| effect.expr.to_string())
+                    .collect::<Vec<_>>()
+                    .join("; ");
+                combined.parse().ok()
+            } else {
+                None
+            };
+            let self_expr = StoredValue::new(self_expr);
+            let spell_name = StoredValue::new(info.spell_name.clone());
+            let feature_name = StoredValue::new(info.feature_name.clone());
+
             let effect_views = info
                 .effects
                 .iter()
                 .map(|effect| {
                     let expr = effect.expr.clone();
                     let label = effect.label().to_string();
+                    let is_self = effect.range == EffectRange::Caster;
                     let rolls = effect.expr.dice_rolls(&ctx);
 
                     if rolls.is_empty() {
@@ -118,8 +173,6 @@ pub fn EffectsCalcModal(
                         let expr = effect.expr.clone();
                         let extra_vars = info.extra_vars.clone();
 
-                        // Create NodeRef groups per die type — also
-                        // collected into all_groups for the reset button
                         let groups: BTreeMap<u32, Vec<NodeRef<html::Input>>> = rolls
                             .iter()
                             .map(|(&sides, &count)| {
@@ -130,6 +183,11 @@ pub fn EffectsCalcModal(
                             .collect();
                         let groups = StoredValue::new(groups);
 
+                        // Track self-targeting dice groups for Apply Effect
+                        if is_self {
+                            self_dice_groups.update_value(|v| v.push(groups));
+                        }
+
                         let total_needed: u32 = rolls.values().copied().sum();
                         let recalc = StoredValue::new(move || {
                             let character = store.read_untracked();
@@ -138,26 +196,10 @@ pub fn EffectsCalcModal(
                                 extra_vars: &extra_vars,
                             };
 
-                            let pool_map = groups.with_value(|groups| {
-                                groups
-                                    .iter()
-                                    .map(|(&sides, refs)| {
-                                        let values: Vec<u32> = refs
-                                            .iter()
-                                            .filter_map(|node_ref| {
-                                                node_ref
-                                                    .get()
-                                                    .and_then(|el| el.value().parse().ok())
-                                                    .filter(|&v: &u32| v >= 1 && v <= sides)
-                                            })
-                                            .collect();
-                                        (sides, values)
-                                    })
-                                    .collect::<BTreeMap<u32, Vec<u32>>>()
-                            });
+                            let pool_map = groups.with_value(collect_dice_pool);
 
-                            // Only evaluate if all inputs are filled and valid
-                            let total_filled: u32 = pool_map.values().map(|v| v.len() as u32).sum();
+                            let total_filled: u32 =
+                                pool_map.values().map(|v| v.len() as u32).sum();
 
                             if total_filled == total_needed {
                                 let pool: DicePool = pool_map.into();
@@ -167,7 +209,6 @@ pub fn EffectsCalcModal(
                             }
                         });
 
-                        // Build grouped input views
                         let mut first_input = true;
                         let group_views = groups.with_value(|groups| {
                             groups
@@ -248,7 +289,72 @@ pub fn EffectsCalcModal(
                 })
                 .collect_view();
 
-            Some(effect_views)
+            // "Apply Effect" button for self-targeting spells
+            let apply_button = has_self_effects.then(|| {
+                let apply_effect = move |_: web_sys::MouseEvent| {
+                    let Some(expr) = self_expr.get_value() else {
+                        return;
+                    };
+
+                    // Collect dice pool from all self-targeting effect inputs
+                    let mut merged_pool = BTreeMap::<u32, Vec<u32>>::new();
+                    self_dice_groups.with_value(|dice_groups| {
+                        for groups in dice_groups {
+                            groups.with_value(|groups| {
+                                for (sides, values) in collect_dice_pool(groups) {
+                                    merged_pool.entry(sides).or_default().extend(values);
+                                }
+                            });
+                        }
+                    });
+
+                    let pool = if merged_pool.is_empty() {
+                        None
+                    } else {
+                        Some(DicePool::from(merged_pool))
+                    };
+
+                    let name = spell_name.get_value();
+                    let scope = feature_name.with_value(|fname| {
+                        if fname.is_empty() {
+                            None
+                        } else {
+                            Some(fname.clone().into_boxed_str())
+                        }
+                    });
+
+                    let effect = ActiveEffect {
+                        name,
+                        label: None,
+                        description: String::new(),
+                        expr: Some(expr),
+                        pool,
+                        enabled: true,
+                        scope,
+                    };
+
+                    effects.update(|active| active.add(effect, &store.read()));
+                    show.set(false);
+                };
+
+                view! {
+                    <div class="effects-calc-footer">
+                        <button
+                            type="button"
+                            class="btn-confirm"
+                            on:click=apply_effect
+                        >
+                            <Icon name="shield-plus" size=16 />
+                            " " {move_tr!("apply-effect")}
+                        </button>
+                    </div>
+                }
+            });
+
+            Some(view! {
+                {effect_views}
+                {apply_button}
+            })
         })
     };
 
