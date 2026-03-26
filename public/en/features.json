@@ -1035,7 +1035,7 @@
     "description": "You have learned to cast spells through your bardic arts. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Bard spells, which appear in the Bard spell list later in the class's description. Cantrips: You know two cantrips of your choice from the Bard spell list. Dancing Lights and Vicious Mockery are recommended."
   },
   "Expertise": {
-    "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them. At Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice."
+    "description": "You gain Expertise in two of your skill proficiencies of your choice."
   },
   "Jack of All Trades": {
     "description": "You can add half your Proficiency (round down) to any ability check you make that uses a skill proficiency you lack and that doesn't otherwise use your Proficiency. For example, if you make a Strength (Athletics) check and lack Athletics proficiency, you can add half your Proficiency to the check."
