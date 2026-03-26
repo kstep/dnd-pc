@@ -234,7 +234,7 @@
     "description": "Proficiency with all Martial weapons. +1 STR/DEX."
   },
   "Spellcasting (Artificer)": {
-    "description": "You have learned how to channel magical energy through objects. See the Player's Handbook for the rules on spellcasting. The information below details how you use those rules with Artificer spells, which appear in the Artificer spell list later in the class's description. Tools Required: You produce your Artificer spells through tools."
+    "description": "You have learned how to channel magical energy through objects. Tools Required: You produce your Artificer spells through tools."
   },
   "Tinker's Magic": {
     "description": "You know the Mending cantrip. As a Magic action while holding Tinker's Tools, you can create one item in an unoccupied space within 5 feet of yourself, choosing the item from the following list: Ball Bearings, Basket, Bedroll, Bell, Blanket, Block and Tackle, Glass Bottle, Bucket, Caltrops, Candle, Crowbar, Flask, Grappling Hook, Hunting Trap, Jug, Lamp, Manacles, Net, Oil, Paper, Parchment, Pole, Pouch, Rope, Sack, Shovel, String, Tinderbox, Torch, Vial. The item vanishes after 1 hour or when you use this feature again."
@@ -1032,7 +1032,7 @@
     "description": "Give one creature within 60 ft your Bardic Inspiration die to add to a failed d20 roll within 1 hour"
   },
   "Spellcasting (Bard)": {
-    "description": "You have learned to cast spells through your bardic arts. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Bard spells, which appear in the Bard spell list later in the class's description. Cantrips: You know two cantrips of your choice from the Bard spell list. Dancing Lights and Vicious Mockery are recommended."
+    "description": "You have learned to cast spells through your bardic arts. Cantrips: You know two cantrips of your choice from the Bard spell list. Dancing Lights and Vicious Mockery are recommended."
   },
   "Expertise": {
     "description": "You gain Expertise in two of your skill proficiencies of your choice."
@@ -1224,7 +1224,7 @@
     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nProtector: Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\nThaumaturge: You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
   },
   "Spellcasting (Cleric)": {
-    "description": "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class's description. Cantrips: You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended."
+    "description": "You have learned to cast spells through prayer and meditation. Cantrips: You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended."
   },
   "Cleric Subclass": {
     "description": "You gain a Cleric subclass of your choice. A subclass is a specialization that grants you features at certain Cleric levels. For the rest of your career, you gain each of your subclass's features that are of your Cleric level or lower."
@@ -1524,7 +1524,7 @@
     "description": "You gain the ability to imbue magic into a weapon or armor. At the end of a long rest, you can touch one nonmagical object that is a suit of armor or a simple or martial weapon. Until the end of your next long rest or until you die, the object becomes a magic item, granting a +1 bonus to AC if it's armor or a +1 bonus to attack and damage rolls if it's a weapon."
   },
   "Channel Divinity: Artisan's Blessing": {
-    "description": "You can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object (see chapter 5, \"Equipment,\" in the Player's Handbook for examples of these items)."
+    "description": "You can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object."
   },
   "Soul of the Forge": {
     "description": "Your mastery of the forge grants you special abilities: You gain resistance to fire damage. While wearing heavy armor, you gain a +1 bonus to AC."
@@ -1716,7 +1716,7 @@
     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\nMagician: You know one extra cantrip from the Druid spell list. In addition, your mystical connection to nature gives you a bonus to your Intelligence (Arcana or Nature) checks. The bonus equals your Wisdom modifier (minimum bonus of +1).\n\nWarden: Trained for battle, you gain proficiency with Martial weapons and training with Medium armor."
   },
   "Spellcasting (Druid)": {
-    "description": "You have learned to cast spells through studying the mystical forces of nature. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Druid spells, which appear on the Druid spell list later in the class's description. Cantrips: You know two cantrips of your choice from the Druid spell list. Druidcraft and Produce Flame are recommended."
+    "description": "You have learned to cast spells through studying the mystical forces of nature. Cantrips: You know two cantrips of your choice from the Druid spell list. Druidcraft and Produce Flame are recommended."
   },
   "Wild Companion": {
     "description": "You can summon a nature spirit that assumes an animal form to aid you. As a Magic action, you can expend a spell slot or a use of Wild Shape to cast the Find Familiar spell without Material components. When you cast the spell in this way, the familiar is Fey and disappears when you finish a Long Rest."
@@ -2130,7 +2130,7 @@
     "description": "You attain the pinnacle of resilience in battle, giving you these benefits. Defy Death: You have Advantage on Death Saving Throw. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it. Heroic Rally: At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Points."
   },
   "Spellcasting (Eldritch Knight)": {
-    "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Eldritch Knight. Cantrips: You know two cantrips of your choice from the Wizard spell list (see that class's section for its list). Ray of Frost and Shocking Grasp are recommended."
+    "description": "You have learned to cast spells. Cantrips: You know two cantrips of your choice from the Wizard spell list. Ray of Frost and Shocking Grasp are recommended."
   },
   "War Bond": {
     "description": "You learn a ritual that creates a magical bond between yourself and one weapon. You perform the ritual over the course of 1 hour, which can be done during a Short Rest. The weapon must be within your reach throughout the ritual, at the conclusion of which you touch the weapon and forge the bond."
@@ -2295,7 +2295,7 @@
     "description": "When you use your Second Wind to regain Hit Points, you can choose a number of allies within a 30-foot Emanation [Area of Effect] originating from yourself, up to a number of allies equal to your Charisma modifier (minimum of one). Each of those allies regains Hit Points equal to 1d4 plus your Fighter level."
   },
   "Knightly Envoy": {
-    "description": "You know how to conduct yourself with grace as a noble ambassador. You gain the following benefits. Comprehension: You can cast the Comprehend Languages spell but only as a Ritual. Charisma is your spellcasting ability for it. Polyglot: You learn one language from the language tables in the Player's Handbook or chapter 2 of this book."
+    "description": "You know how to conduct yourself with grace as a noble ambassador. You gain the following benefits. Comprehension: You can cast the Comprehend Languages spell but only as a Ritual. Charisma is your spellcasting ability for it. Polyglot: You learn one language."
   },
   "Team Tactics": {
     "description": "When you use Group Recovery, each chosen ally has Advantage on D20 Test until the start of your next turn."
@@ -2667,7 +2667,7 @@
     "description": "Restore HP from your pool (5 × Paladin level total) or spend 5 to cure Poisoned"
   },
   "Spellcasting (Paladin)": {
-    "description": "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Paladin spells, which appear in the Paladin spell list later in the class's description. Spell Slots: The Paladin Features table shows how many spell slots you have to cast your level 1+ spells."
+    "description": "You have learned to cast spells through prayer and meditation. Spell Slots: The Paladin Features table shows how many spell slots you have to cast your level 1+ spells."
   },
   "Weapon Mastery (Paladin)": {
     "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longsword and Javelin. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Halberd and Flail."
@@ -3135,7 +3135,7 @@
     "description": "You mark one creature you can see within range as your quarry. Until the spell ends, you deal an extra 1d6 Force damage to the target whenever you hit it with an attack roll. If the target drops to 0 Hit Points before this spell ends, you can take a Bonus Action to mark a new creature you can see within range."
   },
   "Spellcasting (Ranger)": {
-    "description": "You have learned to channel the magical essence of nature to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class's description. Spell Slots: The Ranger Features table shows how many spell slots you have to cast your level 1+ spells."
+    "description": "You have learned to channel the magical essence of nature to cast spells. Spell Slots: The Ranger Features table shows how many spell slots you have to cast your level 1+ spells."
   },
   "Weapon Mastery (Ranger)": {
     "description": "Your training with weapons allows you to use the weapon mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbow and Shortsword. Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the weapon mastery properties of Scimitar and Longsword."
@@ -3483,7 +3483,7 @@
     "description": "When you cast Mage Hand, you can cast it as a Bonus Action, and you can make the spectral hand Invisible. You can control the hand as a Bonus Action, and through it, you can make Dexterity (Sleight of Hand) checks."
   },
   "Spellcasting (Arcane Trickster)": {
-    "description": "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Arcane Trickster. Cantrips: You know three cantrips: Mage Hand and two other cantrips of your choice from the Wizard spell list (see that class's section for its list). Mind Sliver and Minor Illusion are recommended."
+    "description": "You have learned to cast spells. Cantrips: You know three cantrips: Mage Hand and two other cantrips of your choice from the Wizard spell list. Mind Sliver and Minor Illusion are recommended."
   },
   "Magical Ambush": {
     "description": "If you have the Invisible condition when you cast a spell on a creature, it has Disadvantage on any saving throw it makes against the spell on the same turn."
@@ -3699,7 +3699,7 @@
     "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute"
   },
   "Spellcasting (Sorcerer)": {
-    "description": "Drawing from your innate magic, you can cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Sorcerer spells, which appear in the Sorcerer spell list later in the class's description. Cantrips: You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended."
+    "description": "Drawing from your innate magic, you can cast spells. Cantrips: You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended."
   },
   "Font of Magic": {
     "description": "You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects. You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can't have more Sorcery Points than the number shown in the table for your level."
@@ -4206,7 +4206,7 @@
     "description": "Minimum level 15 Warlock. You have Truesight with a range of 30 feet."
   },
   "Pact Magic": {
-    "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows—its identity unclear—but its boon to you is concrete: the ability to cast spells. See chapter 7 for the rules on spellcasting."
+    "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows—its identity unclear—but its boon to you is concrete: the ability to cast spells."
   },
   "Magical Cunning": {
     "description": "You can perform an esoteric rite for 1 minute. At the end of it, you regain expended Pact Magic spell slots but no more than a number equal to half your maximum (round up). Once you use this feature, you can't do so again until you finish a Long Rest."
@@ -4569,7 +4569,7 @@
     "description": "You can cast any spell as a Ritual if that spell has the Ritual tag and the spell is in your spellbook. You needn't have the spell prepared, but you must read from the book to cast a spell in this way."
   },
   "Spellcasting (Wizard)": {
-    "description": "As a student of arcane magic, you have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules with Wizard spells, which appear in the Wizard spell list later in the class's description. Cantrips: You know three Wizard cantrips of your choice. Light, Mage Hand, and Ray of Frost are recommended."
+    "description": "As a student of arcane magic, you have learned to cast spells. Cantrips: You know three Wizard cantrips of your choice. Light, Mage Hand, and Ray of Frost are recommended."
   },
   "Scholar": {
     "description": "While studying magic, you also specialized in another field of study. Choose one of the following skills in which you have proficiency: Arcana, History, Investigation, Medicine, Nature, or Religion. You have Expertise in the chosen skill."
