@@ -329,6 +329,7 @@ impl Attribute {
             Self::Points => i18n.tr("points"),
             Self::PointsMax => i18n.tr("points-max"),
             Self::Cost => i18n.tr("cost"),
+            Self::Arg(_) => "?".to_string(),
             _ => self.to_string(),
         }
     }

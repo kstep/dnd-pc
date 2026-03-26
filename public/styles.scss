@@ -105,8 +105,9 @@ html {
   display: inline-flex;
 
   svg {
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: -0.25rem 0;
   }
 
   .logo-gear {
@@ -2341,7 +2342,11 @@ select.entry-name {
   border-radius: 0 0 var(--radius-2) var(--radius-2);
   overflow: hidden;
   position: sticky;
-  top: calc(var(--size-3) + 2rem);
+  top: calc(var(--size-3) + 3rem);
+
+  @media (max-width: 600px) {
+    top: calc(var(--size-3) + 2rem);
+  }
 }
 
 
@@ -2383,9 +2388,13 @@ select.entry-name {
   display: flex;
   align-items: center;
   position: sticky;
-  top: calc(var(--size-3) + 2rem);
+  top: calc(var(--size-3) + 3rem);
   z-index: 10;
   background: var(--surface-1);
+
+  @media (max-width: 600px) {
+    top: calc(var(--size-3) + 2rem);
+  }
   padding: var(--size-2) 0;
 
   .reference-search {
