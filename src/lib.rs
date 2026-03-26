@@ -1,7 +1,7 @@
 use fluent_templates::static_loader;
 use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
-use leptos_meta::{Html, Link, Meta, provide_meta_context};
+use leptos_meta::{Html, provide_meta_context};
 use leptos_router::{
     components::{ParentRoute, Route, Router, Routes},
     path,
@@ -67,10 +67,6 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() />
-        <Meta charset="UTF-8" />
-        <Meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <Link rel="manifest" href=format!("{BASE_URL}/manifest.json") />
-        <Link rel="apple-touch-icon" href=format!("{BASE_URL}/icons/icon-192.png") />
 
         <Router base=BASE_URL set_is_routing=is_routing.0>
             <Navbar />
