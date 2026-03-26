@@ -2382,7 +2382,6 @@ select.entry-name {
 .reference-feature-header {
   display: flex;
   align-items: center;
-  gap: var(--size-3);
   position: sticky;
   top: calc(var(--size-3) + 2rem);
   z-index: 10;
@@ -2391,11 +2390,7 @@ select.entry-name {
 
   .reference-search {
     flex: 1;
-    padding: var(--size-2) var(--size-3);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-2);
-    background: var(--surface-2);
+    background: var(--panel-bg);
     color: var(--text-primary);
   }
 }
