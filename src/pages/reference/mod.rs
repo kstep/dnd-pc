@@ -8,8 +8,14 @@ use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::components::A;
+use leptos_router::components::{A, Outlet};
 pub use sidebar::ReferenceSidebar;
+
+#[component]
+pub fn ReferenceLayout() -> impl IntoView {
+    expect_context::<WriteSignal<String>>().set("view-reference".into());
+    view! { <Outlet /> }
+}
 
 use crate::{
     BASE_URL,

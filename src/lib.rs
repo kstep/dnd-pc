@@ -46,8 +46,8 @@ use pages::{
     import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
     reference::{
-        background::BackgroundReference, class::ClassReference, feature::FeatureReference,
-        species::SpeciesReference, spell::SpellReference,
+        ReferenceLayout, background::BackgroundReference, class::ClassReference,
+        feature::FeatureReference, species::SpeciesReference, spell::SpellReference,
     },
 };
 use rules::RulesRegistry;
@@ -81,16 +81,18 @@ pub fn App() -> impl IntoView {
                     </ParentRoute>
                     <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
                     <Route path=path!("/s/:data") view=ImportCharacter />
-                    <Route path=path!("/r/class") view=ClassReference />
-                    <Route path=path!("/r/class/:name") view=ClassReference />
-                    <Route path=path!("/r/class/:name/:subname") view=ClassReference />
-                    <Route path=path!("/r/species") view=SpeciesReference />
-                    <Route path=path!("/r/species/:name") view=SpeciesReference />
-                    <Route path=path!("/r/background") view=BackgroundReference />
-                    <Route path=path!("/r/background/:name") view=BackgroundReference />
-                    <Route path=path!("/r/feature") view=FeatureReference />
-                    <Route path=path!("/r/spell") view=SpellReference />
-                    <Route path=path!("/r/spell/:list") view=SpellReference />
+                    <ParentRoute path=path!("/r") view=ReferenceLayout>
+                        <Route path=path!("/class") view=ClassReference />
+                        <Route path=path!("/class/:name") view=ClassReference />
+                        <Route path=path!("/class/:name/:subname") view=ClassReference />
+                        <Route path=path!("/species") view=SpeciesReference />
+                        <Route path=path!("/species/:name") view=SpeciesReference />
+                        <Route path=path!("/background") view=BackgroundReference />
+                        <Route path=path!("/background/:name") view=BackgroundReference />
+                        <Route path=path!("/feature") view=FeatureReference />
+                        <Route path=path!("/spell") view=SpellReference />
+                        <Route path=path!("/spell/:list") view=SpellReference />
+                    </ParentRoute>
                 </Routes>
             </main>
         </Router>
