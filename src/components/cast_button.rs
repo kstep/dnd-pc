@@ -28,7 +28,7 @@ impl CastOption {
     fn view(self) -> impl IntoView {
         match self {
             CastOption::FreeUse { available, max } => EitherOf4::A(view! {
-                <Icon name="gift" size=32 />
+                <Icon name="gift" size=14 />
                 <sub class="slot-remaining">{available}"/"{max}</sub>
             }),
             CastOption::PointsCost { cost, suffix } => EitherOf4::B(view! {
@@ -41,7 +41,7 @@ impl CastOption {
                 <sub class="slot-remaining">{remaining}</sub>
             }),
             CastOption::Ritual { .. } => EitherOf4::D(view! {
-                <Icon name="book-open" size=32 />
+                <Icon name="book-open" size=14 />
             }),
         }
     }
