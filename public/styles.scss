@@ -219,8 +219,11 @@ html {
     gap: var(--size-2);
   }
 
-  .navbar-title,
-  .navbar-ref-label {
+  .navbar-title {
+    display: none;
+  }
+
+  .navbar-ref:has(~ .navbar-ref-inline) .navbar-ref-label {
     display: none;
   }
 
