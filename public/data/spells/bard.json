@@ -568,10 +568,7 @@
     "effects": [
       {
         "name": "Slow",
-        "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2",
-        "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2"
       }
     ]
   },

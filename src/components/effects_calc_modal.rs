@@ -14,7 +14,7 @@ use crate::{
     },
 };
 
-// --- Read-only context for effect calculation ---
+// --- Read-only context for effect calculation (display only) ---
 
 struct CalcContext<'a> {
     character: &'a Character,
@@ -24,6 +24,26 @@ struct CalcContext<'a> {
 impl expr::Context<Attribute, i32> for CalcContext<'_> {
     fn assign(&mut self, _var: Attribute, _value: i32) -> Result<(), expr::Error> {
         Ok(())
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        if let Some(&value) = self.extra_vars.get(&var) {
+            return Ok(value);
+        }
+        self.character.resolve(var)
+    }
+}
+
+// --- Mutable context for instant effect application ---
+
+struct ApplyContext<'a> {
+    character: &'a mut Character,
+    extra_vars: &'a BTreeMap<Attribute, i32>,
+}
+
+impl expr::Context<Attribute, i32> for ApplyContext<'_> {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        self.character.assign(var, value)
     }
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
@@ -94,6 +114,43 @@ pub fn has_non_stackable_duplicate(
     any_non_stackable && active_effects.has_effect(spell_name)
 }
 
+/// Build a combined expression from Caster effects matching a duration filter.
+fn build_self_expr(
+    effects: &[EffectDefinition],
+    filter: fn(EffectDuration) -> bool,
+) -> Option<Expr<Attribute>> {
+    let combined = effects
+        .iter()
+        .filter(|effect| effect.range == EffectRange::Caster && filter(effect.duration))
+        .map(|effect| effect.expr.to_string())
+        .collect::<Vec<_>>()
+        .join("; ");
+    if combined.is_empty() {
+        None
+    } else {
+        combined.parse().ok()
+    }
+}
+
+/// Substitute contextual variables (SLOT_LEVEL, CLASS_LEVEL, etc.) with
+/// concrete values so the expression is self-contained when stored as an
+/// ActiveEffect (which has no access to extra_vars on recompute).
+fn substitute_vars(expr_str: &str, extra_vars: &BTreeMap<Attribute, i32>) -> String {
+    // Sort by variable name length descending so POINTS_MAX is replaced before
+    // POINTS (avoids partial matches).
+    let mut vars: Vec<_> = extra_vars
+        .iter()
+        .map(|(attr, &value)| (attr.to_string(), value))
+        .collect();
+    vars.sort_by(|a, b| b.0.len().cmp(&a.0.len()));
+
+    let mut result = expr_str.to_string();
+    for (var_name, value) in &vars {
+        result = result.replace(var_name.as_str(), &value.to_string());
+    }
+    result
+}
+
 /// Apply all Caster effects immediately (no dice, no modal).
 /// Instant effects are applied directly to the character;
 /// persistent effects create an ActiveEffect (unless blocked by stackable).
@@ -101,36 +158,33 @@ pub fn apply_self_effects_now(
     effects: &[EffectDefinition],
     spell_name: &str,
     feature_name: &str,
+    extra_vars: &BTreeMap<Attribute, i32>,
     store: &Store<Character>,
     active_effects: RwSignal<ActiveEffects>,
 ) {
-    let build_expr = |filter: fn(EffectDuration) -> bool| -> Option<Expr<Attribute>> {
-        let combined = effects
-            .iter()
-            .filter(|effect| effect.range == EffectRange::Caster && filter(effect.duration))
-            .map(|effect| effect.expr.to_string())
-            .collect::<Vec<_>>()
-            .join("; ");
-        if combined.is_empty() {
-            None
-        } else {
-            combined.parse().ok()
-        }
-    };
-
-    if let Some(expr) = build_expr(|duration| duration == EffectDuration::Instant) {
+    if let Some(expr) = build_self_expr(effects, |duration| duration == EffectDuration::Instant) {
         store.update(|character| {
-            if let Err(error) = expr.apply(character) {
+            let mut ctx = ApplyContext {
+                character,
+                extra_vars,
+            };
+            if let Err(error) = expr.apply(&mut ctx) {
                 log::error!("Instant effect error: {error}");
             }
         });
     }
 
-    if let Some(expr) = build_expr(|duration| duration != EffectDuration::Instant) {
+    if let Some(expr) = build_self_expr(effects, |duration| duration != EffectDuration::Instant) {
         // Skip if non-stackable and already active
         if has_non_stackable_duplicate(effects, &active_effects.read_untracked(), spell_name) {
             return;
         }
+        // Substitute contextual vars so the stored expression is self-contained
+        let expr_str = substitute_vars(&expr.to_string(), extra_vars);
+        let Some(expr) = expr_str.parse().ok() else {
+            log::error!("Failed to parse substituted expression: {expr_str}");
+            return;
+        };
         let scope = if feature_name.is_empty() {
             None
         } else {
@@ -240,6 +294,7 @@ pub fn EffectsCalcModal(
             };
             let instant_expr = StoredValue::new(instant_expr);
             let persistent_expr = StoredValue::new(persistent_expr);
+            let extra_vars_copy = StoredValue::new(info.extra_vars.clone());
             let spell_name = StoredValue::new(info.spell_name.clone());
             let feature_name = StoredValue::new(info.feature_name.clone());
 
@@ -413,20 +468,26 @@ pub fn EffectsCalcModal(
                         Some(DicePool::from(merged_pool))
                     };
 
-                    // Instant effects: apply directly to character
+                    // Instant effects: apply directly to character with extra vars
                     if let Some(expr) = instant_expr.get_value() {
-                        store.update(|character| {
-                            let result = match &pool {
-                                Some(pool) => expr.apply_with_dice(character, pool),
-                                None => expr.apply(character),
-                            };
-                            if let Err(error) = result {
-                                log::error!("Instant effect error: {error}");
-                            }
+                        extra_vars_copy.with_value(|extra_vars| {
+                            store.update(|character| {
+                                let mut ctx = ApplyContext {
+                                    character,
+                                    extra_vars,
+                                };
+                                let result = match &pool {
+                                    Some(pool) => expr.apply_with_dice(&mut ctx, pool),
+                                    None => expr.apply(&mut ctx),
+                                };
+                                if let Err(error) = result {
+                                    log::error!("Instant effect error: {error}");
+                                }
+                            });
                         });
                     }
 
-                    // Persistent effects: create ActiveEffect
+                    // Persistent effects: create ActiveEffect with substituted vars
                     if let Some(expr) = persistent_expr.get_value() {
                         let name = spell_name.get_value();
                         let scope = feature_name.with_value(|fname| {
@@ -436,6 +497,16 @@ pub fn EffectsCalcModal(
                                 Some(fname.clone().into_boxed_str())
                             }
                         });
+
+                        // Substitute contextual vars so expression is self-contained
+                        let expr = extra_vars_copy.with_value(|extra_vars| {
+                            let substituted = substitute_vars(&expr.to_string(), extra_vars);
+                            substituted.parse::<Expr<Attribute>>().ok()
+                        });
+                        let Some(expr) = expr else {
+                            show.set(false);
+                            return;
+                        };
 
                         let effect = ActiveEffect {
                             name,

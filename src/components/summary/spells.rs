@@ -83,7 +83,14 @@ pub fn SpellsBlock() -> impl IntoView {
             let all_caster = effects.iter().all(|e| e.range == EffectRange::Caster);
             if all_caster && all_self_effects_diceless(&effects, &character, &extra_vars) {
                 drop(character);
-                apply_self_effects_now(&effects, spell_name, fname, &store, eff.effects());
+                apply_self_effects_now(
+                    &effects,
+                    spell_name,
+                    fname,
+                    &extra_vars,
+                    &store,
+                    eff.effects(),
+                );
                 return;
             }
 

@@ -150,6 +150,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                     &effects,
                     &option_label,
                     &feature_name,
+                    &extra_vars,
                     &store,
                     eff.effects(),
                 );
