@@ -9078,7 +9078,8 @@
                 "name": "Innate Sorcery",
                 "range": "Caster",
                 "duration": "Forever",
-                "expr": "SPELL.DC += 1; SPELL.ATK.ADV = 1"
+                "expr": "SPELL.DC += 1; SPELL.ATK.ADV = 1",
+                "scope": "Spellcasting (Sorcerer)"
               }
             ]
           }

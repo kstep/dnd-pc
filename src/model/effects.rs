@@ -39,6 +39,8 @@ pub struct EffectDefinition {
     pub duration: EffectDuration,
     #[serde(default)]
     pub stackable: bool,
+    #[serde(default)]
+    pub scope: Option<String>,
 }
 
 impl EffectDefinition {

@@ -173,10 +173,15 @@ pub fn apply_self_effects_now(
             return;
         }
         let expr = bind_extra_vars(&expr, extra_vars);
-        let scope = if feature_name.is_empty() {
+        // Use explicit scope from effect definition if set, otherwise feature_name
+        let effect_scope = effects
+            .iter()
+            .find_map(|effect| effect.scope.as_deref())
+            .unwrap_or(feature_name);
+        let scope = if effect_scope.is_empty() {
             None
         } else {
-            Some(feature_name.into())
+            Some(effect_scope.into())
         };
         let effect = ActiveEffect {
             name: spell_name.to_string(),
@@ -284,7 +289,13 @@ pub fn EffectsCalcModal(
             let persistent_expr = StoredValue::new(persistent_expr);
             let extra_vars_copy = StoredValue::new(info.extra_vars.clone());
             let spell_name = StoredValue::new(info.spell_name.clone());
-            let feature_name = StoredValue::new(info.feature_name.clone());
+            // Use explicit scope from effect definition if set, otherwise feature_name
+            let effect_scope = info
+                .effects
+                .iter()
+                .find_map(|effect| effect.scope.clone())
+                .unwrap_or_else(|| info.feature_name.clone());
+            let feature_name = StoredValue::new(effect_scope);
 
             let effect_views = info
                 .effects
