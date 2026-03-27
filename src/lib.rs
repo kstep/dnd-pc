@@ -4,6 +4,7 @@ use leptos_fluent::leptos_fluent;
 use leptos_meta::{Html, provide_meta_context};
 use leptos_router::{
     components::{ParentRoute, Route, Router, Routes},
+    hooks::use_location,
     path,
 };
 
@@ -69,29 +70,50 @@ pub fn App() -> impl IntoView {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() />
 
         <Router base=BASE_URL set_is_routing=is_routing.0>
-            <Navbar />
-            <main>
-                <Routes fallback=|| view! { <NotFound /> }>
-                    <Route path=path!("/") view=CharacterList />
-                    <ParentRoute path=path!("/c/:id") view=CharacterLayout>
-                        <Route path=path!("") view=CharacterSheet />
-                        <Route path=path!("/summary") view=CharacterSummary />
-                    </ParentRoute>
-                    <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
-                    <Route path=path!("/s/:data") view=ImportCharacter />
-                    <Route path=path!("/r/class") view=ClassReference />
-                    <Route path=path!("/r/class/:name") view=ClassReference />
-                    <Route path=path!("/r/class/:name/:subname") view=ClassReference />
-                    <Route path=path!("/r/species") view=SpeciesReference />
-                    <Route path=path!("/r/species/:name") view=SpeciesReference />
-                    <Route path=path!("/r/background") view=BackgroundReference />
-                    <Route path=path!("/r/background/:name") view=BackgroundReference />
-                    <Route path=path!("/r/feature") view=FeatureReference />
-                    <Route path=path!("/r/spell") view=SpellReference />
-                    <Route path=path!("/r/spell/:list") view=SpellReference />
-                </Routes>
-            </main>
+            <AppShell />
         </Router>
+    }
+}
+
+#[component]
+fn AppShell() -> impl IntoView {
+    let location = use_location();
+    let view_class = Memo::new(move |_| {
+        let path = location.pathname.read();
+        let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
+        match rest.trim_start_matches('/').split('/').next().unwrap_or("") {
+            "" => "view-main",
+            "c" => "view-character",
+            "r" => "view-reference",
+            "s" => "view-import",
+            _ => "",
+        }
+    });
+
+    view! {
+        <Html attr:class=move || view_class.get() />
+        <Navbar />
+        <main>
+            <Routes fallback=|| view! { <NotFound /> }>
+                <Route path=path!("/") view=CharacterList />
+                <ParentRoute path=path!("/c/:id") view=CharacterLayout>
+                    <Route path=path!("") view=CharacterSheet />
+                    <Route path=path!("/summary") view=CharacterSummary />
+                </ParentRoute>
+                <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
+                <Route path=path!("/s/:data") view=ImportCharacter />
+                <Route path=path!("/r/class") view=ClassReference />
+                <Route path=path!("/r/class/:name") view=ClassReference />
+                <Route path=path!("/r/class/:name/:subname") view=ClassReference />
+                <Route path=path!("/r/species") view=SpeciesReference />
+                <Route path=path!("/r/species/:name") view=SpeciesReference />
+                <Route path=path!("/r/background") view=BackgroundReference />
+                <Route path=path!("/r/background/:name") view=BackgroundReference />
+                <Route path=path!("/r/feature") view=FeatureReference />
+                <Route path=path!("/r/spell") view=SpellReference />
+                <Route path=path!("/r/spell/:list") view=SpellReference />
+            </Routes>
+        </main>
     }
 }
 
