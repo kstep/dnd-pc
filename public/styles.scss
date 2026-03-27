@@ -1749,6 +1749,7 @@ select.entry-name {
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-2);
   white-space: nowrap;
+  width: max-content;
 }
 
 .cast-slot-pill {
@@ -1761,6 +1762,7 @@ select.entry-name {
   background: var(--surface-1);
   cursor: pointer;
   font-size: var(--font-size-0);
+  flex-shrink: 0;
 
   &:hover {
     background: var(--surface-3);
