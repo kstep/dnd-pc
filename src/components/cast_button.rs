@@ -41,7 +41,7 @@ impl CastOption {
                 <sub class="slot-remaining">{remaining}</sub>
             }),
             CastOption::Ritual { .. } => EitherOf4::D(view! {
-                <Icon name="book-open" size=32 />
+                <Icon name="book-open" size=16 />
             }),
         }
     }
