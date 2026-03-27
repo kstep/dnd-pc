@@ -2409,7 +2409,7 @@ select.entry-name {
   background: var(--surface-1);
 
   @media (max-width: 600px) {
-    top: calc(var(--size-3) + 3rem);
+    top: calc(var(--size-3) + 2rem);
   }
   padding: var(--size-2) 0;
 
