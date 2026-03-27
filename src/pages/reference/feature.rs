@@ -37,8 +37,7 @@ pub fn FeatureReference() -> impl IntoView {
 
     view! {
         <Title text=Signal::derive(move || i18n.tr("ref-features")) />
-        <div class="reference-page">
-            <div class="reference-feature-page">
+        <div class="reference-feature-page">
                 <div class="reference-feature-header">
                     <input
                         type="search"
@@ -51,7 +50,6 @@ pub fn FeatureReference() -> impl IntoView {
                 <main class="reference-main">
                     {features_view}
                 </main>
-            </div>
         </div>
     }
 }

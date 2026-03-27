@@ -371,25 +371,23 @@ pub fn ClassReference() -> impl IntoView {
 
     view! {
         <Title text=Signal::derive(move || i18n.tr("ref-classes")) />
-        <div class="reference-page">
-            <div class="reference-layout">
-                <ReferenceSidebar current_label>
-                    {move || registry.with_class_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            view! {
-                                <A href=format!("{BASE_URL}/r/class/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </A>
-                            }
-                        }).collect_view()
-                    })}
-                </ReferenceSidebar>
-                <main class="reference-main">
-                    {detail}
-                </main>
-            </div>
+        <div class="reference-layout">
+            <ReferenceSidebar current_label>
+                {move || registry.with_class_entries(|entries| {
+                    entries.values().map(|entry| {
+                        let name = entry.name.clone();
+                        let label = entry.label().to_string();
+                        view! {
+                            <A href=format!("{BASE_URL}/r/class/{name}") attr:class="reference-nav-item">
+                                {label}
+                            </A>
+                        }
+                    }).collect_view()
+                })}
+            </ReferenceSidebar>
+            <main class="reference-main">
+                {detail}
+            </main>
         </div>
     }
 }

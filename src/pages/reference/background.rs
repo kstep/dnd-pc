@@ -79,25 +79,23 @@ pub fn BackgroundReference() -> impl IntoView {
 
     view! {
         <Title text=Signal::derive(move || i18n.tr("ref-backgrounds")) />
-        <div class="reference-page">
-            <div class="reference-layout">
-                <ReferenceSidebar current_label>
-                    {move || registry.with_background_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            view! {
-                                <A href=format!("{BASE_URL}/r/background/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </A>
-                            }
-                        }).collect_view()
-                    })}
-                </ReferenceSidebar>
-                <main class="reference-main">
-                    {detail}
-                </main>
-            </div>
+        <div class="reference-layout">
+            <ReferenceSidebar current_label>
+                {move || registry.with_background_entries(|entries| {
+                    entries.values().map(|entry| {
+                        let name = entry.name.clone();
+                        let label = entry.label().to_string();
+                        view! {
+                            <A href=format!("{BASE_URL}/r/background/{name}") attr:class="reference-nav-item">
+                                {label}
+                            </A>
+                        }
+                    }).collect_view()
+                })}
+            </ReferenceSidebar>
+            <main class="reference-main">
+                {detail}
+            </main>
         </div>
     }
 }

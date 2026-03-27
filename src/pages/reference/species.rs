@@ -79,8 +79,7 @@ pub fn SpeciesReference() -> impl IntoView {
 
     view! {
         <Title text=Signal::derive(move || i18n.tr("ref-species")) />
-        <div class="reference-page">
-            <div class="reference-layout">
+        <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     {move || registry.with_species_entries(|entries| {
                         entries.values().map(|entry| {
@@ -97,7 +96,6 @@ pub fn SpeciesReference() -> impl IntoView {
                 <main class="reference-main">
                     {detail}
                 </main>
-            </div>
         </div>
     }
 }
