@@ -138,7 +138,7 @@ fn bind_extra_vars(
     expr: &Expr<Attribute>,
     extra_vars: &BTreeMap<Attribute, i32>,
 ) -> Expr<Attribute> {
-    expr.partial_apply(|op| match op {
+    expr.map(|op| match op {
         Op::PushVar(var) if extra_vars.contains_key(var) => Op::PushConst(extra_vars[var]),
         other => *other,
     })

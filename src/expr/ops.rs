@@ -175,11 +175,9 @@ impl<Var, Val> Block<Var, Val> {
         })
     }
 
-    /// Replace ops in-place by applying a mapping function to each op.
-    pub fn replace(&mut self, mut f: impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) {
-        for op in self.0.iter_mut() {
-            *op = f(op);
-        }
+    /// Create a new block by mapping each op.
+    pub fn map(&self, f: &mut impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) -> Self {
+        Self(self.0.iter().map(f).collect())
     }
 }
 
