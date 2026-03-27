@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, time::Duration};
+use std::{collections::BTreeMap, ops::Not, time::Duration};
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::{move_tr, tr};
@@ -114,16 +114,8 @@ pub fn apply_level(
 
     apply_with_args_modal(pending, move |result| {
         store.update(|character| {
-            let args_map = if result.args.is_empty() {
-                None
-            } else {
-                Some(&result.args)
-            };
-            let replacements = if result.replacements.is_empty() {
-                None
-            } else {
-                Some(&result.replacements)
-            };
+            let args_map = result.args.is_empty().not().then_some(&result.args);
+            let replacements = result.replacements.is_empty().not().then_some(&result.replacements);
             registry.apply_class_level(character, class_index, level, args_map, replacements);
         });
     });
@@ -298,7 +290,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 )
                             }).unwrap_or_default();
                             apply_with_args_modal(pending, move |result| {
-                                let args_map = if result.args.is_empty() { None } else { Some(&result.args) };
+                                let args_map = result.args.is_empty().not().then_some(&result.args);
                                 store.update(|character| registry.apply_species(character, args_map));
                             });
                         }
@@ -336,7 +328,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 )
                             }).unwrap_or_default();
                             apply_with_args_modal(pending, move |result| {
-                                let args_map = if result.args.is_empty() { None } else { Some(&result.args) };
+                                let args_map = result.args.is_empty().not().then_some(&result.args);
                                 store.update(|character| registry.apply_background(character, args_map));
                             });
                         }
