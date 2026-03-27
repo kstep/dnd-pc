@@ -2347,10 +2347,6 @@ select.entry-name {
   .reference-sidebar:not(.open) .reference-nav-item {
     display: none;
   }
-
-  .reference-feature {
-    scroll-margin-top: 7rem;
-  }
 }
 
 .reference-sidebar {
@@ -2534,6 +2530,10 @@ select.entry-name {
 
 .reference-feature {
   scroll-margin-top: 3.5rem;
+
+  @media (max-width: 768px) {
+    scroll-margin-top: 7rem;
+  }
 
   &:target {
     background: var(--panel-bg);
