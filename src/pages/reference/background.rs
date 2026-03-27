@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
+use super::{ReferenceFeaturesView, ReferencePage, collect_feature_views};
 use crate::{
     BASE_URL,
     rules::{DefinitionStore, RulesRegistry},
@@ -77,25 +77,20 @@ pub fn BackgroundReference() -> impl IntoView {
         .into_any()
     };
 
-    view! {
-        <Title text=Signal::derive(move || i18n.tr("ref-backgrounds")) />
-        <div class="reference-layout">
-            <ReferenceSidebar current_label>
-                {move || registry.with_background_entries(|entries| {
-                    entries.values().map(|entry| {
-                        let name = entry.name.clone();
-                        let label = entry.label().to_string();
-                        view! {
-                            <A href=format!("{BASE_URL}/r/background/{name}") attr:class="reference-nav-item">
-                                {label}
-                            </A>
-                        }
-                    }).collect_view()
-                })}
-            </ReferenceSidebar>
-            <main class="reference-main">
-                {detail}
-            </main>
-        </div>
-    }
+    let title = Signal::derive(move || i18n.tr("ref-backgrounds"));
+    let sidebar = move || {
+        registry.with_background_entries(|entries| {
+            entries.values().map(|entry| {
+                let name = entry.name.clone();
+                let label = entry.label().to_string();
+                view! {
+                    <A href=format!("{BASE_URL}/r/background/{name}") attr:class="reference-nav-item">
+                        {label}
+                    </A>
+                }
+            }).collect_view()
+        })
+    };
+
+    view! { <ReferencePage title current_label sidebar=sidebar children=detail /> }
 }

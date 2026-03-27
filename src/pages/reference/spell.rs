@@ -5,7 +5,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::ReferenceSidebar;
+use super::ReferencePage;
 use crate::{
     BASE_URL,
     components::expr_view::ExprView,
@@ -163,25 +163,20 @@ pub fn SpellReference() -> impl IntoView {
             })
     };
 
-    view! {
-        <Title text=Signal::derive(move || i18n.tr("ref-spells")) />
-        <div class="reference-layout">
-            <ReferenceSidebar current_label>
-                {move || registry.with_spell_entries(|entries| {
-                    entries.values().map(|entry| {
-                        let name = entry.name.clone();
-                        let label = entry.label().to_string();
-                        view! {
-                            <A href=format!("{BASE_URL}/r/spell/{name}") attr:class="reference-nav-item">
-                                {label}
-                            </A>
-                        }
-                    }).collect_view()
-                })}
-            </ReferenceSidebar>
-            <main class="reference-main">
-                {detail}
-            </main>
-        </div>
-    }
+    let title = Signal::derive(move || i18n.tr("ref-spells"));
+    let sidebar = move || {
+        registry.with_spell_entries(|entries| {
+            entries.values().map(|entry| {
+                let name = entry.name.clone();
+                let label = entry.label().to_string();
+                view! {
+                    <A href=format!("{BASE_URL}/r/spell/{name}") attr:class="reference-nav-item">
+                        {label}
+                    </A>
+                }
+            }).collect_view()
+        })
+    };
+
+    view! { <ReferencePage title current_label sidebar=sidebar children=detail /> }
 }

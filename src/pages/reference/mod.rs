@@ -8,8 +8,9 @@ use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
+use leptos_meta::Title;
 use leptos_router::components::{A, Outlet};
-pub use sidebar::ReferenceSidebar;
+use sidebar::ReferenceSidebar;
 
 #[component]
 pub fn ReferenceLayout() -> impl IntoView {
@@ -17,6 +18,28 @@ pub fn ReferenceLayout() -> impl IntoView {
     view! {
         <div class="reference-page">
             <Outlet />
+        </div>
+    }
+}
+
+#[component]
+pub fn ReferencePage(
+    title: Signal<String>,
+    current_label: Signal<String>,
+    #[prop(into)] sidebar: ViewFn,
+    #[prop(into)] children: ViewFn,
+) -> impl IntoView {
+    let sidebar = StoredValue::new(sidebar);
+    let children = StoredValue::new(children);
+    view! {
+        <Title text=title />
+        <div class="reference-layout">
+            <ReferenceSidebar current_label>
+                {move || sidebar.read_value().run()}
+            </ReferenceSidebar>
+            <main class="reference-main">
+                {move || children.read_value().run()}
+            </main>
         </div>
     }
 }
