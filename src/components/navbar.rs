@@ -13,8 +13,8 @@ use crate::{
 #[derive(Clone, Copy, Default)]
 pub struct ActiveCharacterId(pub RwSignal<Option<Uuid>>);
 
-#[derive(Clone, Copy, Default)]
-pub struct ViewClass(pub RwSignal<String>);
+#[derive(Clone, Copy)]
+pub struct ViewClass(pub WriteSignal<&'static str>);
 
 #[component]
 fn RefLinks() -> impl IntoView {

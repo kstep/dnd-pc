@@ -55,8 +55,8 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     on_cleanup(move || active_id.set(None));
 
     let view_class = expect_context::<ViewClass>().0;
-    view_class.set("view-character".into());
-    on_cleanup(move || view_class.set(String::new()));
+    view_class.set("view-character");
+    on_cleanup(move || view_class.set(""));
 
     // Provide args-modal context for features that need user input during apply.
     let args_modal_ctx = ArgsModalCtx::new();

@@ -13,7 +13,7 @@ pub use sidebar::ReferenceSidebar;
 
 #[component]
 pub fn ReferenceLayout() -> impl IntoView {
-    expect_context::<ViewClass>().0.set("view-reference".into());
+    expect_context::<ViewClass>().0.set("view-reference");
     view! { <Outlet /> }
 }
 

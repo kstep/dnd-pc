@@ -20,7 +20,7 @@ use crate::{
 
 #[component]
 pub fn ImportLayout() -> impl IntoView {
-    expect_context::<ViewClass>().0.set("view-import".into());
+    expect_context::<ViewClass>().0.set("view-import");
     view! { <Outlet /> }
 }
 
