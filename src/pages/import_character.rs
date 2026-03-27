@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::{
-    components::A,
+    components::{A, Outlet},
     hooks::{use_navigate, use_params},
     params::Params,
 };
@@ -15,6 +15,12 @@ use crate::{
     model::{Ability, Character, Item, Proficiency, Skill, Translatable},
     share, storage,
 };
+
+#[component]
+pub fn ImportLayout() -> impl IntoView {
+    expect_context::<WriteSignal<String>>().set("view-import".into());
+    view! { <Outlet /> }
+}
 
 // --- Diff computation ---
 
