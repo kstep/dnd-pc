@@ -1968,7 +1968,15 @@
           {
             "name": "Rage",
             "cost": 1,
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Rage",
+                "expr": "STR.ADV = 1; STR.SAVE.ADV = 1",
+                "range": "Caster",
+                "duration": "Forever"
+              }
+            ]
           }
         ]
       }

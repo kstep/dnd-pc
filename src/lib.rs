@@ -70,25 +70,27 @@ pub fn App() -> impl IntoView {
 
         <Router base=BASE_URL set_is_routing=is_routing.0>
             <Navbar />
-            <Routes fallback=|| view! { <NotFound /> }>
-                <Route path=path!("/") view=CharacterList />
-                <ParentRoute path=path!("/c/:id") view=CharacterLayout>
-                    <Route path=path!("") view=CharacterSheet />
-                    <Route path=path!("/summary") view=CharacterSummary />
-                </ParentRoute>
-                <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
-                <Route path=path!("/s/:data") view=ImportCharacter />
-                <Route path=path!("/r/class") view=ClassReference />
-                <Route path=path!("/r/class/:name") view=ClassReference />
-                <Route path=path!("/r/class/:name/:subname") view=ClassReference />
-                <Route path=path!("/r/species") view=SpeciesReference />
-                <Route path=path!("/r/species/:name") view=SpeciesReference />
-                <Route path=path!("/r/background") view=BackgroundReference />
-                <Route path=path!("/r/background/:name") view=BackgroundReference />
-                <Route path=path!("/r/feature") view=FeatureReference />
-                <Route path=path!("/r/spell") view=SpellReference />
-                <Route path=path!("/r/spell/:list") view=SpellReference />
-            </Routes>
+            <main>
+                <Routes fallback=|| view! { <NotFound /> }>
+                    <Route path=path!("/") view=CharacterList />
+                    <ParentRoute path=path!("/c/:id") view=CharacterLayout>
+                        <Route path=path!("") view=CharacterSheet />
+                        <Route path=path!("/summary") view=CharacterSummary />
+                    </ParentRoute>
+                    <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
+                    <Route path=path!("/s/:data") view=ImportCharacter />
+                    <Route path=path!("/r/class") view=ClassReference />
+                    <Route path=path!("/r/class/:name") view=ClassReference />
+                    <Route path=path!("/r/class/:name/:subname") view=ClassReference />
+                    <Route path=path!("/r/species") view=SpeciesReference />
+                    <Route path=path!("/r/species/:name") view=SpeciesReference />
+                    <Route path=path!("/r/background") view=BackgroundReference />
+                    <Route path=path!("/r/background/:name") view=BackgroundReference />
+                    <Route path=path!("/r/feature") view=FeatureReference />
+                    <Route path=path!("/r/spell") view=SpellReference />
+                    <Route path=path!("/r/spell/:list") view=SpellReference />
+                </Routes>
+            </main>
         </Router>
     }
 }

@@ -286,8 +286,15 @@ body {
   font-family: var(--font-sans);
   color: var(--text-primary);
   max-width: 1400px;
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: var(--size-3);
+  border-left: 1px solid var(--panel-border);
+  border-right: 1px solid var(--panel-border);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+}
+
+main {
+  padding: 0 var(--size-3);
 }
 
 input,
@@ -395,7 +402,7 @@ input[type="checkbox"] {
 .character-list-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--size-3);
+  gap: var(--size-1) var(--size-3);
   margin-bottom: var(--size-4);
 
 }
@@ -2355,10 +2362,10 @@ select.entry-name {
   border-radius: 0 0 var(--radius-2) var(--radius-2);
   overflow: hidden;
   position: sticky;
-  top: calc(var(--size-3) + 3rem);
+  top: 3rem;
 
   @media (max-width: 600px) {
-    top: calc(var(--size-3) + 2rem);
+    top: 2rem;
   }
 }
 
@@ -2401,7 +2408,7 @@ select.entry-name {
   display: flex;
   align-items: center;
   position: sticky;
-  top: calc(var(--size-3) + 3rem);
+  top: 3rem;
   z-index: 10;
   background: var(--surface-1);
 
