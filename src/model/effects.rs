@@ -37,12 +37,8 @@ pub struct EffectDefinition {
     pub range: EffectRange,
     #[serde(default)]
     pub duration: EffectDuration,
-    #[serde(default = "default_true")]
+    #[serde(default)]
     pub stackable: bool,
-}
-
-fn default_true() -> bool {
-    true
 }
 
 impl EffectDefinition {

@@ -161,8 +161,7 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -184,8 +183,7 @@
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -276,8 +274,7 @@
         "name": "Warding Bond",
         "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -307,8 +304,7 @@
         "name": "Beacon of Hope",
         "expr": "WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -344,8 +340,7 @@
         "name": "Feign Death",
         "expr": "SPEED = 0",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ],
     "ritual": true
@@ -415,8 +410,7 @@
         "name": "Motivational Speech",
         "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -529,8 +523,7 @@
         "name": "Circle of Power",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -698,8 +691,7 @@
         "name": "Heroes' Feast",
         "expr": "WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -817,8 +809,7 @@
         "name": "Holy Aura",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },

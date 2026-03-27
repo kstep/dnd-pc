@@ -371,8 +371,7 @@
         "name": "AC",
         "expr": "AC = max(AC, 13 + DEX.MOD)",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -404,8 +403,7 @@
         "name": "AC",
         "expr": "AC += 5",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -615,8 +613,7 @@
         "name": "Speed",
         "expr": "SPEED += 10",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -636,8 +633,7 @@
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -805,8 +801,7 @@
         "name": "Speed",
         "expr": "SPEED += 20",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -886,8 +881,7 @@
         "name": "Haste",
         "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -903,8 +897,7 @@
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -1340,8 +1333,7 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -1373,8 +1365,7 @@
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -1428,8 +1419,7 @@
         "name": "AC",
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },

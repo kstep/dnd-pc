@@ -267,8 +267,7 @@
         "name": "Speed",
         "expr": "SPEED += 10",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -308,8 +307,7 @@
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -335,8 +333,7 @@
         "name": "AC",
         "expr": "AC = max(AC, 17)",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -464,8 +461,7 @@
         "name": "Stealth",
         "expr": "SKILL.STEA += 10",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -544,8 +540,7 @@
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -567,8 +562,7 @@
         "name": "Feign Death",
         "expr": "SPEED = 0",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ],
     "ritual": true
@@ -779,8 +773,7 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -947,8 +940,7 @@
         "name": "Heroes' Feast",
         "expr": "WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -972,8 +964,7 @@
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
@@ -1133,8 +1124,7 @@
         "name": "Foresight",
         "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever",
-        "stackable": false
+        "duration": "Forever"
       }
     ]
   },
