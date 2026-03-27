@@ -37,6 +37,12 @@ pub struct EffectDefinition {
     pub range: EffectRange,
     #[serde(default)]
     pub duration: EffectDuration,
+    #[serde(default = "default_true")]
+    pub stackable: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl EffectDefinition {
@@ -112,6 +118,11 @@ pub struct ActiveEffects {
 impl ActiveEffects {
     pub fn effects(&self) -> &[ActiveEffect] {
         &self.effects
+    }
+
+    /// Check if an active effect with the given name exists.
+    pub fn has_effect(&self, name: &str) -> bool {
+        self.effects.iter().any(|effect| effect.name == name)
     }
 
     /// Propagate consumable overrides (Hp, TempHp) to the character.

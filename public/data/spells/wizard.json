@@ -415,7 +415,8 @@
         "name": "Speed",
         "expr": "SPEED += 10",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -427,7 +428,8 @@
         "name": "AC",
         "expr": "AC = max(AC, 13 + DEX.MOD)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -473,7 +475,8 @@
         "name": "AC",
         "expr": "AC += 5",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -751,7 +754,8 @@
         "name": "Speed",
         "expr": "SPEED += 10",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -780,7 +784,8 @@
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -979,7 +984,8 @@
         "name": "Speed",
         "expr": "SPEED += 20",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1045,7 +1051,8 @@
         "name": "Feign Death",
         "expr": "SPEED = 0",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ],
     "ritual": true
@@ -1094,7 +1101,8 @@
         "name": "Haste",
         "expr": "SPEED *= 2; AC += 2; DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1114,7 +1122,8 @@
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1208,7 +1217,8 @@
         "name": "Slow",
         "expr": "AC -= 2; DEX.SAVE -= 2; SPEED /= 2",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1553,7 +1563,8 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1894,7 +1905,8 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -1940,7 +1952,8 @@
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -2018,7 +2031,8 @@
         "name": "AC",
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -2030,7 +2044,8 @@
         "name": "Tenser's Transformation",
         "expr": "TEMP_HP = max(TEMP_HP, 50); ATK.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -2320,7 +2335,8 @@
         "name": "Foresight",
         "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },

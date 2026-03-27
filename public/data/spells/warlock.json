@@ -438,7 +438,8 @@
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -721,7 +722,8 @@
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -759,7 +761,8 @@
         "name": "AC",
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },
@@ -859,7 +862,8 @@
         "name": "Foresight",
         "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": "Forever",
+        "stackable": false
       }
     ]
   },

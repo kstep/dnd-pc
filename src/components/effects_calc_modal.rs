@@ -81,9 +81,22 @@ pub fn all_self_effects_diceless(
         .all(|effect| effect.expr.dice_rolls(&ctx).is_empty())
 }
 
+/// Check whether any non-stackable Caster effect already exists in active
+/// effects.
+pub fn has_non_stackable_duplicate(
+    effects: &[EffectDefinition],
+    active_effects: &ActiveEffects,
+    spell_name: &str,
+) -> bool {
+    let any_non_stackable = effects
+        .iter()
+        .any(|effect| effect.range == EffectRange::Caster && !effect.stackable);
+    any_non_stackable && active_effects.has_effect(spell_name)
+}
+
 /// Apply all Caster effects immediately (no dice, no modal).
 /// Instant effects are applied directly to the character;
-/// persistent effects create an ActiveEffect.
+/// persistent effects create an ActiveEffect (unless blocked by stackable).
 pub fn apply_self_effects_now(
     effects: &[EffectDefinition],
     spell_name: &str,
@@ -114,6 +127,10 @@ pub fn apply_self_effects_now(
     }
 
     if let Some(expr) = build_expr(|duration| duration != EffectDuration::Instant) {
+        // Skip if non-stackable and already active
+        if has_non_stackable_duplicate(effects, &active_effects.read_untracked(), spell_name) {
+            return;
+        }
         let scope = if feature_name.is_empty() {
             None
         } else {
@@ -181,11 +198,16 @@ pub fn EffectsCalcModal(
                 extra_vars: &info.extra_vars,
             };
 
-            // Check if any effect is self-targeting
+            // Check if any effect is self-targeting and can be applied
             let has_self_effects = info
                 .effects
                 .iter()
-                .any(|effect| effect.range == EffectRange::Caster);
+                .any(|effect| effect.range == EffectRange::Caster)
+                && !has_non_stackable_duplicate(
+                    &info.effects,
+                    &effects.read_untracked(),
+                    &info.spell_name,
+                );
 
             // Collect self-targeting dice groups for the "Apply Effect" button
             type DiceGroups = Vec<StoredValue<BTreeMap<u32, Vec<NodeRef<html::Input>>>>>;
