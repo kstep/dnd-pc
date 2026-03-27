@@ -1768,6 +1768,10 @@ select.entry-name {
     color: var(--accent);
   }
 
+  .icon-wrapper {
+    padding: 0;
+  }
+
   .slot-remaining {
     font-size: var(--font-size-00);
     opacity: 0.7;
