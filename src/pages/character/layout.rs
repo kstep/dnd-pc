@@ -9,7 +9,7 @@ use crate::{
     BASE_URL,
     components::{
         args_modal::{ArgsModal, ArgsModalCtx},
-        navbar::ActiveCharacterId,
+        navbar::{ActiveCharacterId, ViewClass},
     },
     effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
@@ -54,9 +54,9 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     active_id.set(Some(store.read_untracked().id));
     on_cleanup(move || active_id.set(None));
 
-    let set_view_class = expect_context::<WriteSignal<String>>();
-    set_view_class.set("view-character".into());
-    on_cleanup(move || set_view_class.set(String::new()));
+    let view_class = expect_context::<ViewClass>().0;
+    view_class.set("view-character".into());
+    on_cleanup(move || view_class.set(String::new()));
 
     // Provide args-modal context for features that need user input during apply.
     let args_modal_ctx = ArgsModalCtx::new();

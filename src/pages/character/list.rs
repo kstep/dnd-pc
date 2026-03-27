@@ -4,13 +4,15 @@ use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 
 use crate::{
-    components::character_card::CharacterCard, model::Character,
-    pages::import_character::import_or_conflict, storage,
+    components::{character_card::CharacterCard, navbar::ViewClass},
+    model::Character,
+    pages::import_character::import_or_conflict,
+    storage,
 };
 
 #[component]
 pub fn CharacterList() -> impl IntoView {
-    expect_context::<WriteSignal<String>>().set("view-main".into());
+    expect_context::<ViewClass>().0.set("view-main".into());
     let i18n = expect_context::<leptos_fluent::I18n>();
     let (characters, set_characters) = signal(storage::load_index());
     let import_state = RwSignal::new(None::<Character>);

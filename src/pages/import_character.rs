@@ -11,14 +11,16 @@ use strum::IntoEnumIterator;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL, firebase,
+    BASE_URL,
+    components::navbar::ViewClass,
+    firebase,
     model::{Ability, Character, Item, Proficiency, Skill, Translatable},
     share, storage,
 };
 
 #[component]
 pub fn ImportLayout() -> impl IntoView {
-    expect_context::<WriteSignal<String>>().set("view-import".into());
+    expect_context::<ViewClass>().0.set("view-import".into());
     view! { <Outlet /> }
 }
 

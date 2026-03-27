@@ -35,7 +35,7 @@ static_loader! {
 
 use components::{
     logo::IsRouting,
-    navbar::{ActiveCharacterId, Navbar},
+    navbar::{ActiveCharacterId, Navbar, ViewClass},
 };
 use hooks::use_theme;
 use pages::{
@@ -61,14 +61,14 @@ pub fn App() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
     provide_context(RulesRegistry::new(i18n));
     provide_context(ActiveCharacterId::default());
-    let (view_class, set_view_class) = signal("".to_string());
-    provide_context(set_view_class);
+    let view_class = ViewClass::default();
+    provide_context(view_class);
     let is_routing = IsRouting::default();
     provide_context(is_routing);
     storage::init_sync();
 
     view! {
-        <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() attr:class=move || view_class.get() />
+        <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() attr:class=move || view_class.0.get() />
 
         <Router base=BASE_URL set_is_routing=is_routing.0>
             <Navbar />

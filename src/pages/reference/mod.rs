@@ -13,13 +13,13 @@ pub use sidebar::ReferenceSidebar;
 
 #[component]
 pub fn ReferenceLayout() -> impl IntoView {
-    expect_context::<WriteSignal<String>>().set("view-reference".into());
+    expect_context::<ViewClass>().0.set("view-reference".into());
     view! { <Outlet /> }
 }
 
 use crate::{
     BASE_URL,
-    components::expr_view::ExprView,
+    components::{expr_view::ExprView, navbar::ViewClass},
     expr::{BLOCK_ERROR, BLOCK_NOOP, Expr, Interpreter, Op},
     model::{Attribute, Translatable},
     rules::{Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
