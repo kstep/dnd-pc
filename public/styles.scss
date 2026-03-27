@@ -39,6 +39,7 @@ html {
     --accent: #FBBF24;
     --danger: #FCA5A5;
     --success: #6EE7B7;
+    --logo-gear-color: #F3F1EC;
   }
 }
 
@@ -52,6 +53,7 @@ html {
   --accent: #FBBF24;
   --danger: #FCA5A5;
   --success: #6EE7B7;
+  --logo-gear-color: #F3F1EC;
 }
 
 [data-theme="light"] {
@@ -64,6 +66,7 @@ html {
   --accent: #D97706;
   --danger: #991B1B;
   --success: #065F46;
+  --logo-gear-color: #1F2937;
 }
 
 /* --------------------- Navbar -------------------------------- */
@@ -2118,15 +2121,15 @@ select.entry-name {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--size-2) var(--size-3);
+  padding: var(--size-1) var(--size-3);
   border-bottom: 1px solid var(--panel-border);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .modal-close {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 32px;
+  min-height: 32px;
   padding: var(--size-1);
   border: none;
   border-radius: var(--radius-1);
@@ -2135,6 +2138,7 @@ select.entry-name {
   font-size: var(--font-size-3);
   cursor: pointer;
   line-height: 1;
+  margin-right: calc(var(--size-3) / -2);
 
   &:hover,
   &:focus-visible {

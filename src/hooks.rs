@@ -29,7 +29,7 @@ where
 /// page.
 pub fn use_hash_href() -> impl Fn(&str) -> String {
     let pathname = use_location().pathname;
-    move |hash: &str| pathname.with(|path| format!("{path}#{hash}"))
+    move |hash: &str| pathname.with_untracked(|path| format!("{path}#{hash}"))
 }
 
 /// Returns a reactive signal that tracks the current theme name.
