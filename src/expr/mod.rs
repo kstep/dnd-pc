@@ -93,6 +93,22 @@ impl<Var, Val> Expr<Var, Val> {
     }
 }
 
+impl<Var, Val> Expr<Var, Val> {
+    /// Replace ops across all blocks by applying a mapping function.
+    /// Creates a new Expr with the transformed blocks.
+    pub fn partial_apply(&self, mut f: impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) -> Self {
+        let blocks: Vec<_> = self
+            .0
+            .iter()
+            .map(|block| {
+                let ops: Vec<_> = block.iter().map(&mut f).collect();
+                Block::from(ops)
+            })
+            .collect();
+        Self(blocks.into())
+    }
+}
+
 impl<Var, Val> Deref for Expr<Var, Val> {
     type Target = Block<Var, Val>;
 

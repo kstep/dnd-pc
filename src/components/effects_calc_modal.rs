@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{expr_view::ExprDetails, icon::Icon, modal::Modal},
     effective::EffectiveCharacter,
-    expr::{self, DicePool, Expr},
+    expr::{self, DicePool, Expr, Op},
     model::{
         ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration,
         EffectRange, FeatureData, FeatureValue,
@@ -132,23 +132,16 @@ fn build_self_expr(
     }
 }
 
-/// Substitute contextual variables (SLOT_LEVEL, CLASS_LEVEL, etc.) with
-/// concrete values so the expression is self-contained when stored as an
-/// ActiveEffect (which has no access to extra_vars on recompute).
-fn substitute_vars(expr_str: &str, extra_vars: &BTreeMap<Attribute, i32>) -> String {
-    // Sort by variable name length descending so POINTS_MAX is replaced before
-    // POINTS (avoids partial matches).
-    let mut vars: Vec<_> = extra_vars
-        .iter()
-        .map(|(attr, &value)| (attr.to_string(), value))
-        .collect();
-    vars.sort_by(|a, b| b.0.len().cmp(&a.0.len()));
-
-    let mut result = expr_str.to_string();
-    for (var_name, value) in &vars {
-        result = result.replace(var_name.as_str(), &value.to_string());
-    }
-    result
+/// Replace contextual PushVar ops with PushConst so the expression is
+/// self-contained when stored as an ActiveEffect.
+fn bind_extra_vars(
+    expr: &Expr<Attribute>,
+    extra_vars: &BTreeMap<Attribute, i32>,
+) -> Expr<Attribute> {
+    expr.partial_apply(|op| match op {
+        Op::PushVar(var) if extra_vars.contains_key(var) => Op::PushConst(extra_vars[var]),
+        other => *other,
+    })
 }
 
 /// Apply all Caster effects immediately (no dice, no modal).
@@ -179,12 +172,7 @@ pub fn apply_self_effects_now(
         if has_non_stackable_duplicate(effects, &active_effects.read_untracked(), spell_name) {
             return;
         }
-        // Substitute contextual vars so the stored expression is self-contained
-        let expr_str = substitute_vars(&expr.to_string(), extra_vars);
-        let Some(expr) = expr_str.parse().ok() else {
-            log::error!("Failed to parse substituted expression: {expr_str}");
-            return;
-        };
+        let expr = bind_extra_vars(&expr, extra_vars);
         let scope = if feature_name.is_empty() {
             None
         } else {
@@ -498,15 +486,8 @@ pub fn EffectsCalcModal(
                             }
                         });
 
-                        // Substitute contextual vars so expression is self-contained
-                        let expr = extra_vars_copy.with_value(|extra_vars| {
-                            let substituted = substitute_vars(&expr.to_string(), extra_vars);
-                            substituted.parse::<Expr<Attribute>>().ok()
-                        });
-                        let Some(expr) = expr else {
-                            show.set(false);
-                            return;
-                        };
+                        let expr = extra_vars_copy
+                            .with_value(|extra_vars| bind_extra_vars(&expr, extra_vars));
 
                         let effect = ActiveEffect {
                             name,

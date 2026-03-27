@@ -174,6 +174,13 @@ impl<Var, Val> Block<Var, Val> {
             _ => false,
         })
     }
+
+    /// Replace ops in-place by applying a mapping function to each op.
+    pub fn replace(&mut self, mut f: impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) {
+        for op in self.0.iter_mut() {
+            *op = f(op);
+        }
+    }
 }
 
 impl<Var: PartialEq, Val> Block<Var, Val> {
