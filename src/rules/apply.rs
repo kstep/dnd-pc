@@ -21,6 +21,7 @@ pub struct PendingArgs {
     pub feature_label: String,
     pub feature_description: String,
     pub exprs: Vec<Expr<Attribute>>,
+    pub replaceable: bool,
 }
 
 impl RulesRegistry {
@@ -36,6 +37,7 @@ impl RulesRegistry {
 
     /// Reset character to base state and re-apply all features level by level,
     /// reusing previously stored ARG values.
+    // TODO: replay does not handle feature replacements
     pub fn replay(&self, character: &mut Character) {
         // Extract stored args before reset
         let mut stored_args: BTreeMap<String, VecDeque<Vec<Vec<i32>>>> = BTreeMap::new();
@@ -356,6 +358,150 @@ impl RulesRegistry {
         }
     }
 
+    /// Apply class level-up with feature replacements. Replacement features
+    /// are applied in place of the originals — the original is skipped and
+    /// the replacement feat is applied with the same source and level.
+    /// `replacements` maps original feature name → replacement feature name.
+    pub fn apply_class_level_with_replacements(
+        &self,
+        character: &mut Character,
+        class_idx: usize,
+        level: u32,
+        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
+        replacements: &BTreeMap<String, String>,
+    ) {
+        if replacements.is_empty() {
+            self.apply_class_level(character, class_idx, level, args_map);
+            return;
+        }
+
+        let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
+            return;
+        };
+
+        if class_level.applied_levels.contains(&level) {
+            return;
+        }
+
+        let class_cache = self.class_cache.read_untracked();
+        let Some(def) = class_cache.get(class_level.class.as_str()) else {
+            return;
+        };
+
+        class_level.applied_levels.insert(level);
+        let subclass = class_level.subclass.clone();
+        let source = FeatureSource::Class(def.name.clone());
+        class_level.hit_die_sides = def.hit_die;
+
+        let rules = def.levels.get(level as usize - 1);
+        let subclass_rules = subclass
+            .as_deref()
+            .and_then(|sc| def.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
+        let features_guard = self.features_index.read_untracked();
+        let Some(features_index) = features_guard
+            .as_ref()
+            .and_then(|r| r.as_ref().ok())
+            .map(|idx| &idx.0)
+        else {
+            log::warn!("Features index not loaded yet, skipping level-up");
+            character.identity.classes[class_idx]
+                .applied_levels
+                .remove(&level);
+            return;
+        };
+
+        // Re-apply already applied features at new level (OnLevelUp)
+        let applied: Vec<String> = character
+            .features
+            .iter()
+            .filter(|f| f.applied)
+            .map(|f| f.name.clone())
+            .collect();
+        for feat_name in &applied {
+            if let Some(feat) = features_index.get(feat_name.as_str()) {
+                feat.apply_with_args(level, character, Some(&source), None);
+            }
+        }
+
+        // New features at this level (OnFeatureAdd)
+        let level_features = rules
+            .into_iter()
+            .flat_map(|r| r.features.iter())
+            .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
+
+        for feat_name in level_features {
+            // If this feature was replaced, apply the replacement instead
+            if let Some(replacement_name) = replacements.get(feat_name.as_str()) {
+                if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
+                    let args = args_map
+                        .and_then(|m| m.get(replacement_name.as_str()))
+                        .cloned();
+                    replacement_feat.apply_with_args(level, character, Some(&source), args);
+                } else {
+                    log::warn!("Replacement feature '{replacement_name}' not found in index");
+                }
+                continue;
+            }
+
+            let Some(feat) = features_index.get(feat_name.as_str()) else {
+                log::warn!("Feature '{feat_name}' not found in index");
+                continue;
+            };
+            let already_has = character
+                .features
+                .iter()
+                .any(|f| f.name == *feat_name && f.applied);
+            if already_has && !feat.stackable {
+                continue;
+            }
+            if already_has && feat.stackable && !character.is_feature_pending(feat_name) {
+                character.features.push(Feature {
+                    name: feat_name.to_string(),
+                    label: feat.label.clone(),
+                    description: feat.description.clone(),
+                    applied: false,
+                });
+            }
+            let args = args_map.and_then(|m| m.get(feat_name.as_str())).cloned();
+            feat.apply_with_args(level, character, Some(&source), args);
+        }
+
+        // Re-apply species and background features at new total level
+        let total_level = character.level();
+
+        let species_cache = self.species_cache.read_untracked();
+        if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
+            let source = FeatureSource::Species(character.identity.species.clone());
+            for feat_name in &species_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        }
+
+        let bg_cache = self.background_cache.read_untracked();
+        if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
+            let source = FeatureSource::Background(character.identity.background.clone());
+            for feat_name in &bg_def.features {
+                if let Some(feat) = features_index.get(feat_name.as_str()) {
+                    feat.apply(total_level, character, Some(&source));
+                }
+            }
+        }
+
+        let old_hp_max = character.hp_max();
+        self.compute(character);
+        let hp_delta = character.hp_max().saturating_sub(old_hp_max);
+        character.combat.hp_current += hp_delta;
+
+        let xp_threshold = character.xp_threshold();
+        if character.identity.experience_points < xp_threshold {
+            character.identity.experience_points = xp_threshold;
+        }
+    }
+
     /// Scan features that would be applied at a given class level and return
     /// those whose assignments require user-supplied ARG values.
     pub fn features_needing_args(
@@ -406,6 +552,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }
@@ -429,6 +576,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }
@@ -451,6 +599,7 @@ impl RulesRegistry {
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
                 exprs,
+                replaceable: false,
             })
         })
     }
@@ -500,8 +649,63 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
+            }
+        });
+        result
+    }
+
+    /// Scan features at a given class level and return those marked as
+    /// `replaceable` (can be swapped for a selectable feat).
+    pub fn features_replaceable(
+        &self,
+        character: &Character,
+        class_idx: usize,
+        level: u32,
+    ) -> Vec<PendingArgs> {
+        let Some(class_level) = character.identity.classes.get(class_idx) else {
+            return Vec::new();
+        };
+
+        let class_cache = self.class_cache.read_untracked();
+        let Some(def) = class_cache.get(class_level.class.as_str()) else {
+            return Vec::new();
+        };
+
+        let rules = def.levels.get(level as usize - 1);
+        let subclass_rules = class_level
+            .subclass
+            .as_deref()
+            .and_then(|sc| def.subclasses.get(sc))
+            .and_then(|sc| sc.levels.get(&level));
+
+        let mut result = Vec::new();
+        self.with_features_index_untracked(|features_index| {
+            let level_features = rules
+                .into_iter()
+                .flat_map(|r| r.features.iter())
+                .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
+
+            for feat_name in level_features {
+                let Some(feat) = features_index.get(feat_name.as_str()) else {
+                    continue;
+                };
+                if !feat.replaceable {
+                    continue;
+                }
+                let already_has = character.features.iter().any(|f| f.name == *feat_name);
+                if already_has && !feat.stackable {
+                    continue;
+                }
+                result.push(PendingArgs {
+                    feature_name: feat_name.to_string(),
+                    feature_label: feat.label().to_string(),
+                    feature_description: feat.description.clone(),
+                    exprs: Vec::new(),
+                    replaceable: true,
+                });
             }
         });
         result
