@@ -92,6 +92,10 @@ fn ArgsFeatureInput(
         StoredValue::new(Vec::new());
     let name_for_signals = feature_name.clone();
 
+    // For replaceable features, collect expr validity locally so we can
+    // bypass it when the user picks a replacement.
+    let expr_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
+
     let expr_views = pa
         .exprs
         .into_iter()
@@ -100,7 +104,11 @@ fn ArgsFeatureInput(
                 signal_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.rw_signals));
                 });
-                all_valid.update(|v| v.push(parts.is_valid));
+                if replaceable {
+                    expr_valids.update(|v| v.push(parts.is_valid));
+                } else {
+                    all_valid.update(|v| v.push(parts.is_valid));
+                }
             };
             view! {
                 <ExprDetails expr=expr.clone() />
@@ -116,9 +124,19 @@ fn ArgsFeatureInput(
         });
     });
 
-    // If replaceable-only (no ARG exprs), mark as always valid so submit is enabled
-    if !has_exprs && replaceable {
-        all_valid.update(|v| v.push(Memo::new(move |_| true)));
+    // For replaceable features, push a single combined validity memo:
+    // valid if (replacing with a chosen feat) OR (not replacing AND all
+    // ARG expr memos pass). For replaceable-only features (no exprs),
+    // expr_valids is empty so the fallback is always valid.
+    if replaceable {
+        all_valid.update(|v| {
+            v.push(Memo::new(move |_| {
+                if replacement_choice.get().is_some() {
+                    return true;
+                }
+                expr_valids.with(|fv| fv.is_empty() || fv.iter().all(|m| m.get()))
+            }));
+        });
     }
 
     let is_replacing = Memo::new(move |_| replacement_choice.get().is_some());
