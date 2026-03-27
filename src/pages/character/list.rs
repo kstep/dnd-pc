@@ -10,6 +10,7 @@ use crate::{
 
 #[component]
 pub fn CharacterList() -> impl IntoView {
+    expect_context::<WriteSignal<String>>().set("view-main".into());
     let i18n = expect_context::<leptos_fluent::I18n>();
     let (characters, set_characters) = signal(storage::load_index());
     let import_state = RwSignal::new(None::<Character>);
