@@ -2,14 +2,27 @@ use std::collections::BTreeMap;
 
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
+use reactive_stores::Store;
 
 use crate::{
-    components::{expr_args_input::ExprArgsInput, expr_view::ExprDetails, modal::Modal},
-    rules::PendingArgs,
+    components::{
+        datalist_input::DatalistInput, expr_args_input::ExprArgsInput, expr_view::ExprDetails,
+        modal::Modal,
+    },
+    model::Character,
+    rules::{PendingArgs, RulesRegistry},
 };
 
-type ArgsCallback = Box<dyn Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync>;
+type ArgsCallback = Box<dyn Fn(ArgsModalResult) + Send + Sync>;
 type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
+
+/// Result returned by the ArgsModal on submit.
+pub struct ArgsModalResult {
+    /// Feature name → arg values for each assignment expression.
+    pub args: BTreeMap<String, Vec<Vec<i32>>>,
+    /// Original feature name → replacement feature name.
+    pub replacements: BTreeMap<String, String>,
+}
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
@@ -30,12 +43,11 @@ impl ArgsModalCtx {
     }
 
     /// Show the modal for a list of features needing args. When the user
-    /// submits, `on_complete` is called with a map of feature name → arg
-    /// values (one inner Vec per assignment expression).
+    /// submits, `on_complete` is called with args and replacement maps.
     pub fn open(
         &self,
         pending: Vec<PendingArgs>,
-        on_complete: impl Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync + 'static,
+        on_complete: impl Fn(ArgsModalResult) + Send + Sync + 'static,
     ) {
         self.pending.set(pending);
         self.callback
@@ -43,10 +55,10 @@ impl ArgsModalCtx {
         self.show.set(true);
     }
 
-    fn complete(&self, args_map: BTreeMap<String, Vec<Vec<i32>>>) {
+    fn complete(&self, result: ArgsModalResult) {
         self.callback.with_value(|sig| {
             if let Some(cb) = sig.get_untracked() {
-                cb.with_value(|f| f(args_map));
+                cb.with_value(|f| f(result));
             }
             sig.set(None);
         });
@@ -59,15 +71,29 @@ fn ArgsFeatureInput(
     pa: PendingArgs,
     all_signals: RwSignal<ArgsSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
+    all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
 ) -> impl IntoView {
     let feature_name = pa.feature_name.clone();
     let description = pa.feature_description.clone();
     let has_description = !description.is_empty();
+    let replaceable = pa.replaceable;
+
+    // Signal tracking whether user chose to replace this feature
+    let replacement_choice: RwSignal<Option<String>> = RwSignal::new(None);
+    if replaceable {
+        all_replacements.update(|map| {
+            map.insert(feature_name.clone(), replacement_choice);
+        });
+    }
 
     // Collect signal groups for all exprs of this feature
     let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
         StoredValue::new(Vec::new());
     let name_for_signals = feature_name.clone();
+
+    // For replaceable features, collect expr validity locally so we can
+    // bypass it when the user picks a replacement.
+    let expr_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
 
     let expr_views = pa
         .exprs
@@ -77,7 +103,11 @@ fn ArgsFeatureInput(
                 signal_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.rw_signals));
                 });
-                all_valid.update(|v| v.push(parts.is_valid));
+                if replaceable {
+                    expr_valids.update(|v| v.push(parts.is_valid));
+                } else {
+                    all_valid.update(|v| v.push(parts.is_valid));
+                }
             };
             view! {
                 <ExprDetails expr=expr.clone() />
@@ -93,13 +123,161 @@ fn ArgsFeatureInput(
         });
     });
 
+    // For replaceable features, push a single combined validity memo:
+    // valid if (replacing with a chosen feat) OR (not replacing AND all
+    // ARG expr memos pass). For replaceable-only features (no exprs),
+    // expr_valids is empty so the fallback is always valid.
+    if replaceable {
+        all_valid.update(|v| {
+            v.push(Memo::new(move |_| {
+                if replacement_choice.get().is_some() {
+                    return true;
+                }
+                expr_valids.with(|fv| fv.is_empty() || fv.iter().all(|m| m.get()))
+            }));
+        });
+    }
+
+    let is_replacing = Memo::new(move |_| replacement_choice.get().is_some());
+
     view! {
         <div class="args-modal-feature">
             <h4>{pa.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
-            {expr_views}
+            <div style:display=move || if is_replacing.get() { "none" } else { "" }>
+                {expr_views}
+            </div>
+            {replaceable.then(|| {
+                view! { <ReplacementPicker feature_name=feature_name.clone() replacement_choice all_signals all_valid /> }
+            })}
+        </div>
+    }
+}
+
+#[component]
+fn ReplacementPicker(
+    #[allow(unused)] feature_name: String,
+    replacement_choice: RwSignal<Option<String>>,
+    all_signals: RwSignal<ArgsSignals>,
+    all_valid: RwSignal<Vec<Memo<bool>>>,
+) -> impl IntoView {
+    let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
+    let replacing = RwSignal::new(false);
+
+    let options = Signal::derive(move || {
+        let character = store.read();
+        registry.with_features_index(|features_index| {
+            features_index
+                .values()
+                .filter(|feat| feat.selectable && feat.meets_prerequisites(&character))
+                .map(|feat| {
+                    (
+                        feat.name.clone(),
+                        feat.label().to_string(),
+                        feat.description.clone(),
+                    )
+                })
+                .collect::<Vec<_>>()
+        })
+    });
+
+    let input_value = RwSignal::new(String::new());
+    let placeholder = Signal::derive(move || move_tr!("replace-with-feat").get());
+
+    // Expressions for the currently selected replacement feat (if it needs ARGs)
+    let replacement_exprs: RwSignal<Vec<crate::expr::Expr<crate::model::Attribute>>> =
+        RwSignal::new(Vec::new());
+
+    let on_input = move |_text: String, resolved: Option<String>| {
+        replacement_choice.set(resolved.clone());
+        if let Some(name) = &resolved {
+            input_value.set(name.clone());
+            // Check if the replacement feat needs ARG input
+            let exprs = store.with_untracked(|character| {
+                registry
+                    .feature_needs_args(character, name)
+                    .map(|pending| pending.exprs)
+                    .unwrap_or_default()
+            });
+            replacement_exprs.set(exprs);
+        } else {
+            replacement_exprs.set(Vec::new());
+        }
+    };
+
+    view! {
+        <div class="replacement-picker">
+            <label class="replacement-toggle">
+                <input
+                    type="checkbox"
+                    prop:checked=replacing
+                    on:change=move |ev| {
+                        let checked = event_target_checked(&ev);
+                        replacing.set(checked);
+                        if !checked {
+                            replacement_choice.set(None);
+                            input_value.set(String::new());
+                            replacement_exprs.set(Vec::new());
+                        }
+                    }
+                />
+                {move_tr!("replace-with-feat")}
+            </label>
+            <Show when=move || replacing.get()>
+                <DatalistInput
+                    value=input_value
+                    placeholder=placeholder
+                    options=options
+                    on_input=on_input
+                />
+                {move || {
+                    let exprs = replacement_exprs.get();
+                    let feat_name = replacement_choice.get();
+                    if exprs.is_empty() || feat_name.is_none() {
+                        return None;
+                    }
+                    let feat_name = feat_name.unwrap();
+
+                    let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
+                        StoredValue::new(Vec::new());
+                    let name_for_signals = feat_name.clone();
+
+                    let expr_views: Vec<_> = exprs
+                        .into_iter()
+                        .map(|expr| {
+                            let on_ready =
+                                move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
+                                    signal_groups.update_value(|groups| {
+                                        groups.push(StoredValue::new(parts.rw_signals));
+                                    });
+                                    all_valid.update(|v| v.push(parts.is_valid));
+                                };
+                            view! {
+                                <ExprDetails expr=expr.clone() />
+                                <ExprArgsInput expr on_ready />
+                            }
+                        })
+                        .collect();
+
+                    all_signals.update(|v| {
+                        signal_groups.with_value(|groups| {
+                            v.push((name_for_signals.clone(), groups.clone()));
+                        });
+                    });
+
+                    Some(
+                        view! {
+                            <div class="replacement-args">
+                                {expr_views}
+                            </div>
+                        }
+                        .into_any(),
+                    )
+                }}
+            </Show>
         </div>
     }
 }
@@ -121,11 +299,13 @@ pub fn ArgsModal() -> impl IntoView {
                 let all_signals: RwSignal<ArgsSignals> =
                     RwSignal::new(Vec::new());
                 let all_valid: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
+                let all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>> =
+                    RwSignal::new(BTreeMap::new());
 
                 let feature_views = pending
                     .into_iter()
                     .map(|pa| {
-                        view! { <ArgsFeatureInput pa all_signals all_valid /> }
+                        view! { <ArgsFeatureInput pa all_signals all_valid all_replacements /> }
                     })
                     .collect_view();
 
@@ -135,9 +315,25 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let on_submit = move |ev: web_sys::SubmitEvent| {
                     ev.prevent_default();
-                    let mut map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
+
+                    // Collect replacement decisions
+                    let mut replacements: BTreeMap<String, String> = BTreeMap::new();
+                    all_replacements.with_untracked(|entries| {
+                        for (original_name, signal) in entries {
+                            if let Some(replacement_name) = signal.get_untracked() {
+                                replacements
+                                    .insert(original_name.clone(), replacement_name);
+                            }
+                        }
+                    });
+
+                    // Collect args (skip features that were replaced)
+                    let mut args: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
                     all_signals.with_untracked(|entries| {
                         for (name, groups) in entries {
+                            if replacements.contains_key(name) {
+                                continue;
+                            }
                             let feature_args: Vec<Vec<i32>> = groups
                                 .iter()
                                 .map(|sigs| {
@@ -146,10 +342,11 @@ pub fn ArgsModal() -> impl IntoView {
                                     })
                                 })
                                 .collect();
-                            map.insert(name.clone(), feature_args);
+                            args.insert(name.clone(), feature_args);
                         }
                     });
-                    ctx.complete(map);
+
+                    ctx.complete(ArgsModalResult { args, replacements });
                 };
 
                 Some(

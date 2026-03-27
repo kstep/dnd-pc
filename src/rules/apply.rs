@@ -21,6 +21,7 @@ pub struct PendingArgs {
     pub feature_label: String,
     pub feature_description: String,
     pub exprs: Vec<Expr<Attribute>>,
+    pub replaceable: bool,
 }
 
 impl RulesRegistry {
@@ -36,6 +37,7 @@ impl RulesRegistry {
 
     /// Reset character to base state and re-apply all features level by level,
     /// reusing previously stored ARG values.
+    // TODO: replay does not handle feature replacements
     pub fn replay(&self, character: &mut Character) {
         // Extract stored args before reset
         let mut stored_args: BTreeMap<String, VecDeque<Vec<Vec<i32>>>> = BTreeMap::new();
@@ -64,7 +66,7 @@ impl RulesRegistry {
                 } else {
                     Some(&args_map)
                 };
-                self.apply_class_level(character, class_idx, level, args_ref);
+                self.apply_class_level(character, class_idx, level, args_ref, None);
             }
         }
     }
@@ -233,12 +235,16 @@ impl RulesRegistry {
     /// Apply class level-up logic. Handles saving throws, proficiencies,
     /// spell slots, class/species/background features, and HP. Optional
     /// `args_map` passes user-supplied ARG values to features that need them.
+    /// `replacements` maps original feature name → replacement feature name;
+    /// replaced features are skipped and the replacement feat is applied
+    /// with the same source and level.
     pub fn apply_class_level(
         &self,
         character: &mut Character,
         class_idx: usize,
         level: u32,
         args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
+        replacements: Option<&BTreeMap<String, String>>,
     ) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -297,6 +303,19 @@ impl RulesRegistry {
             .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
 
         for feat_name in level_features {
+            // If this feature was replaced, apply the replacement instead
+            if let Some(replacement_name) = replacements.and_then(|r| r.get(feat_name.as_str())) {
+                if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
+                    let args = args_map
+                        .and_then(|m| m.get(replacement_name.as_str()))
+                        .cloned();
+                    replacement_feat.apply_with_args(level, character, Some(&source), args);
+                } else {
+                    log::warn!("Replacement feature '{replacement_name}' not found in index");
+                }
+                continue;
+            }
+
             let Some(feat) = features_index.get(feat_name.as_str()) else {
                 log::warn!("Feature '{feat_name}' not found in index");
                 continue;
@@ -356,9 +375,10 @@ impl RulesRegistry {
         }
     }
 
-    /// Scan features that would be applied at a given class level and return
-    /// those whose assignments require user-supplied ARG values.
-    pub fn features_needing_args(
+    /// Scan features at a given class level and return those that need
+    /// user interaction before applying: features with ARG expressions
+    /// and/or features marked `replaceable`.
+    pub fn features_pending_input(
         &self,
         character: &Character,
         class_idx: usize,
@@ -400,12 +420,13 @@ impl RulesRegistry {
                     .args_exprs(WhenCondition::OnFeatureAdd)
                     .cloned()
                     .collect();
-                if !exprs.is_empty() {
+                if !exprs.is_empty() || feat.replaceable {
                     result.push(PendingArgs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: feat.replaceable,
                     });
                 }
             }
@@ -429,6 +450,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }
@@ -451,6 +473,7 @@ impl RulesRegistry {
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
                 exprs,
+                replaceable: false,
             })
         })
     }
@@ -500,6 +523,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }

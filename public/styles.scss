@@ -2211,6 +2211,17 @@ select.entry-name {
   white-space: pre-line;
 }
 
+.replacement-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+  cursor: pointer;
+}
+
+.replacement-picker {
+  margin-top: var(--size-2);
+}
+
 .expr-form {
   display: flex;
   flex-wrap: wrap;

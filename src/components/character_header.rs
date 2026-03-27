@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, time::Duration};
+use std::{collections::BTreeMap, ops::Not, time::Duration};
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::{move_tr, tr};
@@ -90,13 +90,16 @@ fn import_character(store: Store<Character>) {
 
 fn apply_with_args_modal(
     pending: Vec<crate::rules::PendingArgs>,
-    apply: impl Fn(Option<&BTreeMap<String, Vec<Vec<i32>>>>) + Copy + Send + Sync + 'static,
+    apply: impl Fn(crate::components::args_modal::ArgsModalResult) + Copy + Send + Sync + 'static,
 ) {
     if pending.is_empty() {
-        apply(None);
+        apply(crate::components::args_modal::ArgsModalResult {
+            args: BTreeMap::new(),
+            replacements: BTreeMap::new(),
+        });
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(pending, move |args_map| apply(Some(&args_map)));
+        ctx.open(pending, apply);
     }
 }
 
@@ -106,10 +109,14 @@ pub fn apply_level(
     class_index: usize,
     level: u32,
 ) {
-    let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
-    apply_with_args_modal(pending, move |args_map| {
-        store.update(|c| {
-            registry.apply_class_level(c, class_index, level, args_map);
+    let pending = store
+        .with_untracked(|character| registry.features_pending_input(character, class_index, level));
+
+    apply_with_args_modal(pending, move |result| {
+        store.update(|character| {
+            let args_map = result.args.is_empty().not().then_some(&result.args);
+            let replacements = result.replacements.is_empty().not().then_some(&result.replacements);
+            registry.apply_class_level(character, class_index, level, args_map, replacements);
         });
     });
 }
@@ -282,7 +289,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                     },
                                 )
                             }).unwrap_or_default();
-                            apply_with_args_modal(pending, move |args_map| {
+                            apply_with_args_modal(pending, move |result| {
+                                let args_map = result.args.is_empty().not().then_some(&result.args);
                                 store.update(|character| registry.apply_species(character, args_map));
                             });
                         }
@@ -319,7 +327,8 @@ pub fn CharacterHeader() -> impl IntoView {
                                     },
                                 )
                             }).unwrap_or_default();
-                            apply_with_args_modal(pending, move |args_map| {
+                            apply_with_args_modal(pending, move |result| {
+                                let args_map = result.args.is_empty().not().then_some(&result.args);
                                 store.update(|character| registry.apply_background(character, args_map));
                             });
                         }

@@ -180,6 +180,8 @@ pub struct FeatureDefinition {
     pub stackable: bool,
     #[serde(default)]
     pub selectable: bool,
+    #[serde(default)]
+    pub replaceable: bool,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub fields: BTreeMap<Box<str>, FieldDefinition>,
