@@ -223,8 +223,12 @@ html {
     display: none;
   }
 
-  .navbar-ref:has(~ .navbar-ref-inline) .navbar-ref-label {
+  .navbar-ref-label {
     display: none;
+  }
+
+  .navbar-ref-main .navbar-ref-label {
+    display: inline;
   }
 
   .navbar-ref .navbar-ref-current {

@@ -57,6 +57,11 @@ pub fn Navbar() -> impl IntoView {
         }
     };
     let on_ref_page = move || ref_key().is_some();
+    let on_main_page = move || {
+        let path = location.pathname.read();
+        let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
+        rest == "/" || rest.is_empty()
+    };
     let current_ref_page = move || ref_key().map(|key| i18n.tr(key)).unwrap_or_default();
 
     view! {
@@ -76,7 +81,7 @@ pub fn Navbar() -> impl IntoView {
                         </A>
                     </div>
                 })}
-                <div class="navbar-ref">
+                <div class="navbar-ref" class:navbar-ref-main=on_main_page>
                     <button
                         class="navbar-link navbar-ref-toggle"
                         on:click=move |_| ref_open.update(|v| *v = !*v)
