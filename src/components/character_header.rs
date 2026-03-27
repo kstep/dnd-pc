@@ -109,22 +109,8 @@ pub fn apply_level(
     class_index: usize,
     level: u32,
 ) {
-    let mut pending = store
-        .with_untracked(|character| registry.features_needing_args(character, class_index, level));
-
-    // Merge in replaceable features
-    let replaceable = store
-        .with_untracked(|character| registry.features_replaceable(character, class_index, level));
-    for repl in replaceable {
-        if let Some(existing) = pending
-            .iter_mut()
-            .find(|p| p.feature_name == repl.feature_name)
-        {
-            existing.replaceable = true;
-        } else {
-            pending.push(repl);
-        }
-    }
+    let pending = store
+        .with_untracked(|character| registry.features_pending_input(character, class_index, level));
 
     apply_with_args_modal(pending, move |result| {
         store.update(|character| {
@@ -133,13 +119,12 @@ pub fn apply_level(
             } else {
                 Some(&result.args)
             };
-            registry.apply_class_level_with_replacements(
-                character,
-                class_index,
-                level,
-                args_map,
-                &result.replacements,
-            );
+            let replacements = if result.replacements.is_empty() {
+                None
+            } else {
+                Some(&result.replacements)
+            };
+            registry.apply_class_level(character, class_index, level, args_map, replacements);
         });
     });
 }
