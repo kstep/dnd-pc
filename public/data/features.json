@@ -9072,7 +9072,15 @@
           {
             "name": "Innate Sorcery",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Innate Sorcery",
+                "range": "Caster",
+                "duration": "Forever",
+                "expr": "SPELL.DC += 1; SPELL.ATK.ADV = 1"
+              }
+            ]
           }
         ]
       }
