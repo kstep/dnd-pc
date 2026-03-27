@@ -77,7 +77,6 @@ fn ArgsFeatureInput(
     let description = pa.feature_description.clone();
     let has_description = !description.is_empty();
     let replaceable = pa.replaceable;
-    let has_exprs = !pa.exprs.is_empty();
 
     // Signal tracking whether user chose to replace this feature
     let replacement_choice: RwSignal<Option<String>> = RwSignal::new(None);
@@ -151,7 +150,7 @@ fn ArgsFeatureInput(
                 {expr_views}
             </div>
             {replaceable.then(|| {
-                view! { <ReplacementPicker feature_name=feature_name.clone() replacement_choice /> }
+                view! { <ReplacementPicker feature_name=feature_name.clone() replacement_choice all_signals all_valid /> }
             })}
         </div>
     }
@@ -161,6 +160,8 @@ fn ArgsFeatureInput(
 fn ReplacementPicker(
     #[allow(unused)] feature_name: String,
     replacement_choice: RwSignal<Option<String>>,
+    all_signals: RwSignal<ArgsSignals>,
+    all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
@@ -186,10 +187,24 @@ fn ReplacementPicker(
     let input_value = RwSignal::new(String::new());
     let placeholder = Signal::derive(move || move_tr!("replace-with-feat").get());
 
+    // Expressions for the currently selected replacement feat (if it needs ARGs)
+    let replacement_exprs: RwSignal<Vec<crate::expr::Expr<crate::model::Attribute>>> =
+        RwSignal::new(Vec::new());
+
     let on_input = move |_text: String, resolved: Option<String>| {
         replacement_choice.set(resolved.clone());
-        if let Some(name) = resolved {
-            input_value.set(name);
+        if let Some(name) = &resolved {
+            input_value.set(name.clone());
+            // Check if the replacement feat needs ARG input
+            let exprs = store.with_untracked(|character| {
+                registry
+                    .feature_needs_args(character, name)
+                    .map(|pending| pending.exprs)
+                    .unwrap_or_default()
+            });
+            replacement_exprs.set(exprs);
+        } else {
+            replacement_exprs.set(Vec::new());
         }
     };
 
@@ -205,6 +220,7 @@ fn ReplacementPicker(
                         if !checked {
                             replacement_choice.set(None);
                             input_value.set(String::new());
+                            replacement_exprs.set(Vec::new());
                         }
                     }
                 />
@@ -217,6 +233,50 @@ fn ReplacementPicker(
                     options=options
                     on_input=on_input
                 />
+                {move || {
+                    let exprs = replacement_exprs.get();
+                    let feat_name = replacement_choice.get();
+                    if exprs.is_empty() || feat_name.is_none() {
+                        return None;
+                    }
+                    let feat_name = feat_name.unwrap();
+
+                    let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
+                        StoredValue::new(Vec::new());
+                    let name_for_signals = feat_name.clone();
+
+                    let expr_views: Vec<_> = exprs
+                        .into_iter()
+                        .map(|expr| {
+                            let on_ready =
+                                move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
+                                    signal_groups.update_value(|groups| {
+                                        groups.push(StoredValue::new(parts.rw_signals));
+                                    });
+                                    all_valid.update(|v| v.push(parts.is_valid));
+                                };
+                            view! {
+                                <ExprDetails expr=expr.clone() />
+                                <ExprArgsInput expr on_ready />
+                            }
+                        })
+                        .collect();
+
+                    all_signals.update(|v| {
+                        signal_groups.with_value(|groups| {
+                            v.push((name_for_signals.clone(), groups.clone()));
+                        });
+                    });
+
+                    Some(
+                        view! {
+                            <div class="replacement-args">
+                                {expr_views}
+                            </div>
+                        }
+                        .into_any(),
+                    )
+                }}
             </Show>
         </div>
     }
