@@ -73,7 +73,7 @@ pub fn Navbar() -> impl IntoView {
                         <A href=format!("{BASE_URL}/c/{id}") exact=true attr:class="navbar-link">
                             {move_tr!("view-full-sheet")}
                         </A>
-                        <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link">
+                        <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link navbar-link-summary">
                             {move_tr!("view-summary")}
                         </A>
                     </div>

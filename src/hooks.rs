@@ -62,6 +62,7 @@ pub fn use_theme() -> ReadSignal<&'static str> {
 pub enum PageKind {
     Main,
     Character,
+    QuickStart,
     Reference,
     Share,
 }
@@ -71,6 +72,7 @@ impl PageKind {
         match self {
             Self::Main => "main",
             Self::Character => "character",
+            Self::QuickStart => "quick-start",
             Self::Reference => "reference",
             Self::Share => "share",
         }
@@ -82,8 +84,9 @@ pub fn use_page_kind() -> Memo<PageKind> {
     Memo::new(move |_| {
         let path = pathname.read();
         let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
-        let first_seg = rest.trim_start_matches('/').split('/').next().unwrap_or("");
+        let (first_seg, tail) = rest.strip_prefix('/').unwrap_or(rest).split_once('/').unwrap_or((rest, ""));
         match first_seg {
+            "c" if tail.ends_with("quick-start") => PageKind::QuickStart,
             "c" => PageKind::Character,
             "r" => PageKind::Reference,
             "s" => PageKind::Share,
