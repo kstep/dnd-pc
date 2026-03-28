@@ -122,18 +122,9 @@ fn create_character(
 ) {
     let gen_name = generation_method.get_untracked();
 
-    // Reset character but preserve identity (name, species, background,
-    // class selections). Handles cancelled previous attempts cleanly.
-    store.update(|character| {
-        let identity = std::mem::take(&mut character.identity);
-        character.reset();
-        character.identity = identity;
-        character.identity.species_applied = false;
-        character.identity.background_applied = false;
-        for class_level in &mut character.identity.classes {
-            class_level.applied_levels.clear();
-        }
-    });
+    // Reset all applied state while preserving identity (name, species,
+    // background, class selections). Handles cancelled previous attempts.
+    store.update(|character| character.reset_keeping_identity());
 
     // Add generation feature entry if selected
     if !gen_name.is_empty() {

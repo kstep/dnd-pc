@@ -136,6 +136,20 @@ impl Character {
         };
     }
 
+    /// Reset all derived/applied state while preserving identity (name,
+    /// species, background, class selections). Used when re-creating a
+    /// character from the quick start page.
+    pub fn reset_keeping_identity(&mut self) {
+        let identity = std::mem::take(&mut self.identity);
+        self.reset();
+        self.identity = identity;
+        self.identity.species_applied = false;
+        self.identity.background_applied = false;
+        for class_level in &mut self.identity.classes {
+            class_level.applied_levels.clear();
+        }
+    }
+
     pub fn long_rest(&mut self) {
         self.combat.hp_current = self.combat.hp_max;
         self.combat.hp_temp = 0;
