@@ -346,6 +346,8 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
         })
         .collect();
 
+    let groups_for_roll = groups.clone();
+
     let mut first = true;
     let groups_view = groups
         .iter()
@@ -384,25 +386,22 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
         })
         .collect_view();
 
-    let groups_for_roll = groups.clone();
     let view = view! {
-        <div class="dice-pool-groups-header">
-            <button
-                type="button"
-                class="btn-icon"
-                title=move_tr!("roll-all-dice")
-                on:click=move |_| {
-                    for (&sides, signals) in &groups_for_roll {
-                        for signal in signals {
-                            let value = getrandom::u32().unwrap_or(0) % sides + 1;
-                            signal.set(value);
-                        }
+        <button
+            type="button"
+            class="btn-icon dice-pool-roll-all"
+            title=move_tr!("roll-all-dice")
+            on:click=move |_| {
+                for (&sides, signals) in &groups_for_roll {
+                    for signal in signals {
+                        let value = getrandom::u32().unwrap_or(0) % sides + 1;
+                        signal.set(value);
                     }
                 }
-            >
-                <Icon name="dices" />
-            </button>
-        </div>
+            }
+        >
+            <Icon name="dices" />
+        </button>
         {groups_view}
     }
     .into_any();
