@@ -11,7 +11,7 @@ mod registry;
 mod resolve;
 pub mod species;
 pub mod spells;
-pub(crate) mod utils;
+pub mod utils;
 
 pub use background::BackgroundDefinition;
 pub use cache::DefinitionStore;
