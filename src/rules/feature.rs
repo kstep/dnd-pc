@@ -280,11 +280,39 @@ impl FeatureDefinition {
             .map(|a| &a.expr)
     }
 
+    /// Returns assignment expressions for the given condition that need user
+    /// interaction: either ARG variables or dice rolls. Used to determine
+    /// whether the args/dice modal should be shown.
+    pub fn interactive_exprs(
+        &self,
+        when: WhenCondition,
+        character: &Character,
+    ) -> Vec<Expr<Attribute>> {
+        let is_arg = |var: &Attribute| -> Option<u8> {
+            if let Attribute::Arg(n) = var {
+                Some(*n)
+            } else {
+                None
+            }
+        };
+        self.assign
+            .iter()
+            .flatten()
+            .filter(|a| a.when == when)
+            .filter(|a| {
+                let analysis = a.expr.analyze(character, is_arg);
+                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
+            })
+            .map(|a| a.expr.clone())
+            .collect()
+    }
+
     pub fn assign(
         &self,
         context: &mut impl expr::Context<Attribute, i32>,
         when: WhenCondition,
         args: Option<impl Iterator<Item = Vec<i32>>>,
+        dice: Option<impl Iterator<Item = expr::DicePool>>,
     ) {
         let Some(assign) = &self.assign else { return };
 
@@ -310,21 +338,41 @@ impl FeatureDefinition {
         }
 
         let mut args = args;
+        let mut dice = dice;
         for a in assign.iter().filter(|a| a.when == when) {
             let has_args = a.expr.has_var(|v| matches!(v, Attribute::Arg(_)));
-            let result = if has_args {
-                if let Some(arg_values) = args.as_mut().and_then(|iter| iter.next()) {
-                    let mut ctx = WithArgs {
-                        inner: context,
-                        args: arg_values,
-                    };
-                    a.expr.apply(&mut ctx)
-                } else {
-                    continue;
+            let has_dice = !a.expr.dice_rolls(context).is_empty();
+            let is_interactive = has_args || has_dice;
+
+            if !is_interactive {
+                if let Err(error) = a.expr.apply(context) {
+                    log::error!(
+                        "Failed to apply assignment for feature '{}': {error:?}",
+                        self.name,
+                    );
+                }
+                continue;
+            }
+
+            let arg_values = args.as_mut().and_then(|iter| iter.next());
+            let dice_pool = dice.as_mut().and_then(|iter| iter.next());
+
+            let result = if let Some(arg_values) = arg_values {
+                let mut ctx = WithArgs {
+                    inner: context,
+                    args: arg_values,
+                };
+                match dice_pool {
+                    Some(pool) if !pool.is_empty() => a.expr.apply_with_dice(&mut ctx, &pool),
+                    _ => a.expr.apply(&mut ctx),
                 }
             } else {
-                a.expr.apply(context)
+                match dice_pool {
+                    Some(pool) if !pool.is_empty() => a.expr.apply_with_dice(context, &pool),
+                    _ => a.expr.apply(context),
+                }
             };
+
             if let Err(error) = result {
                 log::error!(
                     "Failed to apply assignment for feature '{}': {error:?}",
@@ -335,7 +383,7 @@ impl FeatureDefinition {
     }
 
     pub fn apply(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
-        self.apply_with_args(level, character, source, None);
+        self.apply_with_args(level, character, source, None, None);
     }
 
     pub fn apply_with_args(
@@ -344,6 +392,7 @@ impl FeatureDefinition {
         character: &mut Character,
         source: Option<&FeatureSource>,
         args: Option<Vec<Vec<i32>>>,
+        dice: Option<Vec<expr::DicePool>>,
     ) {
         let is_new = character.mark_feature_applied(
             &self.name,
@@ -384,7 +433,12 @@ impl FeatureDefinition {
             caster_level,
             caster_modifier,
         };
-        self.assign(&mut context, when, args.map(|v| v.into_iter()));
+        self.assign(
+            &mut context,
+            when,
+            args.map(|v| v.into_iter()),
+            dice.map(|v| v.into_iter()),
+        );
 
         self.apply_fields(level, character, source);
 

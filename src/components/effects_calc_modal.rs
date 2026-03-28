@@ -5,7 +5,9 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{expr_view::ExprDetails, icon::Icon, modal::Modal},
+    components::{
+        expr_args_input::collect_dice_pool, expr_view::ExprDetails, icon::Icon, modal::Modal,
+    },
     effective::EffectiveCharacter,
     expr::{self, DicePool, Expr, Op},
     model::{
@@ -194,25 +196,6 @@ pub fn apply_self_effects_now(
         };
         active_effects.update(|active| active.add(effect, &store.read()));
     }
-}
-
-/// Collect dice values from a set of NodeRef groups into a DicePool.
-fn collect_dice_pool(groups: &BTreeMap<u32, Vec<NodeRef<html::Input>>>) -> BTreeMap<u32, Vec<u32>> {
-    groups
-        .iter()
-        .map(|(&sides, refs)| {
-            let values: Vec<u32> = refs
-                .iter()
-                .filter_map(|node_ref| {
-                    node_ref
-                        .get()
-                        .and_then(|el| el.value().parse().ok())
-                        .filter(|&v: &u32| v >= 1 && v <= sides)
-                })
-                .collect();
-            (sides, values)
-        })
-        .collect()
 }
 
 // --- Effects calculator modal ---

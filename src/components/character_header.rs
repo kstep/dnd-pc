@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, time::Duration};
+use std::time::Duration;
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::{move_tr, tr};
@@ -91,13 +91,13 @@ fn import_character(store: Store<Character>) {
 
 pub(crate) fn apply_with_args_modal(
     pending: Vec<crate::rules::PendingArgs>,
-    apply: impl Fn(Option<&BTreeMap<String, Vec<Vec<i32>>>>) + Copy + Send + Sync + 'static,
+    apply: impl Fn(Option<&crate::rules::ApplyInputs>) + Copy + Send + Sync + 'static,
 ) {
     if pending.is_empty() {
         apply(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(pending, move |args_map| apply(Some(&args_map)));
+        ctx.open(pending, move |inputs| apply(Some(&inputs)));
     }
 }
 
@@ -108,9 +108,9 @@ pub fn apply_level(
     level: u32,
 ) {
     let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
-    apply_with_args_modal(pending, move |args_map| {
+    apply_with_args_modal(pending, move |inputs| {
         store.update(|c| {
-            registry.apply_class_level(c, class_index, level, args_map);
+            registry.apply_class_level(c, class_index, level, inputs);
         });
     });
 }
@@ -252,9 +252,9 @@ pub fn CharacterHeader() -> impl IntoView {
                                     })
                             })
                             .unwrap_or_default();
-                        apply_with_args_modal(pending, move |args_map| {
+                        apply_with_args_modal(pending, move |inputs| {
                             store
-                                .update(|character| registry.apply_species(character, args_map));
+                                .update(|character| registry.apply_species(character, inputs));
                         });
                     }
                 >
@@ -282,9 +282,9 @@ pub fn CharacterHeader() -> impl IntoView {
                                     })
                             })
                             .unwrap_or_default();
-                        apply_with_args_modal(pending, move |args_map| {
+                        apply_with_args_modal(pending, move |inputs| {
                             store.update(|character| {
-                                registry.apply_background(character, args_map)
+                                registry.apply_background(character, inputs)
                             });
                         });
                     }

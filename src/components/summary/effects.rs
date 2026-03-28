@@ -1,16 +1,17 @@
-use std::collections::BTreeMap;
-
 use leptos::{html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::DatalistInput, dice_pool_input::DicePoolInput, icon::Icon,
+        datalist_input::DatalistInput,
+        expr_args_input::{ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
+        icon::Icon,
+        modal::Modal,
         toggle_button::ToggleButton,
     },
     effective::EffectiveCharacter,
-    expr::Expr,
+    expr::{DicePool, Expr},
     model::{ActiveEffect, Attribute, Character},
     rules::RulesRegistry,
 };
@@ -37,15 +38,18 @@ pub fn EffectsBlock() -> impl IntoView {
     let effect_scope = RwSignal::new(Option::<Box<str>>::None);
     let expr_input: NodeRef<html::Input> = NodeRef::new();
 
-    let show_dice_pool = RwSignal::new(false);
+    // Dice modal state: stores (expr, pending_effect_or_index)
+    let show_dice_modal = RwSignal::new(false);
+    let pending_expr = RwSignal::new(Option::<Expr<Attribute>>::None);
     let pending_effect = RwSignal::new(Option::<ActiveEffect>::None);
     let reroll_index = RwSignal::new(Option::<usize>::None);
-    let pending_rolls = RwSignal::new(BTreeMap::<u32, u32>::new());
+    // Stored parts from ExprArgsInput for dice collection on submit
+    let dice_parts: StoredValue<Option<ExprArgsInputParts>> = StoredValue::new(None);
 
-    let open_dice_modal = move |index: Option<usize>, rolls: BTreeMap<u32, u32>| {
+    let open_dice_modal = move |index: Option<usize>, expr: Expr<Attribute>| {
         reroll_index.set(index);
-        pending_rolls.set(rolls);
-        show_dice_pool.set(true);
+        pending_expr.set(Some(expr));
+        show_dice_modal.set(true);
     };
 
     let commit_effect = move |effect: ActiveEffect| {
@@ -116,8 +120,9 @@ pub fn EffectsBlock() -> impl IntoView {
                         if rolls.is_empty() {
                             commit_effect(effect);
                         } else {
+                            let expr = effect.expr.clone().unwrap();
                             pending_effect.set(Some(effect));
-                            open_dice_modal(None, rolls);
+                            open_dice_modal(None, expr);
                         }
                     }
                 ><Icon name="circle-plus" size=14 /></button>
@@ -168,6 +173,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             let description = effect.description.clone();
                             let scope = effect.scope.clone();
                             let enabled = effect.enabled;
+                            let effect_expr = effect.expr.clone();
                             view! {
                                 <div class="entry-item" class:disabled=!enabled>
                                     <ToggleButton />
@@ -219,6 +225,8 @@ pub fn EffectsBlock() -> impl IntoView {
                                                         return;
                                                     };
                                                     let rolls = expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
+                                                    let has_dice = !rolls.is_empty();
+                                                    let dice_expr = expr.clone();
                                                     effects.update(|effects| {
                                                         effects.update_field(i, |eff| {
                                                             eff.pool = None;
@@ -226,19 +234,23 @@ pub fn EffectsBlock() -> impl IntoView {
                                                         });
                                                         effects.recompute(&store.read());
                                                     });
-                                                    if !rolls.is_empty() {
-                                                        open_dice_modal(Some(i), rolls);
+                                                    if has_dice
+                                                        && let Some(expr) = dice_expr
+                                                    {
+                                                        open_dice_modal(Some(i), expr);
                                                     }
                                                 }
                                             />
                                             {(!dice_rolls.is_empty()).then(|| {
-                                                let rolls = dice_rolls.clone();
+                                                let effect_expr = effect_expr.clone();
                                                 view! {
                                                     <button
                                                         class="btn-icon"
                                                         title=move_tr!("effect-reroll")
                                                         on:click=move |_| {
-                                                            open_dice_modal(Some(i), rolls.clone());
+                                                            if let Some(expr) = effect_expr.clone() {
+                                                                open_dice_modal(Some(i), expr);
+                                                            }
                                                         }
                                                     >
                                                         <Icon name="dices" size=14 />
@@ -267,38 +279,65 @@ pub fn EffectsBlock() -> impl IntoView {
                 })
             }}
 
-            // Dice pool modal (re-created when pending_rolls changes)
-            {move || {
-                let rolls = pending_rolls.get();
-                if rolls.is_empty() {
-                    return None;
-                }
-                Some(view! {
-                    <DicePoolInput
-                        rolls=rolls
-                        show=show_dice_pool
-                        on_confirm=move |pool| {
-                            if let Some(idx) = reroll_index.get_untracked() {
-                                // Re-roll existing effect
-                                effects.update(|e| {
-                                    e.update_field(idx, |eff| eff.pool = Some(pool));
-                                    e.recompute(&store.read());
-                                });
-                                reroll_index.set(None);
-                            } else {
-                                // New effect
-                                pending_effect.update(|pending| {
-                                    if let Some(mut effect) = pending.take() {
-                                        effect.pool = Some(pool);
-                                        commit_effect(effect);
-                                    }
-                                });
-                            }
-                            pending_rolls.set(BTreeMap::new());
+            // Dice modal using ExprArgsInput
+            <Modal show=show_dice_modal title="Dice Rolls">
+                {move || {
+                    if !show_dice_modal.get() {
+                        return None;
+                    }
+                    let expr = pending_expr.get_untracked()?;
+
+                    // Reset stored parts for new modal
+                    dice_parts.set_value(None);
+
+                    let on_ready = move |parts: ExprArgsInputParts| {
+                        dice_parts.set_value(Some(parts));
+                    };
+
+                    let form_ref = NodeRef::<html::Form>::new();
+
+                    let on_submit = move |ev: web_sys::SubmitEvent| {
+                        ev.prevent_default();
+                        let pool: DicePool = dice_parts.with_value(|parts| {
+                            parts.as_ref().map(|p| {
+                                collect_dice_pool(&p.dice_refs).into()
+                            }).unwrap_or_default()
+                        });
+
+                        if let Some(idx) = reroll_index.get_untracked() {
+                            // Re-roll existing effect
+                            effects.update(|e| {
+                                e.update_field(idx, |eff| eff.pool = Some(pool));
+                                e.recompute(&store.read());
+                            });
+                            reroll_index.set(None);
+                        } else {
+                            // New effect
+                            pending_effect.update(|pending| {
+                                if let Some(mut effect) = pending.take() {
+                                    effect.pool = Some(pool);
+                                    commit_effect(effect);
+                                }
+                            });
                         }
-                    />
-                })
-            }}
+                        show_dice_modal.set(false);
+                        pending_expr.set(None);
+                    };
+
+                    let expr_input = view! { <ExprArgsInput expr=expr on_ready /> };
+                    Some(view! {
+                        <form class="dice-pool-form" on:submit=on_submit node_ref=form_ref>
+                            {expr_input}
+                            <div class="dice-pool-footer">
+                                <button type="submit" class="btn-confirm">
+                                    <Icon name="check" size=16 />
+                                    " Confirm"
+                                </button>
+                            </div>
+                        </form>
+                    }.into_any())
+                }}
+            </Modal>
         </div>
     }
 }

@@ -1,5 +1,5 @@
 mod apply;
-pub use apply::PendingArgs;
+pub use apply::{ApplyInputs, PendingArgs};
 pub mod background;
 mod cache;
 pub mod class;
