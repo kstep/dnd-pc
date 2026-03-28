@@ -292,7 +292,8 @@ fn form_block_ops(
 // --- ExprArgsInput ---
 
 /// Dice values for one die type: sides and per-die signals.
-pub type DiceGroupSignals = BTreeMap<u32, Vec<RwSignal<Option<u32>>>>;
+/// A value of 0 means the input is not yet filled (dice are always ≥ 1).
+pub type DiceGroupSignals = BTreeMap<u32, Vec<RwSignal<u32>>>;
 
 /// The rendered parts of an expression input: arg signals, dice signals,
 /// and validation memo. Returned by `ExprArgsInput` via the `on_ready`
@@ -317,7 +318,8 @@ pub fn collect_dice_pool(groups: &DiceGroupSignals) -> DicePool {
         .map(|(&sides, signals)| {
             let values: Vec<u32> = signals
                 .iter()
-                .filter_map(|signal| signal.get_untracked())
+                .map(|signal| signal.get_untracked())
+                .filter(|&value| value > 0)
                 .collect();
             (sides, values)
         })
@@ -338,7 +340,7 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
     let groups: DiceGroupSignals = dice_rolls
         .iter()
         .map(|(&sides, &count)| {
-            let signals: Vec<_> = (0..count).map(|_| RwSignal::new(None::<u32>)).collect();
+            let signals: Vec<_> = (0..count).map(|_| RwSignal::new(0u32)).collect();
             (sides, signals)
         })
         .collect();
@@ -360,9 +362,12 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
                             required
                             autofocus=is_first
                             class="dice-pool-value"
-                            prop:value=move || signal.get().map_or(String::new(), |v| v.to_string())
+                            prop:value=move || {
+                                let value = signal.get();
+                                if value == 0 { String::new() } else { value.to_string() }
+                            }
                             on:input=move |ev| {
-                                let value = event_target_value(&ev).parse::<u32>().ok();
+                                let value = event_target_value(&ev).parse::<u32>().unwrap_or(0);
                                 signal.set(value);
                             }
                         />
@@ -475,7 +480,7 @@ pub fn ExprArgsInput(
                 let filled: u32 = groups
                     .values()
                     .flat_map(|signals| signals.iter())
-                    .filter(|signal| signal.get().is_some())
+                    .filter(|signal| signal.get() > 0)
                     .count() as u32;
                 filled == dice_total_needed
             })
