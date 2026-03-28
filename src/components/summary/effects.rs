@@ -5,7 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         datalist_input::DatalistInput,
-        expr_args_input::{ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
+        expr_args_input::{ExprArgsInput, ExprArgsInputParts},
         icon::Icon,
         modal::Modal,
         toggle_button::ToggleButton,
@@ -47,6 +47,7 @@ pub fn EffectsBlock() -> impl IntoView {
     let dice_parts: StoredValue<Option<ExprArgsInputParts>> = StoredValue::new(None);
 
     let open_dice_modal = move |index: Option<usize>, expr: Expr<Attribute>| {
+        dice_parts.set_value(None);
         reroll_index.set(index);
         pending_expr.set(Some(expr));
         show_dice_modal.set(true);
@@ -287,22 +288,15 @@ pub fn EffectsBlock() -> impl IntoView {
                     }
                     let expr = pending_expr.get_untracked()?;
 
-                    // Reset stored parts for new modal
-                    dice_parts.set_value(None);
-
                     let on_ready = move |parts: ExprArgsInputParts| {
                         dice_parts.set_value(Some(parts));
                     };
 
-                    let form_ref = NodeRef::<html::Form>::new();
-
                     let on_submit = move |event: web_sys::SubmitEvent| {
                         event.prevent_default();
-                        let pool: DicePool = dice_parts.with_value(|parts| {
-                            parts.as_ref().map(|input_parts| {
-                                collect_dice_pool(&input_parts.dice_refs).into()
-                            }).unwrap_or_default()
-                        });
+                        let pool: DicePool = dice_parts
+                            .with_value(|parts| parts.as_ref().map(|p| p.collect_dice()))
+                            .unwrap_or_default();
 
                         if let Some(effect_index) = reroll_index.get_untracked() {
                             // Re-roll existing effect
@@ -326,7 +320,7 @@ pub fn EffectsBlock() -> impl IntoView {
 
                     let expr_input = view! { <ExprArgsInput expr=expr on_ready /> };
                     Some(view! {
-                        <form class="dice-pool-form" on:submit=on_submit node_ref=form_ref>
+                        <form class="dice-pool-form" on:submit=on_submit>
                             {expr_input}
                             <div class="dice-pool-footer">
                                 <button type="submit" class="btn-confirm">

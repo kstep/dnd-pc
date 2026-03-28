@@ -337,15 +337,34 @@ impl FeatureDefinition {
             }
         }
 
+        let is_arg_var = |var: &Attribute| -> Option<u8> {
+            if let Attribute::Arg(n) = var {
+                Some(*n)
+            } else {
+                None
+            }
+        };
+
+        // Pre-classify which expressions are interactive before the loop,
+        // using the same analyze() logic as interactive_exprs(). This avoids
+        // re-evaluating against a mutated context mid-loop and ensures the
+        // iterator consumption matches what the modal collected.
+        let interactive: Vec<bool> = assign
+            .iter()
+            .filter(|assignment| assignment.when == when)
+            .map(|assignment| {
+                let analysis = assignment.expr.analyze(context, is_arg_var);
+                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
+            })
+            .collect();
+
         let mut args = args;
         let mut dice = dice;
-        for assignment in assign.iter().filter(|assignment| assignment.when == when) {
-            let has_args = assignment
-                .expr
-                .has_var(|var| matches!(var, Attribute::Arg(_)));
-            let has_dice = !assignment.expr.dice_rolls(context).is_empty();
-            let is_interactive = has_args || has_dice;
-
+        for (assignment, is_interactive) in assign
+            .iter()
+            .filter(|assignment| assignment.when == when)
+            .zip(interactive)
+        {
             if !is_interactive {
                 if let Err(error) = assignment.expr.apply(context) {
                     log::error!(

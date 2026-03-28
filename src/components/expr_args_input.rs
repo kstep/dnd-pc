@@ -302,8 +302,17 @@ pub struct ExprArgsInputParts {
     pub is_valid: Memo<bool>,
 }
 
+impl ExprArgsInputParts {
+    /// Read all dice input values and return a `DicePool`.
+    pub fn collect_dice(&self) -> crate::expr::DicePool {
+        collect_dice_pool(&self.dice_refs).into()
+    }
+}
+
 /// Collect dice values from NodeRef groups into a raw map suitable for
 /// converting into a `DicePool`. Shared by ArgsModal and effects panel.
+/// Does not filter values — HTML `min`/`max`/`required` attributes on the
+/// inputs handle range validation at the browser level.
 pub fn collect_dice_pool(
     groups: &BTreeMap<u32, Vec<NodeRef<html::Input>>>,
 ) -> BTreeMap<u32, Vec<u32>> {
@@ -312,12 +321,7 @@ pub fn collect_dice_pool(
         .map(|(&sides, refs)| {
             let values: Vec<u32> = refs
                 .iter()
-                .filter_map(|node_ref| {
-                    node_ref
-                        .get()
-                        .and_then(|el| el.value().parse().ok())
-                        .filter(|&v: &u32| v >= 1 && v <= sides)
-                })
+                .filter_map(|node_ref| node_ref.get().and_then(|el| el.value().parse().ok()))
                 .collect();
             (sides, values)
         })
@@ -332,10 +336,17 @@ fn is_arg(var: &Attribute) -> Option<u8> {
 }
 
 /// Build dice input groups view and return the NodeRef map for value
-/// collection.
+/// collection. The returned `RwSignal<u32>` is bumped on every input event
+/// so that validation Memos can react to dice value changes.
 fn build_dice_groups(
     dice_rolls: &BTreeMap<u32, u32>,
-) -> (BTreeMap<u32, Vec<NodeRef<html::Input>>>, AnyView) {
+) -> (
+    BTreeMap<u32, Vec<NodeRef<html::Input>>>,
+    RwSignal<u32>,
+    AnyView,
+) {
+    let dice_input_version = RwSignal::new(0u32);
+
     let groups: BTreeMap<u32, Vec<NodeRef<html::Input>>> = dice_rolls
         .iter()
         .map(|(&sides, &count)| {
@@ -362,6 +373,7 @@ fn build_dice_groups(
                             autofocus=is_first
                             class="dice-pool-value"
                             node_ref=node_ref
+                            on:input=move |_| dice_input_version.update(|version| *version += 1)
                         />
                     }
                 })
@@ -376,7 +388,7 @@ fn build_dice_groups(
         .collect_view()
         .into_any();
 
-    (groups, view)
+    (groups, dice_input_version, view)
 }
 
 /// Renders the interactive formula with number inputs for `ARG.n` variables
@@ -440,15 +452,22 @@ pub fn ExprArgsInput(
     let formula_el = formula_view.map(|(view, _, _)| view);
 
     // Build dice input groups (if any)
-    let (dice_refs, dice_groups_el, dice_refs_stored, dice_total_needed) = if has_dice {
-        let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
-        let (refs, groups_view) = build_dice_groups(&analysis.dice_rolls);
-        let refs_stored = StoredValue::new(refs.clone());
-        let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
-        (refs, el, Some(refs_stored), total_needed)
-    } else {
-        (BTreeMap::new(), None, None, 0)
-    };
+    let (dice_refs, dice_groups_el, dice_refs_stored, dice_total_needed, dice_input_version) =
+        if has_dice {
+            let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
+            let (refs, version_signal, groups_view) = build_dice_groups(&analysis.dice_rolls);
+            let refs_stored = StoredValue::new(refs.clone());
+            let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
+            (
+                refs,
+                el,
+                Some(refs_stored),
+                total_needed,
+                Some(version_signal),
+            )
+        } else {
+            (BTreeMap::new(), None, None, 0, None)
+        };
 
     // Validation: all ARG inputs eval OK AND all dice inputs filled
     let eval_expr = expr.clone();
@@ -467,11 +486,15 @@ pub fn ExprArgsInput(
             true
         };
 
-        // Check dice validity
+        // Check dice validity — subscribe to the version signal so this
+        // Memo re-runs when the user types in dice inputs.
         let dice_ok = if let Some(refs_stored) = dice_refs_stored {
+            if let Some(version) = dice_input_version {
+                let _ = version.get();
+            }
             refs_stored.with_value(|refs| {
                 let pool = collect_dice_pool(refs);
-                let filled: u32 = pool.values().map(|v| v.len() as u32).sum();
+                let filled: u32 = pool.values().map(|values| values.len() as u32).sum();
                 filled == dice_total_needed
             })
         } else {
