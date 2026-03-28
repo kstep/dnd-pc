@@ -23,7 +23,7 @@ use crate::{
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
     },
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{ApplyInputs, DefinitionStore, PendingArgs, RulesRegistry},
     share, storage,
 };
 
@@ -90,8 +90,8 @@ fn import_character(store: Store<Character>) {
 }
 
 pub(crate) fn apply_with_args_modal(
-    pending: Vec<crate::rules::PendingArgs>,
-    apply: impl Fn(Option<&crate::rules::ApplyInputs>) + Copy + Send + Sync + 'static,
+    pending: Vec<PendingArgs>,
+    apply: impl Fn(Option<&ApplyInputs>) + Copy + Send + Sync + 'static,
 ) {
     if pending.is_empty() {
         apply(None);

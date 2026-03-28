@@ -5,7 +5,7 @@ use leptos_fluent::move_tr;
 
 use crate::{
     components::{
-        expr_args_input::{DiceGroupSignals, ExprArgsInput, collect_dice_pool},
+        expr_args_input::{DiceGroupSignals, ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
         expr_view::ExprDetails,
         modal::Modal,
     },
@@ -81,7 +81,7 @@ fn ArgsFeatureInput(
         .exprs
         .into_iter()
         .map(|expr| {
-            let on_ready = move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
+            let on_ready = move |parts: ExprArgsInputParts| {
                 signal_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.arg_signals));
                 });
