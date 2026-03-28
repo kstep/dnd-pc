@@ -1,11 +1,11 @@
 use std::collections::BTreeMap;
 
-use leptos::{html, prelude::*};
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
     components::{
-        expr_args_input::{ExprArgsInput, collect_dice_pool},
+        expr_args_input::{DiceGroupSignals, ExprArgsInput, collect_dice_pool},
         expr_view::ExprDetails,
         modal::Modal,
     },
@@ -15,8 +15,7 @@ use crate::{
 
 type ArgsCallback = Box<dyn Fn(ApplyInputs) + Send + Sync>;
 type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
-type DiceRefs = BTreeMap<u32, Vec<NodeRef<html::Input>>>;
-type DiceSignals = Vec<(String, Vec<StoredValue<DiceRefs>>)>;
+type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
@@ -74,7 +73,7 @@ fn ArgsFeatureInput(
     // Collect signal groups for all exprs of this feature
     let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
         StoredValue::new(Vec::new());
-    let dice_groups: StoredValue<Vec<StoredValue<DiceRefs>>> = StoredValue::new(Vec::new());
+    let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> = StoredValue::new(Vec::new());
     let name_for_signals = feature_name.clone();
     let name_for_dice = feature_name.clone();
 
@@ -87,7 +86,7 @@ fn ArgsFeatureInput(
                     groups.push(StoredValue::new(parts.arg_signals));
                 });
                 dice_groups.update_value(|groups| {
-                    groups.push(StoredValue::new(parts.dice_refs));
+                    groups.push(StoredValue::new(parts.dice_signals));
                 });
                 all_valid.update(|validations| validations.push(parts.is_valid));
             };
@@ -176,8 +175,8 @@ pub fn ArgsModal() -> impl IntoView {
                         for (name, groups) in entries {
                             let feature_dice: Vec<DicePool> = groups
                                 .iter()
-                                .map(|refs| {
-                                    refs.with_value(|refs| collect_dice_pool(refs).into())
+                                .map(|dice_signals| {
+                                    dice_signals.with_value(collect_dice_pool)
                                 })
                                 .collect();
                             dice_map.insert(name.clone(), feature_dice);
