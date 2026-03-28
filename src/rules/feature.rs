@@ -281,8 +281,9 @@ impl FeatureDefinition {
     }
 
     /// Returns assignment expressions for the given condition that need user
-    /// interaction: either ARG variables or dice rolls. Used to determine
-    /// whether the args/dice modal should be shown.
+    /// interaction (have reachable ARG variables). Dice-only expressions are
+    /// applied with random rolls and don't need the modal. If an expression
+    /// has both ARGs and dice, the modal shows inputs for both.
     pub fn interactive_exprs(
         &self,
         when: WhenCondition,
@@ -301,7 +302,7 @@ impl FeatureDefinition {
             .filter(|assignment| assignment.when == when)
             .filter(|assignment| {
                 let analysis = assignment.expr.analyze(character, is_arg);
-                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
+                !analysis.active_args.is_empty()
             })
             .map(|assignment| assignment.expr.clone())
             .collect()
@@ -346,15 +347,15 @@ impl FeatureDefinition {
         };
 
         // Pre-classify which expressions are interactive before the loop,
-        // using the same analyze() logic as interactive_exprs(). This avoids
-        // re-evaluating against a mutated context mid-loop and ensures the
-        // iterator consumption matches what the modal collected.
+        // using the same analyze() logic as interactive_exprs(). Only
+        // expressions with active ARGs are interactive — dice-only
+        // expressions use random rolls via the normal apply() path.
         let interactive: Vec<bool> = assign
             .iter()
             .filter(|assignment| assignment.when == when)
             .map(|assignment| {
                 let analysis = assignment.expr.analyze(context, is_arg_var);
-                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
+                !analysis.active_args.is_empty()
             })
             .collect();
 
