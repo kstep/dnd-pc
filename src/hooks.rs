@@ -84,10 +84,9 @@ pub fn use_page_kind() -> Memo<PageKind> {
     Memo::new(move |_| {
         let path = pathname.read();
         let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
-        let trimmed = rest.trim_start_matches('/');
-        let first_seg = trimmed.split('/').next().unwrap_or("");
+        let (first_seg, tail) = rest.strip_prefix('/').unwrap_or(rest).split_once('/').unwrap_or((rest, ""));
         match first_seg {
-            "c" if trimmed.ends_with("/quick-start") => PageKind::QuickStart,
+            "c" if tail.ends_with("quick-start") => PageKind::QuickStart,
             "c" => PageKind::Character,
             "r" => PageKind::Reference,
             "s" => PageKind::Share,
