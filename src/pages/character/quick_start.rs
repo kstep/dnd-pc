@@ -122,7 +122,9 @@ fn create_character(
 ) {
     let gen_name = generation_method.get_untracked();
 
-    // Add generation feature entry if selected and not already applied
+    // Add generation feature entry if selected and not already applied.
+    // Remove any previously added but unapplied generation entry first
+    // (user may have cancelled a previous attempt with a different method).
     if !gen_name.is_empty() {
         let already_applied = store.with_untracked(|character| {
             character
@@ -131,6 +133,10 @@ fn create_character(
                 .any(|feature| feature.name == gen_name && feature.applied)
         });
         if !already_applied {
+            store
+                .features()
+                .write()
+                .retain(|feature| feature.applied || !feature.name.starts_with("Generation:"));
             store.features().write().push(Feature {
                 name: gen_name.clone(),
                 ..Feature::default()
