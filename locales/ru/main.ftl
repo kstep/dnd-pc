@@ -279,7 +279,8 @@ pool-pact = Ячейки пакта
 ## Быстрый старт
 quick-start-title = Быстрый старт
 quick-start-generation = Характеристики
-quick-start-done = Перейти к листу персонажа
+quick-start-create = Создать персонажа
+quick-start-skip = Пропустить
 quick-start-applied = Применено
 
 ## Облачная синхронизация

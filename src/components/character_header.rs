@@ -11,6 +11,7 @@ use wasm_bindgen::prelude::*;
 use crate::{
     BASE_URL,
     components::{
+        apply_field_section::ApplyFieldSection,
         args_modal::ArgsModalCtx,
         background_field::BackgroundField,
         classes_section::ClassesSection,
@@ -22,7 +23,7 @@ use crate::{
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
     },
-    rules::RulesRegistry,
+    rules::{DefinitionStore, RulesRegistry},
     share, storage,
 };
 
@@ -229,14 +230,67 @@ pub fn CharacterHeader() -> impl IntoView {
                         }
                     />
                 </div>
-                <div class="header-field species-field">
-                    <label>{move_tr!("species")}</label>
+                <ApplyFieldSection
+                    label=move_tr!("species")
+                    class="species-field"
+                    applied=move || store.identity().species_applied().get()
+                    ready=move || {
+                        let species = store.identity().species().get();
+                        registry.species().has_tracked(&species)
+                    }
+                    apply_title=move_tr!("btn-apply-species")
+                    on_apply=move || {
+                        let pending = store
+                            .with_untracked(|character| {
+                                registry
+                                    .species()
+                                    .with(&character.identity.species, |species_def| {
+                                        registry.pending_args_for_features(
+                                            character,
+                                            species_def.features.iter().map(String::as_str),
+                                        )
+                                    })
+                            })
+                            .unwrap_or_default();
+                        apply_with_args_modal(pending, move |args_map| {
+                            store
+                                .update(|character| registry.apply_species(character, args_map));
+                        });
+                    }
+                >
                     <SpeciesField />
-                </div>
-                <div class="header-field background-field">
-                    <label>{move_tr!("background")}</label>
+                </ApplyFieldSection>
+                <ApplyFieldSection
+                    label=move_tr!("background")
+                    class="background-field"
+                    applied=move || store.identity().background_applied().get()
+                    ready=move || {
+                        let background = store.identity().background().get();
+                        registry.backgrounds().has_tracked(&background)
+                    }
+                    apply_title=move_tr!("btn-apply-background")
+                    on_apply=move || {
+                        let pending = store
+                            .with_untracked(|character| {
+                                registry
+                                    .backgrounds()
+                                    .with(&character.identity.background, |bg_def| {
+                                        registry.pending_args_for_features(
+                                            character,
+                                            bg_def.features.iter().map(String::as_str),
+                                        )
+                                    })
+                            })
+                            .unwrap_or_default();
+                        apply_with_args_modal(pending, move |args_map| {
+                            store.update(|character| {
+                                registry.apply_background(character, args_map)
+                            });
+                        });
+                    }
+                >
                     <BackgroundField />
-                </div>
+                </ApplyFieldSection>
                 <div class="header-field">
                     <label>{move_tr!("alignment")}</label>
                     <select

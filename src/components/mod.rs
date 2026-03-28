@@ -1,9 +1,11 @@
 pub mod ability_score_block;
+pub mod apply_field_section;
 pub mod args_modal;
 pub mod background_field;
 pub mod cast_button;
 pub mod character_card;
 pub mod character_header;
+pub mod class_field;
 pub mod classes_section;
 pub mod datalist_input;
 pub mod dice_pool_input;
