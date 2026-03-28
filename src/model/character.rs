@@ -130,8 +130,15 @@ impl Character {
 
     pub fn reset(&mut self) {
         let id = self.id;
+        let mut identity = std::mem::take(&mut self.identity);
+        identity.species_applied = false;
+        identity.background_applied = false;
+        for class_level in &mut identity.classes {
+            class_level.applied_levels.clear();
+        }
         *self = Self {
             id,
+            identity,
             ..Default::default()
         };
     }

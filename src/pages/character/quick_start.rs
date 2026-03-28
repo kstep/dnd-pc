@@ -122,20 +122,16 @@ fn create_character(
 ) {
     let gen_name = generation_method.get_untracked();
 
-    // Add generation feature entry if selected and not already applied
+    // Reset all applied state while preserving identity (name, species,
+    // background, class selections). Handles cancelled previous attempts.
+    store.update(|character| character.reset());
+
+    // Add generation feature entry if selected
     if !gen_name.is_empty() {
-        let already_applied = store.with_untracked(|character| {
-            character
-                .features
-                .iter()
-                .any(|feature| feature.name == gen_name && feature.applied)
+        store.features().write().push(Feature {
+            name: gen_name.clone(),
+            ..Feature::default()
         });
-        if !already_applied {
-            store.features().write().push(Feature {
-                name: gen_name.clone(),
-                ..Feature::default()
-            });
-        }
     }
 
     // Gather ALL pending inputs across all steps into one list
