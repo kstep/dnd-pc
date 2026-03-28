@@ -68,24 +68,15 @@ pub fn Navbar() -> impl IntoView {
                     <Logo />
                     <span class="navbar-title">{move_tr!("page-characters")}</span>
                 </A>
-                {move || active_id.get().map(|id| {
-                    let on_quick_start = {
-                        let path = location.pathname.read();
-                        let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
-                        rest.ends_with("/quick-start")
-                    };
-                    view! {
-                        <div class="navbar-links">
-                            <A href=format!("{BASE_URL}/c/{id}") exact=true attr:class="navbar-link">
-                                {move_tr!("view-full-sheet")}
-                            </A>
-                            <Show when=move || !on_quick_start>
-                                <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link">
-                                    {move_tr!("view-summary")}
-                                </A>
-                            </Show>
-                        </div>
-                    }
+                {move || active_id.get().map(|id| view! {
+                    <div class="navbar-links">
+                        <A href=format!("{BASE_URL}/c/{id}") exact=true attr:class="navbar-link">
+                            {move_tr!("view-full-sheet")}
+                        </A>
+                        <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link navbar-link-summary">
+                            {move_tr!("view-summary")}
+                        </A>
+                    </div>
                 })}
                 <div class="navbar-ref">
                     <button
