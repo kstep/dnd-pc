@@ -276,6 +276,12 @@ ref-languages = Языки
 pool-arcane = Магические ячейки
 pool-pact = Ячейки пакта
 
+## Быстрый старт
+quick-start-title = Быстрый старт
+quick-start-generation = Характеристики
+quick-start-done = Перейти к листу персонажа
+quick-start-applied = Применено
+
 ## Облачная синхронизация
 sync-disabled = Офлайн
 sync-connecting = Подключение...

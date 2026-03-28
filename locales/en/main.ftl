@@ -281,6 +281,12 @@ ref-languages = Languages
 pool-arcane = Arcane Slots
 pool-pact = Pact Slots
 
+## Quick Start
+quick-start-title = Quick Start
+quick-start-generation = Ability Scores
+quick-start-done = Go to Character Sheet
+quick-start-applied = Applied
+
 ## Cloud sync
 sync-disabled = Offline
 sync-connecting = Connecting...

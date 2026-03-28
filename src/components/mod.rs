@@ -1,8 +1,10 @@
 pub mod ability_score_block;
 pub mod args_modal;
+pub mod background_field;
 pub mod cast_button;
 pub mod character_card;
 pub mod character_header;
+pub mod classes_section;
 pub mod datalist_input;
 pub mod dice_pool_input;
 pub mod effects_calc_modal;
@@ -19,6 +21,7 @@ pub mod panel;
 pub mod panels;
 pub mod resource_slot;
 pub mod skill_row;
+pub mod species_field;
 pub mod summary;
 pub mod summary_header;
 pub mod summary_list;
