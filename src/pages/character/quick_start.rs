@@ -20,92 +20,17 @@ pub fn QuickStart() -> impl IntoView {
     let generation_method = RwSignal::new(String::new());
 
     let generation_options = Memo::new(move |_| {
-        let character = store.read();
         registry.with_features_index(|idx| {
             idx.values()
-                .filter(|feat| {
-                    feat.selectable
-                        && feat.name.starts_with("Generation:")
-                        && feat.meets_prerequisites(&character)
-                })
+                .filter(|feat| feat.selectable && feat.name.starts_with("Generation:"))
                 .map(|feat| (feat.name.clone(), feat.label().to_string()))
                 .collect::<Vec<_>>()
         })
     });
 
-    let generation_applied = Memo::new(move |_| {
-        let features = store.features().read();
-        features
-            .iter()
-            .any(|feature| feature.name.starts_with("Generation:") && feature.applied)
-    });
-
-    let apply_generation = move |_| {
-        let name = generation_method.get_untracked();
-        if name.is_empty() {
-            return;
-        }
-
-        store.features().write().push(Feature {
-            name: name.clone(),
-            ..Feature::default()
-        });
-
-        if let Some(pending) =
-            store.with_untracked(|character| registry.feature_needs_args(character, &name))
-        {
-            let feat_name = StoredValue::new(name);
-            apply_with_args_modal(vec![pending], move |args_map| {
-                let name = feat_name.get_value();
-                let identity = store.with_untracked(|character| character.identity.clone());
-                let level = store.with_untracked(|character| character.level());
-                registry.with_feature_source(&identity, &name, |feat_def, source| {
-                    let args = args_map.and_then(|map| map.get(name.as_str()).cloned());
-                    store.update(|character| {
-                        feat_def.apply_with_args(level, character, source.as_ref(), args)
-                    });
-                });
-            });
-        } else {
-            let identity = store.with_untracked(|character| character.identity.clone());
-            let level = store.with_untracked(|character| character.level());
-            registry.with_feature_source(&identity, &name, |feat_def, source| {
-                store.update(|character| feat_def.apply(level, character, source.as_ref()));
-            });
-        }
-    };
-
-    // --- Create: apply everything at once ---
+    // --- Create: apply generation → species → background → class ---
     let on_create = move |_| {
-        // Apply species if selected and not yet applied
-        let species = store.identity().species().get_untracked();
-        if !species.is_empty()
-            && !store.identity().species_applied().get_untracked()
-            && registry.species().has(&species)
-        {
-            let pending = store
-                .with_untracked(|character| {
-                    registry
-                        .species()
-                        .with(&character.identity.species, |species_def| {
-                            registry.pending_args_for_features(
-                                character,
-                                species_def.features.iter().map(String::as_str),
-                            )
-                        })
-                })
-                .unwrap_or_default();
-            if !pending.is_empty() {
-                apply_with_args_modal(pending, move |args_map| {
-                    store.update(|character| registry.apply_species(character, args_map));
-                    apply_background_and_class(store, registry);
-                });
-                return;
-            }
-            store.update(|character| registry.apply_species(character, None));
-        }
-
-        apply_background_and_class(store, registry);
+        apply_generation(store, registry, generation_method);
     };
 
     let on_skip = move |_| {
@@ -160,16 +85,6 @@ pub fn QuickStart() -> impl IntoView {
                         }
                     </For>
                 </div>
-                <Show when=move || {
-                    !generation_method.get().is_empty() && !generation_applied.get()
-                }>
-                    <button class="btn-primary" on:click=apply_generation>
-                        {move_tr!("btn-apply-feature")}
-                    </button>
-                </Show>
-                <Show when=move || generation_applied.get()>
-                    <span class="generation-applied">{move_tr!("quick-start-applied")}</span>
-                </Show>
             </div>
 
             <div class="quick-start-section">
@@ -199,7 +114,97 @@ pub fn QuickStart() -> impl IntoView {
     }
 }
 
-fn apply_background_and_class(store: Store<Character>, registry: RulesRegistry) {
+/// Step 1: apply selected generation feature, then continue to species.
+fn apply_generation(
+    store: Store<Character>,
+    registry: RulesRegistry,
+    generation_method: RwSignal<String>,
+) {
+    let name = generation_method.get_untracked();
+    if name.is_empty() {
+        apply_species(store, registry);
+        return;
+    }
+
+    // Check if already applied
+    let already_applied = store.with_untracked(|character| {
+        character
+            .features
+            .iter()
+            .any(|feature| feature.name == name && feature.applied)
+    });
+    if already_applied {
+        apply_species(store, registry);
+        return;
+    }
+
+    // Add the feature entry
+    store.features().write().push(Feature {
+        name: name.clone(),
+        ..Feature::default()
+    });
+
+    // Apply (may open ArgsModal for Point Buy / Preset)
+    if let Some(pending) =
+        store.with_untracked(|character| registry.feature_needs_args(character, &name))
+    {
+        let feat_name = StoredValue::new(name);
+        apply_with_args_modal(vec![pending], move |args_map| {
+            let name = feat_name.get_value();
+            let identity = store.with_untracked(|character| character.identity.clone());
+            let level = store.with_untracked(|character| character.level());
+            registry.with_feature_source(&identity, &name, |feat_def, source| {
+                let args = args_map.and_then(|map| map.get(name.as_str()).cloned());
+                store.update(|character| {
+                    feat_def.apply_with_args(level, character, source.as_ref(), args)
+                });
+            });
+            apply_species(store, registry);
+        });
+    } else {
+        let identity = store.with_untracked(|character| character.identity.clone());
+        let level = store.with_untracked(|character| character.level());
+        registry.with_feature_source(&identity, &name, |feat_def, source| {
+            store.update(|character| feat_def.apply(level, character, source.as_ref()));
+        });
+        apply_species(store, registry);
+    }
+}
+
+/// Step 2: apply species, then continue to background.
+fn apply_species(store: Store<Character>, registry: RulesRegistry) {
+    let species = store.identity().species().get_untracked();
+    if !species.is_empty()
+        && !store.identity().species_applied().get_untracked()
+        && registry.species().has(&species)
+    {
+        let pending = store
+            .with_untracked(|character| {
+                registry
+                    .species()
+                    .with(&character.identity.species, |species_def| {
+                        registry.pending_args_for_features(
+                            character,
+                            species_def.features.iter().map(String::as_str),
+                        )
+                    })
+            })
+            .unwrap_or_default();
+        if !pending.is_empty() {
+            apply_with_args_modal(pending, move |args_map| {
+                store.update(|character| registry.apply_species(character, args_map));
+                apply_background(store, registry);
+            });
+            return;
+        }
+        store.update(|character| registry.apply_species(character, None));
+    }
+
+    apply_background(store, registry);
+}
+
+/// Step 3: apply background, then continue to class.
+fn apply_background(store: Store<Character>, registry: RulesRegistry) {
     let background = store.identity().background().get_untracked();
     if !background.is_empty()
         && !store.identity().background_applied().get_untracked()
@@ -230,6 +235,7 @@ fn apply_background_and_class(store: Store<Character>, registry: RulesRegistry) 
     apply_class_and_navigate(store, registry);
 }
 
+/// Step 4: apply class level 1, then navigate to sheet.
 fn apply_class_and_navigate(store: Store<Character>, registry: RulesRegistry) {
     let class_name = store.with_untracked(|character| character.identity.classes[0].class.clone());
     if !class_name.is_empty() && registry.classes().has(&class_name) {
