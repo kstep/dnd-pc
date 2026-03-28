@@ -29,7 +29,7 @@ pub fn CharacterList() -> impl IntoView {
         let id = character.id;
         set_characters.set(storage::load_index());
         let navigate = use_navigate();
-        navigate(&format!("/c/{id}"), Default::default());
+        navigate(&format!("/c/{id}/quick-start"), Default::default());
     };
 
     let delete_character = move |id: uuid::Uuid| {
