@@ -10,7 +10,7 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    rules::{ApplyInputs, PendingArgs},
+    rules::{ApplyInputs, PendingInputs},
 };
 
 type ArgsCallback = Box<dyn Fn(ApplyInputs) + Send + Sync>;
@@ -22,7 +22,7 @@ type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
 #[derive(Clone, Copy)]
 pub struct ArgsModalCtx {
     show: RwSignal<bool>,
-    pending: RwSignal<Vec<PendingArgs>>,
+    pending: RwSignal<Vec<PendingInputs>>,
     callback: StoredValue<RwSignal<Option<StoredValue<ArgsCallback>>>>,
 }
 
@@ -39,7 +39,7 @@ impl ArgsModalCtx {
     /// submits, `on_complete` is called with the collected `ApplyInputs`.
     pub fn open(
         &self,
-        pending: Vec<PendingArgs>,
+        pending: Vec<PendingInputs>,
         on_complete: impl Fn(ApplyInputs) + Send + Sync + 'static,
     ) {
         self.pending.set(pending);
@@ -61,13 +61,13 @@ impl ArgsModalCtx {
 
 #[component]
 fn ArgsFeatureInput(
-    pending_args: PendingArgs,
+    pending_inputs: PendingInputs,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
-    let feature_name = pending_args.feature_name.clone();
-    let description = pending_args.feature_description.clone();
+    let feature_name = pending_inputs.feature_name.clone();
+    let description = pending_inputs.feature_description.clone();
     let has_description = !description.is_empty();
 
     // Collect signal groups for all exprs of this feature
@@ -77,7 +77,7 @@ fn ArgsFeatureInput(
     let name_for_signals = feature_name.clone();
     let name_for_dice = feature_name.clone();
 
-    let expr_views = pending_args
+    let expr_views = pending_inputs
         .exprs
         .into_iter()
         .map(|expr| {
@@ -111,7 +111,7 @@ fn ArgsFeatureInput(
 
     view! {
         <div class="args-modal-feature">
-            <h4>{pending_args.feature_label.clone()}</h4>
+            <h4>{pending_inputs.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
@@ -140,8 +140,8 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let feature_views = pending
                     .into_iter()
-                    .map(|pending_args| {
-                        view! { <ArgsFeatureInput pending_args all_signals all_dice all_valid /> }
+                    .map(|pending_inputs| {
+                        view! { <ArgsFeatureInput pending_inputs all_signals all_dice all_valid /> }
                     })
                     .collect_view();
 

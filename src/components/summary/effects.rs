@@ -281,7 +281,7 @@ pub fn EffectsBlock() -> impl IntoView {
             }}
 
             // Dice modal using ExprArgsInput
-            <Modal show=show_dice_modal title="Dice Rolls">
+            <Modal show=show_dice_modal title=move_tr!("dice-rolls-title")>
                 {move || {
                     if !show_dice_modal.get() {
                         return None;
@@ -325,7 +325,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             <div class="dice-pool-footer">
                                 <button type="submit" class="btn-confirm">
                                     <Icon name="check" size=16 />
-                                    " Confirm"
+                                    " " {move_tr!("btn-confirm")}
                                 </button>
                             </div>
                         </form>

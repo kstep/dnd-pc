@@ -243,6 +243,8 @@ effect-name = Название эффекта
 effect-expr = Выражение (опционально)
 effect-dice = Кости
 effect-reroll = Перебросить кости
+dice-rolls-title = Броски костей
+btn-confirm = Подтвердить
 apply-effect = Применить эффект
 
 ## Справочные страницы

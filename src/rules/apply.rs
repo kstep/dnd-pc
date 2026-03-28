@@ -26,7 +26,7 @@ pub struct ApplyInputs {
 /// and/or dice rolls). Each expression in `exprs` gets its own independent
 /// ARG context and dice pool.
 #[derive(Clone, PartialEq)]
-pub struct PendingArgs {
+pub struct PendingInputs {
     pub feature_name: String,
     pub feature_label: String,
     pub feature_description: String,
@@ -377,7 +377,7 @@ impl RulesRegistry {
         character: &Character,
         class_idx: usize,
         level: u32,
-    ) -> Vec<PendingArgs> {
+    ) -> Vec<PendingInputs> {
         let Some(class_level) = character.identity.classes.get(class_idx) else {
             return Vec::new();
         };
@@ -412,7 +412,7 @@ impl RulesRegistry {
                 }
                 let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
@@ -435,7 +435,7 @@ impl RulesRegistry {
                 }
                 let exprs = feat.interactive_exprs(WhenCondition::OnLevelUp, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feature.name.clone(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
@@ -449,7 +449,7 @@ impl RulesRegistry {
 
     /// Check if a single feature (by name) needs user interaction for its
     /// apply (ARG values or dice rolls).
-    pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingArgs> {
+    pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingInputs> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(name)?;
             let when = if character.is_feature_pending(name) {
@@ -458,7 +458,7 @@ impl RulesRegistry {
                 WhenCondition::OnLevelUp
             };
             let exprs = feat.interactive_exprs(when, character);
-            (!exprs.is_empty()).then_some(PendingArgs {
+            (!exprs.is_empty()).then_some(PendingInputs {
                 feature_name: name.to_string(),
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
@@ -489,7 +489,7 @@ impl RulesRegistry {
         &self,
         character: &Character,
         feature_names: impl Iterator<Item = &'a str>,
-    ) -> Vec<PendingArgs> {
+    ) -> Vec<PendingInputs> {
         let mut result = Vec::new();
         self.with_features_index_untracked(|features_index| {
             for feat_name in feature_names {
@@ -507,7 +507,7 @@ impl RulesRegistry {
                 };
                 let exprs = feat.interactive_exprs(when, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
