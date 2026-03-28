@@ -6,10 +6,10 @@ use reactive_stores::Store;
 use crate::{
     components::{
         background_field::BackgroundField, character_header::apply_with_args_modal,
-        classes_section::ClassesSection, species_field::SpeciesField,
+        class_field::ClassField, species_field::SpeciesField,
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature},
-    rules::RulesRegistry,
+    rules::{DefinitionStore, RulesRegistry},
 };
 
 #[component]
@@ -46,17 +46,14 @@ pub fn QuickStart() -> impl IntoView {
             return;
         }
 
-        // Add the feature to the character's feature list
         store.features().write().push(Feature {
             name: name.clone(),
             ..Feature::default()
         });
 
-        // Apply it (may open ArgsModal for Point Buy / Preset)
         if let Some(pending) =
             store.with_untracked(|character| registry.feature_needs_args(character, &name))
         {
-            // Store name in a signal so the closure is Copy
             let feat_name = StoredValue::new(name);
             apply_with_args_modal(vec![pending], move |args_map| {
                 let name = feat_name.get_value();
@@ -78,10 +75,41 @@ pub fn QuickStart() -> impl IntoView {
         }
     };
 
-    let on_done = move |_| {
-        let id = store.read_untracked().id;
-        let navigate = use_navigate();
-        navigate(&format!("/c/{id}"), Default::default());
+    // --- Create: apply everything at once ---
+    let on_create = move |_| {
+        // Apply species if selected and not yet applied
+        let species = store.identity().species().get_untracked();
+        if !species.is_empty()
+            && !store.identity().species_applied().get_untracked()
+            && registry.species().has(&species)
+        {
+            let pending = store
+                .with_untracked(|character| {
+                    registry
+                        .species()
+                        .with(&character.identity.species, |species_def| {
+                            registry.pending_args_for_features(
+                                character,
+                                species_def.features.iter().map(String::as_str),
+                            )
+                        })
+                })
+                .unwrap_or_default();
+            if !pending.is_empty() {
+                apply_with_args_modal(pending, move |args_map| {
+                    store.update(|character| registry.apply_species(character, args_map));
+                    apply_background_and_class(store, registry);
+                });
+                return;
+            }
+            store.update(|character| registry.apply_species(character, None));
+        }
+
+        apply_background_and_class(store, registry);
+    };
+
+    let on_skip = move |_| {
+        navigate_to_sheet(store);
     };
 
     view! {
@@ -154,13 +182,82 @@ pub fn QuickStart() -> impl IntoView {
                 <BackgroundField />
             </div>
 
-            <ClassesSection />
+            <div class="quick-start-section">
+                <label>{move_tr!("class")}</label>
+                <ClassField />
+            </div>
 
             <div class="quick-start-actions">
-                <button class="btn-primary" on:click=on_done>
-                    {move_tr!("quick-start-done")}
+                <button class="btn-primary" on:click=on_create>
+                    {move_tr!("quick-start-create")}
+                </button>
+                <button on:click=on_skip>
+                    {move_tr!("quick-start-skip")}
                 </button>
             </div>
         </div>
     }
+}
+
+fn apply_background_and_class(store: Store<Character>, registry: RulesRegistry) {
+    let background = store.identity().background().get_untracked();
+    if !background.is_empty()
+        && !store.identity().background_applied().get_untracked()
+        && registry.backgrounds().has(&background)
+    {
+        let pending = store
+            .with_untracked(|character| {
+                registry
+                    .backgrounds()
+                    .with(&character.identity.background, |bg_def| {
+                        registry.pending_args_for_features(
+                            character,
+                            bg_def.features.iter().map(String::as_str),
+                        )
+                    })
+            })
+            .unwrap_or_default();
+        if !pending.is_empty() {
+            apply_with_args_modal(pending, move |args_map| {
+                store.update(|character| registry.apply_background(character, args_map));
+                apply_class_and_navigate(store, registry);
+            });
+            return;
+        }
+        store.update(|character| registry.apply_background(character, None));
+    }
+
+    apply_class_and_navigate(store, registry);
+}
+
+fn apply_class_and_navigate(store: Store<Character>, registry: RulesRegistry) {
+    let class_name = store.with_untracked(|character| character.identity.classes[0].class.clone());
+    if !class_name.is_empty() && registry.classes().has(&class_name) {
+        let has_unapplied = store
+            .with_untracked(|character| !character.identity.classes[0].applied_levels.contains(&1));
+        if has_unapplied {
+            let pending =
+                store.with_untracked(|character| registry.features_needing_args(character, 0, 1));
+            if !pending.is_empty() {
+                apply_with_args_modal(pending, move |args_map| {
+                    store.update(|character| {
+                        registry.apply_class_level(character, 0, 1, args_map);
+                    });
+                    navigate_to_sheet(store);
+                });
+                return;
+            }
+            store.update(|character| {
+                registry.apply_class_level(character, 0, 1, None);
+            });
+        }
+    }
+
+    navigate_to_sheet(store);
+}
+
+fn navigate_to_sheet(store: Store<Character>) {
+    let id = store.read_untracked().id;
+    let navigate = use_navigate();
+    navigate(&format!("/c/{id}"), Default::default());
 }

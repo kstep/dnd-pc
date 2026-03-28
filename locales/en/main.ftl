@@ -284,7 +284,8 @@ pool-pact = Pact Slots
 ## Quick Start
 quick-start-title = Quick Start
 quick-start-generation = Ability Scores
-quick-start-done = Go to Character Sheet
+quick-start-create = Create Character
+quick-start-skip = Skip
 quick-start-applied = Applied
 
 ## Cloud sync

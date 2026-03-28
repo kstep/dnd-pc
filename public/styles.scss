@@ -385,6 +385,94 @@ input[type="checkbox"] {
   }
 }
 
+/* --------------------- Quick Start Page ---------------------- */
+.quick-start-page {
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-4);
+    color: var(--panel-header);
+  }
+}
+
+.quick-start-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-2);
+  padding: var(--size-3);
+
+  >label {
+    display: block;
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--size-2);
+  }
+
+  input[type="text"] {
+    width: 100%;
+  }
+
+  .entity-input-row {
+    display: flex;
+    gap: var(--size-1);
+    align-items: center;
+
+    input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+.generation-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  margin-bottom: var(--size-2);
+}
+
+.generation-option {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+  padding: var(--size-1) var(--size-2);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-size: var(--font-size-1);
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-primary);
+
+  &:hover {
+    border-color: var(--accent);
+  }
+
+  input[type="radio"] {
+    height: auto;
+    width: auto;
+    accent-color: var(--accent);
+  }
+}
+
+.generation-applied {
+  color: var(--success);
+  font-weight: var(--font-weight-6);
+}
+
+.quick-start-actions {
+  display: flex;
+  justify-content: center;
+}
+
 /* --------------------- Character List Page ------------------- */
 .character-list-page {
   text-align: left;
