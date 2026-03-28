@@ -77,9 +77,9 @@ impl PageKind {
     }
 }
 
-pub fn use_page_kind() -> Signal<PageKind> {
+pub fn use_page_kind() -> Memo<PageKind> {
     let pathname = use_location().pathname;
-    Signal::derive(move || {
+    Memo::new(move |_| {
         let path = pathname.read();
         let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
         let first_seg = rest.trim_start_matches('/').split('/').next().unwrap_or("");
