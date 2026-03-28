@@ -1,0 +1,273 @@
+{
+  "default": {
+    "first": [
+      "Alaric", "Brynn", "Cael", "Dahlia", "Elowen",
+      "Fenn", "Galen", "Hestia", "Ivar", "Jael",
+      "Kira", "Linden", "Maren", "Niall", "Orla",
+      "Penn", "Quinn", "Rowan", "Sage", "Theron",
+      "Vale", "Wren", "Xara", "Yara", "Zephyr"
+    ],
+    "last": [
+      "Ashford", "Blackthorn", "Crestfall", "Dawnmere", "Everhart",
+      "Foxglove", "Greywood", "Holloway", "Ironvale", "Kestrel",
+      "Larkwood", "Moonshadow", "Nighthollow", "Oakridge", "Proudheart",
+      "Ravencrest", "Silverlake", "Thornwall", "Windmere", "Yarrow"
+    ]
+  },
+  "Human": {
+    "species": ["Human"],
+    "first": [
+      "Aldric", "Beren", "Cassian", "Dorian", "Elena",
+      "Fabian", "Giselle", "Hugo", "Isolde", "Jareth",
+      "Katarina", "Leander", "Mireille", "Nikolai", "Ophelia",
+      "Percival", "Rosalind", "Sebastian", "Tatiana", "Viktor",
+      "Willem", "Yvaine", "Zara", "Armand", "Brielle"
+    ],
+    "last": [
+      "Ashworth", "Blackwood", "Carrington", "Dunwall", "Fairchild",
+      "Galsworth", "Hartwell", "Kingsley", "Lancaster", "Montague",
+      "Northcott", "Pemberton", "Ravensdale", "Stirling", "Thorne",
+      "Valemont", "Whitmore", "Ashdown", "Beaumont", "Coleridge"
+    ]
+  },
+  "Elf": {
+    "species": ["High Elf", "Wood Elf", "Faerie"],
+    "first": [
+      "Aelindra", "Caelum", "Elanor", "Faenor", "Galadria",
+      "Ilyana", "Lirael", "Miriel", "Naelin", "Oristhan",
+      "Quelenna", "Rilindel", "Sylvanis", "Thalion", "Vaelara",
+      "Aelar", "Baelis", "Daenys", "Elaris", "Faelan",
+      "Ithilwen", "Lorien", "Nymira", "Soveliss", "Yavanna"
+    ],
+    "last": [
+      "Amastacia", "Brightwillow", "Dawnwhisper", "Galanodel", "Holimion",
+      "Ilphelkiir", "Liadon", "Meliamne", "Nailo", "Siannodel",
+      "Starweaver", "Xiloscient", "Moonbrook", "Silverfrond", "Windrunner",
+      "Greenbough", "Nightbreeze", "Sunshadow", "Wildgrove", "Autumnveil"
+    ]
+  },
+  "Drow": {
+    "species": ["Drow"],
+    "first": [
+      "Drizzt", "Viconia", "Pharaun", "Quenthel", "Zaknafein",
+      "Malice", "Jarlaxle", "Liriel", "Valas", "Halisstra",
+      "Nimor", "Sharlotta", "Zekith", "Ryld", "Kalannar",
+      "Ilivarra", "Nalfein", "Ssinjin", "Briza", "Tathlyn",
+      "Kelnozz", "Ulviira", "Xune", "Malaggar", "Nathrae"
+    ],
+    "last": [
+      "Do'Urden", "Baenre", "DeVir", "Oblodra", "Xorlarrin",
+      "Mizzrym", "Fey-Branche", "Kenafin", "Tlabbar", "Hunzrin",
+      "Vandree", "Despana", "Symryvvin", "Melarn", "Tuin",
+      "Abaeir", "Hlaund", "Noquar", "Srune'lett", "Zolond"
+    ]
+  },
+  "Dwarf": {
+    "species": ["Dwarf"],
+    "first": [
+      "Adrik", "Barendd", "Dagnal", "Eberk", "Falkrunn",
+      "Gurdis", "Harbek", "Ilde", "Kathra", "Kildrak",
+      "Mardred", "Oskar", "Riswynn", "Rurik", "Tordek",
+      "Thoradin", "Ulfgar", "Vistra", "Whurbin", "Amber",
+      "Bruenor", "Diesa", "Eldeth", "Gardain", "Torbera"
+    ],
+    "last": [
+      "Battlehammer", "Brawnanvil", "Fireforge", "Frostbeard", "Gorunn",
+      "Holderhek", "Ironfist", "Loderr", "Lutgehr", "Rumnaheim",
+      "Strakeln", "Torunn", "Ungart", "Balderk", "Dankil",
+      "Hammerstone", "Coppervein", "Stoneshield", "Deepdelver", "Granitehelm"
+    ]
+  },
+  "Halfling": {
+    "species": ["Halfling"],
+    "first": [
+      "Andry", "Bree", "Callie", "Corrin", "Eldon",
+      "Garret", "Jillian", "Kithri", "Lidda", "Merric",
+      "Nedda", "Osborn", "Paela", "Roscoe", "Seraphina",
+      "Shaena", "Trym", "Vani", "Wellby", "Cade",
+      "Fenn", "Hilda", "Lavinia", "Milo", "Pip"
+    ],
+    "last": [
+      "Brushgather", "Goodbarrel", "Greenbottle", "Highhill", "Hilltopple",
+      "Leagallow", "Tealeaf", "Thorngage", "Tosscobble", "Underbough",
+      "Warmwater", "Brandybuck", "Copperkettle", "Honeydew", "Lightfoot",
+      "Merryweather", "Nimblefingers", "Proudfoot", "Sweetwater", "Thistledown"
+    ]
+  },
+  "Tiefling": {
+    "species": ["Tiefling", "Tiefling (Abyssal)", "Tiefling (Infernal)", "Tiefling (Chthonic)"],
+    "first": [
+      "Akta", "Bryseis", "Criella", "Damakos", "Ekemon",
+      "Iados", "Kairon", "Lerissa", "Makos", "Nemeia",
+      "Orianna", "Pelaios", "Rieta", "Skamos", "Therai",
+      "Valcis", "Zariel", "Amnon", "Morthos", "Carrion",
+      "Malcanthet", "Nyx", "Raven", "Sorrow", "Torment"
+    ],
+    "last": [
+      "Ashmantle", "Brimstone", "Cinderfell", "Darkmore", "Emberthorn",
+      "Fellhorn", "Grimslade", "Hellstrand", "Infernex", "Nightflame",
+      "Shadowveil", "Thornblood", "Voidborn", "Wraithsong", "Duskwalker",
+      "Fiendtongue", "Grimshaw", "Nethercrest", "Soulforge", "Ashenmark"
+    ]
+  },
+  "Dragonborn": {
+    "species": ["Dragonborn"],
+    "first": [
+      "Arjhan", "Balasar", "Bharash", "Donaar", "Ghesh",
+      "Heskan", "Kriv", "Medrash", "Mehen", "Nadarr",
+      "Pandjed", "Patrin", "Rhogar", "Shamash", "Shedinn",
+      "Tarhun", "Torinn", "Akra", "Biri", "Daar",
+      "Farideh", "Harann", "Jheri", "Kava", "Surina"
+    ],
+    "last": [
+      "Clethtinthiallor", "Daardendrian", "Delmirev", "Drachedandion", "Fenkenkabradon",
+      "Kepeshkmolik", "Kerrhylon", "Kimbatuul", "Linxakasendalor", "Myastan",
+      "Nemmonis", "Norixius", "Ophinshtalajiir", "Prexijandilin", "Shestendeliath",
+      "Turnuroth", "Verthisathurgiesh", "Yarjerit", "Flamescale", "Stormbreath"
+    ]
+  },
+  "Gnome": {
+    "species": ["Forest Gnome", "Rock Gnome"],
+    "first": [
+      "Alston", "Brocc", "Dimble", "Ellywick", "Frug",
+      "Gerbo", "Jebeddo", "Lilli", "Nissa", "Orryn",
+      "Pock", "Roywyn", "Seebo", "Warryn", "Wrenn",
+      "Bimpnottin", "Caramip", "Donella", "Glim", "Zook",
+      "Tink", "Namfoodle", "Roondar", "Fibble", "Quink"
+    ],
+    "last": [
+      "Beren", "Daergel", "Folkor", "Garrick", "Murnig",
+      "Nackle", "Ningel", "Raulnor", "Scheppen", "Timbers",
+      "Turen", "Cogsworth", "Fizzlebang", "Glittergem", "Sparkwhistle",
+      "Tinkertop", "Wobblecog", "Brightsprocket", "Gemcutter", "Clockwise"
+    ]
+  },
+  "Orc": {
+    "species": ["Orc", "Goliath"],
+    "first": [
+      "Baggi", "Dench", "Feng", "Gell", "Henk",
+      "Holg", "Imsh", "Keth", "Krusk", "Ront",
+      "Shump", "Thokk", "Ilneval", "Luthic", "Yevelda",
+      "Broud", "Grath", "Murook", "Nogu", "Ovak",
+      "Shautha", "Thuul", "Varg", "Urzul", "Zegran"
+    ],
+    "last": [
+      "Bonebreaker", "Doomfist", "Ironjaw", "Skullcrusher", "Stonegrinder",
+      "Thunderfist", "Warchief", "Bloodaxe", "Grimtusk", "Steelclaw",
+      "Ashrender", "Gorehorn", "Nighthowl", "Stormrage", "Battlescar",
+      "Frostmane", "Earthshaker", "Wolfsbane", "Mountainborn", "Windstrider"
+    ]
+  },
+  "Aasimar": {
+    "species": ["Aasimar"],
+    "first": [
+      "Arael", "Ceriel", "Damiel", "Elanil", "Galiel",
+      "Hazael", "Iorel", "Jophiel", "Kael", "Lurel",
+      "Miasiel", "Nuriel", "Oriel", "Paliel", "Raziel",
+      "Sariel", "Tamiel", "Uriel", "Vasael", "Zariel",
+      "Anariel", "Bethiel", "Cassiel", "Hadriel", "Seraphiel"
+    ],
+    "last": [
+      "Brightborn", "Celestine", "Dawnbringer", "Everlight", "Gloryheart",
+      "Haloweave", "Lightward", "Radiance", "Starblessed", "Sunmantle",
+      "Truegrace", "Valorshield", "Dawnkeeper", "Goldenhand", "Holyfire",
+      "Mercywing", "Pureheart", "Silverglow", "Divinemark", "Gracewind"
+    ]
+  },
+  "Changeling": {
+    "species": ["Changeling", "Lorwyn Changeling"],
+    "first": [
+      "Bin", "Dox", "Fie", "Haze", "Jin",
+      "Lam", "Nix", "Ot", "Pax", "Ruz",
+      "Sim", "Vex", "Wil", "Yug", "Zil",
+      "Ash", "Crypt", "Drift", "Mask", "Shade",
+      "Slip", "Trick", "Veil", "Wisp", "Echo"
+    ],
+    "last": [
+      "Faceless", "Manynames", "Noneborn", "Shifting", "Thousandface",
+      "Mirrorkin", "Blankslate", "Doppel", "Formless", "Greyface",
+      "Lastmask", "Nomask", "Skinwalker", "Trueshape", "Voidface",
+      "Anywho", "Borrowed", "Changer", "Everone", "Noname"
+    ]
+  },
+  "Warforged": {
+    "species": ["Warforged"],
+    "first": [
+      "Anchor", "Bastion", "Cutter", "Dagger", "Envoy",
+      "Forge", "Graven", "Hammer", "Iron", "Judge",
+      "Keeper", "Lance", "Mason", "Noble", "Oak",
+      "Pierce", "Rampart", "Scout", "Tower", "Vanguard",
+      "Ward", "Bulwark", "Crucible", "Sentinel", "Warden"
+    ],
+    "last": [
+      "Steelborn", "Ironcast", "Forgewright", "Gearsmith", "Warsmith",
+      "Titanbuilt", "Bronzeheart", "Copperveins", "Mithralcore", "Adamantine",
+      "Boltjoint", "Clockwork", "Geargrind", "Hammerbuilt", "Pistonweld",
+      "Platemail", "Rivetbound", "Springcoil", "Steamforged", "Tincrank"
+    ]
+  },
+  "Dhampir": {
+    "species": ["Dhampir"],
+    "first": [
+      "Alucard", "Carmilla", "Damien", "Elsbeth", "Grimvald",
+      "Helena", "Lucien", "Mircalla", "Nikolaus", "Orlock",
+      "Ravenka", "Severin", "Tatyana", "Urien", "Vladara",
+      "Cassius", "Desdemona", "Erzsebet", "Malakai", "Seraphina",
+      "Drusilla", "Lazarus", "Morwen", "Nocturne", "Vesper"
+    ],
+    "last": [
+      "Blackvein", "Crimsonthirst", "Duskblood", "Eveningstar", "Gravemire",
+      "Hollowcrest", "Nightthorn", "Palebloom", "Ravensblood", "Shadowmere",
+      "Thornheart", "Twilight", "Darkholme", "Bleakmoore", "Coldvein",
+      "Deathwhisper", "Fogsworth", "Grimcourt", "Moonbane", "Silentgrave"
+    ]
+  },
+  "Shifter": {
+    "species": ["Shifter"],
+    "first": [
+      "Ash", "Brook", "Claw", "Dusk", "Fang",
+      "Gale", "Howl", "Ivy", "Keen", "Lark",
+      "Moss", "Night", "Pine", "Rain", "Storm",
+      "Thorn", "Vale", "Wild", "Blaze", "Ember",
+      "Frost", "Hunt", "Moon", "Rush", "Wren"
+    ],
+    "last": [
+      "Beasthide", "Cliffwalk", "Longstride", "Longtooth", "Razorclaw",
+      "Swiftstride", "Wildhunt", "Moonsnarl", "Nightprowl", "Shadowstalk",
+      "Stormpelt", "Thornback", "Windrunner", "Ironfang", "Greymane",
+      "Duskfur", "Firepelt", "Keeneye", "Swiftclaw", "Wildfang"
+    ]
+  },
+  "Kalashtar": {
+    "species": ["Kalashtar", "Khoravar"],
+    "first": [
+      "Halkhad", "Kanatash", "Lanarath", "Minharath", "Nevitash",
+      "Parmelk", "Selkatari", "Thinharath", "Ganitari", "Havakhad",
+      "Lanharath", "Malharath", "Quortari", "Havrakhad", "Sorkatari",
+      "Vakri", "Endaltari", "Dolkhad", "Novakri", "Ashana",
+      "Ishara", "Mevakri", "Solkhad", "Toranatash", "Velaratari"
+    ],
+    "last": [
+      "Dreamwalker", "Mindkeeper", "Spiritbound", "Thoughtweave", "Voidmind",
+      "Duskdreamer", "Lightseer", "Quietsoul", "Sagewind", "Truemind",
+      "Deepthought", "Etherveil", "Mindforge", "Psionheart", "Sleepward",
+      "Calmspirit", "Harmonypath", "Innerpeace", "Mentalshield", "Wiseheart"
+    ]
+  },
+  "Flamekin": {
+    "species": ["Flamekin", "Rimekin", "Boggart"],
+    "first": [
+      "Ashling", "Brightspark", "Cinder", "Ember", "Flare",
+      "Glow", "Hearth", "Ignite", "Kindle", "Luma",
+      "Pyre", "Radix", "Scorch", "Tinder", "Warmth",
+      "Blaze", "Coal", "Flame", "Magma", "Smolder",
+      "Spark", "Sear", "Torch", "Wisp", "Char"
+    ],
+    "last": [
+      "Ashfall", "Burnbright", "Cindercore", "Emberheart", "Flamecrest",
+      "Hearthstone", "Kindlewick", "Pyreborn", "Scorchmark", "Sparkweave",
+      "Ashbloom", "Coalvein", "Firebrand", "Glowember", "Heatforge",
+      "Lightfire", "Moltencore", "Smolderglow", "Warmlight", "Blazeward"
+    ]
+  }
+}
