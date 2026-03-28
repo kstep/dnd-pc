@@ -49,13 +49,16 @@ impl ArgsModalCtx {
     }
 
     fn complete(&self, inputs: ApplyInputs) {
+        // Close the modal and clear the callback BEFORE invoking it, so
+        // that the callback can open a new modal (e.g. chained quick start
+        // steps) without it being immediately closed.
+        self.show.set(false);
         self.callback.with_value(|signal| {
             if let Some(callback) = signal.get_untracked() {
+                signal.set(None);
                 callback.with_value(|on_complete| on_complete(inputs));
             }
-            signal.set(None);
         });
-        self.show.set(false);
     }
 }
 
