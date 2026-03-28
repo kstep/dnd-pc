@@ -1,11 +1,11 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, Expr, Op},
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, Expr, Op},
     model::{Attribute, Character},
 };
 
@@ -28,8 +28,6 @@ impl Context<Attribute, i32> for ArgContext<'_> {
         Err(expr::Error::read_only_var(var))
     }
 }
-
-// --- FormBuilder: view-building stack mirroring Formatter ---
 
 // --- FormBuilder: view-building stack mirroring Formatter ---
 
@@ -242,7 +240,7 @@ fn form_block_ops(
                                 type="number"
                                 class="expr-form-input"
                                 prop:value=move || signal.get()
-                                on:change=move |ev| {
+                                on:input=move |ev| {
                                     let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
                                     signal.set(value);
                                 }
@@ -293,12 +291,40 @@ fn form_block_ops(
 
 // --- ExprArgsInput ---
 
-/// The rendered parts of an expression args input: arg signals and validation
-/// memo. Returned by `ExprArgsInput` via the `on_ready` callback so the parent
-/// can wire up a shared submit button.
+/// Dice values for one die type: sides and per-die signals.
+/// A value of 0 means the input is not yet filled (dice are always ≥ 1).
+pub type DiceGroupSignals = BTreeMap<u32, Vec<RwSignal<u32>>>;
+
+/// The rendered parts of an expression input: arg signals, dice signals,
+/// and validation memo. Returned by `ExprArgsInput` via the `on_ready`
+/// callback so the parent can wire up a shared submit button.
 pub struct ExprArgsInputParts {
-    pub rw_signals: Vec<RwSignal<i32>>,
+    pub arg_signals: Vec<RwSignal<i32>>,
+    pub dice_signals: DiceGroupSignals,
     pub is_valid: Memo<bool>,
+}
+
+impl ExprArgsInputParts {
+    /// Read all dice input values and return a `DicePool`.
+    pub fn collect_dice(&self) -> DicePool {
+        collect_dice_pool(&self.dice_signals)
+    }
+}
+
+/// Read dice signal values into a `DicePool`. Used by ArgsModal and effects.
+pub fn collect_dice_pool(groups: &DiceGroupSignals) -> DicePool {
+    let map: BTreeMap<u32, Vec<u32>> = groups
+        .iter()
+        .map(|(&sides, signals)| {
+            let values: Vec<u32> = signals
+                .iter()
+                .map(|signal| signal.get_untracked())
+                .filter(|&value| value > 0)
+                .collect();
+            (sides, values)
+        })
+        .collect();
+    map.into()
 }
 
 fn is_arg(var: &Attribute) -> Option<u8> {
@@ -308,7 +334,61 @@ fn is_arg(var: &Attribute) -> Option<u8> {
     }
 }
 
-/// Renders the interactive formula with number inputs for `ARG.n` variables.
+/// Build dice input groups view from roll requirements.
+/// Returns the signal map and the rendered view.
+fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyView) {
+    let groups: DiceGroupSignals = dice_rolls
+        .iter()
+        .map(|(&sides, &count)| {
+            let signals: Vec<_> = (0..count).map(|_| RwSignal::new(0u32)).collect();
+            (sides, signals)
+        })
+        .collect();
+
+    let mut first = true;
+    let view = groups
+        .iter()
+        .map(|(&sides, signals)| {
+            let input_views = signals
+                .iter()
+                .map(|&signal| {
+                    let is_first = first;
+                    first = false;
+                    view! {
+                        <input
+                            type="number"
+                            min=1
+                            max=sides
+                            required
+                            autofocus=is_first
+                            class="dice-pool-value"
+                            prop:value=move || {
+                                let value = signal.get();
+                                if value == 0 { String::new() } else { value.to_string() }
+                            }
+                            on:input=move |ev| {
+                                let value = event_target_value(&ev).parse::<u32>().unwrap_or(0);
+                                signal.set(value);
+                            }
+                        />
+                    }
+                })
+                .collect_view();
+            view! {
+                <div class="dice-pool-group">
+                    <span class="dice-pool-label">"d" {sides}</span>
+                    <div class="dice-pool-inputs">{input_views}</div>
+                </div>
+            }
+        })
+        .collect_view()
+        .into_any();
+
+    (groups, view)
+}
+
+/// Renders the interactive formula with number inputs for `ARG.n` variables
+/// and dice input groups for any dice rolls in the expression.
 /// No submit button — the parent is responsible for submission. Calls
 /// `on_ready` synchronously during build with the signals and validation memo.
 #[component]
@@ -318,19 +398,23 @@ pub fn ExprArgsInput(
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    // Analyze: determine which ARGs are reachable given character state
+    // Analyze: determine which ARGs are reachable and which dice are needed
     let analysis = {
         let character = store.read_untracked();
         expr.analyze(&*character, is_arg)
     };
 
-    if analysis.active_args.is_empty() {
-        let has_args = expr.has_var(|v| matches!(v, Attribute::Arg(_)));
+    let has_args = !analysis.active_args.is_empty();
+    let has_dice = !analysis.dice_rolls.is_empty();
+
+    if !has_args && !has_dice {
+        let has_any_args = expr.has_var(|v| matches!(v, Attribute::Arg(_)));
         on_ready(ExprArgsInputParts {
-            rw_signals: Vec::new(),
-            is_valid: Memo::new(move |_| !has_args),
+            arg_signals: Vec::new(),
+            dice_signals: BTreeMap::new(),
+            is_valid: Memo::new(move |_| !has_any_args),
         });
-        return Either::Left(if has_args {
+        return Either::Left(if has_any_args {
             Either::Left(view! { <p class="expr-form-empty">{move_tr!("no-eligible-options")}</p> })
         } else {
             Either::Right(view! { <span class="expr-form-plain">{expr.to_string()}</span> })
@@ -339,35 +423,84 @@ pub fn ExprArgsInput(
 
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    // Build form from all blocks, using analysis to filter visible ARGs
-    let mut form_ctx = FormCtx::new(analysis.active_args, i18n);
-    let formula_view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
-        .unwrap_or_else(|err| format!("Error: {err}").into_any());
+    // Build formula view with inline ARG inputs (if any)
+    let formula_view = if has_args {
+        let mut form_ctx = FormCtx::new(analysis.active_args, i18n);
+        let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
+            .unwrap_or_else(|err| format!("Error: {err}").into_any());
 
-    let arg_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
-    let arg_signals_stored = StoredValue::new(arg_signals);
+        let read_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
+        let write_signals = form_ctx.args;
 
-    // Validation: evaluate the full expression with current ARG values
+        Some((view, read_signals, write_signals))
+    } else {
+        None
+    };
+
+    let arg_signals = formula_view
+        .as_ref()
+        .map(|(_, _, write_signals)| write_signals.clone())
+        .unwrap_or_default();
+    let read_signals_stored = formula_view
+        .as_ref()
+        .map(|(_, read_signals, _)| StoredValue::new(read_signals.clone()));
+
+    let formula_el = formula_view.map(|(view, _, _)| view);
+
+    // Build dice input groups (if any)
+    let (dice_signals, dice_groups_el, dice_signals_stored, dice_total_needed) = if has_dice {
+        let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
+        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls);
+        let signals_stored = StoredValue::new(signals.clone());
+        let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
+        (signals, el, Some(signals_stored), total_needed)
+    } else {
+        (BTreeMap::new(), None, None, 0)
+    };
+
+    // Validation: all ARG inputs eval OK AND all dice inputs filled.
+    // Both args and dice use RwSignals, so this Memo is fully reactive.
     let eval_expr = expr.clone();
     let is_valid = Memo::new(move |_| {
-        let character = store.read();
-        arg_signals_stored.with_value(|signals| {
-            let ctx = ArgContext {
-                character: &character,
-                args: signals,
-            };
-            eval_expr.eval_lenient(&ctx).is_ok()
-        })
+        let args_ok = if let Some(stored) = read_signals_stored {
+            let character = store.read();
+            stored.with_value(|signals| {
+                let ctx = ArgContext {
+                    character: &character,
+                    args: signals,
+                };
+                eval_expr.eval_lenient(&ctx).is_ok()
+            })
+        } else {
+            true
+        };
+
+        let dice_ok = if let Some(stored) = dice_signals_stored {
+            stored.with_value(|groups| {
+                let filled: u32 = groups
+                    .values()
+                    .flat_map(|signals| signals.iter())
+                    .filter(|signal| signal.get() > 0)
+                    .count() as u32;
+                filled == dice_total_needed
+            })
+        } else {
+            true
+        };
+
+        args_ok && dice_ok
     });
 
     on_ready(ExprArgsInputParts {
-        rw_signals: form_ctx.args,
+        arg_signals,
+        dice_signals,
         is_valid,
     });
 
     Either::Right(view! {
         <div class="expr-formula" class:invalid=move || !is_valid.get()>
-            {formula_view}
+            {formula_el}
+            {dice_groups_el}
         </div>
     })
 }

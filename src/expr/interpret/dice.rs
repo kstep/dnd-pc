@@ -15,6 +15,11 @@ impl DicePool {
     pub fn iter(&self) -> DicePoolIter<'_> {
         DicePoolIter(self.0.iter().map(|(&k, v)| (k, v.iter())).collect())
     }
+
+    /// Returns `true` if this pool has no dice values.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
 
 impl fmt::Display for DicePool {

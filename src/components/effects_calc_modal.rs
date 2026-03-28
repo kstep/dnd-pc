@@ -196,19 +196,16 @@ pub fn apply_self_effects_now(
     }
 }
 
-/// Collect dice values from a set of NodeRef groups into a DicePool.
+/// Collect dice values from NodeRef groups into a raw pool map.
+/// Used only by this module's inline dice inputs (which use NodeRefs for
+/// live result recalculation, unlike the signal-based ExprArgsInput).
 fn collect_dice_pool(groups: &BTreeMap<u32, Vec<NodeRef<html::Input>>>) -> BTreeMap<u32, Vec<u32>> {
     groups
         .iter()
         .map(|(&sides, refs)| {
             let values: Vec<u32> = refs
                 .iter()
-                .filter_map(|node_ref| {
-                    node_ref
-                        .get()
-                        .and_then(|el| el.value().parse().ok())
-                        .filter(|&v: &u32| v >= 1 && v <= sides)
-                })
+                .filter_map(|node_ref| node_ref.get().and_then(|el| el.value().parse().ok()))
                 .collect();
             (sides, values)
         })

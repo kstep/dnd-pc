@@ -133,10 +133,11 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                 if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name)) {
                                                     let args_ctx = expect_context::<ArgsModalCtx>();
                                                     let name = name.clone();
-                                                    args_ctx.open(vec![pending], move |args_map| {
+                                                    args_ctx.open(vec![pending], move |inputs| {
                                                         registry.with_feature_source(&identity, &name, |feat_def, source| {
-                                                            let args = args_map.get(name.as_str()).cloned();
-                                                            store.update(|c| feat_def.apply_with_args(level, c, source.as_ref(), args));
+                                                            let args = inputs.args.get(name.as_str()).cloned();
+                                                            let dice = inputs.dice.get(name.as_str()).cloned();
+                                                            store.update(|c| feat_def.apply_with_args(level, c, source.as_ref(), args, dice));
                                                         });
                                                     });
                                                 } else if registry.with_feature_source(&identity, &name, |feat_def, source| {

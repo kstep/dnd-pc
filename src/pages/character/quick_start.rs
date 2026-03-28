@@ -149,14 +149,15 @@ fn apply_generation(
         store.with_untracked(|character| registry.feature_needs_args(character, &name))
     {
         let feat_name = StoredValue::new(name);
-        apply_with_args_modal(vec![pending], move |args_map| {
+        apply_with_args_modal(vec![pending], move |inputs| {
             let name = feat_name.get_value();
             let identity = store.with_untracked(|character| character.identity.clone());
             let level = store.with_untracked(|character| character.level());
             registry.with_feature_source(&identity, &name, |feat_def, source| {
-                let args = args_map.and_then(|map| map.get(name.as_str()).cloned());
+                let args = inputs.and_then(|i| i.args.get(name.as_str()).cloned());
+                let dice = inputs.and_then(|i| i.dice.get(name.as_str()).cloned());
                 store.update(|character| {
-                    feat_def.apply_with_args(level, character, source.as_ref(), args)
+                    feat_def.apply_with_args(level, character, source.as_ref(), args, dice)
                 });
             });
             apply_species(store, registry);
@@ -191,8 +192,8 @@ fn apply_species(store: Store<Character>, registry: RulesRegistry) {
             })
             .unwrap_or_default();
         if !pending.is_empty() {
-            apply_with_args_modal(pending, move |args_map| {
-                store.update(|character| registry.apply_species(character, args_map));
+            apply_with_args_modal(pending, move |inputs| {
+                store.update(|character| registry.apply_species(character, inputs));
                 apply_background(store, registry);
             });
             return;
@@ -223,8 +224,8 @@ fn apply_background(store: Store<Character>, registry: RulesRegistry) {
             })
             .unwrap_or_default();
         if !pending.is_empty() {
-            apply_with_args_modal(pending, move |args_map| {
-                store.update(|character| registry.apply_background(character, args_map));
+            apply_with_args_modal(pending, move |inputs| {
+                store.update(|character| registry.apply_background(character, inputs));
                 apply_class_and_navigate(store, registry);
             });
             return;
@@ -245,9 +246,9 @@ fn apply_class_and_navigate(store: Store<Character>, registry: RulesRegistry) {
             let pending =
                 store.with_untracked(|character| registry.features_needing_args(character, 0, 1));
             if !pending.is_empty() {
-                apply_with_args_modal(pending, move |args_map| {
+                apply_with_args_modal(pending, move |inputs| {
                     store.update(|character| {
-                        registry.apply_class_level(character, 0, 1, args_map);
+                        registry.apply_class_level(character, 0, 1, inputs);
                     });
                     navigate_to_sheet(store);
                 });

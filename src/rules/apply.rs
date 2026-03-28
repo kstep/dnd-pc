@@ -8,15 +8,25 @@ use super::{
     spells::SpellList,
 };
 use crate::{
-    expr::Expr,
+    expr::{DicePool, Expr},
     model::{Attribute, Character, Context, Feature, FeatureSource, FeatureValue},
     rules::RulesRegistry,
 };
 
-/// A feature whose assignment expressions require user-supplied ARG values.
-/// Each expression in `exprs` gets its own independent ARG context.
+/// Bundled user inputs from the args/dice modal: ARG values and preset dice
+/// pools, keyed by feature name. Each inner Vec has one entry per interactive
+/// assignment expression.
+#[derive(Clone, Default)]
+pub struct ApplyInputs {
+    pub args: BTreeMap<String, Vec<Vec<i32>>>,
+    pub dice: BTreeMap<String, Vec<DicePool>>,
+}
+
+/// A feature whose assignment expressions require user interaction (ARG values
+/// and/or dice rolls). Each expression in `exprs` gets its own independent
+/// ARG context and dice pool.
 #[derive(Clone, PartialEq)]
-pub struct PendingArgs {
+pub struct PendingInputs {
     pub feature_name: String,
     pub feature_label: String,
     pub feature_description: String,
@@ -59,12 +69,15 @@ impl RulesRegistry {
             for level in 1..=max_level {
                 let args_map =
                     self.build_replay_args(character, class_idx, level, &mut stored_args);
-                let args_ref = if args_map.is_empty() {
+                let inputs = if args_map.is_empty() {
                     None
                 } else {
-                    Some(&args_map)
+                    Some(ApplyInputs {
+                        args: args_map,
+                        dice: BTreeMap::new(),
+                    })
                 };
-                self.apply_class_level(character, class_idx, level, args_ref);
+                self.apply_class_level(character, class_idx, level, inputs.as_ref());
             }
         }
     }
@@ -232,13 +245,13 @@ impl RulesRegistry {
 
     /// Apply class level-up logic. Handles saving throws, proficiencies,
     /// spell slots, class/species/background features, and HP. Optional
-    /// `args_map` passes user-supplied ARG values to features that need them.
+    /// `inputs` passes user-supplied ARG values and dice pools to features.
     pub fn apply_class_level(
         &self,
         character: &mut Character,
         class_idx: usize,
         level: u32,
-        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
+        inputs: Option<&ApplyInputs>,
     ) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -286,7 +299,7 @@ impl RulesRegistry {
             .collect();
         for feat_name in &applied {
             if let Some(feat) = features_index.get(feat_name.as_str()) {
-                feat.apply_with_args(level, character, Some(&source), None);
+                feat.apply_with_args(level, character, Some(&source), None, None);
             }
         }
 
@@ -318,8 +331,9 @@ impl RulesRegistry {
                     applied: false,
                 });
             }
-            let args = args_map.and_then(|m| m.get(feat_name.as_str())).cloned();
-            feat.apply_with_args(level, character, Some(&source), args);
+            let args = inputs.and_then(|i| i.args.get(feat_name.as_str())).cloned();
+            let dice = inputs.and_then(|i| i.dice.get(feat_name.as_str())).cloned();
+            feat.apply_with_args(level, character, Some(&source), args, dice);
         }
 
         // Re-apply species and background features at new total level
@@ -357,13 +371,13 @@ impl RulesRegistry {
     }
 
     /// Scan features that would be applied at a given class level and return
-    /// those whose assignments require user-supplied ARG values.
+    /// those whose assignments require user interaction (ARG values or dice).
     pub fn features_needing_args(
         &self,
         character: &Character,
         class_idx: usize,
         level: u32,
-    ) -> Vec<PendingArgs> {
+    ) -> Vec<PendingInputs> {
         let Some(class_level) = character.identity.classes.get(class_idx) else {
             return Vec::new();
         };
@@ -396,12 +410,9 @@ impl RulesRegistry {
                 if already_has && !feat.stackable {
                     continue;
                 }
-                let exprs: Vec<_> = feat
-                    .args_exprs(WhenCondition::OnFeatureAdd)
-                    .cloned()
-                    .collect();
+                let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
@@ -422,9 +433,9 @@ impl RulesRegistry {
                 if result.iter().any(|r| r.feature_name == feature.name) {
                     continue;
                 }
-                let exprs: Vec<_> = feat.args_exprs(WhenCondition::OnLevelUp).cloned().collect();
+                let exprs = feat.interactive_exprs(WhenCondition::OnLevelUp, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feature.name.clone(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
@@ -436,8 +447,9 @@ impl RulesRegistry {
         result
     }
 
-    /// Check if a single feature (by name) needs ARG values for its apply.
-    pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingArgs> {
+    /// Check if a single feature (by name) needs user interaction for its
+    /// apply (ARG values or dice rolls).
+    pub fn feature_needs_args(&self, character: &Character, name: &str) -> Option<PendingInputs> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(name)?;
             let when = if character.is_feature_pending(name) {
@@ -445,8 +457,8 @@ impl RulesRegistry {
             } else {
                 WhenCondition::OnLevelUp
             };
-            let exprs: Vec<_> = feat.args_exprs(when).cloned().collect();
-            (!exprs.is_empty()).then_some(PendingArgs {
+            let exprs = feat.interactive_exprs(when, character);
+            (!exprs.is_empty()).then_some(PendingInputs {
                 feature_name: name.to_string(),
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
@@ -472,12 +484,12 @@ impl RulesRegistry {
     }
 
     /// Scan a list of feature names for those whose assignments require
-    /// user-supplied ARG values.
+    /// user interaction (ARG values or dice rolls).
     pub fn pending_args_for_features<'a>(
         &self,
         character: &Character,
         feature_names: impl Iterator<Item = &'a str>,
-    ) -> Vec<PendingArgs> {
+    ) -> Vec<PendingInputs> {
         let mut result = Vec::new();
         self.with_features_index_untracked(|features_index| {
             for feat_name in feature_names {
@@ -493,9 +505,9 @@ impl RulesRegistry {
                 } else {
                     WhenCondition::OnLevelUp
                 };
-                let exprs: Vec<_> = feat.args_exprs(when).cloned().collect();
+                let exprs = feat.interactive_exprs(when, character);
                 if !exprs.is_empty() {
-                    result.push(PendingArgs {
+                    result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
@@ -507,32 +519,29 @@ impl RulesRegistry {
         result
     }
 
-    /// Apply a list of features by name with optional user-supplied args.
+    /// Apply a list of features by name with optional user-supplied inputs.
     fn apply_features(
         &self,
         character: &mut Character,
         feature_names: &[impl AsRef<str>],
         source: &FeatureSource,
         level: u32,
-        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
+        inputs: Option<&ApplyInputs>,
     ) {
         self.with_features_index_untracked(|features_index| {
             for feat_name in feature_names {
                 let feat_name = feat_name.as_ref();
                 if let Some(feat) = features_index.get(feat_name) {
-                    let args = args_map.and_then(|m| m.get(feat_name)).cloned();
-                    feat.apply_with_args(level, character, Some(source), args);
+                    let args = inputs.and_then(|i| i.args.get(feat_name)).cloned();
+                    let dice = inputs.and_then(|i| i.dice.get(feat_name)).cloned();
+                    feat.apply_with_args(level, character, Some(source), args, dice);
                 }
             }
         });
     }
 
     /// Apply species features from the global index.
-    pub fn apply_species(
-        &self,
-        character: &mut Character,
-        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
-    ) {
+    pub fn apply_species(&self, character: &mut Character, inputs: Option<&ApplyInputs>) {
         character.identity.species_applied = true;
         let total_level = character.level().max(1);
         let species_cache = self.species_cache.read_untracked();
@@ -545,17 +554,13 @@ impl RulesRegistry {
             &species_def.features,
             &source,
             total_level,
-            args_map,
+            inputs,
         );
         self.compute(character);
     }
 
     /// Apply background features from the global index.
-    pub fn apply_background(
-        &self,
-        character: &mut Character,
-        args_map: Option<&BTreeMap<String, Vec<Vec<i32>>>>,
-    ) {
+    pub fn apply_background(&self, character: &mut Character, inputs: Option<&ApplyInputs>) {
         character.identity.background_applied = true;
         let total_level = character.level().max(1);
         let bg_cache = self.background_cache.read_untracked();
@@ -563,7 +568,7 @@ impl RulesRegistry {
             return;
         };
         let source = FeatureSource::Background(character.identity.background.clone());
-        self.apply_features(character, &bg_def.features, &source, total_level, args_map);
+        self.apply_features(character, &bg_def.features, &source, total_level, inputs);
         self.compute(character);
     }
 }

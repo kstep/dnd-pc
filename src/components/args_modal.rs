@@ -4,19 +4,25 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
-    components::{expr_args_input::ExprArgsInput, expr_view::ExprDetails, modal::Modal},
-    rules::PendingArgs,
+    components::{
+        expr_args_input::{DiceGroupSignals, ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
+        expr_view::ExprDetails,
+        modal::Modal,
+    },
+    expr::DicePool,
+    rules::{ApplyInputs, PendingInputs},
 };
 
-type ArgsCallback = Box<dyn Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync>;
+type ArgsCallback = Box<dyn Fn(ApplyInputs) + Send + Sync>;
 type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
+type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
 #[derive(Clone, Copy)]
 pub struct ArgsModalCtx {
     show: RwSignal<bool>,
-    pending: RwSignal<Vec<PendingArgs>>,
+    pending: RwSignal<Vec<PendingInputs>>,
     callback: StoredValue<RwSignal<Option<StoredValue<ArgsCallback>>>>,
 }
 
@@ -29,13 +35,12 @@ impl ArgsModalCtx {
         }
     }
 
-    /// Show the modal for a list of features needing args. When the user
-    /// submits, `on_complete` is called with a map of feature name → arg
-    /// values (one inner Vec per assignment expression).
+    /// Show the modal for a list of features needing interaction. When the user
+    /// submits, `on_complete` is called with the collected `ApplyInputs`.
     pub fn open(
         &self,
-        pending: Vec<PendingArgs>,
-        on_complete: impl Fn(BTreeMap<String, Vec<Vec<i32>>>) + Send + Sync + 'static,
+        pending: Vec<PendingInputs>,
+        on_complete: impl Fn(ApplyInputs) + Send + Sync + 'static,
     ) {
         self.pending.set(pending);
         self.callback
@@ -43,12 +48,12 @@ impl ArgsModalCtx {
         self.show.set(true);
     }
 
-    fn complete(&self, args_map: BTreeMap<String, Vec<Vec<i32>>>) {
-        self.callback.with_value(|sig| {
-            if let Some(cb) = sig.get_untracked() {
-                cb.with_value(|f| f(args_map));
+    fn complete(&self, inputs: ApplyInputs) {
+        self.callback.with_value(|signal| {
+            if let Some(callback) = signal.get_untracked() {
+                callback.with_value(|on_complete| on_complete(inputs));
             }
-            sig.set(None);
+            signal.set(None);
         });
         self.show.set(false);
     }
@@ -56,28 +61,34 @@ impl ArgsModalCtx {
 
 #[component]
 fn ArgsFeatureInput(
-    pa: PendingArgs,
+    pending_inputs: PendingInputs,
     all_signals: RwSignal<ArgsSignals>,
+    all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
-    let feature_name = pa.feature_name.clone();
-    let description = pa.feature_description.clone();
+    let feature_name = pending_inputs.feature_name.clone();
+    let description = pending_inputs.feature_description.clone();
     let has_description = !description.is_empty();
 
     // Collect signal groups for all exprs of this feature
     let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
         StoredValue::new(Vec::new());
+    let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> = StoredValue::new(Vec::new());
     let name_for_signals = feature_name.clone();
+    let name_for_dice = feature_name.clone();
 
-    let expr_views = pa
+    let expr_views = pending_inputs
         .exprs
         .into_iter()
         .map(|expr| {
-            let on_ready = move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
+            let on_ready = move |parts: ExprArgsInputParts| {
                 signal_groups.update_value(|groups| {
-                    groups.push(StoredValue::new(parts.rw_signals));
+                    groups.push(StoredValue::new(parts.arg_signals));
                 });
-                all_valid.update(|v| v.push(parts.is_valid));
+                dice_groups.update_value(|groups| {
+                    groups.push(StoredValue::new(parts.dice_signals));
+                });
+                all_valid.update(|validations| validations.push(parts.is_valid));
             };
             view! {
                 <ExprDetails expr=expr.clone() />
@@ -87,15 +98,20 @@ fn ArgsFeatureInput(
         .collect_view();
 
     // Register all signal groups for this feature after building
-    all_signals.update(|v| {
+    all_signals.update(|signals| {
         signal_groups.with_value(|groups| {
-            v.push((name_for_signals.clone(), groups.clone()));
+            signals.push((name_for_signals.clone(), groups.clone()));
+        });
+    });
+    all_dice.update(|dice| {
+        dice_groups.with_value(|groups| {
+            dice.push((name_for_dice.clone(), groups.clone()));
         });
     });
 
     view! {
         <div class="args-modal-feature">
-            <h4>{pa.feature_label.clone()}</h4>
+            <h4>{pending_inputs.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
@@ -118,38 +134,59 @@ pub fn ArgsModal() -> impl IntoView {
                     return None;
                 }
 
-                let all_signals: RwSignal<ArgsSignals> =
-                    RwSignal::new(Vec::new());
+                let all_signals: RwSignal<ArgsSignals> = RwSignal::new(Vec::new());
+                let all_dice: RwSignal<DiceSignals> = RwSignal::new(Vec::new());
                 let all_valid: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
 
                 let feature_views = pending
                     .into_iter()
-                    .map(|pa| {
-                        view! { <ArgsFeatureInput pa all_signals all_valid /> }
+                    .map(|pending_inputs| {
+                        view! { <ArgsFeatureInput pending_inputs all_signals all_dice all_valid /> }
                     })
                     .collect_view();
 
                 let is_valid = Memo::new(move |_| {
-                    all_valid.with(|v| !v.is_empty() && v.iter().all(|m| m.get()))
+                    all_valid.with(|validations| {
+                        !validations.is_empty()
+                            && validations.iter().all(|memo| memo.get())
+                    })
                 });
 
-                let on_submit = move |ev: web_sys::SubmitEvent| {
-                    ev.prevent_default();
-                    let mut map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
+                let on_submit = move |event: web_sys::SubmitEvent| {
+                    event.prevent_default();
+                    let mut args_map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
+                    let mut dice_map: BTreeMap<String, Vec<DicePool>> = BTreeMap::new();
+
                     all_signals.with_untracked(|entries| {
                         for (name, groups) in entries {
                             let feature_args: Vec<Vec<i32>> = groups
                                 .iter()
                                 .map(|sigs| {
-                                    sigs.with_value(|sigs| {
-                                        sigs.iter().map(|s| s.get_untracked()).collect()
+                                    sigs.with_value(|signals| {
+                                        signals.iter().map(|signal| signal.get_untracked()).collect()
                                     })
                                 })
                                 .collect();
-                            map.insert(name.clone(), feature_args);
+                            args_map.insert(name.clone(), feature_args);
                         }
                     });
-                    ctx.complete(map);
+
+                    all_dice.with_untracked(|entries| {
+                        for (name, groups) in entries {
+                            let feature_dice: Vec<DicePool> = groups
+                                .iter()
+                                .map(|dice_signals| {
+                                    dice_signals.with_value(collect_dice_pool)
+                                })
+                                .collect();
+                            dice_map.insert(name.clone(), feature_dice);
+                        }
+                    });
+
+                    ctx.complete(ApplyInputs {
+                        args: args_map,
+                        dice: dice_map,
+                    });
                 };
 
                 Some(
