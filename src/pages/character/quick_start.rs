@@ -6,9 +6,10 @@ use reactive_stores::Store;
 use crate::{
     components::{
         background_field::BackgroundField, character_header::apply_with_args_modal,
-        class_field::ClassField, species_field::SpeciesField,
+        class_field::ClassField, icon::Icon, species_field::SpeciesField,
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature},
+    names::{self, NamesData},
     rules::{DefinitionStore, PendingInputs, RulesRegistry},
 };
 
@@ -16,6 +17,26 @@ use crate::{
 pub fn QuickStart() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
+
+    let names_data: LocalResource<Option<NamesData>> = LocalResource::new(names::fetch_names);
+
+    // Auto-fill a random name on load (replacing "New Character")
+    Effect::new(move || {
+        if let Some(Some(ref data)) = *names_data.read() {
+            let current = store.identity().name().get_untracked();
+            if current == "New Character" {
+                let species = store.identity().species().get_untracked();
+                store.identity().name().set(data.generate_name(&species));
+            }
+        }
+    });
+
+    let randomize_name = move |_| {
+        if let Some(Some(ref data)) = *names_data.read_untracked() {
+            let species = store.identity().species().get_untracked();
+            store.identity().name().set(data.generate_name(&species));
+        }
+    };
 
     let generation_method = RwSignal::new(String::new());
 
@@ -42,14 +63,24 @@ pub fn QuickStart() -> impl IntoView {
 
             <div class="quick-start-section">
                 <label>{move_tr!("character-name")}</label>
-                <input
-                    type="text"
-                    autofocus
-                    prop:value=move || store.identity().name().get()
-                    on:input=move |event| {
-                        store.identity().name().set(event_target_value(&event));
-                    }
-                />
+                <div class="entity-input-row">
+                    <input
+                        type="text"
+                        autofocus
+                        prop:value=move || store.identity().name().get()
+                        on:input=move |event| {
+                            store.identity().name().set(event_target_value(&event));
+                        }
+                    />
+                    <button
+                        type="button"
+                        class="btn-icon"
+                        title="Randomize name"
+                        on:click=randomize_name
+                    >
+                        <Icon name="dices" />
+                    </button>
+                </div>
             </div>
 
             <div class="quick-start-section">

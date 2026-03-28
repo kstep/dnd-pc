@@ -15,6 +15,7 @@ mod expr;
 mod firebase;
 mod hooks;
 mod model;
+mod names;
 mod pages;
 pub mod rules;
 mod share;
