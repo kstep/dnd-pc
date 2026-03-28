@@ -1922,7 +1922,7 @@ select.entry-name {
   display: contents;
 }
 
-:has(input:invalid)>.btn-icon,
+:has(input:invalid)>.btn-icon:not(.dice-pool-roll-all),
 :has(input:invalid)>.btn-container>.btn-icon {
   opacity: 0.3;
   pointer-events: none;
