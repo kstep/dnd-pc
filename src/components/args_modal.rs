@@ -50,11 +50,11 @@ impl ArgsModalCtx {
     }
 
     fn complete(&self, inputs: ApplyInputs) {
-        self.callback.with_value(|sig| {
-            if let Some(cb) = sig.get_untracked() {
-                cb.with_value(|f| f(inputs));
+        self.callback.with_value(|signal| {
+            if let Some(callback) = signal.get_untracked() {
+                callback.with_value(|on_complete| on_complete(inputs));
             }
-            sig.set(None);
+            signal.set(None);
         });
         self.show.set(false);
     }
@@ -62,13 +62,13 @@ impl ArgsModalCtx {
 
 #[component]
 fn ArgsFeatureInput(
-    pa: PendingArgs,
+    pending_feature: PendingArgs,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
-    let feature_name = pa.feature_name.clone();
-    let description = pa.feature_description.clone();
+    let feature_name = pending_feature.feature_name.clone();
+    let description = pending_feature.feature_description.clone();
     let has_description = !description.is_empty();
 
     // Collect signal groups for all exprs of this feature
@@ -78,7 +78,7 @@ fn ArgsFeatureInput(
     let name_for_signals = feature_name.clone();
     let name_for_dice = feature_name.clone();
 
-    let expr_views = pa
+    let expr_views = pending_feature
         .exprs
         .into_iter()
         .map(|expr| {
@@ -89,7 +89,7 @@ fn ArgsFeatureInput(
                 dice_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.dice_refs));
                 });
-                all_valid.update(|v| v.push(parts.is_valid));
+                all_valid.update(|validations| validations.push(parts.is_valid));
             };
             view! {
                 <ExprDetails expr=expr.clone() />
@@ -99,20 +99,20 @@ fn ArgsFeatureInput(
         .collect_view();
 
     // Register all signal groups for this feature after building
-    all_signals.update(|v| {
+    all_signals.update(|signals| {
         signal_groups.with_value(|groups| {
-            v.push((name_for_signals.clone(), groups.clone()));
+            signals.push((name_for_signals.clone(), groups.clone()));
         });
     });
-    all_dice.update(|v| {
+    all_dice.update(|dice| {
         dice_groups.with_value(|groups| {
-            v.push((name_for_dice.clone(), groups.clone()));
+            dice.push((name_for_dice.clone(), groups.clone()));
         });
     });
 
     view! {
         <div class="args-modal-feature">
-            <h4>{pa.feature_label.clone()}</h4>
+            <h4>{pending_feature.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
@@ -141,17 +141,20 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let feature_views = pending
                     .into_iter()
-                    .map(|pa| {
-                        view! { <ArgsFeatureInput pa all_signals all_dice all_valid /> }
+                    .map(|pending_feature| {
+                        view! { <ArgsFeatureInput pending_feature all_signals all_dice all_valid /> }
                     })
                     .collect_view();
 
                 let is_valid = Memo::new(move |_| {
-                    all_valid.with(|v| !v.is_empty() && v.iter().all(|m| m.get()))
+                    all_valid.with(|validations| {
+                        !validations.is_empty()
+                            && validations.iter().all(|memo| memo.get())
+                    })
                 });
 
-                let on_submit = move |ev: web_sys::SubmitEvent| {
-                    ev.prevent_default();
+                let on_submit = move |event: web_sys::SubmitEvent| {
+                    event.prevent_default();
                     let mut args_map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
                     let mut dice_map: BTreeMap<String, Vec<DicePool>> = BTreeMap::new();
 
@@ -160,8 +163,8 @@ pub fn ArgsModal() -> impl IntoView {
                             let feature_args: Vec<Vec<i32>> = groups
                                 .iter()
                                 .map(|sigs| {
-                                    sigs.with_value(|sigs| {
-                                        sigs.iter().map(|s| s.get_untracked()).collect()
+                                    sigs.with_value(|signals| {
+                                        signals.iter().map(|signal| signal.get_untracked()).collect()
                                     })
                                 })
                                 .collect();

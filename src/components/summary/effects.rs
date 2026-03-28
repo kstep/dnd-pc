@@ -296,19 +296,19 @@ pub fn EffectsBlock() -> impl IntoView {
 
                     let form_ref = NodeRef::<html::Form>::new();
 
-                    let on_submit = move |ev: web_sys::SubmitEvent| {
-                        ev.prevent_default();
+                    let on_submit = move |event: web_sys::SubmitEvent| {
+                        event.prevent_default();
                         let pool: DicePool = dice_parts.with_value(|parts| {
-                            parts.as_ref().map(|p| {
-                                collect_dice_pool(&p.dice_refs).into()
+                            parts.as_ref().map(|input_parts| {
+                                collect_dice_pool(&input_parts.dice_refs).into()
                             }).unwrap_or_default()
                         });
 
-                        if let Some(idx) = reroll_index.get_untracked() {
+                        if let Some(effect_index) = reroll_index.get_untracked() {
                             // Re-roll existing effect
-                            effects.update(|e| {
-                                e.update_field(idx, |eff| eff.pool = Some(pool));
-                                e.recompute(&store.read());
+                            effects.update(|active| {
+                                active.update_field(effect_index, |eff| eff.pool = Some(pool));
+                                active.recompute(&store.read());
                             });
                             reroll_index.set(None);
                         } else {

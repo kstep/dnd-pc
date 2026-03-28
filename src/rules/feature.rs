@@ -298,12 +298,12 @@ impl FeatureDefinition {
         self.assign
             .iter()
             .flatten()
-            .filter(|a| a.when == when)
-            .filter(|a| {
-                let analysis = a.expr.analyze(character, is_arg);
+            .filter(|assignment| assignment.when == when)
+            .filter(|assignment| {
+                let analysis = assignment.expr.analyze(character, is_arg);
                 !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
             })
-            .map(|a| a.expr.clone())
+            .map(|assignment| assignment.expr.clone())
             .collect()
     }
 
@@ -339,13 +339,15 @@ impl FeatureDefinition {
 
         let mut args = args;
         let mut dice = dice;
-        for a in assign.iter().filter(|a| a.when == when) {
-            let has_args = a.expr.has_var(|v| matches!(v, Attribute::Arg(_)));
-            let has_dice = !a.expr.dice_rolls(context).is_empty();
+        for assignment in assign.iter().filter(|assignment| assignment.when == when) {
+            let has_args = assignment
+                .expr
+                .has_var(|var| matches!(var, Attribute::Arg(_)));
+            let has_dice = !assignment.expr.dice_rolls(context).is_empty();
             let is_interactive = has_args || has_dice;
 
             if !is_interactive {
-                if let Err(error) = a.expr.apply(context) {
+                if let Err(error) = assignment.expr.apply(context) {
                     log::error!(
                         "Failed to apply assignment for feature '{}': {error:?}",
                         self.name,
@@ -363,13 +365,17 @@ impl FeatureDefinition {
                     args: arg_values,
                 };
                 match dice_pool {
-                    Some(pool) if !pool.is_empty() => a.expr.apply_with_dice(&mut ctx, &pool),
-                    _ => a.expr.apply(&mut ctx),
+                    Some(pool) if !pool.is_empty() => {
+                        assignment.expr.apply_with_dice(&mut ctx, &pool)
+                    }
+                    _ => assignment.expr.apply(&mut ctx),
                 }
             } else {
                 match dice_pool {
-                    Some(pool) if !pool.is_empty() => a.expr.apply_with_dice(context, &pool),
-                    _ => a.expr.apply(context),
+                    Some(pool) if !pool.is_empty() => {
+                        assignment.expr.apply_with_dice(context, &pool)
+                    }
+                    _ => assignment.expr.apply(context),
                 }
             };
 
