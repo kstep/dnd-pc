@@ -5,6 +5,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
+    components::icon::Icon,
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, Expr, Op},
     model::{Attribute, Character},
 };
@@ -346,7 +347,7 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
         .collect();
 
     let mut first = true;
-    let view = groups
+    let groups_view = groups
         .iter()
         .map(|(&sides, signals)| {
             let input_views = signals
@@ -381,8 +382,30 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
                 </div>
             }
         })
-        .collect_view()
-        .into_any();
+        .collect_view();
+
+    let groups_for_roll = groups.clone();
+    let view = view! {
+        <div class="dice-pool-groups-header">
+            <button
+                type="button"
+                class="btn-icon"
+                title=move_tr!("roll-all-dice")
+                on:click=move |_| {
+                    for (&sides, signals) in &groups_for_roll {
+                        for signal in signals {
+                            let value = getrandom::u32().unwrap_or(0) % sides + 1;
+                            signal.set(value);
+                        }
+                    }
+                }
+            >
+                <Icon name="dices" />
+            </button>
+        </div>
+        {groups_view}
+    }
+    .into_any();
 
     (groups, view)
 }

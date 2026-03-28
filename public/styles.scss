@@ -2866,6 +2866,11 @@ select.entry-name {
 }
 
 // Dice pool input modal
+.dice-pool-groups-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .dice-pool-groups {
   padding: var(--size-2) var(--size-3);
   display: flex;
