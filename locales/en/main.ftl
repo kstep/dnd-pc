@@ -243,6 +243,7 @@ effect-name = Effect name
 effect-expr = Expression (optional)
 effect-dice = Dice
 effect-reroll = Reroll dice
+roll-all-dice = Roll all dice
 dice-rolls-title = Dice Rolls
 btn-confirm = Confirm
 apply-effect = Apply Effect
