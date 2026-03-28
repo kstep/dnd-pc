@@ -124,7 +124,7 @@ fn create_character(
 
     // Reset all applied state while preserving identity (name, species,
     // background, class selections). Handles cancelled previous attempts.
-    store.update(|character| character.reset_keeping_identity());
+    store.update(|character| character.reset());
 
     // Add generation feature entry if selected
     if !gen_name.is_empty() {

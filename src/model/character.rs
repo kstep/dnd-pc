@@ -130,24 +130,17 @@ impl Character {
 
     pub fn reset(&mut self) {
         let id = self.id;
-        *self = Self {
-            id,
-            ..Default::default()
-        };
-    }
-
-    /// Reset all derived/applied state while preserving identity (name,
-    /// species, background, class selections). Used when re-creating a
-    /// character from the quick start page.
-    pub fn reset_keeping_identity(&mut self) {
-        let identity = std::mem::take(&mut self.identity);
-        self.reset();
-        self.identity = identity;
-        self.identity.species_applied = false;
-        self.identity.background_applied = false;
-        for class_level in &mut self.identity.classes {
+        let mut identity = std::mem::take(&mut self.identity);
+        identity.species_applied = false;
+        identity.background_applied = false;
+        for class_level in &mut identity.classes {
             class_level.applied_levels.clear();
         }
+        *self = Self {
+            id,
+            identity,
+            ..Default::default()
+        };
     }
 
     pub fn long_rest(&mut self) {
