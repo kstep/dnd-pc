@@ -286,7 +286,7 @@ quick-start-title = Quick Start
 quick-start-generation = Ability Scores
 quick-start-create = Create Character
 quick-start-skip = Skip
-quick-start-applied = Applied
+
 
 ## Cloud sync
 sync-disabled = Offline

@@ -281,7 +281,7 @@ quick-start-title = Быстрый старт
 quick-start-generation = Характеристики
 quick-start-create = Создать персонажа
 quick-start-skip = Пропустить
-quick-start-applied = Применено
+
 
 ## Облачная синхронизация
 sync-disabled = Офлайн
