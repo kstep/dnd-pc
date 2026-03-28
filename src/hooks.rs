@@ -7,6 +7,8 @@ use leptos_router::{
 };
 use wasm_bindgen::{JsCast, prelude::Closure};
 
+use crate::BASE_URL;
+
 /// Like `query_signal`, but works correctly with a non-root base URL.
 pub fn use_query_signal<T>(
     key: impl Into<leptos::oco::Oco<'static, str>>,
@@ -54,4 +56,38 @@ pub fn use_theme() -> ReadSignal<&'static str> {
         closure.into_js_value();
     }
     theme.read_only()
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum PageKind {
+    Main,
+    Character,
+    Reference,
+    Share,
+}
+
+impl PageKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Main => "main",
+            Self::Character => "character",
+            Self::Reference => "reference",
+            Self::Share => "share",
+        }
+    }
+}
+
+pub fn use_page_kind() -> Signal<PageKind> {
+    let pathname = use_location().pathname;
+    Signal::derive(move || {
+        let path = pathname.read();
+        let rest = path.strip_prefix(BASE_URL).unwrap_or(&path);
+        let first_seg = rest.trim_start_matches('/').split('/').next().unwrap_or("");
+        match first_seg {
+            "c" => PageKind::Character,
+            "r" => PageKind::Reference,
+            "s" => PageKind::Share,
+            _ => PageKind::Main,
+        }
+    })
 }

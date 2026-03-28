@@ -219,9 +219,16 @@ html {
     gap: var(--size-2);
   }
 
-  .navbar-title,
+  .navbar-title {
+    display: none;
+  }
+
   .navbar-ref-label {
     display: none;
+  }
+
+  .navbar.page-main .navbar-ref-label {
+    display: inline;
   }
 
   .navbar-ref .navbar-ref-current {

@@ -8,6 +8,7 @@ use crate::{
     components::{
         icon::Icon, language_switcher::LanguageSwitcher, logo::Logo, sync_indicator::SyncIndicator,
     },
+    hooks::use_page_kind,
 };
 
 #[derive(Clone, Copy, Default)]
@@ -40,6 +41,7 @@ pub fn Navbar() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
     let ref_open = RwSignal::new(false);
     let location = use_location();
+    let page_kind = use_page_kind();
     let ref_key = move || {
         let path = location.pathname.read();
         let section = path
@@ -60,7 +62,7 @@ pub fn Navbar() -> impl IntoView {
     let current_ref_page = move || ref_key().map(|key| i18n.tr(key)).unwrap_or_default();
 
     view! {
-        <nav class="navbar">
+        <nav class=move || format!("navbar page-{}", page_kind.get().as_str())>
             <div class="navbar-left">
                 <A href=format!("{BASE_URL}/") attr:class="navbar-brand">
                     <Logo />
