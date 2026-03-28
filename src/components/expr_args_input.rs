@@ -297,7 +297,7 @@ fn form_block_ops(
 /// refs, and validation memo. Returned by `ExprArgsInput` via the `on_ready`
 /// callback so the parent can wire up a shared submit button.
 pub struct ExprArgsInputParts {
-    pub rw_signals: Vec<RwSignal<i32>>,
+    pub arg_signals: Vec<RwSignal<i32>>,
     pub dice_refs: BTreeMap<u32, Vec<NodeRef<html::Input>>>,
     pub is_valid: Memo<bool>,
 }
@@ -402,7 +402,7 @@ pub fn ExprArgsInput(
     if !has_args && !has_dice {
         let has_any_args = expr.has_var(|v| matches!(v, Attribute::Arg(_)));
         on_ready(ExprArgsInputParts {
-            rw_signals: Vec::new(),
+            arg_signals: Vec::new(),
             dice_refs: BTreeMap::new(),
             is_valid: Memo::new(move |_| !has_any_args),
         });
@@ -421,21 +421,21 @@ pub fn ExprArgsInput(
         let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
             .unwrap_or_else(|err| format!("Error: {err}").into_any());
 
-        let arg_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
-        let rw_signals = form_ctx.args;
+        let read_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
+        let write_signals = form_ctx.args;
 
-        Some((view, arg_signals, rw_signals))
+        Some((view, read_signals, write_signals))
     } else {
         None
     };
 
-    let rw_signals = formula_view
+    let arg_signals = formula_view
         .as_ref()
-        .map(|(_, _, rw)| rw.clone())
+        .map(|(_, _, write_signals)| write_signals.clone())
         .unwrap_or_default();
-    let arg_signals_stored = formula_view
+    let read_signals_stored = formula_view
         .as_ref()
-        .map(|(_, sigs, _)| StoredValue::new(sigs.clone()));
+        .map(|(_, read_signals, _)| StoredValue::new(read_signals.clone()));
 
     let formula_el = formula_view.map(|(view, _, _)| view);
 
@@ -454,7 +454,7 @@ pub fn ExprArgsInput(
     let eval_expr = expr.clone();
     let is_valid = Memo::new(move |_| {
         // Check args validity
-        let args_ok = if let Some(stored) = arg_signals_stored {
+        let args_ok = if let Some(stored) = read_signals_stored {
             let character = store.read();
             stored.with_value(|signals| {
                 let ctx = ArgContext {
@@ -482,7 +482,7 @@ pub fn ExprArgsInput(
     });
 
     on_ready(ExprArgsInputParts {
-        rw_signals,
+        arg_signals,
         dice_refs,
         is_valid,
     });

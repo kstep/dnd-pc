@@ -62,13 +62,13 @@ impl ArgsModalCtx {
 
 #[component]
 fn ArgsFeatureInput(
-    pending_feature: PendingArgs,
+    pending_args: PendingArgs,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
 ) -> impl IntoView {
-    let feature_name = pending_feature.feature_name.clone();
-    let description = pending_feature.feature_description.clone();
+    let feature_name = pending_args.feature_name.clone();
+    let description = pending_args.feature_description.clone();
     let has_description = !description.is_empty();
 
     // Collect signal groups for all exprs of this feature
@@ -78,13 +78,13 @@ fn ArgsFeatureInput(
     let name_for_signals = feature_name.clone();
     let name_for_dice = feature_name.clone();
 
-    let expr_views = pending_feature
+    let expr_views = pending_args
         .exprs
         .into_iter()
         .map(|expr| {
             let on_ready = move |parts: crate::components::expr_args_input::ExprArgsInputParts| {
                 signal_groups.update_value(|groups| {
-                    groups.push(StoredValue::new(parts.rw_signals));
+                    groups.push(StoredValue::new(parts.arg_signals));
                 });
                 dice_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.dice_refs));
@@ -112,7 +112,7 @@ fn ArgsFeatureInput(
 
     view! {
         <div class="args-modal-feature">
-            <h4>{pending_feature.feature_label.clone()}</h4>
+            <h4>{pending_args.feature_label.clone()}</h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>
@@ -141,8 +141,8 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let feature_views = pending
                     .into_iter()
-                    .map(|pending_feature| {
-                        view! { <ArgsFeatureInput pending_feature all_signals all_dice all_valid /> }
+                    .map(|pending_args| {
+                        view! { <ArgsFeatureInput pending_args all_signals all_dice all_valid /> }
                     })
                     .collect_view();
 
