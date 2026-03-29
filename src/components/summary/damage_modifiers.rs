@@ -4,63 +4,69 @@ use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    model::{Character, CharacterStoreFields, Translatable},
+    model::{Character, CharacterStoreFields, DamageModifiers, DamageType, Translatable},
 };
+
+#[component]
+fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl IntoView {
+    let i18n = expect_context::<I18n>();
+    let icon = damage_type.icon_name();
+    let label = i18n.tr(damage_type.tr_key());
+
+    view! {
+        <span class="damage-entry">
+            <Icon name=icon size=14 />
+            {label}
+            {modifiers.immune.then(|| view! {
+                <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>
+                    <Icon name="shield-check" size=12 />
+                </span>
+            })}
+            {modifiers.resistant.then(|| view! {
+                <span class="damage-tag damage-resistance" title=move || i18n.tr("damage-resistance")>
+                    <Icon name="shield-half" size=12 />
+                </span>
+            })}
+            {modifiers.vulnerable.then(|| view! {
+                <span class="damage-tag damage-vulnerability" title=move || i18n.tr("damage-vulnerability")>
+                    <Icon name="shield-off" size=12 />
+                </span>
+            })}
+            {(modifiers.reduction > 0).then(|| view! {
+                <span class="damage-tag damage-reduction" title=move || i18n.tr("damage-reduction")>
+                    <Icon name="shield-minus" size=12 />
+                    {modifiers.reduction}
+                </span>
+            })}
+        </span>
+    }
+}
 
 #[component]
 pub fn DamageModifiersBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
-    let i18n = expect_context::<I18n>();
     let damage_modifiers = store.damage_modifiers();
 
     move || {
-        let entries: Vec<_> = damage_modifiers
+        let entries = damage_modifiers
             .read()
             .iter()
-            .filter(|(_, mods)| mods.is_active())
-            .map(|(dt, mods)| {
-                let icon = dt.icon_name();
-                let label = i18n.tr(dt.tr_key());
-                let resistant = mods.resistant;
-                let vulnerable = mods.vulnerable;
-                let immune = mods.immune;
-                let reduction = mods.reduction;
+            .filter(|(_, modifiers)| modifiers.is_active())
+            .enumerate()
+            .map(|(idx, (damage_type, modifiers))| {
                 view! {
-                    <span class="damage-entry">
-                        <Icon name=icon size=14 />
-                        {label}
-                        {immune.then(|| view! {
-                            <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>
-                                <Icon name="shield-check" size=12 />
-                            </span>
-                        })}
-                        {resistant.then(|| view! {
-                            <span class="damage-tag damage-resistance" title=move || i18n.tr("damage-resistance")>
-                                <Icon name="shield-half" size=12 />
-                            </span>
-                        })}
-                        {vulnerable.then(|| view! {
-                            <span class="damage-tag damage-vulnerability" title=move || i18n.tr("damage-vulnerability")>
-                                <Icon name="shield-off" size=12 />
-                            </span>
-                        })}
-                        {(reduction > 0).then(|| view! {
-                            <span class="damage-tag damage-reduction" title=move || i18n.tr("damage-reduction")>
-                                <Icon name="shield-minus" size=12 />
-                                {reduction}
-                            </span>
-                        })}
-                    </span>
+                    {(idx > 0).then_some(", ")}
+                    <DamageEntry damage_type=*damage_type modifiers=*modifiers />
                 }
             })
-            .collect();
+            .collect_view();
 
         if entries.is_empty() {
             None
         } else {
             Some(view! {
                 <h4 class="summary-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
-                <div class="summary-damage-modifiers">{entries.collect_view()}</div>
+                <div class="summary-damage-modifiers">{entries}</div>
             })
         }
     }

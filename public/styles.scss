@@ -889,19 +889,9 @@ input[type="checkbox"] {
   }
 }
 
-.summary-damage-modifiers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-2);
-}
-
 .damage-entry {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--size-1);
-
-  &:not(:last-child)::after {
-    content: ", ";
+  .damage-tag {
+    margin-left: 2px;
   }
 }
 
