@@ -843,7 +843,7 @@ input[type="checkbox"] {
 
 .damage-row {
   display: grid;
-  grid-template-columns: 20px 1fr repeat(3, 22px) 60px;
+  grid-template-columns: 28px 1fr repeat(3, 22px) 60px;
   row-gap: var(--size-1);
   column-gap: 2px;
   align-items: center;
@@ -860,6 +860,8 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
 }
 
 .damage-toggle {
