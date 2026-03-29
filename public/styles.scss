@@ -871,6 +871,9 @@ input[type="checkbox"] {
   line-height: 1;
   color: var(--text-secondary);
   opacity: 0.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   input[type="checkbox"] {
     display: none;
