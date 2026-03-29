@@ -15,7 +15,7 @@ fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl Into
 
     view! {
         <span class="damage-entry">
-            <Icon name=icon size=14 />
+            <Icon name=icon size=14 title=label.clone() />
             {label}
             {modifiers.immune.then(|| view! {
                 <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>

@@ -862,8 +862,6 @@ input[type="checkbox"] {
 }
 
 .damage-toggle {
-  background: none;
-  border: none;
   cursor: pointer;
   padding: 0;
   margin: 0;
@@ -871,7 +869,11 @@ input[type="checkbox"] {
   color: var(--text-secondary);
   opacity: 0.35;
 
-  &.active {
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  &:has(input:checked) {
     color: var(--text-primary);
     opacity: 1;
   }

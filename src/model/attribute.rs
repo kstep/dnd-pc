@@ -389,7 +389,11 @@ impl Attribute {
             Self::PointsMax => i18n.tr("points-max"),
             Self::Cost => i18n.tr("cost"),
             Self::Resistance(dt) => {
-                format!("{} ({})", i18n.tr("damage-resistance"), i18n.tr(dt.tr_key()))
+                format!(
+                    "{} ({})",
+                    i18n.tr("damage-resistance"),
+                    i18n.tr(dt.tr_key())
+                )
             }
             Self::Vulnerability(dt) => {
                 format!(
