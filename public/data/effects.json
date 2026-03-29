@@ -5,7 +5,7 @@
   },
   {
     "name": "Warding Bond",
-    "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1"
+    "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1; RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
     "name": "Ceremony: Wedding",
@@ -159,7 +159,56 @@
     "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
-    "name": "Fiendish Resilience"
+    "name": "Fiendish Resilience: Acid",
+    "expr": "RESIST.ACID = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Bludgeoning",
+    "expr": "RESIST.BLUDG = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Cold",
+    "expr": "RESIST.COLD = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Fire",
+    "expr": "RESIST.FIRE = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Force",
+    "expr": "RESIST.FORCE = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Lightning",
+    "expr": "RESIST.LIGHT = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Necrotic",
+    "expr": "RESIST.NECRO = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Piercing",
+    "expr": "RESIST.PIERC = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Poison",
+    "expr": "RESIST.POISON = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Psychic",
+    "expr": "RESIST.PSYCH = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Radiant",
+    "expr": "RESIST.RADI = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Slashing",
+    "expr": "RESIST.SLASH = 1"
+  },
+  {
+    "name": "Fiendish Resilience: Thunder",
+    "expr": "RESIST.THUND = 1"
   },
   {
     "name": "Steps of Night"
@@ -332,7 +381,7 @@
   },
   {
     "name": "Intellect Fortress",
-    "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
+    "expr": "RESIST.PSYCH = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
     "name": "Fire Shield: Warm",
@@ -364,10 +413,12 @@
     "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Aura of Purity"
+    "name": "Aura of Purity",
+    "expr": "RESIST.POISON = 1"
   },
   {
-    "name": "Aura of Life"
+    "name": "Aura of Life",
+    "expr": "RESIST.NECRO = 1"
   },
   {
     "name": "Investiture of Flame",
@@ -390,18 +441,36 @@
     "expr": "RESIST.ACID = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
   },
   {
-    "name": "Songal's Elemental Suffusion"
+    "name": "Songal's Elemental Suffusion: Acid",
+    "expr": "RESIST.ACID = 1"
+  },
+  {
+    "name": "Songal's Elemental Suffusion: Cold",
+    "expr": "RESIST.COLD = 1"
+  },
+  {
+    "name": "Songal's Elemental Suffusion: Fire",
+    "expr": "RESIST.FIRE = 1"
+  },
+  {
+    "name": "Songal's Elemental Suffusion: Lightning",
+    "expr": "RESIST.LIGHT = 1"
+  },
+  {
+    "name": "Songal's Elemental Suffusion: Thunder",
+    "expr": "RESIST.THUND = 1"
   },
   {
     "name": "Heroes' Feast",
-    "expr": "WIS.SAVE.ADV = 1"
+    "expr": "IMMUNE.POISON = 1; WIS.SAVE.ADV = 1"
   },
   {
     "name": "Holy Aura",
     "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Mind Blank"
+    "name": "Mind Blank",
+    "expr": "IMMUNE.PSYCH = 1"
   },
   {
     "name": "Foresight",
@@ -424,7 +493,8 @@
     "name": "Swift Quiver"
   },
   {
-    "name": "Fount of Moonlight"
+    "name": "Fount of Moonlight",
+    "expr": "RESIST.RADI = 1"
   },
   {
     "name": "Darkvision"
@@ -449,7 +519,8 @@
     "name": "Polymorph"
   },
   {
-    "name": "Gaseous Form"
+    "name": "Gaseous Form",
+    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
     "name": "Alter Self"
@@ -619,7 +690,7 @@
   },
   {
     "name": "Petrified",
-    "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20"
+    "expr": "SPEED = 0; STR.SAVE = -20; DEX.SAVE = -20; RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
     "name": "Unconscious",

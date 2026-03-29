@@ -3,7 +3,7 @@
     "description": "+2 AC (concentration, 10 min)"
   },
   "Warding Bond": {
-    "description": "+1 AC and +1 to all saving throws (concentration)"
+    "description": "+1 AC, +1 to all saving throws, resistance to all damage (concentration, 1 hour)"
   },
   "Ceremony: Wedding": {
     "description": "+2 AC for 7 days (two creatures)"
@@ -116,8 +116,44 @@
   "Umbral Form": {
     "description": "Resistance to all damage except Force and Radiant (6 Sorcery Points)"
   },
-  "Fiendish Resilience": {
-    "description": "Resistance to one chosen damage type (until next short/long rest)"
+  "Fiendish Resilience: Acid": {
+    "description": "Resistance to Acid damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Bludgeoning": {
+    "description": "Resistance to Bludgeoning damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Cold": {
+    "description": "Resistance to Cold damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Fire": {
+    "description": "Resistance to Fire damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Force": {
+    "description": "Resistance to Force damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Lightning": {
+    "description": "Resistance to Lightning damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Necrotic": {
+    "description": "Resistance to Necrotic damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Piercing": {
+    "description": "Resistance to Piercing damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Poison": {
+    "description": "Resistance to Poison damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Psychic": {
+    "description": "Resistance to Psychic damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Radiant": {
+    "description": "Resistance to Radiant damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Slashing": {
+    "description": "Resistance to Slashing damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Thunder": {
+    "description": "Resistance to Thunder damage (until next short/long rest)"
   },
   "Steps of Night": {
     "description": "Fly speed equal to walking speed (bonus action, 1 min, Twilight Domain)"
@@ -311,8 +347,20 @@
   "Primordial Ward": {
     "description": "Resistance to acid/cold/fire/lightning/thunder; reaction to gain immunity to one (concentration, 1 min)"
   },
-  "Songal's Elemental Suffusion": {
-    "description": "Resistance to one chosen type: Acid/Cold/Fire/Lightning/Thunder, 4d6 pulse damage (concentration, 10 min)"
+  "Songal's Elemental Suffusion: Acid": {
+    "description": "Resistance to Acid damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Cold": {
+    "description": "Resistance to Cold damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Fire": {
+    "description": "Resistance to Fire damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Lightning": {
+    "description": "Resistance to Lightning damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Thunder": {
+    "description": "Resistance to Thunder damage, 4d6 pulse damage (concentration, 10 min)"
   },
   "Heroes' Feast": {
     "description": "Immunity to frightened/poisoned, resistance to poison, advantage on WIS saves (24 hours)"
