@@ -884,6 +884,24 @@ input[type="checkbox"] {
   color: var(--text-secondary);
 }
 
+.summary-damage-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+}
+
+.damage-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.damage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
 
 .skill-ability {
   font-size: var(--font-size-0);
