@@ -889,10 +889,7 @@ input[type="checkbox"] {
   padding: 1px 4px;
   font-size: var(--font-size-0);
   text-align: center;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-1);
-  background: var(--surface-2);
-  color: var(--text-primary);
+  height: auto;
 }
 
 .skill-ability {
