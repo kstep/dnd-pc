@@ -774,9 +774,10 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Immunity(dt) => {
                 Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.immune) as i32)
             }
-            Attribute::DamageReduction(dt) => {
-                Ok(self.damage_modifiers.get(&dt).map_or(0, |m| m.reduction as i32))
-            }
+            Attribute::DamageReduction(dt) => Ok(self
+                .damage_modifiers
+                .get(&dt)
+                .map_or(0, |m| m.reduction as i32)),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
         }

@@ -6,7 +6,7 @@ use crate::{
     components::{
         icon::Icon,
         summary::{
-            BackpackBlock, ChoicesBlock, EffectsBlock, LanguagesBlock, DamageModifiersBlock,
+            BackpackBlock, ChoicesBlock, DamageModifiersBlock, EffectsBlock, LanguagesBlock,
             ResourcesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
         },
         summary_header::SummaryHeader,
