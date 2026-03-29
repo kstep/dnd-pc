@@ -10,8 +10,8 @@ use crate::{
     demap::{self, Keyed},
     expr::{self, Eval as _},
     model::{
-        AbilityScores, Attribute, CharacterIdentity, CombatStats, Equipment, Feature, FeatureData,
-        FeatureValue, Personality, SpellSlotLevel, enums::*,
+        AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
+        Feature, FeatureData, FeatureValue, Personality, SpellSlotLevel, enums::*,
     },
     vecset::VecSet,
 };
@@ -110,7 +110,7 @@ pub struct Character {
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
-    pub resistances: BTreeMap<DamageType, ResistanceLevel>,
+    pub resistances: BTreeMap<DamageType, DamageModifiers>,
     #[serde(default)]
     pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
     #[serde(default)]
@@ -649,6 +649,19 @@ impl Default for Character {
     }
 }
 
+fn set_damage_flag(
+    map: &mut BTreeMap<DamageType, DamageModifiers>,
+    dt: DamageType,
+    value: i32,
+    field: impl FnOnce(&mut DamageModifiers) -> &mut bool,
+) {
+    let entry = map.entry(dt).or_default();
+    *field(entry) = value != 0;
+    if !entry.is_active() {
+        map.remove(&dt);
+    }
+}
+
 impl expr::Context<Attribute, i32> for Character {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
@@ -706,10 +719,18 @@ impl expr::Context<Attribute, i32> for Character {
                 self.combat.inspiration = value != 0;
             }
             Attribute::Resistance(dt) => {
-                let level = ResistanceLevel::from_i32(value);
-                if level.is_active() {
-                    self.resistances.insert(dt, level);
-                } else {
+                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.resistant);
+            }
+            Attribute::Vulnerability(dt) => {
+                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.vulnerable);
+            }
+            Attribute::Immunity(dt) => {
+                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.immune);
+            }
+            Attribute::DamageReduction(dt) => {
+                let entry = self.resistances.entry(dt).or_default();
+                entry.reduction = value.max(0) as u32;
+                if !entry.is_active() {
                     self.resistances.remove(&dt);
                 }
             }
@@ -744,12 +765,18 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
-            Attribute::Resistance(dt) => Ok(self
-                .resistances
-                .get(&dt)
-                .copied()
-                .unwrap_or_default()
-                .as_i32()),
+            Attribute::Resistance(dt) => {
+                Ok(self.resistances.get(&dt).is_some_and(|m| m.resistant) as i32)
+            }
+            Attribute::Vulnerability(dt) => {
+                Ok(self.resistances.get(&dt).is_some_and(|m| m.vulnerable) as i32)
+            }
+            Attribute::Immunity(dt) => {
+                Ok(self.resistances.get(&dt).is_some_and(|m| m.immune) as i32)
+            }
+            Attribute::DamageReduction(dt) => {
+                Ok(self.resistances.get(&dt).map_or(0, |m| m.reduction as i32))
+            }
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
         }

@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::panel::Panel,
+    components::{icon::Icon, panel::Panel},
     model::{Ability, Character, CharacterStoreFields, DamageType, Translatable, format_bonus},
 };
 
@@ -51,7 +51,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
             <h4 class="panel-subsection-title">{move_tr!("summary-resistances")}</h4>
             {DamageType::iter()
                 .map(|dt| {
-                    let level = Memo::new(move |_| {
+                    let mods = Memo::new(move |_| {
                         store
                             .resistances()
                             .read()
@@ -61,36 +61,78 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                     });
                     let tr_key = dt.tr_key();
                     let label = Signal::derive(move || i18n.tr(tr_key));
+                    let icon = dt.icon_name();
 
                     view! {
-                        <div class="save-row">
+                        <div class="resistance-row">
+                            <span class="resistance-dt-icon"><Icon name=icon size=14 /></span>
+                            <span class="resistance-label">{label}</span>
                             <button
-                                class="prof-toggle"
+                                class=move || if mods.get().resistant { "resistance-toggle active" } else { "resistance-toggle" }
+                                title=move || i18n.tr("resistance-resistant")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
-                                        let next = level.get_untracked().next();
-                                        if next.is_active() {
-                                            resistances.insert(dt, next);
-                                        } else {
+                                        let entry = resistances.entry(dt).or_default();
+                                        entry.resistant = !entry.resistant;
+                                        if !entry.is_active() {
                                             resistances.remove(&dt);
                                         }
                                     });
                                 }
                             >
-                                {move || level.get().symbol()}
+                                <Icon name="shield-half" size=14 />
                             </button>
-                            <span class="save-label">{label}</span>
-                            {move || {
-                                let current = level.get();
-                                if current.is_active() {
-                                    let level_key = current.tr_key();
-                                    Some(view! {
-                                        <span class="resistance-level">{Signal::derive(move || i18n.tr(level_key))}</span>
-                                    })
-                                } else {
-                                    None
+                            <button
+                                class=move || if mods.get().vulnerable { "resistance-toggle active" } else { "resistance-toggle" }
+                                title=move || i18n.tr("resistance-vulnerable")
+                                on:click=move |_| {
+                                    store.resistances().update(|resistances| {
+                                        let entry = resistances.entry(dt).or_default();
+                                        entry.vulnerable = !entry.vulnerable;
+                                        if !entry.is_active() {
+                                            resistances.remove(&dt);
+                                        }
+                                    });
                                 }
-                            }}
+                            >
+                                <Icon name="shield-off" size=14 />
+                            </button>
+                            <button
+                                class=move || if mods.get().immune { "resistance-toggle active" } else { "resistance-toggle" }
+                                title=move || i18n.tr("resistance-immune")
+                                on:click=move |_| {
+                                    store.resistances().update(|resistances| {
+                                        let entry = resistances.entry(dt).or_default();
+                                        entry.immune = !entry.immune;
+                                        if !entry.is_active() {
+                                            resistances.remove(&dt);
+                                        }
+                                    });
+                                }
+                            >
+                                <Icon name="shield-check" size=14 />
+                            </button>
+                            <span class="resistance-dr">
+                                <Icon name="shield-minus" size=14 />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    class="resistance-dr-input"
+                                    prop:value=move || mods.get().reduction
+                                    on:input=move |event| {
+                                        let value = event_target_value(&event)
+                                            .parse::<u32>()
+                                            .unwrap_or(0);
+                                        store.resistances().update(|resistances| {
+                                            let entry = resistances.entry(dt).or_default();
+                                            entry.reduction = value;
+                                            if !entry.is_active() {
+                                                resistances.remove(&dt);
+                                            }
+                                        });
+                                    }
+                                />
+                            </span>
                         </div>
                     }
                 })

@@ -2,7 +2,10 @@ use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
-use crate::model::{Character, CharacterStoreFields, ResistanceLevel, Translatable};
+use crate::{
+    components::icon::Icon,
+    model::{Character, CharacterStoreFields, Translatable},
+};
 
 #[component]
 pub fn ResistancesBlock() -> impl IntoView {
@@ -11,26 +14,53 @@ pub fn ResistancesBlock() -> impl IntoView {
     let resistances = store.resistances();
 
     move || {
-        let active: Vec<_> = resistances
+        let entries: Vec<_> = resistances
             .read()
             .iter()
-            .filter(|(_, level)| level.is_active())
-            .map(|(dt, level)| {
-                let dt_name = i18n.tr(dt.tr_key());
-                let level_name = i18n.tr(level.tr_key());
-                match level {
-                    ResistanceLevel::Resistant => dt_name,
-                    _ => format!("{dt_name} ({level_name})"),
+            .filter(|(_, mods)| mods.is_active())
+            .map(|(dt, mods)| {
+                let icon = dt.icon_name();
+                let label = i18n.tr(dt.tr_key());
+                let resistant = mods.resistant;
+                let vulnerable = mods.vulnerable;
+                let immune = mods.immune;
+                let reduction = mods.reduction;
+                view! {
+                    <span class="resistance-entry">
+                        <Icon name=icon size=14 />
+                        {label}
+                        {immune.then(|| view! {
+                            <span class="resistance-tag resistance-immune" title=move || i18n.tr("resistance-immune")>
+                                <Icon name="shield-check" size=12 />
+                            </span>
+                        })}
+                        {resistant.then(|| view! {
+                            <span class="resistance-tag resistance-resistant" title=move || i18n.tr("resistance-resistant")>
+                                <Icon name="shield-half" size=12 />
+                            </span>
+                        })}
+                        {vulnerable.then(|| view! {
+                            <span class="resistance-tag resistance-vulnerable" title=move || i18n.tr("resistance-vulnerable")>
+                                <Icon name="shield-off" size=12 />
+                            </span>
+                        })}
+                        {(reduction > 0).then(|| view! {
+                            <span class="resistance-tag resistance-dr" title=move || i18n.tr("resistance-reduction")>
+                                <Icon name="shield-minus" size=12 />
+                                {reduction}
+                            </span>
+                        })}
+                    </span>
                 }
             })
             .collect();
 
-        if active.is_empty() {
+        if entries.is_empty() {
             None
         } else {
             Some(view! {
                 <h4 class="summary-subsection-title">{move_tr!("summary-resistances")}</h4>
-                <p class="summary-resistances">{active.join(", ")}</p>
+                <div class="summary-resistances">{entries.collect_view()}</div>
             })
         }
     }

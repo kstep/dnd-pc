@@ -42,6 +42,24 @@ impl Default for CombatStats {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
+pub struct DamageModifiers {
+    #[serde(default)]
+    pub resistant: bool,
+    #[serde(default)]
+    pub vulnerable: bool,
+    #[serde(default)]
+    pub immune: bool,
+    #[serde(default)]
+    pub reduction: u32,
+}
+
+impl DamageModifiers {
+    pub fn is_active(&self) -> bool {
+        self.resistant || self.vulnerable || self.immune || self.reduction > 0
+    }
+}
+
 impl CombatStats {
     pub fn damage(&mut self, amount: u32) {
         if amount == 0 {

@@ -233,71 +233,22 @@ impl ProficiencyLevel {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-#[repr(u8)]
-pub enum ResistanceLevel {
-    Vulnerable,
-    #[default]
-    None,
-    Resistant,
-    Immune,
-}
-enum_serde_u8!(ResistanceLevel {
-    Vulnerable,
-    None,
-    Resistant,
-    Immune
-});
-
-impl ResistanceLevel {
-    pub fn is_active(self) -> bool {
-        self != Self::None
-    }
-
-    pub fn as_i32(self) -> i32 {
+impl DamageType {
+    pub fn icon_name(self) -> &'static str {
         match self {
-            Self::Vulnerable => -1,
-            Self::None => 0,
-            Self::Resistant => 1,
-            Self::Immune => 2,
-        }
-    }
-
-    pub fn from_i32(value: i32) -> Self {
-        match value {
-            -1 => Self::Vulnerable,
-            1 => Self::Resistant,
-            2 => Self::Immune,
-            _ => Self::None,
-        }
-    }
-
-    pub fn next(self) -> Self {
-        match self {
-            Self::None => Self::Resistant,
-            Self::Resistant => Self::Immune,
-            Self::Immune => Self::Vulnerable,
-            Self::Vulnerable => Self::None,
-        }
-    }
-
-    pub fn symbol(self) -> &'static str {
-        match self {
-            Self::Vulnerable => "\u{25BD}", // white down-pointing triangle ▽
-            Self::None => "\u{25CB}",       // empty circle ○
-            Self::Resistant => "\u{25CF}",  // filled circle ●
-            Self::Immune => "\u{25C6}",     // black diamond ◆
-        }
-    }
-}
-
-impl Translatable for ResistanceLevel {
-    fn tr_key(&self) -> &'static str {
-        match self {
-            Self::Vulnerable => "resistance-vulnerable",
-            Self::None => "resistance-none",
-            Self::Resistant => "resistance-resistant",
-            Self::Immune => "resistance-immune",
+            Self::Acid => "droplets",
+            Self::Bludgeoning => "gavel",
+            Self::Cold => "snowflake",
+            Self::Fire => "flame",
+            Self::Force => "sparkles",
+            Self::Lightning => "zap",
+            Self::Necrotic => "skull",
+            Self::Piercing => "bow-arrow",
+            Self::Poison => "flask-round",
+            Self::Psychic => "brain",
+            Self::Radiant => "sun",
+            Self::Slashing => "sword",
+            Self::Thunder => "cloud-lightning",
         }
     }
 }

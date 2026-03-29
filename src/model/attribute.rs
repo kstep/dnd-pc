@@ -49,6 +49,9 @@ pub enum Attribute {
     PointsMax,
     Cost,
     Resistance(DamageType),
+    Vulnerability(DamageType),
+    Immunity(DamageType),
+    DamageReduction(DamageType),
     Arg(u8),
 }
 
@@ -257,6 +260,15 @@ impl FromStr for Attribute {
             "RESIST" => parse_damage_type(rest)
                 .map(Self::Resistance)
                 .ok_or("unknown damage type"),
+            "VULN" => parse_damage_type(rest)
+                .map(Self::Vulnerability)
+                .ok_or("unknown damage type"),
+            "IMMUNE" => parse_damage_type(rest)
+                .map(Self::Immunity)
+                .ok_or("unknown damage type"),
+            "DR" => parse_damage_type(rest)
+                .map(Self::DamageReduction)
+                .ok_or("unknown damage type"),
             "INITIATIVE" => match rest {
                 "BONUS" => Ok(Self::InitiativeBonus),
                 _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
@@ -345,6 +357,9 @@ impl fmt::Display for Attribute {
             Self::PointsMax => f.write_str("POINTS_MAX"),
             Self::Cost => f.write_str("COST"),
             Self::Resistance(dt) => write!(f, "RESIST.{}", dt.abbr()),
+            Self::Vulnerability(dt) => write!(f, "VULN.{}", dt.abbr()),
+            Self::Immunity(dt) => write!(f, "IMMUNE.{}", dt.abbr()),
+            Self::DamageReduction(dt) => write!(f, "DR.{}", dt.abbr()),
             Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
@@ -373,7 +388,10 @@ impl Attribute {
             Self::Points => i18n.tr("points"),
             Self::PointsMax => i18n.tr("points-max"),
             Self::Cost => i18n.tr("cost"),
-            Self::Resistance(dt) => i18n.tr(dt.tr_key()),
+            Self::Resistance(dt)
+            | Self::Vulnerability(dt)
+            | Self::Immunity(dt)
+            | Self::DamageReduction(dt) => i18n.tr(dt.tr_key()),
             Self::Arg(_) => "?".to_string(),
             _ => self.to_string(),
         }
@@ -532,12 +550,16 @@ mod tests {
             Attribute::Resistance(DamageType::Fire)
         );
         assert_eq!(
-            "RESIST.COLD".parse::<Attribute>().unwrap(),
-            Attribute::Resistance(DamageType::Cold)
+            "VULN.COLD".parse::<Attribute>().unwrap(),
+            Attribute::Vulnerability(DamageType::Cold)
         );
         assert_eq!(
-            "RESIST.BLUDG".parse::<Attribute>().unwrap(),
-            Attribute::Resistance(DamageType::Bludgeoning)
+            "IMMUNE.BLUDG".parse::<Attribute>().unwrap(),
+            Attribute::Immunity(DamageType::Bludgeoning)
+        );
+        assert_eq!(
+            "DR.FIRE".parse::<Attribute>().unwrap(),
+            Attribute::DamageReduction(DamageType::Fire)
         );
     }
 
@@ -545,10 +567,16 @@ mod tests {
     fn display_resistance_round_trip() {
         use strum::IntoEnumIterator;
         for dt in DamageType::iter() {
-            let attr = Attribute::Resistance(dt);
-            let s = attr.to_string();
-            let parsed: Attribute = s.parse().unwrap();
-            assert_eq!(parsed, attr, "round-trip failed for {s}");
+            for attr in [
+                Attribute::Resistance(dt),
+                Attribute::Vulnerability(dt),
+                Attribute::Immunity(dt),
+                Attribute::DamageReduction(dt),
+            ] {
+                let s = attr.to_string();
+                let parsed: Attribute = s.parse().unwrap();
+                assert_eq!(parsed, attr, "round-trip failed for {s}");
+            }
         }
     }
 }
