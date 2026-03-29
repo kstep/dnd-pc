@@ -884,16 +884,24 @@ input[type="checkbox"] {
   color: var(--text-secondary);
 }
 
-.damage-dr-input {
-  width: 36px;
-  padding: 1px 4px;
-  font-size: var(--font-size-0);
-  text-align: center;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-1);
-  background: var(--surface-2);
-  color: var(--text-primary);
+.summary-damage-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
 }
+
+.damage-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.damage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
 
 .skill-ability {
   font-size: var(--font-size-0);

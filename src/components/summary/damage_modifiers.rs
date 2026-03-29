@@ -11,10 +11,10 @@ use crate::{
 pub fn DamageModifiersBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let i18n = expect_context::<I18n>();
-    let resistances = store.damage_modifiers();
+    let damage_modifiers = store.damage_modifiers();
 
     move || {
-        let entries: Vec<_> = resistances
+        let entries: Vec<_> = damage_modifiers
             .read()
             .iter()
             .filter(|(_, mods)| mods.is_active())
