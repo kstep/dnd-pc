@@ -882,6 +882,11 @@ input[type="checkbox"] {
   align-items: center;
   gap: 2px;
   color: var(--text-secondary);
+
+  .short-input {
+    width: 36px !important;
+    flex: 0 0 36px !important;
+  }
 }
 
 .summary-damage-modifiers {
