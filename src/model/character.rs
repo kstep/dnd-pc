@@ -110,7 +110,7 @@ pub struct Character {
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
-    pub resistances: BTreeMap<DamageType, DamageModifiers>,
+    pub damage_modifiers: BTreeMap<DamageType, DamageModifiers>,
     #[serde(default)]
     pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
     #[serde(default)]
@@ -561,7 +561,7 @@ impl Character {
         self.feature_data.clear();
         self.proficiencies.clear();
         self.languages.clear();
-        self.resistances.clear();
+        self.damage_modifiers.clear();
         self.spell_slots.clear();
         self.combat = CombatStats::default();
         for class_level in &mut self.identity.classes {
@@ -641,7 +641,7 @@ impl Default for Character {
             spell_slots: BTreeMap::new(),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            resistances: BTreeMap::new(),
+            damage_modifiers: BTreeMap::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
@@ -719,19 +719,19 @@ impl expr::Context<Attribute, i32> for Character {
                 self.combat.inspiration = value != 0;
             }
             Attribute::Resistance(dt) => {
-                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.resistant);
+                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.resistant);
             }
             Attribute::Vulnerability(dt) => {
-                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.vulnerable);
+                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.vulnerable);
             }
             Attribute::Immunity(dt) => {
-                set_damage_flag(&mut self.resistances, dt, value, |m| &mut m.immune);
+                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.immune);
             }
             Attribute::DamageReduction(dt) => {
-                let entry = self.resistances.entry(dt).or_default();
+                let entry = self.damage_modifiers.entry(dt).or_default();
                 entry.reduction = value.max(0) as u32;
                 if !entry.is_active() {
-                    self.resistances.remove(&dt);
+                    self.damage_modifiers.remove(&dt);
                 }
             }
             other => return Err(expr::Error::read_only_var(other)),
@@ -766,16 +766,16 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
             Attribute::Resistance(dt) => {
-                Ok(self.resistances.get(&dt).is_some_and(|m| m.resistant) as i32)
+                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.resistant) as i32)
             }
             Attribute::Vulnerability(dt) => {
-                Ok(self.resistances.get(&dt).is_some_and(|m| m.vulnerable) as i32)
+                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.vulnerable) as i32)
             }
             Attribute::Immunity(dt) => {
-                Ok(self.resistances.get(&dt).is_some_and(|m| m.immune) as i32)
+                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.immune) as i32)
             }
             Attribute::DamageReduction(dt) => {
-                Ok(self.resistances.get(&dt).map_or(0, |m| m.reduction as i32))
+                Ok(self.damage_modifiers.get(&dt).map_or(0, |m| m.reduction as i32))
             }
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
@@ -900,7 +900,7 @@ impl Character {
             )]),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            resistances: BTreeMap::new(),
+            damage_modifiers: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
@@ -988,7 +988,7 @@ pub mod tests {
             .into_iter()
             .collect(),
             languages: VecSet::new(),
-            resistances: BTreeMap::new(),
+            damage_modifiers: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,

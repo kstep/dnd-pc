@@ -11,7 +11,7 @@ use crate::{
 pub fn ResistancesBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let i18n = expect_context::<I18n>();
-    let resistances = store.resistances();
+    let resistances = store.damage_modifiers();
 
     move || {
         let entries: Vec<_> = resistances
@@ -59,8 +59,8 @@ pub fn ResistancesBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("summary-resistances")}</h4>
-                <div class="summary-resistances">{entries.collect_view()}</div>
+                <h4 class="summary-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
+                <div class="summary-damage-modifiers">{entries.collect_view()}</div>
             })
         }
     }

@@ -48,12 +48,12 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                 .collect_view()}
 
             // --- Resistances ---
-            <h4 class="panel-subsection-title">{move_tr!("summary-resistances")}</h4>
+            <h4 class="panel-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
             {DamageType::iter()
                 .map(|dt| {
                     let mods = Memo::new(move |_| {
                         store
-                            .resistances()
+                            .damage_modifiers()
                             .read()
                             .get(&dt)
                             .copied()
@@ -71,7 +71,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().resistant { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-resistance")
                                 on:click=move |_| {
-                                    store.resistances().update(|resistances| {
+                                    store.damage_modifiers().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
                                         entry.resistant = !entry.resistant;
                                         if !entry.is_active() {
@@ -86,7 +86,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().vulnerable { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-vulnerability")
                                 on:click=move |_| {
-                                    store.resistances().update(|resistances| {
+                                    store.damage_modifiers().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
                                         entry.vulnerable = !entry.vulnerable;
                                         if !entry.is_active() {
@@ -101,7 +101,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().immune { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-immunity")
                                 on:click=move |_| {
-                                    store.resistances().update(|resistances| {
+                                    store.damage_modifiers().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
                                         entry.immune = !entry.immune;
                                         if !entry.is_active() {
@@ -123,7 +123,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                         let value = event_target_value(&event)
                                             .parse::<u32>()
                                             .unwrap_or(0);
-                                        store.resistances().update(|resistances| {
+                                        store.damage_modifiers().update(|resistances| {
                                             let entry = resistances.entry(dt).or_default();
                                             entry.reduction = value;
                                             if !entry.is_active() {
