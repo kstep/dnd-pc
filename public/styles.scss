@@ -841,6 +841,60 @@ input[type="checkbox"] {
   text-align: left;
 }
 
+.damage-row {
+  display: grid;
+  grid-template-columns: 20px 1fr repeat(3, 28px) 60px;
+  gap: var(--size-1);
+  align-items: center;
+  padding: var(--size-1) 0;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: var(--font-size-1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.damage-dt-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.damage-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  color: var(--text-secondary);
+  opacity: 0.35;
+
+  &.active {
+    color: var(--text-primary);
+    opacity: 1;
+  }
+}
+
+.damage-dr {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-secondary);
+}
+
+.damage-dr-input {
+  width: 36px;
+  padding: 1px 4px;
+  font-size: var(--font-size-0);
+  text-align: center;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-1);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
 .skill-ability {
   font-size: var(--font-size-0);
   color: var(--text-secondary);
