@@ -899,11 +899,6 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: var(--size-1);
-
-  &:not(:last-child)::after {
-    content: ",\a0";
-    margin-left: calc(-1 * var(--size-1));
-  }
 }
 
 .damage-tag {
