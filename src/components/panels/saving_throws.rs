@@ -69,7 +69,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                             <span class="resistance-label">{label}</span>
                             <button
                                 class=move || if mods.get().resistant { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("resistance-resistant")
+                                title=move || i18n.tr("damage-resistant")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
@@ -84,7 +84,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                             </button>
                             <button
                                 class=move || if mods.get().vulnerable { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("resistance-vulnerable")
+                                title=move || i18n.tr("damage-vulnerable")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
@@ -99,7 +99,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                             </button>
                             <button
                                 class=move || if mods.get().immune { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("resistance-immune")
+                                title=move || i18n.tr("damage-immune")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();

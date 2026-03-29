@@ -30,22 +30,22 @@ pub fn ResistancesBlock() -> impl IntoView {
                         <Icon name=icon size=14 />
                         {label}
                         {immune.then(|| view! {
-                            <span class="resistance-tag resistance-immune" title=move || i18n.tr("resistance-immune")>
+                            <span class="resistance-tag resistance-immune" title=move || i18n.tr("damage-immune")>
                                 <Icon name="shield-check" size=12 />
                             </span>
                         })}
                         {resistant.then(|| view! {
-                            <span class="resistance-tag resistance-resistant" title=move || i18n.tr("resistance-resistant")>
+                            <span class="resistance-tag resistance-resistant" title=move || i18n.tr("damage-resistant")>
                                 <Icon name="shield-half" size=12 />
                             </span>
                         })}
                         {vulnerable.then(|| view! {
-                            <span class="resistance-tag resistance-vulnerable" title=move || i18n.tr("resistance-vulnerable")>
+                            <span class="resistance-tag resistance-vulnerable" title=move || i18n.tr("damage-vulnerable")>
                                 <Icon name="shield-off" size=12 />
                             </span>
                         })}
                         {(reduction > 0).then(|| view! {
-                            <span class="resistance-tag resistance-dr" title=move || i18n.tr("resistance-reduction")>
+                            <span class="resistance-tag resistance-dr" title=move || i18n.tr("damage-reduction")>
                                 <Icon name="shield-minus" size=12 />
                                 {reduction}
                             </span>
