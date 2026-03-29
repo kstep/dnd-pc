@@ -110,6 +110,8 @@ pub struct Character {
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
+    pub resistances: BTreeMap<DamageType, ResistanceLevel>,
+    #[serde(default)]
     pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
     #[serde(default)]
     pub notes: String,
@@ -559,6 +561,7 @@ impl Character {
         self.feature_data.clear();
         self.proficiencies.clear();
         self.languages.clear();
+        self.resistances.clear();
         self.spell_slots.clear();
         self.combat = CombatStats::default();
         for class_level in &mut self.identity.classes {
@@ -638,6 +641,7 @@ impl Default for Character {
             spell_slots: BTreeMap::new(),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
+            resistances: BTreeMap::new(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
@@ -701,6 +705,14 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
+            Attribute::Resistance(dt) => {
+                let level = ResistanceLevel::from_i32(value);
+                if level.is_active() {
+                    self.resistances.insert(dt, level);
+                } else {
+                    self.resistances.remove(&dt);
+                }
+            }
             other => return Err(expr::Error::read_only_var(other)),
         }
 
@@ -732,6 +744,12 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
+            Attribute::Resistance(dt) => Ok(self
+                .resistances
+                .get(&dt)
+                .copied()
+                .unwrap_or_default()
+                .as_i32()),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
         }
@@ -855,6 +873,7 @@ impl Character {
             )]),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
+            resistances: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,
@@ -942,6 +961,7 @@ pub mod tests {
             .into_iter()
             .collect(),
             languages: VecSet::new(),
+            resistances: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
             notes: String::new(),
             updated_at: 0,

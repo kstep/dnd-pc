@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, Proficiency, Skill, SpellSlotPool, Translatable};
+use crate::model::{Ability, DamageType, Proficiency, Skill, SpellSlotPool, Translatable};
 
 #[derive(
     Debug,
@@ -48,6 +48,7 @@ pub enum Attribute {
     Points,
     PointsMax,
     Cost,
+    Resistance(DamageType),
     Arg(u8),
 }
 
@@ -96,6 +97,45 @@ fn parse_proficiency(s: &str) -> Option<Proficiency> {
         "SIMPLE_WEAPONS" => Some(Proficiency::SimpleWeapons),
         "MARTIAL_WEAPONS" => Some(Proficiency::MartialWeapons),
         _ => None,
+    }
+}
+
+fn parse_damage_type(s: &str) -> Option<DamageType> {
+    match s {
+        "ACID" => Some(DamageType::Acid),
+        "BLUDG" => Some(DamageType::Bludgeoning),
+        "COLD" => Some(DamageType::Cold),
+        "FIRE" => Some(DamageType::Fire),
+        "FORCE" => Some(DamageType::Force),
+        "LIGHT" => Some(DamageType::Lightning),
+        "NECRO" => Some(DamageType::Necrotic),
+        "PIERC" => Some(DamageType::Piercing),
+        "POISON" => Some(DamageType::Poison),
+        "PSYCH" => Some(DamageType::Psychic),
+        "RADI" => Some(DamageType::Radiant),
+        "SLASH" => Some(DamageType::Slashing),
+        "THUND" => Some(DamageType::Thunder),
+        _ => None,
+    }
+}
+
+impl DamageType {
+    fn abbr(self) -> &'static str {
+        match self {
+            Self::Acid => "ACID",
+            Self::Bludgeoning => "BLUDG",
+            Self::Cold => "COLD",
+            Self::Fire => "FIRE",
+            Self::Force => "FORCE",
+            Self::Lightning => "LIGHT",
+            Self::Necrotic => "NECRO",
+            Self::Piercing => "PIERC",
+            Self::Poison => "POISON",
+            Self::Psychic => "PSYCH",
+            Self::Radiant => "RADI",
+            Self::Slashing => "SLASH",
+            Self::Thunder => "THUND",
+        }
     }
 }
 
@@ -214,6 +254,9 @@ impl FromStr for Attribute {
             "PROF" => parse_proficiency(rest)
                 .map(Self::EquipmentProficiency)
                 .ok_or("unknown proficiency"),
+            "RESIST" => parse_damage_type(rest)
+                .map(Self::Resistance)
+                .ok_or("unknown damage type"),
             "INITIATIVE" => match rest {
                 "BONUS" => Ok(Self::InitiativeBonus),
                 _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
@@ -301,6 +344,7 @@ impl fmt::Display for Attribute {
             Self::Points => f.write_str("POINTS"),
             Self::PointsMax => f.write_str("POINTS_MAX"),
             Self::Cost => f.write_str("COST"),
+            Self::Resistance(dt) => write!(f, "RESIST.{}", dt.abbr()),
             Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
@@ -329,6 +373,7 @@ impl Attribute {
             Self::Points => i18n.tr("points"),
             Self::PointsMax => i18n.tr("points-max"),
             Self::Cost => i18n.tr("cost"),
+            Self::Resistance(dt) => i18n.tr(dt.tr_key()),
             Self::Arg(_) => "?".to_string(),
             _ => self.to_string(),
         }
@@ -478,5 +523,32 @@ mod tests {
         assert!("SKILL.STEA.MOD".parse::<Attribute>().is_err());
         assert!("ATK.MOD".parse::<Attribute>().is_err());
         assert!("STR.SAVE.MOD".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_resistance_attributes() {
+        assert_eq!(
+            "RESIST.FIRE".parse::<Attribute>().unwrap(),
+            Attribute::Resistance(DamageType::Fire)
+        );
+        assert_eq!(
+            "RESIST.COLD".parse::<Attribute>().unwrap(),
+            Attribute::Resistance(DamageType::Cold)
+        );
+        assert_eq!(
+            "RESIST.BLUDG".parse::<Attribute>().unwrap(),
+            Attribute::Resistance(DamageType::Bludgeoning)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_resistance_round_trip() {
+        use strum::IntoEnumIterator;
+        for dt in DamageType::iter() {
+            let attr = Attribute::Resistance(dt);
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
     }
 }
