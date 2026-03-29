@@ -1787,6 +1787,9 @@ select.entry-name {
   color: var(--text-secondary);
   margin: var(--size-3) 0 var(--size-2);
   font-size: var(--font-size-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .summary-empty {
