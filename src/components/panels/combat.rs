@@ -56,6 +56,19 @@ pub fn CombatPanel() -> impl IntoView {
                     />
                 </div>
                 <div class="combat-stat">
+                    <label>{move_tr!("attack-count")}</label>
+                    <input
+                        type="number"
+                        min="1"
+                        prop:value=move || combat.attack_count().get().to_string()
+                        on:input=move |event| {
+                            if let Ok(value) = event_target_value(&event).parse::<u32>() {
+                                combat.attack_count().set(value.max(1));
+                            }
+                        }
+                    />
+                </div>
+                <div class="combat-stat">
                     <label>{move_tr!("inspiration")}</label>
                     <button
                         class="inspiration-toggle"

@@ -338,6 +338,7 @@ impl Character {
         self.compute_hp_max();
         self.compute_speed();
         self.combat.initiative_misc_bonus = 0;
+        self.combat.attack_count = 1;
     }
 
     /// Returns (caster_level, caster_class_count) for the given pool in a
@@ -686,6 +687,9 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::AttackBonus => {
                 self.combat.attack_bonus = value;
             }
+            Attribute::Attacks => {
+                self.combat.attack_count = value.max(1) as u32;
+            }
             Attribute::InitiativeBonus => {
                 self.combat.initiative_misc_bonus = value;
             }
@@ -762,6 +766,7 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::CasterLevel(Some(pool)) => Ok(self.caster_level(pool) as i32),
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
+            Attribute::Attacks => Ok(self.combat.attack_count as i32),
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
@@ -867,6 +872,7 @@ impl Character {
                 attack_bonus: 0,
                 initiative_misc_bonus: 0,
                 inspiration: false,
+                attack_count: 1,
             },
             personality: Personality::default(),
             features: vec![Feature {
@@ -975,6 +981,7 @@ pub mod tests {
                 attack_bonus: 0,
                 initiative_misc_bonus: 0,
                 inspiration: false,
+                attack_count: 1,
             },
             personality: Personality::default(),
             features: Vec::new(),

@@ -66,6 +66,7 @@ recalculate = Recalculate
 replay = Replay
 initiative = Initiative
 speed = Speed
+attack-count = Attacks
 inspiration = Inspiration
 proficiency-bonus = Proficiency Bonus
 level = Level

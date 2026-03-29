@@ -52,6 +52,7 @@ pub enum Attribute {
     Vulnerability(DamageType),
     Immunity(DamageType),
     DamageReduction(DamageType),
+    Attacks,
     Arg(u8),
 }
 
@@ -225,6 +226,7 @@ impl FromStr for Attribute {
                 "ATK" => Ok(Self::AttackBonus),
                 "INITIATIVE" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
+                "ATTACKS" => Ok(Self::Attacks),
                 "SLOT_LEVEL" => Ok(Self::SlotLevel),
                 "POINTS" => Ok(Self::Points),
                 "POINTS_MAX" => Ok(Self::PointsMax),
@@ -360,6 +362,7 @@ impl fmt::Display for Attribute {
             Self::Vulnerability(dt) => write!(f, "VULN.{}", dt.abbr()),
             Self::Immunity(dt) => write!(f, "IMMUNE.{}", dt.abbr()),
             Self::DamageReduction(dt) => write!(f, "DR.{}", dt.abbr()),
+            Self::Attacks => f.write_str("ATTACKS"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
         }
     }
@@ -408,6 +411,7 @@ impl Attribute {
             Self::DamageReduction(dt) => {
                 format!("{} ({})", i18n.tr("damage-reduction"), i18n.tr(dt.tr_key()))
             }
+            Self::Attacks => i18n.tr("attack-count"),
             Self::Arg(_) => "?".to_string(),
             _ => self.to_string(),
         }
