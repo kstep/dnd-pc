@@ -8,34 +8,34 @@ use crate::{
 };
 
 #[component]
-fn DamageEntry(dt: DamageType, mods: DamageModifiers) -> impl IntoView {
+fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl IntoView {
     let i18n = expect_context::<I18n>();
-    let icon = dt.icon_name();
-    let label = i18n.tr(dt.tr_key());
+    let icon = damage_type.icon_name();
+    let label = i18n.tr(damage_type.tr_key());
 
     view! {
         <span class="damage-entry">
             <Icon name=icon size=14 />
             {label}
-            {mods.immune.then(|| view! {
+            {modifiers.immune.then(|| view! {
                 <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>
                     <Icon name="shield-check" size=12 />
                 </span>
             })}
-            {mods.resistant.then(|| view! {
+            {modifiers.resistant.then(|| view! {
                 <span class="damage-tag damage-resistance" title=move || i18n.tr("damage-resistance")>
                     <Icon name="shield-half" size=12 />
                 </span>
             })}
-            {mods.vulnerable.then(|| view! {
+            {modifiers.vulnerable.then(|| view! {
                 <span class="damage-tag damage-vulnerability" title=move || i18n.tr("damage-vulnerability")>
                     <Icon name="shield-off" size=12 />
                 </span>
             })}
-            {(mods.reduction > 0).then(|| view! {
+            {(modifiers.reduction > 0).then(|| view! {
                 <span class="damage-tag damage-reduction" title=move || i18n.tr("damage-reduction")>
                     <Icon name="shield-minus" size=12 />
-                    {mods.reduction}
+                    {modifiers.reduction}
                 </span>
             })}
         </span>
@@ -51,12 +51,12 @@ pub fn DamageModifiersBlock() -> impl IntoView {
         let entries = damage_modifiers
             .read()
             .iter()
-            .filter(|(_, mods)| mods.is_active())
+            .filter(|(_, modifiers)| modifiers.is_active())
             .enumerate()
-            .map(|(idx, (dt, mods))| {
+            .map(|(idx, (damage_type, modifiers))| {
                 view! {
                     {(idx > 0).then_some(", ")}
-                    <DamageEntry dt=*dt mods=*mods />
+                    <DamageEntry damage_type=*damage_type modifiers=*modifiers />
                 }
             })
             .collect_view();
