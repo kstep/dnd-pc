@@ -16,16 +16,17 @@ fn DamageToggle(
     icon: &'static str,
     title: Signal<String>,
     active: Memo<bool>,
-    on_click: impl Fn() + 'static,
+    on_toggle: impl Fn() + 'static,
 ) -> impl IntoView {
     view! {
-        <button
-            class=move || if active.get() { "damage-toggle active" } else { "damage-toggle" }
-            title=move || title.get()
-            on:click=move |_| on_click()
-        >
+        <label class="damage-toggle" title=move || title.get()>
+            <input
+                type="checkbox"
+                prop:checked=move || active.get()
+                on:change=move |_| on_toggle()
+            />
             <Icon name=icon size=14 />
-        </button>
+        </label>
     }
 }
 
@@ -103,19 +104,19 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 icon="shield-half"
                                 title=Signal::derive(move || i18n.tr("damage-resistance"))
                                 active=Memo::new(move |_| current.get().resistant)
-                                on_click=move || toggle_field(|modifiers| &mut modifiers.resistant)
+                                on_toggle=move || toggle_field(|modifiers| &mut modifiers.resistant)
                             />
                             <DamageToggle
                                 icon="shield-off"
                                 title=Signal::derive(move || i18n.tr("damage-vulnerability"))
                                 active=Memo::new(move |_| current.get().vulnerable)
-                                on_click=move || toggle_field(|modifiers| &mut modifiers.vulnerable)
+                                on_toggle=move || toggle_field(|modifiers| &mut modifiers.vulnerable)
                             />
                             <DamageToggle
                                 icon="shield-check"
                                 title=Signal::derive(move || i18n.tr("damage-immunity"))
                                 active=Memo::new(move |_| current.get().immune)
-                                on_click=move || toggle_field(|modifiers| &mut modifiers.immune)
+                                on_toggle=move || toggle_field(|modifiers| &mut modifiers.immune)
                             />
                             <span class="damage-dr">
                                 <Icon name="shield-minus" size=14 />
