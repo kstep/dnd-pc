@@ -233,6 +233,26 @@ impl ProficiencyLevel {
     }
 }
 
+impl DamageType {
+    pub fn icon_name(self) -> &'static str {
+        match self {
+            Self::Acid => "droplets",
+            Self::Bludgeoning => "gavel",
+            Self::Cold => "snowflake",
+            Self::Fire => "flame",
+            Self::Force => "sparkles",
+            Self::Lightning => "zap",
+            Self::Necrotic => "skull",
+            Self::Piercing => "bow-arrow",
+            Self::Poison => "flask-round",
+            Self::Psychic => "brain",
+            Self::Radiant => "sun",
+            Self::Slashing => "sword",
+            Self::Thunder => "cloud-lightning",
+        }
+    }
+}
+
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, EnumIter, Display
 )]
@@ -259,7 +279,7 @@ enum_serde_u8!(Proficiency {
     MartialWeapons,
 });
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Display, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Display, EnumIter)]
 #[repr(u8)]
 pub enum DamageType {
     Acid,

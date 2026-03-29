@@ -135,22 +135,28 @@
     "expr": "SKILL.STEA += 10"
   },
   {
-    "name": "Bear Totem Spirit"
+    "name": "Bear Totem Spirit",
+    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
-    "name": "Stoneskin"
+    "name": "Stoneskin",
+    "expr": "RESIST.BLUDG = 1; RESIST.PIERC = 1; RESIST.SLASH = 1"
   },
   {
-    "name": "Full of Stars"
+    "name": "Full of Stars",
+    "expr": "RESIST.BLUDG = 1; RESIST.PIERC = 1; RESIST.SLASH = 1"
   },
   {
-    "name": "Stormborn"
+    "name": "Stormborn",
+    "expr": "RESIST.COLD = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
   },
   {
-    "name": "Superior Defense"
+    "name": "Superior Defense",
+    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
-    "name": "Umbral Form"
+    "name": "Umbral Form",
+    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
     "name": "Fiendish Resilience"
@@ -312,10 +318,12 @@
     "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1"
   },
   {
-    "name": "Fire Shield: Warm"
+    "name": "Fire Shield: Warm",
+    "expr": "RESIST.COLD = 1"
   },
   {
-    "name": "Fire Shield: Chill"
+    "name": "Fire Shield: Chill",
+    "expr": "RESIST.FIRE = 1"
   },
   {
     "name": "Death Ward"
@@ -345,20 +353,24 @@
     "name": "Aura of Life"
   },
   {
-    "name": "Investiture of Flame"
+    "name": "Investiture of Flame",
+    "expr": "IMMUNE.FIRE = 1; RESIST.COLD = 1"
   },
   {
-    "name": "Investiture of Ice"
+    "name": "Investiture of Ice",
+    "expr": "IMMUNE.COLD = 1; RESIST.FIRE = 1"
   },
   {
-    "name": "Investiture of Stone"
+    "name": "Investiture of Stone",
+    "expr": "RESIST.BLUDG = 1; RESIST.PIERC = 1; RESIST.SLASH = 1"
   },
   {
     "name": "Investiture of Wind",
     "expr": "DEX.SAVE.ADV = 1"
   },
   {
-    "name": "Primordial Ward"
+    "name": "Primordial Ward",
+    "expr": "RESIST.ACID = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
   },
   {
     "name": "Songal's Elemental Suffusion"
@@ -380,7 +392,7 @@
   },
   {
     "name": "Feign Death",
-    "expr": "SPEED = 0"
+    "expr": "SPEED = 0; RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
   },
   {
     "name": "Shadow Blade"
@@ -410,7 +422,8 @@
     "name": "Greater Invisibility"
   },
   {
-    "name": "Protection from Poison"
+    "name": "Protection from Poison",
+    "expr": "RESIST.POISON = 1"
   },
   {
     "name": "Blink"

@@ -4,8 +4,8 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::panel::Panel,
-    model::{Ability, Character, CharacterStoreFields, Translatable, format_bonus},
+    components::{icon::Icon, panel::Panel},
+    model::{Ability, Character, CharacterStoreFields, DamageType, Translatable, format_bonus},
 };
 
 #[component]
@@ -42,6 +42,97 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                             </button>
                             <span class="save-bonus">{bonus_display}</span>
                             <span class="save-label">{label}</span>
+                        </div>
+                    }
+                })
+                .collect_view()}
+
+            // --- Damage Modifiers ---
+            <h4 class="panel-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
+            {DamageType::iter()
+                .map(|dt| {
+                    let mods = Memo::new(move |_| {
+                        store
+                            .damage_modifiers()
+                            .read()
+                            .get(&dt)
+                            .copied()
+                            .unwrap_or_default()
+                    });
+                    let tr_key = dt.tr_key();
+                    let label = Signal::derive(move || i18n.tr(tr_key));
+                    let icon = dt.icon_name();
+
+                    view! {
+                        <div class="damage-row">
+                            <span class="damage-dt-icon"><Icon name=icon size=14 /></span>
+                            <span class="damage-label">{label}</span>
+                            <button
+                                class=move || if mods.get().resistant { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-resistance")
+                                on:click=move |_| {
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
+                                        entry.resistant = !entry.resistant;
+                                        if !entry.is_active() {
+                                            damage_modifiers.remove(&dt);
+                                        }
+                                    });
+                                }
+                            >
+                                <Icon name="shield-half" size=14 />
+                            </button>
+                            <button
+                                class=move || if mods.get().vulnerable { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-vulnerability")
+                                on:click=move |_| {
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
+                                        entry.vulnerable = !entry.vulnerable;
+                                        if !entry.is_active() {
+                                            damage_modifiers.remove(&dt);
+                                        }
+                                    });
+                                }
+                            >
+                                <Icon name="shield-off" size=14 />
+                            </button>
+                            <button
+                                class=move || if mods.get().immune { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-immunity")
+                                on:click=move |_| {
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
+                                        entry.immune = !entry.immune;
+                                        if !entry.is_active() {
+                                            damage_modifiers.remove(&dt);
+                                        }
+                                    });
+                                }
+                            >
+                                <Icon name="shield-check" size=14 />
+                            </button>
+                            <span class="damage-dr">
+                                <Icon name="shield-minus" size=14 />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    class="damage-dr-input"
+                                    prop:value=move || mods.get().reduction
+                                    on:input=move |event| {
+                                        let value = event_target_value(&event)
+                                            .parse::<u32>()
+                                            .unwrap_or(0);
+                                        store.damage_modifiers().update(|damage_modifiers| {
+                                            let entry = damage_modifiers.entry(dt).or_default();
+                                            entry.reduction = value;
+                                            if !entry.is_active() {
+                                                damage_modifiers.remove(&dt);
+                                            }
+                                        });
+                                    }
+                                />
+                            </span>
                         </div>
                     }
                 })
