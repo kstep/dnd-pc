@@ -117,7 +117,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 <input
                                     type="number"
                                     min="0"
-                                    class="damage-dr-input"
+                                    class="short-input"
                                     prop:value=move || mods.get().reduction
                                     on:input=move |event| {
                                         let value = event_target_value(&event)
