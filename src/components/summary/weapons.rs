@@ -61,13 +61,9 @@ pub fn WeaponsBlock() -> impl IntoView {
                 <div class="summary-subsection">
                     <h4 class="summary-subsection-title">
                         {move_tr!("weapons")}
-                        {if attack_count > 1 {
-                            Some(view! {
-                                <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
-                            })
-                        } else {
-                            None
-                        }}
+                        {(attack_count > 1).then(|| view! {
+                            <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
+                        })}
                     </h4>
                     <SummaryList items=items />
                 </div>
