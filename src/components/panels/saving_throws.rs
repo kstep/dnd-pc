@@ -47,7 +47,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                 })
                 .collect_view()}
 
-            // --- Resistances ---
+            // --- Damage Modifiers ---
             <h4 class="panel-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
             {DamageType::iter()
                 .map(|dt| {
@@ -71,11 +71,11 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().resistant { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-resistance")
                                 on:click=move |_| {
-                                    store.damage_modifiers().update(|resistances| {
-                                        let entry = resistances.entry(dt).or_default();
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
                                         entry.resistant = !entry.resistant;
                                         if !entry.is_active() {
-                                            resistances.remove(&dt);
+                                            damage_modifiers.remove(&dt);
                                         }
                                     });
                                 }
@@ -86,11 +86,11 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().vulnerable { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-vulnerability")
                                 on:click=move |_| {
-                                    store.damage_modifiers().update(|resistances| {
-                                        let entry = resistances.entry(dt).or_default();
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
                                         entry.vulnerable = !entry.vulnerable;
                                         if !entry.is_active() {
-                                            resistances.remove(&dt);
+                                            damage_modifiers.remove(&dt);
                                         }
                                     });
                                 }
@@ -101,11 +101,11 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 class=move || if mods.get().immune { "damage-toggle active" } else { "damage-toggle" }
                                 title=move || i18n.tr("damage-immunity")
                                 on:click=move |_| {
-                                    store.damage_modifiers().update(|resistances| {
-                                        let entry = resistances.entry(dt).or_default();
+                                    store.damage_modifiers().update(|damage_modifiers| {
+                                        let entry = damage_modifiers.entry(dt).or_default();
                                         entry.immune = !entry.immune;
                                         if !entry.is_active() {
-                                            resistances.remove(&dt);
+                                            damage_modifiers.remove(&dt);
                                         }
                                     });
                                 }
@@ -123,11 +123,11 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                         let value = event_target_value(&event)
                                             .parse::<u32>()
                                             .unwrap_or(0);
-                                        store.damage_modifiers().update(|resistances| {
-                                            let entry = resistances.entry(dt).or_default();
+                                        store.damage_modifiers().update(|damage_modifiers| {
+                                            let entry = damage_modifiers.entry(dt).or_default();
                                             entry.reduction = value;
                                             if !entry.is_active() {
-                                                resistances.remove(&dt);
+                                                damage_modifiers.remove(&dt);
                                             }
                                         });
                                     }
