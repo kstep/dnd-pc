@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[component]
-pub fn ResistancesBlock() -> impl IntoView {
+pub fn DamageModifiersBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let i18n = expect_context::<I18n>();
     let resistances = store.damage_modifiers();

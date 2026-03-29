@@ -6,7 +6,7 @@ use crate::{
     components::{
         icon::Icon,
         summary::{
-            BackpackBlock, ChoicesBlock, EffectsBlock, LanguagesBlock, ResistancesBlock,
+            BackpackBlock, ChoicesBlock, EffectsBlock, LanguagesBlock, DamageModifiersBlock,
             ResourcesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
         },
         summary_header::SummaryHeader,
@@ -45,7 +45,7 @@ pub fn CharacterSummary() -> impl IntoView {
                 <SpellsBlock />
                 <ChoicesBlock />
                 <LanguagesBlock />
-                <ResistancesBlock />
+                <DamageModifiersBlock />
             </div>
 
             // === Right column: Effects + Stats + Resources ===
