@@ -894,6 +894,10 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: var(--size-1);
+
+  &:not(:last-child)::after {
+    content: ",";
+  }
 }
 
 .damage-tag {
