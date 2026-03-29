@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
-use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    model::{Character, CharacterStoreFields, DamageModifiers, DamageType, Translatable},
+    effective::EffectiveCharacter,
+    model::{DamageModifiers, DamageType, Translatable},
 };
 
 #[component]
@@ -48,16 +48,14 @@ fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl Into
 
 #[component]
 pub fn DamageModifiersBlock() -> impl IntoView {
-    let store = expect_context::<Store<Character>>();
-    let damage_modifiers = store.damage_modifiers();
+    let effective = expect_context::<EffectiveCharacter>();
 
     move || {
-        let entries = damage_modifiers
-            .read()
-            .iter()
-            .filter(|(_, modifiers)| modifiers.is_active())
+        let entries = effective
+            .damage_modifiers()
+            .into_iter()
             .map(|(damage_type, modifiers)| {
-                view! { <DamageEntry damage_type=*damage_type modifiers=*modifiers /> }
+                view! { <DamageEntry damage_type=damage_type modifiers=modifiers /> }
             })
             .collect_view();
 

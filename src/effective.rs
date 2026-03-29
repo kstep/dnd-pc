@@ -1,7 +1,12 @@
+use std::collections::BTreeMap;
+
 use leptos::prelude::*;
 use reactive_stores::Store;
+use strum::IntoEnumIterator;
 
-use crate::model::{Ability, ActiveEffects, Attribute, Character, Skill};
+use crate::model::{
+    Ability, ActiveEffects, Attribute, Character, DamageModifiers, DamageType, Skill,
+};
 
 /// Advantage/disadvantage state for a roll type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -126,5 +131,44 @@ impl EffectiveCharacter {
     #[allow(dead_code)]
     pub fn attack_advantage(&self) -> AdvantageState {
         self.get(Attribute::AttackAdvantage).into()
+    }
+
+    /// Effective damage modifiers: character base merged with effect overrides.
+    pub fn damage_modifiers(&self) -> BTreeMap<DamageType, DamageModifiers> {
+        let character = self.store.read();
+        let effects = self.effects.read();
+        let mut result = character.damage_modifiers.clone();
+
+        for damage_type in DamageType::iter() {
+            let resistant = effects.global_override(Attribute::Resistance(damage_type));
+            let vulnerable = effects.global_override(Attribute::Vulnerability(damage_type));
+            let immune = effects.global_override(Attribute::Immunity(damage_type));
+            let reduction = effects.global_override(Attribute::DamageReduction(damage_type));
+
+            if resistant.is_some()
+                || vulnerable.is_some()
+                || immune.is_some()
+                || reduction.is_some()
+            {
+                let entry = result.entry(damage_type).or_default();
+                if let Some(value) = resistant {
+                    entry.resistant = value != 0;
+                }
+                if let Some(value) = vulnerable {
+                    entry.vulnerable = value != 0;
+                }
+                if let Some(value) = immune {
+                    entry.immune = value != 0;
+                }
+                if let Some(value) = reduction {
+                    entry.reduction = value.max(0) as u32;
+                }
+                if !entry.is_active() {
+                    result.remove(&damage_type);
+                }
+            }
+        }
+
+        result
     }
 }
