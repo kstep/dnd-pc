@@ -14,31 +14,35 @@ fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl Into
     let label = i18n.tr(damage_type.tr_key());
 
     view! {
-        <span class="damage-entry">
-            <Icon name=icon size=14 title=label.clone() />
-            {label}
-            {modifiers.immune.then(|| view! {
-                <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>
-                    <Icon name="shield-check" size=12 />
+        <div class="entry-item">
+            <span class="damage-dt-icon"><Icon name=icon size=14 title=label.clone() /></span>
+            <div class="entry-content">
+                <span class="entry-name">{label}</span>
+                <span class="entry-badge damage-badge">
+                    {modifiers.immune.then(|| view! {
+                        <span class="damage-tag" title=move || i18n.tr("damage-immunity")>
+                            <Icon name="shield-check" size=14 />
+                        </span>
+                    })}
+                    {modifiers.resistant.then(|| view! {
+                        <span class="damage-tag" title=move || i18n.tr("damage-resistance")>
+                            <Icon name="shield-half" size=14 />
+                        </span>
+                    })}
+                    {modifiers.vulnerable.then(|| view! {
+                        <span class="damage-tag" title=move || i18n.tr("damage-vulnerability")>
+                            <Icon name="shield-off" size=14 />
+                        </span>
+                    })}
+                    {(modifiers.reduction > 0).then(|| view! {
+                        <span class="damage-tag" title=move || i18n.tr("damage-reduction")>
+                            <Icon name="shield-minus" size=14 />
+                            {modifiers.reduction}
+                        </span>
+                    })}
                 </span>
-            })}
-            {modifiers.resistant.then(|| view! {
-                <span class="damage-tag damage-resistance" title=move || i18n.tr("damage-resistance")>
-                    <Icon name="shield-half" size=12 />
-                </span>
-            })}
-            {modifiers.vulnerable.then(|| view! {
-                <span class="damage-tag damage-vulnerability" title=move || i18n.tr("damage-vulnerability")>
-                    <Icon name="shield-off" size=12 />
-                </span>
-            })}
-            {(modifiers.reduction > 0).then(|| view! {
-                <span class="damage-tag damage-reduction" title=move || i18n.tr("damage-reduction")>
-                    <Icon name="shield-minus" size=12 />
-                    {modifiers.reduction}
-                </span>
-            })}
-        </span>
+            </div>
+        </div>
     }
 }
 
@@ -52,12 +56,8 @@ pub fn DamageModifiersBlock() -> impl IntoView {
             .read()
             .iter()
             .filter(|(_, modifiers)| modifiers.is_active())
-            .enumerate()
-            .map(|(idx, (damage_type, modifiers))| {
-                view! {
-                    {(idx > 0).then_some(", ")}
-                    <DamageEntry damage_type=*damage_type modifiers=*modifiers />
-                }
+            .map(|(damage_type, modifiers)| {
+                view! { <DamageEntry damage_type=*damage_type modifiers=*modifiers /> }
             })
             .collect_view();
 
@@ -66,7 +66,7 @@ pub fn DamageModifiersBlock() -> impl IntoView {
         } else {
             Some(view! {
                 <h4 class="summary-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
-                <div class="summary-damage-modifiers">{entries}</div>
+                <div class="entry-list">{entries}</div>
             })
         }
     }
