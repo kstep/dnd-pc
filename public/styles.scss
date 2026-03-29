@@ -843,8 +843,9 @@ input[type="checkbox"] {
 
 .damage-row {
   display: grid;
-  grid-template-columns: 20px 1fr repeat(3, 28px) 60px;
-  gap: var(--size-1);
+  grid-template-columns: 28px 1fr repeat(3, 22px) 60px;
+  row-gap: var(--size-1);
+  column-gap: 2px;
   align-items: center;
   padding: var(--size-1) 0;
   border-bottom: 1px solid var(--panel-border);
@@ -859,6 +860,8 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
 }
 
 .damage-toggle {
@@ -868,6 +871,9 @@ input[type="checkbox"] {
   line-height: 1;
   color: var(--text-secondary);
   opacity: 0.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   input[type="checkbox"] {
     display: none;
@@ -904,7 +910,6 @@ input[type="checkbox"] {
 .damage-tag {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
 }
 
 
