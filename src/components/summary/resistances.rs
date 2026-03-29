@@ -26,26 +26,26 @@ pub fn ResistancesBlock() -> impl IntoView {
                 let immune = mods.immune;
                 let reduction = mods.reduction;
                 view! {
-                    <span class="resistance-entry">
+                    <span class="damage-entry">
                         <Icon name=icon size=14 />
                         {label}
                         {immune.then(|| view! {
-                            <span class="resistance-tag resistance-immune" title=move || i18n.tr("damage-immune")>
+                            <span class="damage-tag damage-immunity" title=move || i18n.tr("damage-immunity")>
                                 <Icon name="shield-check" size=12 />
                             </span>
                         })}
                         {resistant.then(|| view! {
-                            <span class="resistance-tag resistance-resistant" title=move || i18n.tr("damage-resistant")>
+                            <span class="damage-tag damage-resistance" title=move || i18n.tr("damage-resistance")>
                                 <Icon name="shield-half" size=12 />
                             </span>
                         })}
                         {vulnerable.then(|| view! {
-                            <span class="resistance-tag resistance-vulnerable" title=move || i18n.tr("damage-vulnerable")>
+                            <span class="damage-tag damage-vulnerability" title=move || i18n.tr("damage-vulnerability")>
                                 <Icon name="shield-off" size=12 />
                             </span>
                         })}
                         {(reduction > 0).then(|| view! {
-                            <span class="resistance-tag resistance-dr" title=move || i18n.tr("damage-reduction")>
+                            <span class="damage-tag damage-reduction" title=move || i18n.tr("damage-reduction")>
                                 <Icon name="shield-minus" size=12 />
                                 {reduction}
                             </span>

@@ -64,12 +64,12 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                     let icon = dt.icon_name();
 
                     view! {
-                        <div class="resistance-row">
-                            <span class="resistance-dt-icon"><Icon name=icon size=14 /></span>
-                            <span class="resistance-label">{label}</span>
+                        <div class="damage-row">
+                            <span class="damage-dt-icon"><Icon name=icon size=14 /></span>
+                            <span class="damage-label">{label}</span>
                             <button
-                                class=move || if mods.get().resistant { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("damage-resistant")
+                                class=move || if mods.get().resistant { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-resistance")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
@@ -83,8 +83,8 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 <Icon name="shield-half" size=14 />
                             </button>
                             <button
-                                class=move || if mods.get().vulnerable { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("damage-vulnerable")
+                                class=move || if mods.get().vulnerable { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-vulnerability")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
@@ -98,8 +98,8 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                 <Icon name="shield-off" size=14 />
                             </button>
                             <button
-                                class=move || if mods.get().immune { "resistance-toggle active" } else { "resistance-toggle" }
-                                title=move || i18n.tr("damage-immune")
+                                class=move || if mods.get().immune { "damage-toggle active" } else { "damage-toggle" }
+                                title=move || i18n.tr("damage-immunity")
                                 on:click=move |_| {
                                     store.resistances().update(|resistances| {
                                         let entry = resistances.entry(dt).or_default();
@@ -112,12 +112,12 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                             >
                                 <Icon name="shield-check" size=14 />
                             </button>
-                            <span class="resistance-dr">
+                            <span class="damage-dr">
                                 <Icon name="shield-minus" size=14 />
                                 <input
                                     type="number"
                                     min="0"
-                                    class="resistance-dr-input"
+                                    class="damage-dr-input"
                                     prop:value=move || mods.get().reduction
                                     on:input=move |event| {
                                         let value = event_target_value(&event)
