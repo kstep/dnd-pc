@@ -50,6 +50,8 @@ pub fn WeaponsBlock() -> impl IntoView {
             })
             .collect::<Vec<_>>();
 
+        let attack_count = eff.attack_count();
+
         if items.is_empty() {
             Either::Left(view! {
                 <p class="summary-empty">{move_tr!("summary-no-weapons")}</p>
@@ -57,7 +59,16 @@ pub fn WeaponsBlock() -> impl IntoView {
         } else {
             Either::Right(view! {
                 <div class="summary-subsection">
-                    <h4 class="summary-subsection-title">{move_tr!("weapons")}</h4>
+                    <h4 class="summary-subsection-title">
+                        {move_tr!("weapons")}
+                        {if attack_count > 1 {
+                            Some(view! {
+                                <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
+                            })
+                        } else {
+                            None
+                        }}
+                    </h4>
                     <SummaryList items=items />
                 </div>
             })

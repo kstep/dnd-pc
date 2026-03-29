@@ -75,6 +75,10 @@ impl EffectiveCharacter {
         self.get(Attribute::AttackBonus)
     }
 
+    pub fn attack_count(&self) -> i32 {
+        self.get(Attribute::Attacks)
+    }
+
     pub fn hp_max(&self) -> i32 {
         self.get(Attribute::MaxHp)
     }

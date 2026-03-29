@@ -66,6 +66,7 @@ recalculate = Пересчитать
 replay = Переприменить
 initiative = Инициатива
 speed = Скорость
+attack-count = Атаки
 inspiration = Вдохновение
 proficiency-bonus = Бонус мастерства
 level = Уровень

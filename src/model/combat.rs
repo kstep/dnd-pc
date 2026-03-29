@@ -23,6 +23,12 @@ pub struct CombatStats {
     pub initiative_misc_bonus: i32,
     #[serde(default)]
     pub inspiration: bool,
+    #[serde(default = "default_attack_count")]
+    pub attack_count: u32,
+}
+
+fn default_attack_count() -> u32 {
+    1
 }
 
 impl Default for CombatStats {
@@ -38,6 +44,7 @@ impl Default for CombatStats {
             attack_bonus: 0,
             initiative_misc_bonus: 0,
             inspiration: false,
+            attack_count: 1,
         }
     }
 }

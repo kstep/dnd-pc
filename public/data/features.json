@@ -1550,7 +1550,13 @@
     "name": "Infiltrator"
   },
   {
-    "name": "Extra Attack"
+    "name": "Extra Attack",
+    "assign": [
+      {
+        "expr": "ATTACKS = 2",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Improved Armorer"
@@ -5327,13 +5333,25 @@
     "name": "Tactical Master"
   },
   {
-    "name": "Two Extra Attacks"
+    "name": "Two Extra Attacks",
+    "assign": [
+      {
+        "expr": "ATTACKS = 3",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Studied Attacks"
   },
   {
-    "name": "Three Extra Attacks"
+    "name": "Three Extra Attacks",
+    "assign": [
+      {
+        "expr": "ATTACKS = 4",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Combat Superiority"
