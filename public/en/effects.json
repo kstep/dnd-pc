@@ -245,8 +245,20 @@
   "Protection from Evil and Good": {
     "description": "Aberrations/Celestials/Elementals/Fey/Fiends/Undead have disadvantage on attacks; can't charm/frighten/possess (concentration, 10 min)"
   },
-  "Protection from Energy": {
-    "description": "Resistance to one chosen type: Acid/Cold/Fire/Lightning/Thunder (concentration, 1 hour)"
+  "Protection from Energy: Acid": {
+    "description": "Resistance to Acid damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Cold": {
+    "description": "Resistance to Cold damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Fire": {
+    "description": "Resistance to Fire damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Lightning": {
+    "description": "Resistance to Lightning damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Thunder": {
+    "description": "Resistance to Thunder damage (concentration, 1 hour)"
   },
   "Beacon of Hope": {
     "description": "Advantage on WIS saves and death saves, max healing from any spell (concentration, 1 min)"

@@ -307,7 +307,24 @@
     "name": "Protection from Evil and Good"
   },
   {
-    "name": "Protection from Energy"
+    "name": "Protection from Energy: Acid",
+    "expr": "RESIST.ACID = 1"
+  },
+  {
+    "name": "Protection from Energy: Cold",
+    "expr": "RESIST.COLD = 1"
+  },
+  {
+    "name": "Protection from Energy: Fire",
+    "expr": "RESIST.FIRE = 1"
+  },
+  {
+    "name": "Protection from Energy: Lightning",
+    "expr": "RESIST.LIGHT = 1"
+  },
+  {
+    "name": "Protection from Energy: Thunder",
+    "expr": "RESIST.THUND = 1"
   },
   {
     "name": "Beacon of Hope",
