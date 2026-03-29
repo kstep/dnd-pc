@@ -901,7 +901,8 @@ input[type="checkbox"] {
   gap: var(--size-1);
 
   &:not(:last-child)::after {
-    content: ", ";
+    content: ",\a0";
+    margin-left: calc(-1 * var(--size-1));
   }
 }
 
