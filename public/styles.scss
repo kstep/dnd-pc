@@ -2986,12 +2986,10 @@ select.entry-name {
   display: flex;
   flex-wrap: wrap;
   gap: var(--size-1);
-  flex: 1;
 }
 
 .dice-pool-value {
-  min-width: 3rem;
-  flex: 1;
+  width: 3rem;
   text-align: center;
 
   &:invalid {
