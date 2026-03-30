@@ -885,7 +885,7 @@ impl Character {
             feature_data: BTreeMap::from([(
                 "Spellcasting (Bard)".to_string(),
                 FeatureData {
-                    args: Vec::new(),
+                    inputs: Vec::new(),
                     fields: Vec::new(),
                     spells: Some(SpellData {
                         casting_ability: Ability::Charisma,
