@@ -7,8 +7,8 @@ use crate::{
     demap::{self, Named},
     expr::{self, Eval as _, Expr},
     model::{
-        Armor, ArmorType, AssignArgs, Attribute, Character, Context, Die, EffectDefinition,
-        FeatureField, FeatureSource, FeatureValue, Translatable,
+        Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition,
+        FeatureField, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
     vecset::VecSet,
@@ -311,14 +311,13 @@ impl FeatureDefinition {
         &self,
         context: &mut impl expr::Context<Attribute, i32>,
         when: WhenCondition,
-        args: Option<impl Iterator<Item = Vec<i32>>>,
-        dice: Option<impl Iterator<Item = expr::DicePool>>,
+        inputs: &[AssignInputs],
     ) {
         let Some(assign) = &self.assign else { return };
 
         struct WithArgs<'a, C> {
             inner: &'a mut C,
-            args: Vec<i32>,
+            args: &'a [i32],
         }
         impl<C: expr::Context<Attribute, i32>> expr::Context<Attribute, i32> for WithArgs<'_, C> {
             fn assign(&mut self, var: Attribute, val: i32) -> Result<(), expr::Error> {
@@ -358,8 +357,7 @@ impl FeatureDefinition {
             })
             .collect();
 
-        let mut args = args;
-        let mut dice = dice;
+        let mut input_iter = inputs.iter();
         for (assignment, is_interactive) in assign
             .iter()
             .filter(|assignment| assignment.when == when)
@@ -375,27 +373,18 @@ impl FeatureDefinition {
                 continue;
             }
 
-            let arg_values = args.as_mut().and_then(|iter| iter.next());
-            let dice_pool = dice.as_mut().and_then(|iter| iter.next());
-
-            let result = if let Some(arg_values) = arg_values {
+            let result = if let Some(input) = input_iter.next() {
                 let mut ctx = WithArgs {
                     inner: context,
-                    args: arg_values,
+                    args: &input.args,
                 };
-                match dice_pool {
-                    Some(pool) if !pool.is_empty() => {
-                        assignment.expr.apply_with_dice(&mut ctx, &pool)
-                    }
-                    _ => assignment.expr.apply(&mut ctx),
+                if input.dice.is_empty() {
+                    assignment.expr.apply(&mut ctx)
+                } else {
+                    assignment.expr.apply_with_dice(&mut ctx, &input.dice)
                 }
             } else {
-                match dice_pool {
-                    Some(pool) if !pool.is_empty() => {
-                        assignment.expr.apply_with_dice(context, &pool)
-                    }
-                    _ => assignment.expr.apply(context),
-                }
+                assignment.expr.apply(context)
             };
 
             if let Err(error) = result {
@@ -407,43 +396,27 @@ impl FeatureDefinition {
         }
     }
 
-    pub fn apply(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
-        self.apply_with_args(level, character, source, None, None);
-    }
-
-    pub fn apply_with_args(
+    pub fn apply(
         &self,
         level: u32,
         character: &mut Character,
-        source: Option<&FeatureSource>,
-        args: Option<Vec<Vec<i32>>>,
-        dice: Option<Vec<expr::DicePool>>,
+        when: WhenCondition,
+        inputs: Vec<AssignInputs>,
     ) {
-        let is_new = character.mark_feature_applied(
-            &self.name,
-            self.label.clone(),
-            self.description.clone(),
-        );
-        let when = if is_new {
-            WhenCondition::OnFeatureAdd
-        } else {
-            WhenCondition::OnLevelUp
-        };
-
         character.languages.extend(self.languages.iter().cloned());
 
-        if let Some(ref args) = args {
+        if !inputs.is_empty() {
             character
                 .feature_data
                 .entry(self.name.clone())
                 .or_default()
-                .args
-                .extend(args.iter().map(|v| AssignArgs { values: v.clone() }));
+                .inputs
+                .extend(inputs.iter().cloned());
         }
 
         let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
             let free_uses_max = self.free_uses_max(level, character);
-            spells_def.apply(level, character, &self.name, source, free_uses_max);
+            spells_def.apply(level, character, &self.name, free_uses_max);
             (
                 character.caster_level(spells_def.pool) as i32,
                 character.ability_modifier(spells_def.casting_ability),
@@ -458,14 +431,9 @@ impl FeatureDefinition {
             caster_level,
             caster_modifier,
         };
-        self.assign(
-            &mut context,
-            when,
-            args.map(|v| v.into_iter()),
-            dice.map(|v| v.into_iter()),
-        );
+        self.assign(&mut context, when, &inputs);
 
-        self.apply_fields(level, character, source);
+        self.apply_fields(level, character);
 
         // Create Natural armor entry if feature defines an AC expression.
         // ac_expr is level-independent, so we only insert once and skip on re-apply.
@@ -496,13 +464,9 @@ impl FeatureDefinition {
             .unwrap_or_default()
     }
 
-    fn apply_fields(&self, level: u32, character: &mut Character, source: Option<&FeatureSource>) {
-        // Always ensure feature_data entry exists with source, even for field-less
-        // features
-        let entry = character.feature_data.entry(self.name.clone()).or_default();
-        if entry.source.is_none() {
-            entry.source = source.cloned();
-        }
+    fn apply_fields(&self, level: u32, character: &mut Character) {
+        // Always ensure feature_data entry exists, even for field-less features
+        character.feature_data.entry(self.name.clone()).or_default();
 
         if self.fields.is_empty() {
             return;
@@ -529,9 +493,6 @@ impl FeatureDefinition {
                 })
                 .collect();
             let entry = character.feature_data.entry(self.name.clone()).or_default();
-            if entry.source.is_none() {
-                entry.source = source.cloned();
-            }
             entry.fields = new_fields;
         } else {
             // Pre-compute expression-based values (needs &character before mutation)
@@ -554,9 +515,6 @@ impl FeatureDefinition {
                 .collect();
 
             let entry = character.feature_data.entry(self.name.clone()).or_default();
-            if entry.source.is_none() {
-                entry.source = source.cloned();
-            }
             for field in entry.fields.iter_mut() {
                 if let Some(def) = self.fields.get(field.name.as_str()) {
                     match (&def.kind, &mut field.value) {

@@ -1,5 +1,7 @@
 use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 
+use serde::{Deserialize, Serialize};
+
 use super::{Interpreter, eval_op};
 use crate::expr::{Context, Error, Op, ops::BlockIndex, stack::Stack};
 
@@ -7,7 +9,7 @@ use crate::expr::{Context, Error, Op, ops::BlockIndex, stack::Stack};
 
 /// Immutable pool of preset dice values, keyed by die sides.
 /// Create a [`DicePoolIter`] via [`iter()`](DicePool::iter) for evaluation.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct DicePool(BTreeMap<u32, Vec<u32>>);
 
 impl DicePool {

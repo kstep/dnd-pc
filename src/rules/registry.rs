@@ -503,28 +503,6 @@ impl RulesRegistry {
         })
     }
 
-    pub fn with_feature_source<R>(
-        &self,
-        identity: &CharacterIdentity,
-        feature_name: &str,
-        f: impl FnOnce(&FeatureDefinition, Option<FeatureSource>) -> R,
-    ) -> Option<R> {
-        self.with_features_index_untracked(|features_index| {
-            let class_cache = self.class_cache.read_untracked();
-            let bg_cache = self.background_cache.read_untracked();
-            let species_cache = self.species_cache.read_untracked();
-            resolve::find_feature_with_source(
-                identity,
-                feature_name,
-                features_index,
-                &class_cache,
-                &bg_cache,
-                &species_cache,
-            )
-            .map(|(feat, source)| f(feat, source))
-        })
-    }
-
     pub fn feature_class_level(
         &self,
         identity: &CharacterIdentity,
@@ -629,6 +607,26 @@ impl RulesRegistry {
     /// arrive or locale changes.
     pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
+
+        // Fix Feature.source levels from class definitions (corrects
+        // migrated characters where level was defaulted to 1).
+        for feature in &mut character.features {
+            if let FeatureSource::Class(class_name, level) = &mut feature.source
+                && let Some(def) = class_cache.get(class_name.as_str())
+            {
+                let subclass = character
+                    .identity
+                    .classes
+                    .iter()
+                    .find(|cl| cl.class == *class_name)
+                    .and_then(|cl| cl.subclass.as_deref());
+                let correct_level = def.feature_level(subclass, &feature.name);
+                if correct_level > 0 && *level != correct_level {
+                    *level = correct_level;
+                }
+            }
+        }
+
         self.with_features_index(|features_index| {
             let spell_list_cache = self.spell_list_cache.read();
 

@@ -27,6 +27,24 @@ impl ClassDefinition {
         self.label.as_deref().unwrap_or(&self.name)
     }
 
+    /// Find the class level at which a feature first appears (checking both
+    /// base class and subclass level tables). Returns 0 if not found.
+    pub fn feature_level(&self, subclass: Option<&str>, feature_name: &str) -> u32 {
+        for (index, level_rules) in self.levels.iter().enumerate() {
+            if level_rules.features.iter().any(|name| name == feature_name) {
+                return index as u32 + 1;
+            }
+        }
+        if let Some(subclass_def) = subclass.and_then(|sc| self.subclasses.get(sc)) {
+            for (level, level_rules) in subclass_def.levels.iter() {
+                if level_rules.features.iter().any(|name| name == feature_name) {
+                    return *level;
+                }
+            }
+        }
+        0
+    }
+
     /// Iterate all feature names from class levels and subclass levels.
     pub fn feature_names<'a>(&'a self, subclass: Option<&str>) -> impl Iterator<Item = &'a str> {
         let sc_features = subclass

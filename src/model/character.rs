@@ -11,7 +11,7 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
-        Feature, FeatureData, FeatureValue, Personality, SpellSlotLevel, enums::*,
+        Feature, FeatureData, FeatureSource, FeatureValue, Personality, SpellSlotLevel, enums::*,
     },
     vecset::VecSet,
 };
@@ -130,7 +130,7 @@ impl Character {
         Self::default()
     }
 
-    pub fn reset(&mut self) {
+    pub fn clear(&mut self) {
         let id = self.id;
         let mut identity = std::mem::take(&mut self.identity);
         identity.species_applied = false;
@@ -348,14 +348,15 @@ impl Character {
         let mut caster_classes = 0u32;
         for cl in &self.identity.classes {
             let max_coef = self
-                .feature_data
-                .values()
-                .filter_map(|feature_data| {
-                    let spell_data = feature_data.spells.as_ref()?;
-                    (spell_data.pool == pool
-                        && spell_data.caster_coef != 0
-                        && feature_data.source.as_ref()?.as_class() == Some(cl.class.as_str()))
-                    .then_some(spell_data.caster_coef)
+                .features
+                .iter()
+                .filter_map(|feature| {
+                    if feature.source.as_class() != Some(cl.class.as_str()) {
+                        return None;
+                    }
+                    let spell_data = self.feature_data.get(&feature.name)?.spells.as_ref()?;
+                    (spell_data.pool == pool && spell_data.caster_coef != 0)
+                        .then_some(spell_data.caster_coef)
                 })
                 .max();
             if let Some(max_coef) = max_coef {
@@ -529,6 +530,7 @@ impl Character {
         name: &str,
         label: Option<String>,
         description: String,
+        source: FeatureSource,
     ) -> bool {
         if let Some(feature) = self
             .features
@@ -538,6 +540,7 @@ impl Character {
             feature.applied = true;
             feature.label = label;
             feature.description = description;
+            feature.source = source;
             true
         } else if self.features.iter().any(|f| f.name == name) {
             false
@@ -547,29 +550,25 @@ impl Character {
                 label,
                 description,
                 applied: true,
+                source,
             });
             true
         }
     }
 
-    /// Reset all derived state for replay. Preserves identity, equipment,
-    /// personality, notes, and feature list (but marks all features unapplied).
-    pub fn reset_for_replay(&mut self) {
+    /// Reset all derived state for replay. Preserves identity (including
+    /// applied flags), equipment, personality, notes, and feature list with
+    /// sources intact.
+    pub fn reset_computed(&mut self) {
         self.abilities = AbilityScores::default();
         self.saving_throws.clear();
         self.skills.clear();
-        self.features.iter_mut().for_each(|f| f.applied = false);
         self.feature_data.clear();
         self.proficiencies.clear();
         self.languages.clear();
         self.damage_modifiers.clear();
         self.spell_slots.clear();
         self.combat = CombatStats::default();
-        for class_level in &mut self.identity.classes {
-            class_level.applied_levels.clear();
-        }
-        self.identity.species_applied = false;
-        self.identity.background_applied = false;
     }
 
     /// Clear all labels and descriptions (blanket clear).
@@ -880,12 +879,12 @@ impl Character {
                 label: None,
                 description: "Use a bonus action...".to_string(),
                 applied: true,
+                source: FeatureSource::Class("Bard".to_string(), 1),
             }],
             equipment: Equipment::default(),
             feature_data: BTreeMap::from([(
                 "Spellcasting (Bard)".to_string(),
                 FeatureData {
-                    source: Some(FeatureSource::Class("Bard".to_string())),
                     args: Vec::new(),
                     fields: Vec::new(),
                     spells: Some(SpellData {
@@ -1012,10 +1011,15 @@ pub mod tests {
         caster_coef: u32,
         pool: SpellSlotPool,
     ) {
+        ch.features.push(Feature {
+            name: feature_name.to_string(),
+            source: FeatureSource::Class(class_name.to_string(), 1),
+            applied: true,
+            ..Default::default()
+        });
         ch.feature_data.insert(
             feature_name.to_string(),
             FeatureData {
-                source: Some(FeatureSource::Class(class_name.to_string())),
                 spells: Some(SpellData {
                     casting_ability: Ability::Intelligence,
                     caster_coef,

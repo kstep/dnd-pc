@@ -1,10 +1,7 @@
 use std::collections::BTreeMap;
 
-use super::{
-    background::BackgroundDefinition, class::ClassDefinition, feature::FeatureDefinition,
-    species::SpeciesDefinition,
-};
-use crate::model::{CharacterIdentity, ClassLevel, FeatureSource};
+use super::{class::ClassDefinition, feature::FeatureDefinition};
+use crate::model::{CharacterIdentity, ClassLevel};
 
 /// Find a feature definition by name in the global features index.
 pub(super) fn find_feature<'a>(
@@ -12,46 +9,6 @@ pub(super) fn find_feature<'a>(
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
 ) -> Option<&'a FeatureDefinition> {
     features_index.get(name)
-}
-
-/// Find a feature and determine its source (Class/Background/Species).
-pub(super) fn find_feature_with_source<'a>(
-    identity: &CharacterIdentity,
-    name: &str,
-    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
-    bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-    species_cache: &'a BTreeMap<Box<str>, SpeciesDefinition>,
-) -> Option<(&'a FeatureDefinition, Option<FeatureSource>)> {
-    let feat = features_index.get(name)?;
-
-    // Determine source by checking which class/bg/species references this feature
-    for cl in &identity.classes {
-        if let Some(def) = class_cache.get(cl.class.as_str())
-            && def.feature_names(cl.subclass.as_deref()).any(|n| n == name)
-        {
-            return Some((feat, Some(FeatureSource::Class(cl.class.clone()))));
-        }
-    }
-
-    if let Some(bg) = bg_cache.get(identity.background.as_str())
-        && bg.features.iter().any(|n| n == name)
-    {
-        return Some((
-            feat,
-            Some(FeatureSource::Background(identity.background.clone())),
-        ));
-    }
-
-    if let Some(species_def) = species_cache.get(identity.species.as_str())
-        && species_def.features.iter().any(|n| n == name)
-    {
-        return Some((feat, Some(FeatureSource::Species(identity.species.clone()))));
-    }
-
-    // Feature exists in index but not referenced by any class/species/background
-    // — manually-added feats (e.g. "Lucky", "Tough").
-    Some((feat, None))
 }
 
 /// Find a feature and the class level of the owning class (0 for non-class).

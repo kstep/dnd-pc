@@ -8,18 +8,20 @@ use super::{
     spells::SpellList,
 };
 use crate::{
-    expr::{DicePool, Expr},
-    model::{Attribute, Character, Context, Feature, FeatureSource, FeatureValue},
+    expr::Expr,
+    model::{AssignInputs, Attribute, Character, Context, Feature, FeatureSource, FeatureValue},
     rules::RulesRegistry,
 };
 
-/// Bundled user inputs from the args/dice modal: ARG values and preset dice
-/// pools, keyed by feature name. Each inner Vec has one entry per interactive
-/// assignment expression.
+/// Bundled user inputs from the args/dice modal, keyed by feature name.
+/// Each inner Vec has one entry per interactive assignment expression.
 #[derive(Clone, Default)]
-pub struct ApplyInputs {
-    pub args: BTreeMap<String, Vec<Vec<i32>>>,
-    pub dice: BTreeMap<String, Vec<DicePool>>,
+pub struct ApplyInputs(pub BTreeMap<String, Vec<AssignInputs>>);
+
+impl ApplyInputs {
+    pub fn get(&self, feature_name: &str) -> Vec<AssignInputs> {
+        self.0.get(feature_name).cloned().unwrap_or_default()
+    }
 }
 
 /// A feature whose assignment expressions require user interaction (ARG values
@@ -44,83 +46,79 @@ impl RulesRegistry {
         self.assign(character, WhenCondition::OnShortRest);
     }
 
-    /// Reset character to base state and re-apply all features level by level,
-    /// reusing previously stored ARG values.
+    /// Reset derived state and re-apply all features using their stored source
+    /// info, reusing previously stored ARG values and dice rolls.
     pub fn replay(&self, character: &mut Character) {
-        // Extract stored args before reset
-        let mut stored_args: BTreeMap<String, VecDeque<Vec<Vec<i32>>>> = BTreeMap::new();
+        // Extract stored inputs (args + dice) before reset
+        let mut stored_inputs: BTreeMap<String, VecDeque<AssignInputs>> = BTreeMap::new();
         for (name, data) in &character.feature_data {
-            if !data.args.is_empty() {
-                let args: VecDeque<Vec<Vec<i32>>> = data
-                    .args
-                    .iter()
-                    .map(|assign_args| vec![assign_args.values.clone()])
-                    .collect();
-                stored_args.insert(name.clone(), args);
+            for assign_args in &data.inputs {
+                stored_inputs
+                    .entry(name.clone())
+                    .or_default()
+                    .push_back(assign_args.clone());
             }
         }
 
-        character.reset_for_replay();
+        character.reset_computed();
 
-        // Re-apply level by level for each class
-        let class_count = character.identity.classes.len();
-        for class_idx in 0..class_count {
-            let max_level = character.identity.classes[class_idx].level;
-            for level in 1..=max_level {
-                let args_map =
-                    self.build_replay_args(character, class_idx, level, &mut stored_args);
-                let inputs = if args_map.is_empty() {
-                    None
-                } else {
-                    Some(ApplyInputs {
-                        args: args_map,
-                        dice: BTreeMap::new(),
-                    })
+        // Collect feature info: (name, source) sorted by added_at_level.
+        // Features list with sources is preserved across reset.
+        let mut features: Vec<(String, FeatureSource)> = character
+            .features
+            .iter()
+            .map(|feature| (feature.name.clone(), feature.source.clone()))
+            .collect();
+        features.sort_by_key(|(_, source)| source.added_at_level());
+
+        self.with_features_index_untracked(|features_index| {
+            // Phase 1: Apply each feature at its added_at_level (OnFeatureAdd)
+            for (feat_name, source) in &features {
+                let Some(feat_def) = features_index.get(feat_name.as_str()) else {
+                    continue;
                 };
-                self.apply_class_level(character, class_idx, level, inputs.as_ref());
+                let added_at = source.added_at_level();
+                let inputs = stored_inputs
+                    .get_mut(feat_name.as_str())
+                    .and_then(|queue| queue.pop_front())
+                    .into_iter()
+                    .collect();
+                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, inputs);
             }
-        }
-    }
 
-    /// Build args_map for a single level's features by popping stored args.
-    fn build_replay_args(
-        &self,
-        character: &Character,
-        class_idx: usize,
-        level: u32,
-        stored_args: &mut BTreeMap<String, VecDeque<Vec<Vec<i32>>>>,
-    ) -> BTreeMap<String, Vec<Vec<i32>>> {
-        let mut args_map = BTreeMap::new();
-
-        let Some(class_level) = character.identity.classes.get(class_idx) else {
-            return args_map;
-        };
-        let class_cache = self.class_cache.read_untracked();
-        let Some(def) = class_cache.get(class_level.class.as_str()) else {
-            return args_map;
-        };
-
-        let rules = def.levels.get(level as usize - 1);
-        let subclass_rules = class_level
-            .subclass
-            .as_deref()
-            .and_then(|sc| def.subclasses.get(sc))
-            .and_then(|sc| sc.levels.get(&level));
-
-        let level_features = rules
-            .into_iter()
-            .flat_map(|r| r.features.iter())
-            .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
-
-        for feat_name in level_features {
-            if let Some(queue) = stored_args.get_mut(feat_name.as_str())
-                && let Some(args) = queue.pop_front()
-            {
-                args_map.insert(feat_name.to_string(), args);
+            // Phase 2: Re-apply each feature through intermediate levels
+            // (OnLevelUp) for spell slot progression, field scaling, etc.
+            for (feat_name, source) in &features {
+                let Some(feat_def) = features_index.get(feat_name.as_str()) else {
+                    continue;
+                };
+                let added_at = source.added_at_level();
+                let effective_level = match source {
+                    FeatureSource::Class(class_name, _) => character
+                        .identity
+                        .classes
+                        .iter()
+                        .find(|cl| cl.class == *class_name)
+                        .map_or(0, |cl| cl.level),
+                    FeatureSource::Species(_)
+                    | FeatureSource::Background(_)
+                    | FeatureSource::User(_) => character.level(),
+                };
+                if !feat_def
+                    .interactive_exprs(WhenCondition::OnLevelUp, character)
+                    .is_empty()
+                {
+                    log::warn!(
+                        "Replay: feature '{feat_name}' has interactive OnLevelUp expressions that will not receive inputs",
+                    );
+                }
+                for level in (added_at + 1)..=effective_level {
+                    feat_def.apply(level, character, WhenCondition::OnLevelUp, vec![]);
+                }
             }
-        }
+        });
 
-        args_map
+        self.compute(character);
     }
 
     pub fn compute(&self, character: &mut Character) {
@@ -268,7 +266,7 @@ impl RulesRegistry {
 
         class_level.applied_levels.insert(level);
         let subclass = class_level.subclass.clone();
-        let source = FeatureSource::Class(def.name.clone());
+        let source = FeatureSource::Class(def.name.clone(), level);
         class_level.hit_die_sides = def.hit_die;
 
         let rules = def.levels.get(level as usize - 1);
@@ -299,7 +297,7 @@ impl RulesRegistry {
             .collect();
         for feat_name in &applied {
             if let Some(feat) = features_index.get(feat_name.as_str()) {
-                feat.apply_with_args(level, character, Some(&source), None, None);
+                feat.apply(level, character, WhenCondition::OnLevelUp, vec![]);
             }
         }
 
@@ -329,11 +327,22 @@ impl RulesRegistry {
                     label: feat.label.clone(),
                     description: feat.description.clone(),
                     applied: false,
+                    source: source.clone(),
                 });
             }
-            let args = inputs.and_then(|i| i.args.get(feat_name.as_str())).cloned();
-            let dice = inputs.and_then(|i| i.dice.get(feat_name.as_str())).cloned();
-            feat.apply_with_args(level, character, Some(&source), args, dice);
+            character.mark_feature_applied(
+                feat_name,
+                feat.label.clone(),
+                feat.description.clone(),
+                source.clone(),
+            );
+            let feature_inputs = inputs.map(|i| i.get(feat_name)).unwrap_or_default();
+            feat.apply(
+                level,
+                character,
+                WhenCondition::OnFeatureAdd,
+                feature_inputs,
+            );
         }
 
         // Re-apply species and background features at new total level
@@ -341,20 +350,18 @@ impl RulesRegistry {
 
         let species_cache = self.species_cache.read_untracked();
         if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
-            let source = FeatureSource::Species(character.identity.species.clone());
             for feat_name in &species_def.features {
                 if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
+                    feat.apply(total_level, character, WhenCondition::OnLevelUp, vec![]);
                 }
             }
         }
 
         let bg_cache = self.background_cache.read_untracked();
         if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
-            let source = FeatureSource::Background(character.identity.background.clone());
             for feat_name in &bg_def.features {
                 if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, Some(&source));
+                    feat.apply(total_level, character, WhenCondition::OnLevelUp, vec![]);
                 }
             }
         }
@@ -406,7 +413,10 @@ impl RulesRegistry {
                 let Some(feat) = features_index.get(feat_name.as_str()) else {
                     continue;
                 };
-                let already_has = character.features.iter().any(|f| f.name == *feat_name);
+                let already_has = character
+                    .features
+                    .iter()
+                    .any(|f| f.name == *feat_name && f.applied);
                 if already_has && !feat.stackable {
                     continue;
                 }
@@ -496,7 +506,10 @@ impl RulesRegistry {
                 let Some(feat) = features_index.get(feat_name) else {
                     continue;
                 };
-                let already_has = character.features.iter().any(|f| f.name == feat_name);
+                let already_has = character
+                    .features
+                    .iter()
+                    .any(|f| f.name == feat_name && f.applied);
                 if already_has && !feat.stackable {
                     continue;
                 }
@@ -532,9 +545,19 @@ impl RulesRegistry {
             for feat_name in feature_names {
                 let feat_name = feat_name.as_ref();
                 if let Some(feat) = features_index.get(feat_name) {
-                    let args = inputs.and_then(|i| i.args.get(feat_name)).cloned();
-                    let dice = inputs.and_then(|i| i.dice.get(feat_name)).cloned();
-                    feat.apply_with_args(level, character, Some(source), args, dice);
+                    character.mark_feature_applied(
+                        feat_name,
+                        feat.label.clone(),
+                        feat.description.clone(),
+                        source.clone(),
+                    );
+                    let feature_inputs = inputs.map(|i| i.get(feat_name)).unwrap_or_default();
+                    feat.apply(
+                        level,
+                        character,
+                        WhenCondition::OnFeatureAdd,
+                        feature_inputs,
+                    );
                 }
             }
         });

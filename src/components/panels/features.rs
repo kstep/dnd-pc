@@ -1,5 +1,5 @@
 use leptos::{either::Either, prelude::*};
-use leptos_fluent::{move_tr, tr};
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -7,16 +7,15 @@ use crate::{
         args_modal::ArgsModalCtx, datalist_input::DatalistInput, icon::Icon, panel::Panel,
         toggle_button::ToggleButton,
     },
-    model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
-    },
-    rules::{DefinitionStore, RulesRegistry},
+    model::{Character, CharacterStoreFields, Feature, FeatureSource},
+    rules::{RulesRegistry, WhenCondition},
 };
 
 #[component]
 pub fn FeaturesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
+    let i18n = expect_context::<I18n>();
 
     let features = store.features();
 
@@ -45,8 +44,6 @@ pub fn FeaturesPanel() -> impl IntoView {
         <Panel title=move_tr!("panel-features") class="features-panel">
             <div class="entry-list">
                 {move || {
-                    let classes_list = store.identity().classes().read();
-                    let feature_data = store.feature_data().read();
                     let options = feature_options;
                     features
                         .read()
@@ -55,40 +52,13 @@ pub fn FeaturesPanel() -> impl IntoView {
                         .map(|(i, feature)| {
                             let name = feature.label().to_string();
                             let desc = feature.description.clone();
-                            let is_readonly = feature_data
-                                .get(&feature.name)
-                                .and_then(|fd| fd.source.as_ref())
-                                .is_some()
+                            let source = &feature.source;
+                            let is_readonly = !matches!(source, FeatureSource::User(_))
                                 || registry.with_features_index(|idx| {
                                     idx.get(feature.name.as_str())
                                         .is_some_and(|f| !f.selectable)
                                 });
-                            let source_text = feature_data.get(&feature.name).and_then(|fd| {
-                                fd.source.as_ref().map(|src| {
-                                    let (prefix, label) = match src {
-                                        FeatureSource::Class(class_name) => {
-                                            let label = classes_list.iter()
-                                                .find(|c| c.class == *class_name)
-                                                .map(|c| c.class_label().to_string())
-                                                .unwrap_or_else(|| class_name.clone());
-                                            (tr!("source-class"), label)
-                                        }
-                                        FeatureSource::Species(species_name) => {
-                                            let label = registry.species().with(species_name, |d| {
-                                                d.label.as_deref().unwrap_or(&d.name).to_string()
-                                            }).unwrap_or_else(|| species_name.clone());
-                                            (tr!("source-species"), label)
-                                        }
-                                        FeatureSource::Background(bg_name) => {
-                                            let label = registry.backgrounds().with(bg_name, |d| {
-                                                d.label.as_deref().unwrap_or(&d.name).to_string()
-                                            }).unwrap_or_else(|| bg_name.clone());
-                                            (tr!("source-background"), label)
-                                        }
-                                    };
-                                    format!("{prefix}: {label}")
-                                })
-                            });
+                            let source_text = source.display_name(i18n);
                             view! {
                                 <div class="entry-item">
                                     <ToggleButton />
@@ -124,24 +94,28 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             title=move_tr!("btn-apply-feature")
                                             on:click=move |_| {
                                                 let name = features.read()[i].name.clone();
-                                                let (level, identity) = store.with_untracked(|c| {
-                                                    let level = registry
-                                                        .feature_class_level(&c.identity, &name)
-                                                        .unwrap_or_else(|| c.level());
-                                                    (level, c.identity.clone())
+                                                let level = store.with_untracked(|character| {
+                                                    registry
+                                                        .feature_class_level(&character.identity, &name)
+                                                        .unwrap_or_else(|| character.level())
                                                 });
                                                 if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name)) {
                                                     let args_ctx = expect_context::<ArgsModalCtx>();
                                                     let name = name.clone();
                                                     args_ctx.open(vec![pending], move |inputs| {
-                                                        registry.with_feature_source(&identity, &name, |feat_def, source| {
-                                                            let args = inputs.args.get(name.as_str()).cloned();
-                                                            let dice = inputs.dice.get(name.as_str()).cloned();
-                                                            store.update(|c| feat_def.apply_with_args(level, c, source.as_ref(), args, dice));
+                                                        registry.with_feature(&name, |feat_def| {
+                                                            let feature_inputs = inputs.get(&name);
+                                                            store.update(|c| {
+                                                                c.mark_feature_applied(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level));
+                                                                feat_def.apply(level, c, WhenCondition::OnFeatureAdd, feature_inputs);
+                                                            });
                                                         });
                                                     });
-                                                } else if registry.with_feature_source(&identity, &name, |feat_def, source| {
-                                                    store.update(|c| feat_def.apply(level, c, source.as_ref()));
+                                                } else if registry.with_feature(&name, |feat_def| {
+                                                    store.update(|c| {
+                                                        c.mark_feature_applied(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level));
+                                                        feat_def.apply(level, c, WhenCondition::OnFeatureAdd, vec![]);
+                                                    });
                                                 }).is_none() {
                                                     log::warn!("Feature {name} not found in index, registry may not be loaded yet");
                                                 }

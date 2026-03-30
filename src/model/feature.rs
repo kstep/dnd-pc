@@ -1,7 +1,13 @@
+use std::fmt;
+
+use leptos_fluent::I18n;
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Die, SpellData};
+use crate::{
+    expr::DicePool,
+    model::{Die, SpellData},
+};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Feature {
@@ -13,6 +19,8 @@ pub struct Feature {
     pub description: String,
     #[serde(default)]
     pub applied: bool,
+    #[serde(default)]
+    pub source: FeatureSource,
 }
 
 impl Feature {
@@ -27,38 +35,83 @@ impl Feature {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum FeatureSource {
-    Class(String),
+    Class(String, u32),
     #[serde(alias = "Race")]
     Species(String),
     Background(String),
+    User(u32),
+}
+
+impl Default for FeatureSource {
+    fn default() -> Self {
+        Self::User(0)
+    }
+}
+
+impl fmt::Display for FeatureSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Class(name, level) => write!(f, "Class: {name} ({level})"),
+            Self::Species(name) => write!(f, "Species: {name}"),
+            Self::Background(name) => write!(f, "Background: {name}"),
+            Self::User(level) => write!(f, "User ({level})"),
+        }
+    }
 }
 
 impl FeatureSource {
+    pub fn display_name(&self, i18n: I18n) -> Option<String> {
+        match self {
+            Self::Class(name, level) => {
+                let prefix = i18n.tr("source-class");
+                Some(format!("{prefix}: {name} ({level})"))
+            }
+            Self::Species(name) => {
+                let prefix = i18n.tr("source-species");
+                Some(format!("{prefix}: {name}"))
+            }
+            Self::Background(name) => {
+                let prefix = i18n.tr("source-background");
+                Some(format!("{prefix}: {name}"))
+            }
+            Self::User(_) => None,
+        }
+    }
+
     pub fn name(&self) -> &str {
         match self {
-            Self::Class(name) | Self::Species(name) | Self::Background(name) => name,
+            Self::Class(name, _) | Self::Species(name) | Self::Background(name) => name,
+            Self::User(_) => "",
         }
     }
 
     pub fn as_class(&self) -> Option<&str> {
         match self {
-            Self::Class(name) => Some(name),
+            Self::Class(name, _) => Some(name),
             _ => None,
+        }
+    }
+
+    pub fn added_at_level(&self) -> u32 {
+        match self {
+            Self::Class(_, level) | Self::User(level) => *level,
+            Self::Species(_) | Self::Background(_) => 0,
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct AssignArgs {
-    pub values: Vec<i32>,
+pub struct AssignInputs {
+    #[serde(default)]
+    pub args: Vec<i32>,
+    #[serde(default)]
+    pub dice: DicePool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct FeatureData {
     #[serde(default)]
-    pub source: Option<FeatureSource>,
-    #[serde(default)]
-    pub args: Vec<AssignArgs>,
+    pub inputs: Vec<AssignInputs>,
     #[serde(default)]
     pub fields: Vec<FeatureField>,
     #[serde(default)]
