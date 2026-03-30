@@ -198,6 +198,8 @@ fn ReplacementPicker(
 
     // Expressions for the currently selected replacement feat (if it needs ARGs)
     let replacement_exprs: RwSignal<Vec<Expr<Attribute>>> = RwSignal::new(Vec::new());
+    // Description of the selected replacement feat
+    let replacement_description: RwSignal<String> = RwSignal::new(String::new());
 
     // Track previous replacement name to clean up stale entries from
     // all_signals/all_dice when the user switches replacement choice.
@@ -225,14 +227,22 @@ fn ReplacementPicker(
         prev_replacement.set(resolved.clone());
         if let Some(name) = &resolved {
             input_value.set(name.clone());
-            let exprs = store.with_untracked(|character| {
-                registry
+            let (description, exprs) = store.with_untracked(|character| {
+                let exprs = registry
                     .feature_needs_args(character, name)
                     .map(|pending| pending.exprs)
-                    .unwrap_or_default()
+                    .unwrap_or_default();
+                let description = registry.with_features_index(|idx| {
+                    idx.get(name.as_str())
+                        .map(|feat| feat.description.clone())
+                        .unwrap_or_default()
+                });
+                (description, exprs)
             });
+            replacement_description.set(description);
             replacement_exprs.set(exprs);
         } else {
+            replacement_description.set(String::new());
             replacement_exprs.set(Vec::new());
         }
     };
@@ -262,6 +272,9 @@ fn ReplacementPicker(
                     options=options
                     on_input=on_input
                 />
+                <Show when=move || !replacement_description.with(String::is_empty)>
+                    <p class="args-modal-description">{move || replacement_description.get()}</p>
+                </Show>
                 {move || {
                     let exprs = replacement_exprs.get();
                     let feat_name = replacement_choice.get();
