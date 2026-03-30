@@ -10,7 +10,7 @@ use crate::{
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature},
     names::{self, NamesData},
-    rules::{DefinitionStore, PendingInputs, RulesRegistry, WhenCondition},
+    rules::{DefinitionStore, FeatureCategory, PendingInputs, RulesRegistry, WhenCondition},
 };
 
 #[component]
@@ -43,7 +43,7 @@ pub fn QuickStart() -> impl IntoView {
     let generation_options = Memo::new(move |_| {
         registry.with_features_index(|idx| {
             idx.values()
-                .filter(|feat| feat.selectable && feat.name.starts_with("Generation:"))
+                .filter(|feat| matches!(feat.category, FeatureCategory::Generation))
                 .map(|feat| (feat.name.clone(), feat.label().to_string()))
                 .collect::<Vec<_>>()
         })
@@ -273,7 +273,7 @@ fn create_character(
         });
         if has_unapplied_class {
             store.update(|character| {
-                registry.apply_class_level(character, 0, 1, inputs, None);
+                registry.apply_class_level(character, 0, 1, inputs);
             });
         }
 

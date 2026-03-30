@@ -21,7 +21,7 @@ pub fn FeatureReference() -> impl IntoView {
         registry.with_features_index(|idx| {
             let filtered = idx.values().filter(|feat| {
                 if query.is_empty() {
-                    feat.selectable
+                    feat.is_selectable()
                 } else {
                     feat.label().to_lowercase().contains(&query)
                 }

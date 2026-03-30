@@ -3,7 +3,8 @@ use std::collections::{BTreeMap, VecDeque};
 use leptos::prelude::*;
 
 use super::{
-    WhenCondition,
+    ReplaceWith, WhenCondition,
+    feature::FeatureDefinition,
     resolve::{find_feature, find_feature_with_class_level},
     spells::SpellList,
 };
@@ -40,7 +41,47 @@ pub struct PendingInputs {
     pub feature_label: String,
     pub feature_description: String,
     pub exprs: Vec<Expr<Attribute>>,
-    pub replaceable: bool,
+    pub replace_with: ReplaceWith,
+}
+
+impl PendingInputs {
+    pub fn is_replaceable(&self) -> bool {
+        !matches!(self.replace_with, ReplaceWith::None)
+    }
+}
+
+/// Try to apply a replacement for `feat_name`. Returns `true` if a
+/// replacement was found and applied (caller should skip the original).
+fn try_apply_replacement(
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &mut Character,
+    feat_name: &str,
+    replacements: Option<&BTreeMap<String, String>>,
+    inputs: Option<&ApplyInputs>,
+    source: &FeatureSource,
+    level: u32,
+) -> bool {
+    let Some(replacement_name) = replacements.and_then(|r| r.get(feat_name)) else {
+        return false;
+    };
+    if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
+        character.mark_feature_applied(
+            replacement_name,
+            replacement_feat.label.clone(),
+            replacement_feat.description.clone(),
+            source.clone(),
+        );
+        let feature_inputs = inputs.map(|i| i.get(replacement_name)).unwrap_or_default();
+        replacement_feat.apply(
+            level,
+            character,
+            WhenCondition::OnFeatureAdd,
+            feature_inputs,
+        );
+    } else {
+        log::warn!("Replacement feature '{replacement_name}' not found in index");
+    }
+    true
 }
 
 impl RulesRegistry {
@@ -56,7 +97,9 @@ impl RulesRegistry {
 
     /// Reset derived state and re-apply all features using their stored source
     /// info, reusing previously stored ARG values and dice rolls.
-    // TODO: replay does not handle feature replacements
+    // Note: feature replacements are transparent to replay — the replacement
+    // feat's name is stored in character.features, so replay re-applies it
+    // directly. The original-to-replacement mapping is not preserved.
     pub fn replay(&self, character: &mut Character) {
         // Extract stored inputs (args + dice) before reset
         let mut stored_inputs: BTreeMap<String, VecDeque<AssignInputs>> = BTreeMap::new();
@@ -259,7 +302,6 @@ impl RulesRegistry {
         class_idx: usize,
         level: u32,
         inputs: Option<&ApplyInputs>,
-        replacements: Option<&BTreeMap<String, String>>,
     ) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -317,27 +359,17 @@ impl RulesRegistry {
             .flat_map(|r| r.features.iter())
             .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
 
+        let replacements = inputs.map(|i| &i.replacements).filter(|r| !r.is_empty());
         for feat_name in level_features {
-            // If this feature was replaced, apply the replacement instead
-            if let Some(replacement_name) = replacements.and_then(|r| r.get(feat_name.as_str())) {
-                if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
-                    character.mark_feature_applied(
-                        replacement_name,
-                        replacement_feat.label.clone(),
-                        replacement_feat.description.clone(),
-                        source.clone(),
-                    );
-                    let feature_inputs =
-                        inputs.map(|i| i.get(replacement_name)).unwrap_or_default();
-                    replacement_feat.apply(
-                        level,
-                        character,
-                        WhenCondition::OnFeatureAdd,
-                        feature_inputs,
-                    );
-                } else {
-                    log::warn!("Replacement feature '{replacement_name}' not found in index");
-                }
+            if try_apply_replacement(
+                features_index,
+                character,
+                feat_name,
+                replacements,
+                inputs,
+                &source,
+                level,
+            ) {
                 continue;
             }
 
@@ -454,13 +486,13 @@ impl RulesRegistry {
                     continue;
                 }
                 let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-                if !exprs.is_empty() || feat.replaceable {
+                if !exprs.is_empty() || feat.is_replaceable() {
                     result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
-                        replaceable: feat.replaceable,
+                        replace_with: feat.replace_with,
                     });
                 }
             }
@@ -484,7 +516,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
-                        replaceable: false,
+                        replace_with: ReplaceWith::None,
                     });
                 }
             }
@@ -508,7 +540,7 @@ impl RulesRegistry {
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
                 exprs,
-                replaceable: false,
+                replace_with: ReplaceWith::None,
             })
         })
     }
@@ -555,13 +587,13 @@ impl RulesRegistry {
                     WhenCondition::OnLevelUp
                 };
                 let exprs = feat.interactive_exprs(when, character);
-                if !exprs.is_empty() {
+                if !exprs.is_empty() || feat.is_replaceable() {
                     result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
-                        replaceable: false,
+                        replace_with: feat.replace_with,
                     });
                 }
             }
@@ -578,9 +610,22 @@ impl RulesRegistry {
         level: u32,
         inputs: Option<&ApplyInputs>,
     ) {
+        let replacements = inputs.map(|i| &i.replacements).filter(|r| !r.is_empty());
         self.with_features_index_untracked(|features_index| {
             for feat_name in feature_names {
                 let feat_name = feat_name.as_ref();
+                if try_apply_replacement(
+                    features_index,
+                    character,
+                    feat_name,
+                    replacements,
+                    inputs,
+                    source,
+                    level,
+                ) {
+                    continue;
+                }
+
                 if let Some(feat) = features_index.get(feat_name) {
                     character.mark_feature_applied(
                         feat_name,

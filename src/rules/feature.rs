@@ -167,6 +167,37 @@ impl Translatable for ActionType {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize)]
+pub enum FeatureCategory {
+    #[default]
+    Class,
+    Origin,
+    General,
+    FightingStyle,
+    EpicBoon,
+    Generation,
+    Faction,
+    Dragonmark,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize)]
+pub enum ReplaceWith {
+    #[default]
+    None,
+    Any,
+    Category(FeatureCategory),
+}
+
+impl ReplaceWith {
+    pub fn matches(&self, feat: &FeatureDefinition) -> bool {
+        match self {
+            Self::None => false,
+            Self::Any => feat.is_selectable(),
+            Self::Category(cat) => feat.category == *cat,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct FeatureDefinition {
     pub name: String,
@@ -179,9 +210,9 @@ pub struct FeatureDefinition {
     #[serde(default)]
     pub stackable: bool,
     #[serde(default)]
-    pub selectable: bool,
+    pub category: FeatureCategory,
     #[serde(default)]
-    pub replaceable: bool,
+    pub replace_with: ReplaceWith,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub fields: BTreeMap<Box<str>, FieldDefinition>,
@@ -227,6 +258,14 @@ impl<'de> serde::Deserialize<'de> for FeaturesIndex {
 impl FeatureDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+
+    pub fn is_selectable(&self) -> bool {
+        !matches!(self.category, FeatureCategory::Class)
+    }
+
+    pub fn is_replaceable(&self) -> bool {
+        !matches!(self.replace_with, ReplaceWith::None)
     }
 
     pub fn meets_prerequisites(&self, character: &Character) -> bool {
