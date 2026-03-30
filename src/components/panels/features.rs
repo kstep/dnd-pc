@@ -28,7 +28,7 @@ pub fn FeaturesPanel() -> impl IntoView {
         registry.with_features_index(|features_index| {
             features_index
                 .values()
-                .filter(|feat| feat.selectable && feat.meets_prerequisites(&character))
+                .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(&character))
                 .map(|feat| {
                     (
                         feat.name.clone(),
@@ -56,7 +56,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                             let is_readonly = !matches!(source, FeatureSource::User(_))
                                 || registry.with_features_index(|idx| {
                                     idx.get(feature.name.as_str())
-                                        .is_some_and(|f| !f.selectable)
+                                        .is_some_and(|f| !f.is_selectable())
                                 });
                             let source_text = source.display_name(i18n);
                             view! {

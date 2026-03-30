@@ -1,36 +1,36 @@
 [
   {
     "name": "Generation: Point Buy",
-    "selectable": true,
     "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 7) and in(ARG.1, 0, 7) and in(ARG.2, 0, 7) and in(ARG.3, 0, 7) and in(ARG.4, 0, 7) and in(ARG.5, 0, 7) and ARG.0 + max(0, ARG.0 - 5) + ARG.1 + max(0, ARG.1 - 5) + ARG.2 + max(0, ARG.2 - 5) + ARG.3 + max(0, ARG.3 - 5) + ARG.4 + max(0, ARG.4 - 5) + ARG.5 + max(0, ARG.5 - 5) == 27, STR += ARG.0; DEX += ARG.1; CON += ARG.2; INT += ARG.3; WIS += ARG.4; CHA += ARG.5)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Generation"
   },
   {
     "name": "Generation: Random",
-    "selectable": true,
     "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
     "assign": [
       {
         "expr": "STR = 4d6kh3; DEX = 4d6kh3; CON = 4d6kh3; INT = 4d6kh3; WIS = 4d6kh3; CHA = 4d6kh3",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Generation"
   },
   {
     "name": "Generation: Preset",
-    "selectable": true,
     "prerequisites": "LEVEL == 1 and STR + DEX + CON + INT + WIS + CHA == 48",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 8, 15) and ARG.0 != 9 and ARG.0 != 11 and in(ARG.1, 8, 15) and ARG.1 != 9 and ARG.1 != 11 and in(ARG.2, 8, 15) and ARG.2 != 9 and ARG.2 != 11 and in(ARG.3, 8, 15) and ARG.3 != 9 and ARG.3 != 11 and in(ARG.4, 8, 15) and ARG.4 != 9 and ARG.4 != 11 and in(ARG.5, 8, 15) and ARG.5 != 9 and ARG.5 != 11 and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 72 and ARG.0 * ARG.0 + ARG.1 * ARG.1 + ARG.2 * ARG.2 + ARG.3 * ARG.3 + ARG.4 * ARG.4 + ARG.5 * ARG.5 == 898, STR = ARG.0; DEX = ARG.1; CON = ARG.2; INT = ARG.3; WIS = ARG.4; CHA = ARG.5)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Generation"
   },
   {
     "name": "Alert",
@@ -40,15 +40,15 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Crafter",
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Healer",
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Lucky",
@@ -61,30 +61,30 @@
         }
       }
     ],
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Musician",
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Savage Attacker",
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Skilled",
     "stackable": true,
-    "selectable": true,
     "assign": [
       {
         "when": "OnFeatureAdd",
         "expr": "guard(ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 + ARG.11 + ARG.12 + ARG.13 + ARG.14 + ARG.15 + ARG.16 + ARG.17 == 3 and in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and in(ARG.8, 0, 1) and in(ARG.9, 0, 1) and in(ARG.10, 0, 1) and in(ARG.11, 0, 1) and in(ARG.12, 0, 1) and in(ARG.13, 0, 1) and in(ARG.14, 0, 1) and in(ARG.15, 0, 1) and in(ARG.16, 0, 1) and in(ARG.17, 0, 1), if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.2); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.3); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.4); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.5); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.6); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.7); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.8); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.9); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.10); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.11); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.12); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.13); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.14); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.15); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.16); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.17))"
       }
-    ]
+    ],
+    "category": "Origin"
   },
   {
     "name": "Tavern Brawler",
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Tough",
@@ -94,392 +94,392 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "Origin"
   },
   {
     "name": "Ability Score Improvement",
     "stackable": true,
-    "replaceable": true,
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and in(ARG.3, 0, 2) and in(ARG.4, 0, 2) and in(ARG.5, 0, 2) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20 and INT + ARG.3 <= 20 and WIS + ARG.4 <= 20 and CHA + ARG.5 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General",
+    "replace_with": "Any"
   },
   {
     "name": "Actor",
     "prerequisites": "LEVEL >= 4 and CHA >= 13",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Athlete",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Charger",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Chef",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Crossbow Expert",
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Crusher",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(CON < 20, CON += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Defensive Duelist",
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Dual Wielder",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Durable",
     "prerequisites": "LEVEL >= 4 and CON >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(CON < 20, CON += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Fey Touched",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Grappler",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Great Weapon Master",
     "prerequisites": "LEVEL >= 4 and STR >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Heavily Armored",
     "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Heavy Armor Master",
     "prerequisites": "LEVEL >= 4 and PROF.HEAVY_ARMOR == 1",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Inspiring Leader",
     "prerequisites": "LEVEL >= 4 and (WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(WIS < 20, WIS += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Keen Mind",
     "prerequisites": "LEVEL >= 4 and INT >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(INT < 20, INT += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Lightly Armored",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Mage Slayer",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Martial Weapon Training",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Medium Armor Master",
     "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Moderately Armored",
     "prerequisites": "LEVEL >= 4 and PROF.LIGHT_ARMOR == 1",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Mounted Combatant",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(WIS < 20, WIS += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Observant",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Piercer",
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Poisoner",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Polearm Master",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Resilient",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5); STR.SAVE.PROF = max(STR.SAVE.PROF, ARG.0); DEX.SAVE.PROF = max(DEX.SAVE.PROF, ARG.1); CON.SAVE.PROF = max(CON.SAVE.PROF, ARG.2); INT.SAVE.PROF = max(INT.SAVE.PROF, ARG.3); WIS.SAVE.PROF = max(WIS.SAVE.PROF, ARG.4); CHA.SAVE.PROF = max(CHA.SAVE.PROF, ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Ritual Caster",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Sentinel",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Shadow Touched",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Sharpshooter",
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Shield Master",
     "prerequisites": "LEVEL >= 4 and PROF.SHIELDS == 1",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(STR < 20, STR += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Skill Expert",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Skulker",
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
-    "selectable": true,
     "assign": [
       {
         "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Slasher",
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Spell Sniper",
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Speedy",
@@ -490,39 +490,39 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Telekinetic",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Telepathic",
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "War Caster",
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Weapon Master",
     "prerequisites": "LEVEL >= 4",
-    "selectable": true
+    "category": "General"
   },
   {
     "name": "Archery",
@@ -532,15 +532,15 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Blessed Warrior",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Blind Fighting",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Defense",
@@ -550,72 +550,72 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Druidic Warrior",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Dueling",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Great Weapon Fighting",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Interception",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Protection",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Thrown Weapon Fighting",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Two-Weapon Fighting",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Unarmed Fighting",
-    "selectable": true
+    "category": "FightingStyle"
   },
   {
     "name": "Boon of Combat Prowess",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Dimensional Travel",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Energy Resistance",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Fate",
@@ -629,13 +629,13 @@
         }
       }
     ],
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Fortitude",
@@ -646,18 +646,18 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Irresistible Offense",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Recovery",
@@ -671,24 +671,24 @@
         }
       }
     ],
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Skill",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Speed",
@@ -699,40 +699,40 @@
         "when": "OnCompute"
       }
     ],
-    "selectable": true
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Spell Recall",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of the Night Spirit",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Truesight",
     "prerequisites": "LEVEL >= 19",
-    "selectable": true,
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Spellcasting (Artificer)",
@@ -1279,7 +1279,7 @@
   {
     "name": "Epic Boon",
     "stackable": true,
-    "replaceable": true
+    "replace_with": "Any"
   },
   {
     "name": "Soul of Artifice"
@@ -2738,7 +2738,10 @@
     "name": "Blade Flourish"
   },
   {
-    "name": "Fighting Style"
+    "name": "Fighting Style",
+    "replace_with": {
+      "Category": "FightingStyle"
+    }
   },
   {
     "name": "Master's Flourish"
@@ -5404,7 +5407,10 @@
     "name": "Remarkable Athlete"
   },
   {
-    "name": "Additional Fighting Style"
+    "name": "Additional Fighting Style",
+    "replace_with": {
+      "Category": "FightingStyle"
+    }
   },
   {
     "name": "Heroic Warrior"
@@ -12510,7 +12516,6 @@
   {
     "name": "Magic Initiate (Cleric)",
     "stackable": true,
-    "selectable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -12532,12 +12537,12 @@
           "1": 1
         }
       }
-    ]
+    ],
+    "category": "Origin"
   },
   {
     "name": "Magic Initiate (Druid)",
     "stackable": true,
-    "selectable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -12559,12 +12564,12 @@
           "1": 1
         }
       }
-    ]
+    ],
+    "category": "Origin"
   },
   {
     "name": "Magic Initiate (Wizard)",
     "stackable": true,
-    "selectable": true,
     "spells": {
       "casting_ability": 3,
       "list": {
@@ -12586,7 +12591,8 @@
           "1": 1
         }
       }
-    ]
+    ],
+    "category": "Origin"
   },
   {
     "name": "Light Bearer",
@@ -12990,7 +12996,10 @@
     ]
   },
   {
-    "name": "Versatile"
+    "name": "Versatile",
+    "replace_with": {
+      "Category": "Origin"
+    }
   },
   {
     "name": "Abyssal Resistance"
@@ -13488,775 +13497,775 @@
   },
   {
     "name": "Elemental Adept (Acid)",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Elemental Adept (Cold)",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Elemental Adept (Fire)",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Elemental Adept (Lightning)",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Elemental Adept (Thunder)",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 2 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Aberrant Dragonmark",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Bloodlust",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Bomber",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "if(DEX < 20, DEX += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Boon of Blazing Dawn",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Bloodshed",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Bountiful Health",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Communication",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Desperate Resilience",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 30, STR += ARG.0); if(CON < 30, CON += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Exquisite Radiance",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Fluid Forms",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Fortune's Favor",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Looming Shadows",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Misty Escape",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Poison Mastery",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Revelry",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Siberys",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of Terror",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "if(CHA + 1 <= 30, CHA += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of the Bright Sun",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(CON < 30, CON += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of the Furious Storm",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Boon of the Soul Drinker",
-    "selectable": true,
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "EpicBoon"
   },
   {
     "name": "Child of the Sun",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Cloying Mists",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Cold Caster",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Cult of the Dragon Initiate",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Delicious Pain",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Dragonscarred",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(CON < 20, CON += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Emerald Enclave Fledgling",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Enclave Magic",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Fairy Trickster",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Genie Magic",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Greater Aberrant Mark",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "if(CON < 20, CON += 1)",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Detection",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Finding",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Handling",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Healing",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Hospitality",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Making",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Passage",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Scribing",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Sentinel",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Shadow",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Storm",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Greater Mark of Warding",
-    "selectable": true,
     "prerequisites": "LEVEL >= 8",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "Dragonmark"
   },
   {
     "name": "Harper Agent",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Harper Teamwork",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Light Bringer",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Lordly Resolve",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Lords' Alliance Agent",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Love Bites",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Mark of Detection",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Finding",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Handling",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Healing",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Hospitality",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Making",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Passage",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Scribing",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Sentinel",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Shadow",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Storm",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mark of Warding",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Mythal Touched",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Order's Resilience",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(STR < 20, STR += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Potent Dragonmark",
-    "selectable": true,
-    "prerequisites": "LEVEL >= 4"
+    "prerequisites": "LEVEL >= 4",
+    "category": "General"
   },
   {
     "name": "Purple Dragon Commandant",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Purple Dragon Rook",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Putrefy",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Rebuke",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Shadowmoor Hexer",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Spellfire Adept",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Spellfire Spark",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Street Justice",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Tireless Reveler",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Treacherous Allure",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Tyro of the Gauntlet",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Vampire Hunter",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Vampire Touched",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   },
   {
     "name": "Vampire's Plaything",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Zhentarim Ruffian",
-    "selectable": true,
-    "prerequisites": "LEVEL == 1"
+    "prerequisites": "LEVEL == 1",
+    "category": "Faction"
   },
   {
     "name": "Zhentarim Tactics",
-    "selectable": true,
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
       }
-    ]
+    ],
+    "category": "General"
   }
 ]

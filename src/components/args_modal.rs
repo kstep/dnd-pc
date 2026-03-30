@@ -13,7 +13,7 @@ use crate::{
     },
     expr::{DicePool, Expr},
     model::{AssignInputs, Attribute, Character},
-    rules::{ApplyInputs, PendingInputs, RulesRegistry},
+    rules::{ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry},
 };
 
 type ArgsCallback = Box<dyn Fn(ApplyInputs) + Send + Sync>;
@@ -73,7 +73,8 @@ fn ArgsFeatureInput(
     let feature_name = pending_inputs.feature_name.clone();
     let description = pending_inputs.feature_description.clone();
     let has_description = !description.is_empty();
-    let replaceable = pending_inputs.replaceable;
+    let replace_with = pending_inputs.replace_with;
+    let replaceable = pending_inputs.is_replaceable();
 
     // Signal tracking whether user chose to replace this feature
     let replacement_choice: RwSignal<Option<String>> = RwSignal::new(None);
@@ -157,7 +158,7 @@ fn ArgsFeatureInput(
                 {expr_views}
             </div>
             {replaceable.then(|| {
-                view! { <ReplacementPicker feature_name=feature_name.clone() replacement_choice all_signals all_dice all_valid /> }
+                view! { <ReplacementPicker replace_with replacement_choice all_signals all_dice all_valid /> }
             })}
         </div>
     }
@@ -165,7 +166,7 @@ fn ArgsFeatureInput(
 
 #[component]
 fn ReplacementPicker(
-    #[allow(unused)] feature_name: String,
+    replace_with: ReplaceWith,
     replacement_choice: RwSignal<Option<String>>,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
@@ -180,7 +181,7 @@ fn ReplacementPicker(
         registry.with_features_index(|features_index| {
             features_index
                 .values()
-                .filter(|feat| feat.selectable && feat.meets_prerequisites(&character))
+                .filter(|feat| replace_with.matches(feat) && feat.meets_prerequisites(&character))
                 .map(|feat| {
                     (
                         feat.name.clone(),
@@ -198,8 +199,30 @@ fn ReplacementPicker(
     // Expressions for the currently selected replacement feat (if it needs ARGs)
     let replacement_exprs: RwSignal<Vec<Expr<Attribute>>> = RwSignal::new(Vec::new());
 
+    // Track previous replacement name to clean up stale entries from
+    // all_signals/all_dice when the user switches replacement choice.
+    let prev_replacement: RwSignal<Option<String>> = RwSignal::new(None);
+
+    // Local validity memos for replacement feat ARGs, reset on each selection
+    // change. One combined memo is pushed to all_valid (below) so stale memos
+    // don't accumulate.
+    let replacement_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
+    all_valid.update(|validations| {
+        validations.push(Memo::new(move |_| {
+            replacement_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
+        }));
+    });
+
     let on_input = move |_text: String, resolved: Option<String>| {
+        // Clean up stale signal/dice entries from previous replacement
+        if let Some(old_name) = prev_replacement.get_untracked() {
+            all_signals.update(|entries| entries.retain(|(name, _)| *name != old_name));
+            all_dice.update(|entries| entries.retain(|(name, _)| *name != old_name));
+        }
+        replacement_valids.set(Vec::new());
+
         replacement_choice.set(resolved.clone());
+        prev_replacement.set(resolved.clone());
         if let Some(name) = &resolved {
             input_value.set(name.clone());
             let exprs = store.with_untracked(|character| {
@@ -264,7 +287,7 @@ fn ReplacementPicker(
                                 dice_groups.update_value(|groups| {
                                     groups.push(StoredValue::new(parts.dice_signals));
                                 });
-                                all_valid
+                                replacement_valids
                                     .update(|validations| validations.push(parts.is_valid));
                             };
                             view! {
