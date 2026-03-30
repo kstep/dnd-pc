@@ -180,6 +180,8 @@ pub struct FeatureDefinition {
     pub stackable: bool,
     #[serde(default)]
     pub selectable: bool,
+    #[serde(default)]
+    pub replaceable: bool,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub fields: BTreeMap<Box<str>, FieldDefinition>,
@@ -401,7 +403,7 @@ impl FeatureDefinition {
         level: u32,
         character: &mut Character,
         when: WhenCondition,
-        inputs: Vec<AssignInputs>,
+        inputs: &[AssignInputs],
     ) {
         character.languages.extend(self.languages.iter().cloned());
 
@@ -431,7 +433,7 @@ impl FeatureDefinition {
             caster_level,
             caster_modifier,
         };
-        self.assign(&mut context, when, &inputs);
+        self.assign(&mut context, when, inputs);
 
         self.apply_fields(level, character);
 

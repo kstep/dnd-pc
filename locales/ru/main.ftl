@@ -24,6 +24,7 @@ btn-apply-species = Применить расовые черты
 btn-apply-background = Применить предысторию
 btn-apply-feature = Применить способность
 apply-features-title = Применить способности
+replace-with-feat = Заменить на черту
 no-eligible-options = Нет доступных вариантов
 export-json = Сохранить в файл
 import-json = Загрузить из файла

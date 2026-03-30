@@ -114,7 +114,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                 } else if registry.with_feature(&name, |feat_def| {
                                                     store.update(|c| {
                                                         c.mark_feature_applied(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level));
-                                                        feat_def.apply(level, c, WhenCondition::OnFeatureAdd, vec![]);
+                                                        feat_def.apply(level, c, WhenCondition::OnFeatureAdd, &[]);
                                                     });
                                                 }).is_none() {
                                                     log::warn!("Feature {name} not found in index, registry may not be loaded yet");

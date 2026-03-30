@@ -24,6 +24,7 @@ btn-apply-species = Apply species traits
 btn-apply-background = Apply background
 btn-apply-feature = Apply feature
 apply-features-title = Apply features
+replace-with-feat = Replace with a feat
 no-eligible-options = No eligible options available
 export-json = Save to file
 import-json = Load from file

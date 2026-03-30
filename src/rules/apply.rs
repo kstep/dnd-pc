@@ -16,11 +16,18 @@ use crate::{
 /// Bundled user inputs from the args/dice modal, keyed by feature name.
 /// Each inner Vec has one entry per interactive assignment expression.
 #[derive(Clone, Default)]
-pub struct ApplyInputs(pub BTreeMap<String, Vec<AssignInputs>>);
+pub struct ApplyInputs {
+    pub feature_inputs: BTreeMap<String, Vec<AssignInputs>>,
+    /// Original feature name → replacement feature name.
+    pub replacements: BTreeMap<String, String>,
+}
 
 impl ApplyInputs {
-    pub fn get(&self, feature_name: &str) -> Vec<AssignInputs> {
-        self.0.get(feature_name).cloned().unwrap_or_default()
+    pub fn get(&self, feature_name: &str) -> &[AssignInputs] {
+        self.feature_inputs
+            .get(feature_name)
+            .map(Vec::as_slice)
+            .unwrap_or_default()
     }
 }
 
@@ -33,6 +40,7 @@ pub struct PendingInputs {
     pub feature_label: String,
     pub feature_description: String,
     pub exprs: Vec<Expr<Attribute>>,
+    pub replaceable: bool,
 }
 
 impl RulesRegistry {
@@ -48,6 +56,7 @@ impl RulesRegistry {
 
     /// Reset derived state and re-apply all features using their stored source
     /// info, reusing previously stored ARG values and dice rolls.
+    // TODO: replay does not handle feature replacements
     pub fn replay(&self, character: &mut Character) {
         // Extract stored inputs (args + dice) before reset
         let mut stored_inputs: BTreeMap<String, VecDeque<AssignInputs>> = BTreeMap::new();
@@ -78,12 +87,12 @@ impl RulesRegistry {
                     continue;
                 };
                 let added_at = source.added_at_level();
-                let inputs = stored_inputs
+                let inputs: Vec<_> = stored_inputs
                     .get_mut(feat_name.as_str())
                     .and_then(|queue| queue.pop_front())
                     .into_iter()
                     .collect();
-                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, inputs);
+                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, &inputs);
             }
 
             // Phase 2: Re-apply each feature through intermediate levels
@@ -113,7 +122,7 @@ impl RulesRegistry {
                     );
                 }
                 for level in (added_at + 1)..=effective_level {
-                    feat_def.apply(level, character, WhenCondition::OnLevelUp, vec![]);
+                    feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
                 }
             }
         });
@@ -250,6 +259,7 @@ impl RulesRegistry {
         class_idx: usize,
         level: u32,
         inputs: Option<&ApplyInputs>,
+        replacements: Option<&BTreeMap<String, String>>,
     ) {
         let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
             return;
@@ -297,7 +307,7 @@ impl RulesRegistry {
             .collect();
         for feat_name in &applied {
             if let Some(feat) = features_index.get(feat_name.as_str()) {
-                feat.apply(level, character, WhenCondition::OnLevelUp, vec![]);
+                feat.apply(level, character, WhenCondition::OnLevelUp, &[]);
             }
         }
 
@@ -308,6 +318,29 @@ impl RulesRegistry {
             .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
 
         for feat_name in level_features {
+            // If this feature was replaced, apply the replacement instead
+            if let Some(replacement_name) = replacements.and_then(|r| r.get(feat_name.as_str())) {
+                if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
+                    character.mark_feature_applied(
+                        replacement_name,
+                        replacement_feat.label.clone(),
+                        replacement_feat.description.clone(),
+                        source.clone(),
+                    );
+                    let feature_inputs =
+                        inputs.map(|i| i.get(replacement_name)).unwrap_or_default();
+                    replacement_feat.apply(
+                        level,
+                        character,
+                        WhenCondition::OnFeatureAdd,
+                        feature_inputs,
+                    );
+                } else {
+                    log::warn!("Replacement feature '{replacement_name}' not found in index");
+                }
+                continue;
+            }
+
             let Some(feat) = features_index.get(feat_name.as_str()) else {
                 log::warn!("Feature '{feat_name}' not found in index");
                 continue;
@@ -352,7 +385,7 @@ impl RulesRegistry {
         if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
             for feat_name in &species_def.features {
                 if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, WhenCondition::OnLevelUp, vec![]);
+                    feat.apply(total_level, character, WhenCondition::OnLevelUp, &[]);
                 }
             }
         }
@@ -361,7 +394,7 @@ impl RulesRegistry {
         if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
             for feat_name in &bg_def.features {
                 if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, WhenCondition::OnLevelUp, vec![]);
+                    feat.apply(total_level, character, WhenCondition::OnLevelUp, &[]);
                 }
             }
         }
@@ -421,12 +454,13 @@ impl RulesRegistry {
                     continue;
                 }
                 let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-                if !exprs.is_empty() {
+                if !exprs.is_empty() || feat.replaceable {
                     result.push(PendingInputs {
                         feature_name: feat_name.to_string(),
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: feat.replaceable,
                     });
                 }
             }
@@ -450,6 +484,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }
@@ -473,6 +508,7 @@ impl RulesRegistry {
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
                 exprs,
+                replaceable: false,
             })
         })
     }
@@ -525,6 +561,7 @@ impl RulesRegistry {
                         feature_label: feat.label().to_string(),
                         feature_description: feat.description.clone(),
                         exprs,
+                        replaceable: false,
                     });
                 }
             }

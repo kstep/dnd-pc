@@ -273,7 +273,7 @@ fn create_character(
         });
         if has_unapplied_class {
             store.update(|character| {
-                registry.apply_class_level(character, 0, 1, inputs);
+                registry.apply_class_level(character, 0, 1, inputs, None);
             });
         }
 

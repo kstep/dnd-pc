@@ -109,8 +109,9 @@ pub fn apply_level(
 ) {
     let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
     apply_modal(pending, move |inputs| {
-        store.update(|c| {
-            registry.apply_class_level(c, class_index, level, inputs);
+        store.update(|character| {
+            let replacements = inputs.map(|i| &i.replacements).filter(|r| !r.is_empty());
+            registry.apply_class_level(character, class_index, level, inputs, replacements);
         });
     });
 }

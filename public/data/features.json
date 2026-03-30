@@ -99,6 +99,7 @@
   {
     "name": "Ability Score Improvement",
     "stackable": true,
+    "replaceable": true,
     "prerequisites": "LEVEL >= 4",
     "selectable": true,
     "assign": [
@@ -1277,7 +1278,8 @@
   },
   {
     "name": "Epic Boon",
-    "stackable": true
+    "stackable": true,
+    "replaceable": true
   },
   {
     "name": "Soul of Artifice"
