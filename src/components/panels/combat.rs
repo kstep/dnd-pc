@@ -246,7 +246,6 @@ pub fn CombatPanel() -> impl IntoView {
                 </button>
                 <button
                     class="btn-rest"
-                    style="display:none"
                     title=move_tr!("replay")
                     on:click=move |_| {
                         let window = web_sys::window().unwrap();
