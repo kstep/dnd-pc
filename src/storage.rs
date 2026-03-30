@@ -234,6 +234,79 @@ fn migrate_v6(value: &mut serde_json::Value) {
     }
 }
 
+/// Migrate Feature entries: add `source` from FeatureData.source, remove
+/// FeatureData.source. Convert FeatureSource::Class(String) to
+/// Class(String, u32).
+fn migrate_v7(value: &mut serde_json::Value) {
+    // Build a map of feature_name → source from feature_data
+    let mut sources: HashMap<String, serde_json::Value> = HashMap::new();
+    if let Some(feature_data) = value.get("feature_data").and_then(|v| v.as_object()) {
+        for (name, data) in feature_data {
+            if let Some(source) = data.get("source") {
+                let mut source = source.clone();
+                // Convert Class(String) → Class(String, 1)
+                if let Some(obj) = source.as_object_mut()
+                    && let Some(class_val) = obj.get("Class")
+                    && let Some(class_name) = class_val.as_str()
+                {
+                    let class_name = class_name.to_string();
+                    obj.insert("Class".to_string(), serde_json::json!([class_name, 1]));
+                }
+                sources.insert(name.clone(), source);
+            }
+        }
+    }
+
+    // Add source to Feature entries that don't have one
+    if let Some(features) = value.get_mut("features").and_then(|v| v.as_array_mut()) {
+        for feature in features {
+            if (feature.get("source").is_none()
+                || feature.get("source") == Some(&serde_json::Value::Null))
+                && let Some(name) = feature.get("name").and_then(|v| v.as_str())
+            {
+                if let Some(source) = sources.get(name) {
+                    feature["source"] = source.clone();
+                } else {
+                    feature["source"] = serde_json::json!({"User": 0});
+                }
+            }
+        }
+    }
+
+    // Remove source and rename args → inputs in feature_data entries
+    if let Some(feature_data) = value
+        .get_mut("feature_data")
+        .and_then(|v| v.as_object_mut())
+    {
+        for (_, data) in feature_data.iter_mut() {
+            if let Some(obj) = data.as_object_mut() {
+                obj.remove("source");
+                if let Some(args) = obj.remove("args") {
+                    // Rename AssignArgs.values → AssignInputs.args inside each entry
+                    let inputs = if let Some(arr) = args.as_array() {
+                        let migrated: Vec<serde_json::Value> = arr
+                            .iter()
+                            .map(|entry| {
+                                if let Some(obj) = entry.as_object()
+                                    && let Some(values) = obj.get("values")
+                                {
+                                    serde_json::json!({"args": values})
+                                } else {
+                                    entry.clone()
+                                }
+                            })
+                            .collect();
+                        serde_json::Value::Array(migrated)
+                    } else {
+                        args
+                    };
+                    obj.insert("inputs".to_string(), inputs);
+                }
+            }
+        }
+    }
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
@@ -243,6 +316,7 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v4(&mut value);
     migrate_v5(&mut value);
     migrate_v6(&mut value);
+    migrate_v7(&mut value);
     serde_json::from_value(value).ok()
 }
 
@@ -337,13 +411,14 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
                 log::error!("File result is not a string");
                 return;
             };
-            match serde_json::from_str::<Character>(&text) {
-                Ok(character) => on_character(character),
-                Err(error) => {
-                    log::error!("Failed to parse character JSON: {error}");
-                    window()
-                        .alert_with_message(&format!("Invalid character file: {error}"))
-                        .ok();
+            match serde_json::from_str(&text)
+                .ok()
+                .and_then(deserialize_character_value)
+            {
+                Some(character) => on_character(character),
+                None => {
+                    log::error!("Failed to parse character JSON");
+                    window().alert_with_message("Invalid character file").ok();
                 }
             }
         });
@@ -734,10 +809,10 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
     let mut seen_remote: HashSet<Uuid> = HashSet::with_capacity(remote_chars.len());
 
     for remote_value in remote_chars {
-        let remote: Character = match serde_json::from_value(remote_value) {
-            Ok(character) => character,
-            Err(error) => {
-                log::warn!("Failed to deserialize remote character: {error}");
+        let remote: Character = match deserialize_character_value(remote_value) {
+            Some(character) => character,
+            None => {
+                log::warn!("Failed to deserialize remote character (migration failed)");
                 continue;
             }
         };

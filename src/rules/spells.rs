@@ -5,10 +5,7 @@ use serde::Deserialize;
 use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
-    model::{
-        Ability, Character, EffectDefinition, FeatureSource, FreeUses, Spell, SpellData,
-        SpellSlotPool,
-    },
+    model::{Ability, Character, EffectDefinition, FreeUses, Spell, SpellData, SpellSlotPool},
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -67,7 +64,6 @@ impl SpellsDefinition {
         level: u32,
         character: &mut Character,
         feature_name: &str,
-        source: Option<&FeatureSource>,
         free_uses_max: u32,
     ) {
         // Ensure SpellData exists so update_spell_slots can count caster classes
@@ -76,9 +72,6 @@ impl SpellsDefinition {
                 .feature_data
                 .entry(feature_name.to_string())
                 .or_default();
-            if entry.source.is_none() {
-                entry.source = source.cloned();
-            }
             let spell_data = entry.spells.get_or_insert_with(|| SpellData {
                 casting_ability: self.casting_ability,
                 caster_coef: self.caster_coef,

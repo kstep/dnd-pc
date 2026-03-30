@@ -5,12 +5,12 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        background_field::BackgroundField, character_header::apply_with_args_modal,
-        class_field::ClassField, icon::Icon, species_field::SpeciesField,
+        background_field::BackgroundField, character_header::apply_modal, class_field::ClassField,
+        icon::Icon, species_field::SpeciesField,
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature},
     names::{self, NamesData},
-    rules::{DefinitionStore, PendingInputs, RulesRegistry},
+    rules::{DefinitionStore, PendingInputs, RulesRegistry, WhenCondition},
 };
 
 #[component]
@@ -155,7 +155,7 @@ fn create_character(
 
     // Reset all applied state while preserving identity (name, species,
     // background, class selections). Handles cancelled previous attempts.
-    store.update(|character| character.reset());
+    store.update(|character| character.clear());
 
     // Add generation feature entry if selected
     if !gen_name.is_empty() {
@@ -226,18 +226,21 @@ fn create_character(
     let gen_name = StoredValue::new(gen_name);
 
     // Single modal for everything, then apply all steps and navigate
-    apply_with_args_modal(all_pending, move |inputs| {
+    apply_modal(all_pending, move |inputs| {
         let gen_name = gen_name.get_value();
 
         // Apply generation feature
         if !gen_name.is_empty() {
-            let (identity, level) =
-                store.with_untracked(|character| (character.identity.clone(), character.level()));
-            registry.with_feature_source(&identity, &gen_name, |feat_def, source| {
-                let args = inputs.and_then(|i| i.args.get(gen_name.as_str()).cloned());
-                let dice = inputs.and_then(|i| i.dice.get(gen_name.as_str()).cloned());
+            let level = store.with_untracked(|character| character.level());
+            registry.with_feature(&gen_name, |feat_def| {
+                let feature_inputs = inputs.map(|i| i.get(gen_name.as_str())).unwrap_or_default();
                 store.update(|character| {
-                    feat_def.apply_with_args(level, character, source.as_ref(), args, dice);
+                    feat_def.apply(
+                        level,
+                        character,
+                        WhenCondition::OnFeatureAdd,
+                        feature_inputs,
+                    );
                 });
             });
         }

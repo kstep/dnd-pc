@@ -89,7 +89,7 @@ fn import_character(store: Store<Character>) {
     });
 }
 
-pub(crate) fn apply_with_args_modal(
+pub(crate) fn apply_modal(
     pending: Vec<PendingInputs>,
     apply: impl Fn(Option<&ApplyInputs>) + Copy + Send + Sync + 'static,
 ) {
@@ -108,7 +108,7 @@ pub fn apply_level(
     level: u32,
 ) {
     let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
-    apply_with_args_modal(pending, move |inputs| {
+    apply_modal(pending, move |inputs| {
         store.update(|c| {
             registry.apply_class_level(c, class_index, level, inputs);
         });
@@ -252,7 +252,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     })
                             })
                             .unwrap_or_default();
-                        apply_with_args_modal(pending, move |inputs| {
+                        apply_modal(pending, move |inputs| {
                             store
                                 .update(|character| registry.apply_species(character, inputs));
                         });
@@ -282,7 +282,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     })
                             })
                             .unwrap_or_default();
-                        apply_with_args_modal(pending, move |inputs| {
+                        apply_modal(pending, move |inputs| {
                             store.update(|character| {
                                 registry.apply_background(character, inputs)
                             });
@@ -375,7 +375,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         let msg = tr!("confirm-reset");
                         let window = leptos::prelude::window();
                         if window.confirm_with_message(&msg).unwrap_or(false) {
-                            store.update(|c| c.reset());
+                            store.update(|c| c.clear());
                         }
                     }
                 >

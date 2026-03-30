@@ -10,6 +10,7 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
+    model::AssignInputs,
     rules::{ApplyInputs, PendingInputs},
 };
 
@@ -154,39 +155,44 @@ pub fn ArgsModal() -> impl IntoView {
 
                 let on_submit = move |event: web_sys::SubmitEvent| {
                     event.prevent_default();
-                    let mut args_map: BTreeMap<String, Vec<Vec<i32>>> = BTreeMap::new();
-                    let mut dice_map: BTreeMap<String, Vec<DicePool>> = BTreeMap::new();
+                    let mut inputs_map: BTreeMap<String, Vec<AssignInputs>> = BTreeMap::new();
 
                     all_signals.with_untracked(|entries| {
                         for (name, groups) in entries {
-                            let feature_args: Vec<Vec<i32>> = groups
+                            let feature_inputs: Vec<AssignInputs> = groups
                                 .iter()
                                 .map(|sigs| {
-                                    sigs.with_value(|signals| {
+                                    let args = sigs.with_value(|signals| {
                                         signals.iter().map(|signal| signal.get_untracked()).collect()
-                                    })
+                                    });
+                                    AssignInputs {
+                                        args,
+                                        dice: DicePool::default(),
+                                    }
                                 })
                                 .collect();
-                            args_map.insert(name.clone(), feature_args);
+                            inputs_map.insert(name.clone(), feature_inputs);
                         }
                     });
 
                     all_dice.with_untracked(|entries| {
                         for (name, groups) in entries {
-                            let feature_dice: Vec<DicePool> = groups
-                                .iter()
-                                .map(|dice_signals| {
-                                    dice_signals.with_value(collect_dice_pool)
-                                })
-                                .collect();
-                            dice_map.insert(name.clone(), feature_dice);
+                            let feature_inputs = inputs_map.entry(name.clone()).or_default();
+                            for (i, dice_signals) in groups.iter().enumerate() {
+                                let dice = dice_signals.with_value(collect_dice_pool);
+                                if i < feature_inputs.len() {
+                                    feature_inputs[i].dice = dice;
+                                } else {
+                                    feature_inputs.push(AssignInputs {
+                                        args: Vec::new(),
+                                        dice,
+                                    });
+                                }
+                            }
                         }
                     });
 
-                    ctx.complete(ApplyInputs {
-                        args: args_map,
-                        dice: dice_map,
-                    });
+                    ctx.complete(ApplyInputs(inputs_map));
                 };
 
                 Some(
