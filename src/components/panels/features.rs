@@ -58,7 +58,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                     idx.get(feature.name.as_str())
                                         .is_some_and(|f| !f.is_selectable())
                                 });
-                            let source_text = source.display_name(i18n);
+                            let source_text = registry.source_label(source, i18n);
                             view! {
                                 <div class="entry-item">
                                     <ToggleButton />

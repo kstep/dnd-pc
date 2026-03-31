@@ -332,6 +332,36 @@ impl RulesRegistry {
         }
     }
 
+    /// Translate a feature source into a display string using cached
+    /// definition labels (locale-aware).
+    pub fn source_label(
+        &self,
+        source: &FeatureSource,
+        i18n: leptos_fluent::I18n,
+    ) -> Option<String> {
+        match source {
+            FeatureSource::Class(name, level) => {
+                let prefix = i18n.tr("source-class");
+                let label = self.classes().with(name, |def| def.label().to_string());
+                Some(format!(
+                    "{prefix}: {} ({level})",
+                    label.as_deref().unwrap_or(name)
+                ))
+            }
+            FeatureSource::Species(name) => {
+                let prefix = i18n.tr("source-species");
+                let label = self.species().with(name, |def| def.label().to_string());
+                Some(format!("{prefix}: {}", label.as_deref().unwrap_or(name)))
+            }
+            FeatureSource::Background(name) => {
+                let prefix = i18n.tr("source-background");
+                let label = self.backgrounds().with(name, |def| def.label().to_string());
+                Some(format!("{prefix}: {}", label.as_deref().unwrap_or(name)))
+            }
+            FeatureSource::User(_) => None,
+        }
+    }
+
     // ---- DefinitionStore accessors ----
 
     pub fn classes(&self) -> ClassDefs {
