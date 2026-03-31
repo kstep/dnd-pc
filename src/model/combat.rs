@@ -65,6 +65,24 @@ impl DamageModifiers {
     pub fn is_active(&self) -> bool {
         self.resistant || self.vulnerable || self.immune || self.reduction > 0
     }
+
+    pub fn modify(&self, mut amount: u32) -> u32 {
+        if self.immune {
+            return 0;
+        }
+
+        amount = amount.saturating_sub(self.reduction);
+
+        if self.resistant {
+            amount /= 2;
+        }
+
+        if self.vulnerable {
+            amount *= 2;
+        }
+
+        amount
+    }
 }
 
 impl CombatStats {
