@@ -65,19 +65,19 @@ pub struct EffectsCalcInfo {
 }
 
 /// Populate `extra_vars` with resource field values (POINTS/POINTS_MAX) from
-/// a feature's data entry. Finds the first Points or Die field.
+/// a feature's data entry. Index matches the field's position in the `fields`
+/// Vec (not just among Points/Die fields).
 pub fn inject_resource_vars(extra_vars: &mut BTreeMap<Attribute, i32>, entry: &FeatureData) {
-    for field in &entry.fields {
+    for (idx, field) in entry.fields.iter().enumerate() {
+        let idx = idx as u8;
         match &field.value {
             FeatureValue::Points { used, max } => {
-                extra_vars.insert(Attribute::Points, (*max - *used) as i32);
-                extra_vars.insert(Attribute::PointsMax, *max as i32);
-                return;
+                extra_vars.insert(Attribute::Points(idx), (*max - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax(idx), *max as i32);
             }
             FeatureValue::Die { die, used } => {
-                extra_vars.insert(Attribute::Points, (die.amount - *used) as i32);
-                extra_vars.insert(Attribute::PointsMax, die.amount as i32);
-                return;
+                extra_vars.insert(Attribute::Points(idx), (die.amount - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax(idx), die.amount as i32);
             }
             _ => {}
         }

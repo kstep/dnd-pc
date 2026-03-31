@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     demap,
     expr::{self, Context, DicePool, Expr},
-    model::{Ability, Attribute, Character},
+    model::{Ability, Attribute, Character, WeaponEffect},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
@@ -49,8 +49,8 @@ impl EffectDefinition {
     }
 }
 
-impl From<&super::WeaponEffect> for EffectDefinition {
-    fn from(effect: &super::WeaponEffect) -> Self {
+impl From<&WeaponEffect> for EffectDefinition {
+    fn from(effect: &WeaponEffect) -> Self {
         Self {
             name: effect.name.clone(),
             label: None,

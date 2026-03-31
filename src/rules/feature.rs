@@ -228,6 +228,8 @@ pub struct FeatureDefinition {
 pub struct Assignment {
     pub expr: Expr<Attribute>,
     pub when: WhenCondition,
+    #[serde(default)]
+    pub scope: Option<String>,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, PartialEq, Eq)]
@@ -462,6 +464,7 @@ impl FeatureDefinition {
             class_level: level as i32,
             caster_level,
             caster_modifier,
+            points: Vec::new(),
         };
         self.assign(&mut context, when, inputs);
 

@@ -743,6 +743,10 @@ pub struct Context<'a> {
     pub class_level: i32,
     pub caster_level: i32,
     pub caster_modifier: i32,
+    /// Extracted Points/Die field values: (field_index, available, max).
+    /// Populated from FeatureData before expression evaluation, written back
+    /// after.
+    pub points: Vec<(u8, i32, i32)>,
 }
 
 impl<'a> From<&'a mut Character> for Context<'a> {
@@ -752,13 +756,92 @@ impl<'a> From<&'a mut Character> for Context<'a> {
             class_level: 0,
             caster_level: 0,
             caster_modifier: 0,
+            points: Vec::new(),
         }
+    }
+}
+
+impl Context<'_> {
+    /// Extract (available, max) from Points/Die fields at their actual indices.
+    pub fn extract_points(feature_data: &FeatureData) -> Vec<(u8, i32, i32)> {
+        feature_data
+            .fields
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, field)| match &field.value {
+                FeatureValue::Points { used, max } => {
+                    Some((idx as u8, (*max - *used) as i32, *max as i32))
+                }
+                FeatureValue::Die { die, used } => {
+                    Some((idx as u8, (die.amount - *used) as i32, die.amount as i32))
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Write back modified points values into the feature data fields.
+    pub fn writeback_points(feature_data: &mut FeatureData, points: &[(u8, i32, i32)]) {
+        for &(idx, available, max) in points {
+            let Some(field) = feature_data.fields.get_mut(idx as usize) else {
+                continue;
+            };
+            match &mut field.value {
+                FeatureValue::Points { used, .. } => {
+                    *used = (max - available).max(0) as u32;
+                }
+                FeatureValue::Die { used, .. } => {
+                    *used = (max - available).max(0) as u32;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn resolve_points(&self, idx: u8) -> Result<i32, expr::Error> {
+        self.points
+            .iter()
+            .find(|(i, _, _)| *i == idx)
+            .map(|(_, available, _)| *available)
+            .ok_or(expr::Error::unsupported_var(Attribute::Points(idx)))
+    }
+
+    fn resolve_points_max(&self, idx: u8) -> Result<i32, expr::Error> {
+        self.points
+            .iter()
+            .find(|(i, _, _)| *i == idx)
+            .map(|(_, _, max)| *max)
+            .ok_or(expr::Error::unsupported_var(Attribute::PointsMax(idx)))
+    }
+
+    fn assign_points(&mut self, idx: u8, value: i32) -> Result<(), expr::Error> {
+        let entry = self
+            .points
+            .iter_mut()
+            .find(|(i, _, _)| *i == idx)
+            .ok_or(expr::Error::unsupported_var(Attribute::Points(idx)))?;
+        entry.1 = value.clamp(0, entry.2);
+        Ok(())
+    }
+
+    fn assign_points_max(&mut self, idx: u8, value: i32) -> Result<(), expr::Error> {
+        let entry = self
+            .points
+            .iter_mut()
+            .find(|(i, _, _)| *i == idx)
+            .ok_or(expr::Error::unsupported_var(Attribute::PointsMax(idx)))?;
+        entry.2 = value.max(0);
+        Ok(())
     }
 }
 
 impl expr::Context<Attribute, i32> for Context<'_> {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-        self.character.assign(var, value)
+        match var {
+            Attribute::Points(n) => self.assign_points(n, value),
+            Attribute::PointsMax(n) => self.assign_points_max(n, value),
+            _ => self.character.assign(var, value),
+        }
     }
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
@@ -767,6 +850,8 @@ impl expr::Context<Attribute, i32> for Context<'_> {
             Attribute::CasterLevel(None) => Ok(self.caster_level),
             Attribute::CasterLevel(Some(pool)) => Ok(self.character.caster_level(pool) as i32),
             Attribute::CasterModifier => Ok(self.caster_modifier),
+            Attribute::Points(n) => self.resolve_points(n),
+            Attribute::PointsMax(n) => self.resolve_points_max(n),
             _ => self.character.resolve(var),
         }
     }

@@ -45,8 +45,8 @@ pub enum Attribute {
     SpellAttack,
     SpellAttackAdvantage,
     SlotLevel,
-    Points,
-    PointsMax,
+    Points(u8),
+    PointsMax(u8),
     Cost,
     Resistance(DamageType),
     Vulnerability(DamageType),
@@ -228,8 +228,8 @@ impl FromStr for Attribute {
                 "INSPIRATION" => Ok(Self::Inspiration),
                 "ATTACKS" => Ok(Self::Attacks),
                 "SLOT_LEVEL" => Ok(Self::SlotLevel),
-                "POINTS" => Ok(Self::Points),
-                "POINTS_MAX" => Ok(Self::PointsMax),
+                "POINTS" => Ok(Self::Points(0)),
+                "POINTS_MAX" => Ok(Self::PointsMax(0)),
                 "COST" => Ok(Self::Cost),
                 other => {
                     // Bare ability names => ability score
@@ -271,6 +271,14 @@ impl FromStr for Attribute {
             "DR" => parse_damage_type(rest)
                 .map(Self::DamageReduction)
                 .ok_or("unknown damage type"),
+            "POINTS" => rest
+                .parse::<u8>()
+                .map(Self::Points)
+                .map_err(|_| "invalid POINTS index (expected integer 0-255)"),
+            "POINTS_MAX" => rest
+                .parse::<u8>()
+                .map(Self::PointsMax)
+                .map_err(|_| "invalid POINTS_MAX index (expected integer 0-255)"),
             "INITIATIVE" => match rest {
                 "BONUS" => Ok(Self::InitiativeBonus),
                 _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
@@ -355,8 +363,10 @@ impl fmt::Display for Attribute {
             Self::SpellAttack => f.write_str("SPELL.ATK"),
             Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
             Self::SlotLevel => f.write_str("SLOT_LEVEL"),
-            Self::Points => f.write_str("POINTS"),
-            Self::PointsMax => f.write_str("POINTS_MAX"),
+            Self::Points(0) => f.write_str("POINTS"),
+            Self::Points(n) => write!(f, "POINTS.{n}"),
+            Self::PointsMax(0) => f.write_str("POINTS_MAX"),
+            Self::PointsMax(n) => write!(f, "POINTS_MAX.{n}"),
             Self::Cost => f.write_str("COST"),
             Self::Resistance(dt) => write!(f, "RESIST.{}", dt.abbr()),
             Self::Vulnerability(dt) => write!(f, "VULN.{}", dt.abbr()),
@@ -388,8 +398,8 @@ impl Attribute {
             Self::CasterLevel(Some(pool)) => {
                 format!("{} ({})", i18n.tr("caster-level"), i18n.tr(pool.tr_key()))
             }
-            Self::Points => i18n.tr("points"),
-            Self::PointsMax => i18n.tr("points-max"),
+            Self::Points(_) => i18n.tr("points"),
+            Self::PointsMax(_) => i18n.tr("points-max"),
             Self::Cost => i18n.tr("cost"),
             Self::Resistance(dt) => {
                 format!(
@@ -554,6 +564,38 @@ mod tests {
         );
         // Round-trip
         assert_eq!(Attribute::SlotLevel.to_string(), "SLOT_LEVEL");
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_points_attributes() {
+        assert_eq!("POINTS".parse::<Attribute>().unwrap(), Attribute::Points(0));
+        assert_eq!(
+            "POINTS.2".parse::<Attribute>().unwrap(),
+            Attribute::Points(2)
+        );
+        assert_eq!(
+            "POINTS_MAX".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(0)
+        );
+        assert_eq!(
+            "POINTS_MAX.1".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(1)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_points_round_trip() {
+        let cases = [
+            Attribute::Points(0),
+            Attribute::Points(3),
+            Attribute::PointsMax(0),
+            Attribute::PointsMax(2),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
     }
 
     #[wasm_bindgen_test]

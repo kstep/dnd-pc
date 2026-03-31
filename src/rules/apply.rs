@@ -271,9 +271,9 @@ impl RulesRegistry {
         self.with_features_index_untracked(|features_index| {
             let class_cache = self.class_cache.read_untracked();
 
-            // Collect per-feature info: (expressions, class_level, caster_level,
-            // caster_modifier). Uses find_feature_with_class_level for a single-pass
-            // lookup. The Vec is necessary because we need &mut character in the loop.
+            // Collect per-feature info with scope-grouped assignments.
+            // Each entry: (scope_groups, class_level, caster_level, caster_modifier)
+            // where scope_groups: Vec<(scope_target, Vec<Expr>)>
             let feature_entries: Vec<_> = character
                 .features
                 .iter()
@@ -284,16 +284,27 @@ impl RulesRegistry {
                         features_index,
                         &class_cache,
                     )?;
-                    let exprs: Vec<_> = feat_def
+                    let assignments: Vec<_> = feat_def
                         .assign
                         .iter()
                         .flat_map(|a| a.iter())
                         .filter(|a| a.when == when)
-                        .map(|a| a.expr.clone())
                         .collect();
-                    if exprs.is_empty() {
+                    if assignments.is_empty() {
                         return None;
                     }
+
+                    // Group by scope target (None = own feature)
+                    let mut scope_groups: Vec<(Option<&str>, Vec<Expr<Attribute>>)> = Vec::new();
+                    for assignment in &assignments {
+                        let scope = assignment.scope.as_deref();
+                        if let Some(group) = scope_groups.iter_mut().find(|(s, _)| *s == scope) {
+                            group.1.push(assignment.expr.clone());
+                        } else {
+                            scope_groups.push((scope, vec![assignment.expr.clone()]));
+                        }
+                    }
+
                     let (caster_level, caster_modifier) = feat_def
                         .spells
                         .as_ref()
@@ -304,20 +315,46 @@ impl RulesRegistry {
                             )
                         })
                         .unwrap_or((0, 0));
-                    Some((exprs, class_level as i32, caster_level, caster_modifier))
+                    Some((
+                        feat.name.clone(),
+                        scope_groups
+                            .into_iter()
+                            .map(|(scope, exprs)| (scope.map(String::from), exprs))
+                            .collect::<Vec<_>>(),
+                        class_level as i32,
+                        caster_level,
+                        caster_modifier,
+                    ))
                 })
                 .collect();
 
-            for (exprs, class_level, caster_level, caster_modifier) in feature_entries {
-                let mut ctx = Context {
-                    character,
-                    class_level,
-                    caster_level,
-                    caster_modifier,
-                };
-                for expr in exprs {
-                    if let Err(error) = expr.apply(&mut ctx) {
-                        log::error!("Failed to apply assignment: {error:?}");
+            for (feat_name, scope_groups, class_level, caster_level, caster_modifier) in
+                feature_entries
+            {
+                for (scope, exprs) in scope_groups {
+                    let target = scope.as_deref().unwrap_or(&feat_name);
+                    let points = character
+                        .feature_data
+                        .get(target)
+                        .map(Context::extract_points)
+                        .unwrap_or_default();
+
+                    let mut ctx = Context {
+                        character,
+                        class_level,
+                        caster_level,
+                        caster_modifier,
+                        points,
+                    };
+                    for expr in &exprs {
+                        if let Err(error) = expr.apply(&mut ctx) {
+                            log::error!("Failed to apply assignment: {error:?}");
+                        }
+                    }
+
+                    // Write back modified points
+                    if let Some(feature_data) = ctx.character.feature_data.get_mut(target) {
+                        Context::writeback_points(feature_data, &ctx.points);
                     }
                 }
             }

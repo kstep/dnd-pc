@@ -2090,6 +2090,12 @@
           }
         ]
       }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + 1, POINTS_MAX)",
+        "when": "OnShortRest"
+      }
     ]
   },
   {
@@ -4597,6 +4603,12 @@
           }
         ]
       }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + 1, POINTS_MAX)",
+        "when": "OnShortRest"
+      }
     ]
   },
   {
@@ -5358,6 +5370,12 @@
             ]
           }
         ]
+      }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + 1, POINTS_MAX)",
+        "when": "OnShortRest"
       }
     ]
   },
@@ -6121,6 +6139,12 @@
             "level": 18
           }
         ]
+      }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = POINTS_MAX",
+        "when": "OnShortRest"
       }
     ]
   },
@@ -9515,7 +9539,14 @@
     "name": "Sorcerer Subclass"
   },
   {
-    "name": "Sorcerous Restoration"
+    "name": "Sorcerous Restoration",
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + CLASS_LEVEL / 2, POINTS_MAX)",
+        "when": "OnShortRest",
+        "scope": "Font of Magic"
+      }
+    ]
   },
   {
     "name": "Sorcery Incarnate"
@@ -12588,6 +12619,12 @@
           }
         ]
       }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + 1, POINTS_MAX)",
+        "when": "OnShortRest"
+      }
     ]
   },
   {
@@ -12612,6 +12649,12 @@
             "cost": 1
           }
         ]
+      }
+    ],
+    "assign": [
+      {
+        "expr": "POINTS = min(POINTS + 1, POINTS_MAX)",
+        "when": "OnShortRest"
       }
     ]
   },
