@@ -2024,6 +2024,7 @@ select.entry-name {
     display: flex;
     align-items: center;
     gap: var(--size-1);
+    position: relative;
 
     @container (min-width: 240px) {
       padding-right: var(--size-1);

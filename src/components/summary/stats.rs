@@ -7,8 +7,8 @@ use crate::{
     components::icon::Icon,
     effective::{AdvantageState, EffectiveCharacter},
     model::{
-        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, Skill, Translatable,
-        format_bonus,
+        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, DamageType, Skill,
+        Translatable, format_bonus,
     },
 };
 
@@ -44,7 +44,27 @@ pub fn StatsBlock() -> impl IntoView {
             .unwrap_or_default()
     };
 
+    let show_damage_picker = RwSignal::new(false);
+
+    let apply_damage = move |damage_type: Option<DamageType>| {
+        let damage = damage_value();
+        if damage > 0 {
+            let modified = match damage_type {
+                Some(dt) => {
+                    let modifiers = eff.damage_modifiers();
+                    modifiers.get(&dt).map_or(damage, |m| m.modify(damage))
+                }
+                None => damage,
+            };
+            combat.update(|combat| combat.damage(modified));
+        }
+        show_damage_picker.set(false);
+    };
+
     move || {
+        let modifiers = eff.damage_modifiers();
+        let has_modifiers = !modifiers.is_empty();
+
         view! {
             <div class="summary-section summary-section-stats" id="summary-stats">
                 <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
@@ -59,9 +79,10 @@ pub fn StatsBlock() -> impl IntoView {
                                 <div class="btn-container">
                                     <button class="btn-icon btn-icon--danger" title=move_tr!("damage")
                                         on:click=move |_| {
-                                            let damage = damage_value();
-                                            if damage > 0 {
-                                                combat.update(|c| c.damage(damage));
+                                            if has_modifiers {
+                                                show_damage_picker.update(|v| *v = !*v);
+                                            } else {
+                                                apply_damage(None);
                                             }
                                         }
                                     ><Icon name="swords" size=14 /></button>
@@ -69,11 +90,32 @@ pub fn StatsBlock() -> impl IntoView {
                                         on:click=move |_| {
                                             let heal = damage_value();
                                             if heal > 0 {
-                                                combat.update(|c| c.heal(heal));
+                                                combat.update(|combat| combat.heal(heal));
                                             }
                                         }
                                     ><Icon name="heart-plus" size=14 /></button>
                                 </div>
+                                <Show when=move || show_damage_picker.get()>
+                                    <div class="cast-slot-picker">
+                                        <button class="cast-slot-pill natural-level"
+                                            title=move_tr!("damage")
+                                            on:click=move |_| apply_damage(None)
+                                        ><Icon name="swords" size=14 /></button>
+                                        {modifiers.keys().map(|&damage_type| {
+                                            let tr_key = damage_type.tr_key();
+                                            let title = Signal::derive(move || i18n.tr(tr_key));
+                                            view! {
+                                                <button class="cast-slot-pill"
+                                                    title=title
+                                                    on:click=move |_| apply_damage(Some(damage_type))
+                                                ><Icon name=damage_type.icon_name() size=14 /></button>
+                                            }
+                                        }).collect_view()}
+                                        <button class="btn-icon"
+                                            on:click=move |_| show_damage_picker.set(false)
+                                        ><Icon name="x" size=14 /></button>
+                                    </div>
+                                </Show>
                             </div>
                             <div class="summary-hp-value">
                                 {move || combat.hp_current().get()}
