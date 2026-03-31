@@ -95,12 +95,72 @@ impl RulesRegistry {
         self.assign(character, WhenCondition::OnShortRest);
     }
 
+    /// Scan features that would be replayed and return those whose
+    /// `OnFeatureAdd` assignments need user interaction but lack stored inputs.
+    pub fn features_needing_args_for_replay(&self, character: &Character) -> Vec<PendingInputs> {
+        // Count stored inputs per feature (same ordering as replay Phase 1)
+        let mut stored_counts: BTreeMap<&str, usize> = BTreeMap::new();
+        for (name, data) in &character.feature_data {
+            if !data.inputs.is_empty() {
+                stored_counts.insert(name, data.inputs.len());
+            }
+        }
+
+        let mut features: Vec<(&str, &FeatureSource)> = character
+            .features
+            .iter()
+            .map(|feature| (feature.name.as_str(), &feature.source))
+            .collect();
+        features.sort_by_key(|(_, source)| source.added_at_level());
+
+        let mut result = Vec::new();
+        self.with_features_index_untracked(|features_index| {
+            // Track how many stored inputs each feature has consumed
+            let mut consumed: BTreeMap<&str, usize> = BTreeMap::new();
+
+            for (feat_name, _source) in &features {
+                let Some(feat_def) = features_index.get(*feat_name) else {
+                    continue;
+                };
+                let exprs = feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, character);
+                if exprs.is_empty() {
+                    continue;
+                }
+                // Check if this occurrence has a stored input
+                let idx = consumed.entry(feat_name).or_insert(0);
+                let stored = stored_counts.get(feat_name).copied().unwrap_or(0);
+                if *idx < stored {
+                    // Stored input exists for this occurrence — skip
+                    *idx += 1;
+                    continue;
+                }
+                *idx += 1;
+                // No stored input — need to collect via modal
+                if !result
+                    .iter()
+                    .any(|r: &PendingInputs| r.feature_name == *feat_name)
+                {
+                    result.push(PendingInputs {
+                        feature_name: feat_name.to_string(),
+                        feature_label: feat_def.label().to_string(),
+                        feature_description: feat_def.description.clone(),
+                        exprs,
+                        replace_with: ReplaceWith::None,
+                    });
+                }
+            }
+        });
+        result
+    }
+
     /// Reset derived state and re-apply all features using their stored source
     /// info, reusing previously stored ARG values and dice rolls.
+    /// When `supplemental` is provided, it supplies inputs for features that
+    /// lack stored args (collected from the args modal beforehand).
     // Note: feature replacements are transparent to replay — the replacement
     // feat's name is stored in character.features, so replay re-applies it
     // directly. The original-to-replacement mapping is not preserved.
-    pub fn replay(&self, character: &mut Character) {
+    pub fn replay(&self, character: &mut Character, supplemental: Option<&ApplyInputs>) {
         // Extract stored inputs (args + dice) before reset
         let mut stored_inputs: BTreeMap<String, VecDeque<AssignInputs>> = BTreeMap::new();
         for (name, data) in &character.feature_data {
@@ -135,7 +195,13 @@ impl RulesRegistry {
                     .and_then(|queue| queue.pop_front())
                     .into_iter()
                     .collect();
-                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, &inputs);
+                // Fall back to supplemental inputs when stored ones are missing
+                let inputs = if inputs.is_empty() {
+                    supplemental.map(|s| s.get(feat_name)).unwrap_or_default()
+                } else {
+                    &inputs
+                };
+                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, inputs);
             }
 
             // Phase 2: Re-apply each feature through intermediate levels
@@ -156,14 +222,6 @@ impl RulesRegistry {
                     | FeatureSource::Background(_)
                     | FeatureSource::User(_) => character.level(),
                 };
-                if !feat_def
-                    .interactive_exprs(WhenCondition::OnLevelUp, character)
-                    .is_empty()
-                {
-                    log::warn!(
-                        "Replay: feature '{feat_name}' has interactive OnLevelUp expressions that will not receive inputs",
-                    );
-                }
                 for level in (added_at + 1)..=effective_level {
                     feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
                 }
