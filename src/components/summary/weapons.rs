@@ -1,23 +1,33 @@
+use std::collections::BTreeMap;
+
 use leptos::{either::Either, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
     components::{
+        cast_button::CastButton,
+        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
         icon::Icon,
         summary_list::{SummaryList, SummaryListItem},
     },
     effective::EffectiveCharacter,
-    model::{Character, CharacterStoreFields, EquipmentStoreFields},
+    model::{
+        Character, CharacterStoreFields, EffectDefinition, EquipmentStoreFields, Translatable,
+    },
 };
 
 #[component]
 pub fn WeaponsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
+    let i18n = expect_context::<I18n>();
     let weapons = store.equipment().weapons();
 
-    move || {
+    let show_calc = RwSignal::new(false);
+    let calc_info = StoredValue::new(None::<EffectsCalcInfo>);
+
+    let content = move || {
         let global_atk = eff.attack_bonus();
         let items = weapons
             .read()
@@ -31,29 +41,74 @@ pub fn WeaponsBlock() -> impl IntoView {
                     w.name.clone()
                 };
 
-                let badges: Vec<_> = w
-                    .effects
-                    .iter()
-                    .map(|effect| {
-                        let icon = effect
-                            .damage_type
-                            .map(|dt| view! { <Icon name=dt.icon_name() size=14 /> });
-                        let label = if effect.name.is_empty() {
-                            effect.expr.to_string()
-                        } else {
-                            format!("{}: {}", effect.name, effect.expr)
-                        };
-                        view! { <span class="entry-badge">{icon}" "{label}</span> }.into_any()
-                    })
-                    .collect();
+                let active_effects: Vec<_> =
+                    w.effects.iter().filter(|e| !e.expr.is_empty()).collect();
+                let has_effects = !active_effects.is_empty();
+
+                // First effect as inline badge, "…" if more
+                let first_badge = active_effects.first().map(|effect| {
+                    let icon = effect
+                        .damage_type
+                        .map(|dt| view! { <Icon name=dt.icon_name() size=14 /> });
+                    let title = if effect.name.is_empty() {
+                        None
+                    } else {
+                        Some(effect.name.clone())
+                    };
+                    let expr = effect.expr.to_string();
+                    view! { <span class="entry-badge" title=title>{icon}" "{expr}</span> }
+                });
+                let more = (active_effects.len() > 1)
+                    .then(|| view! { <span class="entry-badge">"\u{2026}"</span> });
+
+                // Full list for expandable description
+                let description = if active_effects.len() > 1 {
+                    active_effects
+                        .iter()
+                        .map(|effect| {
+                            let dt = effect
+                                .damage_type
+                                .map(|dt| i18n.tr(dt.tr_key()))
+                                .unwrap_or_default();
+                            let name = &effect.name;
+                            let expr = &effect.expr;
+                            if name.is_empty() {
+                                format!("{dt} {expr}")
+                            } else {
+                                format!("{dt} {expr} ({name})")
+                            }
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                } else {
+                    String::new()
+                };
+
+                let cast_button = has_effects.then(|| {
+                    let effects: Vec<EffectDefinition> =
+                        w.effects.iter().map(EffectDefinition::from).collect();
+                    let title = name_atk.clone();
+                    view! {
+                        <CastButton on_cast=Callback::new(move |_| {
+                            calc_info.set_value(Some(EffectsCalcInfo {
+                                title: title.clone(),
+                                effects: effects.clone(),
+                                extra_vars: BTreeMap::new(),
+                                spell_name: String::new(),
+                                feature_name: String::new(),
+                            }));
+                            show_calc.set(true);
+                        }) />
+                    }
+                });
 
                 SummaryListItem {
                     name: name_atk,
-                    description: String::new(),
-                    badge: if badges.is_empty() {
+                    description,
+                    badge: if first_badge.is_none() && cast_button.is_none() {
                         None
                     } else {
-                        Some(view! { <>{badges}</> }.into_any())
+                        Some(view! { <>{first_badge}{more}{cast_button}</> }.into_any())
                     },
                 }
             })
@@ -78,5 +133,10 @@ pub fn WeaponsBlock() -> impl IntoView {
                 </div>
             })
         }
+    };
+
+    view! {
+        {content}
+        <EffectsCalcModal show=show_calc info=calc_info />
     }
 }

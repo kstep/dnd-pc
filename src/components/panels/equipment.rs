@@ -153,7 +153,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             }).collect_view()}
                                             <div class="entry-full-row">
                                                 <button
-                                                    class="btn-add-inline"
+                                                    class="btn-primary"
                                                     on:click=move |_| {
                                                         weapons.write()[i].effects.push(WeaponEffect::default());
                                                     }
