@@ -103,6 +103,7 @@ atk-bonus = Бонус атаки
 damage = Урон
 heal = Лечение
 btn-add-weapon = + Добавить оружие
+btn-add-effect = Добавить эффект
 armor = Доспехи
 base-ac = Базовый КЗ
 ac-formula = Формула КЗ

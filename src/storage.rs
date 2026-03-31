@@ -348,6 +348,40 @@ fn migrate_v8(value: &mut serde_json::Value) {
     }
 }
 
+/// Convert weapon `damage` + `damage_type` fields to `effects` array.
+fn migrate_v9(value: &mut serde_json::Value) {
+    let Some(weapons) = value
+        .pointer_mut("/equipment/weapons")
+        .and_then(|v| v.as_array_mut())
+    else {
+        return;
+    };
+    for weapon in weapons {
+        let damage = weapon
+            .get("damage")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+        let damage_type = weapon.get("damage_type").cloned();
+
+        if !damage.is_empty() {
+            let mut effect = serde_json::json!({
+                "name": "",
+                "expr": damage,
+            });
+            if let Some(dt) = damage_type {
+                effect["damage_type"] = dt;
+            }
+            weapon["effects"] = serde_json::json!([effect]);
+        }
+
+        if let Some(obj) = weapon.as_object_mut() {
+            obj.remove("damage");
+            obj.remove("damage_type");
+        }
+    }
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
@@ -359,6 +393,7 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v6(&mut value);
     migrate_v7(&mut value);
     migrate_v8(&mut value);
+    migrate_v9(&mut value);
     serde_json::from_value(value).ok()
 }
 

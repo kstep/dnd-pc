@@ -54,6 +54,16 @@ impl Armor {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct WeaponEffect {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub damage_type: Option<DamageType>,
+    #[serde(default)]
+    pub expr: Expr<Attribute>,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Weapon {
     #[serde(default)]
@@ -61,9 +71,7 @@ pub struct Weapon {
     #[serde(default)]
     pub attack_bonus: i32,
     #[serde(default)]
-    pub damage: String,
-    #[serde(default)]
-    pub damage_type: Option<DamageType>,
+    pub effects: Vec<WeaponEffect>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

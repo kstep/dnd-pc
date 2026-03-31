@@ -103,6 +103,7 @@ atk-bonus = Atk Bonus
 damage = Damage
 heal = Heal
 btn-add-weapon = + Add Weapon
+btn-add-effect = Add Effect
 armor = Armor
 base-ac = Base AC
 ac-formula = AC formula

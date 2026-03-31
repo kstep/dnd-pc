@@ -1,18 +1,20 @@
 use leptos::{either::Either, prelude::*};
-use leptos_fluent::{I18n, move_tr};
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::summary_list::{SummaryList, SummaryListItem},
+    components::{
+        icon::Icon,
+        summary_list::{SummaryList, SummaryListItem},
+    },
     effective::EffectiveCharacter,
-    model::{Character, CharacterStoreFields, EquipmentStoreFields, Translatable},
+    model::{Character, CharacterStoreFields, EquipmentStoreFields},
 };
 
 #[component]
 pub fn WeaponsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
-    let i18n = expect_context::<I18n>();
     let weapons = store.equipment().weapons();
 
     move || {
@@ -22,8 +24,6 @@ pub fn WeaponsBlock() -> impl IntoView {
             .iter()
             .filter(|w| !w.name.is_empty())
             .map(|w| {
-                let dmg_type = w.damage_type.map(|dt| i18n.tr(dt.tr_key()));
-
                 let total_atk = w.attack_bonus + global_atk;
                 let name_atk = if total_atk != 0 {
                     format!("{} {:+}", w.name, total_atk)
@@ -31,21 +31,30 @@ pub fn WeaponsBlock() -> impl IntoView {
                     w.name.clone()
                 };
 
-                let damage_info = if let Some(dtype) = dmg_type {
-                    format!("{dtype} {}", w.damage)
-                } else {
-                    w.damage.clone()
-                };
+                let badges: Vec<_> = w
+                    .effects
+                    .iter()
+                    .map(|effect| {
+                        let icon = effect
+                            .damage_type
+                            .map(|dt| view! { <Icon name=dt.icon_name() size=14 /> });
+                        let label = if effect.name.is_empty() {
+                            effect.expr.to_string()
+                        } else {
+                            format!("{}: {}", effect.name, effect.expr)
+                        };
+                        view! { <span class="entry-badge">{icon}" "{label}</span> }.into_any()
+                    })
+                    .collect();
 
                 SummaryListItem {
                     name: name_atk,
                     description: String::new(),
-                    badge: Some(
-                        view! {
-                            <span class="entry-badge">{damage_info}</span>
-                        }
-                        .into_any(),
-                    ),
+                    badge: if badges.is_empty() {
+                        None
+                    } else {
+                        Some(view! { <>{badges}</> }.into_any())
+                    },
                 }
             })
             .collect::<Vec<_>>();

@@ -49,6 +49,20 @@ impl EffectDefinition {
     }
 }
 
+impl From<&super::WeaponEffect> for EffectDefinition {
+    fn from(effect: &super::WeaponEffect) -> Self {
+        Self {
+            name: effect.name.clone(),
+            label: None,
+            expr: effect.expr.clone(),
+            range: EffectRange::default(),
+            duration: EffectDuration::default(),
+            stackable: false,
+            scope: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActiveEffect {
     pub name: String,

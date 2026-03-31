@@ -36,6 +36,12 @@ pub const fn avg_hp(sides: i32) -> i32 {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Expr<Var, Val = i32>(Arc<[Block<Var, Val>]>);
 
+impl<Var, Val> Default for Expr<Var, Val> {
+    fn default() -> Self {
+        Self(Arc::from([]))
+    }
+}
+
 impl<Var, Val> Serialize for Expr<Var, Val>
 where
     Var: Serialize + Copy + PartialEq + fmt::Display,

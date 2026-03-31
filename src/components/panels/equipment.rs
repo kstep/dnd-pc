@@ -7,7 +7,7 @@ use crate::{
     components::{icon::Icon, panel::Panel, toggle_button::ToggleButton},
     model::{
         Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields, DamageType,
-        EquipmentStoreFields, Item, Translatable, Weapon,
+        EquipmentStoreFields, Item, Translatable, Weapon, WeaponEffect,
     },
 };
 
@@ -48,8 +48,12 @@ pub fn EquipmentPanel() -> impl IntoView {
                                 .map(|(i, weapon)| {
                                     let name = weapon.name.clone();
                                     let atk = weapon.attack_bonus.to_string();
-                                    let dmg = weapon.damage.clone();
-                                    let dmg_type = weapon.damage_type.map(|dt| dt as u8);
+                                    let effects: Vec<_> = weapon.effects.iter().enumerate().map(|(j, effect)| {
+                                        let eff_name = effect.name.clone();
+                                        let eff_expr = effect.expr.to_string();
+                                        let eff_dmg_type = effect.damage_type.map(|dt| dt as u8);
+                                        (j, eff_name, eff_expr, eff_dmg_type)
+                                    }).collect();
                                     view! {
                                         <div class="entry-item">
                                             <ToggleButton />
@@ -72,31 +76,6 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         weapons.write()[i].attack_bonus = event_target_value(&e).parse().unwrap_or(0);
                                                     }
                                                 />
-                                                <select class="select-fixed"
-                                                    prop:value=dmg_type.map(|dt| dt.to_string()).unwrap_or_default()
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e);
-                                                        weapons.write()[i].damage_type = if value.is_empty() {
-                                                            None
-                                                        } else {
-                                                            DamageType::from_u8_str(&value)
-                                                        };
-                                                    }
-                                                >
-                                                    <option value="" selected=dmg_type.is_none()>"\u{2014}"</option>
-                                                    {DamageType::iter()
-                                                        .map(|dt| {
-                                                            let option_value = (dt as u8).to_string();
-                                                            let selected = dmg_type == Some(dt as u8);
-                                                            let label = Signal::derive(move || i18n.tr(dt.tr_key()));
-                                                            view! {
-                                                                <option value=option_value selected=selected>
-                                                                    {label}
-                                                                </option>
-                                                            }
-                                                        })
-                                                        .collect_view()}
-                                                </select>
                                             </div>
                                             <div class="entry-actions">
                                                 <button
@@ -110,16 +89,77 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     <Icon name="x" size=14 />
                                                 </button>
                                             </div>
+                                            {effects.into_iter().map(|(j, eff_name, eff_expr, eff_dmg_type)| {
+                                                view! {
+                                                    <div class="entry-full-row weapon-effect-row">
+                                                        <input
+                                                            type="text"
+                                                            placeholder=move_tr!("effect-name")
+                                                            class="effect-name-input"
+                                                            prop:value=eff_name
+                                                            on:input=move |e| {
+                                                                weapons.write()[i].effects[j].name = event_target_value(&e);
+                                                            }
+                                                        />
+                                                        <select class="select-fixed"
+                                                            prop:value=eff_dmg_type.map(|dt| dt.to_string()).unwrap_or_default()
+                                                            on:change=move |e| {
+                                                                let value = event_target_value(&e);
+                                                                weapons.write()[i].effects[j].damage_type = if value.is_empty() {
+                                                                    None
+                                                                } else {
+                                                                    DamageType::from_u8_str(&value)
+                                                                };
+                                                            }
+                                                        >
+                                                            <option value="" selected=eff_dmg_type.is_none()>"\u{2014}"</option>
+                                                            {DamageType::iter()
+                                                                .map(|dt| {
+                                                                    let option_value = (dt as u8).to_string();
+                                                                    let selected = eff_dmg_type == Some(dt as u8);
+                                                                    let label = Signal::derive(move || i18n.tr(dt.tr_key()));
+                                                                    view! {
+                                                                        <option value=option_value selected=selected>
+                                                                            {label}
+                                                                        </option>
+                                                                    }
+                                                                })
+                                                                .collect_view()}
+                                                        </select>
+                                                        <input
+                                                            type="text"
+                                                            placeholder=move_tr!("damage")
+                                                            class="damage-input"
+                                                            prop:value=eff_expr
+                                                            on:input=move |e| {
+                                                                let value = event_target_value(&e);
+                                                                if let Ok(expr) = value.parse() {
+                                                                    weapons.write()[i].effects[j].expr = expr;
+                                                                }
+                                                            }
+                                                        />
+                                                        <button
+                                                            class="btn-remove"
+                                                            on:click=move |_| {
+                                                                if j < weapons.read()[i].effects.len() {
+                                                                    weapons.write()[i].effects.remove(j);
+                                                                }
+                                                            }
+                                                        >
+                                                            <Icon name="x" size=14 />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            }).collect_view()}
                                             <div class="entry-full-row">
-                                                <input
-                                                    type="text"
-                                                    placeholder=move_tr!("damage")
-                                                    class="damage-input"
-                                                    prop:value=dmg.clone()
-                                                    on:input=move |e| {
-                                                        weapons.write()[i].damage = event_target_value(&e);
+                                                <button
+                                                    class="btn-add-inline"
+                                                    on:click=move |_| {
+                                                        weapons.write()[i].effects.push(WeaponEffect::default());
                                                     }
-                                                />
+                                                >
+                                                    "+ " {move_tr!("btn-add-effect")}
+                                                </button>
                                             </div>
                                         </div>
                             }
