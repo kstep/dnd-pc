@@ -2372,7 +2372,24 @@
     ]
   },
   {
-    "name": "Rage of the Gods"
+    "name": "Rage of the Gods",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Rage of the Gods",
+            "effects": [
+              {
+                "name": "Rage of the Gods",
+                "expr": "RESIST.NECRO = 1; RESIST.RADI = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Form of the Beast"
@@ -2447,7 +2464,30 @@
     "name": "Animal Speaker"
   },
   {
-    "name": "Rage of the Wilds"
+    "name": "Rage of the Wilds",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Bear",
+            "effects": [
+              {
+                "name": "Bear Totem Spirit",
+                "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+              }
+            ]
+          },
+          {
+            "name": "Eagle"
+          },
+          {
+            "name": "Wolf"
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Aspect of the Wilds"
@@ -3705,7 +3745,24 @@
     "name": "Thunderbolt Strike"
   },
   {
-    "name": "Stormborn"
+    "name": "Stormborn",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Stormborn",
+            "effects": [
+              {
+                "name": "Stormborn",
+                "expr": "RESIST.COLD = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Blessing of the Trickster",
@@ -5274,7 +5331,24 @@
     "name": "Twinkling Constellations"
   },
   {
-    "name": "Full of Stars"
+    "name": "Full of Stars",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Full of Stars",
+            "effects": [
+              {
+                "name": "Full of Stars",
+                "expr": "RESIST.BLUDG = 1; RESIST.PIERC = 1; RESIST.SLASH = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Summon Wildfire Spirit"
@@ -6709,7 +6783,60 @@
     "name": "Stride of the Elements"
   },
   {
-    "name": "Elemental Epitome"
+    "name": "Elemental Epitome",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Acid Resistance",
+            "effects": [
+              {
+                "name": "Elemental Epitome",
+                "expr": "RESIST.ACID = 1"
+              }
+            ]
+          },
+          {
+            "name": "Cold Resistance",
+            "effects": [
+              {
+                "name": "Elemental Epitome",
+                "expr": "RESIST.COLD = 1"
+              }
+            ]
+          },
+          {
+            "name": "Fire Resistance",
+            "effects": [
+              {
+                "name": "Elemental Epitome",
+                "expr": "RESIST.FIRE = 1"
+              }
+            ]
+          },
+          {
+            "name": "Lightning Resistance",
+            "effects": [
+              {
+                "name": "Elemental Epitome",
+                "expr": "RESIST.LIGHT = 1"
+              }
+            ]
+          },
+          {
+            "name": "Thunder Resistance",
+            "effects": [
+              {
+                "name": "Elemental Epitome",
+                "expr": "RESIST.THUND = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Open Hand Technique"
@@ -7183,7 +7310,24 @@
     }
   },
   {
-    "name": "Aura of Warding"
+    "name": "Aura of Warding",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Aura of Warding",
+            "effects": [
+              {
+                "name": "Aura of Warding",
+                "expr": "RESIST.NECRO = 1; RESIST.PSYCH = 1; RESIST.RADI = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Undying Sentinel"
@@ -8550,7 +8694,13 @@
     "name": "Perfected Bond"
   },
   {
-    "name": "Frigid Explorer"
+    "name": "Frigid Explorer",
+    "assign": [
+      {
+        "expr": "RESIST.COLD = 1",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Hunter's Rime"
@@ -10329,7 +10479,60 @@
     ]
   },
   {
-    "name": "Elemental Affinity"
+    "name": "Elemental Affinity",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Acid Resistance",
+            "effects": [
+              {
+                "name": "Elemental Affinity",
+                "expr": "RESIST.ACID = 1"
+              }
+            ]
+          },
+          {
+            "name": "Cold Resistance",
+            "effects": [
+              {
+                "name": "Elemental Affinity",
+                "expr": "RESIST.COLD = 1"
+              }
+            ]
+          },
+          {
+            "name": "Fire Resistance",
+            "effects": [
+              {
+                "name": "Elemental Affinity",
+                "expr": "RESIST.FIRE = 1"
+              }
+            ]
+          },
+          {
+            "name": "Lightning Resistance",
+            "effects": [
+              {
+                "name": "Elemental Affinity",
+                "expr": "RESIST.LIGHT = 1"
+              }
+            ]
+          },
+          {
+            "name": "Poison Resistance",
+            "effects": [
+              {
+                "name": "Elemental Affinity",
+                "expr": "RESIST.POISON = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Dragon Wings",
@@ -11548,7 +11751,123 @@
     "name": "Dark One's Own Luck"
   },
   {
-    "name": "Fiendish Resilience"
+    "name": "Fiendish Resilience",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Acid",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.ACID = 1"
+              }
+            ]
+          },
+          {
+            "name": "Bludgeoning",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.BLUDG = 1"
+              }
+            ]
+          },
+          {
+            "name": "Cold",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.COLD = 1"
+              }
+            ]
+          },
+          {
+            "name": "Fire",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.FIRE = 1"
+              }
+            ]
+          },
+          {
+            "name": "Lightning",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.LIGHT = 1"
+              }
+            ]
+          },
+          {
+            "name": "Necrotic",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.NECRO = 1"
+              }
+            ]
+          },
+          {
+            "name": "Piercing",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.PIERC = 1"
+              }
+            ]
+          },
+          {
+            "name": "Poison",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.POISON = 1"
+              }
+            ]
+          },
+          {
+            "name": "Psychic",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.PSYCH = 1"
+              }
+            ]
+          },
+          {
+            "name": "Radiant",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.RADI = 1"
+              }
+            ]
+          },
+          {
+            "name": "Slashing",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.SLASH = 1"
+              }
+            ]
+          },
+          {
+            "name": "Thunder",
+            "effects": [
+              {
+                "name": "Fiendish Resilience",
+                "expr": "RESIST.THUND = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Hurl Through Hell"
