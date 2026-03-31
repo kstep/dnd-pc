@@ -42,6 +42,12 @@ impl<Var, Val> Default for Expr<Var, Val> {
     }
 }
 
+impl<Var, Val> Expr<Var, Val> {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
 impl<Var, Val> Serialize for Expr<Var, Val>
 where
     Var: Serialize + Copy + PartialEq + fmt::Display,
@@ -49,8 +55,9 @@ where
 {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         if serializer.is_human_readable() {
-            // JSON/Firestore: serialize as infix string (avoids nested arrays
-            // which Firestore rejects).
+            if self.0.is_empty() {
+                return serializer.serialize_str("");
+            }
             let s = self
                 .format_block(BLOCK_MAIN)
                 .map_err(serde::ser::Error::custom)?;
@@ -209,6 +216,9 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.trim().is_empty() {
+            return Ok(Self::default());
+        }
         let blocks: Arc<[Block<Var, Val>]> = Parser::new(s)
             .parse()?
             .into_iter()
@@ -274,6 +284,9 @@ impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> fmt::Displa
     for Expr<Var, Val>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.0.is_empty() {
+            return Ok(());
+        }
         let s = self.format_block(BLOCK_MAIN).map_err(|_| fmt::Error)?;
         f.write_str(&s)
     }

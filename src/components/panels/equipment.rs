@@ -131,7 +131,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             placeholder=move_tr!("damage")
                                                             class="damage-input"
                                                             prop:value=eff_expr
-                                                            on:input=move |e| {
+                                                            on:change=move |e| {
                                                                 let value = event_target_value(&e);
                                                                 if let Ok(expr) = value.parse() {
                                                                     weapons.write()[i].effects[j].expr = expr;
