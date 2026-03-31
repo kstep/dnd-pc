@@ -165,6 +165,18 @@ impl RulesRegistry {
                 feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, inputs);
             }
 
+            // Persist supplemental inputs back to Feature entries
+            if let Some(supplemental) = supplemental {
+                for feature in character.features.iter_mut() {
+                    if feature.inputs.is_empty() {
+                        let supp = supplemental.get(&feature.name);
+                        if !supp.is_empty() {
+                            feature.inputs = supp.to_vec();
+                        }
+                    }
+                }
+            }
+
             // Phase 2: Re-apply each feature through intermediate levels
             // (OnLevelUp) for spell slot progression, field scaling, etc.
             for (feat_name, source, _) in &features {

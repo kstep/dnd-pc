@@ -241,6 +241,13 @@ fn create_character(
             registry.with_feature(&gen_name, |feat_def| {
                 let feature_inputs = inputs.map(|i| i.get(gen_name.as_str())).unwrap_or_default();
                 store.update(|character| {
+                    character.features.add(
+                        &gen_name,
+                        feat_def.label.clone(),
+                        feat_def.description.clone(),
+                        FeatureSource::User(level),
+                        feature_inputs.to_vec(),
+                    );
                     feat_def.apply(
                         level,
                         character,
