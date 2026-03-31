@@ -99,21 +99,21 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                         .feature_class_level(&character.identity, &name)
                                                         .unwrap_or_else(|| character.level())
                                                 });
-                                                if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name)) {
+                                                if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name, None)) {
                                                     let args_ctx = expect_context::<ArgsModalCtx>();
                                                     let name = name.clone();
                                                     args_ctx.open(vec![pending], move |inputs| {
                                                         registry.with_feature(&name, |feat_def| {
                                                             let feature_inputs = inputs.get(&name);
                                                             store.update(|c| {
-                                                                c.mark_feature_applied(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level));
+                                                                c.features.add(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level), feature_inputs.to_vec());
                                                                 feat_def.apply(level, c, WhenCondition::OnFeatureAdd, feature_inputs);
                                                             });
                                                         });
                                                     });
                                                 } else if registry.with_feature(&name, |feat_def| {
                                                     store.update(|c| {
-                                                        c.mark_feature_applied(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level));
+                                                        c.features.add(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level), Vec::new());
                                                         feat_def.apply(level, c, WhenCondition::OnFeatureAdd, &[]);
                                                     });
                                                 }).is_none() {

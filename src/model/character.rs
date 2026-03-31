@@ -11,7 +11,7 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
-        Feature, FeatureData, FeatureSource, FeatureValue, Personality, SpellSlotLevel, enums::*,
+        Feature, FeatureData, FeatureValue, Features, Personality, SpellSlotLevel, enums::*,
     },
     vecset::VecSet,
 };
@@ -100,7 +100,7 @@ pub struct Character {
     #[serde(default)]
     pub personality: Personality,
     #[serde(default)]
-    pub features: Vec<Feature>,
+    pub features: Features,
     #[serde(default)]
     pub equipment: Equipment,
     #[serde(default)]
@@ -506,56 +506,6 @@ impl Character {
             .map(|(&pool, _)| pool)
     }
 
-    /// Returns `true` if a feature should use `OnFeatureAdd`: either it has no
-    /// entries at all (brand new) or has at least one unapplied entry.
-    pub fn is_feature_pending(&self, name: &str) -> bool {
-        let mut has_applied = false;
-        let mut has_unapplied = false;
-        for feature in &self.features {
-            if feature.name == name {
-                if feature.applied {
-                    has_applied = true;
-                } else {
-                    has_unapplied = true;
-                }
-            }
-        }
-        !has_applied || has_unapplied
-    }
-
-    /// Find an unapplied feature entry and mark it applied, or push a new one.
-    /// Returns `true` if this is a first-time application (OnFeatureAdd).
-    pub fn mark_feature_applied(
-        &mut self,
-        name: &str,
-        label: Option<String>,
-        description: String,
-        source: FeatureSource,
-    ) -> bool {
-        if let Some(feature) = self
-            .features
-            .iter_mut()
-            .rfind(|f| f.name == name && !f.applied)
-        {
-            feature.applied = true;
-            feature.label = label;
-            feature.description = description;
-            feature.source = source;
-            true
-        } else if self.features.iter().any(|f| f.name == name) {
-            false
-        } else {
-            self.features.push(Feature {
-                name: name.to_string(),
-                label,
-                description,
-                applied: true,
-                source,
-            });
-            true
-        }
-    }
-
     /// Reset all derived state for replay. Preserves identity (including
     /// applied flags), equipment, personality, notes, and feature list with
     /// sources intact.
@@ -635,7 +585,7 @@ impl Default for Character {
             skills: BTreeMap::new(),
             combat: CombatStats::default(),
             personality: Personality::default(),
-            features: Vec::new(),
+            features: Features::default(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
             spell_slots: BTreeMap::new(),
@@ -880,12 +830,13 @@ impl Character {
                 description: "Use a bonus action...".to_string(),
                 applied: true,
                 source: FeatureSource::Class("Bard".to_string(), 1),
-            }],
+                inputs: Vec::new(),
+            }]
+            .into(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::from([(
                 "Spellcasting (Bard)".to_string(),
                 FeatureData {
-                    inputs: Vec::new(),
                     fields: Vec::new(),
                     spells: Some(SpellData {
                         casting_ability: Ability::Charisma,
@@ -983,7 +934,7 @@ pub mod tests {
                 attack_count: 1,
             },
             personality: Personality::default(),
-            features: Vec::new(),
+            features: Features::default(),
             equipment: Equipment::default(),
             feature_data: BTreeMap::new(),
             proficiencies: [

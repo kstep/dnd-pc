@@ -21,7 +21,8 @@ use crate::{
     },
     firebase,
     model::{
-        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureSource,
+        Translatable,
     },
     rules::{ApplyInputs, DefinitionStore, PendingInputs, RulesRegistry},
     share, storage,
@@ -242,12 +243,14 @@ pub fn CharacterHeader() -> impl IntoView {
                     on_apply=move || {
                         let pending = store
                             .with_untracked(|character| {
+                                let source = FeatureSource::Species(character.identity.species.clone());
                                 registry
                                     .species()
                                     .with(&character.identity.species, |species_def| {
                                         registry.pending_args_for_features(
                                             character,
                                             species_def.features.iter().map(String::as_str),
+                                            &source,
                                         )
                                     })
                             })
@@ -272,12 +275,14 @@ pub fn CharacterHeader() -> impl IntoView {
                     on_apply=move || {
                         let pending = store
                             .with_untracked(|character| {
+                                let source = FeatureSource::Background(character.identity.background.clone());
                                 registry
                                     .backgrounds()
                                     .with(&character.identity.background, |bg_def| {
                                         registry.pending_args_for_features(
                                             character,
                                             bg_def.features.iter().map(String::as_str),
+                                            &source,
                                         )
                                     })
                             })

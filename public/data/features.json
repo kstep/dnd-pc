@@ -9407,8 +9407,7 @@
           }
         ]
       }
-    ],
-    "stackable": true
+    ]
   },
   {
     "name": "Sorcerer Subclass"
@@ -12515,7 +12514,6 @@
   },
   {
     "name": "Magic Initiate (Cleric)",
-    "stackable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -12542,7 +12540,6 @@
   },
   {
     "name": "Magic Initiate (Druid)",
-    "stackable": true,
     "spells": {
       "casting_ability": 4,
       "list": {
@@ -12569,7 +12566,6 @@
   },
   {
     "name": "Magic Initiate (Wizard)",
-    "stackable": true,
     "spells": {
       "casting_ability": 3,
       "list": {

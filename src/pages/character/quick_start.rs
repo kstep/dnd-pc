@@ -8,7 +8,9 @@ use crate::{
         background_field::BackgroundField, character_header::apply_modal, class_field::ClassField,
         icon::Icon, species_field::SpeciesField,
     },
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature},
+    model::{
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
+    },
     names::{self, NamesData},
     rules::{DefinitionStore, FeatureCategory, PendingInputs, RulesRegistry, WhenCondition},
 };
@@ -170,7 +172,7 @@ fn create_character(
     store.with_untracked(|character| {
         // Generation feature
         if !gen_name.is_empty()
-            && let Some(pending) = registry.feature_needs_args(character, &gen_name)
+            && let Some(pending) = registry.feature_needs_args(character, &gen_name, None)
         {
             all_pending.push(pending);
         }
@@ -181,6 +183,7 @@ fn create_character(
             && !character.identity.species_applied
             && registry.species().has(species)
         {
+            let source = FeatureSource::Species(species.clone());
             all_pending.extend(
                 registry
                     .species()
@@ -188,6 +191,7 @@ fn create_character(
                         registry.pending_args_for_features(
                             character,
                             species_def.features.iter().map(String::as_str),
+                            &source,
                         )
                     })
                     .unwrap_or_default(),
@@ -200,6 +204,7 @@ fn create_character(
             && !character.identity.background_applied
             && registry.backgrounds().has(background)
         {
+            let source = FeatureSource::Background(background.clone());
             all_pending.extend(
                 registry
                     .backgrounds()
@@ -207,6 +212,7 @@ fn create_character(
                         registry.pending_args_for_features(
                             character,
                             bg_def.features.iter().map(String::as_str),
+                            &source,
                         )
                     })
                     .unwrap_or_default(),

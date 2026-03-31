@@ -12,7 +12,7 @@ use crate::{
         modal::Modal,
     },
     expr::{DicePool, Expr},
-    model::{AssignInputs, Attribute, Character},
+    model::{AssignInputs, Attribute, Character, FeatureSource},
     rules::{ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry},
 };
 
@@ -75,6 +75,7 @@ fn ArgsFeatureInput(
     let has_description = !description.is_empty();
     let replace_with = pending_inputs.replace_with;
     let replaceable = pending_inputs.is_replaceable();
+    let source = pending_inputs.source.clone();
 
     // Signal tracking whether user chose to replace this feature
     let replacement_choice: RwSignal<Option<String>> = RwSignal::new(None);
@@ -158,7 +159,8 @@ fn ArgsFeatureInput(
                 {expr_views}
             </div>
             {replaceable.then(|| {
-                view! { <ReplacementPicker replace_with replacement_choice all_signals all_dice all_valid /> }
+                let source = source.clone();
+                view! { <ReplacementPicker replace_with replacement_choice all_signals all_dice all_valid source /> }
             })}
         </div>
     }
@@ -171,10 +173,12 @@ fn ReplacementPicker(
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
+    source: FeatureSource,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
     let replacing = RwSignal::new(false);
+    let source = StoredValue::new(source);
 
     let options = Signal::derive(move || {
         let character = store.read();
@@ -228,10 +232,12 @@ fn ReplacementPicker(
         if let Some(name) = &resolved {
             input_value.set(name.clone());
             let (description, exprs) = store.with_untracked(|character| {
-                let exprs = registry
-                    .feature_needs_args(character, name)
-                    .map(|pending| pending.exprs)
-                    .unwrap_or_default();
+                let exprs = source.with_value(|source| {
+                    registry
+                        .feature_needs_args(character, name, Some(source))
+                        .map(|pending| pending.exprs)
+                        .unwrap_or_default()
+                });
                 let description = registry.with_features_index(|idx| {
                     idx.get(name.as_str())
                         .map(|feat| feat.description.clone())

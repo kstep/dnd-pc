@@ -446,15 +446,6 @@ impl FeatureDefinition {
     ) {
         character.languages.extend(self.languages.iter().cloned());
 
-        if !inputs.is_empty() {
-            character
-                .feature_data
-                .entry(self.name.clone())
-                .or_default()
-                .inputs
-                .extend(inputs.iter().cloned());
-        }
-
         let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
             let free_uses_max = self.free_uses_max(level, character);
             spells_def.apply(level, character, &self.name, free_uses_max);

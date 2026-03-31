@@ -307,6 +307,47 @@ fn migrate_v7(value: &mut serde_json::Value) {
     }
 }
 
+/// Move `inputs` from `feature_data[name].inputs` to `features[i].inputs`.
+/// Each feature instance now carries its own inputs for stackable support.
+fn migrate_v8(value: &mut serde_json::Value) {
+    // Build a map: feature_name → VecDeque of inputs arrays
+    let mut inputs_by_name: HashMap<String, Vec<serde_json::Value>> = HashMap::new();
+    if let Some(feature_data) = value.get("feature_data").and_then(|v| v.as_object()) {
+        for (name, data) in feature_data {
+            if let Some(inputs) = data.get("inputs").and_then(|v| v.as_array())
+                && !inputs.is_empty()
+            {
+                inputs_by_name.insert(name.clone(), inputs.clone());
+            }
+        }
+    }
+
+    // Distribute inputs to matching feature entries (in order)
+    if let Some(features) = value.get_mut("features").and_then(|v| v.as_array_mut()) {
+        for feature in features {
+            if let Some(name) = feature.get("name").and_then(|v| v.as_str())
+                && let Some(inputs) = inputs_by_name.get_mut(name)
+                && !inputs.is_empty()
+            {
+                let input = inputs.remove(0);
+                feature["inputs"] = serde_json::json!([input]);
+            }
+        }
+    }
+
+    // Remove inputs from feature_data entries
+    if let Some(feature_data) = value
+        .get_mut("feature_data")
+        .and_then(|v| v.as_object_mut())
+    {
+        for (_, data) in feature_data.iter_mut() {
+            if let Some(obj) = data.as_object_mut() {
+                obj.remove("inputs");
+            }
+        }
+    }
+}
+
 /// Deserialize a `serde_json::Value` into a `Character`, applying all
 /// migrations. Used for cloud-fetched data.
 pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
@@ -317,6 +358,7 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v5(&mut value);
     migrate_v6(&mut value);
     migrate_v7(&mut value);
+    migrate_v8(&mut value);
     serde_json::from_value(value).ok()
 }
 
