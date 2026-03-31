@@ -1538,7 +1538,13 @@
     "name": "Restorative Reagents"
   },
   {
-    "name": "Chemical Mastery"
+    "name": "Chemical Mastery",
+    "assign": [
+      {
+        "expr": "RESIST.ACID = 1; RESIST.POISON = 1; IMMUNE.POISON = 1",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Arcane Armor"
@@ -1801,7 +1807,13 @@
     "name": "Fortified Position"
   },
   {
-    "name": "Battle Ready"
+    "name": "Battle Ready",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "PROF.MARTIAL_WEAPONS = 1"
+      }
+    ]
   },
   {
     "name": "Battle Smith Spells",
@@ -2134,7 +2146,13 @@
     "name": "Barbarian Subclass"
   },
   {
-    "name": "Primal Knowledge"
+    "name": "Primal Knowledge",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.3); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.4); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.5))"
+      }
+    ]
   },
   {
     "name": "Fast Movement",
@@ -2752,7 +2770,13 @@
     "name": "Combat Inspiration"
   },
   {
-    "name": "Martial Training"
+    "name": "Martial Training",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "PROF.MARTIAL_WEAPONS = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1"
+      }
+    ]
   },
   {
     "name": "Battle Magic"
@@ -3231,7 +3255,13 @@
     "name": "Greater Divine Intervention"
   },
   {
-    "name": "Blessings of Knowledge"
+    "name": "Blessings of Knowledge",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.2); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.3))"
+      }
+    ]
   },
   {
     "name": "Channel Divinity: Knowledge of the Ages",
@@ -3558,10 +3588,22 @@
     ]
   },
   {
-    "name": "Acolyte of Nature"
+    "name": "Acolyte of Nature",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.1); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.2))"
+      }
+    ]
   },
   {
-    "name": "Bonus Proficiency"
+    "name": "Bonus Proficiency",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
+      }
+    ]
   },
   {
     "name": "Channel Divinity: Charm Animals and Plants",
@@ -3940,7 +3982,13 @@
     "name": "Improved Reaper"
   },
   {
-    "name": "Arcane Initiate"
+    "name": "Arcane Initiate",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "SKILL.ARCA.PROF += 1"
+      }
+    ]
   },
   {
     "name": "Channel Divinity: Arcane Abjuration",
@@ -4055,7 +4103,13 @@
     ]
   },
   {
-    "name": "Acolyte of Strength"
+    "name": "Acolyte of Strength",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.2); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.3))"
+      }
+    ]
   },
   {
     "name": "Channel Divinity: Feat of Strength",
@@ -4269,7 +4323,13 @@
     "name": "Emboldening Bond"
   },
   {
-    "name": "Implement of Peace"
+    "name": "Implement of Peace",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.0); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.1); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.2))"
+      }
+    ]
   },
   {
     "name": "Channel Divinity: Balm of Peace",
@@ -5675,7 +5735,13 @@
     "name": "Bulwark"
   },
   {
-    "name": "Arcane Archer Lore"
+    "name": "Arcane Archer Lore",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.1))"
+      }
+    ]
   },
   {
     "name": "Arcane Shot"
@@ -5787,7 +5853,13 @@
     ]
   },
   {
-    "name": "Elegant Courtier"
+    "name": "Elegant Courtier",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "WIS.SAVE.PROF = 1"
+      }
+    ]
   },
   {
     "name": "Tireless Spirit"
@@ -6246,7 +6318,13 @@
     "name": "Deflect Energy"
   },
   {
-    "name": "Disciplined Survivor"
+    "name": "Disciplined Survivor",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1"
+      }
+    ]
   },
   {
     "name": "Perfect Focus"
@@ -6502,7 +6580,13 @@
     ]
   },
   {
-    "name": "Implements of Mercy"
+    "name": "Implements of Mercy",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "SKILL.INSI.PROF += 1; SKILL.MEDI.PROF += 1"
+      }
+    ]
   },
   {
     "name": "Physician's Touch"
@@ -7830,6 +7914,10 @@
       {
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "when": "OnFeatureAdd"
+      },
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
       }
     ]
   },
@@ -8190,7 +8278,13 @@
     "name": "Umbral Sight"
   },
   {
-    "name": "Iron Mind"
+    "name": "Iron Mind",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "WIS.SAVE.PROF = 1"
+      }
+    ]
   },
   {
     "name": "Stalker's Flurry"
@@ -8366,7 +8460,13 @@
     }
   },
   {
-    "name": "Otherworldly Glamour"
+    "name": "Otherworldly Glamour",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.0); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.1); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.2))"
+      }
+    ]
   },
   {
     "name": "Beguiling Twist"
@@ -9032,7 +9132,13 @@
     ]
   },
   {
-    "name": "Survivalist"
+    "name": "Survivalist",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "SKILL.NATU.PROF += 1; SKILL.SURV.PROF += 1"
+      }
+    ]
   },
   {
     "name": "Superior Mobility"
@@ -10837,7 +10943,13 @@
     ]
   },
   {
-    "name": "Hex Warrior"
+    "name": "Hex Warrior",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.MARTIAL_WEAPONS = 1"
+      }
+    ]
   },
   {
     "name": "Hexblade's Curse",
@@ -12287,7 +12399,13 @@
     ]
   },
   {
-    "name": "Training in War and Song"
+    "name": "Training in War and Song",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
+      }
+    ]
   },
   {
     "name": "Song of Defense"
@@ -13150,13 +13268,25 @@
     "name": "Fey Ancestry"
   },
   {
-    "name": "Keen Senses"
+    "name": "Keen Senses",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.0); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.1); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.2))"
+      }
+    ]
   },
   {
     "name": "Trance"
   },
   {
-    "name": "Dwarven Resilience"
+    "name": "Dwarven Resilience",
+    "assign": [
+      {
+        "expr": "RESIST.POISON = 1",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Dwarven Toughness",
@@ -13831,6 +13961,10 @@
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "IMMUNE.RADI = 1",
+        "when": "OnCompute"
       }
     ],
     "category": "EpicBoon"
@@ -13941,6 +14075,10 @@
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "IMMUNE.POISON = 1; RESIST.POISON = 1",
+        "when": "OnCompute"
       }
     ],
     "category": "EpicBoon"
@@ -13972,7 +14110,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "if(CHA + 1 <= 30, CHA += 1)",
+        "expr": "if(CHA + 1 <= 30, CHA += 1); SKILL.INTI.PROF += 1",
         "when": "OnFeatureAdd"
       }
     ],
@@ -13996,6 +14134,10 @@
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 30, INT += ARG.0); if(WIS < 30, WIS += ARG.1); if(CHA < 30, CHA += ARG.2))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "RESIST.LIGHT = 1; RESIST.THUND = 1",
+        "when": "OnCompute"
       }
     ],
     "category": "EpicBoon"
