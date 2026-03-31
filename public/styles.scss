@@ -859,6 +859,8 @@ input[type="checkbox"] {
 .damage-label {
   flex: 1;
   text-align: left;
+  overflow: hidden;
+  text-oveflow: ellipsis;
 }
 
 .damage-dt-icon {
