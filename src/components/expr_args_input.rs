@@ -78,7 +78,10 @@ impl FormBuilder {
     ) -> Result<(), expr::Error> {
         match op {
             Op::PushConst(n) => self.push_text(n),
-            Op::PushVar(var) => self.push_text(var.display_name(i18n)),
+            Op::PushVar(var) => {
+                let i18n = *i18n;
+                self.push_view((move || var.display_name(&i18n)).into_any());
+            }
             Op::Add => self.binary_op("+")?,
             Op::Sub => self.binary_op("-")?,
             Op::Mul => self.binary_op("*")?,
@@ -125,7 +128,8 @@ impl FormBuilder {
             Op::Cmp(cmp) => self.binary_op(cmp.symbol())?,
             Op::Assign(var) => {
                 let val = self.pop()?;
-                let var_s = var.display_name(i18n);
+                let i18n = *i18n;
+                let var_s = move || var.display_name(&i18n);
                 self.0.push(view! { <>{var_s}" = "{val}</> }.into_any());
             }
             Op::In => {
@@ -207,7 +211,8 @@ fn form_block(
                 condition,
             )?;
             let rhs = fb.pop()?;
-            let var_s = assign_var.display_name(&ctx.i18n);
+            let i18n = ctx.i18n;
+            let var_s = move || assign_var.display_name(&i18n);
             let sym = ca.sym;
             fb.push_view(view! { <>{var_s}" "{sym}"= "{rhs}</> }.into_any());
         } else {

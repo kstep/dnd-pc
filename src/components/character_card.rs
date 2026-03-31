@@ -1,6 +1,5 @@
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
-use leptos_router::components::A;
+use leptos_fluent::{move_tr, tr};
 use uuid::Uuid;
 
 use crate::{BASE_URL, model::CharacterSummary};
@@ -17,17 +16,17 @@ pub fn CharacterCard(
 
     view! {
         <div class="character-card">
-            <A href=href attr:class="card-link">
+            <a href=href class="card-link">
                 <h3>{summary.name.clone()}</h3>
                 <p class="card-subtitle">
                     {move_tr!("level-prefix")} " " {summary.level} " "
-                    <span>{if class_empty {
-                        move_tr!("no-class").get()
+                    <span>{move || if class_empty {
+                        tr!("no-class")
                     } else {
                         class_str.clone()
                     }}</span>
                 </p>
-            </A>
+            </a>
             <button
                 class="btn-danger"
                 on:click=move |e| {
