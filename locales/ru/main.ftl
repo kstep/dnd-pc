@@ -129,6 +129,7 @@ btn-add-feature = + Добавить особенность
 source-class = Класс
 source-species = Раса
 source-background = Предыстория
+source-user = Вручную
 history = Предыстория
 personality-traits = Черты характера
 ideals = Идеалы

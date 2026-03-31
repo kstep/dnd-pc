@@ -129,6 +129,7 @@ btn-add-feature = + Add Feature
 source-class = Class
 source-species = Species
 source-background = Background
+source-user = Manual
 history = History
 personality-traits = Personality Traits
 ideals = Ideals

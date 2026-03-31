@@ -137,9 +137,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                             <Icon name="x" size=14 />
                                         </button>
                                     </div>
-                                    {source_text.as_ref().map(|s| view! {
-                                        <span class="entry-sublabel">{s.clone()}</span>
-                                    })}
+                                    <span class="entry-sublabel">{source_text}</span>
                                     <textarea
                                         class="entry-desc"
                                         placeholder=move_tr!("description")
