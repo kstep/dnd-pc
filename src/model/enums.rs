@@ -231,6 +231,14 @@ impl ProficiencyLevel {
             Self::Expertise => "\u{25C9}",  // fisheye (double)
         }
     }
+
+    pub fn icon_name(self) -> &'static str {
+        match self {
+            Self::None => "circle-dashed",
+            Self::Proficient => "circle-dot",
+            Self::Expertise => "target",
+        }
+    }
 }
 
 impl DamageType {

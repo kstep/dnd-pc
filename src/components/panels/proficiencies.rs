@@ -41,7 +41,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                         });
                                     }
                                 >
-                                    {move || if active.get() { "\u{25CF}" } else { "\u{25CB}" }}
+                                    <Icon name=Signal::derive(move || if active.get() { "circle-dot" } else { "circle-dashed" }) size=14 />
                                 </button>
                                 <span class="prof-label">{label}</span>
                             </div>

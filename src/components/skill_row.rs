@@ -1,8 +1,9 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use crate::model::{
-    Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable, format_bonus,
+use crate::{
+    components::icon::Icon,
+    model::{Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable, format_bonus},
 };
 
 #[component]
@@ -44,7 +45,7 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
                     });
                 }
             >
-                {move || prof_level.get().symbol()}
+                <Icon name=Signal::derive(move || prof_level.get().icon_name()) size=14 />
             </button>
             <span class="skill-bonus">{bonus_display}</span>
             <span class="skill-name">{skill_label}</span>

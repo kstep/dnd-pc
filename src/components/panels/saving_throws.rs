@@ -60,7 +60,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                                     });
                                 }
                             >
-                                {move || if proficient.get() { "\u{25CF}" } else { "\u{25CB}" }}
+                                <Icon name=Signal::derive(move || if proficient.get() { "circle-dot" } else { "circle-dashed" }) size=14 />
                             </button>
                             <span class="save-bonus">{bonus_display}</span>
                             <span class="save-label">{label}</span>
