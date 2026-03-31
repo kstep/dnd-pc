@@ -155,6 +155,45 @@
   "Fiendish Resilience: Thunder": {
     "description": "Resistance to Thunder damage (until next short/long rest)"
   },
+  "Rage of the Gods": {
+    "description": "Resistance to Necrotic and Radiant damage (while in divine warrior form)"
+  },
+  "Rage of the Wilds: Bear": {
+    "description": "Resistance to all damage except Force, Necrotic, Psychic, and Radiant (while raging)"
+  },
+  "Aura of Warding": {
+    "description": "Resistance to Necrotic, Psychic, and Radiant damage (Aura of Protection)"
+  },
+  "Elemental Epitome: Acid": {
+    "description": "Resistance to Acid damage (while Elemental Attunement active)"
+  },
+  "Elemental Epitome: Cold": {
+    "description": "Resistance to Cold damage (while Elemental Attunement active)"
+  },
+  "Elemental Epitome: Fire": {
+    "description": "Resistance to Fire damage (while Elemental Attunement active)"
+  },
+  "Elemental Epitome: Lightning": {
+    "description": "Resistance to Lightning damage (while Elemental Attunement active)"
+  },
+  "Elemental Epitome: Thunder": {
+    "description": "Resistance to Thunder damage (while Elemental Attunement active)"
+  },
+  "Elemental Affinity: Acid": {
+    "description": "Resistance to Acid damage (Draconic Bloodline)"
+  },
+  "Elemental Affinity: Cold": {
+    "description": "Resistance to Cold damage (Draconic Bloodline)"
+  },
+  "Elemental Affinity: Fire": {
+    "description": "Resistance to Fire damage (Draconic Bloodline)"
+  },
+  "Elemental Affinity: Lightning": {
+    "description": "Resistance to Lightning damage (Draconic Bloodline)"
+  },
+  "Elemental Affinity: Poison": {
+    "description": "Resistance to Poison damage (Draconic Bloodline)"
+  },
   "Steps of Night": {
     "description": "Fly speed equal to walking speed (bonus action, 1 min, Twilight Domain)"
   },

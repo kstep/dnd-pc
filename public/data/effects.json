@@ -211,6 +211,58 @@
     "expr": "RESIST.THUND = 1"
   },
   {
+    "name": "Rage of the Gods",
+    "expr": "RESIST.NECRO = 1; RESIST.RADI = 1"
+  },
+  {
+    "name": "Rage of the Wilds: Bear",
+    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+  },
+  {
+    "name": "Aura of Warding",
+    "expr": "RESIST.NECRO = 1; RESIST.PSYCH = 1; RESIST.RADI = 1"
+  },
+  {
+    "name": "Elemental Epitome: Acid",
+    "expr": "RESIST.ACID = 1"
+  },
+  {
+    "name": "Elemental Epitome: Cold",
+    "expr": "RESIST.COLD = 1"
+  },
+  {
+    "name": "Elemental Epitome: Fire",
+    "expr": "RESIST.FIRE = 1"
+  },
+  {
+    "name": "Elemental Epitome: Lightning",
+    "expr": "RESIST.LIGHT = 1"
+  },
+  {
+    "name": "Elemental Epitome: Thunder",
+    "expr": "RESIST.THUND = 1"
+  },
+  {
+    "name": "Elemental Affinity: Acid",
+    "expr": "RESIST.ACID = 1"
+  },
+  {
+    "name": "Elemental Affinity: Cold",
+    "expr": "RESIST.COLD = 1"
+  },
+  {
+    "name": "Elemental Affinity: Fire",
+    "expr": "RESIST.FIRE = 1"
+  },
+  {
+    "name": "Elemental Affinity: Lightning",
+    "expr": "RESIST.LIGHT = 1"
+  },
+  {
+    "name": "Elemental Affinity: Poison",
+    "expr": "RESIST.POISON = 1"
+  },
+  {
     "name": "Steps of Night"
   },
   {

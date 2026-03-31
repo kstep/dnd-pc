@@ -8550,7 +8550,13 @@
     "name": "Perfected Bond"
   },
   {
-    "name": "Frigid Explorer"
+    "name": "Frigid Explorer",
+    "assign": [
+      {
+        "expr": "RESIST.COLD = 1",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Hunter's Rime"
