@@ -12282,6 +12282,10 @@
       {
         "expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.6))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12295,6 +12299,10 @@
       {
         "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.3); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.4); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.5))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12303,6 +12311,10 @@
     "assign": [
       {
         "expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and in(ARG.8, 0, 1) and in(ARG.9, 0, 1) and in(ARG.10, 0, 1) and in(ARG.11, 0, 1) and in(ARG.12, 0, 1) and in(ARG.13, 0, 1) and in(ARG.14, 0, 1) and in(ARG.15, 0, 1) and in(ARG.16, 0, 1) and in(ARG.17, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 + ARG.11 + ARG.12 + ARG.13 + ARG.14 + ARG.15 + ARG.16 + ARG.17 == 3, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.2); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.3); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.4); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.5); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.6); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.7); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.8); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.9); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.10); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.11); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.12); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.13); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.14); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.15); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.16); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.17))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12317,6 +12329,10 @@
       {
         "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 == 2, if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.4))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12326,6 +12342,10 @@
       {
         "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12334,6 +12354,10 @@
     "assign": [
       {
         "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 2, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.2); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.3); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.4); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.5); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12348,6 +12372,10 @@
       {
         "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.2); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.3); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.4); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.5))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12356,6 +12384,10 @@
     "assign": [
       {
         "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12366,6 +12398,10 @@
       {
         "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 3, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12374,6 +12410,10 @@
     "assign": [
       {
         "expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and in(ARG.8, 0, 1) and in(ARG.9, 0, 1) and in(ARG.10, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 == 4, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.2); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.3); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.4); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.5); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.6); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.7); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.8); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.9); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.10))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -12384,6 +12424,10 @@
       {
         "expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12393,6 +12437,10 @@
       {
         "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.1); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.2); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.3); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.4); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.5); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.6))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -12401,6 +12449,10 @@
     "assign": [
       {
         "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.3); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
         "when": "OnFeatureAdd"
       }
     ]
