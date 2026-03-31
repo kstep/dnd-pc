@@ -479,6 +479,12 @@
   {
     "name": "Spell Sniper",
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
+    "assign": [
+      {
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
+        "when": "OnFeatureAdd"
+      }
+    ],
     "category": "General"
   },
   {
