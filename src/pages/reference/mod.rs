@@ -11,6 +11,11 @@ use leptos_fluent::move_tr;
 use leptos_router::components::A;
 pub use sidebar::ReferenceSidebar;
 
+/// Percent-encode a name for use in URL paths (spaces, parens, etc.).
+pub fn encode_name(name: &str) -> String {
+    js_sys::encode_uri_component(name).into()
+}
+
 use crate::{
     BASE_URL,
     components::expr_view::ExprView,
