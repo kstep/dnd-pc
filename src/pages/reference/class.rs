@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
+use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name};
 use crate::{
     BASE_URL,
     components::loader::Loader,
@@ -346,7 +346,7 @@ pub fn ClassReference() -> impl IntoView {
                             None
                         } else {
                             let cards = subclass_list.into_iter().map(|(sc_name, sc_label, sc_desc)| {
-                                let href = format!("{BASE_URL}/r/class/{name_for_link}/{sc_name}");
+                                let href = format!("{BASE_URL}/r/class/{name_for_link}/{}", encode_name(&sc_name));
                                 view! {
                                     <A href=href attr:class="reference-card">
                                         <h3>{sc_label}</h3>
