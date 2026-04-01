@@ -338,13 +338,18 @@ pub fn CharacterHeader() -> impl IntoView {
                     <label>{move_tr!("total-level")}</label>
                     <div class="level-value-row">
                         <span class="computed-value">{total_level}</span>
-                        <button
-                            class="btn-level-up"
-                            title=move_tr!("level-up")
-                            on:click=on_level_up
-                        >
-                            <Icon name="arrow-up" size=14 />
-                        </button>
+                        <Show when=move || {
+                            let cls = classes.read();
+                            cls.len() > 1 || cls.len() == 1 && !cls[0].class.is_empty()
+                        }>
+                            <button
+                                class="btn-level-up"
+                                title=move_tr!("level-up")
+                                on:click=on_level_up
+                            >
+                                <Icon name="arrow-up" size=14 />
+                            </button>
+                        </Show>
                     </div>
                 </div>
                 <div class="header-field level-field">
