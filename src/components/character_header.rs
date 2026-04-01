@@ -129,6 +129,15 @@ pub fn CharacterHeader() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let level_up_class = move |class_idx: usize| {
+        store.update(|character| {
+            let class_level = &character.identity.classes[class_idx];
+            let unapplied: Vec<u32> = (1..=class_level.level)
+                .filter(|lvl| !class_level.applied_levels.contains(lvl))
+                .collect();
+            for lvl in unapplied {
+                registry.apply_class_level(character, class_idx, lvl, None);
+            }
+        });
         let new_level = classes.read()[class_idx].level + 1;
         classes.write()[class_idx].level = new_level;
         apply_level(store, registry, class_idx, new_level);
