@@ -14160,12 +14160,27 @@
       {
         "name": "Empower",
         "kind": "Choice",
+        "cost": "Free Uses",
         "options": [
           {
-            "name": "Drain"
+            "name": "Drain",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "1d4 + CON.MOD"
+              }
+            ]
           },
           {
-            "name": "Strengthen"
+            "name": "Strengthen",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Bonus",
+                "expr": "1d4 + CON.MOD"
+              }
+            ]
           }
         ]
       }
