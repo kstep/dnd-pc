@@ -6,6 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
+    components::loader::Loader,
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -52,7 +53,7 @@ pub fn BackgroundReference() -> impl IntoView {
                 )
             })
         else {
-            return view! { <p class="reference-loading">{move_tr!("ref-loading")}</p> }.into_any();
+            return view! { <Loader /> }.into_any();
         };
 
         let features = registry.with_features_index(|features_index| {

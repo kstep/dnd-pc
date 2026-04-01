@@ -49,6 +49,6 @@ pub fn Logo() -> impl IntoView {
 
     view! {
         <span class="navbar-logo" class:loading=spinning
-            inner_html=include_str!("../../public/icons/logo.svg") />
+            inner_html=crate::LOGO_SVG />
     }
 }

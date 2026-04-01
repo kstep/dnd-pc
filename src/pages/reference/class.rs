@@ -6,6 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
+    components::loader::Loader,
     hooks::use_hash_href,
     model::{format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
@@ -365,7 +366,7 @@ pub fn ClassReference() -> impl IntoView {
                 .into_any()
             })
             .unwrap_or_else(|| {
-                view! { <p class="reference-loading">{move_tr!("ref-loading")}</p> }.into_any()
+                view! { <Loader /> }.into_any()
             })
     };
 

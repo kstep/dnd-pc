@@ -8,7 +8,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::ReferenceSidebar;
 use crate::{
     BASE_URL,
-    components::expr_view::ExprView,
+    components::{expr_view::ExprView, loader::Loader},
     expr::Expr,
     model::Attribute,
     rules::{RulesRegistry, SpellList},
@@ -159,7 +159,7 @@ pub fn SpellReference() -> impl IntoView {
                 .into_any()
             })
             .unwrap_or_else(|| {
-                view! { <p class="reference-loading">{move_tr!("ref-loading")}</p> }.into_any()
+                view! { <Loader /> }.into_any()
             })
     };
 

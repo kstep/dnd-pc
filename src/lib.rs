@@ -27,6 +27,8 @@ pub const BASE_URL: &str = match option_env!("BASE_URL") {
     None => "",
 };
 
+pub static LOGO_SVG: &str = include_str!("../public/icons/logo.svg");
+
 static_loader! {
     pub static TRANSLATIONS = {
         locales: "./locales",
@@ -89,6 +91,7 @@ pub fn App() -> impl IntoView {
                     <Route path=path!("/r/background") view=BackgroundReference />
                     <Route path=path!("/r/background/:name") view=BackgroundReference />
                     <Route path=path!("/r/feature") view=FeatureReference />
+                    <Route path=path!("/r/feature/:category") view=FeatureReference />
                     <Route path=path!("/r/spell") view=SpellReference />
                     <Route path=path!("/r/spell/:list") view=SpellReference />
                 </Routes>

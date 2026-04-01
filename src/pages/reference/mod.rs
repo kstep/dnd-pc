@@ -68,6 +68,7 @@ pub struct InlineChoiceOption {
     pub level: u32,
     pub cost: u32,
     pub description: String,
+    pub effects: Vec<(String, Expr<Attribute>)>,
 }
 
 pub struct ChoiceFieldView {
@@ -105,6 +106,11 @@ pub fn feature_choices(
                         level: opt.level,
                         cost: opt.cost,
                         description: opt.description.clone(),
+                        effects: opt
+                            .effects
+                            .iter()
+                            .map(|e| (e.label().to_string(), e.expr.clone()))
+                            .collect(),
                     })
                     .collect(),
             })
@@ -272,16 +278,62 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     }
                 }
             }
-            // Condition ops: consume operands, push a dummy (condition result
-            // doesn't matter for summarizing assignments)
-            Op::Cmp(_) | Op::And | Op::Or | Op::In => {
-                self.pop();
-                self.pop();
-                self.stack.push(SumEntry::constant(0));
+            Op::Cmp(cmp) => {
+                let b = self.pop();
+                let a = self.pop();
+                let sym = match cmp.symbol() {
+                    "<=" => "≤",
+                    ">=" => "≥",
+                    "!=" => "≠",
+                    "==" => "=",
+                    s => s,
+                };
+                self.stack.push(SumEntry {
+                    text: format!("{} {sym} {}", a.text, b.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::And => {
+                let b = self.pop();
+                let a = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{} and {}", a.text, b.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::Or => {
+                let b = self.pop();
+                let a = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{} or {}", a.text, b.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
             }
             Op::Not => {
-                self.pop();
-                self.stack.push(SumEntry::constant(0));
+                let a = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("not {}", a.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::In => {
+                let c = self.pop();
+                let b = self.pop();
+                let a = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{} ≤ {} ≤ {}", b.text, a.text, c.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
             }
             // if(): evaluate both branches to collect all possible assignments
             Op::EvalIf(then_idx, else_idx) => {
@@ -329,6 +381,12 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             parts.push(self.equipment.join(", "));
         }
         parts.extend(self.other);
+        // Remaining stack entries (e.g. prerequisites — boolean expressions)
+        for entry in self.stack {
+            if entry.num.is_none() && !entry.text.is_empty() {
+                parts.push(entry.text);
+            }
+        }
         Ok(parts.join(" | "))
     }
 }
@@ -350,8 +408,10 @@ pub(super) fn summarize_assignments(
 pub struct FeatureViewData {
     pub name: String,
     pub label: String,
+    pub category: String,
     pub description: String,
     pub languages: String,
+    pub prerequisites: String,
     pub assignments: String,
     pub spells: FeatureSpells,
     pub choices: Option<Vec<ChoiceFieldView>>,
@@ -365,6 +425,11 @@ pub fn collect_feature_views<'a>(
     let i18n = expect_context::<leptos_fluent::I18n>();
     features
         .map(|feat| {
+            let prerequisites = feat
+                .prerequisites
+                .as_ref()
+                .and_then(|p| p.run(AssignmentSummarizer::new(&i18n)).ok())
+                .unwrap_or_default();
             let assignments = feat
                 .assign
                 .as_deref()
@@ -373,8 +438,10 @@ pub fn collect_feature_views<'a>(
             FeatureViewData {
                 name: feat.name.clone(),
                 label: feat.label().to_string(),
+                category: i18n.tr(feat.category.tr_key()),
                 description: feat.description.clone(),
                 languages: feat.languages.join(", "),
+                prerequisites,
                 assignments,
                 spells: FeatureSpells::from_spell_list(
                     feat.spells.as_ref().map(|spells_def| &spells_def.list),
@@ -403,6 +470,12 @@ pub fn ReferenceFeaturesView(
                     view! {
                         <div class="reference-feature" id=id>
                             <h3>{feat.label}</h3>
+                            <p class="feature-prerequisites">
+                                {feat.category}
+                                {(!feat.prerequisites.is_empty()).then(|| view! {
+                                    {" · "}{move_tr!("ref-prerequisites")}{": "}{feat.prerequisites}
+                                })}
+                            </p>
                             <p>{feat.description}</p>
                             {(!feat.languages.is_empty()).then(|| view! {
                                 <p class="feature-languages">
@@ -484,6 +557,16 @@ pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldView>>) -> impl IntoVie
                                                         })}
                                                     {(!opt_desc.is_empty())
                                                         .then(|| view! { <p>{opt_desc}</p> })}
+                                                    {(!opt.effects.is_empty()).then(|| view! {
+                                                        <div class="spell-effects">
+                                                            {opt.effects.into_iter().map(|(name, expr)| view! {
+                                                                <div class="spell-effect">
+                                                                    <strong>{name}</strong>
+                                                                    <ExprView expr />
+                                                                </div>
+                                                            }).collect_view()}
+                                                        </div>
+                                                    })}
                                                 </div>
                                             }
                                         })

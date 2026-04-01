@@ -14,6 +14,7 @@ pub mod expr_args_input;
 pub mod expr_view;
 pub mod icon;
 pub mod language_switcher;
+pub mod loader;
 pub mod logo;
 pub mod menu_modal;
 pub mod modal;

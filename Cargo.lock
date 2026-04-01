@@ -452,6 +452,7 @@ dependencies = [
  "log",
  "postcard",
  "reactive_stores",
+ "regex",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

@@ -1,7 +1,7 @@
 /* --------------------- Open Props --------------------------- */
-@import "https://unpkg.com/open-props";
-@import "https://unpkg.com/open-props/normalize.min.css";
-@import "https://unpkg.com/open-props/buttons.min.css";
+@import "vendor/open-props/open-props.min";
+@import "vendor/open-props/normalize.min";
+@import "vendor/open-props/buttons.min";
 
 *,
 *::before,
@@ -2513,6 +2513,10 @@ select.entry-name {
     grid-template-columns: 1fr;
   }
 
+  .reference-layout:has(.reference-feature-page) {
+    gap: 0;
+  }
+
   .reference-nav-toggle {
     display: flex;
     align-items: center;
@@ -2596,11 +2600,20 @@ select.entry-name {
   top: 3rem;
   z-index: 10;
   background: var(--surface-1);
+  margin-top: -0.5rem;
+
+  padding: var(--size-2) 0;
 
   @media (max-width: 600px) {
     top: calc(var(--size-3) + 2rem);
   }
-  padding: var(--size-2) 0;
+
+  .reference-layout & {
+    @media (max-width: 768px) {
+      top: 5.3rem;
+      margin-top: 0;
+    }
+  }
 
   .reference-search {
     flex: 1;
@@ -2703,6 +2716,13 @@ select.entry-name {
   tbody tr:hover {
     background: var(--panel-border);
   }
+}
+
+.feature-prerequisites {
+  font-size: var(--font-size-0);
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .feature-assignments {
@@ -2865,10 +2885,22 @@ select.entry-name {
   font-style: italic;
 }
 
-.reference-loading {
-  color: var(--text-secondary);
-  font-style: italic;
-  padding: var(--size-3);
+.loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    width: 128px;
+    height: 128px;
+  }
+
+  .logo-gear {
+    transform-origin: 512px 512px;
+    animation: spin-gear 2s linear infinite;
+  }
 }
 
 /* --------------------- Sync Indicator ------------------------ */
