@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
+use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name};
 use crate::{
     BASE_URL,
     components::loader::Loader,
@@ -87,8 +87,9 @@ pub fn SpeciesReference() -> impl IntoView {
                         entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
+                            let href = format!("{BASE_URL}/r/species/{}", encode_name(&name));
                             view! {
-                                <A href=format!("{BASE_URL}/r/species/{name}") attr:class="reference-nav-item">
+                                <A href=href attr:class="reference-nav-item">
                                     {label}
                                 </A>
                             }
