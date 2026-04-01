@@ -132,14 +132,13 @@ pub fn CharacterHeader() -> impl IntoView {
         let new_level = classes.read()[class_idx].level + 1;
 
         let mut all_pending: Vec<PendingInputs> = Vec::new();
-        let (unapplied, apply_species, apply_background) = store.with_untracked(|character| {
+        let (apply_species, apply_background) = store.with_untracked(|character| {
             let class_level = &character.identity.classes[class_idx];
-            let unapplied: Vec<u32> = (1..=class_level.level)
-                .filter(|lvl| !class_level.applied_levels.contains(lvl))
-                .collect();
-            for &lvl in &unapplied {
-                all_pending.extend(registry.features_needing_args(character, class_idx, lvl));
-            }
+            all_pending.extend(
+                (1..=class_level.level)
+                    .filter(|lvl| !class_level.applied_levels.contains(lvl))
+                    .flat_map(|lvl| registry.features_needing_args(character, class_idx, lvl)),
+            );
 
             let apply_species = !character.identity.species_applied
                 && !character.identity.species.is_empty();
@@ -179,14 +178,13 @@ pub fn CharacterHeader() -> impl IntoView {
                 }
             }
 
-            (unapplied, apply_species, apply_background)
+            (apply_species, apply_background)
         });
         all_pending
             .extend(store.with_untracked(|character| {
                 registry.features_needing_args(character, class_idx, new_level)
             }));
 
-        let unapplied = StoredValue::new(unapplied);
         apply_modal(all_pending, move |inputs| {
             store.update(|character| {
                 if apply_species {
@@ -195,7 +193,8 @@ pub fn CharacterHeader() -> impl IntoView {
                 if apply_background {
                     registry.apply_background(character, inputs);
                 }
-                for &lvl in &*unapplied.read_value() {
+                // apply_class_level skips already-applied levels internally
+                for lvl in 1..new_level {
                     registry.apply_class_level(character, class_idx, lvl, inputs);
                 }
                 character.identity.classes[class_idx].level = new_level;
