@@ -132,7 +132,7 @@ pub fn CharacterHeader() -> impl IntoView {
         let new_level = classes.read()[class_idx].level + 1;
 
         let mut all_pending: Vec<PendingInputs> = Vec::new();
-        let unapplied: Vec<u32> = store.with_untracked(|character| {
+        let (unapplied, apply_species, apply_background) = store.with_untracked(|character| {
             let class_level = &character.identity.classes[class_idx];
             let unapplied: Vec<u32> = (1..=class_level.level)
                 .filter(|lvl| !class_level.applied_levels.contains(lvl))
@@ -140,7 +140,46 @@ pub fn CharacterHeader() -> impl IntoView {
             for &lvl in &unapplied {
                 all_pending.extend(registry.features_needing_args(character, class_idx, lvl));
             }
-            unapplied
+
+            let apply_species = !character.identity.species_applied
+                && !character.identity.species.is_empty();
+            if apply_species {
+                let source =
+                    FeatureSource::Species(character.identity.species.clone());
+                if let Some(pending) =
+                    registry.species().with(&character.identity.species, |def| {
+                        registry.pending_args_for_features(
+                            character,
+                            def.features.iter().map(String::as_str),
+                            &source,
+                        )
+                    })
+                {
+                    all_pending.extend(pending);
+                }
+            }
+
+            let apply_background = !character.identity.background_applied
+                && !character.identity.background.is_empty();
+            if apply_background {
+                let source =
+                    FeatureSource::Background(character.identity.background.clone());
+                if let Some(pending) =
+                    registry
+                        .backgrounds()
+                        .with(&character.identity.background, |def| {
+                            registry.pending_args_for_features(
+                                character,
+                                def.features.iter().map(String::as_str),
+                                &source,
+                            )
+                        })
+                {
+                    all_pending.extend(pending);
+                }
+            }
+
+            (unapplied, apply_species, apply_background)
         });
         all_pending
             .extend(store.with_untracked(|character| {
@@ -150,6 +189,12 @@ pub fn CharacterHeader() -> impl IntoView {
         let unapplied = StoredValue::new(unapplied);
         apply_modal(all_pending, move |inputs| {
             store.update(|character| {
+                if apply_species {
+                    registry.apply_species(character, inputs);
+                }
+                if apply_background {
+                    registry.apply_background(character, inputs);
+                }
                 for &lvl in &*unapplied.read_value() {
                     registry.apply_class_level(character, class_idx, lvl, inputs);
                 }
