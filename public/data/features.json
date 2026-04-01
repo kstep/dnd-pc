@@ -13957,30 +13957,10 @@
   },
   {
     "name": "Changeling Instincts",
-    "fields": [
+    "assign": [
       {
-        "name": "Skills",
-        "kind": "Choice",
-        "levels": {
-          "1": 2
-        },
-        "options": [
-          {
-            "name": "Deception"
-          },
-          {
-            "name": "Insight"
-          },
-          {
-            "name": "Intimidation"
-          },
-          {
-            "name": "Performance"
-          },
-          {
-            "name": "Persuasion"
-          }
-        ]
+        "when": "OnFeatureAdd",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 == 2, if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4))"
       }
     ]
   },
