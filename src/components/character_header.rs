@@ -129,18 +129,34 @@ pub fn CharacterHeader() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let level_up_class = move |class_idx: usize| {
-        store.update(|character| {
+        let new_level = classes.read()[class_idx].level + 1;
+
+        let mut all_pending: Vec<PendingInputs> = Vec::new();
+        let unapplied: Vec<u32> = store.with_untracked(|character| {
             let class_level = &character.identity.classes[class_idx];
             let unapplied: Vec<u32> = (1..=class_level.level)
                 .filter(|lvl| !class_level.applied_levels.contains(lvl))
                 .collect();
-            for lvl in unapplied {
-                registry.apply_class_level(character, class_idx, lvl, None);
+            for &lvl in &unapplied {
+                all_pending.extend(registry.features_needing_args(character, class_idx, lvl));
             }
+            unapplied
         });
-        let new_level = classes.read()[class_idx].level + 1;
-        classes.write()[class_idx].level = new_level;
-        apply_level(store, registry, class_idx, new_level);
+        all_pending
+            .extend(store.with_untracked(|character| {
+                registry.features_needing_args(character, class_idx, new_level)
+            }));
+
+        let unapplied = StoredValue::new(unapplied);
+        apply_modal(all_pending, move |inputs| {
+            store.update(|character| {
+                for &lvl in &*unapplied.read_value() {
+                    registry.apply_class_level(character, class_idx, lvl, inputs);
+                }
+                character.identity.classes[class_idx].level = new_level;
+                registry.apply_class_level(character, class_idx, new_level, inputs);
+            });
+        });
     };
 
     let on_level_up = move |_| {
