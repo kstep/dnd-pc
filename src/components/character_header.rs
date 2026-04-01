@@ -340,7 +340,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         <span class="computed-value">{total_level}</span>
                         <Show when=move || {
                             let cls = classes.read();
-                            cls.len() > 1 || cls.len() == 1 && !cls[0].class.is_empty()
+                            !cls.is_empty() && cls.iter().all(|cl| !cl.class.is_empty())
                         }>
                             <button
                                 class="btn-level-up"
