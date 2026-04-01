@@ -1541,7 +1541,7 @@
     "name": "Chemical Mastery",
     "assign": [
       {
-        "expr": "RESIST.ACID = 1; RESIST.POISON = 1; IMMUNE.POISON = 1",
+        "expr": "RESIST.ACID = 1; RESIST.POISON = 1",
         "when": "OnCompute"
       }
     ]
