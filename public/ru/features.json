@@ -7104,7 +7104,7 @@
     "description": "Повышение характеристик от предыстории."
   },
   "Languages (Aasimar)": {
-    "description": "Вы можете говорить, читать и писать на Common and Celestial."
+    "description": "Вы можете говорить, читать и писать на Общем и Небесном."
   },
   "Languages (Boggart)": {
     "description": "Вы можете говорить, читать и писать на Общем и Сильване."
@@ -7113,13 +7113,13 @@
     "description": "Вы можете говорить, читать и писать на Общем и Сильване."
   },
   "Languages (Dragonborn)": {
-    "description": "Вы можете говорить, читать и писать на Common and Draconic."
+    "description": "Вы можете говорить, читать и писать на Общем и Драконьем."
   },
   "Languages (Dwarf)": {
-    "description": "Вы можете говорить, читать и писать на Common and Dwarvish."
+    "description": "Вы можете говорить, читать и писать на Общем и Дварфийском."
   },
   "Languages (Elf)": {
-    "description": "Вы можете говорить, читать и писать на Common and Elvish."
+    "description": "Вы можете говорить, читать и писать на Общем и Эльфийском."
   },
   "Languages (Faerie)": {
     "description": "Вы можете говорить, читать и писать на Общем и Сильване."
@@ -7128,16 +7128,16 @@
     "description": "Вы можете говорить, читать и писать на Общем и Первичном."
   },
   "Languages (Gnome)": {
-    "description": "Вы можете говорить, читать и писать на Common and Gnomish."
+    "description": "Вы можете говорить, читать и писать на Общем и Гномьем."
   },
   "Languages (Goliath)": {
-    "description": "Вы можете говорить, читать и писать на Common and Giant."
+    "description": "Вы можете говорить, читать и писать на Общем и Великаньем."
   },
   "Languages (Halfling)": {
-    "description": "Вы можете говорить, читать и писать на Common and Halfling."
+    "description": "Вы можете говорить, читать и писать на Общем и языке Полуросликов."
   },
   "Languages (Human)": {
-    "description": "Вы можете говорить, читать и писать на Common."
+    "description": "Вы можете говорить, читать и писать на Общем."
   },
   "Languages (Kalashtar)": {
     "description": "Вы можете говорить, читать и писать на Общем и Кори."
@@ -7146,19 +7146,19 @@
     "description": "Вы можете говорить, читать и писать на Общем и Сильване."
   },
   "Languages (Orc)": {
-    "description": "Вы можете говорить, читать и писать на Common and Orc."
+    "description": "Вы можете говорить, читать и писать на Общем и Орочьем."
   },
   "Languages (Rimekin)": {
     "description": "Вы можете говорить, читать и писать на Общем и Первичном."
   },
   "Languages (Tiefling (Abyssal))": {
-    "description": "Вы можете говорить, читать и писать на Common and Abyssal."
+    "description": "Вы можете говорить, читать и писать на Общем и Бездном."
   },
   "Languages (Tiefling (Chthonic))": {
-    "description": "Вы можете говорить, читать и писать на Common and Sylvan."
+    "description": "Вы можете говорить, читать и писать на Общем и Сильване."
   },
   "Languages (Tiefling)": {
-    "description": "Вы можете говорить, читать и писать на Common and Infernal."
+    "description": "Вы можете говорить, читать и писать на Общем и Инфернальном."
   },
   "Changeling Instincts": {
     "description": "Благодаря связи с царством фей вы получаете владение двумя навыками на выбор: Обман, Проницательность, Запугивание, Выступление или Убеждение."
