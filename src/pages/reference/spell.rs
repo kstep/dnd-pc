@@ -8,7 +8,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::ReferenceSidebar;
 use crate::{
     BASE_URL,
-    components::{expr_view::ExprView, loader::Loader},
+    components::{expr_view::ExprView, spinner::Spinner},
     expr::Expr,
     model::Attribute,
     rules::{RulesRegistry, SpellList},
@@ -158,12 +158,19 @@ pub fn SpellReference() -> impl IntoView {
                 }
                 .into_any()
             })
-            .unwrap_or_else(|| {
-                view! { <Loader /> }.into_any()
-            })
+            .unwrap_or_else(|| ().into_any())
     };
 
+    let loading = Signal::derive(move || {
+        let name = list_name();
+        !name.is_empty()
+            && registry
+                .with_spell_list_tracked(&SpellList::ref_path(&name), |_| ())
+                .is_none()
+    });
+
     view! {
+        <Spinner loading />
         <Title text=Signal::derive(move || i18n.tr("ref-spells")) />
         <div class="reference-page">
             <div class="reference-layout">

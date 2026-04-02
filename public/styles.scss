@@ -2885,12 +2885,13 @@ select.entry-name {
   font-style: italic;
 }
 
-.loader {
+.spinner {
   position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   svg {
     width: 128px;
@@ -2901,6 +2902,24 @@ select.entry-name {
     transform-origin: 512px 512px;
     animation: spin-gear 2s linear infinite;
   }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.fade-out {
+  animation: fade-out 0.5s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* --------------------- Sync Indicator ------------------------ */

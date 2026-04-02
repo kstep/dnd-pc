@@ -6,7 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    components::loader::Loader,
+    components::spinner::Spinner,
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -36,25 +36,24 @@ pub fn BackgroundReference() -> impl IntoView {
         let name = bg_name();
 
         if name.is_empty() {
-            return view! {
-                <div class="reference-empty">
-                    <p>{move_tr!("ref-select-background")}</p>
-                </div>
-            }
-            .into_any();
+            return Some(
+                view! {
+                    <div class="reference-empty">
+                        <p>{move_tr!("ref-select-background")}</p>
+                    </div>
+                }
+                .into_any(),
+            );
         }
 
-        let Some((title, description, feature_names)) =
+        let (title, description, feature_names) =
             registry.backgrounds().with_tracked(&name, |def| {
                 (
                     def.label().to_string(),
                     def.description.clone(),
                     def.features.clone(),
                 )
-            })
-        else {
-            return view! { <Loader /> }.into_any();
-        };
+            })?;
 
         let features = registry.with_features_index(|features_index| {
             let iter = feature_names
@@ -63,22 +62,30 @@ pub fn BackgroundReference() -> impl IntoView {
             collect_feature_views(iter)
         });
 
-        view! {
-            <Title text=title.clone() />
-            <div class="reference-detail">
-                <h1>{title}</h1>
-                <p class="reference-description">{description}</p>
+        Some(
+            view! {
+                <Title text=title.clone() />
+                <div class="reference-detail">
+                    <h1>{title}</h1>
+                    <p class="reference-description">{description}</p>
 
-                {(!features.is_empty()).then(|| view! {
-                    <h2>{move_tr!("ref-features")}</h2>
-                    <ReferenceFeaturesView features />
-                })}
-            </div>
-        }
-        .into_any()
+                    {(!features.is_empty()).then(|| view! {
+                        <h2>{move_tr!("ref-features")}</h2>
+                        <ReferenceFeaturesView features />
+                    })}
+                </div>
+            }
+            .into_any(),
+        )
     };
 
+    let loading = Signal::derive(move || {
+        let name = bg_name();
+        !name.is_empty() && registry.backgrounds().with_tracked(&name, |_| ()).is_none()
+    });
+
     view! {
+        <Spinner loading />
         <Title text=Signal::derive(move || i18n.tr("ref-backgrounds")) />
         <div class="reference-page">
             <div class="reference-layout">

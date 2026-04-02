@@ -6,7 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name};
 use crate::{
     BASE_URL,
-    components::loader::Loader,
+    components::spinner::Spinner,
     hooks::use_hash_href,
     model::{format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
@@ -365,12 +365,16 @@ pub fn ClassReference() -> impl IntoView {
                 }
                 .into_any()
             })
-            .unwrap_or_else(|| {
-                view! { <Loader /> }.into_any()
-            })
+            .unwrap_or_else(|| ().into_any())
     };
 
+    let loading = Signal::derive(move || {
+        let name = class_name();
+        !name.is_empty() && registry.classes().with_tracked(&name, |_| ()).is_none()
+    });
+
     view! {
+        <Spinner loading />
         <Title text=Signal::derive(move || i18n.tr("ref-classes")) />
         <div class="reference-page">
             <div class="reference-layout">
