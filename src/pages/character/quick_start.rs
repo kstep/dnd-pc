@@ -1,7 +1,10 @@
-use leptos::prelude::*;
+use std::time::Duration;
+
+use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
+use uuid::Uuid;
 
 use crate::{
     components::{
@@ -59,7 +62,7 @@ pub fn QuickStart() -> impl IntoView {
     };
 
     let on_skip = move |_| {
-        navigate_to_sheet(store);
+        navigate_to_sheet(store.read_untracked().id);
     };
 
     view! {
@@ -215,13 +218,15 @@ fn create_character(
             apply_new_features(fi, character, pending, Some(inputs));
             character.combat.hp_current = character.hp_max();
 
-            navigate_to_sheet(store);
+            navigate_to_sheet(character.id);
         },
     );
 }
 
-fn navigate_to_sheet(store: Store<Character>) {
-    let id = store.read_untracked().id;
+fn navigate_to_sheet(id: Uuid) {
     let navigate = use_navigate();
-    navigate(&format!("/c/{id}"), Default::default());
+    set_timeout(
+        move || navigate(&format!("/c/{id}"), Default::default()),
+        Duration::ZERO,
+    );
 }
