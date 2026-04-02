@@ -18,6 +18,9 @@ pub fn EntityField(
     /// Placeholder text.
     #[prop(into)]
     placeholder: Signal<String>,
+    /// Whether the input is required for form validation.
+    #[prop(optional)]
+    required: bool,
     /// Called with the resolved name when the user makes a selection.
     on_input: impl Fn(String) + Send + Sync + 'static,
 ) -> impl IntoView {
@@ -35,6 +38,7 @@ pub fn EntityField(
         <DatalistInput
             value=display
             placeholder=placeholder
+            required=required
             options=options
             ref_href=move || {
                 let key = name.get();

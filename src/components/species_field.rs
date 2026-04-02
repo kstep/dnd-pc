@@ -35,6 +35,7 @@ pub fn SpeciesField() -> impl IntoView {
             name=move || store.identity().species().get()
             options=options
             ref_prefix="species"
+            required=true
             placeholder=move_tr!("species")
             on_input=move |name: String| {
                 let old = store.identity().species().get_untracked();

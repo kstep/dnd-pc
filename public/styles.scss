@@ -251,10 +251,11 @@ html {
 }
 
 /* --------------------- Base ---------------------------------- */
-button {
+button, a.btn-link {
   --btn-bg: var(--panel-bg);
   --btn-color: var(--text-primary);
 
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -291,6 +292,16 @@ button {
   &.btn-icon {
     padding: var(--size-1);
   }
+}
+
+input:user-invalid {
+  border-color: var(--danger);
+}
+
+form:invalid button[type="submit"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 body {
@@ -475,7 +486,14 @@ input[type="checkbox"] {
 .quick-start-actions {
   display: flex;
   justify-content: center;
+  align-items: stretch;
+  gap: var(--size-2);
+
+  .btn-primary {
+    margin-top: 0;
+  }
 }
+
 
 /* --------------------- Character List Page ------------------- */
 .character-list-page {
@@ -2005,11 +2023,6 @@ select.entry-name {
   display: contents;
 }
 
-:has(input:invalid)>.btn-icon:not(.dice-pool-roll-all),
-:has(input:invalid)>.btn-container>.btn-icon {
-  opacity: 0.3;
-  pointer-events: none;
-}
 
 .summary-hp-box {
   grid-column: span 2;

@@ -35,6 +35,7 @@ pub fn BackgroundField() -> impl IntoView {
             name=move || store.identity().background().get()
             options=options
             ref_prefix="background"
+            required=true
             placeholder=move_tr!("background")
             on_input=move |name: String| {
                 let old = store.identity().background().get_untracked();

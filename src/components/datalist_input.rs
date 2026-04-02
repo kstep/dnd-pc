@@ -44,6 +44,9 @@ pub fn DatalistInput(
     /// shown below.
     #[prop(into)]
     options: Signal<Vec<(String, String, String)>>,
+    /// Whether the input is required for form validation.
+    #[prop(optional)]
+    required: bool,
     /// Called with `(input_text, resolved_name)` on each input event.
     /// `resolved_name` is `Some(name)` if the input matches an option's label
     /// or name.
@@ -96,6 +99,7 @@ pub fn DatalistInput(
             // datalist), so it works even after the datalist options are cleared.
             <input
                 type="text"
+                required=required
                 list=format!("datalist-{id}")
                 placeholder=move || placeholder.get()
                 prop:value=move || display_value.get()

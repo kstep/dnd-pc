@@ -58,6 +58,7 @@ pub fn ClassField() -> impl IntoView {
             name=class_key
             options=options
             ref_prefix="class"
+            required=true
             placeholder=move_tr!("class")
             on_input=move |input: String| {
                 // EntityField resolves label→name, but class needs split_resolved

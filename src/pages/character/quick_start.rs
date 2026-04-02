@@ -7,6 +7,7 @@ use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
+    BASE_URL,
     components::{
         background_field::BackgroundField, character_header::apply_with_modal,
         class_field::ClassField, icon::Icon, species_field::SpeciesField,
@@ -61,12 +62,13 @@ pub fn QuickStart() -> impl IntoView {
         create_character(store, registry, generation_method);
     };
 
-    let on_skip = move |_| {
-        navigate_to_sheet(store.read_untracked().id);
-    };
+    let skip_href = format!("{BASE_URL}/c/{}", store.read_untracked().id);
 
     view! {
-        <div class="quick-start-page">
+        <form class="quick-start-page" on:submit=move |event| {
+            event.prevent_default();
+            on_create(event);
+        }>
             <h2>{move_tr!("quick-start-title")}</h2>
 
             <div class="quick-start-section">
@@ -74,6 +76,7 @@ pub fn QuickStart() -> impl IntoView {
                 <div class="entity-input-row">
                     <input
                         type="text"
+                        required
                         autofocus
                         prop:value=move || store.identity().name().get()
                         on:input=move |event| {
@@ -141,14 +144,14 @@ pub fn QuickStart() -> impl IntoView {
             </div>
 
             <div class="quick-start-actions">
-                <button class="btn-primary" on:click=on_create>
+                <button type="submit" class="btn-primary">
                     {move_tr!("quick-start-create")}
                 </button>
-                <button on:click=on_skip>
+                <a class="btn-link" href=skip_href>
                     {move_tr!("quick-start-skip")}
-                </button>
+                </a>
             </div>
-        </div>
+        </form>
     }
 }
 
