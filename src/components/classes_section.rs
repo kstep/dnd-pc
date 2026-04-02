@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 
-use super::character_header::{apply_level, split_resolved};
+use super::character_header::{apply_single_level, split_resolved};
 use crate::{
     BASE_URL,
     components::{datalist_input::DatalistInput, icon::Icon},
@@ -245,7 +245,7 @@ pub fn ClassesSection() -> impl IntoView {
                                                         class="btn-apply-level"
                                                         title=title
                                                         on:click=move |_| {
-                                                            apply_level(store, registry, i, lvl);
+                                                            apply_single_level(store, registry, i, lvl);
                                                         }
                                                     >
                                                         <Icon name="arrow-up" size=14 />

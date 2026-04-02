@@ -1,4 +1,4 @@
-mod apply;
+pub mod apply;
 pub use apply::{ApplyInputs, PendingInputs};
 pub mod background;
 mod cache;

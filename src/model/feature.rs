@@ -215,6 +215,15 @@ impl Features {
         features.sort_by_key(|(_, source)| source.added_at_level());
         features
     }
+
+    /// Look up stored inputs for a feature by name.
+    pub fn get_inputs(&self, name: &str) -> &[AssignInputs] {
+        self.0
+            .iter()
+            .find(|f| f.name == name)
+            .map(|f| f.inputs.as_slice())
+            .unwrap_or_default()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

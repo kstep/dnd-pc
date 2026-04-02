@@ -2,16 +2,18 @@ use std::collections::BTreeMap;
 
 use leptos::prelude::*;
 
-use super::{
-    ReplaceWith, WhenCondition,
-    feature::FeatureDefinition,
-    resolve::{find_feature, find_feature_with_class_level},
-    spells::SpellList,
-};
 use crate::{
     expr::Expr,
     model::{AssignInputs, Attribute, Character, Context, FeatureSource, FeatureValue},
-    rules::RulesRegistry,
+    rules::{
+        DefinitionStore, ReplaceWith, RulesRegistry, WhenCondition,
+        background::BackgroundDefinition,
+        class::ClassDefinition,
+        feature::FeatureDefinition,
+        resolve::{find_feature, find_feature_with_class_level},
+        species::SpeciesDefinition,
+        spells::SpellList,
+    },
 };
 
 /// Bundled user inputs from the args/dice modal, keyed by feature name.
@@ -53,39 +55,330 @@ impl PendingInputs {
     }
 }
 
-/// Try to apply a replacement for `feat_name`. Returns `true` if a
-/// replacement was found and applied (caller should skip the original).
-fn try_apply_replacement(
+/// A feature pending application. Owned and cheap — survives move closure
+/// boundaries (modal callbacks). Produced by collect functions, consumed by
+/// apply primitives.
+#[derive(Clone)]
+pub struct PendingFeature {
+    pub name: String,
+    pub source: FeatureSource,
+    pub level: u32,
+}
+
+impl PendingFeature {
+    /// Bridge to PendingInputs for the modal UI. Returns Some if this
+    /// feature needs user interaction (ARG values, dice rolls, or is
+    /// replaceable).
+    pub fn pending_inputs(
+        &self,
+        feat_def: &FeatureDefinition,
+        character: &Character,
+    ) -> Option<PendingInputs> {
+        let exprs = feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, character);
+        if exprs.is_empty() && !feat_def.is_replaceable() {
+            return None;
+        }
+        Some(PendingInputs {
+            feature_name: self.name.clone(),
+            feature_label: feat_def.label().to_string(),
+            feature_description: feat_def.description.clone(),
+            exprs,
+            replace_with: feat_def.replace_with,
+            source: self.source.clone(),
+        })
+    }
+}
+
+// ── Collect functions ────────────────────────────────────────────────
+
+/// Collect new features for a class level-up from class + subclass level rules.
+/// Filters out already-applied features via dedup check.
+pub fn collect_class_features<'a>(
+    character: &'a Character,
+    class_idx: usize,
+    level: u32,
+    class_def: &'a ClassDefinition,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+) -> impl Iterator<Item = PendingFeature> + 'a {
+    let class_level = &character.identity.classes[class_idx];
+    let source = FeatureSource::Class(class_def.name.clone(), level);
+
+    let rules = class_def.levels.get(level as usize - 1);
+    let subclass_rules = class_level
+        .subclass
+        .as_deref()
+        .and_then(|sc| class_def.subclasses.get(sc))
+        .and_then(|sc| sc.levels.get(&level));
+
+    let filter_source = source.clone();
+    rules
+        .into_iter()
+        .flat_map(|r| r.features.iter())
+        .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()))
+        .filter(move |feat_name| {
+            features_index.get(feat_name.as_str()).is_none_or(|feat| {
+                !character
+                    .features
+                    .contains(&feat.name, feat.stackable, &filter_source)
+            })
+        })
+        .map(move |feat_name| PendingFeature {
+            name: feat_name.clone(),
+            source: source.clone(),
+            level,
+        })
+}
+
+/// Collect features from a species definition.
+pub fn collect_species_features<'a>(
+    character: &'a Character,
+    species_def: &'a SpeciesDefinition,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+) -> impl Iterator<Item = PendingFeature> + 'a {
+    let total_level = character.level().max(1);
+    let source = FeatureSource::Species(character.identity.species.clone());
+    let filter_source = source.clone();
+    species_def
+        .features
+        .iter()
+        .filter(move |feat_name| {
+            features_index.get(feat_name.as_str()).is_none_or(|feat| {
+                !character
+                    .features
+                    .contains(&feat.name, feat.stackable, &filter_source)
+            })
+        })
+        .map(move |feat_name| PendingFeature {
+            name: feat_name.clone(),
+            source: source.clone(),
+            level: total_level,
+        })
+}
+
+/// Collect features from a background definition.
+pub fn collect_background_features<'a>(
+    character: &'a Character,
+    bg_def: &'a BackgroundDefinition,
+    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+) -> impl Iterator<Item = PendingFeature> + 'a {
+    let total_level = character.level().max(1);
+    let source = FeatureSource::Background(character.identity.background.clone());
+    let filter_source = source.clone();
+    bg_def
+        .features
+        .iter()
+        .filter(move |feat_name| {
+            features_index.get(feat_name.as_str()).is_none_or(|feat| {
+                !character
+                    .features
+                    .contains(&feat.name, feat.stackable, &filter_source)
+            })
+        })
+        .map(move |feat_name| PendingFeature {
+            name: feat_name.clone(),
+            source: source.clone(),
+            level: total_level,
+        })
+}
+
+/// Collect all unapplied features: species (if not applied), background
+/// (if not applied), and class features for unapplied levels.
+pub fn collect_pending_features(
+    character: &Character,
+    registry: &RulesRegistry,
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+) -> Vec<PendingFeature> {
+    let species_cache = registry.species().cache().read_untracked();
+    let bg_cache = registry.backgrounds().cache().read_untracked();
+    let class_cache = registry.classes().cache().read_untracked();
+
+    let species_iter = species_cache
+        .get(character.identity.species.as_str())
+        .filter(|_| !character.identity.species.is_empty() && !character.identity.species_applied)
+        .into_iter()
+        .flat_map(|species_def| collect_species_features(character, species_def, features_index));
+
+    let bg_iter = bg_cache
+        .get(character.identity.background.as_str())
+        .filter(|_| {
+            !character.identity.background.is_empty() && !character.identity.background_applied
+        })
+        .into_iter()
+        .flat_map(|bg_def| collect_background_features(character, bg_def, features_index));
+
+    let class_iter =
+        character
+            .identity
+            .classes
+            .iter()
+            .enumerate()
+            .flat_map(|(idx, class_level)| {
+                let unapplied: Vec<u32> = (1..=class_level.level)
+                    .filter(|lvl| !class_level.applied_levels.contains(lvl))
+                    .collect();
+                let class_def = class_cache.get(class_level.class.as_str());
+                unapplied.into_iter().flat_map(move |lvl| {
+                    class_def.into_iter().flat_map(move |def| {
+                        collect_class_features(character, idx, lvl, def, features_index)
+                    })
+                })
+            });
+
+    species_iter.chain(bg_iter).chain(class_iter).collect()
+}
+
+// ── Apply primitives ─────────────────────────────────────────────────
+
+/// Resolve replacement choices from modal inputs. For each pending feature
+/// that has a replacement mapping, swap it with the replacement feature.
+pub fn resolve_replacements(
+    pending: &[PendingFeature],
+    replacements: &BTreeMap<String, String>,
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+) -> Vec<PendingFeature> {
+    if replacements.is_empty() {
+        return pending.to_vec();
+    }
+    pending
+        .iter()
+        .map(|pending_feature| {
+            if let Some(replacement_name) = replacements.get(&pending_feature.name) {
+                if features_index.contains_key(replacement_name.as_str()) {
+                    PendingFeature {
+                        name: replacement_name.clone(),
+                        source: pending_feature.source.clone(),
+                        level: pending_feature.level,
+                    }
+                } else {
+                    log::warn!("Replacement feature '{replacement_name}' not found in index");
+                    pending_feature.clone()
+                }
+            } else {
+                pending_feature.clone()
+            }
+        })
+        .collect()
+}
+
+/// Add features to character.features and call feat.apply(OnFeatureAdd).
+/// Looks up definitions from features_index by name.
+pub fn apply_new_features(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     character: &mut Character,
-    feat_name: &str,
-    replacements: Option<&BTreeMap<String, String>>,
+    pending: &[PendingFeature],
     inputs: Option<&ApplyInputs>,
-    source: &FeatureSource,
-    level: u32,
-) -> bool {
-    let Some(replacement_name) = replacements.and_then(|r| r.get(feat_name)) else {
-        return false;
-    };
-    if let Some(replacement_feat) = features_index.get(replacement_name.as_str()) {
-        let feature_inputs = inputs.map(|i| i.get(replacement_name)).unwrap_or_default();
+) {
+    for pending_feature in pending {
+        let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+            log::warn!("Feature '{}' not found in index", pending_feature.name);
+            continue;
+        };
+        if character
+            .features
+            .contains(&feat_def.name, feat_def.stackable, &pending_feature.source)
+        {
+            continue;
+        }
+        let feature_inputs = inputs
+            .map(|i| i.get(&pending_feature.name))
+            .unwrap_or_default();
         character.features.add(
-            replacement_name,
-            replacement_feat.label.clone(),
-            replacement_feat.description.clone(),
-            source.clone(),
+            &pending_feature.name,
+            feat_def.label.clone(),
+            feat_def.description.clone(),
+            pending_feature.source.clone(),
             feature_inputs.to_vec(),
         );
-        replacement_feat.apply(
-            level,
+        feat_def.apply(
+            pending_feature.level,
             character,
             WhenCondition::OnFeatureAdd,
             feature_inputs,
         );
-    } else {
-        log::warn!("Replacement feature '{replacement_name}' not found in index");
     }
-    true
+}
+
+/// Re-apply OnLevelUp for all currently applied features at their appropriate
+/// level. Class features use their class's current level;
+/// species/background/user features use total character level.
+pub fn reapply_existing(
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &mut Character,
+) {
+    let applied: Vec<(String, FeatureSource)> = character
+        .features
+        .iter()
+        .filter(|f| f.applied)
+        .map(|f| (f.name.clone(), f.source.clone()))
+        .collect();
+    for (feat_name, source) in &applied {
+        if let Some(feat_def) = features_index.get(feat_name.as_str()) {
+            let level = character.effective_level_for(source);
+            feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
+        }
+    }
+}
+
+/// Replay: reset derived state and re-apply all features from stored data.
+/// `pending` should be sorted by `added_at_level`. `inputs` supplies
+/// supplemental ARG values for features that lack stored inputs.
+pub fn replay(
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &mut Character,
+    pending: &[PendingFeature],
+    inputs: &ApplyInputs,
+) {
+    character.reset_computed();
+
+    // Phase 1: OnFeatureAdd at added_at_level.
+    // Collect stored inputs upfront to avoid borrow conflict with
+    // def.apply() which takes &mut Character.
+    let stored_inputs: Vec<_> = pending
+        .iter()
+        .map(|pending_feature| {
+            character
+                .features
+                .get_inputs(&pending_feature.name)
+                .to_vec()
+        })
+        .collect();
+    for (pending_feature, stored) in pending.iter().zip(&stored_inputs) {
+        let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+            continue;
+        };
+        let feature_inputs = if stored.is_empty() {
+            inputs.get(&pending_feature.name)
+        } else {
+            stored.as_slice()
+        };
+        feat_def.apply(
+            pending_feature.level,
+            character,
+            WhenCondition::OnFeatureAdd,
+            feature_inputs,
+        );
+    }
+
+    // Persist supplemental inputs back to Feature entries
+    for feature in character.features.iter_mut() {
+        if feature.inputs.is_empty() {
+            let supp = inputs.get(&feature.name);
+            if !supp.is_empty() {
+                feature.inputs = supp.to_vec();
+            }
+        }
+    }
+
+    // Phase 2: OnLevelUp through intermediate levels
+    for pending_feature in pending {
+        let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+            continue;
+        };
+        let effective = character.effective_level_for(&pending_feature.source);
+        for level in (pending_feature.level + 1)..=effective {
+            feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
+        }
+    }
 }
 
 impl RulesRegistry {
@@ -97,111 +390,6 @@ impl RulesRegistry {
     pub fn short_rest(&self, character: &mut Character) {
         character.short_rest();
         self.assign(character, WhenCondition::OnShortRest);
-    }
-
-    /// Scan features that would be replayed and return those whose
-    /// `OnFeatureAdd` assignments need user interaction but lack stored inputs.
-    pub fn features_needing_args_for_replay(&self, character: &Character) -> Vec<PendingInputs> {
-        self.with_features_index_untracked(|features_index| {
-            character
-                .features
-                .iter()
-                .filter(|feature| feature.inputs.is_empty())
-                .filter_map(|feature| {
-                    let feat_def = features_index.get(feature.name.as_str())?;
-                    let exprs = feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-                    (!exprs.is_empty()).then_some(PendingInputs {
-                        feature_name: feature.name.clone(),
-                        feature_label: feat_def.label().to_string(),
-                        feature_description: feat_def.description.clone(),
-                        exprs,
-                        replace_with: ReplaceWith::None,
-                        source: feature.source.clone(),
-                    })
-                })
-                .collect()
-        })
-    }
-
-    /// Reset derived state and re-apply all features using their stored source
-    /// info, reusing previously stored ARG values and dice rolls.
-    /// When `supplemental` is provided, it supplies inputs for features that
-    /// lack stored args (collected from the args modal beforehand).
-    // Note: feature replacements are transparent to replay — the replacement
-    // feat's name is stored in character.features, so replay re-applies it
-    // directly. The original-to-replacement mapping is not preserved.
-    pub fn replay(&self, character: &mut Character, supplemental: Option<&ApplyInputs>) {
-        // Collect features with inputs before reset (owned copies since we
-        // mutate character in the loop). Inputs live on Feature entries and
-        // survive reset_computed, but we need owned copies for the borrow.
-        let mut features: Vec<(String, FeatureSource, Vec<AssignInputs>)> = character
-            .features
-            .iter()
-            .map(|feature| {
-                (
-                    feature.name.clone(),
-                    feature.source.clone(),
-                    feature.inputs.clone(),
-                )
-            })
-            .collect();
-        features.sort_by_key(|(_, source, _)| source.added_at_level());
-
-        character.reset_computed();
-
-        self.with_features_index_untracked(|features_index| {
-            // Phase 1: Apply each feature at its added_at_level (OnFeatureAdd)
-            for (feat_name, source, inputs) in &features {
-                let Some(feat_def) = features_index.get(feat_name.as_str()) else {
-                    continue;
-                };
-                let added_at = source.added_at_level();
-                // Fall back to supplemental inputs when stored ones are missing
-                let inputs = if inputs.is_empty() {
-                    supplemental.map(|s| s.get(feat_name)).unwrap_or_default()
-                } else {
-                    inputs.as_slice()
-                };
-                feat_def.apply(added_at, character, WhenCondition::OnFeatureAdd, inputs);
-            }
-
-            // Persist supplemental inputs back to Feature entries
-            if let Some(supplemental) = supplemental {
-                for feature in character.features.iter_mut() {
-                    if feature.inputs.is_empty() {
-                        let supp = supplemental.get(&feature.name);
-                        if !supp.is_empty() {
-                            feature.inputs = supp.to_vec();
-                        }
-                    }
-                }
-            }
-
-            // Phase 2: Re-apply each feature through intermediate levels
-            // (OnLevelUp) for spell slot progression, field scaling, etc.
-            for (feat_name, source, _) in &features {
-                let Some(feat_def) = features_index.get(feat_name.as_str()) else {
-                    continue;
-                };
-                let added_at = source.added_at_level();
-                let effective_level = match source {
-                    FeatureSource::Class(class_name, _) => character
-                        .identity
-                        .classes
-                        .iter()
-                        .find(|cl| cl.class == *class_name)
-                        .map_or(0, |cl| cl.level),
-                    FeatureSource::Species(_)
-                    | FeatureSource::Background(_)
-                    | FeatureSource::User(_) => character.level(),
-                };
-                for level in (added_at + 1)..=effective_level {
-                    feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
-                }
-            }
-        });
-
-        self.compute(character);
     }
 
     pub fn compute(&self, character: &mut Character) {
@@ -361,228 +549,6 @@ impl RulesRegistry {
         });
     }
 
-    /// Apply class level-up logic. Handles saving throws, proficiencies,
-    /// spell slots, class/species/background features, and HP. Optional
-    /// `inputs` passes user-supplied ARG values and dice pools to features.
-    pub fn apply_class_level(
-        &self,
-        character: &mut Character,
-        class_idx: usize,
-        level: u32,
-        inputs: Option<&ApplyInputs>,
-    ) {
-        let Some(class_level) = character.identity.classes.get_mut(class_idx) else {
-            return;
-        };
-
-        if class_level.applied_levels.contains(&level) {
-            return;
-        }
-
-        let class_cache = self.class_cache.read_untracked();
-        let Some(def) = class_cache.get(class_level.class.as_str()) else {
-            return;
-        };
-
-        class_level.applied_levels.insert(level);
-        let subclass = class_level.subclass.clone();
-        let source = FeatureSource::Class(def.name.clone(), level);
-        class_level.hit_die_sides = def.hit_die;
-
-        let rules = def.levels.get(level as usize - 1);
-        let subclass_rules = subclass
-            .as_deref()
-            .and_then(|sc| def.subclasses.get(sc))
-            .and_then(|sc| sc.levels.get(&level));
-
-        let features_guard = self.features_index.read_untracked();
-        let Some(features_index) = features_guard
-            .as_ref()
-            .and_then(|r| r.as_ref().ok())
-            .map(|idx| &idx.0)
-        else {
-            log::warn!("Features index not loaded yet, skipping level-up");
-            character.identity.classes[class_idx]
-                .applied_levels
-                .remove(&level);
-            return;
-        };
-
-        // Re-apply already applied features at new level (OnLevelUp)
-        let applied: Vec<String> = character
-            .features
-            .iter()
-            .filter(|f| f.applied)
-            .map(|f| f.name.clone())
-            .collect();
-        for feat_name in &applied {
-            if let Some(feat) = features_index.get(feat_name.as_str()) {
-                feat.apply(level, character, WhenCondition::OnLevelUp, &[]);
-            }
-        }
-
-        // New features at this level (OnFeatureAdd)
-        let level_features = rules
-            .into_iter()
-            .flat_map(|r| r.features.iter())
-            .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
-
-        let replacements = inputs.map(|i| &i.replacements).filter(|r| !r.is_empty());
-        for feat_name in level_features {
-            if try_apply_replacement(
-                features_index,
-                character,
-                feat_name,
-                replacements,
-                inputs,
-                &source,
-                level,
-            ) {
-                continue;
-            }
-
-            let Some(feat) = features_index.get(feat_name.as_str()) else {
-                log::warn!("Feature '{feat_name}' not found in index");
-                continue;
-            };
-            if character
-                .features
-                .contains(&feat.name, feat.stackable, &source)
-            {
-                continue;
-            }
-            let feature_inputs = inputs.map(|i| i.get(feat_name)).unwrap_or_default();
-            character.features.add(
-                feat_name,
-                feat.label.clone(),
-                feat.description.clone(),
-                source.clone(),
-                feature_inputs.to_vec(),
-            );
-            feat.apply(
-                level,
-                character,
-                WhenCondition::OnFeatureAdd,
-                feature_inputs,
-            );
-        }
-
-        // Re-apply species and background features at new total level
-        let total_level = character.level();
-
-        let species_cache = self.species_cache.read_untracked();
-        if let Some(species_def) = species_cache.get(character.identity.species.as_str()) {
-            for feat_name in &species_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, WhenCondition::OnLevelUp, &[]);
-                }
-            }
-        }
-
-        let bg_cache = self.background_cache.read_untracked();
-        if let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) {
-            for feat_name in &bg_def.features {
-                if let Some(feat) = features_index.get(feat_name.as_str()) {
-                    feat.apply(total_level, character, WhenCondition::OnLevelUp, &[]);
-                }
-            }
-        }
-
-        let old_hp_max = character.hp_max();
-        self.compute(character);
-        let hp_delta = character.hp_max().saturating_sub(old_hp_max);
-        character.combat.hp_current += hp_delta;
-
-        let xp_threshold = character.xp_threshold();
-        if character.identity.experience_points < xp_threshold {
-            character.identity.experience_points = xp_threshold;
-        }
-    }
-
-    /// Scan features that would be applied at a given class level and return
-    /// those whose assignments require user interaction (ARG values or dice).
-    pub fn features_needing_args(
-        &self,
-        character: &Character,
-        class_idx: usize,
-        level: u32,
-    ) -> Vec<PendingInputs> {
-        let Some(class_level) = character.identity.classes.get(class_idx) else {
-            return Vec::new();
-        };
-
-        let class_cache = self.class_cache.read_untracked();
-        let Some(def) = class_cache.get(class_level.class.as_str()) else {
-            return Vec::new();
-        };
-
-        let rules = def.levels.get(level as usize - 1);
-        let subclass_rules = class_level
-            .subclass
-            .as_deref()
-            .and_then(|sc| def.subclasses.get(sc))
-            .and_then(|sc| sc.levels.get(&level));
-
-        let mut result = Vec::new();
-        self.with_features_index_untracked(|features_index| {
-            // New features at this level → OnFeatureAdd
-            let level_features = rules
-                .into_iter()
-                .flat_map(|r| r.features.iter())
-                .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()));
-
-            let source = FeatureSource::Class(def.name.clone(), level);
-            for feat_name in level_features {
-                let Some(feat) = features_index.get(feat_name.as_str()) else {
-                    continue;
-                };
-                if character
-                    .features
-                    .contains(&feat.name, feat.stackable, &source)
-                {
-                    continue;
-                }
-                let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-                if !exprs.is_empty() || feat.is_replaceable() {
-                    result.push(PendingInputs {
-                        feature_name: feat_name.to_string(),
-                        feature_label: feat.label().to_string(),
-                        feature_description: feat.description.clone(),
-                        exprs,
-                        replace_with: feat.replace_with,
-                        source: source.clone(),
-                    });
-                }
-            }
-
-            // Already applied features → OnLevelUp
-            for feature in &character.features {
-                if !feature.applied {
-                    continue;
-                }
-                let Some(feat) = features_index.get(feature.name.as_str()) else {
-                    continue;
-                };
-                // Skip if already collected as OnFeatureAdd
-                if result.iter().any(|r| r.feature_name == feature.name) {
-                    continue;
-                }
-                let exprs = feat.interactive_exprs(WhenCondition::OnLevelUp, character);
-                if !exprs.is_empty() {
-                    result.push(PendingInputs {
-                        feature_name: feature.name.clone(),
-                        feature_label: feat.label().to_string(),
-                        feature_description: feat.description.clone(),
-                        exprs,
-                        replace_with: ReplaceWith::None,
-                        source: feature.source.clone(),
-                    });
-                }
-            }
-        });
-        result
-    }
-
     /// Check if a single feature (by name) needs user interaction for its
     /// apply (ARG values or dice rolls). When `source` is provided (e.g. for
     /// replacement features), uses source-aware dedup for stackable features.
@@ -639,119 +605,5 @@ impl RulesRegistry {
                 }
             }
         });
-    }
-
-    /// Scan a list of feature names for those whose assignments require
-    /// user interaction (ARG values or dice rolls).
-    pub fn pending_args_for_features<'a>(
-        &self,
-        character: &Character,
-        feature_names: impl Iterator<Item = &'a str>,
-        source: &FeatureSource,
-    ) -> Vec<PendingInputs> {
-        let mut result = Vec::new();
-        self.with_features_index_untracked(|features_index| {
-            for feat_name in feature_names {
-                let Some(feat) = features_index.get(feat_name) else {
-                    continue;
-                };
-                if character
-                    .features
-                    .contains(&feat.name, feat.stackable, source)
-                {
-                    continue;
-                }
-                // Features that passed contains() are new additions
-                let exprs = feat.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-                if !exprs.is_empty() || feat.is_replaceable() {
-                    result.push(PendingInputs {
-                        feature_name: feat_name.to_string(),
-                        feature_label: feat.label().to_string(),
-                        feature_description: feat.description.clone(),
-                        exprs,
-                        replace_with: feat.replace_with,
-                        source: source.clone(),
-                    });
-                }
-            }
-        });
-        result
-    }
-
-    /// Apply a list of features by name with optional user-supplied inputs.
-    fn apply_features(
-        &self,
-        character: &mut Character,
-        feature_names: &[impl AsRef<str>],
-        source: &FeatureSource,
-        level: u32,
-        inputs: Option<&ApplyInputs>,
-    ) {
-        let replacements = inputs.map(|i| &i.replacements).filter(|r| !r.is_empty());
-        self.with_features_index_untracked(|features_index| {
-            for feat_name in feature_names {
-                let feat_name = feat_name.as_ref();
-                if try_apply_replacement(
-                    features_index,
-                    character,
-                    feat_name,
-                    replacements,
-                    inputs,
-                    source,
-                    level,
-                ) {
-                    continue;
-                }
-
-                if let Some(feat) = features_index.get(feat_name) {
-                    let feature_inputs = inputs.map(|i| i.get(feat_name)).unwrap_or_default();
-                    character.features.add(
-                        feat_name,
-                        feat.label.clone(),
-                        feat.description.clone(),
-                        source.clone(),
-                        feature_inputs.to_vec(),
-                    );
-                    feat.apply(
-                        level,
-                        character,
-                        WhenCondition::OnFeatureAdd,
-                        feature_inputs,
-                    );
-                }
-            }
-        });
-    }
-
-    /// Apply species features from the global index.
-    pub fn apply_species(&self, character: &mut Character, inputs: Option<&ApplyInputs>) {
-        character.identity.species_applied = true;
-        let total_level = character.level().max(1);
-        let species_cache = self.species_cache.read_untracked();
-        let Some(species_def) = species_cache.get(character.identity.species.as_str()) else {
-            return;
-        };
-        let source = FeatureSource::Species(character.identity.species.clone());
-        self.apply_features(
-            character,
-            &species_def.features,
-            &source,
-            total_level,
-            inputs,
-        );
-        self.compute(character);
-    }
-
-    /// Apply background features from the global index.
-    pub fn apply_background(&self, character: &mut Character, inputs: Option<&ApplyInputs>) {
-        character.identity.background_applied = true;
-        let total_level = character.level().max(1);
-        let bg_cache = self.background_cache.read_untracked();
-        let Some(bg_def) = bg_cache.get(character.identity.background.as_str()) else {
-            return;
-        };
-        let source = FeatureSource::Background(character.identity.background.clone());
-        self.apply_features(character, &bg_def.features, &source, total_level, inputs);
-        self.compute(character);
     }
 }

@@ -3,14 +3,14 @@ mod dice;
 mod evaluator;
 mod formatter;
 
-pub use self::{analyze::ExprAnalysis, dice::DicePool};
-pub(crate) use self::{
-    dice::DicePoolEvaluator,
+pub use self::{
+    analyze::ExprAnalysis,
+    dice::{DicePool, DicePoolEvaluator},
     evaluator::{Evaluator, ReadOnlyEvaluator},
     formatter::Formatter,
 };
 use crate::expr::{
-    Error, Op,
+    Error, Op, avg_hp,
     ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
@@ -152,7 +152,7 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<Block
         }
         Op::AvgHp => {
             let sides = stack.pop()?;
-            stack.push(crate::expr::avg_hp(sides));
+            stack.push(avg_hp(sides));
         }
         Op::And => {
             let (a, b) = stack.pop2()?;

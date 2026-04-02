@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::BTreeMap, time::Duration};
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::{move_tr, tr};
@@ -21,10 +21,17 @@ use crate::{
     },
     firebase,
     model::{
-        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureSource,
-        Translatable,
+        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
     },
-    rules::{ApplyInputs, DefinitionStore, PendingInputs, RulesRegistry},
+    rules::{
+        ApplyInputs, DefinitionStore, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
+        apply::{
+            PendingFeature, apply_new_features, collect_background_features,
+            collect_class_features, collect_pending_features, collect_species_features,
+            reapply_existing, resolve_replacements,
+        },
+        feature::FeatureDefinition,
+    },
     share, storage,
 };
 
@@ -75,7 +82,7 @@ fn export_character(character: &Character) {
     let _ = web_sys::Url::revoke_object_url(&url);
 }
 
-pub(crate) fn split_resolved(input: String, resolved: Option<String>) -> (String, Option<String>) {
+pub fn split_resolved(input: String, resolved: Option<String>) -> (String, Option<String>) {
     match resolved {
         Some(name) => (name, Some(input)),
         None => (input, None),
@@ -90,30 +97,152 @@ fn import_character(store: Store<Character>) {
     });
 }
 
-pub(crate) fn apply_modal(
-    pending: Vec<PendingInputs>,
-    apply: impl Fn(Option<&ApplyInputs>) + Copy + Send + Sync + 'static,
+/// Top-level helper for the unified feature application pipeline.
+/// Collects PendingInputs from pending features, shows the args modal if
+/// needed, resolves replacements, calls the user callback, then computes.
+pub fn apply_with_modal(
+    store: Store<Character>,
+    registry: RulesRegistry,
+    pending: Vec<PendingFeature>,
+    callback: impl Fn(
+        &mut Character,
+        &[PendingFeature],
+        &ApplyInputs,
+        &BTreeMap<Box<str>, FeatureDefinition>,
+    ) + Send
+    + Sync
+    + 'static,
 ) {
-    if pending.is_empty() {
+    let all_inputs: Vec<PendingInputs> = registry.with_features_index_untracked(|fi| {
+        let character = store.read_untracked();
+
+        // OnFeatureAdd inputs for new features
+        let new_inputs = pending.iter().filter_map(|pending_feature| {
+            let feat_def = fi.get(pending_feature.name.as_str())?;
+            pending_feature.pending_inputs(feat_def, &character)
+        });
+
+        // OnLevelUp inputs for already-applied features
+        let levelup_inputs =
+            character
+                .features
+                .iter()
+                .filter(|f| f.applied)
+                .filter_map(|feature| {
+                    let feat_def = fi.get(feature.name.as_str())?;
+                    let exprs = feat_def.interactive_exprs(WhenCondition::OnLevelUp, &character);
+                    (!exprs.is_empty()).then_some(PendingInputs {
+                        feature_name: feature.name.clone(),
+                        feature_label: feat_def.label().to_string(),
+                        feature_description: feat_def.description.clone(),
+                        exprs,
+                        replace_with: ReplaceWith::None,
+                        source: feature.source.clone(),
+                    })
+                });
+
+        new_inputs.chain(levelup_inputs).collect()
+    });
+
+    let apply = move |inputs: Option<&ApplyInputs>| {
+        let empty = ApplyInputs::default();
+        let inputs = inputs.unwrap_or(&empty);
+        store.update(|character| {
+            registry.with_features_index_untracked(|fi| {
+                let resolved = resolve_replacements(&pending, &inputs.replacements, fi);
+                callback(character, &resolved, inputs, fi);
+            });
+            registry.compute(character);
+        });
+    };
+
+    if all_inputs.is_empty() {
         apply(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(pending, move |inputs| apply(Some(&inputs)));
+        ctx.open(all_inputs, move |inputs| apply(Some(&inputs)));
     }
 }
 
-pub fn apply_level(
+pub fn apply_level(store: Store<Character>, registry: RulesRegistry) {
+    let pending = store.with_untracked(|character| {
+        registry
+            .with_features_index_untracked(|fi| collect_pending_features(character, &registry, fi))
+    });
+
+    apply_with_modal(
+        store,
+        registry,
+        pending,
+        move |character, pending, inputs, fi| {
+            // Mark species/background as applied if they had pending features
+            if !character.identity.species_applied && !character.identity.species.is_empty() {
+                character.identity.species_applied = true;
+            }
+            if !character.identity.background_applied && !character.identity.background.is_empty() {
+                character.identity.background_applied = true;
+            }
+            // Mark class levels as applied
+            let class_cache = registry.classes().cache().read_untracked();
+            for class_level in &mut character.identity.classes {
+                for lvl in 1..=class_level.level {
+                    if !class_level.applied_levels.contains(&lvl) {
+                        class_level.applied_levels.insert(lvl);
+                    }
+                }
+                if let Some(def) = class_cache.get(class_level.class.as_str()) {
+                    class_level.hit_die_sides = def.hit_die;
+                }
+            }
+
+            reapply_existing(fi, character);
+            apply_new_features(fi, character, pending, Some(inputs));
+            character.combat.hp_current = character.hp_max();
+
+            let xp_threshold = character.xp_threshold();
+            if character.identity.experience_points < xp_threshold {
+                character.identity.experience_points = xp_threshold;
+            }
+        },
+    );
+}
+
+/// Apply a single class level only (used by per-level apply buttons).
+pub fn apply_single_level(
     store: Store<Character>,
     registry: RulesRegistry,
     class_index: usize,
     level: u32,
 ) {
-    let pending = store.with_untracked(|c| registry.features_needing_args(c, class_index, level));
-    apply_modal(pending, move |inputs| {
-        store.update(|character| {
-            registry.apply_class_level(character, class_index, level, inputs);
-        });
+    let pending = store.with_untracked(|character| {
+        let class_cache = registry.classes().cache().read_untracked();
+        registry.with_features_index_untracked(|fi| {
+            class_cache
+                .get(character.identity.classes[class_index].class.as_str())
+                .into_iter()
+                .flat_map(|class_def| {
+                    collect_class_features(character, class_index, level, class_def, fi)
+                })
+                .collect()
+        })
     });
+
+    apply_with_modal(
+        store,
+        registry,
+        pending,
+        move |character, pending, inputs, fi| {
+            if let Some(class_level) = character.identity.classes.get_mut(class_index) {
+                class_level.applied_levels.insert(level);
+                registry.classes().with(&class_level.class, |def| {
+                    class_level.hit_die_sides = def.hit_die;
+                });
+            }
+            reapply_existing(fi, character);
+            apply_new_features(fi, character, pending, Some(inputs));
+            character.combat.hp_current = character.hp_max();
+        },
+    );
 }
 
 #[component]
@@ -129,9 +258,8 @@ pub fn CharacterHeader() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let level_up_class = move |class_idx: usize| {
-        let new_level = classes.read()[class_idx].level + 1;
-        classes.write()[class_idx].level = new_level;
-        apply_level(store, registry, class_idx, new_level);
+        classes.write()[class_idx].level += 1;
+        apply_level(store, registry);
     };
 
     let on_level_up = move |_| {
@@ -241,24 +369,27 @@ pub fn CharacterHeader() -> impl IntoView {
                     }
                     apply_title=move_tr!("btn-apply-species")
                     on_apply=move || {
-                        let pending = store
-                            .with_untracked(|character| {
-                                let source = FeatureSource::Species(character.identity.species.clone());
-                                registry
-                                    .species()
-                                    .with(&character.identity.species, |species_def| {
-                                        registry.pending_args_for_features(
-                                            character,
-                                            species_def.features.iter().map(String::as_str),
-                                            &source,
-                                        )
+                        let pending = store.with_untracked(|character| {
+                            let species_cache = registry.species().cache().read_untracked();
+                            registry.with_features_index_untracked(|fi| {
+                                species_cache
+                                    .get(character.identity.species.as_str())
+                                    .into_iter()
+                                    .flat_map(|species_def| {
+                                        collect_species_features(character, species_def, fi)
                                     })
+                                    .collect()
                             })
-                            .unwrap_or_default();
-                        apply_modal(pending, move |inputs| {
-                            store
-                                .update(|character| registry.apply_species(character, inputs));
                         });
+                        apply_with_modal(
+                            store,
+                            registry,
+                            pending,
+                            move |character, pending, inputs, fi| {
+                                character.identity.species_applied = true;
+                                apply_new_features(fi, character, pending, Some(inputs));
+                            },
+                        );
                     }
                 >
                     <SpeciesField />
@@ -273,25 +404,27 @@ pub fn CharacterHeader() -> impl IntoView {
                     }
                     apply_title=move_tr!("btn-apply-background")
                     on_apply=move || {
-                        let pending = store
-                            .with_untracked(|character| {
-                                let source = FeatureSource::Background(character.identity.background.clone());
-                                registry
-                                    .backgrounds()
-                                    .with(&character.identity.background, |bg_def| {
-                                        registry.pending_args_for_features(
-                                            character,
-                                            bg_def.features.iter().map(String::as_str),
-                                            &source,
-                                        )
+                        let pending = store.with_untracked(|character| {
+                            let bg_cache = registry.backgrounds().cache().read_untracked();
+                            registry.with_features_index_untracked(|fi| {
+                                bg_cache
+                                    .get(character.identity.background.as_str())
+                                    .into_iter()
+                                    .flat_map(|bg_def| {
+                                        collect_background_features(character, bg_def, fi)
                                     })
+                                    .collect()
                             })
-                            .unwrap_or_default();
-                        apply_modal(pending, move |inputs| {
-                            store.update(|character| {
-                                registry.apply_background(character, inputs)
-                            });
                         });
+                        apply_with_modal(
+                            store,
+                            registry,
+                            pending,
+                            move |character, pending, inputs, fi| {
+                                character.identity.background_applied = true;
+                                apply_new_features(fi, character, pending, Some(inputs));
+                            },
+                        );
                     }
                 >
                     <BackgroundField />
@@ -338,13 +471,15 @@ pub fn CharacterHeader() -> impl IntoView {
                     <label>{move_tr!("total-level")}</label>
                     <div class="level-value-row">
                         <span class="computed-value">{total_level}</span>
-                        <button
-                            class="btn-level-up"
-                            title=move_tr!("level-up")
-                            on:click=on_level_up
-                        >
-                            <Icon name="arrow-up" size=14 />
-                        </button>
+                        <Show when=move || store.read().can_level_up()>
+                            <button
+                                class="btn-level-up"
+                                title=move_tr!("level-up")
+                                on:click=on_level_up
+                            >
+                                <Icon name="arrow-up" size=14 />
+                            </button>
+                        </Show>
                     </div>
                 </div>
                 <div class="header-field level-field">

@@ -4,11 +4,14 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        args_modal::ArgsModalCtx, datalist_input::DatalistInput, icon::Icon, panel::Panel,
-        toggle_button::ToggleButton,
+        character_header::apply_with_modal, datalist_input::DatalistInput, icon::Icon,
+        panel::Panel, toggle_button::ToggleButton,
     },
     model::{Character, CharacterStoreFields, Feature, FeatureSource},
-    rules::{RulesRegistry, WhenCondition},
+    rules::{
+        RulesRegistry,
+        apply::{PendingFeature, apply_new_features},
+    },
 };
 
 #[component]
@@ -55,8 +58,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                             let source = &feature.source;
                             let is_readonly = !matches!(source, FeatureSource::User(_))
                                 || registry.with_features_index(|idx| {
-                                    idx.get(feature.name.as_str())
-                                        .is_some_and(|f| !f.is_selectable())
+                                    idx.contains_key(feature.name.as_str())
                                 });
                             let source_text = registry.source_label(source, i18n);
                             view! {
@@ -99,26 +101,19 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                         .feature_class_level(&character.identity, &name)
                                                         .unwrap_or_else(|| character.level())
                                                 });
-                                                if let Some(pending) = store.with_untracked(|c| registry.feature_needs_args(c, &name, None)) {
-                                                    let args_ctx = expect_context::<ArgsModalCtx>();
-                                                    let name = name.clone();
-                                                    args_ctx.open(vec![pending], move |inputs| {
-                                                        registry.with_feature(&name, |feat_def| {
-                                                            let feature_inputs = inputs.get(&name);
-                                                            store.update(|c| {
-                                                                c.features.add(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level), feature_inputs.to_vec());
-                                                                feat_def.apply(level, c, WhenCondition::OnFeatureAdd, feature_inputs);
-                                                            });
-                                                        });
-                                                    });
-                                                } else if registry.with_feature(&name, |feat_def| {
-                                                    store.update(|c| {
-                                                        c.features.add(&name, feat_def.label.clone(), feat_def.description.clone(), FeatureSource::User(level), Vec::new());
-                                                        feat_def.apply(level, c, WhenCondition::OnFeatureAdd, &[]);
-                                                    });
-                                                }).is_none() {
-                                                    log::warn!("Feature {name} not found in index, registry may not be loaded yet");
-                                                }
+                                                let pending = vec![PendingFeature {
+                                                    name,
+                                                    source: FeatureSource::User(level),
+                                                    level,
+                                                }];
+                                                apply_with_modal(
+                                                    store,
+                                                    registry,
+                                                    pending,
+                                                    move |character, pending, inputs, fi| {
+                                                        apply_new_features(fi, character, pending, Some(inputs));
+                                                    },
+                                                );
                                             }
                                         >
                                             <Icon name="arrow-up" size=14 />

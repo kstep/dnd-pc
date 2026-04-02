@@ -11,7 +11,8 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
-        Feature, FeatureData, FeatureValue, Features, Personality, SpellSlotLevel, enums::*,
+        Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality, SpellSlotLevel,
+        enums::*,
     },
     vecset::VecSet,
 };
@@ -404,6 +405,11 @@ impl Character {
         }
     }
 
+    pub fn can_level_up(&self) -> bool {
+        !self.identity.classes.is_empty()
+            && self.identity.classes.iter().all(|cl| !cl.class.is_empty())
+    }
+
     pub fn level(&self) -> u32 {
         self.identity
             .classes
@@ -411,6 +417,22 @@ impl Character {
             .map(|c| c.level)
             .sum::<u32>()
             .max(1)
+    }
+
+    /// Effective current level for a feature based on its source.
+    /// Class features use their class's current level; others use total level.
+    pub fn effective_level_for(&self, source: &FeatureSource) -> u32 {
+        match source {
+            FeatureSource::Class(class_name, _) => self
+                .identity
+                .classes
+                .iter()
+                .find(|cl| cl.class == *class_name)
+                .map_or(0, |cl| cl.level),
+            FeatureSource::Species(_) | FeatureSource::Background(_) | FeatureSource::User(_) => {
+                self.level()
+            }
+        }
     }
 
     pub fn xp_threshold(&self) -> u32 {

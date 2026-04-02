@@ -61,7 +61,7 @@ impl DicePoolIter<'_> {
     }
 }
 
-pub(crate) struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
+pub struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a mut Ctx,
     pool: &'a mut DicePoolIter<'p>,

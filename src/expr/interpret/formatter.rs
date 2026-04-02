@@ -8,7 +8,7 @@ struct Frag {
     prec: u8, // 0=assign, 1=or, 2=and, 3=cmp, 4=add/sub, 5=mul/div, 6=unary, 7=atom
 }
 
-pub(crate) struct Formatter {
+pub struct Formatter {
     stack: Stack<Frag>,
 }
 

@@ -3,12 +3,15 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{character_header::apply_modal, icon::Icon, panel::Panel},
+    components::{character_header::apply_with_modal, icon::Icon, panel::Panel},
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
         format_bonus,
     },
-    rules::RulesRegistry,
+    rules::{
+        RulesRegistry,
+        apply::{PendingFeature, replay},
+    },
 };
 
 #[component]
@@ -250,9 +253,20 @@ pub fn CombatPanel() -> impl IntoView {
                     on:click=move |_| {
                         let window = web_sys::window().unwrap();
                         if window.confirm_with_message("Replay will reset and re-apply all features. Continue?").unwrap_or(false) {
-                            let pending = store.with_untracked(|character| registry.features_needing_args_for_replay(character));
-                            apply_modal(pending, move |inputs| {
-                                store.update(|character| registry.replay(character, inputs));
+                            let mut pending: Vec<PendingFeature> = store.with_untracked(|character| {
+                                character.features.iter()
+                                    .filter(|f| f.applied)
+                                    .map(|f| PendingFeature {
+                                        name: f.name.clone(),
+                                        source: f.source.clone(),
+                                        level: f.source.added_at_level(),
+                                    })
+                                    .collect()
+                            });
+                            pending.sort_by_key(|p| p.source.added_at_level());
+
+                            apply_with_modal(store, registry, pending, move |character, pending, inputs, fi| {
+                                replay(fi, character, pending, inputs);
                             });
                         }
                     }

@@ -5,7 +5,7 @@ use crate::expr::{Context, Error, Op, ops::BlockIndex, stack::Stack};
 
 // --- Evaluator (apply mode, mutable context) ---
 
-pub(crate) struct Evaluator<'a, Var, Ctx> {
+pub struct Evaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a mut Ctx,
     _var: PhantomData<Var>,
@@ -47,7 +47,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
 
 // --- ReadOnlyEvaluator (eval mode, immutable context) ---
 
-pub(crate) struct ReadOnlyEvaluator<'a, Var, Ctx> {
+pub struct ReadOnlyEvaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
     ctx: &'a Ctx,
     lenient: bool,
