@@ -134,6 +134,33 @@
   "background.Wayfarer": {
     "description": "Wanderer who survives by luck and wits. Feat: Lucky."
   },
+  "spell.artificer": {
+    "label": "Artificer"
+  },
+  "spell.bard": {
+    "label": "Bard"
+  },
+  "spell.cleric": {
+    "label": "Cleric"
+  },
+  "spell.druid": {
+    "label": "Druid"
+  },
+  "spell.paladin": {
+    "label": "Paladin"
+  },
+  "spell.ranger": {
+    "label": "Ranger"
+  },
+  "spell.sorcerer": {
+    "label": "Sorcerer"
+  },
+  "spell.warlock": {
+    "label": "Warlock"
+  },
+  "spell.wizard": {
+    "label": "Wizard"
+  },
   "species.Boggart": {
     "description": "Squat goblinoids from Lorwyn with bestial features, natural magic, and a knack for potions."
   },
