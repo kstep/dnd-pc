@@ -73,7 +73,7 @@
 </head>
 
 <body>
-  <div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1F2937;z-index:9999">
+  <div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1F2937;z-index:9999;transition:opacity 0.5s ease-out">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" style="width:min(256px,34vw);height:min(256px,34vw)">
       <defs>
         <clipPath id="d20-clip">
@@ -94,7 +94,7 @@
     </svg>
     <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} @keyframes slosh{from{transform:translateX(120px)}to{transform:translateX(-120px)}}</style>
   </div>
-  <script>new MutationObserver((_,o)=>{if(document.body.querySelector('main,nav,.app,leptos-island,[data-hk]')){document.getElementById('loading-screen')?.remove();o.disconnect()}}).observe(document.body,{childList:true,subtree:true})</script>
+  <script>new MutationObserver((_,o)=>{if(document.body.querySelector('main,nav,.app,leptos-island,[data-hk]')){var s=document.getElementById('loading-screen');if(s){s.style.opacity='0';s.addEventListener('transitionend',()=>s.remove())}o.disconnect()}}).observe(document.body,{childList:true,subtree:true})</script>
 </body>
 
 <script>
