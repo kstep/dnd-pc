@@ -175,6 +175,14 @@ impl<Var, Val> Block<Var, Val> {
         })
     }
 
+    /// Returns true if this block assigns to any variable matching the
+    /// predicate.
+    pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool {
+        self.0
+            .iter()
+            .any(|op| matches!(op, Op::Assign(v) if pred(v)))
+    }
+
     /// Create a new block by mapping each op.
     pub fn map(&self, f: &mut impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) -> Self {
         Self(self.0.iter().map(f).collect())
