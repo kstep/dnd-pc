@@ -4887,52 +4887,52 @@
     "description": "Choose one creature, object, or magical effect within range. Any ongoing spell of level 3 or lower on the target ends. For each ongoing spell of level 4 or higher on the target, make an ability check using your spellcasting ability (10 plus that spell's level). On a successful check, the spell ends."
   },
   "Class Proficiencies (Artificer)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Arcana, History, Investigation, Medicine, Nature, Perception, Sleight of Hand. Saves: CON, INT. Light/medium armor, shields, simple weapons."
   },
   "Unarmored Defense (Barbarian)": {
     "description": "While you aren't wearing any armor, your base Armor Class equals 10 plus your Dexterity and Constitution modifiers. You can use a Shield and still gain this benefit."
   },
   "Class Proficiencies (Barbarian)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Animal Handling, Athletics, Intimidation, Nature, Perception, Survival. Saves: STR, CON. Light/medium armor, shields, simple/martial weapons."
   },
   "Class Proficiencies (Bard)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 3 from any skill. Saves: DEX, CHA. Light armor, simple weapons."
   },
   "Unarmored Defense (Bard)": {
     "description": "Your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
   },
   "Class Proficiencies (Cleric)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: History, Insight, Medicine, Persuasion, Religion. Saves: WIS, CHA. Light/medium armor, shields, simple weapons."
   },
   "Class Proficiencies (Druid)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Arcana, Animal Handling, Insight, Medicine, Nature, Perception, Religion, Survival. Saves: INT, WIS. Light armor, shields, simple weapons."
   },
   "Class Proficiencies (Fighter)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Acrobatics, Animal Handling, Athletics, History, Insight, Intimidation, Perception, Survival. Saves: STR, CON. All armor, shields, simple/martial weapons."
   },
   "Unarmored Defense (Monk)": {
     "description": "While you aren't wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers."
   },
   "Class Proficiencies (Monk)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Acrobatics, Athletics, History, Insight, Religion, Stealth. Saves: STR, DEX. Simple weapons."
   },
   "Class Proficiencies (Paladin)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Athletics, Insight, Intimidation, Medicine, Persuasion, Religion. Saves: WIS, CHA. All armor, shields, simple/martial weapons."
   },
   "Class Proficiencies (Ranger)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 3 from: Animal Handling, Athletics, Insight, Investigation, Nature, Perception, Stealth, Survival. Saves: STR, DEX. Light/medium armor, shields, simple/martial weapons."
   },
   "Class Proficiencies (Rogue)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 4 from: Acrobatics, Athletics, Deception, Insight, Intimidation, Investigation, Perception, Performance, Persuasion, Sleight of Hand, Stealth. Saves: DEX, INT. Light armor, simple weapons."
   },
   "Class Proficiencies (Sorcerer)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Arcana, Deception, Insight, Intimidation, Persuasion, Religion. Saves: CON, CHA. Simple weapons."
   },
   "Class Proficiencies (Warlock)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Arcana, Deception, History, Intimidation, Investigation, Nature, Religion. Saves: WIS, CHA. Light armor, simple weapons."
   },
   "Class Proficiencies (Wizard)": {
-    "description": "Saving throw and equipment proficiencies granted by this class."
+    "description": "Choose 2 from: Arcana, History, Insight, Investigation, Medicine, Religion. Saves: INT, WIS. Simple weapons."
   },
   "Channel Divinity (Cleric)": {
     "description": "You can channel divine energy directly from the Outer Planes to fuel magical effects. You start with two such effects: Divine Spark and Turn Undead, each of which is described below. Each time you use this class's Channel Divinity, choose which Channel Divinity effect from this class to create. You gain additional effect options at higher Cleric levels. You can use Channel Divinity twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Cleric level 6 (three uses) and level 18 (four uses).\n\nDivine Spark: As a Magic action, you point your Holy Symbol at another creature you can see within 30 feet of yourself and focus divine energy at it. Roll 1d8 and add your Wisdom modifier. You either restore Hit Points to the creature equal to that total or force the creature to make a Constitution saving throw. On a failed save, the creature takes Necrotic or Radiant damage (your choice) equal to that total. The number of dice increases to 2d8 at Cleric level 7, 3d8 at Cleric level 13, and 4d8 at Cleric level 18.\n\nTurn Undead: As a Magic action, you present your Holy Symbol and censure Undead creatures. Each Undead of your choice within 30 feet of you must make a Wisdom saving throw. If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 minute. For that duration, it tries to move as far from you as it can on its turns."
@@ -5169,52 +5169,52 @@
     "description": "You know the Thaumaturgy cantrip. It uses the same spellcasting ability as your Fiendish Legacy."
   },
   "Background Abilities (Acolyte)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between INT, WIS, CHA. Skills: Insight, Religion."
   },
   "Background Abilities (Artisan)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, DEX, INT. Skills: Investigation, Persuasion."
   },
   "Background Abilities (Charlatan)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between DEX, CON, CHA. Skills: Deception, Sleight of Hand."
   },
   "Background Abilities (Criminal)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between DEX, CON, INT. Skills: Sleight of Hand, Stealth."
   },
   "Background Abilities (Entertainer)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, DEX, CHA. Skills: Acrobatics, Performance."
   },
   "Background Abilities (Farmer)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, CON, WIS. Skills: Animal Handling, Nature."
   },
   "Background Abilities (Guard)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, INT, WIS. Skills: Athletics, Perception."
   },
   "Background Abilities (Guide)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between DEX, CON, WIS. Skills: Stealth, Survival."
   },
   "Background Abilities (Hermit)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between CON, WIS, CHA. Skills: Medicine, Religion."
   },
   "Background Abilities (Merchant)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between CON, INT, CHA. Skills: Animal Handling, Persuasion."
   },
   "Background Abilities (Noble)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, INT, CHA. Skills: History, Persuasion."
   },
   "Background Abilities (Sage)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between CON, INT, WIS. Skills: Arcana, History."
   },
   "Background Abilities (Sailor)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, DEX, WIS. Skills: Acrobatics, Perception."
   },
   "Background Abilities (Scribe)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between DEX, INT, WIS. Skills: Investigation, Perception."
   },
   "Background Abilities (Soldier)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between STR, DEX, CON. Skills: Athletics, Intimidation."
   },
   "Background Abilities (Wayfarer)": {
-    "description": "Ability score increase from background."
+    "description": "Distribute 3 points between DEX, WIS, CHA. Skills: Insight, Stealth."
   },
   "Changeling Instincts": {
     "description": "Thanks to your connection to the fey realm, you gain proficiency in two of the following skills of your choice: Deception, Insight, Intimidation, Performance, or Persuasion."
