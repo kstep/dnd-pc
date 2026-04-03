@@ -369,7 +369,7 @@ fn is_arg(var: &Attribute) -> Option<u8> {
 
 /// Build dice input groups view from roll requirements.
 /// Returns the signal map and the rendered view.
-fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyView) {
+pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyView) {
     let groups: DiceGroupSignals = dice_rolls
         .iter()
         .map(|(&sides, &count)| {
@@ -432,7 +432,7 @@ fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyV
                 }
             }
         >
-            <Icon name="dices" />
+            <Icon name="dices" size=14 />
         </button>
         {groups_view}
     }

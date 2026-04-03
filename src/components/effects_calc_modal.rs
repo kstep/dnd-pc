@@ -1,11 +1,16 @@
 use std::collections::BTreeMap;
 
-use leptos::{html, prelude::*};
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{expr_view::ExprDetails, icon::Icon, modal::Modal},
+    components::{
+        expr_args_input::{DiceGroupSignals, build_dice_groups, collect_dice_pool},
+        expr_view::ExprDetails,
+        icon::Icon,
+        modal::Modal,
+    },
     effective::EffectiveCharacter,
     expr::{self, DicePool, Expr, Op},
     model::{
@@ -196,22 +201,6 @@ pub fn apply_self_effects_now(
     }
 }
 
-/// Collect dice values from NodeRef groups into a raw pool map.
-/// Used only by this module's inline dice inputs (which use NodeRefs for
-/// live result recalculation, unlike the signal-based ExprArgsInput).
-fn collect_dice_pool(groups: &BTreeMap<u32, Vec<NodeRef<html::Input>>>) -> BTreeMap<u32, Vec<u32>> {
-    groups
-        .iter()
-        .map(|(&sides, refs)| {
-            let values: Vec<u32> = refs
-                .iter()
-                .filter_map(|node_ref| node_ref.get().and_then(|el| el.value().parse().ok()))
-                .collect();
-            (sides, values)
-        })
-        .collect()
-}
-
 // --- Effects calculator modal ---
 
 #[component]
@@ -254,7 +243,7 @@ pub fn EffectsCalcModal(
                 );
 
             // Collect self-targeting dice groups for the "Apply Effect" button
-            type DiceGroups = Vec<StoredValue<BTreeMap<u32, Vec<NodeRef<html::Input>>>>>;
+            type DiceGroups = Vec<StoredValue<DiceGroupSignals>>;
             let self_dice_groups: StoredValue<DiceGroups> = StoredValue::new(Vec::new());
 
             // Build separate instant and persistent expressions
@@ -322,97 +311,50 @@ pub fn EffectsCalcModal(
                         .into_any()
                     } else {
                         // Has dice — build inputs and live result
-                        let result = RwSignal::new(None::<i32>);
                         let formula_expr = effect.expr.clone();
                         let expr = effect.expr.clone();
                         let extra_vars = info.extra_vars.clone();
 
-                        let groups: BTreeMap<u32, Vec<NodeRef<html::Input>>> = rolls
-                            .iter()
-                            .map(|(&sides, &count)| {
-                                let refs: Vec<_> =
-                                    (0..count).map(|_| NodeRef::<html::Input>::new()).collect();
-                                (sides, refs)
-                            })
-                            .collect();
-                        let groups = StoredValue::new(groups);
+                        let total_needed: u32 = rolls.values().copied().sum();
+                        let (dice_signals, dice_view) = build_dice_groups(&rolls);
+                        let dice_signals = StoredValue::new(dice_signals);
 
                         // Track self-targeting dice groups for Apply Effect
                         if is_self {
-                            self_dice_groups.update_value(|v| v.push(groups));
+                            self_dice_groups.update_value(|v| v.push(dice_signals));
                         }
 
-                        let total_needed: u32 = rolls.values().copied().sum();
-                        let recalc = StoredValue::new(move || {
+                        // Reactive result: recomputes when any dice signal changes
+                        let result = Memo::new(move |_| {
                             let character = store.read_untracked();
                             let mut ctx = CalcContext {
                                 character: &character,
                                 extra_vars: &extra_vars,
                             };
-
-                            let pool_map = groups.with_value(collect_dice_pool);
-
-                            let total_filled: u32 =
-                                pool_map.values().map(|v| v.len() as u32).sum();
-
-                            if total_filled == total_needed {
-                                let pool: DicePool = pool_map.into();
-                                result.set(expr.apply_with_dice(&mut ctx, &pool).ok());
+                            // Read all signals to subscribe, count filled
+                            let filled: u32 = dice_signals.with_value(|groups| {
+                                groups
+                                    .values()
+                                    .flat_map(|sigs| sigs.iter())
+                                    .filter(|s| s.get() > 0)
+                                    .count() as u32
+                            });
+                            if filled == total_needed {
+                                let pool = dice_signals.with_value(collect_dice_pool);
+                                expr.apply_with_dice(&mut ctx, &pool).ok()
                             } else {
-                                result.set(None);
+                                None
                             }
                         });
 
-                        let mut first_input = true;
-                        let group_views = groups.with_value(|groups| {
-                            groups
-                                .iter()
-                                .map(|(&sides, refs)| {
-                                    let input_views = refs
-                                        .iter()
-                                        .map(|&node_ref| {
-                                            let is_first = first_input;
-                                            first_input = false;
-                                            view! {
-                                                <input
-                                                    type="number"
-                                                    min=1
-                                                    max=sides
-                                                    required
-                                                    autofocus=is_first
-                                                    class="dice-pool-value"
-                                                    node_ref=node_ref
-                                                    on:input=move |_| recalc.with_value(|f| f())
-                                                />
-                                            }
-                                        })
-                                        .collect_view();
-                                    view! {
-                                        <div class="dice-pool-group">
-                                            <span class="dice-pool-label">"d" {sides}</span>
-                                            <div class="dice-pool-inputs">{input_views}</div>
-                                        </div>
-                                    }
-                                })
-                                .collect_view()
-                        });
-
                         let reset = move |_: web_sys::MouseEvent| {
-                            groups.with_value(|groups| {
-                                let mut first = true;
-                                for refs in groups.values() {
-                                    for node_ref in refs {
-                                        if let Some(el) = node_ref.get() {
-                                            el.set_value("");
-                                            if first {
-                                                let _ = el.focus();
-                                                first = false;
-                                            }
-                                        }
+                            dice_signals.with_value(|groups| {
+                                for signals in groups.values() {
+                                    for signal in signals {
+                                        signal.set(0);
                                     }
                                 }
                             });
-                            result.set(None);
                         };
 
                         view! {
@@ -435,7 +377,7 @@ pub fn EffectsCalcModal(
                                     </button>
                                 </div>
                                 <ExprDetails expr=formula_expr />
-                                <div class="dice-pool-groups">{group_views}</div>
+                                <div class="dice-pool-groups">{dice_view}</div>
                             </div>
                         }
                         .into_any()
@@ -450,8 +392,13 @@ pub fn EffectsCalcModal(
                     let mut merged_pool = BTreeMap::<u32, Vec<u32>>::new();
                     self_dice_groups.with_value(|dice_groups| {
                         for groups in dice_groups {
-                            groups.with_value(|groups| {
-                                for (sides, values) in collect_dice_pool(groups) {
+                            groups.with_value(|signals| {
+                                for (&sides, sigs) in signals {
+                                    let values: Vec<u32> = sigs
+                                        .iter()
+                                        .map(|s| s.get_untracked())
+                                        .filter(|&v| v > 0)
+                                        .collect();
                                     merged_pool.entry(sides).or_default().extend(values);
                                 }
                             });
