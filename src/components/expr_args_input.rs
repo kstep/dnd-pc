@@ -258,8 +258,7 @@ fn form_block_ops(
                                     class="expr-form-input"
                                     prop:checked=move || signal.get() != 0
                                     on:change=move |ev| {
-                                        let checked = event_target_checked(&ev);
-                                        signal.set(if checked { 1 } else { 0 });
+                                        signal.set(event_target_checked(&ev) as i32);
                                     }
                                 />
                             }
