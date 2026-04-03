@@ -232,6 +232,39 @@ fn form_block(
     fb.finish()
 }
 
+fn arg_checkbox(signal: RwSignal<i32>) -> AnyView {
+    view! {
+        <input
+            type="checkbox"
+            class="expr-form-input"
+            prop:checked=move || signal.get() != 0
+            on:change=move |ev| {
+                signal.set(event_target_checked(&ev) as i32);
+            }
+        />
+    }
+    .into_any()
+}
+
+fn arg_number(signal: RwSignal<i32>) -> AnyView {
+    view! {
+        <input
+            type="number"
+            class="expr-form-input"
+            prop:value=move || signal.get()
+            on:input=move |ev| {
+                let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
+                signal.set(value);
+            }
+        />
+    }
+    .into_any()
+}
+
+fn arg_ref(signal: RwSignal<i32>) -> AnyView {
+    view! { <span class="expr-form-ref">{move || signal.get()}</span> }.into_any()
+}
+
 fn form_block_ops(
     fb: &mut FormBuilder,
     expr: &Expr<Attribute, i32>,
@@ -249,43 +282,15 @@ fn form_block_ops(
                 let signal = ctx.args[idx];
                 // In condition context or inactive ARG: always a ref.
                 // In body context + active + first occurrence: input.
-                if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
+                fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
                     if ctx.is_boolean(n) {
-                        fb.push_view(
-                            view! {
-                                <input
-                                    type="checkbox"
-                                    class="expr-form-input"
-                                    prop:checked=move || signal.get() != 0
-                                    on:change=move |ev| {
-                                        signal.set(event_target_checked(&ev) as i32);
-                                    }
-                                />
-                            }
-                            .into_any(),
-                        );
+                        arg_checkbox(signal)
                     } else {
-                        fb.push_view(
-                            view! {
-                                <input
-                                    type="number"
-                                    class="expr-form-input"
-                                    prop:value=move || signal.get()
-                                    on:input=move |ev| {
-                                        let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
-                                        signal.set(value);
-                                    }
-                                />
-                            }
-                            .into_any(),
-                        );
+                        arg_number(signal)
                     }
                 } else {
-                    fb.push_view(
-                        view! { <span class="expr-form-ref">{move || signal.get()}</span> }
-                            .into_any(),
-                    );
-                }
+                    arg_ref(signal)
+                });
             }
             Op::Eval(idx) => {
                 let sub = form_block(expr, idx, ctx, true)?;
