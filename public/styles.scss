@@ -526,7 +526,7 @@ input[type="checkbox"] {
 
 .character-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 250px);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--size-3);
   justify-content: center;
 }
