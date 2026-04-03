@@ -175,11 +175,7 @@ struct FormCtx {
 }
 
 impl FormCtx {
-    fn new(
-        active_args: Vec<u8>,
-        boolean_args: BTreeSet<u8>,
-        i18n: leptos_fluent::I18n,
-    ) -> Self {
+    fn new(active_args: Vec<u8>, boolean_args: BTreeSet<u8>, i18n: leptos_fluent::I18n) -> Self {
         Self {
             args: Vec::new(),
             seen: BTreeSet::new(),

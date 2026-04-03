@@ -998,8 +998,7 @@ mod tests {
         assert!(analysis.boolean_args.contains(&1));
 
         // Non-boolean arg not in boolean_args
-        let expr: Expr =
-            "guard(in(ARG.0, 0, 7), STR += ARG.0)".parse().unwrap();
+        let expr: Expr = "guard(in(ARG.0, 0, 7), STR += ARG.0)".parse().unwrap();
         let analysis = expr.analyze(&character, is_arg);
         assert!(!analysis.boolean_args.contains(&0));
     }

@@ -182,14 +182,14 @@ fn create_character(
             let level = character.level().max(1);
             PendingFeature {
                 name: gen_name.clone(),
-                source: FeatureSource::User(level),
+                source: FeatureSource::User(0),
                 level,
             }
         });
 
         registry.with_features_index_untracked(|fi| {
-            let mut pending = collect_pending_features(character, &registry, fi);
-            pending.extend(gen_pending);
+            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
+            pending.extend(collect_pending_features(character, &registry, fi));
             pending
         })
     });
