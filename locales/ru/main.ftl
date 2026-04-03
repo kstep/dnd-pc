@@ -292,6 +292,9 @@ ref-spell-always-ready = всегда подготовлено
 ref-prerequisites = Требования
 ref-spell-list-link = Список заклинаний
 ref-languages = Языки
+expr-and = и
+expr-or = или
+expr-not = не
 
 ## Пулы ячеек заклинаний
 pool-arcane = Магические ячейки

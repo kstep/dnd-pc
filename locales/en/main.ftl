@@ -297,6 +297,9 @@ ref-spell-always-ready = always ready
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
 ref-languages = Languages
+expr-and = and
+expr-or = or
+expr-not = not
 
 ## Spell slot pools
 pool-arcane = Arcane Slots

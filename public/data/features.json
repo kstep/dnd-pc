@@ -2453,8 +2453,11 @@
   },
   {
     "name": "Giant Power",
-    "languages": [
-      "Giant"
+    "assign": [
+      {
+        "expr": "LANG.Giant = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -4492,8 +4495,11 @@
   },
   {
     "name": "Druidic",
-    "languages": [
-      "Druidic"
+    "assign": [
+      {
+        "expr": "LANG.Druidic = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -5198,8 +5204,11 @@
   },
   {
     "name": "Speech of the Woods",
-    "languages": [
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -8920,8 +8929,11 @@
   },
   {
     "name": "Thieves' Cant",
-    "languages": [
-      "Thieves' Cant"
+    "assign": [
+      {
+        "expr": "LANG.`Thieves' Cant` = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -10040,8 +10052,11 @@
   },
   {
     "name": "Wind Speaker",
-    "languages": [
-      "Primordial"
+    "assign": [
+      {
+        "expr": "LANG.Primordial = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -12883,8 +12898,11 @@
   },
   {
     "name": "Bonus Proficiencies",
-    "languages": [
-      "Giant"
+    "assign": [
+      {
+        "expr": "LANG.Giant = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -13943,134 +13961,173 @@
   },
   {
     "name": "Languages (Aasimar)",
-    "languages": [
-      "Common",
-      "Celestial"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Celestial = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Boggart)",
-    "languages": [
-      "Common",
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Changeling)",
-    "languages": [
-      "Common",
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Dragonborn)",
-    "languages": [
-      "Common",
-      "Draconic"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Draconic = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Dwarf)",
-    "languages": [
-      "Common",
-      "Dwarvish"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Dwarvish = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Elf)",
-    "languages": [
-      "Common",
-      "Elvish"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Elvish = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Faerie)",
-    "languages": [
-      "Common",
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Flamekin)",
-    "languages": [
-      "Common",
-      "Primordial"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Primordial = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Gnome)",
-    "languages": [
-      "Common",
-      "Gnomish"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Gnomish = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Goliath)",
-    "languages": [
-      "Common",
-      "Giant"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Giant = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Halfling)",
-    "languages": [
-      "Common",
-      "Halfling"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Halfling = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Human)",
-    "languages": [
-      "Common"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Kalashtar)",
-    "languages": [
-      "Common",
-      "Quori"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Quori = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Lorwyn Changeling)",
-    "languages": [
-      "Common",
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Orc)",
-    "languages": [
-      "Common",
-      "Orc"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Orc = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Rimekin)",
-    "languages": [
-      "Common",
-      "Primordial"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Primordial = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Tiefling (Abyssal))",
-    "languages": [
-      "Common",
-      "Abyssal"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Abyssal = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Tiefling (Chthonic))",
-    "languages": [
-      "Common",
-      "Sylvan"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
     "name": "Languages (Tiefling)",
-    "languages": [
-      "Common",
-      "Infernal"
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Infernal = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {

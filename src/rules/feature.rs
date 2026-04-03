@@ -11,7 +11,6 @@ use crate::{
         FeatureCategory, FeatureField, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
-    vecset::VecSet,
 };
 
 /// A field value that is either a static number or an expression evaluated
@@ -192,8 +191,6 @@ pub struct FeatureDefinition {
     pub label: Option<String>,
     #[serde(default)]
     pub description: String,
-    #[serde(default)]
-    pub languages: VecSet<String>,
     #[serde(default)]
     pub stackable: bool,
     #[serde(default)]
@@ -433,8 +430,6 @@ impl FeatureDefinition {
         when: WhenCondition,
         inputs: &[AssignInputs],
     ) {
-        character.languages.extend(self.languages.iter().cloned());
-
         let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
             let free_uses_max = self.free_uses_max(level, character);
             spells_def.apply(level, character, &self.name, free_uses_max);

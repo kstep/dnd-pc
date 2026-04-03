@@ -21,7 +21,10 @@ use crate::{
     components::expr_view::ExprView,
     expr::{BLOCK_ERROR, BLOCK_NOOP, Expr, Interpreter, Op},
     model::{Attribute, Translatable},
-    rules::{Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, SpellList},
+    rules::{
+        Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
+        SpellList,
+    },
 };
 
 pub struct InlineSpell {
@@ -168,24 +171,34 @@ impl SumEntry {
 struct AssignmentSummarizer<'a> {
     stack: Vec<SumEntry>,
     i18n: &'a leptos_fluent::I18n,
+    registry: RulesRegistry,
     abilities: Vec<String>,
     skills: Vec<String>,
     saves: Vec<String>,
     equipment: Vec<String>,
+    languages: Vec<&'static str>,
     other: Vec<String>,
 }
 
 impl<'a> AssignmentSummarizer<'a> {
-    fn new(i18n: &'a leptos_fluent::I18n) -> Self {
+    fn new(i18n: &'a leptos_fluent::I18n, registry: RulesRegistry) -> Self {
         Self {
             stack: Vec::new(),
             i18n,
+            registry,
             abilities: Vec::new(),
             skills: Vec::new(),
             saves: Vec::new(),
             equipment: Vec::new(),
+            languages: Vec::new(),
             other: Vec::new(),
         }
+    }
+
+    fn feature_label(&self, name: &str) -> String {
+        self.registry
+            .with_feature(name, |feat| feat.label().to_string())
+            .unwrap_or_else(|| name.to_string())
     }
 
     fn pop(&mut self) -> SumEntry {
@@ -226,7 +239,10 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
             Op::PushVar(var) => {
                 let raw = var.to_string();
-                let text = var.display_name(self.i18n);
+                let text = match var {
+                    Attribute::Feature(name) => self.feature_label(name),
+                    _ => var.display_name(self.i18n),
+                };
                 self.stack.push(SumEntry::var(text, raw));
             }
             Op::Add => self.binary_op("+", |a, b| a + b),
@@ -277,6 +293,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     Attribute::EquipmentProficiency(prof) => {
                         self.equipment.push(self.i18n.tr(prof.tr_key()));
                     }
+                    Attribute::Language(name) => {
+                        self.languages.push(name);
+                    }
                     _ => {
                         let label = attr.display_name(self.i18n);
                         self.other.push(format!("{label} {prefix}{display}"));
@@ -303,8 +322,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             Op::And => {
                 let b = self.pop();
                 let a = self.pop();
+                let op = self.i18n.tr("expr-and");
                 self.stack.push(SumEntry {
-                    text: format!("{} and {}", a.text, b.text),
+                    text: format!("{} {op} {}", a.text, b.text),
                     num: None,
                     raw_key: None,
                     compound: None,
@@ -313,8 +333,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             Op::Or => {
                 let b = self.pop();
                 let a = self.pop();
+                let op = self.i18n.tr("expr-or");
                 self.stack.push(SumEntry {
-                    text: format!("{} or {}", a.text, b.text),
+                    text: format!("{} {op} {}", a.text, b.text),
                     num: None,
                     raw_key: None,
                     compound: None,
@@ -322,8 +343,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
             }
             Op::Not => {
                 let a = self.pop();
+                let op = self.i18n.tr("expr-not");
                 self.stack.push(SumEntry {
-                    text: format!("not {}", a.text),
+                    text: format!("{op} {}", a.text),
                     num: None,
                     raw_key: None,
                     compound: None,
@@ -385,6 +407,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
         if !self.equipment.is_empty() {
             parts.push(self.equipment.join(", "));
         }
+        if !self.languages.is_empty() {
+            parts.push(self.languages.join(", "));
+        }
         parts.extend(self.other);
         // Remaining stack entries (e.g. prerequisites — boolean expressions)
         for entry in self.stack {
@@ -400,10 +425,11 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
 pub(super) fn summarize_assignments(
     assignments: &[Assignment],
     i18n: &leptos_fluent::I18n,
+    registry: RulesRegistry,
 ) -> String {
     assignments
         .iter()
-        .filter_map(|a| a.expr.run(AssignmentSummarizer::new(i18n)).ok())
+        .filter_map(|a| a.expr.run(AssignmentSummarizer::new(i18n, registry)).ok())
         .filter(|s| !s.is_empty())
         .collect::<Vec<_>>()
         .join("; ")
@@ -415,7 +441,6 @@ pub struct FeatureViewData {
     pub label: String,
     pub category: String,
     pub description: String,
-    pub languages: String,
     pub prerequisites: String,
     pub assignments: String,
     pub spells: FeatureSpells,
@@ -428,24 +453,24 @@ pub fn collect_feature_views<'a>(
     features: impl Iterator<Item = &'a FeatureDefinition>,
 ) -> Vec<FeatureViewData> {
     let i18n = expect_context::<leptos_fluent::I18n>();
+    let registry = expect_context::<RulesRegistry>();
     features
         .map(|feat| {
             let prerequisites = feat
                 .prerequisites
                 .as_ref()
-                .and_then(|p| p.run(AssignmentSummarizer::new(&i18n)).ok())
+                .and_then(|p| p.run(AssignmentSummarizer::new(&i18n, registry)).ok())
                 .unwrap_or_default();
             let assignments = feat
                 .assign
                 .as_deref()
-                .map(|a| summarize_assignments(a, &i18n))
+                .map(|a| summarize_assignments(a, &i18n, registry))
                 .unwrap_or_default();
             FeatureViewData {
                 name: feat.name.clone(),
                 label: feat.label().to_string(),
                 category: i18n.tr(feat.category.tr_key()),
                 description: feat.description.clone(),
-                languages: feat.languages.join(", "),
                 prerequisites,
                 assignments,
                 spells: FeatureSpells::from_spell_list(
@@ -482,11 +507,6 @@ pub fn ReferenceFeaturesView(
                                 })}
                             </p>
                             <p>{feat.description}</p>
-                            {(!feat.languages.is_empty()).then(|| view! {
-                                <p class="feature-languages">
-                                    {move_tr!("ref-languages")}{": "}{feat.languages}
-                                </p>
-                            })}
                             {(!feat.assignments.is_empty()).then(|| view! {
                                 <p class="feature-assignments">{feat.assignments}</p>
                             })}
