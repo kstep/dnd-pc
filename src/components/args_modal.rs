@@ -75,6 +75,7 @@ fn ArgsFeatureInput(
     let has_description = !description.is_empty();
     let replace_with = pending_inputs.replace_with;
     let replaceable = pending_inputs.is_replaceable();
+    let replace_only = pending_inputs.is_replace_only();
     let source = pending_inputs.source.clone();
 
     // Signal tracking whether user chose to replace this feature
@@ -160,7 +161,7 @@ fn ArgsFeatureInput(
             </div>
             {replaceable.then(|| {
                 let source = source.clone();
-                view! { <ReplacementPicker replace_with replacement_choice all_signals all_dice all_valid source /> }
+                view! { <ReplacementPicker replace_with replacement_choice all_signals all_dice all_valid source replace_only /> }
             })}
         </div>
     }
@@ -174,10 +175,11 @@ fn ReplacementPicker(
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
     source: FeatureSource,
+    replace_only: bool,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
-    let replacing = RwSignal::new(false);
+    let replacing = RwSignal::new(replace_only);
     let source = StoredValue::new(source);
 
     let options = Signal::derive(move || {
@@ -259,6 +261,7 @@ fn ReplacementPicker(
                 <input
                     type="checkbox"
                     prop:checked=replacing
+                    prop:disabled=replace_only
                     on:change=move |ev| {
                         let checked = event_target_checked(&ev);
                         replacing.set(checked);
@@ -277,6 +280,7 @@ fn ReplacementPicker(
                     placeholder=placeholder
                     options=options
                     on_input=on_input
+                    required=true
                 />
                 <Show when=move || !replacement_description.with(String::is_empty)>
                     <p class="args-modal-description">{move || replacement_description.get()}</p>

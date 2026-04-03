@@ -53,6 +53,10 @@ impl PendingInputs {
     pub fn is_replaceable(&self) -> bool {
         !matches!(self.replace_with, ReplaceWith::None)
     }
+
+    pub fn is_replace_only(&self) -> bool {
+        self.is_replaceable() && self.exprs.is_empty()
+    }
 }
 
 /// A feature pending application. Owned and cheap — survives move closure

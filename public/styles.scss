@@ -2299,28 +2299,70 @@ select.entry-name {
   }
 }
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgb(0 0 0 / 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--size-3);
-}
-
-.modal {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
+dialog.modal {
+  border: none;
   border-radius: var(--radius-2);
+  padding: 0;
+  background: var(--panel-bg);
+  color: var(--text-primary);
   width: fit-content;
   min-width: 250px;
   max-width: 600px;
   max-height: 80vh;
+  overflow: hidden;
+  animation: modal-slide-in 250ms ease-out;
+}
+
+dialog.modal.closing {
+  animation: modal-slide-out 250ms ease-in forwards;
+}
+
+dialog.modal::backdrop {
+  background: rgb(0 0 0 / 50%);
+  animation: overlay-fade-in 250ms ease-out;
+}
+
+dialog.modal.closing::backdrop {
+  animation: overlay-fade-out 250ms ease-in forwards;
+}
+
+.modal-content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-height: 80vh;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlay-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
 }
 
 .modal-header {
