@@ -235,23 +235,27 @@ impl Character {
         self.combat.armor_class
     }
 
-    /// Evaluate all armor AC formulas and write the best result to
-    /// `combat.armor_class`. Returns the computed AC.
+    /// Evaluate equipped armor AC formulas and apply if better than the
+    /// current AC (which may already include natural armor from assignments).
+    ///
+    /// Expects `combat.armor_class` to be pre-set as the baseline
+    /// (default `10 + DEX.MOD`, possibly overridden by OnCompute assignments).
     ///
     /// Evaluation order:
-    /// 1. All non-shield armor formulas → pick the max (or `10 + DEX.MOD`)
+    /// 1. All non-shield, non-natural armor formulas → pick the max vs baseline
     /// 2. Set AC so shield formulas can read it
     /// 3. All shield formulas → pick the max
     pub fn compute_armor_class(&mut self) -> u32 {
-        let default_ac = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
+        let baseline = self.combat.armor_class;
 
-        // Best body armor (non-shield), skipping armor the character isn't proficient
-        // with
-        let body_ac = self
+        // Best body armor (non-shield, non-natural), skipping armor the
+        // character isn't proficient with. Natural armor AC comes through
+        // OnCompute assignments, not through equipment evaluation.
+        if let Some(body_ac) = self
             .equipment
             .armors
             .iter()
-            .filter(|a| a.armor_type != ArmorType::Shield)
+            .filter(|a| a.armor_type != ArmorType::Shield && a.armor_type != ArmorType::Natural)
             .filter(|a| {
                 a.armor_type
                     .required_proficiency()
@@ -269,10 +273,9 @@ impl Character {
             })
             .max()
             .map(|v| v.max(0) as u32)
-            .unwrap_or(default_ac);
-
-        // Set AC so shield formulas can read it via resolve(Ac)
-        self.combat.armor_class = body_ac;
+        {
+            self.combat.armor_class = baseline.max(body_ac);
+        }
 
         // Best shield (reads AC = body_ac), only if proficient with shields
         if !self.proficiencies.contains(&Proficiency::Shields) {
@@ -331,11 +334,15 @@ impl Character {
         DEFAULT_SPEED
     }
 
-    /// Recompute all base combat stats (AC, HP, speed).
-    /// Call `RulesRegistry::assign(character, OnCompute)` after this
-    /// to apply feature bonuses.
+    /// Reset base combat stats to defaults before feature assignments.
+    ///
+    /// Sets default AC (`10 + DEX.MOD`), recomputes HP and speed,
+    /// and resets misc bonuses. After this, call
+    /// `RulesRegistry::assign(character, OnCompute)` to apply feature
+    /// bonuses (including natural armor via `AC = max(AC, ...)`),
+    /// then `compute_armor_class()` to apply equipped armor and shields.
     pub fn compute(&mut self) {
-        self.compute_armor_class();
+        self.combat.armor_class = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
         self.compute_hp_max();
         self.compute_speed();
         self.combat.initiative_misc_bonus = 0;

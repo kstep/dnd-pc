@@ -10565,10 +10565,13 @@
   },
   {
     "name": "Draconic Resilience",
-    "ac_expr": "10 + DEX.MOD + CHA.MOD",
     "assign": [
       {
         "expr": "MAX_HP += CLASS_LEVEL",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "when": "OnCompute"
       }
     ]
@@ -12977,7 +12980,12 @@
   },
   {
     "name": "Unarmored Defense (Barbarian)",
-    "ac_expr": "10 + DEX.MOD + CON.MOD"
+    "assign": [
+      {
+        "expr": "AC = max(AC, 10 + DEX.MOD + CON.MOD)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Class Proficiencies (Barbarian)",
@@ -13007,7 +13015,12 @@
   },
   {
     "name": "Unarmored Defense (Bard)",
-    "ac_expr": "10 + DEX.MOD + CHA.MOD"
+    "assign": [
+      {
+        "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Class Proficiencies (Cleric)",
@@ -13050,7 +13063,12 @@
   },
   {
     "name": "Unarmored Defense (Monk)",
-    "ac_expr": "10 + DEX.MOD + WIS.MOD"
+    "assign": [
+      {
+        "expr": "AC = max(AC, 10 + DEX.MOD + WIS.MOD)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Class Proficiencies (Monk)",

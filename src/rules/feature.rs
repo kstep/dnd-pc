@@ -203,8 +203,6 @@ pub struct FeatureDefinition {
     #[serde(default)]
     pub assign: Option<Vec<Assignment>>,
     #[serde(default)]
-    pub ac_expr: Option<Expr<Attribute>>,
-    #[serde(default)]
     pub prerequisites: Option<Expr<Attribute>>,
 }
 
@@ -258,6 +256,21 @@ impl FeatureDefinition {
         self.prerequisites
             .as_ref()
             .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
+    }
+
+    /// Returns the single `OnCompute` assignment that writes to `AC`, if
+    /// exactly one such assignment exists. Used to auto-create a Natural
+    /// armor entry for display.
+    fn single_ac_assignment(&self) -> Option<&Assignment> {
+        let assignments = self.assign.as_ref()?;
+        let mut ac_iter = assignments.iter().filter(|a| {
+            a.when == WhenCondition::OnCompute && a.expr.assigns_to(|v| matches!(v, Attribute::Ac))
+        });
+        let first = ac_iter.next()?;
+        if ac_iter.next().is_some() {
+            return None; // more than one AC assignment
+        }
+        Some(first)
     }
 
     /// Returns `(cost_field_name, short_suffix)` if this feature has a
@@ -452,9 +465,9 @@ impl FeatureDefinition {
 
         self.apply_fields(level, character);
 
-        // Create Natural armor entry if feature defines an AC expression.
-        // ac_expr is level-independent, so we only insert once and skip on re-apply.
-        if let Some(ac_expr) = &self.ac_expr {
+        // Create Natural armor entry for display if the feature has exactly one
+        // OnCompute assignment that writes to AC.
+        if let Some(ac_assign) = self.single_ac_assignment() {
             let already_exists = character
                 .equipment
                 .armors
@@ -464,7 +477,7 @@ impl FeatureDefinition {
                 character.equipment.armors.push(Armor {
                     name: self.name.clone(),
                     armor_type: ArmorType::Natural,
-                    ac_expr: Some(ac_expr.clone()),
+                    ac_expr: Some(ac_assign.expr.clone()),
                     ..Default::default()
                 });
             }

@@ -84,6 +84,11 @@ impl<Var, Val> Expr<Var, Val> {
         self.0.iter().any(|block| block.has_var(&pred))
     }
 
+    /// Returns true if any block assigns to a variable matching the predicate.
+    pub fn assigns_to(&self, pred: impl Fn(&Var) -> bool) -> bool {
+        self.0.iter().any(|block| block.assigns_to(&pred))
+    }
+
     /// Returns true if a specific block or any of its sub-blocks contains a
     /// variable matching the predicate.
     /// Returns true if `idx` refers to a real sub-block (not a sentinel and

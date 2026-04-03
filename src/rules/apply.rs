@@ -400,6 +400,7 @@ impl RulesRegistry {
     pub fn compute(&self, character: &mut Character) {
         character.compute();
         self.assign(character, WhenCondition::OnCompute);
+        character.compute_armor_class();
         self.recompute_dynamic_fields(character);
     }
 
