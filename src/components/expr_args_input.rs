@@ -170,21 +170,31 @@ struct FormCtx {
     args: Vec<RwSignal<i32>>,
     seen: BTreeSet<u8>,
     active_args: BTreeSet<u8>,
+    boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
 }
 
 impl FormCtx {
-    fn new(active_args: Vec<u8>, i18n: leptos_fluent::I18n) -> Self {
+    fn new(
+        active_args: Vec<u8>,
+        boolean_args: BTreeSet<u8>,
+        i18n: leptos_fluent::I18n,
+    ) -> Self {
         Self {
             args: Vec::new(),
             seen: BTreeSet::new(),
             active_args: active_args.into_iter().collect(),
+            boolean_args,
             i18n,
         }
     }
 
     fn is_active(&self, n: u8) -> bool {
         self.active_args.contains(&n)
+    }
+
+    fn is_boolean(&self, n: u8) -> bool {
+        self.boolean_args.contains(&n)
     }
 }
 
@@ -240,20 +250,37 @@ fn form_block_ops(
                 // In condition context or inactive ARG: always a ref.
                 // In body context + active + first occurrence: input.
                 if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
-                    fb.push_view(
-                        view! {
-                            <input
-                                type="number"
-                                class="expr-form-input"
-                                prop:value=move || signal.get()
-                                on:input=move |ev| {
-                                    let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
-                                    signal.set(value);
-                                }
-                            />
-                        }
-                        .into_any(),
-                    );
+                    if ctx.is_boolean(n) {
+                        fb.push_view(
+                            view! {
+                                <input
+                                    type="checkbox"
+                                    class="expr-form-input"
+                                    prop:checked=move || signal.get() != 0
+                                    on:change=move |ev| {
+                                        let checked = event_target_checked(&ev);
+                                        signal.set(if checked { 1 } else { 0 });
+                                    }
+                                />
+                            }
+                            .into_any(),
+                        );
+                    } else {
+                        fb.push_view(
+                            view! {
+                                <input
+                                    type="number"
+                                    class="expr-form-input"
+                                    prop:value=move || signal.get()
+                                    on:input=move |ev| {
+                                        let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
+                                        signal.set(value);
+                                    }
+                                />
+                            }
+                            .into_any(),
+                        );
+                    }
                 } else {
                     fb.push_view(
                         view! { <span class="expr-form-ref">{move || signal.get()}</span> }
@@ -452,7 +479,7 @@ pub fn ExprArgsInput(
 
     // Build formula view with inline ARG inputs (if any)
     let formula_view = if has_args {
-        let mut form_ctx = FormCtx::new(analysis.active_args, i18n);
+        let mut form_ctx = FormCtx::new(analysis.active_args, analysis.boolean_args, i18n);
         let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
             .unwrap_or_else(|err| format!("Error: {err}").into_any());
 

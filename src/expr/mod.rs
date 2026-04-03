@@ -973,4 +973,34 @@ mod tests {
         assert_eq!(analysis.dice_rolls.get(&8), Some(&1));
         assert!(analysis.active_args.is_empty());
     }
+
+    #[wasm_bindgen_test]
+    fn analyze_detects_boolean_args() {
+        let character = test_character();
+
+        // in(ARG.0, 0, 1) constrains ARG.0 to boolean
+        let expr: Expr = "guard(in(ARG.0, 0, 1), STR += ARG.0)".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert!(analysis.boolean_args.contains(&0));
+
+        // in(ARG.0, 0, 2) does NOT make ARG.0 boolean
+        let expr: Expr = "guard(in(ARG.0, 0, 2), STR += ARG.0)".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert!(!analysis.boolean_args.contains(&0));
+
+        // Multiple args, mixed boolean and non-boolean
+        let expr: Expr =
+            "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, STR += ARG.0; DEX += ARG.1)"
+                .parse()
+                .unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert!(analysis.boolean_args.contains(&0));
+        assert!(analysis.boolean_args.contains(&1));
+
+        // Non-boolean arg not in boolean_args
+        let expr: Expr =
+            "guard(in(ARG.0, 0, 7), STR += ARG.0)".parse().unwrap();
+        let analysis = expr.analyze(&character, is_arg);
+        assert!(!analysis.boolean_args.contains(&0));
+    }
 }

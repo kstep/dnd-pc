@@ -1,4 +1,7 @@
-use std::{collections::BTreeMap, fmt};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fmt,
+};
 
 use super::eval_block;
 use crate::expr::{
@@ -15,6 +18,8 @@ pub struct ExprAnalysis {
     pub dice_rolls: BTreeMap<u32, u32>,
     /// ARG indices that appear in reachable (non-guarded-out) blocks.
     pub active_args: Vec<u8>,
+    /// ARG indices constrained to 0/1 by `in(ARG.n, 0, 1)`.
+    pub boolean_args: BTreeSet<u8>,
 }
 
 impl ExprAnalysis {
@@ -56,6 +61,9 @@ impl ExprAnalysis {
         let mut stack = Stack::new();
         let mut has_args = false;
         let mut last_eval_had_args = false;
+        // State machine for detecting `in(ARG.n, 0, 1)` patterns inline.
+        // Tracks (arg_index, steps_matched): 1 = saw Arg, 2 = saw 0, 3 = saw 1.
+        let mut bool_detect: Option<(u8, u8)> = None;
 
         for &op in ops.iter() {
             match op {
@@ -119,10 +127,28 @@ impl ExprAnalysis {
                     }
                     last_eval_had_args = false;
                 }
+                Op::In => {
+                    if let Some((arg_idx, 3)) = bool_detect {
+                        self.boolean_args.insert(arg_idx);
+                    }
+                    let _ = super::eval_op(&mut stack, op);
+                }
                 op => {
                     let _ = super::eval_op(&mut stack, op);
                 }
             }
+
+            // Advance boolean-arg pattern: Arg(n) → PushConst(0) → PushConst(1) → In
+            bool_detect = match op {
+                Op::PushVar(var) => is_arg(&var).map(|idx| (idx, 1)),
+                Op::PushConst(0) if matches!(bool_detect, Some((_, 1))) => {
+                    Some((bool_detect.unwrap().0, 2))
+                }
+                Op::PushConst(1) if matches!(bool_detect, Some((_, 2))) => {
+                    Some((bool_detect.unwrap().0, 3))
+                }
+                _ => None,
+            };
         }
 
         AnalyzedBlock {
