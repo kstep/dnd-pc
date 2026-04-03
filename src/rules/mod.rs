@@ -18,10 +18,11 @@ pub use cache::DefinitionStore;
 pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition, SubclassLevelRules};
 pub use feature::{
     ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureCategory,
-    FeatureDefinition, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr, WhenCondition,
+    FeatureDefinition, FeaturesIndex, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr,
+    WhenCondition,
 };
-pub use index::{BackgroundIndexEntry, ClassIndexEntry, SpeciesIndexEntry, SpellIndexEntry};
+pub use index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry};
 pub use registry::RulesRegistry;
 pub use species::SpeciesDefinition;
-pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellsDefinition};
+pub use spells::{SpellDefinition, SpellLevelRules, SpellList, SpellMap, SpellsDefinition};
 pub use utils::LevelRules;

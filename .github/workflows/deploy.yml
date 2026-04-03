@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  test-wasm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,13 +29,25 @@ jobs:
       - name: Install wasm-bindgen-cli
         run: cargo install wasm-bindgen-cli --version 0.2.112
 
-      - name: Run tests
+      - name: Run wasm tests
         run: cargo test --target wasm32-unknown-unknown
         env:
           WASM_BINDGEN_USE_BROWSER: 1
 
+  test-native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run native tests
+        run: cargo test
+
   build:
-    needs: test
+    needs: [test-wasm, test-native]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Deserialize)]
-pub(super) struct Index {
+pub struct Index {
     #[serde(deserialize_with = "demap::named_map")]
     pub classes: BTreeMap<Box<str>, ClassIndexEntry>,
     #[serde(default, alias = "races", deserialize_with = "demap::named_map")]

@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt};
+use std::{borrow::Borrow, collections::BTreeMap, fmt};
 
 use serde::Deserialize;
 
@@ -91,6 +91,12 @@ impl<'de> Deserialize<'de> for LocaleKey {
 impl fmt::Display for LocaleKey {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(&self.0)
+    }
+}
+
+impl Borrow<str> for LocaleKey {
+    fn borrow(&self) -> &str {
+        &self.0
     }
 }
 
