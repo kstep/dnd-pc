@@ -1,20 +1,12 @@
-use std::{fmt, str::FromStr};
+use std::{cell::RefCell, collections::HashSet, fmt, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, DamageType, Proficiency, Skill, SpellSlotPool, Translatable};
+use crate::model::{
+    Ability, DamageType, FeatureCategory, Proficiency, Skill, SpellSlotPool, Translatable,
+};
 
-#[derive(
-    Debug,
-    Copy,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize
-)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Attribute {
     Ability(Ability),
     Modifier(Ability),
@@ -54,6 +46,26 @@ pub enum Attribute {
     DamageReduction(DamageType),
     Attacks,
     Arg(u8),
+    Feature(&'static str),
+    FeatCategory(FeatureCategory),
+}
+
+/// Intern a string for the lifetime of the program.
+/// Intentional leak — used for Feature attribute names that live
+/// until the wasm instance (browser tab) is closed. Deduplicates
+/// via a global HashSet so each unique name is leaked at most once.
+fn intern(s: &str) -> &'static str {
+    thread_local! {
+        static INTERNED: RefCell<HashSet<&'static str>> = RefCell::new(HashSet::new());
+    }
+    INTERNED.with_borrow_mut(|set| {
+        if let Some(&existing) = set.get(s) {
+            return existing;
+        }
+        let leaked: &'static str = Box::leak(s.to_string().into_boxed_str());
+        set.insert(leaked);
+        leaked
+    })
 }
 
 impl Attribute {
@@ -302,6 +314,14 @@ impl FromStr for Attribute {
                 "PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
                 _ => Err("unknown CASTER_LEVEL suffix (expected ARCANE or PACT)"),
             },
+            "FEAT" => {
+                let name = rest.trim_matches('`');
+                Ok(Self::Feature(intern(name)))
+            }
+            "FEAT_CAT" => rest
+                .parse::<FeatureCategory>()
+                .map(Self::FeatCategory)
+                .map_err(|_| "unknown feature category"),
             prefix => {
                 let Some(ability) = parse_ability(prefix) else {
                     return Err("unknown attribute");
@@ -374,7 +394,32 @@ impl fmt::Display for Attribute {
             Self::DamageReduction(dt) => write!(f, "DR.{}", dt.abbr()),
             Self::Attacks => f.write_str("ATTACKS"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
+            Self::Feature(name) => {
+                if name
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+                {
+                    write!(f, "FEAT.{name}")
+                } else {
+                    write!(f, "FEAT.`{name}`")
+                }
+            }
+            Self::FeatCategory(cat) => write!(f, "FEAT_CAT.{cat}"),
         }
+    }
+}
+
+impl Serialize for Attribute {
+    fn serialize<S: serde::Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
+        ser.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for Attribute {
+    fn deserialize<D: serde::Deserializer<'de>>(de: D) -> Result<Self, D::Error> {
+        <&str>::deserialize(de)?
+            .parse()
+            .map_err(serde::de::Error::custom)
     }
 }
 
@@ -423,6 +468,8 @@ impl Attribute {
             }
             Self::Attacks => i18n.tr("attack-count"),
             Self::Arg(_) => "?".to_string(),
+            Self::Feature(name) => name.to_string(),
+            Self::FeatCategory(cat) => i18n.tr(cat.tr_key()),
             _ => self.to_string(),
         }
     }
@@ -640,5 +687,93 @@ mod tests {
                 assert_eq!(parsed, attr, "round-trip failed for {s}");
             }
         }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_feature_attributes() {
+        assert_eq!(
+            "FEAT.`Alert`".parse::<Attribute>().unwrap(),
+            Attribute::Feature(intern("Alert"))
+        );
+        assert_eq!(
+            "FEAT.`War Caster`".parse::<Attribute>().unwrap(),
+            Attribute::Feature(intern("War Caster"))
+        );
+        assert_eq!(
+            "FEAT.`Spellcasting (Bard)`".parse::<Attribute>().unwrap(),
+            Attribute::Feature(intern("Spellcasting (Bard)"))
+        );
+        assert_eq!(
+            "FEAT.`Tinker's Magic`".parse::<Attribute>().unwrap(),
+            Attribute::Feature(intern("Tinker's Magic"))
+        );
+        // Unquoted single-word names also work
+        assert_eq!(
+            "FEAT.Alert".parse::<Attribute>().unwrap(),
+            Attribute::Feature(intern("Alert"))
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_feature_round_trip() {
+        let cases = [
+            Attribute::Feature(intern("Alert")),
+            Attribute::Feature(intern("War Caster")),
+            Attribute::Feature(intern("Spellcasting (Bard)")),
+            Attribute::Feature(intern("Tinker's Magic")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_feat_category_attributes() {
+        assert_eq!(
+            "FEAT_CAT.Dragonmark".parse::<Attribute>().unwrap(),
+            Attribute::FeatCategory(FeatureCategory::Dragonmark)
+        );
+        assert_eq!(
+            "FEAT_CAT.General".parse::<Attribute>().unwrap(),
+            Attribute::FeatCategory(FeatureCategory::General)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_feat_category_round_trip() {
+        let cases = [
+            Attribute::FeatCategory(FeatureCategory::Dragonmark),
+            Attribute::FeatCategory(FeatureCategory::General),
+            Attribute::FeatCategory(FeatureCategory::EpicBoon),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    /// Full expression parsing pipeline (tokenizer → parser → Attribute)
+    /// for backtick-quoted feature names.
+    #[wasm_bindgen_test]
+    fn parse_expr_with_backtick_features() {
+        use crate::expr::Expr;
+
+        let expr: Expr<Attribute, i32> = "LEVEL >= 4 and FEAT.`War Caster`".parse().unwrap();
+        assert_eq!(expr.to_string(), "LEVEL >= 4 and FEAT.`War Caster`");
+
+        let expr: Expr<Attribute, i32> = "FEAT.`Spellcasting (Bard)` and not FEAT_CAT.Dragonmark"
+            .parse()
+            .unwrap();
+        assert_eq!(
+            expr.to_string(),
+            "FEAT.`Spellcasting (Bard)` and not FEAT_CAT.Dragonmark"
+        );
+
+        // Unquoted works too
+        let expr: Expr<Attribute, i32> = "FEAT.Alert".parse().unwrap();
+        assert_eq!(expr.to_string(), "FEAT.Alert");
     }
 }

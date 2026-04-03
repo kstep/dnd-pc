@@ -13,11 +13,12 @@ use crate::{
         class_field::ClassField, icon::Icon, species_field::SpeciesField,
     },
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureCategory,
+        FeatureSource,
     },
     names::{self, NamesData},
     rules::{
-        DefinitionStore, FeatureCategory, RulesRegistry,
+        DefinitionStore, RulesRegistry,
         apply::{PendingFeature, apply_new_features, collect_pending_features},
     },
 };

@@ -17,9 +17,8 @@ pub use background::BackgroundDefinition;
 pub use cache::DefinitionStore;
 pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition, SubclassLevelRules};
 pub use feature::{
-    ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureCategory,
-    FeatureDefinition, FeaturesIndex, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr,
-    WhenCondition,
+    ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition,
+    FeaturesIndex, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr, WhenCondition,
 };
 pub use index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry};
 pub use registry::RulesRegistry;

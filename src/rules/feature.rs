@@ -1,7 +1,6 @@
 use std::{collections::BTreeMap, fmt};
 
 use serde::{Deserialize, Deserializer, de};
-use strum::{Display, EnumIter, EnumString};
 
 use super::spells::SpellsDefinition;
 use crate::{
@@ -9,7 +8,7 @@ use crate::{
     expr::{self, Eval as _, Expr},
     model::{
         Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition,
-        FeatureField, FeatureValue, Translatable,
+        FeatureCategory, FeatureField, FeatureValue, Translatable,
     },
     rules::utils::LevelRules,
     vecset::VecSet,
@@ -164,44 +163,6 @@ impl Translatable for ActionType {
             Self::Action => "action-type-action",
             Self::BonusAction => "action-type-bonus-action",
             Self::Reaction => "action-type-reaction",
-        }
-    }
-}
-
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    Default,
-    PartialEq,
-    EnumIter,
-    Display,
-    EnumString,
-    Deserialize
-)]
-pub enum FeatureCategory {
-    #[default]
-    Class,
-    Origin,
-    General,
-    FightingStyle,
-    EpicBoon,
-    Generation,
-    Faction,
-    Dragonmark,
-}
-
-impl Translatable for FeatureCategory {
-    fn tr_key(&self) -> &'static str {
-        match self {
-            Self::Class => "feat-cat-class",
-            Self::Origin => "feat-cat-origin",
-            Self::General => "feat-cat-general",
-            Self::FightingStyle => "feat-cat-fighting-style",
-            Self::EpicBoon => "feat-cat-epic-boon",
-            Self::Generation => "feat-cat-generation",
-            Self::Faction => "feat-cat-faction",
-            Self::Dragonmark => "feat-cat-dragonmark",
         }
     }
 }

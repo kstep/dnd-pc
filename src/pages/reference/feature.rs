@@ -11,8 +11,8 @@ use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     hooks::use_query_signal,
-    model::Translatable,
-    rules::{FeatureCategory, RulesRegistry},
+    model::{FeatureCategory, Translatable},
+    rules::RulesRegistry,
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]

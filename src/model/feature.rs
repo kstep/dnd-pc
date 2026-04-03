@@ -3,11 +3,54 @@ use std::{fmt, ops};
 use leptos_fluent::I18n;
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumIter, EnumString};
 
 use crate::{
     expr::DicePool,
-    model::{Die, SpellData},
+    model::{Die, SpellData, Translatable},
 };
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    EnumIter,
+    Display,
+    EnumString,
+    Serialize,
+    Deserialize
+)]
+pub enum FeatureCategory {
+    #[default]
+    Class,
+    Origin,
+    General,
+    FightingStyle,
+    EpicBoon,
+    Generation,
+    Faction,
+    Dragonmark,
+}
+
+impl Translatable for FeatureCategory {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Class => "feat-cat-class",
+            Self::Origin => "feat-cat-origin",
+            Self::General => "feat-cat-general",
+            Self::FightingStyle => "feat-cat-fighting-style",
+            Self::EpicBoon => "feat-cat-epic-boon",
+            Self::Generation => "feat-cat-generation",
+            Self::Faction => "feat-cat-faction",
+            Self::Dragonmark => "feat-cat-dragonmark",
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Feature {
@@ -19,6 +62,8 @@ pub struct Feature {
     pub description: String,
     #[serde(default)]
     pub applied: bool,
+    #[serde(default)]
+    pub category: FeatureCategory,
     #[serde(default)]
     pub source: FeatureSource,
     #[serde(default)]
@@ -158,6 +203,14 @@ impl Features {
         }
     }
 
+    pub fn has(&self, name: &str) -> bool {
+        self.0.iter().any(|f| f.name == name && f.applied)
+    }
+
+    pub fn has_category(&self, category: FeatureCategory) -> bool {
+        self.0.iter().any(|f| f.applied && f.category == category)
+    }
+
     /// Is this a first-time add (OnFeatureAdd)?
     /// True if no entries at all, or has an unapplied entry waiting.
     pub fn is_pending(&self, name: &str) -> bool {
@@ -183,6 +236,7 @@ impl Features {
         name: &str,
         label: Option<String>,
         description: String,
+        category: FeatureCategory,
         source: FeatureSource,
         inputs: Vec<AssignInputs>,
     ) {
@@ -190,6 +244,7 @@ impl Features {
             feature.applied = true;
             feature.label = label;
             feature.description = description;
+            feature.category = category;
             feature.source = source;
             feature.inputs = inputs;
         } else {
@@ -198,6 +253,7 @@ impl Features {
                 label,
                 description,
                 applied: true,
+                category,
                 source,
                 inputs,
             });

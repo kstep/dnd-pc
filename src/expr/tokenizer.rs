@@ -63,11 +63,24 @@ impl<'a> Iterator for Tokenizer<'a> {
                 Some(Ok(Token::Value(digits)))
             }
             b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
+                // Backtick-quoted segments (e.g. FEAT.`Spellcasting (Bard)`)
+                // are included as part of the identifier token.
+                let mut in_backtick = false;
                 let len = self
                     .rest
                     .bytes()
-                    .take_while(|b| b.is_ascii_alphanumeric() || *b == b'_' || *b == b'.')
+                    .take_while(|&b| {
+                        if b == b'`' {
+                            in_backtick = !in_backtick;
+                            true
+                        } else {
+                            in_backtick || b.is_ascii_alphanumeric() || b == b'_' || b == b'.'
+                        }
+                    })
                     .count();
+                if in_backtick {
+                    return Some(Err(Error::UnexpectedChar('`')));
+                }
                 let (ident, rest) = self.rest.split_at(len);
                 // Dice keywords glued to digits ("d6", "kh3", "dl1") must be
                 // split: emit the keyword token now and leave the digits for the

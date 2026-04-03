@@ -286,6 +286,7 @@ pub fn apply_new_features(
             &pending_feature.name,
             feat_def.label.clone(),
             feat_def.description.clone(),
+            feat_def.category,
             pending_feature.source.clone(),
             feature_inputs.to_vec(),
         );

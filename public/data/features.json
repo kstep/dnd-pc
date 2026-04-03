@@ -14243,7 +14243,7 @@
   },
   {
     "name": "Aberrant Dragonmark",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
     "category": "Dragonmark"
   },
   {
@@ -14581,7 +14581,7 @@
   },
   {
     "name": "Greater Aberrant Mark",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Aberrant Dragonmark`",
     "assign": [
       {
         "expr": "if(CON < 20, CON += 1)",
@@ -14592,7 +14592,7 @@
   },
   {
     "name": "Greater Mark of Detection",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Detection`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14603,7 +14603,7 @@
   },
   {
     "name": "Greater Mark of Finding",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Finding`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14614,7 +14614,7 @@
   },
   {
     "name": "Greater Mark of Handling",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Handling`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14625,7 +14625,7 @@
   },
   {
     "name": "Greater Mark of Healing",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Healing`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14636,7 +14636,7 @@
   },
   {
     "name": "Greater Mark of Hospitality",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Hospitality`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14647,7 +14647,7 @@
   },
   {
     "name": "Greater Mark of Making",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Making`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14658,7 +14658,7 @@
   },
   {
     "name": "Greater Mark of Passage",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Passage`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14669,7 +14669,7 @@
   },
   {
     "name": "Greater Mark of Scribing",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Scribing`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14680,7 +14680,7 @@
   },
   {
     "name": "Greater Mark of Sentinel",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Sentinel`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14691,7 +14691,7 @@
   },
   {
     "name": "Greater Mark of Shadow",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Shadow`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14702,7 +14702,7 @@
   },
   {
     "name": "Greater Mark of Storm",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Storm`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14713,7 +14713,7 @@
   },
   {
     "name": "Greater Mark of Warding",
-    "prerequisites": "LEVEL >= 8",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Warding`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); if(INT < 20, INT += ARG.3); if(WIS < 20, WIS += ARG.4); if(CHA < 20, CHA += ARG.5))",
@@ -14778,63 +14778,63 @@
   },
   {
     "name": "Mark of Detection",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Finding",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Handling",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Healing",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Hospitality",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Making",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Passage",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Scribing",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Sentinel",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Shadow",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Storm",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mark of Warding",
-    "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
   },
   {
     "name": "Mythal Touched",

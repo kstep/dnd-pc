@@ -754,6 +754,8 @@ impl expr::Context<Attribute, i32> for Character {
                 .damage_modifiers
                 .get(&dt)
                 .map_or(0, |m| m.reduction as i32)),
+            Attribute::Feature(name) => Ok(self.features.has(name) as i32),
+            Attribute::FeatCategory(cat) => Ok(self.features.has_category(cat) as i32),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
         }
@@ -882,7 +884,7 @@ impl expr::Context<Attribute, i32> for Context<'_> {
 #[cfg(test)]
 impl Character {
     pub fn test_character() -> Character {
-        use crate::model::{ClassLevel, FeatureSource, Spell, SpellData};
+        use crate::model::{ClassLevel, FeatureCategory, FeatureSource, Spell, SpellData};
 
         let mut ch = Character {
             id: Uuid::nil(),
@@ -936,6 +938,7 @@ impl Character {
                 label: None,
                 description: "Use a bonus action...".to_string(),
                 applied: true,
+                category: FeatureCategory::Class,
                 source: FeatureSource::Class("Bard".to_string(), 1),
                 inputs: Vec::new(),
             }]

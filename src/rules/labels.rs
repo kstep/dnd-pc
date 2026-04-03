@@ -67,6 +67,7 @@ pub(super) fn sync_labels(
         if let Some(feat_def) = find_feature(&feature.name, features_index) {
             set_label(&mut feature.label, feat_def.label.as_deref());
             set_desc(&mut feature.description, &feat_def.description);
+            feature.category = feat_def.category;
         }
     }
 
