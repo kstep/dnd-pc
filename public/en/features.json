@@ -4988,16 +4988,16 @@
   "Draconic Flight": {
     "description": "Starting at 5th level, as a Bonus Action you sprout spectral wings for 10 minutes, gaining Fly Speed equal to your Speed. Once per Long Rest."
   },
-  "Drow Magic": {
+  "Elven Lineage (Drow)": {
     "description": "You know the Dancing Lights cantrip. At 3rd level you can cast Faerie Fire once per long rest. At 5th level you can cast Darkness once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
   },
-  "Drow Magic.spell.Dancing Lights": {
+  "Elven Lineage (Drow).spell.Dancing Lights": {
     "description": "You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration."
   },
-  "Drow Magic.spell.Faerie Fire": {
+  "Elven Lineage (Drow).spell.Faerie Fire": {
     "description": "Objects and creatures in a 20-foot Cube within range are outlined in blue, green, or violet light. Creatures in the area must make a Dexterity save or have attack rolls against them gain Advantage. Once per Long Rest (racial)."
   },
-  "Drow Magic.spell.Darkness": {
+  "Elven Lineage (Drow).spell.Darkness": {
     "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
   },
   "Stonecunning": {
@@ -5015,16 +5015,16 @@
   "Large Form": {
     "description": "Starting at 5th level, as a Bonus Action you become Large for 10 minutes (if space permits). You have advantage on Strength checks and your Speed increases by 10 feet. Once per Long Rest."
   },
-  "Elven Lineage": {
-    "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  "Elven Lineage (High Elf)": {
+    "description": "You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace it with a different cantrip from the Wizard spell list. At 3rd level you can cast Detect Magic once per long rest. At 5th level you can cast Misty Step once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
   },
-  "Elven Lineage.spell.Prestidigitation": {
+  "Elven Lineage (High Elf).spell.Prestidigitation": {
     "description": "A minor magical trick: create a sensory effect, light or snuff a flame, clean or soil an object, chill/warm/flavor material, create a symbol or trinket, or create an illusory image."
   },
-  "Elven Lineage.spell.Detect Magic": {
+  "Elven Lineage (High Elf).spell.Detect Magic": {
     "description": "For the duration, you sense the presence of magic within 30 feet of you. The spell can penetrate most barriers. Once per Long Rest (racial)."
   },
-  "Elven Lineage.spell.Misty Step": {
+  "Elven Lineage (High Elf).spell.Misty Step": {
     "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see. Once per Long Rest (racial)."
   },
   "Adrenaline Rush": {
@@ -5084,13 +5084,16 @@
   "Infernal Legacy.spell.Darkness": {
     "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius Sphere for the duration. Darkvision can't see through it and nonmagical light can't illuminate it. Once per Long Rest (racial)."
   },
-  "Elven Lineage.spell.Druidcraft": {
+  "Elven Lineage (Wood Elf)": {
+    "description": "You know the Druidcraft cantrip. At 3rd level you can cast Longstrider once per long rest. At 5th level you can cast Pass without Trace once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (choose when you select this lineage)."
+  },
+  "Elven Lineage (Wood Elf).spell.Druidcraft": {
     "description": "Whispering to the spirits of nature, you create one of several minor effects: predict weather, make a flower blossom or a seed pod open, create a harmless sensory effect, or instantly light or snuff out a candle, torch, or small campfire."
   },
-  "Elven Lineage.spell.Longstrider": {
+  "Elven Lineage (Wood Elf).spell.Longstrider": {
     "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial)."
   },
-  "Elven Lineage.spell.Pass without Trace": {
+  "Elven Lineage (Wood Elf).spell.Pass without Trace": {
     "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial)."
   },
   "Celestial Resistance": {

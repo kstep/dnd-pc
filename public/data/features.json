@@ -13351,7 +13351,7 @@
     "name": "Draconic Flight"
   },
   {
-    "name": "Drow Magic",
+    "name": "Elven Lineage (Drow)",
     "spells": {
       "cost": "Free Uses",
       "casting_ability": 5,
@@ -13411,7 +13411,7 @@
     "name": "Large Form"
   },
   {
-    "name": "Elven Lineage",
+    "name": "Elven Lineage (High Elf)",
     "spells": {
       "cost": "Free Uses",
       "casting_ability": 5,
@@ -13430,6 +13430,44 @@
         },
         {
           "name": "Misty Step",
+          "level": 2,
+          "sticky": true,
+          "min_level": 5,
+          "cost": 1
+        }
+      ]
+    },
+    "fields": [
+      {
+        "name": "Free Uses",
+        "kind": "FreeUses",
+        "levels": {
+          "3": 1,
+          "5": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "Elven Lineage (Wood Elf)",
+    "spells": {
+      "cost": "Free Uses",
+      "casting_ability": 5,
+      "list": [
+        {
+          "name": "Druidcraft",
+          "level": 0,
+          "sticky": true
+        },
+        {
+          "name": "Longstrider",
+          "level": 1,
+          "sticky": true,
+          "min_level": 3,
+          "cost": 1
+        },
+        {
+          "name": "Pass without Trace",
           "level": 2,
           "sticky": true,
           "min_level": 5,
