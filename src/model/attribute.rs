@@ -48,6 +48,7 @@ pub enum Attribute {
     Arg(u8),
     Feature(&'static str),
     FeatCategory(FeatureCategory),
+    Language(&'static str),
 }
 
 /// Intern a string for the lifetime of the program.
@@ -318,6 +319,10 @@ impl FromStr for Attribute {
                 let name = rest.trim_matches('`');
                 Ok(Self::Feature(intern(name)))
             }
+            "LANG" => {
+                let name = rest.trim_matches('`');
+                Ok(Self::Language(intern(name)))
+            }
             "FEAT_CAT" => rest
                 .parse::<FeatureCategory>()
                 .map(Self::FeatCategory)
@@ -404,6 +409,16 @@ impl fmt::Display for Attribute {
                     write!(f, "FEAT.`{name}`")
                 }
             }
+            Self::Language(name) => {
+                if name
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+                {
+                    write!(f, "LANG.{name}")
+                } else {
+                    write!(f, "LANG.`{name}`")
+                }
+            }
             Self::FeatCategory(cat) => write!(f, "FEAT_CAT.{cat}"),
         }
     }
@@ -469,6 +484,7 @@ impl Attribute {
             Self::Attacks => i18n.tr("attack-count"),
             Self::Arg(_) => "?".to_string(),
             Self::Feature(name) => name.to_string(),
+            Self::Language(name) => name.to_string(),
             Self::FeatCategory(cat) => i18n.tr(cat.tr_key()),
             _ => self.to_string(),
         }
@@ -747,6 +763,36 @@ mod tests {
             Attribute::FeatCategory(FeatureCategory::Dragonmark),
             Attribute::FeatCategory(FeatureCategory::General),
             Attribute::FeatCategory(FeatureCategory::EpicBoon),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_language_attributes() {
+        assert_eq!(
+            "LANG.Common".parse::<Attribute>().unwrap(),
+            Attribute::Language(intern("Common"))
+        );
+        assert_eq!(
+            "LANG.`Thieves' Cant`".parse::<Attribute>().unwrap(),
+            Attribute::Language(intern("Thieves' Cant"))
+        );
+        assert_eq!(
+            "LANG.Draconic".parse::<Attribute>().unwrap(),
+            Attribute::Language(intern("Draconic"))
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_language_round_trip() {
+        let cases = [
+            Attribute::Language(intern("Common")),
+            Attribute::Language(intern("Thieves' Cant")),
+            Attribute::Language(intern("Draconic")),
         ];
         for attr in cases {
             let s = attr.to_string();

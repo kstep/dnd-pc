@@ -693,6 +693,13 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Inspiration => {
                 self.combat.inspiration = value != 0;
             }
+            Attribute::Language(name) => {
+                if value != 0 {
+                    self.languages.insert(name.to_string());
+                } else {
+                    self.languages.remove(name);
+                }
+            }
             Attribute::Resistance(dt) => {
                 set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.resistant);
             }
@@ -755,6 +762,7 @@ impl expr::Context<Attribute, i32> for Character {
                 .get(&dt)
                 .map_or(0, |m| m.reduction as i32)),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
+            Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
             Attribute::FeatCategory(cat) => Ok(self.features.has_category(cat) as i32),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),

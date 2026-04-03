@@ -172,6 +172,7 @@ struct AssignmentSummarizer<'a> {
     skills: Vec<String>,
     saves: Vec<String>,
     equipment: Vec<String>,
+    languages: Vec<&'static str>,
     other: Vec<String>,
 }
 
@@ -184,6 +185,7 @@ impl<'a> AssignmentSummarizer<'a> {
             skills: Vec::new(),
             saves: Vec::new(),
             equipment: Vec::new(),
+            languages: Vec::new(),
             other: Vec::new(),
         }
     }
@@ -276,6 +278,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     }
                     Attribute::EquipmentProficiency(prof) => {
                         self.equipment.push(self.i18n.tr(prof.tr_key()));
+                    }
+                    Attribute::Language(name) => {
+                        self.languages.push(name);
                     }
                     _ => {
                         let label = attr.display_name(self.i18n);
@@ -385,6 +390,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
         if !self.equipment.is_empty() {
             parts.push(self.equipment.join(", "));
         }
+        if !self.languages.is_empty() {
+            parts.push(self.languages.join(", "));
+        }
         parts.extend(self.other);
         // Remaining stack entries (e.g. prerequisites — boolean expressions)
         for entry in self.stack {
@@ -415,7 +423,6 @@ pub struct FeatureViewData {
     pub label: String,
     pub category: String,
     pub description: String,
-    pub languages: String,
     pub prerequisites: String,
     pub assignments: String,
     pub spells: FeatureSpells,
@@ -445,7 +452,6 @@ pub fn collect_feature_views<'a>(
                 label: feat.label().to_string(),
                 category: i18n.tr(feat.category.tr_key()),
                 description: feat.description.clone(),
-                languages: feat.languages.join(", "),
                 prerequisites,
                 assignments,
                 spells: FeatureSpells::from_spell_list(
@@ -482,11 +488,6 @@ pub fn ReferenceFeaturesView(
                                 })}
                             </p>
                             <p>{feat.description}</p>
-                            {(!feat.languages.is_empty()).then(|| view! {
-                                <p class="feature-languages">
-                                    {move_tr!("ref-languages")}{": "}{feat.languages}
-                                </p>
-                            })}
                             {(!feat.assignments.is_empty()).then(|| view! {
                                 <p class="feature-assignments">{feat.assignments}</p>
                             })}

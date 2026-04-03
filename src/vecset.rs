@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{borrow::Borrow, ops::Deref};
 
 use serde::{Deserialize, Deserializer, Serialize};
 
@@ -27,9 +27,23 @@ impl<T: PartialEq> VecSet<T> {
         }
     }
 
-    /// Remove first match. Returns `true` if found.
-    pub fn remove(&mut self, value: &T) -> bool {
-        if let Some(pos) = self.0.iter().position(|v| v == value) {
+    /// Check if the set contains a value (like `HashSet::contains`).
+    pub fn contains<Q>(&self, value: &Q) -> bool
+    where
+        T: Borrow<Q>,
+        Q: PartialEq + ?Sized,
+    {
+        self.0.iter().any(|v| v.borrow() == value)
+    }
+
+    /// Remove first match. Returns `true` if found (like
+    /// `HashSet::remove`).
+    pub fn remove<Q>(&mut self, value: &Q) -> bool
+    where
+        T: Borrow<Q>,
+        Q: PartialEq + ?Sized,
+    {
+        if let Some(pos) = self.0.iter().position(|v| v.borrow() == value) {
             self.0.remove(pos);
             true
         } else {
