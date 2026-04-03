@@ -133,14 +133,22 @@ pub fn FeaturesPanel() -> impl IntoView {
                                         </button>
                                     </div>
                                     <span class="entry-sublabel">{source_text}</span>
-                                    <textarea
-                                        class="entry-desc"
-                                        placeholder=move_tr!("description")
-                                        prop:value=desc.clone()
-                                        on:change=move |e| {
-                                            features.write()[i].description = event_target_value(&e);
-                                        }
-                                    />
+                                    {if is_readonly {
+                                        Either::Left(view! {
+                                            <p class="entry-desc">{desc.clone()}</p>
+                                        })
+                                    } else {
+                                        Either::Right(view! {
+                                            <textarea
+                                                class="entry-desc"
+                                                placeholder=move_tr!("description")
+                                                prop:value=desc.clone()
+                                                on:change=move |e| {
+                                                    features.write()[i].description = event_target_value(&e);
+                                                }
+                                            />
+                                        })
+                                    }}
                                 </div>
                             }
                         })
