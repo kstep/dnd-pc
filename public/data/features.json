@@ -14244,7 +14244,7 @@
   {
     "name": "Aberrant Dragonmark",
     "prerequisites": "LEVEL >= 4",
-    "category": "General"
+    "category": "Dragonmark"
   },
   {
     "name": "Bloodlust",
