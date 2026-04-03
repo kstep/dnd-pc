@@ -252,36 +252,29 @@
           "level": 3,
           "features": [
             "Arcane Archer Lore",
-            "Arcane Shot",
-            "Arcane Shot Options"
+            "Arcane Shot"
           ]
         },
         "7": {
           "level": 7,
           "features": [
-            "Additional Arcane Shot Option",
             "Curving Shot",
             "Magic Arrow"
           ]
         },
         "10": {
           "level": 10,
-          "features": [
-            "Additional Arcane Shot Option"
-          ]
+          "features": []
         },
         "15": {
           "level": 15,
           "features": [
-            "Additional Arcane Shot Option",
             "Ever-Ready Shot"
           ]
         },
         "18": {
           "level": 18,
-          "features": [
-            "Additional Arcane Shot Option"
-          ]
+          "features": []
         }
       }
     },

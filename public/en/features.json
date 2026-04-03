@@ -219,7 +219,7 @@
     "description": "Increase one ability score by 1 (max 30). You can cast any spell you know or have prepared without expending a spell slot. Once you do so, you cannot use this benefit again until you finish a Long Rest."
   },
   "Boon of the Night Spirit": {
-    "description": "Increase one ability score by 1 (max 30). While in dim light or darkness you are Invisible. You also gain resistance to necrotic damage and can move through creatures and objects as if they were difficult terrain (taking 1d10 force damage if you end your turn inside an object)."
+    "description": "Ability Score Increase. Increase one ability score of your choice by 1, to a maximum of 30.\n\nMerge with Shadows. While within Dim Light or Darkness, you can give yourself the Invisible condition as a Bonus Action. The condition ends on you immediately after you take an action, a Bonus Action, or a Reaction.\n\nShadowy Form. While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
   },
   "Boon of Truesight": {
     "description": "Increase one ability score by 1 (max 30). You gain Truesight with a range of 60 feet, allowing you to see through magical darkness, invisible creatures, illusions, shapechangers, and into the Ethereal Plane."
@@ -663,7 +663,7 @@
     "description": "A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration."
   },
   "Artillerist Spells.spell.Ice Storm": {
-    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw, taking 2d8 Bludgeoning and 4d6 Cold damage on a failed save, or half as much on a successful one. The area becomes Difficult Terrain until the end of your next turn. Using a Higher-Level Spell Slot: the Bludgeoning damage increases by 1d8 for each slot level above 4."
+    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. A creature takes 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much damage on a successful one. Hailstones turn ground in the Cylinder into Difficult Terrain until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
   },
   "Artillerist Spells.spell.Wall of Fire": {
     "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save, or half on a success. One side of the wall (your choice) deals 5d8 Fire damage to each creature that ends its turn within 10 feet of that side or enters the wall for the first time on a turn. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 4."
@@ -720,7 +720,7 @@
     "description": "The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration."
   },
   "Battle Smith Spells.spell.Mass Cure Wounds": {
-    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 1d8 for each spell slot level above 5."
   },
   "Steel Defender": {
     "description": "Your tinkering has borne you a companion, a Steel Defender. You determine the defender's appearance and whether it has two legs or four; your choices don't affect the defender's game statistics. The Steel Defender is Friendly [Attitude] to you and your allies and obeys you. It vanishes if you die. The Defender in Combat: In combat, the defender acts during your turn."
@@ -741,7 +741,7 @@
     "description": "Objects in a 20-foot Cube [Area of Effect] within range are outlined in blue, green, or violet light (your choice). Each creature in the Cube [Area of Effect] is also outlined if it fails a Dexterity saving throw."
   },
   "Cartographer Spells.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Cartographer Spells.spell.Healing Word": {
     "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
@@ -1296,7 +1296,7 @@
     "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
   },
   "Life Domain Spells.spell.Mass Cure Wounds": {
-    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 1d8 for each spell slot level above 5."
   },
   "Preserve Life": {
     "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Points maximum."
@@ -1335,7 +1335,7 @@
     "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save, or half on a success. One side of the wall (your choice) deals 5d8 Fire damage to each creature that ends its turn within 10 feet of that side or enters the wall for the first time on a turn. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 4."
   },
   "Light Domain Spells.spell.Flame Strike": {
-    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: both the Fire and Radiant damage increase by 1d6 for each slot level above 5."
+    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one.\n\nUsing a Higher-Level Spell Slot. The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5."
   },
   "Light Domain Spells.spell.Scrying": {
     "description": "You can see and hear a creature you choose that is on the same plane of existence as you. The target makes a Wisdom saving throw, which is modified (see the tables below) by how well you know the target and the sort of physical connection you have to it."
@@ -1425,7 +1425,7 @@
     "description": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the War Domain Spells table, you thereafter always have the listed spells prepared."
   },
   "War Domain Spells.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "War Domain Spells.spell.Shield of Faith": {
     "description": "A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
@@ -1746,7 +1746,7 @@
     "description": "While using Wild Shape, you can cast spells in Beast form, except for any spell that has a Material component with a cost specified or that consumes its Material component."
   },
   "Archdruid": {
-    "description": "The vitality of nature constantly blooms within you, granting you the following benefits. Evergreen Wild Shape: Whenever you roll Initiative and have no uses of Wild Shape left, you regain one expended use of it. Nature Magician: You can convert uses of Wild Shape into a spell slot (no action required). Choose a number of your unexpended uses of Wild Shape and convert them into a single spell slot, with each use contributing 2 spell levels. For example, you can convert two uses to create a level 4 spell slot. Once you use this benefit, you can't do so again until you finish a Long Rest. Longevity: For every ten years that pass, your body ages only one year."
+    "description": "The vitality of nature constantly blooms within you, granting you the following benefits.\n\nEvergreen Wild Shape. Whenever you roll Initiative and have no uses of Wild Shape left, you regain one expended use of it.\n\nNature Magician. You can convert uses of Wild Shape into a spell slot (no action required). Choose a number of your unexpended uses of Wild Shape and convert them into a single spell slot, with each use contributing 2 spell levels. For example, you can convert two uses to create a level 4 spell slot. Once you use this benefit, you can't do so again until you finish a Long Rest.\n\nLongevity. For every ten years that pass, your body ages only one year."
   },
   "Circle of the Land Spells": {
     "description": "Whenever you finish a Long Rest, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared."
@@ -1797,7 +1797,7 @@
     "description": "Until the spell ends, sleet falls in a 40-foot-tall, 20-foot-radius Cylinder [Area of Effect] centered on a point you choose within range. The area is Heavily Obscured, and exposed flames in the area are doused. Ground in the Cylinder [Area of Effect] is Difficult Terrain."
   },
   "Circle of the Land Spells.spell.Stinking Cloud": {
-    "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it."
+    "description": "You create a 20-foot-radius Sphere of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it. Each creature that starts its turn in the Sphere must succeed on a Constitution saving throw or have the Poisoned condition until the end of the current turn. While Poisoned in this way, the creature can't take an action or a Bonus Action."
   },
   "Circle of the Land Spells.spell.Blight": {
     "description": "A creature that you can see within range makes a Constitution saving throw, taking 8d8 Necrotic damage on a failed save or half as much damage on a successful one. A Plant creature automatically fails the save. Alternatively, target a nonmagical plant that isn't a creature, such as a tree or shrub."
@@ -1806,7 +1806,7 @@
     "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
   },
   "Circle of the Land Spells.spell.Ice Storm": {
-    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw, taking 2d8 Bludgeoning and 4d6 Cold damage on a failed save, or half as much on a successful one. The area becomes Difficult Terrain until the end of your next turn. Using a Higher-Level Spell Slot: the Bludgeoning damage increases by 1d8 for each slot level above 4."
+    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. A creature takes 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much damage on a successful one. Hailstones turn ground in the Cylinder into Difficult Terrain until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
   },
   "Circle of the Land Spells.spell.Polymorph": {
     "description": "You attempt to transform a creature that you can see within range into a Beast. The target must succeed on a Wisdom saving throw or shape-shift into Beast form for the duration."
@@ -1857,7 +1857,7 @@
     "description": "A cool light wreathes your body for the duration, emitting Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. Until the spell ends, you have Resistance to Radiant damage, and your melee attacks deal an extra 2d6 Radiant damage on a hit."
   },
   "Circle of the Moon Spells.spell.Mass Cure Wounds": {
-    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere [Area of Effect] centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier."
+    "description": "A wave of healing energy washes out from a point you can see within range. Choose up to six creatures in a 30-foot-radius Sphere centered on that point. Each target regains Hit Points equal to 5d8 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 1d8 for each spell slot level above 5."
   },
   "Improved Circle Forms": {
     "description": "While in a Wild Shape form, you gain the following benefits. Lunar Radiance: Each of your attacks in a Wild Shape form can deal its normal damage type or Radiant damage. You make this choice each time you hit with those attacks. Increased Toughness: You can add your Wisdom modifier to your Constitution saving throws."
@@ -1971,7 +1971,7 @@
     "description": "Until the spell ends, you control any water inside an area you choose that is a Cube [Area of Effect] up to 100 feet on a side, using one of the following effects. As a Magic action on your later turns, you can repeat the same effect or choose a different one."
   },
   "Circle of the Sea Spells.spell.Ice Storm": {
-    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw, taking 2d8 Bludgeoning and 4d6 Cold damage on a failed save, or half as much on a successful one. The area becomes Difficult Terrain until the end of your next turn. Using a Higher-Level Spell Slot: the Bludgeoning damage increases by 1d8 for each slot level above 4."
+    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. A creature takes 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much damage on a successful one. Hailstones turn ground in the Cylinder into Difficult Terrain until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
   },
   "Circle of the Sea Spells.spell.Conjure Elemental": {
     "description": "You conjure a Large, intangible spirit from the Elemental Planes that appears in an unoccupied space within range. Choose the spirit's element, which determines its damage type: air (Lightning), earth (Thunder), fire (Fire), or water (Cold). The spirit lasts for the duration."
@@ -2166,13 +2166,7 @@
     "description": "You learn magical theory or some of the secrets of nature—typical for practitioners of this elven martial tradition. You choose to gain proficiency in either the Arcana or the Nature skill, and you choose to learn either the prestidigitation or the druidcraft cantrip."
   },
   "Arcane Shot": {
-    "description": "You learn to unleash special magical effects with some of your shots. When you gain this feature, you learn two Arcane Shot options of your choice (see \"Arcane Shot Options\" below). Once per turn when you fire an arrow from a shortbow or longbow as part of the Attack action, you can apply one of your Arcane Shot options to that arrow."
-  },
-  "Arcane Shot Options": {
-    "description": "The Arcane Shot feature lets you choose options for it at certain levels. The options are presented here in alphabetical order. They are all magical effects, and each one is associated with one of the schools of magic. If an option requires a saving throw, your Arcane Shot save DC is calculated as follows:"
-  },
-  "Additional Arcane Shot Option": {
-    "description": "You gain an additional Arcane Shot option of your choice when you reach 7th level."
+    "description": "You learn to unleash special magical effects with some of your shots. Once per turn when you fire an arrow from a shortbow or longbow as part of the Attack action, you can apply one of your Arcane Shot options to that arrow. If an option requires a saving throw, your Arcane Shot save DC equals 8 + your proficiency bonus + your Intelligence modifier. You regain all uses after a Short or Long Rest."
   },
   "Curving Shot": {
     "description": "You learn how to direct an errant arrow toward a new target. When you make an attack roll with a magic arrow and miss, you can use a bonus action to reroll the attack roll against a different target within 60 feet of the original target."
@@ -2574,7 +2568,7 @@
     "description": "You know the Minor Illusion spell. Wisdom is your spellcasting ability for it."
   },
   "Shadowy Figments.spell.Minor Illusion": {
-    "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
+    "description": "You create a sound or an image of an object within range that lasts for the duration. The illusion ends if you cast this spell again. If a creature takes a Study action to examine the sound or image, the creature can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the illusion becomes faint to the creature.\n\nSound. If you create a sound, its volume can range from a whisper to a scream. It can be your voice, someone else's voice, a lion's roar, a beating of drums, or any other sound you choose. The sound continues unabated throughout the duration, or you can make discrete sounds at different times before the spell ends.\n\nImage. If you create an image of an object—such as a chair, muddy footprints, or a small chest—it must be no larger than a 5-foot Cube. The image can't create sound, light, smell, or any other sensory effect. Physical interaction with the image reveals it to be an illusion, since things can pass through it."
   },
   "Shadow Step": {
     "description": "While entirely within Dim Light or Darkness, you can use a Bonus Action to teleport up to 60 feet to an unoccupied space you can see that is also in Dim Light or Darkness. You then have Advantage on the next melee attack you make before the end of the current turn."
@@ -2733,7 +2727,7 @@
     "description": "You contact a deity or a divine proxy and ask up to three questions that can be answered with yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question."
   },
   "Oath of Devotion Spells.spell.Flame Strike": {
-    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: both the Fire and Radiant damage increase by 1d6 for each slot level above 5."
+    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one.\n\nUsing a Higher-Level Spell Slot. The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5."
   },
   "Sacred Weapon": {
     "description": "When you take the Attack action, you can expend one use of your Channel Divinity to imbue one Melee weapon that you are holding with positive energy. For 10 minutes or until you use this feature again, you add your Charisma modifier to attack rolls you make with that weapon (minimum bonus of +1), and each time you hit with it, you cause it to deal its normal damage type or Radiant damage. The weapon also emits Bright Light in a 20-foot radius and Dim Light 20 feet beyond that. You can end this effect early (no action required). This effect also ends if you drop the weapon or die."
@@ -2772,7 +2766,7 @@
     "description": "For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder."
   },
   "Oath of the Ancients Spells.spell.Ice Storm": {
-    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw, taking 2d8 Bludgeoning and 4d6 Cold damage on a failed save, or half as much on a successful one. The area becomes Difficult Terrain until the end of your next turn. Using a Higher-Level Spell Slot: the Bludgeoning damage increases by 1d8 for each slot level above 4."
+    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. A creature takes 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much damage on a successful one. Hailstones turn ground in the Cylinder into Difficult Terrain until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
   },
   "Oath of the Ancients Spells.spell.Stoneskin": {
     "description": "Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage."
@@ -2916,7 +2910,7 @@
     "description": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Glory Spells table, you thereafter always have the listed spells prepared."
   },
   "Oath of Glory Spells.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Oath of Glory Spells.spell.Heroism": {
     "description": "A willing creature you touch is imbued with bravery. Until the spell ends, the creature is immune to the Frightened condition and gains Temporary Hit Points equal to your spellcasting ability modifier at the start of each of its turns."
@@ -2940,7 +2934,7 @@
     "description": "You touch a willing creature. For the duration, the target's movement is unaffected by Difficult Terrain, and spells and other magical effects can neither reduce the target's Speed nor cause the target to have the Paralyzed or Restrained conditions."
   },
   "Oath of Glory Spells.spell.Legend Lore": {
-    "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
+    "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known. The more information you already know about the thing, the more precise and detailed the information you receive is. If the famous thing you chose isn't actually famous, you hear sad musical notes played on a trombone, and the spell fails."
   },
   "Oath of Glory Spells.spell.Yolande's Regal Presence": {
     "description": "You surround yourself with unearthly majesty in a 10-foot Emanation [Area of Effect]. Whenever the Emanation [Area of Effect] enters the space of a creature you can see and whenever a creature you can see enters the Emanation [Area of Effect] or ends its turn there, you can force that creature to make a Wisdom saving throw. On a failed save, the creature has the Charmed condition for 1 minute or until it takes any damage. While Charmed in this way, the creature also has the Incapacitated condition and its Speed is 0."
@@ -2994,7 +2988,7 @@
     "description": "You exert control over the elements, creating one of the following effects within range. Beckon Air: You create a breeze strong enough to ripple cloth, stir dust, rustle leaves, and close open doors and shutters, all in a 5-foot Cube [Area of Effect]."
   },
   "Genie Spells.spell.Chromatic Orb": {
-    "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
+    "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type. If you roll the same number on two or more of the d8s, the orb leaps to a different target of your choice within 30 feet of the target. Make an attack roll against the new target, and make a new damage roll. The orb can't leap again unless you cast the spell with a level 2+ spell slot.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell."
   },
   "Genie Spells.spell.Thunderous Smite": {
     "description": "Your strike rings with thunder that is audible within 300 feet of you, and the target takes an extra 2d6 Thunder damage from the attack. Additionally, if the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet away from you and have the Prone condition."
@@ -3003,7 +2997,7 @@
     "description": "Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it's impossible to track which image is real."
   },
   "Genie Spells.spell.Phantasmal Force": {
-    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli. The target rationalizes any illogical interaction with the phantasm. The target can take a Study action to make an Intelligence (Investigation) check against your spell save DC, ending the effect on a success. While affected, the target treats the phantasm as real and can take 1d6 Psychic damage each turn from a harmful phantasm."
+    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli.\n\nThe target can take a Study action to examine the phantasm with an Intelligence (Investigation) check against your spell save DC. If the check succeeds, the target realizes that the phantasm is an illusion, and the spell ends.\n\nWhile affected by the spell, the target treats the phantasm as if it were real and rationalizes any illogical outcomes from interacting with it. An affected target can even take damage from the illusion if the phantasm represents a dangerous creature or hazard. On each of your turns, such a phantasm can deal 2d8 Psychic damage to the target if it is in the phantasm's area or within 5 feet of the phantasm."
   },
   "Genie Spells.spell.Fly": {
     "description": "You touch a willing creature. For the duration, the target gains a Fly Speed of 60 feet and can hover. When the spell ends, the target falls if it is still aloft unless it can stop the fall."
@@ -3234,7 +3228,7 @@
     "description": "A creature you touch has the Invisible condition until the spell ends. Anything the target is wearing or carrying is also Invisible. Unlike the Invisibility spell, this effect doesn't end if the target attacks, deals damage, or forces a saving throw."
   },
   "Gloom Stalker Spells.spell.Seeming": {
-    "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+    "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets. The spell can change the appearance of the targets' bodies and equipment. You can make each creature seem 1 foot shorter or taller and appear heavier or lighter. A target's new appearance must have the same basic arrangement of limbs as the target, but the extent of the illusion is otherwise up to you.\n\nThe changes wrought by this spell fail to hold up to physical inspection. A creature that takes the Study action to examine a target can make an Intelligence (Investigation) check against your spell save DC. If it succeeds, it becomes aware that the target is disguised."
   },
   "Umbral Sight": {
     "description": "You gain Darkvision with a range of 60 feet. If you already have Darkvision when you gain this feature, its range increases by 60 feet. You are also adept at evading creatures that rely on Darkvision. While entirely in Darkness, you have the Invisible condition to any creature that relies on Darkvision to see you in that Darkness."
@@ -3297,7 +3291,7 @@
     "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
   },
   "Fey Wanderer Spells.spell.Summon Fey": {
-    "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+    "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy. The creature resembles a Fey creature of your choice marked by the chosen mood, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends.\n\nThe creature is an ally to you and your allies. In combat, the creature shares your Initiative count, but it takes its turn immediately after yours. It obeys your verbal commands (no action required by you). If you don't issue any, it takes the Dodge action and uses its movement to avoid danger.\n\nUsing a Higher-Level Spell Slot. Use the spell slot's level for the spell's level in the stat block."
   },
   "Fey Wanderer Spells.spell.Dimension Door": {
     "description": "You teleport to a location within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"300 feet upward to the northwest at a 45-degree angle.\" You can also bring one willing creature of your size or smaller, provided it is within 5 feet of you. If you would arrive in an occupied space, both you and any traveling companion each take 4d6 Force damage, and the teleportation fails."
@@ -3369,7 +3363,7 @@
     "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
   },
   "Winter Walker Spells.spell.Ice Storm": {
-    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range. Each creature in the Cylinder [Area of Effect] makes a Dexterity saving throw, taking 2d8 Bludgeoning and 4d6 Cold damage on a failed save, or half as much on a successful one. The area becomes Difficult Terrain until the end of your next turn. Using a Higher-Level Spell Slot: the Bludgeoning damage increases by 1d8 for each slot level above 4."
+    "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. A creature takes 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much damage on a successful one. Hailstones turn ground in the Cylinder into Difficult Terrain until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
   },
   "Winter Walker Spells.spell.Cone of Cold": {
     "description": "You unleash a blast of cold air. Each creature in a 60-foot Cone [Area of Effect] originating from you makes a Constitution saving throw, taking 8d8 Cold damage on a failed save or half as much damage on a successful one. A creature killed by this spell becomes a frozen statue until it thaws."
@@ -3936,7 +3930,7 @@
     "description": "When you reach a Sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared."
   },
   "Draconic Spells.spell.Chromatic Orb": {
-    "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type."
+    "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type. If you roll the same number on two or more of the d8s, the orb leaps to a different target of your choice within 30 feet of the target. Make an attack roll against the new target, and make a new damage roll. The orb can't leap again unless you cast the spell with a level 2+ spell slot.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell."
   },
   "Draconic Spells.spell.Command": {
     "description": "You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn."
@@ -3960,7 +3954,7 @@
     "description": "One creature you can see within range makes a Wisdom saving throw. It does so with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it. The Charmed creature is Friendly [Attitude] to you."
   },
   "Draconic Spells.spell.Legend Lore": {
-    "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known."
+    "description": "Name or describe a famous person, place, or object. The spell brings to your mind a brief summary of the significant lore about that famous thing, as described by the DM. The lore might consist of important details, amusing revelations, or even secret lore that has never been widely known. The more information you already know about the thing, the more precise and detailed the information you receive is. If the famous thing you chose isn't actually famous, you hear sad musical notes played on a trombone, and the spell fails."
   },
   "Draconic Spells.spell.Summon Dragon": {
     "description": "You call forth a Dragon spirit. It manifests in an unoccupied space that you can see within range and uses the Draconic Spirit stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your allies."
@@ -4008,7 +4002,7 @@
     "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
   },
   "Spellfire Spells.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Spellfire Spells.spell.Lesser Restoration": {
     "description": "You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned."
@@ -4032,7 +4026,7 @@
     "description": "You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration. When the wall appears, each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage on a failed save, or half on a success. One side of the wall (your choice) deals 5d8 Fire damage to each creature that ends its turn within 10 feet of that side or enters the wall for the first time on a turn. Using a Higher-Level Spell Slot: the damage increases by 1d8 for each slot level above 4."
   },
   "Spellfire Spells.spell.Flame Strike": {
-    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder [Area of Effect] centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one. Using a Higher-Level Spell Slot: both the Fire and Radiant damage increase by 1d6 for each slot level above 5."
+    "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much damage on a successful one.\n\nUsing a Higher-Level Spell Slot. The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5."
   },
   "Spellfire Spells.spell.Greater Restoration": {
     "description": "You touch a creature and magically remove one of the following effects from it: 1 Exhaustion level The Charmed or Petrified condition A curse, including the target's Attunement to a cursed magic item Any reduction to one of the target's ability scores Any reduction to the target's Hit Points maximum"
@@ -4326,7 +4320,7 @@
     "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
   },
   "Archfey Spells.spell.Phantasmal Force": {
-    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli. The target rationalizes any illogical interaction with the phantasm. The target can take a Study action to make an Intelligence (Investigation) check against your spell save DC, ending the effect on a success. While affected, the target treats the phantasm as real and can take 1d6 Psychic damage each turn from a harmful phantasm."
+    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli.\n\nThe target can take a Study action to examine the phantasm with an Intelligence (Investigation) check against your spell save DC. If the check succeeds, the target realizes that the phantasm is an illusion, and the spell ends.\n\nWhile affected by the spell, the target treats the phantasm as if it were real and rationalizes any illogical outcomes from interacting with it. An affected target can even take damage from the illusion if the phantasm represents a dangerous creature or hazard. On each of your turns, such a phantasm can deal 2d8 Psychic damage to the target if it is in the phantasm's area or within 5 feet of the phantasm."
   },
   "Archfey Spells.spell.Blink": {
     "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell ends instantly if you are already on that plane)."
@@ -4344,7 +4338,7 @@
     "description": "One Humanoid you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target has Advantage on the save if you or your allies are fighting it. Whenever the target takes damage, it repeats the save, ending the spell on itself on a success."
   },
   "Archfey Spells.spell.Seeming": {
-    "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets."
+    "description": "You give an illusory appearance to each creature of your choice that you can see within range. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. You can give the same appearance or different ones to the targets. The spell can change the appearance of the targets' bodies and equipment. You can make each creature seem 1 foot shorter or taller and appear heavier or lighter. A target's new appearance must have the same basic arrangement of limbs as the target, but the extent of the illusion is otherwise up to you.\n\nThe changes wrought by this spell fail to hold up to physical inspection. A creature that takes the Study action to examine a target can make an Intelligence (Investigation) check against your spell save DC. If it succeeds, it becomes aware that the target is disguised."
   },
   "Steps of the Fey": {
     "description": "Your patron grants you the ability to move between the boundaries of the planes. You can cast Misty Step without expending a spell slot a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest. In addition, whenever you cast that spell, you can choose one of the following additional effects."
@@ -4371,7 +4365,7 @@
     "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier."
   },
   "Celestial Spells.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Celestial Spells.spell.Aid": {
     "description": "Choose up to three creatures within range. Each target's Hit Points maximum and current Hit Points increase by 5 for the duration."
@@ -4431,7 +4425,7 @@
     "description": "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere [Area of Effect] centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much damage on a successful one. The fire spreads around corners and ignites flammable objects that aren't being worn or carried. Using a Higher-Level Spell Slot: the damage increases by 1d6 for each slot level above 3."
   },
   "Fiend Spells.spell.Stinking Cloud": {
-    "description": "You create a 20-foot-radius Sphere [Area of Effect] of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it."
+    "description": "You create a 20-foot-radius Sphere of yellow, nauseating gas centered on a point within range. The cloud is Heavily Obscured. The cloud lingers in the air for the duration or until a strong wind (such as the one created by Gust of Wind) disperses it. Each creature that starts its turn in the Sphere must succeed on a Constitution saving throw or have the Poisoned condition until the end of the current turn. While Poisoned in this way, the creature can't take an action or a Bonus Action."
   },
   "Fiend Spells.spell.Fire Shield": {
     "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose."
@@ -4473,7 +4467,7 @@
     "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns. Sense Thoughts: You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic."
   },
   "Great Old One Spells.spell.Phantasmal Force": {
-    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube [Area of Effect] and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli. The target rationalizes any illogical interaction with the phantasm. The target can take a Study action to make an Intelligence (Investigation) check against your spell save DC, ending the effect on a success. While affected, the target treats the phantasm as real and can take 1d6 Psychic damage each turn from a harmful phantasm."
+    "description": "You attempt to craft an illusion in the mind of a creature you can see within range. The target makes an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other phenomenon that is no larger than a 10-foot Cube and that is perceivable only to the target for the duration. The phantasm includes sound, temperature, and other stimuli.\n\nThe target can take a Study action to examine the phantasm with an Intelligence (Investigation) check against your spell save DC. If the check succeeds, the target realizes that the phantasm is an illusion, and the spell ends.\n\nWhile affected by the spell, the target treats the phantasm as if it were real and rationalizes any illogical outcomes from interacting with it. An affected target can even take damage from the illusion if the phantasm represents a dangerous creature or hazard. On each of your turns, such a phantasm can deal 2d8 Psychic damage to the target if it is in the phantasm's area or within 5 feet of the phantasm."
   },
   "Great Old One Spells.spell.Clairvoyance": {
     "description": "You create an Invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees)."
@@ -4758,7 +4752,7 @@
     "description": "You can cast Illusion spells without providing Verbal components, and if an Illusion spell you cast has a range of 10+ feet, the range increases by 60 feet. You also know the Minor Illusion cantrip. If you already know it, you learn a different Wizard cantrip of your choice. The cantrip doesn't count against your number of cantrips known."
   },
   "Improved Illusions.spell.Minor Illusion": {
-    "description": "You create a sound or an image of an object within range that lasts for the duration. See the descriptions below for the effects of each. The illusion ends if you cast this spell again."
+    "description": "You create a sound or an image of an object within range that lasts for the duration. The illusion ends if you cast this spell again. If a creature takes a Study action to examine the sound or image, the creature can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the illusion becomes faint to the creature.\n\nSound. If you create a sound, its volume can range from a whisper to a scream. It can be your voice, someone else's voice, a lion's roar, a beating of drums, or any other sound you choose. The sound continues unabated throughout the duration, or you can make discrete sounds at different times before the spell ends.\n\nImage. If you create an image of an object—such as a chair, muddy footprints, or a small chest—it must be no larger than a 5-foot Cube. The image can't create sound, light, smell, or any other sensory effect. Physical interaction with the image reveals it to be an illusion, since things can pass through it."
   },
   "Phantasmal Creatures": {
     "description": "You always have the Summon Beast and Summon Fey spells prepared. Whenever you cast either spell, you can change its school to Illusion, which causes the summoned creature to appear spectral. You can cast the Illusion version of each spell without expending a spell slot, but casting it without a slot halves the creature's Hit Points."
@@ -4767,7 +4761,7 @@
     "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range and uses the Bestial Spirit stat block. When you cast the spell, choose an environment: Air, Land, or Water."
   },
   "Phantasmal Creatures.spell.Summon Fey": {
-    "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy."
+    "description": "You call forth a Fey spirit. It manifests in an unoccupied space that you can see within range and uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy. The creature resembles a Fey creature of your choice marked by the chosen mood, which determines certain details in its stat block. The creature disappears when it drops to 0 Hit Points or when the spell ends.\n\nThe creature is an ally to you and your allies. In combat, the creature shares your Initiative count, but it takes its turn immediately after yours. It obeys your verbal commands (no action required by you). If you don't issue any, it takes the Dodge action and uses its movement to avoid danger.\n\nUsing a Higher-Level Spell Slot. Use the spell slot's level for the spell's level in the stat block."
   },
   "Illusory Self": {
     "description": "When a creature hits you with an attack roll, you can take a Reaction to interpose an illusory duplicate of yourself between the attacker and yourself. The attack automatically misses you, then the illusion dissipates. You can use this feature a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
@@ -4872,7 +4866,7 @@
     "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
   },
   "Star Map.spell.Guiding Bolt": {
-    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage."
+    "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Cosmic Omen.field.Actions.option.Cosmic Omen": {
     "description": "Reaction: Weal (even) — add 1d6 to a creature's d20 test within 30 ft; Woe (odd) — subtract 1d6 from a creature's d20 test within 30 ft"
@@ -5013,7 +5007,7 @@
     "description": "You know the Mending and Prestidigitation cantrips. You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP) that produces its effect when activated with a Bonus Action. You can have three such devices at a time; each falls apart after 8 hours. Intelligence, Wisdom, or Charisma is your spellcasting ability."
   },
   "Gnomish Lineage.spell.Minor Illusion": {
-    "description": "You create a sound or an image of an object within range that lasts for 1 minute. The illusion ends if you dismiss it or cast this spell again."
+    "description": "You create a sound or an image of an object within range that lasts for the duration. The illusion ends if you cast this spell again. If a creature takes a Study action to examine the sound or image, the creature can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the illusion becomes faint to the creature.\n\nSound. If you create a sound, its volume can range from a whisper to a scream. It can be your voice, someone else's voice, a lion's roar, a beating of drums, or any other sound you choose. The sound continues unabated throughout the duration, or you can make discrete sounds at different times before the spell ends.\n\nImage. If you create an image of an object—such as a chair, muddy footprints, or a small chest—it must be no larger than a 5-foot Cube. The image can't create sound, light, smell, or any other sensory effect. Physical interaction with the image reveals it to be an illusion, since things can pass through it."
   },
   "Giant Ancestry": {
     "description": "Choose one: Cloud's Jaunt (teleport 30 ft as Bonus Action), Fire's Burn (+1d10 fire on hit), Frost's Chill (+1d6 cold on hit, -10 ft speed), Hill's Tumble (knock Large or smaller Prone on hit), Stone's Endurance (Reaction: reduce damage by 1d12 + CON mod), Storm's Thunder (Reaction: 1d8 thunder to attacker within 60 ft). Uses: Proficiency Bonus per Long Rest."
@@ -5638,5 +5632,83 @@
   },
   "Devious Strikes.field.Actions.option.Obscure": {
     "description": "Cost: 3d6. The target must succeed on a Dexterity saving throw, or it has the Blinded condition until the end of its next turn."
+  },
+  "Arcane Shot.field.Arcane Shot Options": {
+    "label": "Arcane Shot Options"
+  },
+  "Arcane Shot.field.Uses": {
+    "label": "Uses"
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Banishing Shot": {
+    "label": "Banishing Shot",
+    "description": "Your ammunition temporarily sequesters your target in a harmless demiplane. The creature you hit takes additional Psychic damage equal to one roll of your Arcane Shot Die and must succeed on a Charisma saving throw or be banished. While banished, the creature has the Incapacitated condition and a Speed of 0. At the end of its next turn, the target reappears in the space it left or the nearest unoccupied space."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Beguiling Shot": {
+    "label": "Beguiling Shot",
+    "description": "Your ammunition beguiles your target. The creature you hit takes additional Psychic damage equal to two rolls of your Arcane Shot Die and must succeed on a Wisdom saving throw or have the Charmed condition until the start of your next turn."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Bursting Shot": {
+    "label": "Bursting Shot",
+    "description": "You imbue your ammunition with explosive force energy. Immediately after you deal damage to the creature, your target and each creature within a 10-foot Emanation originating from the target take Force damage equal to two rolls of your Arcane Shot Die."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Darkening Shot": {
+    "label": "Darkening Shot",
+    "description": "Magical shadows fill a 15-foot Emanation originating from the ammunition for 1 minute. Nonmagical flames in the Emanation are extinguished, and creatures in the Emanation have a -5 penalty to Wisdom (Perception) checks and Passive Perception."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Enfeebling Shot": {
+    "label": "Enfeebling Shot",
+    "description": "Your ammunition saps your target's strength. The creature you hit takes additional Necrotic damage equal to two rolls of your Arcane Shot Die. The target must also succeed on a Constitution saving throw or have the Poisoned condition until the end of its next turn."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Grasping Shot": {
+    "label": "Grasping Shot",
+    "description": "Your ammunition creates clutching brambles around your target. The creature you hit takes additional Slashing damage equal to one roll of your Arcane Shot Die and must succeed on a Strength saving throw or have the Restrained condition for 1 minute or until you use this option again."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Piercing Shot": {
+    "label": "Piercing Shot",
+    "description": "You give your ammunition an ethereal quality. You don't make an attack roll. Instead, the ammunition shoots forward in a 30-foot Line that is 1 foot wide, ignoring cover. Each creature in the Line must make a Dexterity saving throw, taking damage as if hit plus additional Piercing damage equal to two rolls of your Arcane Shot Die on a failure, or half on a success."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Seeking Shot": {
+    "label": "Seeking Shot",
+    "description": "Your ammunition can seek out a target. You don't make an attack roll. Instead, choose one creature you have seen in the last minute. The ammunition flies toward that creature, moving around corners and ignoring Half and Three-Quarters Cover. The target must make a Dexterity saving throw, taking damage as if hit plus additional Force damage equal to two rolls of your Arcane Shot Die on a failure, or half on a success."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Shadow Shot": {
+    "label": "Shadow Shot",
+    "description": "Your ammunition occludes your foe's vision with shadows. The creature you hit takes additional Psychic damage equal to one roll of your Arcane Shot Die, and it must succeed on a Wisdom saving throw or have the Blinded condition until the end of its next turn."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Unlocking Shot": {
+    "label": "Unlocking Shot",
+    "description": "A burst of magic fills a 15-foot Emanation originating from the ammunition. A loud knock, audible up to 300 feet away, also emits from the ammunition. Any object in the Emanation that is held shut by a mundane lock or that is stuck or barred becomes unlocked, unstuck, or unbarred."
+  },
+  "Arcane Shot.field.Arcane Shot Options.option.Vine Shot": {
+    "label": "Vine Shot",
+    "description": "A 60-foot-long vine grows from the ammunition. You and other creatures can then climb it. The vine withers away after 10 minutes."
+  },
+  "Arcane Shot.field.Arcane Shot Die": {
+    "label": "Arcane Shot Die"
+  },
+  "Boon of the Bright Sun.field.Actions": {
+    "label": "Actions"
+  },
+  "Boon of the Bright Sun.field.Actions.option.Daylight Presence": {
+    "label": "Daylight Presence",
+    "description": "As a Bonus Action, radiate a 30-foot Emanation of sunlight. You and allies gain 10 Temporary Hit Points at the start of each of your turns."
+  },
+  "Boon of the Soul Drinker.field.Actions": {
+    "label": "Actions"
+  },
+  "Boon of the Soul Drinker.field.Actions.option.Siphon Life": {
+    "label": "Siphon Life",
+    "description": "When an enemy within 120 feet is reduced to 0 Hit Points, use a Reaction to regain 50 Hit Points. Once per Short or Long Rest."
+  },
+  "Boon of the Night Spirit.field.Actions": {
+    "label": "Actions"
+  },
+  "Boon of the Night Spirit.field.Actions.option.Merge with Shadows": {
+    "label": "Merge with Shadows",
+    "description": "While in Dim Light or Darkness, give yourself the Invisible condition as a Bonus Action. Ends when you take an action, Bonus Action, or Reaction."
+  },
+  "Boon of the Night Spirit.field.Actions.option.Shadowy Form": {
+    "label": "Shadowy Form",
+    "description": "While in Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
   }
 }

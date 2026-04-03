@@ -823,7 +823,28 @@
         "when": "OnFeatureAdd"
       }
     ],
-    "category": "EpicBoon"
+    "category": "EpicBoon",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Merge with Shadows",
+            "action": "BonusAction"
+          },
+          {
+            "name": "Shadowy Form",
+            "effects": [
+              {
+                "name": "Shadowy Form",
+                "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Boon of Truesight",
@@ -5818,13 +5839,72 @@
     ]
   },
   {
-    "name": "Arcane Shot"
-  },
-  {
-    "name": "Arcane Shot Options"
-  },
-  {
-    "name": "Additional Arcane Shot Option"
+    "name": "Arcane Shot",
+    "fields": [
+      {
+        "kind": "Choice",
+        "name": "Arcane Shot Options",
+        "levels": {
+          "3": 2,
+          "7": 3,
+          "10": 4,
+          "15": 5,
+          "18": 6
+        },
+        "options": [
+          {
+            "name": "Banishing Shot"
+          },
+          {
+            "name": "Beguiling Shot"
+          },
+          {
+            "name": "Bursting Shot"
+          },
+          {
+            "name": "Darkening Shot"
+          },
+          {
+            "name": "Enfeebling Shot"
+          },
+          {
+            "name": "Grasping Shot"
+          },
+          {
+            "name": "Piercing Shot"
+          },
+          {
+            "name": "Seeking Shot"
+          },
+          {
+            "name": "Shadow Shot"
+          },
+          {
+            "name": "Unlocking Shot"
+          },
+          {
+            "name": "Vine Shot"
+          }
+        ]
+      },
+      {
+        "kind": "FreeUses",
+        "name": "Uses",
+        "levels": {
+          "3": "max(1, INT.MOD)"
+        }
+      },
+      {
+        "kind": "Die",
+        "name": "Arcane Shot Die",
+        "levels": {
+          "3": "1d6",
+          "10": "1d8",
+          "15": "1d10",
+          "18": "1d12"
+        }
+      }
+    ]
   },
   {
     "name": "Curving Shot",
@@ -14006,27 +14086,10 @@
   },
   {
     "name": "Bestial Instincts",
-    "fields": [
+    "assign": [
       {
-        "name": "Skill",
-        "kind": "Choice",
-        "levels": {
-          "1": 1
-        },
-        "options": [
-          {
-            "name": "Acrobatics"
-          },
-          {
-            "name": "Athletics"
-          },
-          {
-            "name": "Intimidation"
-          },
-          {
-            "name": "Survival"
-          }
-        ]
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.3))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
@@ -14439,7 +14502,25 @@
         "when": "OnFeatureAdd"
       }
     ],
-    "category": "EpicBoon"
+    "category": "EpicBoon",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Daylight Presence",
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Daylight Presence",
+                "expr": "TEMP_HP = max(TEMP_HP, 10)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Boon of the Furious Storm",
@@ -14463,9 +14544,32 @@
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(STR < 30, STR += ARG.0); if(DEX < 30, DEX += ARG.1); if(CON < 30, CON += ARG.2); if(INT < 30, INT += ARG.3); if(WIS < 30, WIS += ARG.4); if(CHA < 30, CHA += ARG.5))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "RESIST.COLD = 1; RESIST.NECRO = 1",
+        "when": "OnFeatureAdd"
       }
     ],
-    "category": "EpicBoon"
+    "category": "EpicBoon",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Siphon Life",
+            "action": "Reaction",
+            "effects": [
+              {
+                "name": "Siphon Life",
+                "expr": "HP += 50",
+                "duration": "Instant"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Child of the Sun",
@@ -14537,6 +14641,10 @@
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(CON < 20, CON += ARG.0); if(CHA < 20, CHA += ARG.1))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "guard(in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 1, RESIST.ACID += ARG.2; RESIST.COLD += ARG.3; RESIST.FIRE += ARG.4; RESIST.LIGHT += ARG.5; RESIST.POISON += ARG.6)",
+        "when": "OnFeatureAdd"
       }
     ],
     "category": "General"
@@ -14548,7 +14656,7 @@
   },
   {
     "name": "Enclave Magic",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and FEAT.`Emerald Enclave Fledgling`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
@@ -14729,7 +14837,7 @@
   },
   {
     "name": "Harper Teamwork",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and FEAT.`Harper Agent`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
@@ -14751,7 +14859,7 @@
   },
   {
     "name": "Lordly Resolve",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and FEAT.`Lords' Alliance Agent`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(CHA < 20, CHA += ARG.1))",
@@ -14860,12 +14968,12 @@
   },
   {
     "name": "Potent Dragonmark",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and FEAT_CAT.Dragonmark",
     "category": "General"
   },
   {
     "name": "Purple Dragon Commandant",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and (FEAT.`Purple Dragon Rook` or PROF.MARTIAL_WEAPONS)",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1))",
@@ -14908,7 +15016,7 @@
   },
   {
     "name": "Spellfire Adept",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and (FEAT.`Spellfire Spark` or CASTER_LEVEL >= 1)",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2))",
@@ -14982,7 +15090,7 @@
   },
   {
     "name": "Zhentarim Tactics",
-    "prerequisites": "LEVEL >= 4",
+    "prerequisites": "LEVEL >= 4 and FEAT.`Zhentarim Ruffian`",
     "assign": [
       {
         "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(DEX < 20, DEX += ARG.0); if(CHA < 20, CHA += ARG.1))",
