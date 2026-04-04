@@ -7,6 +7,7 @@ use leptos_router::{
     path,
 };
 
+mod ai;
 mod components;
 pub mod constvec;
 mod demap;

@@ -307,6 +307,34 @@ fn migrate_v7(value: &mut serde_json::Value) {
     }
 }
 
+use crate::ai::{AiSettings, Story};
+
+const AI_SETTINGS_KEY: &str = "dnd_pc_ai_settings";
+
+fn stories_key(id: &Uuid) -> String {
+    format!("dnd_pc_stories_{id}")
+}
+
+pub fn load_ai_settings() -> AiSettings {
+    LocalStorage::get(AI_SETTINGS_KEY).unwrap_or_default()
+}
+
+pub fn save_ai_settings(settings: &AiSettings) {
+    if let Err(error) = LocalStorage::set(AI_SETTINGS_KEY, settings) {
+        log::error!("Failed to save AI settings: {error}");
+    }
+}
+
+pub fn load_stories(id: &Uuid) -> Vec<Story> {
+    LocalStorage::get(stories_key(id)).unwrap_or_default()
+}
+
+pub fn save_stories(id: &Uuid, stories: &[Story]) {
+    if let Err(error) = LocalStorage::set(stories_key(id), stories) {
+        log::error!("Failed to save stories: {error}");
+    }
+}
+
 /// Move `inputs` from `feature_data[name].inputs` to `features[i].inputs`.
 /// Each feature instance now carries its own inputs for stackable support.
 fn migrate_v8(value: &mut serde_json::Value) {
