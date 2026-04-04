@@ -11,7 +11,7 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     BASE_URL,
-    ai::{AiSettings, CharacterContext, Story, generate_story},
+    ai::{AiSettings, CharacterContext, Story, fetch_models, generate_story},
     components::{icon::Icon, modal::Modal},
     model::Character,
     pages::reference::ReferenceSidebar,
@@ -29,6 +29,17 @@ struct StoryParams {
 fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
     let draft = RwSignal::new(settings.get_untracked());
 
+    // Refetch models when modal opens (tracks `show`)
+    let remote_models = LocalResource::new(move || {
+        let current = settings.get_untracked();
+        async move {
+            if !show.get() || !current.has_api_key() {
+                return Vec::new();
+            }
+            fetch_models(&current).await.unwrap_or_default()
+        }
+    });
+
     Effect::new(move || {
         if show.get() {
             draft.set(settings.get_untracked());
@@ -40,6 +51,22 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
         storage::save_ai_settings(&saved);
         settings.set(saved);
         show.set(false);
+    };
+
+    let models_list = move || {
+        let remote = remote_models.read();
+        let remote = remote.as_deref().unwrap_or(&[]);
+        if remote.is_empty() {
+            draft
+                .get()
+                .provider
+                .available_models()
+                .iter()
+                .map(|model| model.to_string())
+                .collect::<Vec<_>>()
+        } else {
+            remote.to_vec()
+        }
     };
 
     view! {
@@ -64,17 +91,24 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                     </div>
                     <div class="textarea-field">
                         <label>{move_tr!("story-model")}</label>
-                        <select
-                            prop:value=move || draft.get().model
-                            on:change=move |event| {
-                                draft.update(|draft| draft.model = event_target_value(&event));
-                            }
-                        >
-                            {move || draft.get().provider.available_models().iter().map(|model| {
-                                let selected = draft.get().model == *model;
-                                view! { <option value=*model selected=selected>{*model}</option> }
-                            }).collect::<Vec<_>>()}
-                        </select>
+                        <Suspense fallback=move || view! {
+                            <select disabled>
+                                <option>{move || draft.get().model} " ⏳"</option>
+                            </select>
+                        }>
+                            <select
+                                prop:value=move || draft.get().model
+                                on:change=move |event| {
+                                    draft.update(|draft| draft.model = event_target_value(&event));
+                                }
+                            >
+                                {move || models_list().into_iter().map(|model| {
+                                    let selected = draft.get().model == model;
+                                    let label = model.clone();
+                                    view! { <option value=model selected=selected>{label}</option> }
+                                }).collect::<Vec<_>>()}
+                            </select>
+                        </Suspense>
                     </div>
                 </div>
                 <div class="modal-actions">

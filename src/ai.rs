@@ -13,26 +13,26 @@ pub enum AiProvider {
 }
 
 impl AiProvider {
-    pub fn default_model(self) -> &'static str {
+    pub fn default_model(&self) -> &'static str {
         match self {
             Self::OpenAI => "gpt-4o-mini",
         }
     }
 
-    pub fn api_url(self) -> &'static str {
+    pub fn api_url(&self) -> &'static str {
         match self {
             Self::OpenAI => "https://api.openai.com/v1/chat/completions",
         }
     }
 
     #[allow(dead_code)]
-    pub fn name(self) -> &'static str {
+    pub fn name(&self) -> &'static str {
         match self {
             Self::OpenAI => "OpenAI",
         }
     }
 
-    pub fn available_models(self) -> &'static [&'static str] {
+    pub fn available_models(&self) -> &'static [&'static str] {
         match self {
             Self::OpenAI => &[
                 "gpt-4o-mini",
@@ -44,6 +44,77 @@ impl AiProvider {
             ],
         }
     }
+
+    fn models_url(&self) -> &'static str {
+        match self {
+            Self::OpenAI => "https://api.openai.com/v1/models",
+        }
+    }
+
+    fn is_chat_model(&self, id: &str) -> bool {
+        match self {
+            Self::OpenAI => {
+                (id.starts_with("gpt-") || id.starts_with("o"))
+                    && !id.contains("realtime")
+                    && !id.contains("audio")
+                    && !id.contains("search")
+                    && !id.contains("instruct")
+            }
+        }
+    }
+}
+
+#[derive(Deserialize)]
+struct ModelsResponse {
+    data: Vec<ModelEntry>,
+}
+
+#[derive(Deserialize)]
+struct ModelEntry {
+    id: String,
+}
+
+/// Fetch available chat models from the provider API.
+pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> {
+    let opts = web_sys::RequestInit::new();
+    opts.set_method("GET");
+
+    let headers = web_sys::Headers::new().map_err(|error| format!("{error:?}"))?;
+    headers
+        .set("Authorization", &format!("Bearer {}", settings.api_key))
+        .map_err(|error| format!("{error:?}"))?;
+    opts.set_headers(&headers);
+
+    let request = web_sys::Request::new_with_str_and_init(settings.provider.models_url(), &opts)
+        .map_err(|error| format!("{error:?}"))?;
+
+    let window = web_sys::window().ok_or("no window")?;
+    let resp_value = JsFuture::from(window.fetch_with_request(&request))
+        .await
+        .map_err(|error| format!("fetch failed: {error:?}"))?;
+
+    let resp: web_sys::Response = resp_value.dyn_into().map_err(|_| "not a Response")?;
+
+    if !resp.ok() {
+        return Err(format!("API error {}", resp.status()));
+    }
+
+    let json = JsFuture::from(resp.json().map_err(|error| format!("{error:?}"))?)
+        .await
+        .map_err(|error| format!("{error:?}"))?;
+
+    let parsed: ModelsResponse =
+        serde_wasm_bindgen::from_value(json).map_err(|error| format!("{error:?}"))?;
+
+    let mut models: Vec<String> = parsed
+        .data
+        .into_iter()
+        .filter(|entry| settings.provider.is_chat_model(&entry.id))
+        .map(|entry| entry.id)
+        .collect();
+
+    models.sort();
+    Ok(models)
 }
 
 // --- Settings ---

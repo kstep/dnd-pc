@@ -3308,7 +3308,8 @@ dialog.modal.closing::backdrop {
     flex-direction: column;
     gap: var(--size-3);
 
-    input {
+    input,
+    select {
       width: 100%;
       box-sizing: border-box;
     }
