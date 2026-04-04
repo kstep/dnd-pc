@@ -31,6 +31,19 @@ impl AiProvider {
             Self::OpenAI => "OpenAI",
         }
     }
+
+    pub fn available_models(self) -> &'static [&'static str] {
+        match self {
+            Self::OpenAI => &[
+                "gpt-4o-mini",
+                "gpt-4o",
+                "gpt-4.1-nano",
+                "gpt-4.1-mini",
+                "gpt-4.1",
+                "o4-mini",
+            ],
+        }
+    }
 }
 
 // --- Settings ---

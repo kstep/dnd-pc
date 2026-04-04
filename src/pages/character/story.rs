@@ -64,13 +64,17 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                     </div>
                     <div class="textarea-field">
                         <label>{move_tr!("story-model")}</label>
-                        <input
-                            type="text"
+                        <select
                             prop:value=move || draft.get().model
-                            on:input=move |event| {
+                            on:change=move |event| {
                                 draft.update(|draft| draft.model = event_target_value(&event));
                             }
-                        />
+                        >
+                            {move || draft.get().provider.available_models().iter().map(|model| {
+                                let selected = draft.get().model == *model;
+                                view! { <option value=*model selected=selected>{*model}</option> }
+                            }).collect::<Vec<_>>()}
+                        </select>
                     </div>
                 </div>
                 <div class="modal-actions">
