@@ -1890,6 +1890,16 @@ select.entry-name {
   color: var(--text-secondary);
 }
 
+.session-choice-cost {
+  color: var(--text-secondary);
+  font-size: var(--font-size-0);
+  font-variant: small-caps;
+  white-space: nowrap;
+
+  &::after {
+    content: " " var(--points-symbol, "⬡");
+  }
+}
 
 .session-spell-level:nth-last-child(n + 3) {
   padding-right: var(--size-1);
