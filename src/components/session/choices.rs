@@ -12,11 +12,12 @@ use crate::{
             inject_resource_vars,
         },
         icon::Icon,
+        session::FreeUsesBadge,
         session_list::{SessionList, SessionListItem},
     },
     model::{
         Attribute, Character, CharacterStoreFields, EffectDefinition, EffectRange, FeatureOption,
-        FeatureValue, Translatable, short_name,
+        FeatureValue, Translatable,
     },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -24,6 +25,7 @@ use crate::{
 /// Info extracted from the registry for a single Choice field.
 struct ChoiceFieldInfo {
     points: u32,
+    max_points: u32,
     from: Option<String>,
     cost: Option<String>,
     /// Definition options that have `action` set (action menu items).
@@ -44,6 +46,7 @@ struct ChoiceItemInput {
 fn build_choice_items(
     items: impl Iterator<Item = ChoiceItemInput>,
     points: u32,
+    max_points: u32,
     spend_cost: Option<Callback<u32>>,
     open_effects: Callback<(String, String, Vec<EffectDefinition>)>,
     i18n: &I18n,
@@ -62,9 +65,9 @@ fn build_choice_items(
             let show_button = item.cost > 0 || has_effects;
 
             let cost_badge = (item.cost > 0).then(|| {
-                view! {
-                    <span class="session-choice-cost">{item.cost}</span>
-                }
+                let avail = points / item.cost;
+                let max = max_points / item.cost;
+                view! { <FreeUsesBadge available=avail max=max /> }
             });
 
             let cast_button = show_button.then(|| {
@@ -111,7 +114,6 @@ fn build_choice_items(
 
 /// A group of choice items to be rendered under a shared header.
 struct ChoiceGroup {
-    short: Option<String>,
     items: Vec<SessionListItem>,
 }
 
@@ -174,7 +176,9 @@ pub fn ChoicesBlock() -> impl IntoView {
             .values()
             .flat_map(|entry| {
                 entry.fields.iter().filter_map(|field| {
-                    Some((field.name.as_str(), field.value.available_points()?))
+                    let available = field.value.available_points()?;
+                    let max = field.value.max_points()?;
+                    Some((field.name.as_str(), (available, max)))
                 })
             })
             .collect::<BTreeMap<_, _>>();
@@ -200,7 +204,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                             None
                         };
 
-                        let points = cost
+                        let (points, max_points) = cost
                             .as_deref()
                             .and_then(|cost| remaining_points.get(cost))
                             .copied()
@@ -219,6 +223,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                             name.to_string(),
                             ChoiceFieldInfo {
                                 points,
+                                max_points,
                                 from,
                                 cost: cost.clone(),
                                 action_options,
@@ -234,8 +239,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                 let Some(info) = fields.get(&field.name) else {
                     continue;
                 };
-                let short = info.cost.as_deref().map(short_name);
                 let points = info.points;
+                let max_points = info.max_points;
 
                 let spend_cost =
                     info.cost
@@ -287,14 +292,14 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
+                            max_points,
                             spend_cost,
                             open_effects,
                             &i18n,
                         );
-                        let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
-                            short: short.clone(),
-                            items: Vec::new(),
-                        });
+                        let group = groups
+                            .entry(label)
+                            .or_insert_with(|| ChoiceGroup { items: Vec::new() });
                         group.items.extend(items);
                     }
                     None => {
@@ -308,14 +313,14 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
+                            max_points,
                             spend_cost,
                             open_effects,
                             &i18n,
                         );
-                        let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
-                            short: short.clone(),
-                            items: Vec::new(),
-                        });
+                        let group = groups
+                            .entry(label)
+                            .or_insert_with(|| ChoiceGroup { items: Vec::new() });
                         group.items.extend(items);
                     }
                     // Ref-based choices (dropdown selects) — render standalone
@@ -395,9 +400,8 @@ pub fn ChoicesBlock() -> impl IntoView {
             .into_iter()
             .filter(|(_, group)| !group.items.is_empty())
             .map(|(label, group)| {
-                let style = group.short.map(|s| format!("--points-symbol: '{s}'"));
                 view! {
-                    <div class="session-subsection" style=style>
+                    <div class="session-subsection">
                         <h4 class="session-subsection-title">{label}</h4>
                         <SessionList items=group.items />
                     </div>
