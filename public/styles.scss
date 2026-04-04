@@ -3375,6 +3375,8 @@ dialog.modal.closing::backdrop {
 
 .story-view {
   padding: var(--size-3);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .story-view-header {
