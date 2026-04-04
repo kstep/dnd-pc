@@ -382,7 +382,7 @@
     "level": 2,
     "effects": [
       {
-        "name": "HP",
+        "name": "Homunculus HP",
         "expr": "5 + SLOT_LEVEL * 5"
       }
     ]
