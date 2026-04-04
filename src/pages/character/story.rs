@@ -148,7 +148,8 @@ fn NewStoryView(
 
     let cancelled = RwSignal::new(false);
 
-    let on_generate = move |_| {
+    let on_generate = move |event: web_sys::SubmitEvent| {
+        event.prevent_default();
         if is_streaming.get_untracked() {
             cancelled.set(true);
             return;
@@ -245,9 +246,10 @@ fn NewStoryView(
                         })
                     } else {
                         Either::Right(view! {
-                            <div class="story-prompt">
+                            <form class="story-prompt" on:submit=on_generate>
                                 <textarea
                                     class="notes-textarea"
+                                    required
                                     placeholder=move_tr!("story-prompt-placeholder")
                                     prop:value=move || prompt.get()
                                     on:input=move |event| {
@@ -257,7 +259,8 @@ fn NewStoryView(
                                 />
                                 <div class="story-actions">
                                     <button
-                                        on:click=on_generate
+                                        type="submit"
+                                        class="btn-primary"
                                     >
                                         {move || if is_streaming.get() {
                                             move_tr!("story-stop")
@@ -268,6 +271,7 @@ fn NewStoryView(
                                         }}
                                     </button>
                                     <button
+                                        type="button"
                                         class="btn-icon"
                                         title=move_tr!("story-settings")
                                         on:click=move |_| show_settings.set(true)
@@ -275,7 +279,7 @@ fn NewStoryView(
                                         <Icon name="settings" size=18 />
                                     </button>
                                 </div>
-                            </div>
+                            </form>
                         })
                     }
                 }}
