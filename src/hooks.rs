@@ -65,6 +65,7 @@ pub enum PageKind {
     QuickStart,
     Reference,
     Share,
+    Story,
 }
 
 impl PageKind {
@@ -75,6 +76,7 @@ impl PageKind {
             Self::QuickStart => "quick-start",
             Self::Reference => "reference",
             Self::Share => "share",
+            Self::Story => "story",
         }
     }
 }
@@ -91,6 +93,7 @@ pub fn use_page_kind() -> Memo<PageKind> {
             .unwrap_or((rest, ""));
         match first_seg {
             "c" if tail.ends_with("quick-start") => PageKind::QuickStart,
+            "c" if tail.starts_with("story") => PageKind::Story,
             "c" => PageKind::Character,
             "r" => PageKind::Reference,
             "s" => PageKind::Share,

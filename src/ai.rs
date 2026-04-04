@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::JsFuture;
 
 // --- Provider ---
 
@@ -131,4 +133,125 @@ impl CharacterContext {
         }
         parts.join("\n")
     }
+}
+
+// --- Story generation ---
+
+const SYSTEM_PROMPT: &str = "\
+You are a creative D&D storyteller. Write a short story about what \
+the character did between game sessions, based on their details and \
+the player's prompt. Write in the same language as the player's prompt.";
+
+/// Generate a story by streaming from the OpenAI API.
+///
+/// `on_chunk` is called with each text fragment as it arrives.
+/// Returns the complete generated text, or an error message.
+pub async fn generate_story(
+    settings: &AiSettings,
+    context: &CharacterContext,
+    prompt: &str,
+    on_chunk: impl Fn(&str),
+) -> Result<String, String> {
+    let body = serde_json::json!({
+        "model": settings.model,
+        "stream": true,
+        "messages": [
+            { "role": "system", "content": SYSTEM_PROMPT },
+            { "role": "user", "content": format!("{}\n\nPlayer's request: {}", context.to_prompt_text(), prompt) },
+        ]
+    });
+
+    let opts = web_sys::RequestInit::new();
+    opts.set_method("POST");
+    opts.set_body(&JsValue::from_str(&body.to_string()));
+
+    let headers = web_sys::Headers::new().map_err(|error| format!("{error:?}"))?;
+    headers
+        .set("Content-Type", "application/json")
+        .map_err(|error| format!("{error:?}"))?;
+    headers
+        .set("Authorization", &format!("Bearer {}", settings.api_key))
+        .map_err(|error| format!("{error:?}"))?;
+    opts.set_headers(&headers);
+
+    let request = web_sys::Request::new_with_str_and_init(settings.provider.api_url(), &opts)
+        .map_err(|error| format!("{error:?}"))?;
+
+    let window = web_sys::window().ok_or("no window")?;
+    let resp_value = JsFuture::from(window.fetch_with_request(&request))
+        .await
+        .map_err(|error| format!("fetch failed: {error:?}"))?;
+
+    let resp: web_sys::Response = resp_value
+        .dyn_into()
+        .map_err(|_| "response is not a Response")?;
+
+    if !resp.ok() {
+        let status = resp.status();
+        let text = JsFuture::from(resp.text().map_err(|error| format!("{error:?}"))?)
+            .await
+            .ok()
+            .and_then(|value| value.as_string())
+            .unwrap_or_default();
+        return Err(format!("API error {status}: {text}"));
+    }
+
+    let body_stream = resp.body().ok_or("response has no body")?;
+    let reader: web_sys::ReadableStreamDefaultReader = body_stream
+        .get_reader()
+        .dyn_into()
+        .map_err(|_| "failed to get reader")?;
+
+    let mut full_text = String::new();
+    let mut buffer = String::new();
+    let decoder = web_sys::TextDecoder::new().map_err(|error| format!("{error:?}"))?;
+
+    loop {
+        let result = JsFuture::from(reader.read())
+            .await
+            .map_err(|error| format!("read error: {error:?}"))?;
+
+        let done = js_sys::Reflect::get(&result, &JsValue::from_str("done"))
+            .map_err(|error| format!("{error:?}"))?
+            .as_bool()
+            .unwrap_or(true);
+
+        if done {
+            break;
+        }
+
+        let value = js_sys::Reflect::get(&result, &JsValue::from_str("value"))
+            .map_err(|error| format!("{error:?}"))?;
+
+        let value_obj: js_sys::Object = value.into();
+        let chunk_text = decoder
+            .decode_with_buffer_source(&value_obj)
+            .map_err(|error| format!("{error:?}"))?;
+
+        buffer.push_str(&chunk_text);
+
+        // Process complete SSE lines from the buffer
+        while let Some(newline_pos) = buffer.find('\n') {
+            let line = buffer[..newline_pos].trim().to_string();
+            buffer = buffer[newline_pos + 1..].to_string();
+
+            if line.is_empty() || line.starts_with(':') {
+                continue;
+            }
+
+            if let Some(data) = line.strip_prefix("data: ") {
+                if data == "[DONE]" {
+                    break;
+                }
+                if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(data)
+                    && let Some(content) = parsed["choices"][0]["delta"]["content"].as_str()
+                {
+                    full_text.push_str(content);
+                    on_chunk(content);
+                }
+            }
+        }
+    }
+
+    Ok(full_text)
 }

@@ -16,6 +16,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::{
+    ai::{AiSettings, Story},
     firebase,
     model::{ActiveEffects, Character, CharacterIndex, CharacterSummary, DamageType},
 };
@@ -306,8 +307,6 @@ fn migrate_v7(value: &mut serde_json::Value) {
         }
     }
 }
-
-use crate::ai::{AiSettings, Story};
 
 const AI_SETTINGS_KEY: &str = "dnd_pc_ai_settings";
 

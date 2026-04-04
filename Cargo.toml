@@ -47,6 +47,13 @@ web-sys = { version = "0.3", features = [
     "WritableStreamDefaultWriter",
     "ReadableWritablePair",
     "Response",
+    "ReadableStreamDefaultReader",
+    "ReadableStreamReadResult",
+    "Headers",
+    "RequestInit",
+    "RequestMode",
+    "Request",
+    "TextDecoder",
 ] }
 indexmap = "2.13.0"
 regex = "1.12"

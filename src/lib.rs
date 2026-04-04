@@ -45,7 +45,7 @@ use hooks::use_theme;
 use pages::{
     character::{
         layout::CharacterLayout, list::CharacterList, quick_start::QuickStart,
-        sheet::CharacterSheet, summary::CharacterSummary,
+        sheet::CharacterSheet, story::CharacterStory, summary::CharacterSummary,
     },
     import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
@@ -81,6 +81,8 @@ pub fn App() -> impl IntoView {
                         <Route path=path!("") view=CharacterSheet />
                         <Route path=path!("/summary") view=CharacterSummary />
                         <Route path=path!("/quick-start") view=QuickStart />
+                        <Route path=path!("/story") view=CharacterStory />
+                        <Route path=path!("/story/:story_id") view=CharacterStory />
                     </ParentRoute>
                     <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
                     <Route path=path!("/s/:data") view=ImportCharacter />

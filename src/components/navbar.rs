@@ -76,6 +76,9 @@ pub fn Navbar() -> impl IntoView {
                         <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link navbar-link-summary">
                             {move_tr!("view-summary")}
                         </A>
+                        <A href=format!("{BASE_URL}/c/{id}/story") attr:class="navbar-link navbar-link-story">
+                            {move_tr!("view-story")}
+                        </A>
                     </div>
                 })}
                 <div class="navbar-ref">
