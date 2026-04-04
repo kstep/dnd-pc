@@ -11,7 +11,7 @@ use crate::{
             EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
             inject_resource_vars,
         },
-        session::adv_icon,
+        session::{FreeUsesBadge, adv_icon},
         session_list::{SessionList, SessionListItem},
     },
     effective::EffectiveCharacter,
@@ -198,11 +198,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let free_uses_badge = spell.free_uses.as_ref().map(|fu| {
                             let avail = fu.available();
                             let max = fu.max;
-                            view! {
-                                <span class="entry-badge">
-                                    {avail} "/" {max}
-                                </span>
-                            }
+                            view! { <FreeUsesBadge available=avail max=max /> }
                         });
                         let has_free_uses = spell.free_uses.is_some();
                         let can_free_cast = spell

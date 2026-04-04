@@ -347,6 +347,14 @@ impl FeatureValue {
         }
     }
 
+    pub fn max_points(&self) -> Option<u32> {
+        match self {
+            FeatureValue::Points { max, .. } => Some(*max),
+            FeatureValue::Die { die, .. } => Some(die.amount),
+            _ => None,
+        }
+    }
+
     pub fn choices(&self) -> &[FeatureOption] {
         match self {
             FeatureValue::Choice { options } => options,

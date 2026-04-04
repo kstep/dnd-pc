@@ -12,6 +12,7 @@ use crate::{
             inject_resource_vars,
         },
         icon::Icon,
+        session::FreeUsesBadge,
         session_list::{SessionList, SessionListItem},
     },
     model::{
@@ -24,6 +25,8 @@ use crate::{
 /// Info extracted from the registry for a single Choice field.
 struct ChoiceFieldInfo {
     points: u32,
+    max_points: u32,
+    is_free_uses: bool,
     from: Option<String>,
     cost: Option<String>,
     /// Definition options that have `action` set (action menu items).
@@ -44,6 +47,8 @@ struct ChoiceItemInput {
 fn build_choice_items(
     items: impl Iterator<Item = ChoiceItemInput>,
     points: u32,
+    max_points: u32,
+    is_free_uses: bool,
     spend_cost: Option<Callback<u32>>,
     open_effects: Callback<(String, String, Vec<EffectDefinition>)>,
     i18n: &I18n,
@@ -62,8 +67,15 @@ fn build_choice_items(
             let show_button = item.cost > 0 || has_effects;
 
             let cost_badge = (item.cost > 0).then(|| {
-                view! {
-                    <span class="session-choice-cost">{item.cost}</span>
+                if is_free_uses {
+                    let avail = points / item.cost;
+                    let max = max_points / item.cost;
+                    view! { <FreeUsesBadge available=avail max=max /> }.into_any()
+                } else {
+                    view! {
+                        <span class="session-choice-cost">{item.cost}</span>
+                    }
+                    .into_any()
                 }
             });
 
@@ -174,7 +186,9 @@ pub fn ChoicesBlock() -> impl IntoView {
             .values()
             .flat_map(|entry| {
                 entry.fields.iter().filter_map(|field| {
-                    Some((field.name.as_str(), field.value.available_points()?))
+                    let available = field.value.available_points()?;
+                    let max = field.value.max_points()?;
+                    Some((field.name.as_str(), (available, max)))
                 })
             })
             .collect::<BTreeMap<_, _>>();
@@ -200,11 +214,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                             None
                         };
 
-                        let points = cost
+                        let (points, max_points) = cost
                             .as_deref()
                             .and_then(|cost| remaining_points.get(cost))
                             .copied()
                             .unwrap_or_default();
+
+                        let is_free_uses = cost.as_deref().is_some_and(|cost_name| {
+                            feat.fields
+                                .get(cost_name)
+                                .is_some_and(|f| matches!(f.kind, FieldKind::FreeUses { .. }))
+                        });
 
                         let action_options = match options {
                             ChoiceOptions::List(list) => list
@@ -219,6 +239,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                             name.to_string(),
                             ChoiceFieldInfo {
                                 points,
+                                max_points,
+                                is_free_uses,
                                 from,
                                 cost: cost.clone(),
                                 action_options,
@@ -234,8 +256,12 @@ pub fn ChoicesBlock() -> impl IntoView {
                 let Some(info) = fields.get(&field.name) else {
                     continue;
                 };
-                let short = info.cost.as_deref().map(short_name);
+                let short = (!info.is_free_uses)
+                    .then(|| info.cost.as_deref().map(short_name))
+                    .flatten();
                 let points = info.points;
+                let max_points = info.max_points;
+                let is_free_uses = info.is_free_uses;
 
                 let spend_cost =
                     info.cost
@@ -287,6 +313,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
+                            max_points,
+                            is_free_uses,
                             spend_cost,
                             open_effects,
                             &i18n,
@@ -308,6 +336,8 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
+                            max_points,
+                            is_free_uses,
                             spend_cost,
                             open_effects,
                             &i18n,
