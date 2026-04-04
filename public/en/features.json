@@ -1398,7 +1398,7 @@
     "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell."
   },
   "Trickery Domain Spells.spell.Pass without Trace": {
-    "description": "You radiate a concealing aura in a 30-foot Emanation [Area of Effect] for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
+    "description": "Action | Self | Concentration, up to 1 hour\n\nYou radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
   },
   "Trickery Domain Spells.spell.Hypnotic Pattern": {
     "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
@@ -5094,7 +5094,7 @@
     "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial)."
   },
   "Elven Lineage (Wood Elf).spell.Pass without Trace": {
-    "description": "A veil of shadows and silence radiates from you. For the duration, each creature you choose within 30 feet has a +10 bonus to Stealth checks and can't be tracked except by magical means. Once per Long Rest (racial)."
+    "description": "Action | Self | Concentration, up to 1 hour\n\nYou radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
   },
   "Celestial Resistance": {
     "description": "You have resistance to Necrotic damage and Radiant damage."
