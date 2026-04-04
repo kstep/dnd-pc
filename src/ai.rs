@@ -34,7 +34,7 @@ impl AiProvider {
 
 // --- Settings ---
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AiSettings {
     pub provider: AiProvider,
     pub api_key: String,
@@ -60,7 +60,7 @@ impl AiSettings {
 
 // --- Story ---
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Story {
     pub id: Uuid,
     pub title: String,

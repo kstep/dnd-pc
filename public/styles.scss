@@ -3280,3 +3280,109 @@ dialog.modal.closing::backdrop {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
+
+// --- Story generator ---
+
+.story-generate-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 60vh;
+}
+
+.story-output {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--size-2);
+}
+
+.story-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.story-placeholder {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--size-4);
+}
+
+.story-error {
+  color: var(--danger);
+  padding: var(--size-2);
+}
+
+.story-input {
+  border-top: 1px solid var(--panel-border);
+  padding: var(--size-2);
+}
+
+.story-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+}
+
+.story-actions {
+  display: flex;
+  gap: var(--size-2);
+  align-items: center;
+}
+
+.story-no-key {
+  text-align: center;
+  padding: var(--size-3);
+  color: var(--text-secondary);
+
+  button {
+    margin-top: var(--size-2);
+  }
+}
+
+.story-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--size-2);
+  padding-bottom: var(--size-2);
+  border-bottom: 2px solid var(--panel-border);
+
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-4);
+  }
+}
+
+.story-view-date {
+  color: var(--text-secondary);
+  font-size: var(--font-size-0);
+}
+
+.story-view-prompt {
+  color: var(--text-secondary);
+  margin-bottom: var(--size-3);
+  padding: var(--size-2);
+  background: var(--input-bg);
+  border-radius: var(--radius-1);
+}
+
+.story-nav-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-nav-date {
+  display: block;
+  font-size: var(--font-size-00, 0.7rem);
+  color: var(--text-secondary);
+}
