@@ -146,7 +146,13 @@ fn NewStoryView(
         }
     };
 
+    let cancelled = RwSignal::new(false);
+
     let on_generate = move |_| {
+        if is_streaming.get_untracked() {
+            cancelled.set(true);
+            return;
+        }
         let ai_settings = settings.get_untracked();
         if !ai_settings.has_api_key() {
             return;
@@ -158,35 +164,41 @@ fn NewStoryView(
         let context = build_context();
 
         is_streaming.set(true);
+        cancelled.set(false);
         error_msg.set(None);
         streaming_text.set(String::new());
 
         spawn_local(async move {
             let result = generate_story(&ai_settings, &context, &user_prompt, |chunk| {
-                streaming_text.update(|text| text.push_str(chunk));
+                if !cancelled.get_untracked() {
+                    streaming_text.update(|text| text.push_str(chunk));
+                }
             })
             .await;
 
             is_streaming.set(false);
 
-            match result {
-                Ok(full_text) => {
-                    let title = full_text
-                        .lines()
-                        .next()
-                        .unwrap_or("Untitled")
-                        .chars()
-                        .take(60)
-                        .collect::<String>();
-
-                    let story = Story::new(title, user_prompt, full_text);
-                    stories.update(|list| list.insert(0, story));
-                    storage::save_stories(&char_id, &stories.get_untracked());
-                    prompt.set(String::new());
-                }
-                Err(error) => {
+            if let Err(error) = result {
+                if !cancelled.get_untracked() {
                     error_msg.set(Some(error));
                 }
+            }
+
+            // Save whatever was generated (even partial if cancelled)
+            let full_text = streaming_text.get_untracked();
+            if !full_text.is_empty() {
+                let title = full_text
+                    .lines()
+                    .next()
+                    .unwrap_or("Untitled")
+                    .chars()
+                    .take(60)
+                    .collect::<String>();
+
+                let story = Story::new(title, user_prompt, full_text);
+                stories.update(|list| list.insert(0, story));
+                storage::save_stories(&char_id, &stories.get_untracked());
+                prompt.set(String::new());
             }
         });
     };
@@ -244,7 +256,6 @@ fn NewStoryView(
                                 <div class="story-actions">
                                     <button
                                         on:click=on_generate
-                                        disabled=move || is_streaming.get()
                                     >
                                         {move || if is_streaming.get() {
                                             move_tr!("story-stop")
