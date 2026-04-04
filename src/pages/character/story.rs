@@ -66,7 +66,7 @@ fn AiSettingsModal(show: RwSignal<bool>) -> impl IntoView {
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button on:click=on_save>{move_tr!("story-save")}</button>
+                    <button class="btn-primary" on:click=on_save>{move_tr!("story-save")}</button>
                 </div>
             </div>
         </Modal>

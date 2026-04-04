@@ -3291,6 +3291,11 @@ dialog.modal.closing::backdrop {
     display: flex;
     flex-direction: column;
     gap: var(--size-3);
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
   }
 
   .modal-actions {
