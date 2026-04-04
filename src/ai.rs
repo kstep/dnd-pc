@@ -51,14 +51,15 @@ impl AiProvider {
         }
     }
 
-    fn is_chat_model(&self, id: &str) -> bool {
+    fn is_chat_model(&self, entry: &ModelEntry) -> bool {
         match self {
             Self::OpenAI => {
-                (id.starts_with("gpt-") || id.starts_with("o"))
-                    && !id.contains("realtime")
-                    && !id.contains("audio")
-                    && !id.contains("search")
-                    && !id.contains("instruct")
+                entry.owned_by == "openai"
+                    && (entry.id.starts_with("gpt-") || entry.id.starts_with("o"))
+                    && !entry.id.contains("realtime")
+                    && !entry.id.contains("audio")
+                    && !entry.id.contains("search")
+                    && !entry.id.contains("instruct")
             }
         }
     }
@@ -72,6 +73,7 @@ struct ModelsResponse {
 #[derive(Deserialize)]
 struct ModelEntry {
     id: String,
+    owned_by: String,
 }
 
 /// Fetch available chat models from the provider API.
@@ -103,17 +105,22 @@ pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> 
         .await
         .map_err(|error| format!("{error:?}"))?;
 
+    // Log raw API response
+    let raw: serde_json::Value = serde_wasm_bindgen::from_value(json.clone()).unwrap_or_default();
+    log::info!("Models API response: {raw}");
+
     let parsed: ModelsResponse =
         serde_wasm_bindgen::from_value(json).map_err(|error| format!("{error:?}"))?;
 
     let mut models: Vec<String> = parsed
         .data
         .into_iter()
-        .filter(|entry| settings.provider.is_chat_model(&entry.id))
+        .filter(|entry| settings.provider.is_chat_model(entry))
         .map(|entry| entry.id)
         .collect();
 
     models.sort();
+    log::info!("Filtered chat models: {models:?}");
     Ok(models)
 }
 
