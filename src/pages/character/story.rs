@@ -29,11 +29,13 @@ struct StoryParams {
 fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
     let draft = RwSignal::new(settings.get_untracked());
 
-    // Refetch models when modal opens (tracks `show`)
+    let fetch_trigger = RwSignal::new(0u32);
+
     let remote_models = LocalResource::new(move || {
+        let version = fetch_trigger.get();
         let current = settings.get_untracked();
         async move {
-            if !show.get() || !current.has_api_key() {
+            if version == 0 || !current.has_api_key() {
                 return Vec::new();
             }
             fetch_models(&current).await.unwrap_or_default()
@@ -43,11 +45,17 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
     Effect::new(move || {
         if show.get() {
             draft.set(settings.get_untracked());
+            fetch_trigger.update(|v| *v += 1);
         }
     });
 
     let on_save = move |_| {
         let saved = draft.get_untracked();
+        log::info!(
+            "Saving AI settings: model={}, has_key={}",
+            saved.model,
+            saved.has_api_key()
+        );
         storage::save_ai_settings(&saved);
         settings.set(saved);
         show.set(false);
@@ -96,18 +104,21 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                                 <option>{move || draft.get().model} " ⏳"</option>
                             </select>
                         }>
-                            <select
-                                prop:value=move || draft.get().model
-                                on:change=move |event| {
-                                    draft.update(|draft| draft.model = event_target_value(&event));
+                            {move || {
+                                let current_model = draft.get().model.clone();
+                                let models = models_list();
+                                view! {
+                                    <select on:change=move |event| {
+                                        draft.update(|draft| draft.model = event_target_value(&event));
+                                    }>
+                                        {models.into_iter().map(|model| {
+                                            let selected = model == current_model;
+                                            let label = model.clone();
+                                            view! { <option value=model selected=selected>{label}</option> }
+                                        }).collect::<Vec<_>>()}
+                                    </select>
                                 }
-                            >
-                                {move || models_list().into_iter().map(|model| {
-                                    let selected = draft.get().model == model;
-                                    let label = model.clone();
-                                    view! { <option value=model selected=selected>{label}</option> }
-                                }).collect::<Vec<_>>()}
-                            </select>
+                            }}
                         </Suspense>
                     </div>
                 </div>
