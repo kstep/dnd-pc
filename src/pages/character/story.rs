@@ -47,7 +47,13 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
             <div class="ai-settings-modal">
                 <div class="modal-body">
                     <div class="textarea-field">
-                        <label>{move_tr!("story-api-key")}</label>
+                        <label>
+                            {move_tr!("story-api-key")}
+                            " "
+                            <a href="https://platform.openai.com/api-keys" target="_blank">
+                                {move_tr!("story-get-key")}
+                            </a>
+                        </label>
                         <input
                             type="password"
                             prop:value=move || draft.get().api_key

@@ -237,6 +237,7 @@ story-stop = Stop
 story-no-api-key = Configure your API key to generate stories.
 story-settings = AI Settings
 story-api-key = API Key
+story-get-key = (get one)
 story-model = Model
 story-save = Save
 story-delete = Delete
