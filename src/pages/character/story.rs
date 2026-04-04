@@ -187,7 +187,15 @@ fn NewStoryView(
             // Save whatever was generated (even partial if cancelled)
             let full_text = streaming_text.get_untracked();
             if !full_text.is_empty() {
-                let title = full_text.lines().next().unwrap_or("Untitled").to_string();
+                let first_line = full_text.lines().next().unwrap_or("Untitled");
+                let title = if first_line.len() <= 80 {
+                    first_line.to_string()
+                } else {
+                    match first_line[..80].rfind(' ') {
+                        Some(pos) => format!("{}…", &first_line[..pos]),
+                        None => format!("{}…", &first_line[..80]),
+                    }
+                };
 
                 let story = Story::new(title, user_prompt, full_text);
                 stories.update(|list| list.insert(0, story));

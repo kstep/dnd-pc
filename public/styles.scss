@@ -3361,6 +3361,10 @@ dialog.modal.closing::backdrop {
   display: flex;
   gap: var(--size-2);
   align-items: center;
+
+  > button:first-child {
+    min-width: 10em;
+  }
 }
 
 .story-no-key {
