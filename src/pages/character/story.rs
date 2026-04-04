@@ -90,7 +90,9 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                             </a>
                         </label>
                         <input
-                            type="password"
+                            type="text"
+                            autocomplete="off"
+                            class="secret-input"
                             prop:value=move || draft.get().api_key
                             on:input=move |event| {
                                 draft.update(|draft| draft.api_key = event_target_value(&event));

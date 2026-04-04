@@ -3303,6 +3303,10 @@ dialog.modal.closing::backdrop {
 
 // --- AI Settings modal ---
 
+.secret-input {
+  -webkit-text-security: disc;
+}
+
 .ai-settings-modal {
   min-width: 350px;
 
