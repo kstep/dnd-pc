@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[component]
-pub fn SummaryHeader() -> impl IntoView {
+pub fn SessionHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
     let registry = expect_context::<RulesRegistry>();
@@ -35,15 +35,15 @@ pub fn SummaryHeader() -> impl IntoView {
     let prof_bonus = Memo::new(move |_| eff.proficiency_bonus());
 
     view! {
-        <div class="panel summary-header">
-            <div class="summary-header-info">
-                <span class="summary-header-name">{name}</span>
-                <span class="summary-header-detail">{species_display}</span>
-                <span class="summary-header-detail">{class_summary}</span>
-                <span class="summary-header-stat">
+        <div class="panel session-header">
+            <div class="session-header-info">
+                <span class="session-header-name">{name}</span>
+                <span class="session-header-detail">{species_display}</span>
+                <span class="session-header-detail">{class_summary}</span>
+                <span class="session-header-stat">
                     {move_tr!("total-level")} ": " <strong>{total_level}</strong>
                 </span>
-                <span class="summary-header-stat">
+                <span class="session-header-stat">
                     {move_tr!("prof-bonus")} ": +" <strong>{prof_bonus}</strong>
                 </span>
             </div>

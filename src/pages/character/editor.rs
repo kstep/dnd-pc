@@ -11,23 +11,23 @@ use crate::components::{
 };
 
 #[component]
-pub fn CharacterSheet() -> impl IntoView {
+pub fn CharacterEditor() -> impl IntoView {
     view! {
         <CharacterHeader />
-        <div class="sheet-grid">
-            <div class="sheet-column sheet-column-left">
+        <div class="editor-grid">
+            <div class="editor-column editor-column-left">
                 <AbilityScoresPanel />
                 <SavingThrowsPanel />
                 <SkillsPanel />
                 <ProficienciesPanel />
             </div>
-            <div class="sheet-column sheet-column-center">
+            <div class="editor-column editor-column-center">
                 <CombatPanel />
                 <EquipmentPanel />
                 <NotesPanel />
                 <PersonalityPanel />
             </div>
-            <div class="sheet-column sheet-column-right">
+            <div class="editor-column editor-column-right">
                 <SpellcastingPanel />
                 <ClassFieldsPanels />
                 <FeaturesPanel />

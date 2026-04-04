@@ -157,7 +157,7 @@ pub fn QuickStart() -> impl IntoView {
 }
 
 /// Collect all pending inputs from generation + species + background + class
-/// into a single modal, then apply everything and navigate to the sheet.
+/// into a single modal, then apply everything and navigate to the editor.
 fn create_character(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -222,12 +222,12 @@ fn create_character(
             apply_new_features(fi, character, pending, Some(inputs));
             character.combat.hp_current = character.hp_max();
 
-            navigate_to_sheet(character.id);
+            navigate_to_editor(character.id);
         },
     );
 }
 
-fn navigate_to_sheet(id: Uuid) {
+fn navigate_to_editor(id: Uuid) {
     let navigate = use_navigate();
     set_timeout(
         move || navigate(&format!("/c/{id}"), Default::default()),

@@ -18,20 +18,20 @@ pub fn ResourceSlot(
         on_change.with_value(|f| f(max - clamped));
     };
     view! {
-        <div class="summary-slot">
-            <span class="summary-slot-level">{label}</span>
+        <div class="session-slot">
+            <span class="session-slot-level">{label}</span>
             <input
                 type="number"
                 min=0
                 max=max
                 prop:value=move || remaining.get()
-                class="summary-slot-value"
+                class="session-slot-value"
                 on:change=move |event| {
                     let value = event_target_value(&event).parse().unwrap_or(remaining.get());
                     set_remaining(value);
                 }
             />
-            <span class="summary-slot-max">" / " {max}</span>
+            <span class="session-slot-max">" / " {max}</span>
             <button
                 class="btn-icon"
                 title=move_tr!("spend")

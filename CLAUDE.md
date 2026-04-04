@@ -23,8 +23,8 @@ Leptos 0.8 CSR (client-side rendered) PWA targeting `wasm32-unknown-unknown`, bu
 ### Routing (`src/lib.rs`)
 - `/` — Character list (create, delete, select)
 - `/c/:id` — `ParentRoute` → `CharacterLayout` with nested:
-  - `""` → `CharacterSheet` (3-column editor grid)
-  - `"/summary"` → `CharacterSummary` (game session view)
+  - `""` → `CharacterEditor` (3-column editor grid)
+  - `"/session"` → `CharacterSession` (game session view)
 - `/s/:user_id/:char_id` — Import shared character from Firestore (UUID-based sharing)
 - `/s/:data` — Import shared character from compressed URL (with conflict detection)
 - `/r/class`, `/r/class/:name`, `/r/class/:name/:subname` → `ClassReference`
@@ -67,7 +67,7 @@ let store = expect_context::<Store<Character>>();
 5. **Effects recompute:** Watches `store.read()` and recomputes `ActiveEffects` overrides when character data changes.
 6. **Effects auto-save:** Watches `effects.read()` and persists to localStorage via `storage::save_effects()`.
 
-Character pages live in `src/pages/character/` (`layout.rs`, `list.rs`, `sheet.rs`, `summary.rs`).
+Character pages live in `src/pages/character/` (`layout.rs`, `list.rs`, `editor.rs`, `session.rs`).
 
 ### Storage (`src/storage.rs`)
 Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at `dnd_pc_index`, individual characters at `dnd_pc_char_{uuid}`, transient effects at `dnd_pc_effects_{uuid}`. `CharacterSummary` includes `updated_at` for cheap timestamp comparison during sync (avoids full character deserialization). Saving a character calls `touch()` (sets `updated_at`) and updates the index. Panel open/closed state persisted at `dnd_pc_panel_{class}`. Effects are loaded/saved via `load_effects(id)` / `save_effects(id, effects)` — stored separately from character data (not cloud-synced). A `SAVE_IN_FLIGHT` flag lets `track_cloud_character` suppress the auto-save effect when writing cloud-pulled data to the Store, preventing redundant re-push.
@@ -135,7 +135,7 @@ Import page (`src/pages/import_character.rs`) handles both import types: `Import
 - `LevelRules<T>` — newtype around `BTreeMap<u32, T>` for level-based progressions. `get_for_level(level)` finds the highest key `<= level`. `eval_for_level(level, ctx)` evaluates expression-based values. `is_dynamic(level)` checks if value at level contains expressions. Custom deserialization accepts both numeric and stringified keys
 - `ChoiceOptions` — `#[serde(untagged)]` enum: `List(Vec<ChoiceOption>)` or `Ref { from: String }` (references another field's choices)
 - `ChoiceOption` — has `name`, `label`, `description`, `level: u32` (level-gated choices), `cost: u32` (point cost for point-based choices), `action: Option<ActionType>` (action menu items) fields
-- `ActionType` — enum: `Action`, `BonusAction`, `Reaction`. Has `icon_name()` (swords/zap/shield) and `Translatable` impl. A Choice field with no `levels` and action options is an **action menu** — rendered read-only in the sheet, with icon badges in the summary
+- `ActionType` — enum: `Action`, `BonusAction`, `Reaction`. Has `icon_name()` (swords/zap/shield) and `Translatable` impl. A Choice field with no `levels` and action options is an **action menu** — rendered read-only in the editor, with icon badges in the session view
 - `Assignment` — `{ expr: Expr<Attribute>, when: WhenCondition }` for feature expressions
 - `WhenCondition` — enum: `OnFeatureAdd`, `OnLevelUp`, `OnLongRest`, `OnShortRest`, `OnCompute`
 - `ClassDefinition` — `name`, `label`, `description`, `hit_die: u32`, `levels: Vec<ClassLevelRules>`, `subclasses: BTreeMap<Box<str>, SubclassDefinition>`. No inline features — `ClassLevelRules` and `SubclassLevelRules` contain `features: VecSet<String>` referencing the global index. Method `feature_names(subclass)` returns an iterator of feature name strings from class and subclass level tables
@@ -175,15 +175,15 @@ All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact ser
 Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Language detected from browser, persisted in localStorage. Components use `move_tr!("key")` for reactive translations, `tr!("key")` for non-reactive.
 
 ### Pages (`src/pages/`)
-- `character/` — character CRUD and views. `layout.rs` is the key file: loads character by UUID, creates `Store`, loads `ActiveEffects`, provides `Store<Character>` and `EffectiveCharacter` as context, runs effects (auto-save, fill, locale, cloud sync, effects recompute, effects save), renders `<Outlet />`. `sheet.rs` renders the 3-column character building/editing grid, `summary.rs` the game session view.
+- `character/` — character CRUD and views. `layout.rs` is the key file: loads character by UUID, creates `Store`, loads `ActiveEffects`, provides `Store<Character>` and `EffectiveCharacter` as context, runs effects (auto-save, fill, locale, cloud sync, effects recompute, effects save), renders `<Outlet />`. `editor.rs` renders the 3-column character building/editing grid, `session.rs` the game session view.
 - `import_character.rs` — handles both share URL types (compressed and Firestore UUID) with conflict detection
 - `reference/` — reference browsers for classes, species, backgrounds, features, spells. `mod.rs` contains shared view helpers.
 - `not_found.rs` — 404 page
 
 ### Components (`src/components/`)
 - Top-level components: navbar, character header/card, modals, form inputs (datalist, expression, dice pool), display primitives (icon, panel, resource slot). See `mod.rs` for the full list.
-- `panels/` — character sheet panels for building/editing (one per section: abilities, skills, combat, equipment, spellcasting, etc.)
-- `summary/` — game session view sections (stats, resources, spells, weapons, backpack, choices, languages, effects)
+- `panels/` — character editor panels for building/editing (one per section: abilities, skills, combat, equipment, spellcasting, etc.)
+- `session/` — game session view sections (stats, resources, spells, weapons, backpack, choices, languages, effects)
 
 ## Formatting Conventions (rustfmt.toml)
 - Edition 2024 formatting rules

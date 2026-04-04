@@ -26,16 +26,16 @@ pub fn BackpackBlock() -> impl IntoView {
     };
 
     view! {
-        <div class="summary-section" id="summary-backpack">
-            <h3 class="summary-section-title">{move_tr!("summary-backpack")}</h3>
+        <div class="session-section" id="session-backpack">
+            <h3 class="session-section-title">{move_tr!("session-backpack")}</h3>
 
             // -- Currency --
-            <div class="summary-currency">
+            <div class="session-currency">
                 <label>{move_tr!("currency")}</label>
                 <span>{move || equipment.currency().read().to_string()}</span>
-                <div class="summary-currency-controls">
-                    <input type="text" required inputmode="decimal" class="summary-currency-input" node_ref=money_input />
-                    <span class="summary-currency-unit">"gp"</span>
+                <div class="session-currency-controls">
+                    <input type="text" required inputmode="decimal" class="session-currency-input" node_ref=money_input />
+                    <span class="session-currency-unit">"gp"</span>
                     <div class="btn-container">
                         <button class="btn-icon btn-icon--danger" title=move_tr!("spend")
                             on:click=move |_| {
@@ -89,7 +89,7 @@ pub fn BackpackBlock() -> impl IntoView {
                     <input type="text" required class="entry-name" placeholder=move_tr!("item-name") node_ref=name_input />
                     <span class="entry-badge">
                         "\u{00d7}"
-                        <input type="number" class="summary-qty-input" min="1" required value="1" node_ref=qty_input />
+                        <input type="number" class="session-qty-input" min="1" required value="1" node_ref=qty_input />
                     </span>
                 </div>
                 <div class="entry-actions" />
@@ -104,7 +104,7 @@ pub fn BackpackBlock() -> impl IntoView {
                     .collect::<Vec<_>>();
                 if items.is_empty() {
                     Either::Left(view! {
-                        <p class="summary-empty">{move_tr!("summary-no-items")}</p>
+                        <p class="session-empty">{move_tr!("session-no-items")}</p>
                     })
                 } else {
                     Either::Right(view! {
@@ -119,7 +119,7 @@ pub fn BackpackBlock() -> impl IntoView {
                                                 "\u{00d7}"
                                                 <input
                                                     type="number"
-                                                    class="summary-qty-input"
+                                                    class="session-qty-input"
                                                     min="0"
                                                     prop:value=qty.to_string()
                                                     on:input=move |e| {

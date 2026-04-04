@@ -24,8 +24,8 @@ pub fn LanguagesBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("summary-languages")}</h4>
-                <p class="summary-languages">{langs.join(", ")}</p>
+                <h4 class="session-subsection-title">{move_tr!("session-languages")}</h4>
+                <p class="session-languages">{langs.join(", ")}</p>
             })
         }
     }

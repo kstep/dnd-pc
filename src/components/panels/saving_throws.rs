@@ -70,7 +70,7 @@ pub fn SavingThrowsPanel() -> impl IntoView {
                 .collect_view()}
 
             // --- Damage Modifiers ---
-            <h4 class="panel-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
+            <h4 class="panel-subsection-title">{move_tr!("session-damage-modifiers")}</h4>
             {DamageType::iter()
                 .map(|damage_type| {
                     let current = Memo::new(move |_| {

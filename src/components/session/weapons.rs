@@ -9,7 +9,7 @@ use crate::{
         cast_button::CastButton,
         effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
         icon::Icon,
-        summary_list::{SummaryList, SummaryListItem},
+        session_list::{SessionList, SessionListItem},
     },
     effective::EffectiveCharacter,
     model::{
@@ -102,7 +102,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                     }
                 });
 
-                SummaryListItem {
+                SessionListItem {
                     name: name_atk,
                     description,
                     badge: if first_badge.is_none() && cast_button.is_none() {
@@ -118,18 +118,18 @@ pub fn WeaponsBlock() -> impl IntoView {
 
         if items.is_empty() {
             Either::Left(view! {
-                <p class="summary-empty">{move_tr!("summary-no-weapons")}</p>
+                <p class="session-empty">{move_tr!("session-no-weapons")}</p>
             })
         } else {
             Either::Right(view! {
-                <div class="summary-subsection">
-                    <h4 class="summary-subsection-title">
+                <div class="session-subsection">
+                    <h4 class="session-subsection-title">
                         {move_tr!("weapons")}
                         {(attack_count > 1).then(|| view! {
                             <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
                         })}
                     </h4>
-                    <SummaryList items=items />
+                    <SessionList items=items />
                 </div>
             })
         }

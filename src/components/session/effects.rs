@@ -80,8 +80,8 @@ pub fn EffectsBlock() -> impl IntoView {
     });
 
     view! {
-        <div class="summary-section summary-section-effects" id="summary-effects">
-            <h3 class="summary-section-title">{move_tr!("summary-effects")}</h3>
+        <div class="session-section session-section-effects" id="session-effects">
+            <h3 class="session-section-title">{move_tr!("session-effects")}</h3>
 
             // -- Add effect form --
             <div class="entry-item effect-add-form">
@@ -153,7 +153,7 @@ pub fn EffectsBlock() -> impl IntoView {
                 </div>
                 <div class="entry-actions" />
                 <div class="entry-value">
-                    <input type="text" class="summary-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
+                    <input type="text" class="session-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
                 </div>
             </div>
 
@@ -215,10 +215,10 @@ pub fn EffectsBlock() -> impl IntoView {
                                     {scope.map(|s| view! {
                                         <span class="entry-sublabel">{s.to_string()}</span>
                                     })}
-                                        <div class="entry-full-row summary-item-expr-row">
+                                        <div class="entry-full-row session-item-expr-row">
                                             <input
                                                 type="text"
-                                                class="entry-name summary-item-expr"
+                                                class="entry-name session-item-expr"
                                                 placeholder=move_tr!("effect-expr")
                                                 prop:value=expr_str.clone()
                                                 on:change=move |ev| {
@@ -260,7 +260,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             })}
                                         </div>
                                         {pool_str.clone().map(|pool| view! {
-                                            <span class="entry-sublabel summary-item-dice">
+                                            <span class="entry-sublabel session-item-dice">
                                                 {move_tr!("effect-dice")} ": " {pool}
                                             </span>
                                         })}

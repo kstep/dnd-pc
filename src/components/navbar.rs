@@ -71,10 +71,10 @@ pub fn Navbar() -> impl IntoView {
                 {move || active_id.get().map(|id| view! {
                     <div class="navbar-links">
                         <A href=format!("{BASE_URL}/c/{id}") exact=true attr:class="navbar-link">
-                            {move_tr!("view-full-sheet")}
+                            {move_tr!("view-editor")}
                         </A>
-                        <A href=format!("{BASE_URL}/c/{id}/summary") exact=true attr:class="navbar-link navbar-link-summary">
-                            {move_tr!("view-summary")}
+                        <A href=format!("{BASE_URL}/c/{id}/session") exact=true attr:class="navbar-link navbar-link-session">
+                            {move_tr!("view-session")}
                         </A>
                         <A href=format!("{BASE_URL}/c/{id}/story") attr:class="navbar-link navbar-link-story">
                             <Icon name="book-open" size=16 />

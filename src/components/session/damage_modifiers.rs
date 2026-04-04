@@ -63,7 +63,7 @@ pub fn DamageModifiersBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("summary-damage-modifiers")}</h4>
+                <h4 class="session-subsection-title">{move_tr!("session-damage-modifiers")}</h4>
                 <div class="entry-list">{entries}</div>
             })
         }

@@ -12,7 +12,7 @@ use crate::{
             inject_resource_vars,
         },
         icon::Icon,
-        summary_list::{SummaryList, SummaryListItem},
+        session_list::{SessionList, SessionListItem},
     },
     model::{
         Attribute, Character, CharacterStoreFields, EffectDefinition, EffectRange, FeatureOption,
@@ -40,14 +40,14 @@ struct ChoiceItemInput {
     feature_name: String,
 }
 
-/// Build SummaryListItems from an iterator of choice/action items.
+/// Build SessionListItems from an iterator of choice/action items.
 fn build_choice_items(
     items: impl Iterator<Item = ChoiceItemInput>,
     points: u32,
     spend_cost: Option<Callback<u32>>,
     open_effects: Callback<(String, String, Vec<EffectDefinition>)>,
     i18n: &I18n,
-) -> Vec<SummaryListItem> {
+) -> Vec<SessionListItem> {
     items
         .filter(|item| item.cost <= points)
         .map(|item| {
@@ -63,7 +63,7 @@ fn build_choice_items(
 
             let cost_badge = (item.cost > 0).then(|| {
                 view! {
-                    <span class="summary-choice-cost">{item.cost}</span>
+                    <span class="session-choice-cost">{item.cost}</span>
                 }
             });
 
@@ -89,7 +89,7 @@ fn build_choice_items(
                 view! { <CastButton on_cast /> }
             });
 
-            SummaryListItem {
+            SessionListItem {
                 name: item.name,
                 description: item.description,
                 badge: if action_icon.is_some() || cost_badge.is_some() || cast_button.is_some() {
@@ -112,7 +112,7 @@ fn build_choice_items(
 /// A group of choice items to be rendered under a shared header.
 struct ChoiceGroup {
     short: Option<String>,
-    items: Vec<SummaryListItem>,
+    items: Vec<SessionListItem>,
 }
 
 #[component]
@@ -376,8 +376,8 @@ pub fn ChoicesBlock() -> impl IntoView {
 
                         ref_views.push(
                             view! {
-                                <div class="summary-subsection">
-                                    <h4 class="summary-subsection-title">{label}</h4>
+                                <div class="session-subsection">
+                                    <h4 class="session-subsection-title">{label}</h4>
                                     <div class="entry-list">
                                         {options.iter().enumerate().map(choice_entry_factory).collect_view()}
                                     </div>
@@ -397,9 +397,9 @@ pub fn ChoicesBlock() -> impl IntoView {
             .map(|(label, group)| {
                 let style = group.short.map(|s| format!("--points-symbol: '{s}'"));
                 view! {
-                    <div class="summary-subsection" style=style>
-                        <h4 class="summary-subsection-title">{label}</h4>
-                        <SummaryList items=group.items />
+                    <div class="session-subsection" style=style>
+                        <h4 class="session-subsection-title">{label}</h4>
+                        <SessionList items=group.items />
                     </div>
                 }
                 .into_any()

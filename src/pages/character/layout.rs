@@ -128,7 +128,7 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     view! {
         <Title text=title />
-        <div class="character-sheet">
+        <div class="character-editor">
             <Outlet />
             <ArgsModal />
         </div>

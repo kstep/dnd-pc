@@ -2,14 +2,14 @@ use leptos::{either::Either, prelude::*};
 
 use crate::components::toggle_button::ToggleButton;
 
-pub struct SummaryListItem {
+pub struct SessionListItem {
     pub name: String,
     pub description: String,
     pub badge: Option<AnyView>,
 }
 
 #[component]
-pub fn SummaryList(items: Vec<SummaryListItem>) -> impl IntoView {
+pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
     view! {
         <div class="entry-list">
             {items

@@ -11,8 +11,8 @@ use crate::{
             EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
             inject_resource_vars,
         },
-        summary::adv_icon,
-        summary_list::{SummaryList, SummaryListItem},
+        session::adv_icon,
+        session_list::{SessionList, SessionListItem},
     },
     effective::EffectiveCharacter,
     model::{
@@ -190,7 +190,7 @@ pub fn SpellsBlock() -> impl IntoView {
                     })
                     .map(|(spell_idx, spell)| {
                         let level_str = if spell.level == 0 {
-                            tr!("summary-cantrips")
+                            tr!("session-cantrips")
                         } else {
                             tr!("slot-level", {"level" => spell.level})
                         };
@@ -356,7 +356,7 @@ pub fn SpellsBlock() -> impl IntoView {
 
                         let badge = view! {
                             <span class="entry-badge">
-                                <span class="summary-spell-level">{level_str}</span>
+                                <span class="session-spell-level">{level_str}</span>
                                 {free_uses_badge}
                                 {cost_badge}
                                 {cast_button}
@@ -364,7 +364,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         }
                         .into_any();
 
-                        SummaryListItem {
+                        SessionListItem {
                             name: spell.label().to_string(),
                             description: spell.description.clone(),
                             badge: Some(badge),
@@ -383,18 +383,18 @@ pub fn SpellsBlock() -> impl IntoView {
                 let atk_adv = eff.spell_attack_advantage(name);
 
                 Some(view! {
-                    <div class="summary-subsection">
-                        <h4 class="summary-subsection-title">{feature_label}</h4>
-                        <div class="summary-spell-stats">
-                            <span class="summary-spell-stat">
+                    <div class="session-subsection">
+                        <h4 class="session-subsection-title">{feature_label}</h4>
+                        <div class="session-spell-stats">
+                            <span class="session-spell-stat">
                                 {move_tr!("spell-save-dc")} ": " <strong>{save_dc}</strong>
                             </span>
-                            <span class="summary-spell-stat">
+                            <span class="session-spell-stat">
                                 {move_tr!("spell-attack")} ": " <strong>{atk_str}</strong>
                                 {adv_icon(atk_adv)}
                             </span>
                         </div>
-                        <SummaryList items=all_spells />
+                        <SessionList items=all_spells />
                     </div>
                 })
             })

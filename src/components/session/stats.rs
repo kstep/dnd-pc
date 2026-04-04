@@ -66,16 +66,16 @@ pub fn StatsBlock() -> impl IntoView {
         let has_modifiers = !modifiers.is_empty();
 
         view! {
-            <div class="summary-section summary-section-stats" id="summary-stats">
-                <h3 class="summary-section-title">{move_tr!("summary-stats")}</h3>
+            <div class="session-section session-section-stats" id="session-stats">
+                <h3 class="session-section-title">{move_tr!("session-stats")}</h3>
 
                 // -- HP --
-                <div class="summary-core-stats">
-                    <div class="summary-stat-box summary-hp-box">
+                <div class="session-core-stats">
+                    <div class="session-stat-box session-hp-box">
                         <label>{move_tr!("hp")}</label>
-                        <div class="summary-hp-controls">
-                            <div class="summary-hp-damage">
-                                <input type="number" min="1" required class="summary-damage-input" node_ref=damage_input />
+                        <div class="session-hp-controls">
+                            <div class="session-hp-damage">
+                                <input type="number" min="1" required class="session-damage-input" node_ref=damage_input />
                                 <div class="btn-container">
                                     <button class="btn-icon btn-icon--danger" title=move_tr!("damage")
                                         on:click=move |_| {
@@ -117,24 +117,24 @@ pub fn StatsBlock() -> impl IntoView {
                                     </div>
                                 </Show>
                             </div>
-                            <div class="summary-hp-value">
+                            <div class="session-hp-value">
                                 {move || combat.hp_current().get()}
                                 " ("
-                                <input type="number" min="0" class="summary-hp-temp-input" prop:value=move || combat.hp_temp().get()
+                                <input type="number" min="0" class="session-hp-temp-input" prop:value=move || combat.hp_temp().get()
                                     on:change=move |event| {
                                         let value = event_target_value(&event).parse().unwrap_or_default();
                                         combat.hp_temp().set(value);
                                     }
                                 />
                                 ")"
-                                <span class="summary-hp-max">
+                                <span class="session-hp-max">
                                     "/ " {move || eff.hp_max()}
                                 </span>
                             </div>
                         </div>
                     </div>
                     // -- Inspiration toggle --
-                    <div class="summary-stat-box summary-inspiration-box">
+                    <div class="session-stat-box session-inspiration-box">
                         <label>{move_tr!("inspiration")}</label>
                         <button
                             class="inspiration-toggle"
@@ -150,7 +150,7 @@ pub fn StatsBlock() -> impl IntoView {
 
                 // -- Death saves (shown when HP == 0) --
                 <Show when=move || combat.hp_current().get() == 0>
-                    <div class="summary-death-saves">
+                    <div class="session-death-saves">
                         <div class="death-save-row">
                             <span>{move_tr!("successes")}</span>
                             <div class="death-save-boxes">
@@ -207,31 +207,31 @@ pub fn StatsBlock() -> impl IntoView {
                 </Show>
 
                 // -- Core stats: AC, Initiative, Speed --
-                <div class="summary-core-stats">
-                    <div class="summary-stat-box">
+                <div class="session-core-stats">
+                    <div class="session-stat-box">
                         <label>{move_tr!("armor-class")}</label>
                         <span>{move || eff.armor_class()}</span>
                     </div>
-                    <div class="summary-stat-box">
+                    <div class="session-stat-box">
                         <label>{move_tr!("initiative")}</label>
                         <span>{move || format_bonus(eff.initiative())}</span>
                     </div>
-                    <div class="summary-stat-box">
+                    <div class="session-stat-box">
                         <label>{move_tr!("speed")}</label>
                         <span>{move || eff.speed()}</span>
                     </div>
                 </div>
 
                 // -- Ability modifiers --
-                <h4 class="summary-subsection-title">{move_tr!("summary-ability-mods")}</h4>
-                <div class="summary-abilities-grid">
+                <h4 class="session-subsection-title">{move_tr!("session-ability-mods")}</h4>
+                <div class="session-abilities-grid">
                     {Ability::iter().map(|ability| {
                         let tr_key = ability.tr_abbr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
                         view! {
-                            <div class="summary-ability">
-                                <span class="summary-ability-label">{label}</span>
-                                <span class="summary-ability-mod">
+                            <div class="session-ability">
+                                <span class="session-ability-label">{label}</span>
+                                <span class="session-ability-mod">
                                     {move || format_bonus(eff.ability_modifier(ability))}
                                     {move || adv_icon(eff.ability_advantage(ability))}
                                 </span>
@@ -241,15 +241,15 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Saving throws --
-                <h4 class="summary-subsection-title">{move_tr!("summary-saving-throws")}</h4>
-                <div class="summary-saves-grid">
+                <h4 class="session-subsection-title">{move_tr!("session-saving-throws")}</h4>
+                <div class="session-saves-grid">
                     {Ability::iter().map(|ability| {
                         let tr_key = ability.tr_abbr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
                         view! {
-                            <div class="summary-save" class:proficient=move || store.read().proficient_with(ability)>
-                                <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">
+                            <div class="session-save" class:proficient=move || store.read().proficient_with(ability)>
+                                <span class="session-save-label">{label}</span>
+                                <span class="session-save-value">
                                     {move || format_bonus(eff.saving_throw_bonus(ability))}
                                     {move || adv_icon(eff.save_advantage(ability))}
                                 </span>
@@ -259,16 +259,16 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Skills --
-                <h4 class="summary-subsection-title">{move_tr!("panel-skills")}</h4>
-                <div class="summary-saves-grid">
+                <h4 class="session-subsection-title">{move_tr!("panel-skills")}</h4>
+                <div class="session-saves-grid">
                     {Skill::iter().map(|skill| {
                         let tr_key = skill.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
                         let proficient = move || store.read().skill_proficiency(skill).is_proficient();
                         view! {
-                            <div class="summary-save" class:proficient=proficient>
-                                <span class="summary-save-label">{label}</span>
-                                <span class="summary-save-value">
+                            <div class="session-save" class:proficient=proficient>
+                                <span class="session-save-label">{label}</span>
+                                <span class="session-save-value">
                                     {move || format_bonus(eff.skill_bonus(skill))}
                                     {move || adv_icon(eff.skill_advantage(skill))}
                                 </span>

@@ -44,7 +44,7 @@ pub fn ResourcesBlock() -> impl IntoView {
                 .collect::<Vec<_>>();
             view! {
                 {many_pools.then(|| view! { <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5> })}
-                <div class="summary-spell-slots">
+                <div class="session-spell-slots">
                     {slots.into_iter().map(|(level, idx, slot)| {
                         let label = tr!("slot-level", {"level" => level});
                         view! {
@@ -71,7 +71,7 @@ pub fn ResourcesBlock() -> impl IntoView {
         }
 
         Some(view! {
-            <h4 class="summary-subsection-title">{move_tr!("spell-slots")}</h4>
+            <h4 class="session-subsection-title">{move_tr!("spell-slots")}</h4>
             {view}
         })
     };
@@ -103,8 +103,8 @@ pub fn ResourcesBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("hit-dice")}</h4>
-                <div class="summary-spell-slots">
+                <h4 class="session-subsection-title">{move_tr!("hit-dice")}</h4>
+                <div class="session-spell-slots">
                     {dice}
                 </div>
             })
@@ -178,8 +178,8 @@ pub fn ResourcesBlock() -> impl IntoView {
             None
         } else {
             Some(view! {
-                <h4 class="summary-subsection-title">{move_tr!("summary-resources")}</h4>
-                <div class="summary-spell-slots">
+                <h4 class="session-subsection-title">{move_tr!("session-resources")}</h4>
+                <div class="session-spell-slots">
                     {res}
                 </div>
             })
@@ -187,8 +187,8 @@ pub fn ResourcesBlock() -> impl IntoView {
     };
 
     view! {
-        <div class="summary-section summary-section-resources" id="summary-resources">
-            <h3 class="summary-section-title">{move_tr!("summary-resources")}</h3>
+        <div class="session-section session-section-resources" id="session-resources">
+            <h3 class="session-section-title">{move_tr!("session-resources")}</h3>
             {spell_slots}
             {hit_dice}
             {resources}
