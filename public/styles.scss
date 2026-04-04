@@ -3420,6 +3420,11 @@ dialog.modal.closing::backdrop {
 
 .story-nav-date {
   display: block;
-  font-size: var(--font-size-00, 0.7rem);
+  font-size: var(--font-size-0);
   color: var(--text-secondary);
+
+  [aria-current="page"] > & {
+    color: inherit;
+    opacity: 0.8;
+  }
 }
