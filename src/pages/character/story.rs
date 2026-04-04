@@ -312,7 +312,7 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
                 <div class="story-view">
                     <div class="story-view-header">
                         <h2>{story.title.clone()}</h2>
-                        <span class="story-view-date">{story.short_date().to_string()}</span>
+                        <div class="story-view-date">{story.short_date().to_string()}</div>
                     </div>
                     <div class="story-view-prompt">
                         <em>{story.prompt.clone()}</em>

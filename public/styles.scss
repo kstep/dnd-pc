@@ -3373,16 +3373,17 @@ dialog.modal.closing::backdrop {
   }
 }
 
+.story-view {
+  padding: var(--size-3);
+}
+
 .story-view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--size-2);
+  margin-bottom: var(--size-3);
   padding-bottom: var(--size-2);
   border-bottom: 2px solid var(--panel-border);
 
   h2 {
-    margin: 0;
+    margin: 0 0 var(--size-1) 0;
     font-size: var(--font-size-4);
   }
 }
@@ -3398,6 +3399,12 @@ dialog.modal.closing::backdrop {
   padding: var(--size-2);
   background: var(--input-bg);
   border-radius: var(--radius-1);
+}
+
+.story-view > .story-actions {
+  margin-top: var(--size-3);
+  padding-top: var(--size-2);
+  border-top: 1px solid var(--panel-border);
 }
 
 .story-nav-title {
