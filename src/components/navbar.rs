@@ -77,7 +77,8 @@ pub fn Navbar() -> impl IntoView {
                             {move_tr!("view-summary")}
                         </A>
                         <A href=format!("{BASE_URL}/c/{id}/story") attr:class="navbar-link navbar-link-story">
-                            {move_tr!("view-story")}
+                            <Icon name="book-open" size=16 />
+                            <span class="navbar-link-label">{move_tr!("view-story")}</span>
                         </A>
                     </div>
                 })}

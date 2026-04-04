@@ -157,6 +157,18 @@ html {
   }
 }
 
+.navbar-link.navbar-link-story {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2);
+
+  @media (max-width: 768px) {
+    &[aria-current="page"] {
+      display: none;
+    }
+  }
+}
+
 .navbar-ref {
   position: relative;
 
@@ -232,6 +244,10 @@ html {
   }
 
   .navbar.page-quick-start .navbar-link-summary {
+    display: none;
+  }
+
+  .navbar-link-story .navbar-link-label {
     display: none;
   }
 
