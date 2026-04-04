@@ -1046,7 +1046,7 @@ pub mod tests {
                 (Skill::Perception, ProficiencyLevel::Expertise),
             ]),
             combat: CombatStats {
-                armor_class: 18,
+                armor_class: 12,
                 speed: 30,
                 hp_max: 44,
                 hp_current: 44,
@@ -1730,8 +1730,11 @@ pub mod tests {
 
     #[wasm_bindgen_test]
     fn computed_ac_natural_armor() {
-        // Unarmored Defense (Barbarian): 10 + DEX(+2) + CON(+1) = 13
+        // Natural armor is now applied via assign() OnCompute, which sets
+        // combat.armor_class directly. compute_armor_class() skips Natural
+        // type and uses the baseline. Simulate by setting baseline to 13.
         let mut ch = test_character();
+        ch.combat.armor_class = 13; // as if assign() set 10 + DEX(+2) + CON(+1)
         ch.equipment.armors = vec![make_armor(
             "Unarmored Defense",
             0,
