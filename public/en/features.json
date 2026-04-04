@@ -528,7 +528,7 @@
     "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier."
   },
   "Alchemist Spells.spell.Ray of Sickness": {
-    "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn."
+    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Alchemist Spells.spell.Flaming Sphere": {
     "description": "You create a 5-foot-diameter sphere of fire in an unoccupied space on the ground within range. It lasts for the duration. Any creature that ends its turn within 5 feet of the sphere makes a Dexterity saving throw, taking 2d6 Fire damage on a failed save or half as much damage on a successful one."
@@ -1770,7 +1770,7 @@
     "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
   },
   "Circle of the Land Spells.spell.Ray of Sickness": {
-    "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn."
+    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Circle of the Land Spells.spell.Sleep": {
     "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save."
@@ -5049,7 +5049,7 @@
     "description": "You extend your hand toward a creature you can see within range and project a puff of noxious gas. The creature must succeed on a CON save or take 1d12 poison damage."
   },
   "Abyssal Legacy.spell.Ray of Sickness": {
-    "description": "A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack. On a hit, the target takes 2d8 poison damage and must make a CON save or be Poisoned until the end of your next turn. Once per Long Rest (racial)."
+    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Abyssal Legacy.spell.Hold Person": {
     "description": "Choose a humanoid that you can see within range. The target must succeed on a WIS save or be Paralyzed for the duration. Once per Long Rest (racial)."
