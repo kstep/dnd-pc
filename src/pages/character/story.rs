@@ -11,7 +11,7 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     BASE_URL,
-    ai::{CharacterContext, Story, generate_story},
+    ai::{AiSettings, CharacterContext, Story, generate_story},
     components::{icon::Icon, modal::Modal},
     model::Character,
     pages::reference::ReferenceSidebar,
@@ -26,17 +26,19 @@ struct StoryParams {
 // --- Settings Modal ---
 
 #[component]
-fn AiSettingsModal(show: RwSignal<bool>) -> impl IntoView {
-    let settings = RwSignal::new(storage::load_ai_settings());
+fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
+    let draft = RwSignal::new(settings.get_untracked());
 
     Effect::new(move || {
         if show.get() {
-            settings.set(storage::load_ai_settings());
+            draft.set(settings.get_untracked());
         }
     });
 
     let on_save = move |_| {
-        storage::save_ai_settings(&settings.get_untracked());
+        let saved = draft.get_untracked();
+        storage::save_ai_settings(&saved);
+        settings.set(saved);
         show.set(false);
     };
 
@@ -48,9 +50,9 @@ fn AiSettingsModal(show: RwSignal<bool>) -> impl IntoView {
                         <label>{move_tr!("story-api-key")}</label>
                         <input
                             type="password"
-                            prop:value=move || settings.get().api_key
+                            prop:value=move || draft.get().api_key
                             on:input=move |event| {
-                                settings.update(|settings| settings.api_key = event_target_value(&event));
+                                draft.update(|draft| draft.api_key = event_target_value(&event));
                             }
                         />
                     </div>
@@ -58,9 +60,9 @@ fn AiSettingsModal(show: RwSignal<bool>) -> impl IntoView {
                         <label>{move_tr!("story-model")}</label>
                         <input
                             type="text"
-                            prop:value=move || settings.get().model
+                            prop:value=move || draft.get().model
                             on:input=move |event| {
-                                settings.update(|settings| settings.model = event_target_value(&event));
+                                draft.update(|draft| draft.model = event_target_value(&event));
                             }
                         />
                     </div>
@@ -108,7 +110,11 @@ fn StorySidebar(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
 // --- New Story View ---
 
 #[component]
-fn NewStoryView(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
+fn NewStoryView(
+    char_id: Uuid,
+    stories: RwSignal<Vec<Story>>,
+    settings: RwSignal<AiSettings>,
+) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let show_settings = RwSignal::new(false);
     let prompt = RwSignal::new(String::new());
@@ -116,7 +122,6 @@ fn NewStoryView(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
     let is_streaming = RwSignal::new(false);
     let error_msg = RwSignal::new(Option::<String>::None);
 
-    let settings = Memo::new(move |_| storage::load_ai_settings());
     let has_key = move || settings.get().has_api_key();
 
     let build_context = move || {
@@ -257,7 +262,7 @@ fn NewStoryView(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
                 }}
             </div>
         </div>
-        <AiSettingsModal show=show_settings />
+        <AiSettingsModal show=show_settings settings />
     }
 }
 
@@ -321,6 +326,7 @@ pub fn CharacterStory() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let char_id = store.read_untracked().id;
     let stories = RwSignal::new(storage::load_stories(&char_id));
+    let settings = RwSignal::new(storage::load_ai_settings());
     let params = use_params::<StoryParams>();
 
     let story_id = move || params.get().ok().and_then(|params| params.story_id);
@@ -335,7 +341,7 @@ pub fn CharacterStory() -> impl IntoView {
                             <ViewStoryView char_id story_id=sid stories />
                         }),
                         None => Either::Right(view! {
-                            <NewStoryView char_id stories />
+                            <NewStoryView char_id stories settings />
                         }),
                     }}
                 </main>
