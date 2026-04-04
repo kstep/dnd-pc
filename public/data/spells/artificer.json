@@ -379,7 +379,13 @@
   },
   {
     "name": "Homunculus Servant",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "HP",
+        "expr": "5 + SLOT_LEVEL * 5"
+      }
+    ]
   },
   {
     "name": "Invisibility",
