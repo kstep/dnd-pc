@@ -42,26 +42,28 @@ fn AiSettingsModal(show: RwSignal<bool>) -> impl IntoView {
 
     view! {
         <Modal show title=move_tr!("story-settings")>
-            <div class="modal-body">
-                <div class="textarea-field">
-                    <label>{move_tr!("story-api-key")}</label>
-                    <input
-                        type="password"
-                        prop:value=move || settings.get().api_key
-                        on:input=move |event| {
-                            settings.update(|settings| settings.api_key = event_target_value(&event));
-                        }
-                    />
-                </div>
-                <div class="textarea-field">
-                    <label>{move_tr!("story-model")}</label>
-                    <input
-                        type="text"
-                        prop:value=move || settings.get().model
-                        on:input=move |event| {
-                            settings.update(|settings| settings.model = event_target_value(&event));
-                        }
-                    />
+            <div class="ai-settings-modal">
+                <div class="modal-body">
+                    <div class="textarea-field">
+                        <label>{move_tr!("story-api-key")}</label>
+                        <input
+                            type="password"
+                            prop:value=move || settings.get().api_key
+                            on:input=move |event| {
+                                settings.update(|settings| settings.api_key = event_target_value(&event));
+                            }
+                        />
+                    </div>
+                    <div class="textarea-field">
+                        <label>{move_tr!("story-model")}</label>
+                        <input
+                            type="text"
+                            prop:value=move || settings.get().model
+                            on:input=move |event| {
+                                settings.update(|settings| settings.model = event_target_value(&event));
+                            }
+                        />
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button on:click=on_save>{move_tr!("story-save")}</button>
