@@ -238,74 +238,42 @@ pub async fn wait_for_auth() -> Option<(String, bool)> {
     Some((uid, is_anon))
 }
 
-pub async fn set_character_doc(
-    uid: &str,
-    char_id: &str,
-    data: &impl Serialize,
-) -> Result<(), FirebaseError> {
-    call_async_with_retry(
-        "setCharacterDoc",
-        &[uid.into(), char_id.into(), to_js(data)?],
-    )
-    .await?;
+// --- Generic Firestore operations ---
+
+pub async fn set_doc(data: &impl Serialize, path: &[&str]) -> Result<(), FirebaseError> {
+    let mut args = vec![to_js(data)?];
+    args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
+    call_async_with_retry("setDoc", &args).await?;
     Ok(())
 }
 
-pub async fn get_all_characters<T: DeserializeOwned>(uid: &str) -> Result<Vec<T>, FirebaseError> {
-    let result = call_async_with_retry("getAllCharacters", &[uid.into()]).await?;
-    from_js_array(result, "getAllCharacters")
-}
-
-pub async fn get_character_doc<T: DeserializeOwned>(
-    uid: &str,
-    char_id: &str,
-) -> Result<Option<T>, FirebaseError> {
-    let result = call_async_with_retry("getCharacterDoc", &[uid.into(), char_id.into()]).await?;
+pub async fn get_doc<T: DeserializeOwned>(path: &[&str]) -> Result<Option<T>, FirebaseError> {
+    let args: Vec<JsValue> = path
+        .iter()
+        .map(|segment| JsValue::from_str(segment))
+        .collect();
+    let result = call_async_with_retry("getDoc", &args).await?;
     if result.is_null() || result.is_undefined() {
         return Ok(None);
     }
     from_js(result).map(Some)
 }
 
-pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), FirebaseError> {
-    call_async_with_retry("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
-    Ok(())
+pub async fn get_all_docs<T: DeserializeOwned>(path: &[&str]) -> Result<Vec<T>, FirebaseError> {
+    let args: Vec<JsValue> = path
+        .iter()
+        .map(|segment| JsValue::from_str(segment))
+        .collect();
+    let result = call_async_with_retry("getDocs", &args).await?;
+    from_js_array(result, "getDocs")
 }
 
-// --- Stories subcollection ---
-
-pub async fn set_story_doc(
-    uid: &str,
-    char_id: &str,
-    story_id: &str,
-    data: &impl Serialize,
-) -> Result<(), FirebaseError> {
-    call_async_with_retry(
-        "setStoryDoc",
-        &[uid.into(), char_id.into(), story_id.into(), to_js(data)?],
-    )
-    .await?;
-    Ok(())
-}
-
-pub async fn get_all_stories<T: DeserializeOwned>(
-    uid: &str,
-    char_id: &str,
-) -> Result<Vec<T>, FirebaseError> {
-    let result = call_async_with_retry("getAllStories", &[uid.into(), char_id.into()]).await?;
-    from_js_array(result, "getAllStories")
-}
-
-pub async fn delete_story_doc(
-    uid: &str,
-    char_id: &str,
-    story_id: &str,
-) -> Result<(), FirebaseError> {
-    call_async_with_retry(
-        "deleteStoryDoc",
-        &[uid.into(), char_id.into(), story_id.into()],
-    )
-    .await?;
+pub async fn delete_doc(path: &[&str]) -> Result<(), FirebaseError> {
+    let args: Vec<JsValue> = path
+        .iter()
+        .map(|segment| JsValue::from_str(segment))
+        .collect();
+    call_async_with_retry("deleteDoc", &args).await?;
     Ok(())
 }
 

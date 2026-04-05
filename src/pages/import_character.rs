@@ -672,9 +672,10 @@ pub fn ImportCloudCharacter() -> impl IntoView {
         let cid = char_id.clone();
         async move {
             firebase::wait_ready().await;
-            let value = firebase::get_character_doc::<serde_json::Value>(&uid, &cid)
-                .await
-                .ok()??;
+            let value =
+                firebase::get_doc::<serde_json::Value>(&["users", &uid, "characters", &cid])
+                    .await
+                    .ok()??;
             let ch = storage::deserialize_character_value(value)?;
             ch.shared.then_some(ch)
         }

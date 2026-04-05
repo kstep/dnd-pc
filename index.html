@@ -115,12 +115,12 @@
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
   import {
     getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    getDocs,
-    deleteDoc,
-    collection,
+    doc as fsDoc,
+    setDoc as fsSetDoc,
+    getDoc as fsGetDoc,
+    getDocs as fsGetDocs,
+    deleteDoc as fsDeleteDoc,
+    collection as fsCollection,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   // Replace with your Firebase project config
@@ -168,26 +168,16 @@
     }),
     onAuthStateChanged: (cb) =>
       onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
-    setCharacterDoc: (uid, charId, data) =>
-      setDoc(doc(db, "users", uid, "characters", charId), data),
-    getCharacterDoc: async (uid, charId) => {
-      const snap = await getDoc(doc(db, "users", uid, "characters", charId));
+    setDoc: (data, ...path) => fsSetDoc(fsDoc(db, ...path), data),
+    getDoc: async (...path) => {
+      const snap = await fsGetDoc(fsDoc(db, ...path));
       return snap.exists() ? snap.data() : null;
     },
-    getAllCharacters: async (uid) => {
-      const snap = await getDocs(collection(db, "users", uid, "characters"));
+    getDocs: async (...path) => {
+      const snap = await fsGetDocs(fsCollection(db, ...path));
       return snap.docs.map((d) => d.data());
     },
-    deleteCharacterDoc: (uid, charId) =>
-      deleteDoc(doc(db, "users", uid, "characters", charId)),
-    setStoryDoc: (uid, charId, storyId, data) =>
-      setDoc(doc(db, "users", uid, "characters", charId, "stories", storyId), data),
-    getAllStories: async (uid, charId) => {
-      const snap = await getDocs(collection(db, "users", uid, "characters", charId, "stories"));
-      return snap.docs.map((d) => d.data());
-    },
-    deleteStoryDoc: (uid, charId, storyId) =>
-      deleteDoc(doc(db, "users", uid, "characters", charId, "stories", storyId)),
+    deleteDoc: (...path) => fsDeleteDoc(fsDoc(db, ...path)),
   };
   window.__firebaseResolve();
 </script>

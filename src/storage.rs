@@ -375,8 +375,18 @@ pub fn schedule_stories_cloud_push(char_id: &Uuid) {
                     let Some(story_id) = story_value["id"].as_str() else {
                         continue;
                     };
-                    if let Err(error) =
-                        firebase::set_story_doc(&uid, &char_id_str, story_id, story_value).await
+                    if let Err(error) = firebase::set_doc(
+                        story_value,
+                        &[
+                            "users",
+                            &uid,
+                            "characters",
+                            &char_id_str,
+                            "stories",
+                            story_id,
+                        ],
+                    )
+                    .await
                     {
                         log::warn!("Story cloud push failed for {story_id}: {error:?}");
                     }
@@ -402,7 +412,16 @@ pub fn schedule_story_cloud_delete(char_id: &Uuid, story_id: &Uuid) {
         let Some(uid) = firebase::current_uid() else {
             return;
         };
-        if let Err(error) = firebase::delete_story_doc(&uid, &char_id_str, &story_id_str).await {
+        if let Err(error) = firebase::delete_doc(&[
+            "users",
+            &uid,
+            "characters",
+            &char_id_str,
+            "stories",
+            &story_id_str,
+        ])
+        .await
+        {
             log::warn!("Story cloud delete failed: {error:?}");
         }
     });
@@ -925,7 +944,7 @@ fn schedule_cloud_push(character: &Character) {
                     }
                 };
                 state.set_ok(SyncStatus::Syncing);
-                match firebase::set_character_doc(&uid, &char_id_str, &json).await {
+                match firebase::set_doc(&json, &["users", &uid, "characters", &char_id_str]).await {
                     Ok(()) => state.set_ok(SyncStatus::Synced),
                     Err(error) => {
                         log::warn!("Cloud push failed: {error:?}");
@@ -944,11 +963,15 @@ fn schedule_cloud_push(character: &Character) {
 }
 
 async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), firebase::FirebaseError> {
-    firebase::set_character_doc(uid, &character.id.to_string(), character).await
+    firebase::set_doc(
+        character,
+        &["users", uid, "characters", &character.id.to_string()],
+    )
+    .await
 }
 
 async fn delete_from_cloud(uid: &str, id: &Uuid) -> Result<(), firebase::FirebaseError> {
-    firebase::delete_character_doc(uid, &id.to_string()).await
+    firebase::delete_doc(&["users", uid, "characters", &id.to_string()]).await
 }
 
 /// Bidirectional sync: pull remote characters (saving remote-newer locally,
@@ -960,7 +983,8 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), firebase::Fire
         return Ok(());
     };
     log::info!("sync_all_with_cloud: syncing for uid={uid}");
-    let remote_chars = firebase::get_all_characters::<serde_json::Value>(&uid).await?;
+    let remote_chars =
+        firebase::get_all_docs::<serde_json::Value>(&["users", &uid, "characters"]).await?;
     log::info!(
         "sync_all_with_cloud: got {} remote characters",
         remote_chars.len()
@@ -1048,7 +1072,9 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), firebase::Fire
 }
 
 async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), firebase::FirebaseError> {
-    let remote_stories: Vec<Story> = firebase::get_all_stories(uid, &char_id.to_string()).await?;
+    let char_id_str = char_id.to_string();
+    let remote_stories: Vec<Story> =
+        firebase::get_all_docs(&["users", uid, "characters", &char_id_str, "stories"]).await?;
     if remote_stories.is_empty() {
         return Ok(());
     }
