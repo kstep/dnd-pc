@@ -4,14 +4,15 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
+use wasm_bindgen::JsCast;
 
-use super::ReferenceSidebar;
 use crate::{
     BASE_URL,
     components::{expr_view::ExprView, spinner::Spinner},
     expr::Expr,
     hooks::use_hash_href,
     model::Attribute,
+    pages::reference::ReferenceSidebar,
     rules::{RulesRegistry, SpellList},
 };
 
@@ -221,8 +222,20 @@ fn SpellLevelNav(levels: Vec<u32>) -> impl IntoView {
         })
         .collect_view();
 
+    let details_ref = NodeRef::<leptos::html::Details>::new();
+    let close = move |event: web_sys::MouseEvent| {
+        let target = event
+            .target()
+            .and_then(|t| t.dyn_into::<web_sys::HtmlElement>().ok());
+        if target.is_some_and(|t| t.closest("a").ok().flatten().is_some())
+            && let Some(details) = details_ref.get()
+        {
+            details.set_open(false);
+        }
+    };
+
     view! {
-        <details class="floating-nav">
+        <details class="floating-nav" node_ref=details_ref on:click=close>
             <summary>"#"</summary>
             {items}
         </details>

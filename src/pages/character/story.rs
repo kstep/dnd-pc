@@ -230,10 +230,10 @@ fn NewStoryView(
 
             is_streaming.set(false);
 
-            if let Err(error) = result {
-                if !cancelled.get_untracked() {
-                    error_msg.set(Some(error));
-                }
+            if let Err(error) = result
+                && !cancelled.get_untracked()
+            {
+                error_msg.set(Some(error));
             }
 
             // Save whatever was generated (even partial if cancelled)
