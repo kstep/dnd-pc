@@ -8,6 +8,37 @@ use wasm_bindgen_futures::JsFuture;
 /// persistence).
 const FIRESTORE_TIMEOUT_MS: u32 = 10_000;
 
+#[derive(Debug)]
+pub enum FirebaseError {
+    NotAvailable,
+    Timeout { method: &'static str },
+    Js(JsValue),
+    Serde(serde_wasm_bindgen::Error),
+}
+
+impl std::fmt::Display for FirebaseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NotAvailable => write!(f, "Firebase not available"),
+            Self::Timeout { method } => write!(f, "{method} timed out"),
+            Self::Js(value) => write!(f, "{}", friendly_js_error(value)),
+            Self::Serde(error) => write!(f, "{error}"),
+        }
+    }
+}
+
+impl From<JsValue> for FirebaseError {
+    fn from(value: JsValue) -> Self {
+        Self::Js(value)
+    }
+}
+
+impl From<serde_wasm_bindgen::Error> for FirebaseError {
+    fn from(error: serde_wasm_bindgen::Error) -> Self {
+        Self::Serde(error)
+    }
+}
+
 fn firebase_obj() -> Option<Object> {
     let window = web_sys::window()?;
     let val = Reflect::get(&window, &"__firebase".into()).ok()?;
@@ -38,8 +69,8 @@ pub async fn wait_ready() -> bool {
 
 /// Call a `window.__firebase` method and return the result as a Promise.
 /// Fails immediately on structural errors (missing object, not a function).
-fn call_to_promise(method: &str, args: &[JsValue]) -> Result<Promise, JsValue> {
-    let fb = firebase_obj().ok_or_else(|| JsValue::from_str("Firebase not available"))?;
+fn call_to_promise(method: &str, args: &[JsValue]) -> Result<Promise, FirebaseError> {
+    let fb = firebase_obj().ok_or(FirebaseError::NotAvailable)?;
     let func = Reflect::get(&fb, &method.into())?;
     let func: js_sys::Function = func
         .dyn_into()
@@ -49,24 +80,25 @@ fn call_to_promise(method: &str, args: &[JsValue]) -> Result<Promise, JsValue> {
     result
         .dyn_into()
         .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))
+        .map_err(FirebaseError::Js)
 }
 
 /// Call a `window.__firebase` method synchronously (non-Promise return value).
-fn call(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
-    let fb = firebase_obj().ok_or_else(|| JsValue::from_str("Firebase not available"))?;
+fn call(method: &str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
+    let fb = firebase_obj().ok_or(FirebaseError::NotAvailable)?;
     let func = Reflect::get(&fb, &method.into())?;
     let func: js_sys::Function = func
         .dyn_into()
         .map_err(|_| JsValue::from_str(&format!("__firebase.{method} is not a function")))?;
     let js_args: Array = args.iter().collect();
-    Reflect::apply(&func, &fb, &js_args)
+    Ok(Reflect::apply(&func, &fb, &js_args)?)
 }
 
 /// Call a `window.__firebase` method and await its Promise (no retry, no
 /// timeout). Used for auth operations that are interactive/non-retriable.
-async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
+async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
     let promise = call_to_promise(method, args)?;
-    JsFuture::from(promise).await
+    Ok(JsFuture::from(promise).await?)
 }
 
 /// Create a JS Promise that resolves after `ms` milliseconds.
@@ -84,16 +116,14 @@ fn timeout_promise(ms: i32, sentinel: &JsValue) -> Promise {
 /// Race a JS promise against a timeout. Returns `Err` if the timeout fires
 /// first. Uses a sentinel object (not `undefined`) to distinguish timeout from
 /// a successful resolve that returns `undefined` (e.g. Firestore `setDoc`).
-async fn with_timeout(promise: Promise, label: &str) -> Result<JsValue, JsValue> {
+async fn with_timeout(promise: Promise, method: &'static str) -> Result<JsValue, FirebaseError> {
     let sentinel = Object::new();
     let sentinel_val: JsValue = sentinel.clone().into();
     let timeout = timeout_promise(FIRESTORE_TIMEOUT_MS as i32, &sentinel_val);
     let race = Promise::race(&Array::of2(&promise, &timeout));
     let value = JsFuture::from(race).await?;
     if value == sentinel_val {
-        Err(JsValue::from_str(&format!(
-            "{label} timed out after {FIRESTORE_TIMEOUT_MS}ms"
-        )))
+        Err(FirebaseError::Timeout { method })
     } else {
         Ok(value)
     }
@@ -113,14 +143,18 @@ const INITIAL_RETRY_MS: u32 = 2_000;
 /// Like `call_async` but with timeout and exponential backoff retry.
 /// Structural errors (missing method, not a Promise) fail immediately.
 /// Only timeouts and Promise rejections are retried.
-async fn call_async_with_retry(method: &str, args: &[JsValue]) -> Result<JsValue, JsValue> {
-    let label = format!("__firebase.{method}");
+async fn call_async_with_retry(
+    method: &'static str,
+    args: &[JsValue],
+) -> Result<JsValue, FirebaseError> {
     let mut delay = INITIAL_RETRY_MS;
-    let mut last_err = JsValue::UNDEFINED;
+    let mut last_err = FirebaseError::Js(JsValue::UNDEFINED);
 
     for attempt in 0..=MAX_RETRIES {
         if attempt > 0 {
-            log::info!("Retrying {label} (attempt {attempt}/{MAX_RETRIES}) after {delay}ms");
+            log::info!(
+                "Retrying __firebase.{method} (attempt {attempt}/{MAX_RETRIES}) after {delay}ms"
+            );
             sleep_ms(delay).await;
             delay *= 2;
         }
@@ -128,7 +162,7 @@ async fn call_async_with_retry(method: &str, args: &[JsValue]) -> Result<JsValue
         // Fail fast on structural errors — these are permanent.
         let promise = call_to_promise(method, args)?;
 
-        match with_timeout(promise, &label).await {
+        match with_timeout(promise, method).await {
             Ok(value) => return Ok(value),
             Err(error) => {
                 last_err = error;
@@ -139,21 +173,51 @@ async fn call_async_with_retry(method: &str, args: &[JsValue]) -> Result<JsValue
     Err(last_err)
 }
 
-pub async fn sign_in_anonymously() -> Result<JsValue, JsValue> {
+fn to_js<T: Serialize>(data: &T) -> Result<JsValue, FirebaseError> {
+    let serializer = serde_wasm_bindgen::Serializer::new()
+        .serialize_maps_as_objects(true)
+        .serialize_missing_as_null(true);
+    Ok(data.serialize(&serializer)?)
+}
+
+fn from_js<T: serde::de::DeserializeOwned>(value: JsValue) -> Result<T, FirebaseError> {
+    Ok(serde_wasm_bindgen::from_value(value)?)
+}
+
+fn from_js_array<T: serde::de::DeserializeOwned>(
+    value: JsValue,
+    label: &str,
+) -> Result<Vec<T>, FirebaseError> {
+    let array: Array = value.dyn_into().map_err(|_| {
+        FirebaseError::Js(JsValue::from_str(&format!(
+            "{label} did not return an array"
+        )))
+    })?;
+    let mut items = Vec::with_capacity(array.length() as usize);
+    for i in 0..array.length() {
+        match from_js::<T>(array.get(i)) {
+            Ok(val) => items.push(val),
+            Err(error) => log::warn!("Failed to deserialize {label} at index {i}: {error}"),
+        }
+    }
+    Ok(items)
+}
+
+pub async fn sign_in_anonymously() -> Result<JsValue, FirebaseError> {
     call_async("signInAnonymously", &[]).await
 }
 
 /// Call linkWithGoogle synchronously (opens popup in user gesture context),
 /// returning a Promise to await for the result.
-pub fn link_with_google_start() -> Result<Promise, JsValue> {
+pub fn link_with_google_start() -> Result<Promise, FirebaseError> {
     let result = call("linkWithGoogle", &[])?;
-    result
-        .dyn_into::<Promise>()
-        .map_err(|_| JsValue::from_str("linkWithGoogle did not return a Promise"))
+    result.dyn_into::<Promise>().map_err(|_| {
+        FirebaseError::Js(JsValue::from_str("linkWithGoogle did not return a Promise"))
+    })
 }
 
-pub async fn link_with_google_finish(promise: Promise) -> Result<JsValue, JsValue> {
-    JsFuture::from(promise).await
+pub async fn link_with_google_finish(promise: Promise) -> Result<JsValue, FirebaseError> {
+    Ok(JsFuture::from(promise).await?)
 }
 
 pub fn current_uid() -> Option<String> {
@@ -175,46 +239,33 @@ pub async fn wait_for_auth() -> Option<(String, bool)> {
     Some((uid, is_anon))
 }
 
-pub async fn set_character_doc(uid: &str, char_id: &str, data: &Value) -> Result<(), JsValue> {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_maps_as_objects(true)
-        .serialize_missing_as_null(true);
-    let js_data = data
-        .serialize(&serializer)
-        .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
-    call_async_with_retry("setCharacterDoc", &[uid.into(), char_id.into(), js_data]).await?;
+pub async fn set_character_doc(
+    uid: &str,
+    char_id: &str,
+    data: &Value,
+) -> Result<(), FirebaseError> {
+    call_async_with_retry(
+        "setCharacterDoc",
+        &[uid.into(), char_id.into(), to_js(data)?],
+    )
+    .await?;
     Ok(())
 }
 
-pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, JsValue> {
+pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, FirebaseError> {
     let result = call_async_with_retry("getAllCharacters", &[uid.into()]).await?;
-    let array: Array = result
-        .dyn_into()
-        .map_err(|_| JsValue::from_str("getAllCharacters did not return an array"))?;
-    let mut chars = Vec::with_capacity(array.length() as usize);
-    for i in 0..array.length() {
-        let item = array.get(i);
-        match serde_wasm_bindgen::from_value::<Value>(item) {
-            Ok(val) => chars.push(val),
-            Err(error) => {
-                log::warn!("Failed to deserialize remote character at index {i}: {error}")
-            }
-        }
-    }
-    Ok(chars)
+    from_js_array(result, "getAllCharacters")
 }
 
-pub async fn get_character_doc(uid: &str, char_id: &str) -> Result<Option<Value>, JsValue> {
+pub async fn get_character_doc(uid: &str, char_id: &str) -> Result<Option<Value>, FirebaseError> {
     let result = call_async_with_retry("getCharacterDoc", &[uid.into(), char_id.into()]).await?;
     if result.is_null() || result.is_undefined() {
         return Ok(None);
     }
-    serde_wasm_bindgen::from_value::<Value>(result)
-        .map(Some)
-        .map_err(|error| JsValue::from_str(&format!("Deserialization error: {error}")))
+    from_js(result).map(Some)
 }
 
-pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), JsValue> {
+pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), FirebaseError> {
     call_async_with_retry("deleteCharacterDoc", &[uid.into(), char_id.into()]).await?;
     Ok(())
 }
@@ -226,40 +277,25 @@ pub async fn set_story_doc(
     char_id: &str,
     story_id: &str,
     data: &Value,
-) -> Result<(), JsValue> {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_maps_as_objects(true)
-        .serialize_missing_as_null(true);
-    let js_data = data
-        .serialize(&serializer)
-        .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
+) -> Result<(), FirebaseError> {
     call_async_with_retry(
         "setStoryDoc",
-        &[uid.into(), char_id.into(), story_id.into(), js_data],
+        &[uid.into(), char_id.into(), story_id.into(), to_js(data)?],
     )
     .await?;
     Ok(())
 }
 
-pub async fn get_all_stories(uid: &str, char_id: &str) -> Result<Vec<Value>, JsValue> {
+pub async fn get_all_stories(uid: &str, char_id: &str) -> Result<Vec<Value>, FirebaseError> {
     let result = call_async_with_retry("getAllStories", &[uid.into(), char_id.into()]).await?;
-    let array: Array = result
-        .dyn_into()
-        .map_err(|_| JsValue::from_str("getAllStories did not return an array"))?;
-    let mut stories = Vec::with_capacity(array.length() as usize);
-    for i in 0..array.length() {
-        let item = array.get(i);
-        match serde_wasm_bindgen::from_value::<Value>(item) {
-            Ok(val) => stories.push(val),
-            Err(error) => {
-                log::warn!("Failed to deserialize remote story at index {i}: {error}")
-            }
-        }
-    }
-    Ok(stories)
+    from_js_array(result, "getAllStories")
 }
 
-pub async fn delete_story_doc(uid: &str, char_id: &str, story_id: &str) -> Result<(), JsValue> {
+pub async fn delete_story_doc(
+    uid: &str,
+    char_id: &str,
+    story_id: &str,
+) -> Result<(), FirebaseError> {
     call_async_with_retry(
         "deleteStoryDoc",
         &[uid.into(), char_id.into(), story_id.into()],
@@ -269,7 +305,7 @@ pub async fn delete_story_doc(uid: &str, char_id: &str, story_id: &str) -> Resul
 }
 
 /// Extract a human-readable message from a JsValue error.
-pub fn friendly_js_error(js_err: &JsValue) -> String {
+fn friendly_js_error(js_err: &JsValue) -> String {
     if let Some(error_obj) = js_err.dyn_ref::<js_sys::Error>() {
         return error_obj.message().into();
     }

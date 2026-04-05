@@ -772,10 +772,7 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
                 Ok(()) => None,
                 Err(error) => {
                     log::warn!("Cloud sync failed: {error:?}");
-                    Some(format!(
-                        "Sync failed: {}",
-                        firebase::friendly_js_error(&error)
-                    ))
+                    Some(format!("Sync failed: {error}"))
                 }
             };
             log::info!("finish_sign_in: done");
@@ -836,10 +833,7 @@ pub fn init_sync() {
             Ok(_) => finish_sign_in(state, true, SyncOp::PullOnly).await,
             Err(error) => {
                 log::warn!("Anonymous sign-in failed: {error:?}");
-                state.set_error(format!(
-                    "Anonymous sign-in failed: {}",
-                    firebase::friendly_js_error(&error)
-                ));
+                state.set_error(format!("Anonymous sign-in failed: {error}"));
             }
         }
         state.sync_done.set(true);
@@ -859,10 +853,7 @@ pub fn sign_in_with_google() {
         Ok(p) => p,
         Err(error) => {
             log::warn!("Google sign-in failed: {error:?}");
-            state.set_error(format!(
-                "Google sign-in failed: {}",
-                firebase::friendly_js_error(&error)
-            ));
+            state.set_error(format!("Google sign-in failed: {error}"));
             return;
         }
     };
@@ -872,10 +863,7 @@ pub fn sign_in_with_google() {
             Ok(_) => finish_sign_in(state, false, SyncOp::FullSync).await,
             Err(error) => {
                 log::warn!("Google sign-in failed: {error:?}");
-                state.set_error(format!(
-                    "Google sign-in failed: {}",
-                    firebase::friendly_js_error(&error)
-                ));
+                state.set_error(format!("Google sign-in failed: {error}"));
             }
         }
     });
@@ -941,10 +929,7 @@ fn schedule_cloud_push(character: &Character) {
                     Ok(()) => state.set_ok(SyncStatus::Synced),
                     Err(error) => {
                         log::warn!("Cloud push failed: {error:?}");
-                        state.set_error(format!(
-                            "Push failed: {}",
-                            firebase::friendly_js_error(&error)
-                        ));
+                        state.set_error(format!("Push failed: {error}"));
                     }
                 }
             });
@@ -958,20 +943,21 @@ fn schedule_cloud_push(character: &Character) {
     });
 }
 
-async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), JsValue> {
-    let json = serde_json::to_value(character)
-        .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
+async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), firebase::FirebaseError> {
+    let json = serde_json::to_value(character).map_err(|error| {
+        firebase::FirebaseError::Js(JsValue::from_str(&format!("Serialization error: {error}")))
+    })?;
     firebase::set_character_doc(uid, &character.id.to_string(), &json).await
 }
 
-async fn delete_from_cloud(uid: &str, id: &Uuid) -> Result<(), JsValue> {
+async fn delete_from_cloud(uid: &str, id: &Uuid) -> Result<(), firebase::FirebaseError> {
     firebase::delete_character_doc(uid, &id.to_string()).await
 }
 
 /// Bidirectional sync: pull remote characters (saving remote-newer locally,
 /// pushing local-newer to cloud). When `push_local_only` is true, also push
 /// characters that exist only locally (e.g. after linking a Google account).
-async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
+async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), firebase::FirebaseError> {
     let Some(uid) = firebase::current_uid() else {
         log::info!("sync_all_with_cloud: no UID, skipping");
         return Ok(());
@@ -1056,15 +1042,15 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
     }
 
     if push_failures > 0 {
-        Err(JsValue::from_str(&format!(
+        Err(firebase::FirebaseError::Js(JsValue::from_str(&format!(
             "Failed to push {push_failures} character(s)"
-        )))
+        ))))
     } else {
         Ok(())
     }
 }
 
-async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), JsValue> {
+async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), firebase::FirebaseError> {
     let remote_values = firebase::get_all_stories(uid, &char_id.to_string()).await?;
     if remote_values.is_empty() {
         return Ok(());
