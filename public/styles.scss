@@ -3290,6 +3290,16 @@ details.floating-nav {
 
   &[open] {
     @extend %floating-nav-panel;
+
+    > summary {
+      margin: 0;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: var(--radius-1);
+      box-shadow: none;
+      align-self: stretch;
+    }
   }
 
   > summary {
