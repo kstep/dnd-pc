@@ -21,7 +21,7 @@ pub fn SessionNav() -> impl IntoView {
             let href = hash_href(section_id);
             let label = move || i18n.tr(section_id);
             view! {
-                <a class="session-nav-btn" href=href title=label rel="external">
+                <a class="floating-nav-btn" href=href title=label rel="external">
                     <Icon name=icon_name size=18 />
                 </a>
             }
@@ -29,7 +29,7 @@ pub fn SessionNav() -> impl IntoView {
         .collect_view();
 
     view! {
-        <nav class="session-nav">
+        <nav class="floating-nav">
             {items}
         </nav>
     }

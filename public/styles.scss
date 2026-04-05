@@ -2712,6 +2712,11 @@ dialog.modal.closing::backdrop {
     border-bottom: 2px solid var(--panel-header);
     padding-bottom: var(--size-1);
     max-inline-size: none;
+    scroll-margin-top: 3.5rem;
+
+    @media (max-width: 768px) {
+      scroll-margin-top: 6rem;
+    }
   }
 }
 
@@ -3251,12 +3256,8 @@ dialog.modal.closing::backdrop {
   gap: var(--size-1);
 }
 
-// --- Session sidebar navigation ---
-.session-nav {
-  position: fixed;
-  right: var(--size-2);
-  bottom: var(--size-2);
-  z-index: 100;
+// --- Floating navigation panel ---
+%floating-nav-panel {
   display: flex;
   flex-direction: column;
   gap: var(--size-1);
@@ -3267,7 +3268,38 @@ dialog.modal.closing::backdrop {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.session-nav-btn {
+.floating-nav {
+  position: fixed;
+  right: var(--size-2);
+  bottom: var(--size-2);
+  z-index: 100;
+}
+
+nav.floating-nav {
+  @extend %floating-nav-panel;
+}
+
+details.floating-nav {
+  &:not([open]) > summary {
+    padding: var(--size-1);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &[open] {
+    @extend %floating-nav-panel;
+  }
+
+  > summary {
+    @extend .floating-nav-btn;
+    list-style: none;
+    cursor: pointer;
+  }
+}
+
+.floating-nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3278,7 +3310,10 @@ dialog.modal.closing::backdrop {
   border-radius: var(--radius-1);
   background: none;
   color: var(--text-secondary);
+  text-decoration: none;
   cursor: pointer;
+  font-size: var(--font-size-2);
+  font-weight: bold;
 
   &:hover {
     background: var(--panel-border);

@@ -10,6 +10,7 @@ use crate::{
     BASE_URL,
     components::{expr_view::ExprView, spinner::Spinner},
     expr::Expr,
+    hooks::use_hash_href,
     model::Attribute,
     rules::{RulesRegistry, SpellList},
 };
@@ -97,6 +98,8 @@ pub fn SpellReference() -> impl IntoView {
                     .map(|(level, spells)| SpellGroup { level, spells })
                     .collect();
 
+                let levels: Vec<u32> =
+                    by_level.iter().map(|group| group.level).collect();
                 let title_for_heading = title.clone();
                 view! {
                     <Title text=title />
@@ -106,13 +109,14 @@ pub fn SpellReference() -> impl IntoView {
                         {by_level.into_iter().map(|group| {
                             let level = group.level;
                             let spells = group.spells;
+                            let section_id = format!("spell-level-{level}");
                             let heading = if level == 0 {
                                 move_tr!("ref-cantrips")
                             } else {
                                 move_tr!("ref-spell-level", {"level" => level})
                             };
                             view! {
-                                <h2>{heading}</h2>
+                                <h2 id=section_id>{heading}</h2>
                                 <div class="reference-features">
                                     {spells.into_iter().map(|spell| {
                                         let anchor_id = format!("spell-{}", spell.name);
@@ -155,6 +159,7 @@ pub fn SpellReference() -> impl IntoView {
                             }
                         }).collect_view()}
                     </div>
+                    <SpellLevelNav levels />
                 }
                 .into_any()
             })
@@ -192,5 +197,34 @@ pub fn SpellReference() -> impl IntoView {
                 </main>
             </div>
         </div>
+    }
+}
+
+#[component]
+fn SpellLevelNav(levels: Vec<u32>) -> impl IntoView {
+    let hash_href = use_hash_href();
+
+    let items = levels
+        .into_iter()
+        .map(|level| {
+            let href = hash_href(&format!("spell-level-{level}"));
+            let label = if level == 0 {
+                move_tr!("ref-cantrips")
+            } else {
+                move_tr!("ref-spell-level", {"level" => level})
+            };
+            view! {
+                <a class="floating-nav-btn" href=href title=label rel="external">
+                    {level}
+                </a>
+            }
+        })
+        .collect_view();
+
+    view! {
+        <details class="floating-nav">
+            <summary>"#"</summary>
+            {items}
+        </details>
     }
 }
