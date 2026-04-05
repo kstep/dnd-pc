@@ -219,6 +219,55 @@ pub async fn delete_character_doc(uid: &str, char_id: &str) -> Result<(), JsValu
     Ok(())
 }
 
+// --- Stories subcollection ---
+
+pub async fn set_story_doc(
+    uid: &str,
+    char_id: &str,
+    story_id: &str,
+    data: &Value,
+) -> Result<(), JsValue> {
+    let serializer = serde_wasm_bindgen::Serializer::new()
+        .serialize_maps_as_objects(true)
+        .serialize_missing_as_null(true);
+    let js_data = data
+        .serialize(&serializer)
+        .map_err(|error| JsValue::from_str(&format!("Serialization error: {error}")))?;
+    call_async_with_retry(
+        "setStoryDoc",
+        &[uid.into(), char_id.into(), story_id.into(), js_data],
+    )
+    .await?;
+    Ok(())
+}
+
+pub async fn get_all_stories(uid: &str, char_id: &str) -> Result<Vec<Value>, JsValue> {
+    let result = call_async_with_retry("getAllStories", &[uid.into(), char_id.into()]).await?;
+    let array: Array = result
+        .dyn_into()
+        .map_err(|_| JsValue::from_str("getAllStories did not return an array"))?;
+    let mut stories = Vec::with_capacity(array.length() as usize);
+    for i in 0..array.length() {
+        let item = array.get(i);
+        match serde_wasm_bindgen::from_value::<Value>(item) {
+            Ok(val) => stories.push(val),
+            Err(error) => {
+                log::warn!("Failed to deserialize remote story at index {i}: {error}")
+            }
+        }
+    }
+    Ok(stories)
+}
+
+pub async fn delete_story_doc(uid: &str, char_id: &str, story_id: &str) -> Result<(), JsValue> {
+    call_async_with_retry(
+        "deleteStoryDoc",
+        &[uid.into(), char_id.into(), story_id.into()],
+    )
+    .await?;
+    Ok(())
+}
+
 /// Extract a human-readable message from a JsValue error.
 pub fn friendly_js_error(js_err: &JsValue) -> String {
     if let Some(error_obj) = js_err.dyn_ref::<js_sys::Error>() {

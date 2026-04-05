@@ -334,6 +334,80 @@ pub fn save_stories(id: &Uuid, stories: &[Story]) {
     }
 }
 
+pub fn schedule_stories_cloud_push(char_id: &Uuid) {
+    if !firebase::is_available() {
+        return;
+    }
+    if get_or_init_sync().uid.get_untracked().is_none() {
+        return;
+    }
+
+    let char_id = *char_id;
+    let story_key = stories_key(&char_id);
+    let char_id_str = char_id.to_string();
+
+    STORY_DEBOUNCE_TIMERS.with(|timers| {
+        if let Some(handle) = timers.borrow_mut().remove(&char_id) {
+            handle.clear();
+        }
+    });
+
+    let Ok(handle) = set_timeout_with_handle(
+        move || {
+            STORY_DEBOUNCE_TIMERS.with(|timers| {
+                timers.borrow_mut().remove(&char_id);
+            });
+            spawn_local(async move {
+                let Some(uid) = firebase::current_uid() else {
+                    return;
+                };
+                let Ok(Some(raw)) = LocalStorage::raw().get_item(&story_key) else {
+                    return;
+                };
+                let stories: Vec<serde_json::Value> = match serde_json::from_str(&raw) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        log::warn!("Failed to parse stories JSON for cloud: {error}");
+                        return;
+                    }
+                };
+                for story_value in &stories {
+                    let Some(story_id) = story_value["id"].as_str() else {
+                        continue;
+                    };
+                    if let Err(error) =
+                        firebase::set_story_doc(&uid, &char_id_str, story_id, story_value).await
+                    {
+                        log::warn!("Story cloud push failed for {story_id}: {error:?}");
+                    }
+                }
+            });
+        },
+        DEBOUNCE,
+    ) else {
+        return;
+    };
+    STORY_DEBOUNCE_TIMERS.with(|timers| {
+        timers.borrow_mut().insert(char_id, handle);
+    });
+}
+
+pub fn schedule_story_cloud_delete(char_id: &Uuid, story_id: &Uuid) {
+    if !firebase::is_available() {
+        return;
+    }
+    let char_id_str = char_id.to_string();
+    let story_id_str = story_id.to_string();
+    spawn_local(async move {
+        let Some(uid) = firebase::current_uid() else {
+            return;
+        };
+        if let Err(error) = firebase::delete_story_doc(&uid, &char_id_str, &story_id_str).await {
+            log::warn!("Story cloud delete failed: {error:?}");
+        }
+    });
+}
+
 /// Move `inputs` from `feature_data[name].inputs` to `features[i].inputs`.
 /// Each feature instance now carries its own inputs for stackable support.
 fn migrate_v8(value: &mut serde_json::Value) {
@@ -457,6 +531,7 @@ pub fn save_and_sync_character(character: &mut Character) {
 
 pub fn delete_character(id: &Uuid) {
     LocalStorage::delete(character_key(id));
+    LocalStorage::delete(stories_key(id));
 
     let id = *id;
     update_index(|index| {
@@ -583,6 +658,7 @@ thread_local! {
     /// prevents the closure from leaking — it is dropped when the timer is
     /// cancelled or after it fires.
     static DEBOUNCE_TIMERS: RefCell<HashMap<Uuid, TimeoutHandle>> = RefCell::new(HashMap::new());
+    static STORY_DEBOUNCE_TIMERS: RefCell<HashMap<Uuid, TimeoutHandle>> = RefCell::new(HashMap::new());
     /// Cached character index to avoid repeated localStorage round-trips on every
     /// save. Lazily populated on first access; kept in sync with localStorage.
     static INDEX_CACHE: RefCell<Option<CharacterIndex>> = const { RefCell::new(None) };
@@ -972,6 +1048,13 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
         get_or_init_sync().index_version.update(|v| *v += 1);
     }
 
+    // Sync stories for all characters
+    for summary in index.characters.values() {
+        if let Err(error) = sync_stories_with_cloud(&uid, &summary.id).await {
+            log::warn!("Story sync failed for {}: {error:?}", summary.id);
+        }
+    }
+
     if push_failures > 0 {
         Err(JsValue::from_str(&format!(
             "Failed to push {push_failures} character(s)"
@@ -979,4 +1062,38 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), JsValue> {
     } else {
         Ok(())
     }
+}
+
+async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), JsValue> {
+    let remote_values = firebase::get_all_stories(uid, &char_id.to_string()).await?;
+    if remote_values.is_empty() {
+        return Ok(());
+    }
+
+    let mut local_stories = load_stories(char_id);
+    let local_ids: HashSet<Uuid> = local_stories.iter().map(|story| story.id).collect();
+    let mut dirty = false;
+
+    for remote_value in remote_values {
+        let remote_story: Story = match serde_json::from_value(remote_value) {
+            Ok(story) => story,
+            Err(error) => {
+                log::warn!("Failed to deserialize remote story: {error}");
+                continue;
+            }
+        };
+
+        if !local_ids.contains(&remote_story.id) {
+            local_stories.push(remote_story);
+            dirty = true;
+        }
+    }
+
+    if dirty {
+        // Sort newest first
+        local_stories.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        save_stories(char_id, &local_stories);
+    }
+
+    Ok(())
 }

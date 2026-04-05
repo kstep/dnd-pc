@@ -51,11 +51,6 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
 
     let on_save = move |_| {
         let saved = draft.get_untracked();
-        log::info!(
-            "Saving AI settings: model={}, has_key={}",
-            saved.model,
-            saved.has_api_key()
-        );
         storage::save_ai_settings(&saved);
         settings.set(saved);
         show.set(false);
@@ -252,6 +247,7 @@ fn NewStoryView(
                 let story = Story::new(title, user_prompt, full_text);
                 stories.update(|list| list.insert(0, story));
                 storage::save_stories(&char_id, &stories.get_untracked());
+                storage::schedule_stories_cloud_push(&char_id);
                 prompt.set(String::new());
             }
         });
@@ -356,6 +352,7 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
             let on_delete = move |_| {
                 stories.update(|list| list.retain(|story| story.id != story_id));
                 storage::save_stories(&char_id, &stories.get_untracked());
+                storage::schedule_story_cloud_delete(&char_id, &story_id);
                 navigate(&format!("{BASE_URL}/c/{char_id}/story"), Default::default());
             };
 

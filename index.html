@@ -180,6 +180,14 @@
     },
     deleteCharacterDoc: (uid, charId) =>
       deleteDoc(doc(db, "users", uid, "characters", charId)),
+    setStoryDoc: (uid, charId, storyId, data) =>
+      setDoc(doc(db, "users", uid, "characters", charId, "stories", storyId), data),
+    getAllStories: async (uid, charId) => {
+      const snap = await getDocs(collection(db, "users", uid, "characters", charId, "stories"));
+      return snap.docs.map((d) => d.data());
+    },
+    deleteStoryDoc: (uid, charId, storyId) =>
+      deleteDoc(doc(db, "users", uid, "characters", charId, "stories", storyId)),
   };
   window.__firebaseResolve();
 </script>

@@ -105,10 +105,6 @@ pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> 
         .await
         .map_err(|error| format!("{error:?}"))?;
 
-    // Log raw API response
-    let raw: serde_json::Value = serde_wasm_bindgen::from_value(json.clone()).unwrap_or_default();
-    log::info!("Models API response: {raw}");
-
     let parsed: ModelsResponse =
         serde_wasm_bindgen::from_value(json).map_err(|error| format!("{error:?}"))?;
 
@@ -120,7 +116,6 @@ pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> 
         .collect();
 
     models.sort();
-    log::info!("Filtered chat models: {models:?}");
     Ok(models)
 }
 
