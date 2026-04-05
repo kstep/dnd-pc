@@ -107,7 +107,7 @@ pub fn ClassReference() -> impl IntoView {
                     def.feature_names(subname.as_deref())
                         .flat_map(|feat_name| {
                             features_index.get(feat_name).into_iter().flat_map(|f| {
-                                f.fields.values().filter(|fd| fd.kind.has_levels()).map(
+                                f.fields.values().filter(|fd| fd.kind.has_levels() && !matches!(fd.kind, FieldKind::FreeUses { .. })).map(
                                     |fd| FieldColumn {
                                         label: fd.label().to_string(),
                                         kind: fd.kind.clone(),
