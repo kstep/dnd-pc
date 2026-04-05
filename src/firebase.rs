@@ -1,6 +1,5 @@
 use js_sys::{Array, Object, Promise, Reflect};
-use serde::Serialize;
-use serde_json::Value;
+use serde::{Serialize, de::DeserializeOwned};
 use wasm_bindgen::{JsCast, prelude::*};
 use wasm_bindgen_futures::JsFuture;
 
@@ -180,11 +179,11 @@ fn to_js<T: Serialize>(data: &T) -> Result<JsValue, FirebaseError> {
     Ok(data.serialize(&serializer)?)
 }
 
-fn from_js<T: serde::de::DeserializeOwned>(value: JsValue) -> Result<T, FirebaseError> {
+fn from_js<T: DeserializeOwned>(value: JsValue) -> Result<T, FirebaseError> {
     Ok(serde_wasm_bindgen::from_value(value)?)
 }
 
-fn from_js_array<T: serde::de::DeserializeOwned>(
+fn from_js_array<T: DeserializeOwned>(
     value: JsValue,
     label: &str,
 ) -> Result<Vec<T>, FirebaseError> {
@@ -242,7 +241,7 @@ pub async fn wait_for_auth() -> Option<(String, bool)> {
 pub async fn set_character_doc(
     uid: &str,
     char_id: &str,
-    data: &Value,
+    data: &impl Serialize,
 ) -> Result<(), FirebaseError> {
     call_async_with_retry(
         "setCharacterDoc",
@@ -252,12 +251,15 @@ pub async fn set_character_doc(
     Ok(())
 }
 
-pub async fn get_all_characters(uid: &str) -> Result<Vec<Value>, FirebaseError> {
+pub async fn get_all_characters<T: DeserializeOwned>(uid: &str) -> Result<Vec<T>, FirebaseError> {
     let result = call_async_with_retry("getAllCharacters", &[uid.into()]).await?;
     from_js_array(result, "getAllCharacters")
 }
 
-pub async fn get_character_doc(uid: &str, char_id: &str) -> Result<Option<Value>, FirebaseError> {
+pub async fn get_character_doc<T: DeserializeOwned>(
+    uid: &str,
+    char_id: &str,
+) -> Result<Option<T>, FirebaseError> {
     let result = call_async_with_retry("getCharacterDoc", &[uid.into(), char_id.into()]).await?;
     if result.is_null() || result.is_undefined() {
         return Ok(None);
@@ -276,7 +278,7 @@ pub async fn set_story_doc(
     uid: &str,
     char_id: &str,
     story_id: &str,
-    data: &Value,
+    data: &impl Serialize,
 ) -> Result<(), FirebaseError> {
     call_async_with_retry(
         "setStoryDoc",
@@ -286,7 +288,10 @@ pub async fn set_story_doc(
     Ok(())
 }
 
-pub async fn get_all_stories(uid: &str, char_id: &str) -> Result<Vec<Value>, FirebaseError> {
+pub async fn get_all_stories<T: DeserializeOwned>(
+    uid: &str,
+    char_id: &str,
+) -> Result<Vec<T>, FirebaseError> {
     let result = call_async_with_retry("getAllStories", &[uid.into(), char_id.into()]).await?;
     from_js_array(result, "getAllStories")
 }

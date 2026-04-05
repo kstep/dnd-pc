@@ -944,10 +944,7 @@ fn schedule_cloud_push(character: &Character) {
 }
 
 async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), firebase::FirebaseError> {
-    let json = serde_json::to_value(character).map_err(|error| {
-        firebase::FirebaseError::Js(JsValue::from_str(&format!("Serialization error: {error}")))
-    })?;
-    firebase::set_character_doc(uid, &character.id.to_string(), &json).await
+    firebase::set_character_doc(uid, &character.id.to_string(), character).await
 }
 
 async fn delete_from_cloud(uid: &str, id: &Uuid) -> Result<(), firebase::FirebaseError> {
@@ -963,7 +960,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), firebase::Fire
         return Ok(());
     };
     log::info!("sync_all_with_cloud: syncing for uid={uid}");
-    let remote_chars = firebase::get_all_characters(&uid).await?;
+    let remote_chars = firebase::get_all_characters::<serde_json::Value>(&uid).await?;
     log::info!(
         "sync_all_with_cloud: got {} remote characters",
         remote_chars.len()
@@ -1051,8 +1048,8 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), firebase::Fire
 }
 
 async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), firebase::FirebaseError> {
-    let remote_values = firebase::get_all_stories(uid, &char_id.to_string()).await?;
-    if remote_values.is_empty() {
+    let remote_stories: Vec<Story> = firebase::get_all_stories(uid, &char_id.to_string()).await?;
+    if remote_stories.is_empty() {
         return Ok(());
     }
 
@@ -1060,15 +1057,7 @@ async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), fireba
     let local_ids: HashSet<Uuid> = local_stories.iter().map(|story| story.id).collect();
     let mut dirty = false;
 
-    for remote_value in remote_values {
-        let remote_story: Story = match serde_json::from_value(remote_value) {
-            Ok(story) => story,
-            Err(error) => {
-                log::warn!("Failed to deserialize remote story: {error}");
-                continue;
-            }
-        };
-
+    for remote_story in remote_stories {
         if !local_ids.contains(&remote_story.id) {
             local_stories.push(remote_story);
             dirty = true;
