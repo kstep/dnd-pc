@@ -121,6 +121,9 @@
     getDocs as fsGetDocs,
     deleteDoc as fsDeleteDoc,
     collection as fsCollection,
+    onSnapshot,
+    query as fsQuery,
+    where as fsWhere,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   // Replace with your Firebase project config
@@ -178,6 +181,26 @@
       return snap.docs.map((d) => d.data());
     },
     deleteDoc: (...path) => fsDeleteDoc(fsDoc(db, ...path)),
+    onSnapshot: (callback, conditions, ...path) => {
+      let colRef = fsCollection(db, ...path);
+      if (conditions) {
+        for (const [field, op, value] of conditions) {
+          colRef = fsQuery(colRef, fsWhere(field, op, value));
+        }
+      }
+      return onSnapshot(
+        colRef,
+        { source: "server" },
+        (snapshot) => {
+          const changes = snapshot.docChanges().map((change) => ({
+            type: change.type,
+            data: change.doc.data(),
+            id: change.doc.id,
+          }));
+          callback(changes);
+        }
+      );
+    },
   };
   window.__firebaseResolve();
 </script>

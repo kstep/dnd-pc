@@ -1,3 +1,5 @@
+use js_sys::{Date, Object, Reflect};
+use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
@@ -29,19 +31,6 @@ impl AiProvider {
     pub fn name(&self) -> &'static str {
         match self {
             Self::OpenAI => "OpenAI",
-        }
-    }
-
-    pub fn available_models(&self) -> &'static [&'static str] {
-        match self {
-            Self::OpenAI => &[
-                "gpt-4o-mini",
-                "gpt-4o",
-                "gpt-4.1-nano",
-                "gpt-4.1-mini",
-                "gpt-4.1",
-                "o4-mini",
-            ],
         }
     }
 
@@ -121,7 +110,7 @@ pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> 
 
 // --- Settings ---
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct AiSettings {
     pub provider: AiProvider,
     pub api_key: String,
@@ -158,7 +147,7 @@ pub struct Story {
 
 impl Story {
     pub fn new(title: String, prompt: String, content: String) -> Self {
-        let date = js_sys::Date::new_0();
+        let date = Date::new_0();
         Self {
             id: Uuid::new_v4(),
             title,
@@ -191,34 +180,38 @@ pub struct CharacterContext {
 
 impl CharacterContext {
     pub fn to_prompt_text(&self) -> String {
-        let mut parts = vec![format!(
+        use std::fmt::Write;
+
+        let mut out = String::with_capacity(512);
+        let _ = write!(
+            out,
             "Character: {}, Level {} {} {}",
             self.name, self.level, self.species, self.class_summary
-        )];
+        );
         if !self.history.is_empty() {
-            parts.push(format!("Backstory: {}", self.history));
+            let _ = write!(out, "\nBackstory: {}", self.history);
         }
         if !self.personality_traits.is_empty() {
-            parts.push(format!("Personality: {}", self.personality_traits));
+            let _ = write!(out, "\nPersonality: {}", self.personality_traits);
         }
         if !self.ideals.is_empty() {
-            parts.push(format!("Ideals: {}", self.ideals));
+            let _ = write!(out, "\nIdeals: {}", self.ideals);
         }
         if !self.bonds.is_empty() {
-            parts.push(format!("Bonds: {}", self.bonds));
+            let _ = write!(out, "\nBonds: {}", self.bonds);
         }
         if !self.flaws.is_empty() {
-            parts.push(format!("Flaws: {}", self.flaws));
+            let _ = write!(out, "\nFlaws: {}", self.flaws);
         }
         if !self.notes.is_empty() {
             let notes = if self.notes.len() > 2000 {
-                &self.notes[..2000]
+                &self.notes[..self.notes.floor_char_boundary(2000)]
             } else {
                 &self.notes
             };
-            parts.push(format!("Recent notes: {notes}"));
+            let _ = write!(out, "\nRecent notes: {notes}");
         }
-        parts.join("\n")
+        out
     }
 }
 
@@ -298,7 +291,7 @@ pub async fn generate_story(
             .await
             .map_err(|error| format!("read error: {error:?}"))?;
 
-        let done = js_sys::Reflect::get(&result, &JsValue::from_str("done"))
+        let done = Reflect::get(&result, &JsValue::from_str("done"))
             .map_err(|error| format!("{error:?}"))?
             .as_bool()
             .unwrap_or(true);
@@ -307,10 +300,10 @@ pub async fn generate_story(
             break;
         }
 
-        let value = js_sys::Reflect::get(&result, &JsValue::from_str("value"))
+        let value = Reflect::get(&result, &JsValue::from_str("value"))
             .map_err(|error| format!("{error:?}"))?;
 
-        let value_obj: js_sys::Object = value.into();
+        let value_obj: Object = value.into();
         let chunk_text = decoder
             .decode_with_buffer_source(&value_obj)
             .map_err(|error| format!("{error:?}"))?;
@@ -319,23 +312,31 @@ pub async fn generate_story(
 
         // Process complete SSE lines from the buffer
         while let Some(newline_pos) = buffer.find('\n') {
-            let line = buffer[..newline_pos].trim().to_string();
-            buffer = buffer[newline_pos + 1..].to_string();
+            let line = &buffer[..newline_pos];
+            let trimmed = line.trim();
 
-            if line.is_empty() || line.starts_with(':') {
-                continue;
-            }
-
-            if let Some(data) = line.strip_prefix("data: ") {
+            let should_break = if trimmed.is_empty() || trimmed.starts_with(':') {
+                false
+            } else if let Some(data) = trimmed.strip_prefix("data: ") {
                 if data == "[DONE]" {
-                    break;
+                    true
+                } else {
+                    if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(data)
+                        && let Some(content) = parsed["choices"][0]["delta"]["content"].as_str()
+                    {
+                        full_text.push_str(content);
+                        on_chunk(content);
+                    }
+                    false
                 }
-                if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(data)
-                    && let Some(content) = parsed["choices"][0]["delta"]["content"].as_str()
-                {
-                    full_text.push_str(content);
-                    on_chunk(content);
-                }
+            } else {
+                false
+            };
+
+            buffer.drain(..newline_pos + 1);
+
+            if should_break {
+                break;
             }
         }
     }

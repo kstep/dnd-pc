@@ -11,7 +11,9 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     BASE_URL,
-    ai::{AiSettings, CharacterContext, Story, fetch_models, generate_story},
+    ai::{
+        AiSettings, AiSettingsStoreFields, CharacterContext, Story, fetch_models, generate_story,
+    },
     components::{icon::Icon, modal::Modal},
     model::Character,
     pages::reference::ReferenceSidebar,
@@ -27,7 +29,7 @@ struct StoryParams {
 
 #[component]
 fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
-    let draft = RwSignal::new(settings.get_untracked());
+    let draft = Store::new(settings.get_untracked());
 
     let fetch_trigger = RwSignal::new(0u32);
 
@@ -50,25 +52,17 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
     });
 
     let on_save = move |_| {
-        let saved = draft.get_untracked();
+        let saved = draft.get();
         storage::save_ai_settings(&saved);
         settings.set(saved);
         show.set(false);
     };
 
-    let models_list = move || {
+    let models_list = move || -> Vec<String> {
         let remote = remote_models.read();
-        let remote = remote.as_deref().unwrap_or(&[]);
-        if remote.is_empty() {
-            draft
-                .get()
-                .provider
-                .available_models()
-                .iter()
-                .map(|model| model.to_string())
-                .collect::<Vec<_>>()
-        } else {
-            remote.to_vec()
+        match remote.as_deref() {
+            Some(models) if !models.is_empty() => models.to_vec(),
+            _ => vec![draft.model().get()],
         }
     };
 
@@ -88,9 +82,9 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                             type="text"
                             autocomplete="off"
                             class="secret-input"
-                            prop:value=move || draft.get().api_key
+                            prop:value=move || draft.api_key().get()
                             on:input=move |event| {
-                                draft.update(|draft| draft.api_key = event_target_value(&event));
+                                draft.api_key().set(event_target_value(&event));
                             }
                         />
                     </div>
@@ -98,18 +92,18 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
                         <label>{move_tr!("story-model")}</label>
                         <Suspense fallback=move || view! {
                             <select disabled>
-                                <option>{move || draft.get().model} " ⏳"</option>
+                                <option>{move || draft.model().get()} " ⏳"</option>
                             </select>
                         }>
                             {move || {
-                                let current_model = draft.get().model.clone();
+                                let current_model = draft.model().get();
                                 let models = models_list();
                                 view! {
                                     <select on:change=move |event| {
-                                        draft.update(|draft| draft.model = event_target_value(&event));
+                                        draft.model().set(event_target_value(&event));
                                     }>
                                         {models.into_iter().map(|model| {
-                                            let selected = model == current_model;
+                                            let selected = model == *current_model;
                                             let label = model.clone();
                                             view! { <option value=model selected=selected>{label}</option> }
                                         }).collect::<Vec<_>>()}
@@ -177,7 +171,7 @@ fn NewStoryView(
     let has_key = move || settings.get().has_api_key();
 
     let build_context = move || {
-        let character = store.get();
+        let character = store.read();
         CharacterContext {
             name: character.identity.name.clone(),
             species: character.identity.species.clone(),
@@ -238,16 +232,19 @@ fn NewStoryView(
                 let title = if first_line.len() <= 80 {
                     first_line.to_string()
                 } else {
-                    match first_line[..80].rfind(' ') {
+                    let boundary = first_line.floor_char_boundary(80);
+                    match first_line[..boundary].rfind(' ') {
                         Some(pos) => format!("{}…", &first_line[..pos]),
-                        None => format!("{}…", &first_line[..80]),
+                        None => format!("{}…", &first_line[..boundary]),
                     }
                 };
 
                 let story = Story::new(title, user_prompt, full_text);
                 stories.update(|list| list.insert(0, story));
                 storage::save_stories(&char_id, &stories.get_untracked());
-                storage::schedule_stories_cloud_push(&char_id);
+                if let Some(uid) = crate::firebase::current_uid() {
+                    storage::queue::push(storage::queue::CloudOp::PushStories { uid, char_id });
+                }
                 prompt.set(String::new());
             }
         });
@@ -340,25 +337,39 @@ fn NewStoryView(
 
 #[component]
 fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
-    let story = Memo::new(move |_| stories.get().into_iter().find(|story| story.id == story_id));
+    let story = Memo::new(move |_| {
+        stories.with(|list| list.iter().find(|story| story.id == story_id).cloned())
+    });
 
     let navigate = use_navigate();
 
     view! {
         {move || story.get().map(|story| {
             let navigate = navigate.clone();
-            let content = story.content.clone();
 
             let on_delete = move |_| {
                 stories.update(|list| list.retain(|story| story.id != story_id));
                 storage::save_stories(&char_id, &stories.get_untracked());
-                storage::schedule_story_cloud_delete(&char_id, &story_id);
+                if let Some(uid) = crate::firebase::current_uid() {
+                    storage::queue::push(storage::queue::CloudOp::DeleteStory {
+                        uid,
+                        char_id,
+                        story_id,
+                    });
+                }
                 navigate(&format!("{BASE_URL}/c/{char_id}/story"), Default::default());
             };
 
             let on_copy = move |_| {
-                if let Some(window) = web_sys::window() {
-                    let _ = window.navigator().clipboard().write_text(&content);
+                let content = stories.with(|list| {
+                    list.iter()
+                        .find(|story| story.id == story_id)
+                        .map(|story| story.content.clone())
+                });
+                if let Some(text) = content
+                    && let Some(window) = web_sys::window()
+                {
+                    let _ = window.navigator().clipboard().write_text(&text);
                 }
             };
 
@@ -372,7 +383,7 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
                         <em>{story.prompt.clone()}</em>
                     </div>
                     <div class="story-content">
-                        <pre>{story.content.clone()}</pre>
+                        <pre>{story.content}</pre>
                     </div>
                     <div class="story-actions">
                         <button on:click=on_copy>

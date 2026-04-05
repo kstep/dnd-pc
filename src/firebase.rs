@@ -1,6 +1,6 @@
 use js_sys::{Array, Object, Promise, Reflect};
-use serde::{Serialize, de::DeserializeOwned};
-use wasm_bindgen::{JsCast, prelude::*};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use wasm_bindgen::{JsCast, closure::Closure, prelude::*};
 use wasm_bindgen_futures::JsFuture;
 
 /// Timeout for Firestore operations in ms (setDoc can hang with offline
@@ -102,7 +102,8 @@ async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, FirebaseE
 
 /// Create a JS Promise that resolves after `ms` milliseconds.
 /// The resolved value is `sentinel` (use `JsValue::UNDEFINED` for sleep).
-fn timeout_promise(ms: i32, sentinel: &JsValue) -> Promise {
+fn timeout_promise(ms: u32, sentinel: &JsValue) -> Promise {
+    let ms = ms.min(i32::MAX as u32) as i32;
     let sentinel = sentinel.clone();
     Promise::new(&mut move |resolve, _| {
         web_sys::window()
@@ -118,7 +119,7 @@ fn timeout_promise(ms: i32, sentinel: &JsValue) -> Promise {
 async fn with_timeout(promise: Promise, method: &'static str) -> Result<JsValue, FirebaseError> {
     let sentinel = Object::new();
     let sentinel_val: JsValue = sentinel.clone().into();
-    let timeout = timeout_promise(FIRESTORE_TIMEOUT_MS as i32, &sentinel_val);
+    let timeout = timeout_promise(FIRESTORE_TIMEOUT_MS, &sentinel_val);
     let race = Promise::race(&Array::of2(&promise, &timeout));
     let value = JsFuture::from(race).await?;
     if value == sentinel_val {
@@ -130,7 +131,7 @@ async fn with_timeout(promise: Promise, method: &'static str) -> Result<JsValue,
 
 /// Sleep for the given number of milliseconds.
 async fn sleep_ms(ms: u32) {
-    let promise = timeout_promise(ms as i32, &JsValue::UNDEFINED);
+    let promise = timeout_promise(ms, &JsValue::UNDEFINED);
     let _ = JsFuture::from(promise).await;
 }
 
@@ -275,6 +276,84 @@ pub async fn delete_doc(path: &[&str]) -> Result<(), FirebaseError> {
         .collect();
     call_async_with_retry("deleteDoc", &args).await?;
     Ok(())
+}
+
+// --- Realtime subscriptions ---
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ChangeType {
+    Added,
+    Modified,
+    Removed,
+}
+
+#[derive(Deserialize)]
+pub struct DocChange {
+    #[serde(rename = "type")]
+    pub change_type: ChangeType,
+    pub data: serde_json::Value,
+    pub id: String,
+}
+
+pub struct WhereClause(pub &'static str, pub &'static str, pub JsValue);
+
+/// An active Firestore subscription. Dropping it unsubscribes.
+pub struct Subscription {
+    _callback: Closure<dyn Fn(JsValue)>,
+    unsubscribe: js_sys::Function,
+}
+
+impl Subscription {
+    pub fn unsubscribe(&self) {
+        let _ = self.unsubscribe.call0(&JsValue::NULL);
+    }
+}
+
+impl Drop for Subscription {
+    fn drop(&mut self) {
+        self.unsubscribe();
+    }
+}
+
+/// Subscribe to Firestore collection changes with optional query conditions.
+/// The returned `Subscription` must be kept alive; dropping it unsubscribes.
+pub fn subscribe_collection(
+    path: &[&str],
+    conditions: &[WhereClause],
+    on_change: impl Fn(Vec<DocChange>) + 'static,
+) -> Result<Subscription, FirebaseError> {
+    let callback = Closure::wrap(Box::new(move |changes: JsValue| {
+        if let Ok(parsed) = from_js::<Vec<DocChange>>(changes) {
+            on_change(parsed);
+        }
+    }) as Box<dyn Fn(JsValue)>);
+
+    let js_conditions = if conditions.is_empty() {
+        JsValue::NULL
+    } else {
+        let arr = Array::new();
+        for clause in conditions {
+            let triple = Array::of3(
+                &JsValue::from_str(clause.0),
+                &JsValue::from_str(clause.1),
+                &clause.2,
+            );
+            arr.push(&triple);
+        }
+        arr.into()
+    };
+
+    let mut args: Vec<JsValue> = vec![callback.as_ref().clone(), js_conditions];
+    args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
+    let unsubscribe: js_sys::Function = call("onSnapshot", &args)?
+        .dyn_into()
+        .map_err(FirebaseError::from)?;
+
+    Ok(Subscription {
+        _callback: callback,
+        unsubscribe,
+    })
 }
 
 /// Extract a human-readable message from a JsValue error.

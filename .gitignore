@@ -2,3 +2,4 @@
 /dist
 
 .playwright-mcp/
+.claude/worktrees/
