@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::BTreeMap, time::Duration};
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::move_tr;
@@ -17,13 +17,14 @@ use crate::{
         species_field::SpeciesField,
     },
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureCategory,
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureCategory,
         FeatureSource, PersonalityStoreFields,
     },
     names::{self, NamesData},
     rules::{
-        DefinitionStore, RulesRegistry,
+        ApplyInputs, DefinitionStore, RulesRegistry,
         apply::{PendingFeature, apply_new_features, collect_pending_features},
+        feature::FeatureDefinition,
     },
 };
 
@@ -180,7 +181,74 @@ pub fn QuickStart() -> impl IntoView {
     }
 }
 
-/// Manual character creation via Quick Start form.
+// --- Shared helpers ---
+
+/// Collect all pending features for quick-start creation: generation feature
+/// (if selected) + species/background/class features.
+fn collect_quick_start_pending(
+    store: &Store<Character>,
+    registry: &RulesRegistry,
+    gen_name: &str,
+) -> Vec<PendingFeature> {
+    store.with_untracked(|character| {
+        let gen_pending = (!gen_name.is_empty()).then(|| {
+            let level = character.level().max(1);
+            PendingFeature {
+                name: gen_name.to_string(),
+                source: FeatureSource::User(0),
+                level,
+            }
+        });
+
+        registry.with_features_index_untracked(|fi| {
+            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
+            pending.extend(collect_pending_features(character, registry, fi));
+            pending
+        })
+    })
+}
+
+/// Apply callback shared by manual and AI quick-start: set applied flags,
+/// hit dice, apply features, set HP, navigate to editor.
+fn finalize_quick_start(
+    registry: RulesRegistry,
+    character: &mut Character,
+    pending: &[PendingFeature],
+    inputs: &ApplyInputs,
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+) {
+    if !character.identity.species.is_empty() && !character.identity.species_applied {
+        character.identity.species_applied = true;
+    }
+    if !character.identity.background.is_empty() && !character.identity.background_applied {
+        character.identity.background_applied = true;
+    }
+    let class_cache = registry.classes().cache().read_untracked();
+    for class_level in &mut character.identity.classes {
+        for lvl in 1..=class_level.level {
+            class_level.applied_levels.insert(lvl);
+        }
+        if let Some(def) = class_cache.get(class_level.class.as_str()) {
+            class_level.hit_die_sides = def.hit_die;
+        }
+    }
+
+    apply_new_features(features_index, character, pending, Some(inputs));
+    character.combat.hp_current = character.hp_max();
+
+    navigate_to_editor(character.id);
+}
+
+fn navigate_to_editor(id: Uuid) {
+    let navigate = use_navigate();
+    set_timeout(
+        move || navigate(&format!("/c/{id}"), Default::default()),
+        Duration::ZERO,
+    );
+}
+
+// --- Manual creation ---
+
 fn create_character(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -192,74 +260,20 @@ fn create_character(
     // background, class selections). Handles cancelled previous attempts.
     store.update(|character| character.clear());
 
-    // Add generation feature entry if selected
-    if !gen_name.is_empty() {
-        store.features().write().push(Feature {
-            name: gen_name.clone(),
-            ..Feature::default()
-        });
-    }
+    let all_pending = collect_quick_start_pending(&store, &registry, &gen_name);
 
-    // Collect ALL pending features across all steps into one list
-    let all_pending: Vec<PendingFeature> = store.with_untracked(|character| {
-        let gen_pending = (!gen_name.is_empty()).then(|| {
-            let level = character.level().max(1);
-            PendingFeature {
-                name: gen_name.clone(),
-                source: FeatureSource::User(0),
-                level,
-            }
-        });
-
-        registry.with_features_index_untracked(|fi| {
-            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
-            pending.extend(collect_pending_features(character, &registry, fi));
-            pending
-        })
-    });
-
-    // Single modal for everything, then apply all steps and navigate
     apply_with_modal(
         store,
         registry,
         all_pending,
         move |character, pending, inputs, fi| {
-            // Set applied flags
-            if !character.identity.species.is_empty() && !character.identity.species_applied {
-                character.identity.species_applied = true;
-            }
-            if !character.identity.background.is_empty() && !character.identity.background_applied {
-                character.identity.background_applied = true;
-            }
-            let class_cache = registry.classes().cache().read_untracked();
-            for class_level in &mut character.identity.classes {
-                for lvl in 1..=class_level.level {
-                    class_level.applied_levels.insert(lvl);
-                }
-                if let Some(def) = class_cache.get(class_level.class.as_str()) {
-                    class_level.hit_die_sides = def.hit_die;
-                }
-            }
-
-            // Apply all collected features in one pass
-            apply_new_features(fi, character, pending, Some(inputs));
-            character.combat.hp_current = character.hp_max();
-
-            navigate_to_editor(character.id);
+            finalize_quick_start(registry, character, pending, inputs, fi);
         },
     );
 }
 
-fn navigate_to_editor(id: Uuid) {
-    let navigate = use_navigate();
-    set_timeout(
-        move || navigate(&format!("/c/{id}"), Default::default()),
-        Duration::ZERO,
-    );
-}
+// --- AI creation ---
 
-/// Apply AI generation result. Called synchronously from Effect in component
-/// scope — full Leptos context available (navigate, ArgsModalCtx, etc.)
 fn apply_ai_result(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -292,51 +306,15 @@ fn apply_ai_result(
         .unwrap_or_default();
     generation_method.set(preset_name.clone());
 
-    // Collect all pending features (identity + generation feature already set
-    // by the Action before Phase 2)
-    let all_pending: Vec<PendingFeature> = store.with_untracked(|character| {
-        let gen_pending = (!preset_name.is_empty()).then(|| {
-            let level = character.level().max(1);
-            PendingFeature {
-                name: preset_name,
-                source: FeatureSource::User(0),
-                level,
-            }
-        });
-        registry.with_features_index_untracked(|fi| {
-            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
-            pending.extend(collect_pending_features(character, &registry, fi));
-            pending
-        })
-    });
+    let all_pending = collect_quick_start_pending(&store, &registry, &preset_name);
 
-    // Apply with prefilled args, falling back to modal for any remaining
     apply_with_prefilled_args(
         store,
         registry,
         all_pending,
         prefilled,
         move |character, pending, inputs, fi| {
-            if !character.identity.species.is_empty() && !character.identity.species_applied {
-                character.identity.species_applied = true;
-            }
-            if !character.identity.background.is_empty() && !character.identity.background_applied {
-                character.identity.background_applied = true;
-            }
-            let class_cache = registry.classes().cache().read_untracked();
-            for class_level in &mut character.identity.classes {
-                for lvl in 1..=class_level.level {
-                    class_level.applied_levels.insert(lvl);
-                }
-                if let Some(def) = class_cache.get(class_level.class.as_str()) {
-                    class_level.hit_die_sides = def.hit_die;
-                }
-            }
-
-            apply_new_features(fi, character, pending, Some(inputs));
-            character.combat.hp_current = character.hp_max();
-
-            navigate_to_editor(character.id);
+            finalize_quick_start(registry, character, pending, inputs, fi);
         },
     );
 }

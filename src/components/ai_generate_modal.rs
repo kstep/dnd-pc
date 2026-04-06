@@ -8,7 +8,7 @@ use crate::{
     ai::{self, AiSettings, CharacterConcept, PendingArgDescription},
     components::{icon::Icon, modal::Modal, spinner::Spinner},
     hooks,
-    model::{Character, CharacterStoreFields, Feature, FeatureCategory, FeatureSource},
+    model::{Character, FeatureCategory, FeatureSource},
     rules::{
         DefinitionStore, RulesRegistry,
         apply::{PendingFeature, collect_pending_features},
@@ -79,14 +79,6 @@ async fn run_ai_generation(
             break;
         }
         hooks::sleep(Duration::from_millis(100)).await;
-    }
-
-    // Add generation feature to collect it with pending
-    if !input.preset_name.is_empty() {
-        store.features().write().push(Feature {
-            name: input.preset_name.clone(),
-            ..Feature::default()
-        });
     }
 
     // Collect pending features
