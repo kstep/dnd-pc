@@ -1,11 +1,13 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
+use js_sys::Promise;
 use leptos::{prelude::*, reactive::computed::Memo};
 use leptos_router::{
     NavigateOptions,
     hooks::{query_signal_with_options, use_location},
 };
 use wasm_bindgen::{JsCast, prelude::Closure};
+use wasm_bindgen_futures::JsFuture;
 
 use crate::BASE_URL;
 
@@ -79,6 +81,17 @@ impl PageKind {
             Self::Story => "story",
         }
     }
+}
+
+/// Async sleep via JS `setTimeout` Promise.
+pub async fn sleep(duration: Duration) {
+    let ms = duration.as_millis().min(i32::MAX as u128) as i32;
+    let promise = Promise::new(&mut move |resolve, _| {
+        let _ = web_sys::window()
+            .expect("no window")
+            .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, ms);
+    });
+    let _ = JsFuture::from(promise).await;
 }
 
 pub fn use_page_kind() -> Memo<PageKind> {

@@ -9,12 +9,16 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     components::{
-        background_field::BackgroundField, character_header::apply_with_modal,
-        class_field::ClassField, icon::Icon, species_field::SpeciesField,
+        ai_generate_modal::{AiGenerateModal, AiGenerateResult},
+        apply::{apply_with_modal, apply_with_prefilled_args},
+        background_field::BackgroundField,
+        class_field::ClassField,
+        icon::Icon,
+        species_field::SpeciesField,
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureCategory,
-        FeatureSource,
+        FeatureSource, PersonalityStoreFields,
     },
     names::{self, NamesData},
     rules::{
@@ -63,14 +67,34 @@ pub fn QuickStart() -> impl IntoView {
         create_character(store, registry, generation_method);
     };
 
+    let show_ai_modal = RwSignal::new(false);
+
+    // AI result callback runs synchronously in Effect context — full Leptos
+    // Owner available (navigate, ArgsModalCtx, etc.)
+    let on_ai_result = Callback::new(move |result: AiGenerateResult| {
+        apply_ai_result(store, registry, generation_method, result);
+    });
+
     let skip_href = format!("{BASE_URL}/c/{}", store.read_untracked().id);
 
     view! {
+        <AiGenerateModal show=show_ai_modal on_result=on_ai_result />
         <form class="quick-start-page" on:submit=move |event| {
             event.prevent_default();
             on_create(event);
         }>
-            <h2>{move_tr!("quick-start-title")}</h2>
+            <div class="quick-start-header">
+                <h2>{move_tr!("quick-start-title")}</h2>
+                <button
+                    type="button"
+                    class="btn-primary"
+                    on:click=move |_| show_ai_modal.set(true)
+                >
+                    <Icon name="sparkles" size=16 />
+                    " "
+                    {move_tr!("ai-generate-button")}
+                </button>
+            </div>
 
             <div class="quick-start-section">
                 <label>{move_tr!("character-name")}</label>
@@ -156,8 +180,7 @@ pub fn QuickStart() -> impl IntoView {
     }
 }
 
-/// Collect all pending inputs from generation + species + background + class
-/// into a single modal, then apply everything and navigate to the editor.
+/// Manual character creation via Quick Start form.
 fn create_character(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -232,5 +255,88 @@ fn navigate_to_editor(id: Uuid) {
     set_timeout(
         move || navigate(&format!("/c/{id}"), Default::default()),
         Duration::ZERO,
+    );
+}
+
+/// Apply AI generation result. Called synchronously from Effect in component
+/// scope — full Leptos context available (navigate, ArgsModalCtx, etc.)
+fn apply_ai_result(
+    store: Store<Character>,
+    registry: RulesRegistry,
+    generation_method: RwSignal<String>,
+    result: AiGenerateResult,
+) {
+    let concept = result.concept;
+    let prefilled = result.feature_choices;
+
+    // Fill personality fields
+    store
+        .personality()
+        .personality_traits()
+        .set(concept.personality_traits);
+    store.personality().ideals().set(concept.ideals);
+    store.personality().bonds().set(concept.bonds);
+    store.personality().flaws().set(concept.flaws);
+    store.personality().history().set(concept.backstory);
+
+    // Set generation method to preset
+    let preset_name = registry
+        .with_features_index_untracked(|idx| {
+            idx.values()
+                .find(|feat| {
+                    matches!(feat.category, FeatureCategory::Generation)
+                        && feat.name.contains("Preset")
+                })
+                .map(|feat| feat.name.to_string())
+        })
+        .unwrap_or_default();
+    generation_method.set(preset_name.clone());
+
+    // Collect all pending features (identity + generation feature already set
+    // by the Action before Phase 2)
+    let all_pending: Vec<PendingFeature> = store.with_untracked(|character| {
+        let gen_pending = (!preset_name.is_empty()).then(|| {
+            let level = character.level().max(1);
+            PendingFeature {
+                name: preset_name,
+                source: FeatureSource::User(0),
+                level,
+            }
+        });
+        registry.with_features_index_untracked(|fi| {
+            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
+            pending.extend(collect_pending_features(character, &registry, fi));
+            pending
+        })
+    });
+
+    // Apply with prefilled args, falling back to modal for any remaining
+    apply_with_prefilled_args(
+        store,
+        registry,
+        all_pending,
+        prefilled,
+        move |character, pending, inputs, fi| {
+            if !character.identity.species.is_empty() && !character.identity.species_applied {
+                character.identity.species_applied = true;
+            }
+            if !character.identity.background.is_empty() && !character.identity.background_applied {
+                character.identity.background_applied = true;
+            }
+            let class_cache = registry.classes().cache().read_untracked();
+            for class_level in &mut character.identity.classes {
+                for lvl in 1..=class_level.level {
+                    class_level.applied_levels.insert(lvl);
+                }
+                if let Some(def) = class_cache.get(class_level.class.as_str()) {
+                    class_level.hit_die_sides = def.hit_die;
+                }
+            }
+
+            apply_new_features(fi, character, pending, Some(inputs));
+            character.combat.hp_current = character.hp_max();
+
+            navigate_to_editor(character.id);
+        },
     );
 }

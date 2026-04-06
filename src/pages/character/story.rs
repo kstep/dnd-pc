@@ -68,54 +68,52 @@ fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl
 
     view! {
         <Modal show title=move_tr!("story-settings")>
-            <div class="ai-settings-modal">
-                <div class="modal-body">
-                    <div class="textarea-field">
-                        <label>
-                            {move_tr!("story-api-key")}
-                            " "
-                            <a href="https://platform.openai.com/api-keys" target="_blank">
-                                {move_tr!("story-get-key")}
-                            </a>
-                        </label>
-                        <input
-                            type="text"
-                            autocomplete="off"
-                            class="secret-input"
-                            prop:value=move || draft.api_key().get()
-                            on:input=move |event| {
-                                draft.api_key().set(event_target_value(&event));
+            <div class="modal-body ai-settings-modal">
+                <div class="textarea-field">
+                    <label>
+                        {move_tr!("story-api-key")}
+                        " "
+                        <a href="https://platform.openai.com/api-keys" target="_blank">
+                            {move_tr!("story-get-key")}
+                        </a>
+                    </label>
+                    <input
+                        type="text"
+                        autocomplete="off"
+                        class="secret-input"
+                        prop:value=move || draft.api_key().get()
+                        on:input=move |event| {
+                            draft.api_key().set(event_target_value(&event));
+                        }
+                    />
+                </div>
+                <div class="textarea-field">
+                    <label>{move_tr!("story-model")}</label>
+                    <Suspense fallback=move || view! {
+                        <select disabled>
+                            <option>{move || draft.model().get()} " ⏳"</option>
+                        </select>
+                    }>
+                        {move || {
+                            let current_model = draft.model().get();
+                            let models = models_list();
+                            view! {
+                                <select on:change=move |event| {
+                                    draft.model().set(event_target_value(&event));
+                                }>
+                                    {models.into_iter().map(|model| {
+                                        let selected = model == *current_model;
+                                        let label = model.clone();
+                                        view! { <option value=model selected=selected>{label}</option> }
+                                    }).collect::<Vec<_>>()}
+                                </select>
                             }
-                        />
-                    </div>
-                    <div class="textarea-field">
-                        <label>{move_tr!("story-model")}</label>
-                        <Suspense fallback=move || view! {
-                            <select disabled>
-                                <option>{move || draft.model().get()} " ⏳"</option>
-                            </select>
-                        }>
-                            {move || {
-                                let current_model = draft.model().get();
-                                let models = models_list();
-                                view! {
-                                    <select on:change=move |event| {
-                                        draft.model().set(event_target_value(&event));
-                                    }>
-                                        {models.into_iter().map(|model| {
-                                            let selected = model == *current_model;
-                                            let label = model.clone();
-                                            view! { <option value=model selected=selected>{label}</option> }
-                                        }).collect::<Vec<_>>()}
-                                    </select>
-                                }
-                            }}
-                        </Suspense>
-                    </div>
+                        }}
+                    </Suspense>
                 </div>
-                <div class="modal-actions">
-                    <button class="btn-primary" on:click=on_save>{move_tr!("story-save")}</button>
-                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" on:click=on_save>{move_tr!("story-save")}</button>
             </div>
         </Modal>
     }
@@ -222,7 +220,7 @@ fn NewStoryView(
             if let Err(error) = result
                 && !cancelled.get_untracked()
             {
-                error_msg.set(Some(error));
+                error_msg.set(Some(error.to_string()));
             }
 
             // Save whatever was generated (even partial if cancelled)

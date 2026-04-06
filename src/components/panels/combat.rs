@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{character_header::apply_with_modal, icon::Icon, panel::Panel},
+    components::{apply::apply_with_modal, icon::Icon, panel::Panel},
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
         format_bonus,

@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 
-use super::character_header::{apply_single_level, split_resolved};
+use super::{apply::apply_single_level, character_header::split_resolved};
 use crate::{
     BASE_URL,
     components::{datalist_input::DatalistInput, icon::Icon},

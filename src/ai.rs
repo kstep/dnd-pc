@@ -1,9 +1,51 @@
+use std::{collections::BTreeMap, fmt::Write};
+
 use js_sys::{Date, Object, Reflect};
 use reactive_stores::Store;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
+
+use crate::{
+    model::{Attribute, Character},
+    rules::PendingInputs,
+};
+
+// --- Error ---
+
+#[derive(Debug, Clone)]
+pub enum AiError {
+    NoWindow,
+    Http { status: u16, body: String },
+    Js(JsValue),
+    Json(String),
+    EmptyResponse,
+}
+
+impl std::fmt::Display for AiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NoWindow => write!(f, "no browser window"),
+            Self::Http { status, body } => write!(f, "API error {status}: {body}"),
+            Self::Js(error) => write!(f, "{error:?}"),
+            Self::Json(error) => write!(f, "{error}"),
+            Self::EmptyResponse => write!(f, "no choices in API response"),
+        }
+    }
+}
+
+impl From<JsValue> for AiError {
+    fn from(value: JsValue) -> Self {
+        Self::Js(value)
+    }
+}
+
+impl From<serde_json::Error> for AiError {
+    fn from(error: serde_json::Error) -> Self {
+        Self::Json(error.to_string())
+    }
+}
 
 // --- Provider ---
 
@@ -54,6 +96,69 @@ impl AiProvider {
     }
 }
 
+// --- HTTP helpers ---
+
+/// Send an authenticated API request: serialize body, fetch, deserialize
+/// response.
+async fn api_request<T: Serialize, R: DeserializeOwned>(
+    url: &str,
+    api_key: &str,
+    request: &T,
+) -> Result<R, AiError> {
+    let body_str = serde_json::to_string(request)?;
+    let resp = api_fetch(url, "POST", api_key, Some(&body_str)).await?;
+    let text = response_text(resp).await?;
+    Ok(serde_json::from_str(&text)?)
+}
+
+/// Low-level authenticated fetch returning raw `web_sys::Response`.
+/// Used by `api_request` and streaming endpoints.
+async fn api_fetch(
+    url: &str,
+    method: &str,
+    api_key: &str,
+    body: Option<&str>,
+) -> Result<web_sys::Response, AiError> {
+    let opts = web_sys::RequestInit::new();
+    opts.set_method(method);
+
+    let headers = web_sys::Headers::new()?;
+    headers.set("Authorization", &format!("Bearer {api_key}"))?;
+    if let Some(body_str) = body {
+        headers.set("Content-Type", "application/json")?;
+        opts.set_body(&JsValue::from_str(body_str));
+    }
+    opts.set_headers(&headers);
+
+    let request = web_sys::Request::new_with_str_and_init(url, &opts)?;
+
+    let window = web_sys::window().ok_or(AiError::NoWindow)?;
+    let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
+
+    let resp: web_sys::Response = resp_value.dyn_into()?;
+
+    if !resp.ok() {
+        let status = resp.status();
+        let body = JsFuture::from(resp.text()?)
+            .await
+            .ok()
+            .and_then(|value| value.as_string())
+            .unwrap_or_default();
+        return Err(AiError::Http { status, body });
+    }
+
+    Ok(resp)
+}
+
+async fn response_text(resp: web_sys::Response) -> Result<String, AiError> {
+    JsFuture::from(resp.text()?)
+        .await?
+        .as_string()
+        .ok_or(AiError::EmptyResponse)
+}
+
+// --- Models ---
+
 #[derive(Deserialize)]
 struct ModelsResponse {
     data: Vec<ModelEntry>,
@@ -66,36 +171,16 @@ struct ModelEntry {
 }
 
 /// Fetch available chat models from the provider API.
-pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, String> {
-    let opts = web_sys::RequestInit::new();
-    opts.set_method("GET");
-
-    let headers = web_sys::Headers::new().map_err(|error| format!("{error:?}"))?;
-    headers
-        .set("Authorization", &format!("Bearer {}", settings.api_key))
-        .map_err(|error| format!("{error:?}"))?;
-    opts.set_headers(&headers);
-
-    let request = web_sys::Request::new_with_str_and_init(settings.provider.models_url(), &opts)
-        .map_err(|error| format!("{error:?}"))?;
-
-    let window = web_sys::window().ok_or("no window")?;
-    let resp_value = JsFuture::from(window.fetch_with_request(&request))
-        .await
-        .map_err(|error| format!("fetch failed: {error:?}"))?;
-
-    let resp: web_sys::Response = resp_value.dyn_into().map_err(|_| "not a Response")?;
-
-    if !resp.ok() {
-        return Err(format!("API error {}", resp.status()));
-    }
-
-    let json = JsFuture::from(resp.json().map_err(|error| format!("{error:?}"))?)
-        .await
-        .map_err(|error| format!("{error:?}"))?;
-
-    let parsed: ModelsResponse =
-        serde_wasm_bindgen::from_value(json).map_err(|error| format!("{error:?}"))?;
+pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, AiError> {
+    let resp = api_fetch(
+        settings.provider.models_url(),
+        "GET",
+        &settings.api_key,
+        None,
+    )
+    .await?;
+    let text = response_text(resp).await?;
+    let parsed: ModelsResponse = serde_json::from_str(&text)?;
 
     let mut models: Vec<String> = parsed
         .data
@@ -180,8 +265,6 @@ pub struct CharacterContext {
 
 impl CharacterContext {
     pub fn to_prompt_text(&self) -> String {
-        use std::fmt::Write;
-
         let mut out = String::with_capacity(512);
         let _ = write!(
             out,
@@ -215,9 +298,16 @@ impl CharacterContext {
     }
 }
 
-// --- Story generation ---
+// --- Story generation (streaming) ---
 
-const SYSTEM_PROMPT: &str = "\
+#[derive(Serialize)]
+struct StreamingChatRequest<'a> {
+    model: &'a str,
+    stream: bool,
+    messages: Vec<ChatMessage<'a>>,
+}
+
+const STORY_SYSTEM_PROMPT: &str = "\
 You are a creative D&D storyteller. Write a short story about what \
 the character did between game sessions, based on their details and \
 the player's prompt. Write in the same language as the player's prompt.";
@@ -231,68 +321,48 @@ pub async fn generate_story(
     context: &CharacterContext,
     prompt: &str,
     on_chunk: impl Fn(&str),
-) -> Result<String, String> {
-    let body = serde_json::json!({
-        "model": settings.model,
-        "stream": true,
-        "messages": [
-            { "role": "system", "content": SYSTEM_PROMPT },
-            { "role": "user", "content": format!("{}\n\nPlayer's request: {}", context.to_prompt_text(), prompt) },
-        ]
-    });
+) -> Result<String, AiError> {
+    let user_content = format!(
+        "{}\n\nPlayer's request: {}",
+        context.to_prompt_text(),
+        prompt
+    );
+    let request_body = StreamingChatRequest {
+        model: &settings.model,
+        stream: true,
+        messages: vec![
+            ChatMessage {
+                role: "system",
+                content: STORY_SYSTEM_PROMPT,
+            },
+            ChatMessage {
+                role: "user",
+                content: &user_content,
+            },
+        ],
+    };
+    let body_str = serde_json::to_string(&request_body)?;
 
-    let opts = web_sys::RequestInit::new();
-    opts.set_method("POST");
-    opts.set_body(&JsValue::from_str(&body.to_string()));
+    let resp = api_fetch(
+        settings.provider.api_url(),
+        "POST",
+        &settings.api_key,
+        Some(&body_str),
+    )
+    .await?;
 
-    let headers = web_sys::Headers::new().map_err(|error| format!("{error:?}"))?;
-    headers
-        .set("Content-Type", "application/json")
-        .map_err(|error| format!("{error:?}"))?;
-    headers
-        .set("Authorization", &format!("Bearer {}", settings.api_key))
-        .map_err(|error| format!("{error:?}"))?;
-    opts.set_headers(&headers);
-
-    let request = web_sys::Request::new_with_str_and_init(settings.provider.api_url(), &opts)
-        .map_err(|error| format!("{error:?}"))?;
-
-    let window = web_sys::window().ok_or("no window")?;
-    let resp_value = JsFuture::from(window.fetch_with_request(&request))
-        .await
-        .map_err(|error| format!("fetch failed: {error:?}"))?;
-
-    let resp: web_sys::Response = resp_value
-        .dyn_into()
-        .map_err(|_| "response is not a Response")?;
-
-    if !resp.ok() {
-        let status = resp.status();
-        let text = JsFuture::from(resp.text().map_err(|error| format!("{error:?}"))?)
-            .await
-            .ok()
-            .and_then(|value| value.as_string())
-            .unwrap_or_default();
-        return Err(format!("API error {status}: {text}"));
-    }
-
-    let body_stream = resp.body().ok_or("response has no body")?;
-    let reader: web_sys::ReadableStreamDefaultReader = body_stream
-        .get_reader()
-        .dyn_into()
-        .map_err(|_| "failed to get reader")?;
+    let body_stream = resp.body().ok_or(AiError::EmptyResponse)?;
+    let reader: web_sys::ReadableStreamDefaultReader =
+        body_stream.get_reader().dyn_into().map_err(JsValue::from)?;
 
     let mut full_text = String::new();
     let mut buffer = String::new();
-    let decoder = web_sys::TextDecoder::new().map_err(|error| format!("{error:?}"))?;
+    let decoder = web_sys::TextDecoder::new()?;
 
     loop {
-        let result = JsFuture::from(reader.read())
-            .await
-            .map_err(|error| format!("read error: {error:?}"))?;
+        let result = JsFuture::from(reader.read()).await?;
 
-        let done = Reflect::get(&result, &JsValue::from_str("done"))
-            .map_err(|error| format!("{error:?}"))?
+        let done = Reflect::get(&result, &JsValue::from_str("done"))?
             .as_bool()
             .unwrap_or(true);
 
@@ -300,13 +370,10 @@ pub async fn generate_story(
             break;
         }
 
-        let value = Reflect::get(&result, &JsValue::from_str("value"))
-            .map_err(|error| format!("{error:?}"))?;
+        let value = Reflect::get(&result, &JsValue::from_str("value"))?;
 
         let value_obj: Object = value.into();
-        let chunk_text = decoder
-            .decode_with_buffer_source(&value_obj)
-            .map_err(|error| format!("{error:?}"))?;
+        let chunk_text = decoder.decode_with_buffer_source(&value_obj)?;
 
         buffer.push_str(&chunk_text);
 
@@ -342,4 +409,265 @@ pub async fn generate_story(
     }
 
     Ok(full_text)
+}
+
+// --- Non-streaming chat completion ---
+
+#[derive(Serialize)]
+struct ChatRequest<'a> {
+    model: &'a str,
+    messages: Vec<ChatMessage<'a>>,
+}
+
+#[derive(Serialize)]
+struct ChatMessage<'a> {
+    role: &'a str,
+    content: &'a str,
+}
+
+#[derive(Deserialize)]
+struct ChatResponse {
+    choices: Vec<ChatChoice>,
+}
+
+#[derive(Deserialize)]
+struct ChatChoice {
+    message: ChatMessageContent,
+}
+
+#[derive(Deserialize)]
+struct ChatMessageContent {
+    content: String,
+}
+
+/// Non-streaming chat completion that parses the response content as JSON of
+/// type `T`.
+async fn chat_completion<T: DeserializeOwned>(
+    settings: &AiSettings,
+    system_prompt: &str,
+    user_message: &str,
+) -> Result<T, AiError> {
+    let request_body = ChatRequest {
+        model: &settings.model,
+        messages: vec![
+            ChatMessage {
+                role: "system",
+                content: system_prompt,
+            },
+            ChatMessage {
+                role: "user",
+                content: user_message,
+            },
+        ],
+    };
+
+    log::debug!("AI request to {}: system={system_prompt}", settings.model);
+    log::debug!("AI user message:\n{user_message}");
+
+    let response: ChatResponse = api_request(
+        settings.provider.api_url(),
+        &settings.api_key,
+        &request_body,
+    )
+    .await?;
+
+    let content = response
+        .choices
+        .into_iter()
+        .next()
+        .ok_or(AiError::EmptyResponse)?
+        .message
+        .content;
+
+    log::debug!("AI response:\n{content}");
+
+    // Strip markdown code fences if present (models without response_format)
+    let json = content.trim();
+    let json = json
+        .strip_prefix("```json")
+        .or_else(|| json.strip_prefix("```"))
+        .and_then(|rest| rest.strip_suffix("```"))
+        .map(str::trim)
+        .unwrap_or(json);
+
+    Ok(serde_json::from_str(json)?)
+}
+
+// --- Character concept ---
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct CharacterConcept {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub species: String,
+    #[serde(default)]
+    pub class: String,
+    #[serde(default)]
+    pub subclass: Option<String>,
+    #[serde(default)]
+    pub background: String,
+    #[serde(default)]
+    pub abilities: [i32; 6],
+    #[serde(default)]
+    pub personality_traits: String,
+    #[serde(default)]
+    pub ideals: String,
+    #[serde(default)]
+    pub bonds: String,
+    #[serde(default)]
+    pub flaws: String,
+    #[serde(default)]
+    pub backstory: String,
+}
+
+// --- Character generation ---
+
+pub async fn generate_character(
+    settings: &AiSettings,
+    description: &str,
+    classes: &str,
+    species: &str,
+    backgrounds: &str,
+) -> Result<CharacterConcept, AiError> {
+    let system_prompt = "You are a D&D 5e character creator. Given a character description, \
+        choose the best fitting options and create a complete character concept. \
+        Write personality and backstory in the same language as the description. \
+        Respond with valid JSON only, no markdown.";
+
+    let user_message = format!(
+        "Character description: {description}\n\n\
+         Available species: {species}\n\
+         Available classes: {classes}\n\
+         Available backgrounds: {backgrounds}\n\n\
+         Abilities must be a permutation of [15, 14, 13, 12, 10, 8] assigned to \
+         [STR, DEX, CON, INT, WIS, CHA] in that order.\n\n\
+         Respond with a JSON object with these fields:\n\
+         - name: string\n\
+         - species: string (exactly one of the available species)\n\
+         - class: string (exactly one of the available classes)\n\
+         - subclass: string or null (exactly one of the listed subclasses)\n\
+         - background: string (exactly one of the available backgrounds)\n\
+         - abilities: [STR, DEX, CON, INT, WIS, CHA] (array of 6 integers)\n\
+         - personality_traits: string\n\
+         - ideals: string\n\
+         - bonds: string\n\
+         - flaws: string\n\
+         - backstory: string"
+    );
+
+    chat_completion(settings, system_prompt, &user_message).await
+}
+
+// --- Feature choices generation ---
+
+pub struct PendingArgDescription {
+    pub feature_name: String,
+    pub feature_description: String,
+    pub args_description: String,
+}
+
+/// Convert pending feature inputs into AI-readable descriptions of their ARG
+/// parameters. Features with no active ARGs are skipped.
+pub fn describe_pending_args(
+    pending: &[PendingInputs],
+    character: &Character,
+) -> Vec<PendingArgDescription> {
+    let is_arg = |var: &Attribute| -> Option<u8> {
+        if let Attribute::Arg(n) = var {
+            Some(*n)
+        } else {
+            None
+        }
+    };
+
+    pending
+        .iter()
+        .filter_map(|inputs| {
+            let mut args_lines = Vec::new();
+
+            for expr in &inputs.exprs {
+                let analysis = expr.analyze(character, is_arg);
+
+                for &arg_index in &analysis.active_args {
+                    if analysis.boolean_args.contains(&arg_index) {
+                        args_lines
+                            .push(format!("ARG.{arg_index}: integer, 0 or 1 (boolean choice)"));
+                    } else {
+                        args_lines.push(format!("ARG.{arg_index}: integer"));
+                    }
+                }
+
+                if !analysis.active_args.is_empty() {
+                    args_lines.push(format!("Expression: {expr}"));
+                }
+            }
+
+            if args_lines.is_empty() {
+                return None;
+            }
+
+            Some(PendingArgDescription {
+                feature_name: inputs.feature_name.clone(),
+                feature_description: inputs.feature_description.clone(),
+                args_description: args_lines.join("\n"),
+            })
+        })
+        .collect()
+}
+
+pub async fn generate_feature_choices(
+    settings: &AiSettings,
+    concept: &CharacterConcept,
+    pending_args: &[PendingArgDescription],
+) -> Result<BTreeMap<String, Vec<i32>>, AiError> {
+    if pending_args.is_empty() {
+        return Ok(BTreeMap::new());
+    }
+
+    let system_prompt = "You are a D&D 5e character builder. Given a character concept and \
+        pending feature choices with ARG constraints, pick ARG values that best fit the character. \
+        Respond with valid JSON only, no markdown.\n\n\
+        Expression language reference:\n\
+        - guard(condition, body): body executes only if condition is true\n\
+        - in(x, min, max): true if min <= x <= max\n\
+        - ARG.N: the Nth argument you must provide (0-indexed)\n\
+        - Boolean ARGs (0 or 1) act as toggles to select options\n\
+        - SKILL.XXXX.PROF: skill proficiency (0=none, 1=proficient)\n\
+        - STR, DEX, CON, INT, WIS, CHA: ability scores\n\
+        - The guard condition is a MANDATORY constraint: if it evaluates to false, \
+        the feature application FAILS. Your ARG values MUST satisfy it.";
+
+    let features_description: String = pending_args
+        .iter()
+        .map(|pending| {
+            format!(
+                "- \"{}\"\n  Description: {}\n  ARG constraints: {}",
+                pending.feature_name, pending.feature_description, pending.args_description
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n\n");
+
+    let user_message = format!(
+        "Character concept:\n\
+         Name: {name}\n\
+         Species: {species}\n\
+         Class: {class}\n\
+         Background: {background}\n\
+         Personality: {personality}\n\
+         Backstory: {backstory}\n\n\
+         Pending feature choices:\n{features}\n\n\
+         Respond with a JSON object where each key is the feature name \
+         and each value is an array of integer ARG values for that feature.",
+        name = concept.name,
+        species = concept.species,
+        class = concept.class,
+        background = concept.background,
+        personality = concept.personality_traits,
+        backstory = concept.backstory,
+        features = features_description,
+    );
+
+    chat_completion(settings, system_prompt, &user_message).await
 }

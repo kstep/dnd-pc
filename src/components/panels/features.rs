@@ -4,8 +4,8 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        character_header::apply_with_modal, datalist_input::DatalistInput, icon::Icon,
-        panel::Panel, toggle_button::ToggleButton,
+        apply::apply_with_modal, datalist_input::DatalistInput, icon::Icon, panel::Panel,
+        toggle_button::ToggleButton,
     },
     model::{Character, CharacterStoreFields, Feature, FeatureSource},
     rules::{

@@ -436,6 +436,12 @@ input[type="checkbox"] {
   }
 }
 
+.quick-start-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .quick-start-section {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
@@ -2327,10 +2333,14 @@ dialog.modal {
   color: var(--text-primary);
   width: fit-content;
   min-width: 250px;
-  max-width: 600px;
+  max-width: min(600px, 90vw);
   max-height: 80vh;
-  overflow: hidden;
   animation: modal-slide-in 250ms ease-out;
+}
+
+dialog.modal[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 dialog.modal.closing {
@@ -2349,8 +2359,26 @@ dialog.modal.closing::backdrop {
 .modal-content {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  max-height: 80vh;
+  min-height: 0;
+  flex: 1;
+}
+
+.modal-body {
+  padding: var(--size-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-actions {
+  padding: var(--size-2) var(--size-3);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--size-2);
+  flex-shrink: 0;
 }
 
 @keyframes overlay-fade-in {
@@ -2393,6 +2421,7 @@ dialog.modal.closing::backdrop {
   border-bottom: 1px solid var(--panel-border);
   font-weight: 600;
   color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .modal-close {
@@ -3355,24 +3384,38 @@ details.floating-nav {
 .ai-settings-modal {
   min-width: 350px;
 
-  .modal-body {
-    padding: var(--size-3);
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-3);
+  input,
+  select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
 
-    input,
-    select {
-      width: 100%;
-      box-sizing: border-box;
-    }
+// --- AI character generator ---
+
+.ai-generate-modal {
+  width: min(450px, 90vw);
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 6lh;
+    max-height: 50vh;
   }
 
-  .modal-actions {
-    padding: var(--size-2) var(--size-3);
-    border-top: 1px solid var(--panel-border);
+  .ai-generate-no-key {
+    color: var(--color-warning, #b8860b);
+  }
+
+  .ai-generate-error {
+    color: var(--color-error, #c00);
+  }
+
+  .ai-generate-status {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
     gap: var(--size-2);
   }
 }
