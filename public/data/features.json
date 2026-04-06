@@ -638,6 +638,17 @@
   },
   {
     "name": "Blessed Warrior",
+    "spells": {
+      "casting_ability": 5,
+      "list": {
+        "from": "spells/cleric.json"
+      },
+      "levels": {
+        "1": {
+          "cantrips": 2
+        }
+      }
+    },
     "category": "FightingStyle"
   },
   {
@@ -656,6 +667,17 @@
   },
   {
     "name": "Druidic Warrior",
+    "spells": {
+      "casting_ability": 4,
+      "list": {
+        "from": "spells/druid.json"
+      },
+      "levels": {
+        "1": {
+          "cantrips": 2
+        }
+      }
+    },
     "category": "FightingStyle"
   },
   {
