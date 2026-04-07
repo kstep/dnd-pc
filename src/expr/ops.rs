@@ -380,19 +380,30 @@ impl<Var, Val, Grp> From<Vec<Op<Var, Val, Grp>>> for Block<Var, Val, Grp> {
 
 impl<Var, Val, Grp> Block<Var, Val, Grp> {
     /// Returns true if this block contains any variable matching the predicate.
-    pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool {
+    pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
         self.0.iter().any(|op| match op {
             Op::PushVar(v) | Op::AssignVar(v) => pred(v),
+            Op::PushGroup(g) | Op::AssignGroup(g) => {
+                (0..32).any(|i| g.member(i).is_some_and(|v| pred(&v)))
+            }
             _ => false,
         })
     }
 
     /// Returns true if this block assigns to any variable matching the
     /// predicate.
-    pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool {
-        self.0
-            .iter()
-            .any(|op| matches!(op, Op::AssignVar(v) if pred(v)))
+    pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
+        self.0.iter().any(|op| match op {
+            Op::AssignVar(v) => pred(v),
+            Op::AssignGroup(g) => (0..32).any(|i| g.member(i).is_some_and(|v| pred(&v))),
+            _ => false,
+        })
     }
 
     /// Create a new block by mapping each op.

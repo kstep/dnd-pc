@@ -84,12 +84,18 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
 
     /// Returns true if any block in this expression contains a variable
     /// matching the predicate.
-    pub fn has_var(&self, pred: impl Fn(&Var) -> bool) -> bool {
+    pub fn has_var(&self, pred: impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
         self.0.iter().any(|block| block.has_var(&pred))
     }
 
     /// Returns true if any block assigns to a variable matching the predicate.
-    pub fn assigns_to(&self, pred: impl Fn(&Var) -> bool) -> bool {
+    pub fn assigns_to(&self, pred: impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
         self.0.iter().any(|block| block.assigns_to(&pred))
     }
 
@@ -101,7 +107,10 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
         idx != BLOCK_NOOP && idx != BLOCK_ERROR && (idx as usize) < self.0.len()
     }
 
-    pub fn block_has_var(&self, block: BlockIndex, pred: &impl Fn(&Var) -> bool) -> bool {
+    pub fn block_has_var(&self, block: BlockIndex, pred: &impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
         let mut visited = BTreeSet::new();
         self.block_has_var_inner(block, pred, &mut visited)
     }
@@ -111,7 +120,10 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
         block: BlockIndex,
         pred: &impl Fn(&Var) -> bool,
         visited: &mut BTreeSet<BlockIndex>,
-    ) -> bool {
+    ) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
         if !self.is_sub_block(block) || !visited.insert(block) {
             return false;
         }
