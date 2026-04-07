@@ -1,5 +1,5 @@
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     fmt,
     ops::{Deref, Neg},
     str::FromStr,
@@ -102,14 +102,27 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
     }
 
     pub fn block_has_var(&self, block: BlockIndex, pred: &impl Fn(&Var) -> bool) -> bool {
-        if !self.is_sub_block(block) {
+        let mut visited = BTreeSet::new();
+        self.block_has_var_inner(block, pred, &mut visited)
+    }
+
+    fn block_has_var_inner(
+        &self,
+        block: BlockIndex,
+        pred: &impl Fn(&Var) -> bool,
+        visited: &mut BTreeSet<BlockIndex>,
+    ) -> bool {
+        if !self.is_sub_block(block) || !visited.insert(block) {
             return false;
         }
         let blk = &self.0[block as usize];
         blk.has_var(pred)
             || blk.iter().any(|op| match op {
-                Op::Eval(idx) => self.block_has_var(*idx, pred),
-                Op::EvalIf(a, b) => self.block_has_var(*a, pred) || self.block_has_var(*b, pred),
+                Op::Eval(idx) => self.block_has_var_inner(*idx, pred, visited),
+                Op::EvalIf(a, b) => {
+                    self.block_has_var_inner(*a, pred, visited)
+                        || self.block_has_var_inner(*b, pred, visited)
+                }
                 _ => false,
             })
     }
