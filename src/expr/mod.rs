@@ -1313,6 +1313,35 @@ mod loop_tests {
     }
 
     #[wasm_bindgen_test]
+    fn analyze_masked_each_active_args() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "with(@ABILITY(STR, INT, CHA), each(@, @ += @ARG))"
+            .parse()
+            .unwrap();
+        let analysis = expr.analyze(&ctx, is_arg);
+        assert_eq!(analysis.active_args.len(), 3);
+        // Real indices: STR=0, INT=3, CHA=5
+        assert_eq!(analysis.active_args, vec![0, 3, 5]);
+    }
+
+    #[wasm_bindgen_test]
+    fn analyze_masked_fold_boolean_args() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "with(@ABILITY(STR, INT, CHA), fold(and, @, in(@ARG, 0, 1)))"
+            .parse()
+            .unwrap();
+        let analysis = expr.analyze(&ctx, is_arg);
+        assert_eq!(analysis.active_args.len(), 3);
+        assert_eq!(analysis.active_args, vec![0, 3, 5]);
+        for &i in &[0u8, 3, 5] {
+            assert!(
+                analysis.boolean_args.contains(&i),
+                "ARG.{i} should be boolean"
+            );
+        }
+    }
+
+    #[wasm_bindgen_test]
     fn parse_each_resist() {
         let expr: Expr = "each(@RESIST._, @RESIST._ = 1)".parse().unwrap();
         let display = expr.to_string();
