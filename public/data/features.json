@@ -13859,7 +13859,7 @@
     "name": "Background Abilities (Acolyte)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and INT + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(INT < 20, INT += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1)",
+        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13868,7 +13868,7 @@
     "name": "Background Abilities (Artisan)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and INT + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(INT < 20, INT += ARG.2); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1)",
+        "expr": "with($ABILITY(STR, DEX, INT), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13877,7 +13877,7 @@
     "name": "Background Abilities (Charlatan)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1)",
+        "expr": "with($ABILITY(DEX, CON, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13886,7 +13886,7 @@
     "name": "Background Abilities (Criminal)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and INT + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(INT < 20, INT += ARG.2); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1)",
+        "expr": "with($ABILITY(DEX, CON, INT), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13895,7 +13895,7 @@
     "name": "Background Abilities (Entertainer)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1)",
+        "expr": "with($ABILITY(STR, DEX, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13904,7 +13904,7 @@
     "name": "Background Abilities (Farmer)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(CON < 20, CON += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1)",
+        "expr": "with($ABILITY(STR, CON, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13913,7 +13913,7 @@
     "name": "Background Abilities (Guard)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1)",
+        "expr": "with($ABILITY(STR, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13922,7 +13922,7 @@
     "name": "Background Abilities (Guide)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and CON + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(CON < 20, CON += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1)",
+        "expr": "with($ABILITY(DEX, CON, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13931,7 +13931,7 @@
     "name": "Background Abilities (Hermit)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1)",
+        "expr": "with($ABILITY(CON, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13940,7 +13940,7 @@
     "name": "Background Abilities (Merchant)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(INT < 20, INT += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1)",
+        "expr": "with($ABILITY(CON, INT, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13949,7 +13949,7 @@
     "name": "Background Abilities (Noble)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and INT + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(INT < 20, INT += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1)",
+        "expr": "with($ABILITY(STR, INT, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13958,7 +13958,7 @@
     "name": "Background Abilities (Sage)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and CON + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(CON < 20, CON += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1)",
+        "expr": "with($ABILITY(CON, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13967,7 +13967,7 @@
     "name": "Background Abilities (Sailor)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1)",
+        "expr": "with($ABILITY(STR, DEX, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13976,7 +13976,7 @@
     "name": "Background Abilities (Scribe)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and INT + ARG.1 <= 20 and WIS + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(INT < 20, INT += ARG.1); if(WIS < 20, WIS += ARG.2); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1)",
+        "expr": "with($ABILITY(DEX, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13985,7 +13985,7 @@
     "name": "Background Abilities (Soldier)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and STR + ARG.0 <= 20 and DEX + ARG.1 <= 20 and CON + ARG.2 <= 20, if(STR < 20, STR += ARG.0); if(DEX < 20, DEX += ARG.1); if(CON < 20, CON += ARG.2); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1)",
+        "expr": "with($ABILITY(STR, DEX, CON), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13994,7 +13994,7 @@
     "name": "Background Abilities (Wayfarer)",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 2) and in(ARG.1, 0, 2) and in(ARG.2, 0, 2) and ARG.0 + ARG.1 + ARG.2 == 3 and DEX + ARG.0 <= 20 and WIS + ARG.1 <= 20 and CHA + ARG.2 <= 20, if(DEX < 20, DEX += ARG.0); if(WIS < 20, WIS += ARG.1); if(CHA < 20, CHA += ARG.2); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1)",
+        "expr": "with($ABILITY(DEX, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
