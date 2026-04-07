@@ -313,6 +313,7 @@ fn apply_ai_result(
         registry,
         all_pending,
         prefilled,
+        result.replacements,
         move |character, pending, inputs, fi| {
             finalize_quick_start(registry, character, pending, inputs, fi);
         },

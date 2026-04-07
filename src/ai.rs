@@ -9,7 +9,7 @@ use wasm_bindgen_futures::JsFuture;
 
 use crate::{
     expr::{self, BinOp, BlockIndex, Cmp, Interpreter, VarGroup},
-    model::{Ability, Attribute, AttributeGroup, Character, Op},
+    model::{Attribute, AttributeGroup, Character, Op},
     rules::{FeatureDefinition, PendingInputs},
 };
 
@@ -538,8 +538,6 @@ pub struct CharacterConcept {
     #[serde(default)]
     pub background: String,
     #[serde(default)]
-    pub abilities: [i32; 6],
-    #[serde(default)]
     pub personality_traits: String,
     #[serde(default)]
     pub ideals: String,
@@ -570,15 +568,12 @@ pub async fn generate_character(
          Available species: {species}\n\
          Available classes: {classes}\n\
          Available backgrounds: {backgrounds}\n\n\
-         Abilities must be a permutation of [15, 14, 13, 12, 10, 8] assigned to \
-         [STR, DEX, CON, INT, WIS, CHA] in that order.\n\n\
          Respond with a JSON object with these fields:\n\
          - name: string\n\
          - species: string (exactly one of the available species)\n\
          - class: string (exactly one of the available classes)\n\
          - subclass: string or null (exactly one of the listed subclasses)\n\
          - background: string (exactly one of the available backgrounds)\n\
-         - abilities: [STR, DEX, CON, INT, WIS, CHA] (array of 6 integers)\n\
          - personality_traits: string\n\
          - ideals: string\n\
          - bonds: string\n\
@@ -638,27 +633,39 @@ pub fn describe_pending_replacements(
 
 // --- ArgSummarizer: Interpreter that extracts ARG descriptions ---
 
-/// Map an Attribute to a human-readable English name for AI prompts.
-fn friendly_attr_name(attr: &Attribute) -> String {
-    match attr {
-        Attribute::Ability(a) => match a {
-            Ability::Strength => "Strength",
-            Ability::Dexterity => "Dexterity",
-            Ability::Constitution => "Constitution",
-            Ability::Intelligence => "Intelligence",
-            Ability::Wisdom => "Wisdom",
-            Ability::Charisma => "Charisma",
-        }
-        .to_string(),
-        Attribute::SkillProficiency(s) => format!("{s} proficiency"),
-        Attribute::SaveProficiency(a) => format!("{a} save proficiency"),
-        Attribute::EquipmentProficiency(p) => format!("{p} proficiency"),
-        Attribute::Ac => "Armor Class".to_string(),
-        Attribute::Speed => "Speed".to_string(),
-        Attribute::MaxHp => "Max HP".to_string(),
-        Attribute::Initiative | Attribute::InitiativeBonus => "Initiative".to_string(),
-        Attribute::Inspiration => "Inspiration".to_string(),
-        other => other.to_string(),
+/// Map an Attribute Display string to a human-readable English name for AI
+/// prompts. Accepts the `Display` representation (e.g. "STR",
+/// "SKILL.ACRO.PROF").
+fn friendly_attr_name(attr_str: &str) -> &str {
+    match attr_str {
+        "STR" => "Strength",
+        "DEX" => "Dexterity",
+        "CON" => "Constitution",
+        "INT" => "Intelligence",
+        "WIS" => "Wisdom",
+        "CHA" => "Charisma",
+        "SKILL.ACRO.PROF" => "Acrobatics proficiency",
+        "SKILL.ANIM.PROF" => "Animal Handling proficiency",
+        "SKILL.ARCA.PROF" => "Arcana proficiency",
+        "SKILL.ATHL.PROF" => "Athletics proficiency",
+        "SKILL.DECE.PROF" => "Deception proficiency",
+        "SKILL.HIST.PROF" => "History proficiency",
+        "SKILL.INSI.PROF" => "Insight proficiency",
+        "SKILL.INTI.PROF" => "Intimidation proficiency",
+        "SKILL.INVE.PROF" => "Investigation proficiency",
+        "SKILL.MEDI.PROF" => "Medicine proficiency",
+        "SKILL.NATU.PROF" => "Nature proficiency",
+        "SKILL.PERC.PROF" => "Perception proficiency",
+        "SKILL.PERF.PROF" => "Performance proficiency",
+        "SKILL.PERS.PROF" => "Persuasion proficiency",
+        "SKILL.RELI.PROF" => "Religion proficiency",
+        "SKILL.SLEI.PROF" => "Sleight of Hand proficiency",
+        "SKILL.STEA.PROF" => "Stealth proficiency",
+        "SKILL.SURV.PROF" => "Survival proficiency",
+        "AC" => "Armor Class",
+        "SPEED" => "Speed",
+        "MAX_HP" => "Max HP",
+        other => other,
     }
 }
 
@@ -672,6 +679,8 @@ struct ArgInfo {
 struct ArgSummary {
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
+    /// For loop expressions: Display names of target group members.
+    group_names: Vec<String>,
 }
 
 /// Stack entry for the summarizer: tracks whether a value came from an ARG.
@@ -715,6 +724,7 @@ struct ArgSummarizer {
     iter_stack: Vec<usize>,
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
+    group_names: Vec<String>,
 }
 
 impl ArgSummarizer {
@@ -724,6 +734,7 @@ impl ArgSummarizer {
             iter_stack: Vec::new(),
             args: BTreeMap::new(),
             sum_constraint: None,
+            group_names: Vec::new(),
         }
     }
 
@@ -781,7 +792,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 if let Some(idx) = value.arg_idx {
                     let info = self.ensure_arg(idx);
                     if info.target.is_none() {
-                        info.target = Some(friendly_attr_name(&attr));
+                        info.target = Some(friendly_attr_name(&attr.to_string()).to_string());
                     }
                 }
             }
@@ -846,6 +857,12 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 self.stack.push(top);
             }
             Op::Each(subgrp) => {
+                // Collect group member names for AI descriptions
+                if self.group_names.is_empty() {
+                    self.group_names.extend(
+                        (0..).map_while(|idx| subgrp.member(idx).map(|var| var.to_string())),
+                    );
+                }
                 self.iter_stack.push(subgrp.real_index(0).unwrap_or(0));
                 self.stack.push(ArgStackEntry::constant(
                     subgrp
@@ -880,6 +897,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
         Ok(ArgSummary {
             args: self.args,
             sum_constraint: self.sum_constraint,
+            group_names: self.group_names,
         })
     }
 }
@@ -911,18 +929,21 @@ pub fn describe_pending_args(
                 }
                 had_args = true;
 
-                // Run the ArgSummarizer to extract structured info
+                // Run ArgSummarizer for non-loop expressions (extracts per-ARG
+                // targets and ranges). Loop expressions use ExprAnalysis fields.
                 let summary = expr.run(ArgSummarizer::new()).unwrap_or(ArgSummary {
                     args: BTreeMap::new(),
                     sum_constraint: None,
+                    group_names: Vec::new(),
                 });
 
-                // Summary line with sum constraint
+                let sum_constraint = summary.sum_constraint;
+
                 let all_boolean = analysis
                     .active_args
                     .iter()
                     .all(|idx| analysis.boolean_args.contains(idx));
-                if let Some(sum) = summary.sum_constraint {
+                if let Some(sum) = sum_constraint {
                     if all_boolean {
                         let _ = writeln!(
                             description,
@@ -933,14 +954,28 @@ pub fn describe_pending_args(
                     }
                 }
 
-                // Per-ARG description
+                // Per-ARG description: use group names from ExprAnalysis for
+                // loop expressions, ArgSummarizer info for flat expressions.
                 for &arg_index in &analysis.active_args {
-                    let info = summary.args.get(&arg_index);
-                    let target = info
-                        .and_then(|info| info.target.as_deref())
-                        .unwrap_or("unknown");
+                    let idx = arg_index as usize;
 
-                    if let Some((min, max)) = info.and_then(|info| info.range) {
+                    // Target name: group member name (loop) or ArgSummarizer target (flat)
+                    let group_name = summary
+                        .group_names
+                        .get(idx)
+                        .map(|name| friendly_attr_name(name).to_string());
+                    let summarizer_name = summary
+                        .args
+                        .get(&arg_index)
+                        .and_then(|info| info.target.clone());
+                    let target = group_name
+                        .or(summarizer_name)
+                        .unwrap_or_else(|| "unknown".to_string());
+
+                    // Range: from ArgSummarizer (flat) or boolean from ExprAnalysis
+                    let range = summary.args.get(&arg_index).and_then(|info| info.range);
+
+                    if let Some((min, max)) = range {
                         if min == 0 && max == 1 {
                             let _ = writeln!(description, "  ARG.{arg_index}: {target} — 0 or 1");
                         } else {

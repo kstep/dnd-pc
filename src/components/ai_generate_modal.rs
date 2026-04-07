@@ -1,16 +1,16 @@
-use std::{collections::BTreeMap, time::Duration};
+use std::{collections::BTreeMap, fmt::Write, time::Duration};
 
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    ai::{self, AiSettings, CharacterConcept, PendingArgDescription},
-    components::{icon::Icon, modal::Modal, spinner::Spinner},
-    hooks,
-    model::{Character, FeatureCategory, FeatureSource},
+    ai::{self, AiSettings, CharacterConcept, ChatMessage, PendingArgDescription, Role},
+    components::{ai_settings_modal::AiSettingsModal, icon::Icon, modal::Modal, spinner::Spinner},
+    expr, hooks,
+    model::{Attribute, Character, FeatureCategory, FeatureSource},
     rules::{
-        DefinitionStore, RulesRegistry,
+        DefinitionStore, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
         apply::{PendingFeature, collect_pending_features},
     },
     storage,
@@ -21,6 +21,7 @@ use crate::{
 pub struct AiGenerateResult {
     pub concept: CharacterConcept,
     pub feature_choices: BTreeMap<String, Vec<i32>>,
+    pub replacements: BTreeMap<String, String>,
 }
 
 struct AiGenerateInput {
@@ -98,7 +99,7 @@ async fn run_ai_generation(
         })
     });
 
-    // Build AI arg descriptions
+    // Build AI arg & replacement descriptions
     let pending_inputs: Vec<_> = registry.with_features_index_untracked(|fi| {
         let character = store.read_untracked();
         all_pending
@@ -111,26 +112,154 @@ async fn run_ai_generation(
     });
     let arg_descriptions: Vec<PendingArgDescription> =
         store.with_untracked(|character| ai::describe_pending_args(&pending_inputs, character));
+    let replacement_descriptions = registry.with_features_index_untracked(|fi| {
+        store.with_untracked(|character| {
+            ai::describe_pending_replacements(&pending_inputs, fi, character)
+        })
+    });
 
-    // Pre-fill Generation: Preset from concept abilities
     let mut feature_choices: BTreeMap<String, Vec<i32>> = BTreeMap::new();
-    if !input.preset_name.is_empty() {
-        feature_choices.insert(input.preset_name, concept.abilities.to_vec());
-    }
+    let mut replacements: BTreeMap<String, String> = BTreeMap::new();
 
-    // Phase 2: generate feature choices
-    if !arg_descriptions.is_empty() {
+    // Phase 2: generate feature choices with retry loop
+    let has_work = !arg_descriptions.is_empty() || !replacement_descriptions.is_empty();
+    if has_work {
         phase.set("ai-generate-phase-choices");
-        if let Ok(ai_choices) =
-            ai::generate_feature_choices(&input.settings, &concept, &arg_descriptions).await
-        {
-            for (feature_name, args) in ai_choices {
-                // Strip "Feature: " prefix if model included it
+        let mut messages = ai::build_feature_choices_messages(
+            &concept,
+            &arg_descriptions,
+            &replacement_descriptions,
+        );
+
+        // First round: get ARGs + replacements
+        for attempt in 0..3 {
+            let result: Result<(serde_json::Value, String), _> =
+                ai::send_chat(&input.settings, &messages).await;
+            let Ok((value, raw_content)) = result else {
+                break;
+            };
+
+            let (choices, new_replacements) = ai::parse_feature_choices_response(value);
+
+            for (feature_name, args) in choices {
                 let key = feature_name
                     .strip_prefix("Feature: ")
                     .unwrap_or(&feature_name)
                     .to_string();
-                feature_choices.entry(key).or_insert(args);
+                feature_choices.insert(key, args);
+            }
+
+            // Validate replacements
+            registry.with_features_index_untracked(|fi| {
+                for (original, replacement) in &new_replacements {
+                    let valid = pending_inputs
+                        .iter()
+                        .find(|input| input.feature_name == *original)
+                        .and_then(|input| {
+                            fi.get(replacement.as_str())
+                                .filter(|feat_def| input.replace_with.matches(feat_def))
+                        })
+                        .is_some();
+                    if valid {
+                        replacements.insert(original.clone(), replacement.clone());
+                    }
+                }
+            });
+
+            messages.push(ChatMessage {
+                role: Role::Assistant,
+                content: raw_content,
+            });
+
+            let errors = validate_feature_choices(
+                &feature_choices,
+                &pending_inputs,
+                &store.read_untracked(),
+            );
+            if errors.is_empty() {
+                break;
+            }
+
+            if attempt < 2 {
+                phase.set("ai-generate-phase-retry");
+                messages.push(ChatMessage {
+                    role: Role::User,
+                    content: format_validation_feedback(&errors),
+                });
+            }
+        }
+
+        // Follow-up: get ARGs for chosen replacements (with retry)
+        if !replacements.is_empty() {
+            let (replacement_inputs, replacement_arg_descriptions) = registry
+                .with_features_index_untracked(|fi| {
+                    let character = store.read_untracked();
+                    let inputs: Vec<PendingInputs> = replacements
+                        .values()
+                        .filter_map(|replacement_name| {
+                            let feat_def = fi.get(replacement_name.as_str())?;
+                            let exprs =
+                                feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, &character);
+                            if exprs.is_empty() {
+                                return None;
+                            }
+                            Some(PendingInputs {
+                                feature_name: replacement_name.clone(),
+                                feature_label: feat_def.label().to_string(),
+                                feature_description: feat_def.description.clone(),
+                                exprs,
+                                replace_with: ReplaceWith::None,
+                                source: FeatureSource::User(0),
+                            })
+                        })
+                        .collect();
+                    let descriptions = ai::describe_pending_args(&inputs, &character);
+                    (inputs, descriptions)
+                });
+
+            if !replacement_arg_descriptions.is_empty() {
+                phase.set("ai-generate-phase-choices");
+                let args_text: String = replacement_arg_descriptions
+                    .iter()
+                    .map(|desc| {
+                        format!(
+                            "- \"{}\"\n  Description: {}\n{}",
+                            desc.feature_name, desc.feature_description, desc.args_description
+                        )
+                    })
+                    .collect::<Vec<_>>()
+                    .join("\n\n");
+
+                let mut follow_up_messages = vec![
+                    ChatMessage {
+                        role: Role::System,
+                        content: "You are a D&D 5e character builder. \
+                            Provide ARG values for the chosen replacement features. \
+                            Respond with valid JSON only, no markdown."
+                            .to_string(),
+                    },
+                    ChatMessage {
+                        role: Role::User,
+                        content: format!(
+                            "Character: {name} ({species} {class})\n\n\
+                             Provide ARG values for:\n{args_text}\n\n\
+                             Respond with a JSON object: {{ \"Feature Name\": [ARGs], ... }}",
+                            name = concept.name,
+                            species = concept.species,
+                            class = concept.class,
+                        ),
+                    },
+                ];
+
+                let follow_up_choices = send_with_retry(
+                    &input.settings,
+                    &mut follow_up_messages,
+                    &replacement_inputs,
+                    &store.read_untracked(),
+                    phase,
+                )
+                .await;
+                feature_choices.extend(follow_up_choices);
             }
         }
     }
@@ -138,7 +267,143 @@ async fn run_ai_generation(
     Ok(AiGenerateResult {
         concept,
         feature_choices,
+        replacements,
     })
+}
+
+/// Run a chat request with retry loop: send messages, merge ARG choices,
+/// validate against guard expressions, retry with feedback on failure.
+/// Returns the merged choices from all attempts.
+async fn send_with_retry(
+    settings: &AiSettings,
+    messages: &mut Vec<ChatMessage>,
+    pending_inputs: &[PendingInputs],
+    character: &Character,
+    phase: RwSignal<&'static str>,
+) -> BTreeMap<String, Vec<i32>> {
+    let mut choices = BTreeMap::new();
+
+    for attempt in 0..3 {
+        let result: Result<(serde_json::Value, String), _> =
+            ai::send_chat(settings, messages).await;
+        let Ok((value, raw_content)) = result else {
+            break;
+        };
+
+        let (new_choices, _) = ai::parse_feature_choices_response(value);
+        for (feature_name, args) in new_choices {
+            let key = feature_name
+                .strip_prefix("Feature: ")
+                .unwrap_or(&feature_name)
+                .to_string();
+            choices.insert(key, args);
+        }
+
+        messages.push(ChatMessage {
+            role: Role::Assistant,
+            content: raw_content,
+        });
+
+        let errors = validate_feature_choices(&choices, pending_inputs, character);
+        if errors.is_empty() {
+            break;
+        }
+
+        if attempt < 2 {
+            phase.set("ai-generate-phase-retry");
+            messages.push(ChatMessage {
+                role: Role::User,
+                content: format_validation_feedback(&errors),
+            });
+        }
+    }
+
+    choices
+}
+
+struct ChoiceValidationError {
+    feature_name: String,
+    message: String,
+}
+
+/// Read-only context for validating ARG values against guard expressions.
+struct ArgsContext<'a> {
+    character: &'a Character,
+    args: &'a [i32],
+}
+
+impl expr::Context<Attribute, i32> for ArgsContext<'_> {
+    fn assign(&mut self, _var: Attribute, _value: i32) -> Result<(), expr::Error> {
+        Ok(())
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Arg(n) => self
+                .args
+                .get(n as usize)
+                .copied()
+                .ok_or_else(|| expr::Error::unsupported_var(var)),
+            other => self.character.resolve(other),
+        }
+    }
+}
+
+fn validate_feature_choices(
+    choices: &BTreeMap<String, Vec<i32>>,
+    pending_inputs: &[PendingInputs],
+    character: &Character,
+) -> Vec<ChoiceValidationError> {
+    let mut errors = Vec::new();
+    for input in pending_inputs {
+        let Some(args) = choices.get(&input.feature_name) else {
+            errors.push(ChoiceValidationError {
+                feature_name: input.feature_name.clone(),
+                message: format!(
+                    "missing from response (expected {} ARG values)",
+                    input
+                        .exprs
+                        .iter()
+                        .flat_map(|e| {
+                            let is_arg = |var: &Attribute| {
+                                if let Attribute::Arg(n) = var {
+                                    Some(*n)
+                                } else {
+                                    None
+                                }
+                            };
+                            e.analyze(character, is_arg).active_args
+                        })
+                        .count()
+                ),
+            });
+            continue;
+        };
+
+        let ctx = ArgsContext { character, args };
+        for expression in &input.exprs {
+            if expression.eval_lenient(&ctx).is_err() {
+                errors.push(ChoiceValidationError {
+                    feature_name: input.feature_name.clone(),
+                    message: format!("guard constraint failed with ARG values {args:?}"),
+                });
+                break;
+            }
+        }
+    }
+    errors
+}
+
+fn format_validation_feedback(errors: &[ChoiceValidationError]) -> String {
+    let mut feedback = String::from("The following features have invalid ARG values:\n");
+    for error in errors {
+        let _ = writeln!(feedback, "- \"{}\": {}", error.feature_name, error.message);
+    }
+    feedback.push_str(
+        "\nPlease respond with corrected JSON for ONLY these features. \
+         Make sure all constraints are satisfied.",
+    );
+    feedback
 }
 
 #[component]
@@ -149,15 +414,17 @@ pub fn AiGenerateModal(
     let description = RwSignal::new(String::new());
     let error_text = RwSignal::new(Option::<String>::None);
     let phase = RwSignal::new("");
+    let show_settings = RwSignal::new(false);
+    let settings = RwSignal::new(storage::load_ai_settings());
 
-    let has_key = Memo::new(move |_| storage::load_ai_settings().has_api_key());
+    let has_key = Memo::new(move |_| settings.get().has_api_key());
 
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
 
     let generate = Action::new_local(move |description: &String| {
         let description = description.clone();
-        let settings = storage::load_ai_settings();
+        let settings = settings.get_untracked();
 
         let species_list = registry.with_species_entries(|entries| {
             entries
@@ -339,7 +606,16 @@ pub fn AiGenerateModal(
                 >
                     {move_tr!("import-cancel")}
                 </button>
+                <button
+                    type="button"
+                    class="btn-icon"
+                    title="AI Settings"
+                    on:click=move |_| show_settings.set(true)
+                >
+                    <Icon name="settings" size=16 />
+                </button>
             </div>
+            <AiSettingsModal show=show_settings settings />
         </Modal>
     }
 }

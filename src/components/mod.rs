@@ -1,5 +1,6 @@
 pub mod ability_score_block;
 pub mod ai_generate_modal;
+pub mod ai_settings_modal;
 pub mod apply;
 pub mod apply_field_section;
 pub mod args_modal;

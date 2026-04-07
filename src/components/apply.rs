@@ -123,6 +123,7 @@ pub fn apply_with_prefilled_args(
     registry: RulesRegistry,
     pending: Vec<PendingFeature>,
     prefilled: BTreeMap<String, Vec<i32>>,
+    prefilled_replacements: BTreeMap<String, String>,
     callback: impl Fn(
         &mut Character,
         &[PendingFeature],
@@ -141,6 +142,30 @@ pub fn apply_with_prefilled_args(
     {
         let character = store.read_untracked();
         for pending_input in &all_inputs {
+            // Check for prefilled replacement
+            if pending_input.is_replaceable()
+                && let Some(replacement) = prefilled_replacements.get(&pending_input.feature_name)
+            {
+                validated_inputs
+                    .replacements
+                    .insert(pending_input.feature_name.clone(), replacement.clone());
+                // If the replacement has ARGs, validate them too
+                if let Some(args) = prefilled.get(replacement) {
+                    let expr_inputs = pending_input
+                        .exprs
+                        .iter()
+                        .map(|_| AssignInputs {
+                            args: args.clone(),
+                            dice: Default::default(),
+                        })
+                        .collect();
+                    validated_inputs
+                        .feature_inputs
+                        .insert(pending_input.feature_name.clone(), expr_inputs);
+                }
+                continue;
+            }
+
             if let Some(args) = prefilled.get(&pending_input.feature_name) {
                 let all_valid = pending_input.exprs.iter().all(|expression| {
                     let ctx = ArgsContext {
