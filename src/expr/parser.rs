@@ -12,7 +12,7 @@ pub(super) struct Parser<'a, Var, Val, Grp = NoGroup<Var>> {
     /// Extra blocks for sub-expressions (if branches, etc.).
     /// Block indices are 1-based (0 = main block / "no block").
     blocks: Vec<Vec<Op<Var, Val, Grp>>>,
-    /// Current `with($GROUP, ...)` binding. `$` without a name resolves to
+    /// Current `with(@GROUP, ...)` binding. `$` without a name resolves to
     /// this.
     with_binding: Option<VarSubgroup<Grp>>,
     _var: PhantomData<(Var, Val)>,
@@ -318,8 +318,8 @@ impl<
                 ops.push(Op::PushGroup(group));
                 Ok(())
             }
-            Some(Token::Dollar) => {
-                let grp = self.with_binding.ok_or(Error::unexpected_token("$"))?.inner;
+            Some(Token::At) => {
+                let grp = self.with_binding.ok_or(Error::unexpected_token("@"))?.inner;
                 ops.push(Op::PushGroup(grp));
                 Ok(())
             }
@@ -430,7 +430,7 @@ impl<
         Ok(())
     }
 
-    /// `each($GROUP, body)` →
+    /// `each(@GROUP, body)` →
     /// `[Each(group), EvalIf(m, NOOP)]`
     /// `block m: [...body..., Next(group), EvalIf(m, NOOP)]`
     fn expect_group(&mut self) -> Result<Grp, Error> {
@@ -441,14 +441,14 @@ impl<
         }
     }
 
-    /// Parse `$GROUP` or `$GROUP(elem, elem, ...)` into a VarSubgroup.
+    /// Parse `@GROUP` or `@GROUP(elem, elem, ...)` into a VarSubgroup.
     /// Elements are resolved as member names — each must be a valid
     /// `Var` that the group contains, and its index becomes a set bit.
     fn expect_subgroup(&mut self) -> Result<VarSubgroup<Grp>, Error> {
         // Bare $ → use with_binding
-        if let Some(Token::Dollar) = self.peek() {
+        if let Some(Token::At) = self.peek() {
             self.next()?;
-            return self.with_binding.ok_or(Error::unexpected_token("$"));
+            return self.with_binding.ok_or(Error::unexpected_token("@"));
         }
         let group = self.expect_group()?;
         if let Some(Token::LParen) = self.peek() {
@@ -495,7 +495,7 @@ impl<
         }
     }
 
-    /// `with($GROUP, body)` — set a group binding so `$` resolves to it.
+    /// `with(@GROUP, body)` — set a group binding so `$` resolves to it.
     fn parse_with(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
         let subgrp = self.expect_subgroup()?;
@@ -525,7 +525,7 @@ impl<
         Ok(())
     }
 
-    /// `fold(op, $GROUP, expr)` →
+    /// `fold(op, @GROUP, expr)` →
     /// `[Each(group), EvalIf(m, NOOP)]`
     /// `block m: [...expr..., Next(group), EvalIf(n, NOOP)]`
     /// `block n: [Eval(m), BinOp(op)]`
@@ -541,7 +541,7 @@ impl<
             self.next()?;
             self.parse_or(&mut body_ops)?;
         } else {
-            // fold(op, $GROUP) shorthand → fold(op, $GROUP, $GROUP)
+            // fold(op, @GROUP) shorthand → fold(op, @GROUP, @GROUP)
             body_ops.push(Op::PushGroup(subgrp.inner));
         }
         body_ops.push(Op::Next(subgrp));
@@ -604,12 +604,12 @@ impl<
         }
     }
 
-    // assignment = IDENT '=' expr | IDENT op= expr | $GROUP '=' expr | $GROUP op=
+    // assignment = IDENT '=' expr | IDENT op= expr | @GROUP '=' expr | @GROUP op=
     // expr | expr
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         loop {
-            if let Some(Token::Dollar) = self.peek() {
-                let group = self.with_binding.ok_or(Error::unexpected_token("$"))?.inner;
+            if let Some(Token::At) = self.peek() {
+                let group = self.with_binding.ok_or(Error::unexpected_token("@"))?.inner;
                 self.next()?;
                 if let Some(Token::Eq) = self.peek() {
                     self.next()?;

@@ -1,10 +1,10 @@
 [
   {
     "name": "Generation: Point Buy",
-    "prerequisites": "LEVEL == 1 and fold(+, $ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 7)) and fold(+, $, $ARG + max(0, $ARG - 5)) == 27, each($, $ += $ARG)))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 7)) and fold(+, @, @ARG + max(0, @ARG - 5)) == 27, each(@, @ += @ARG)))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -12,7 +12,7 @@
   },
   {
     "name": "Generation: Random",
-    "prerequisites": "LEVEL == 1 and fold(+, $ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
     "assign": [
       {
         "expr": "STR = 4d6kh3; DEX = 4d6kh3; CON = 4d6kh3; INT = 4d6kh3; WIS = 4d6kh3; CHA = 4d6kh3",
@@ -23,10 +23,10 @@
   },
   {
     "name": "Generation: Preset",
-    "prerequisites": "LEVEL == 1 and fold(+, $ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 8, 15) and $ARG != 9 and $ARG != 11) and fold(+, $, $ARG) == 72 and fold(+, $, $ARG * $ARG) == 898, each($, $ = $ARG)))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 8, 15) and @ARG != 9 and @ARG != 11) and fold(+, @, @ARG) == 72 and fold(+, @, @ARG * @ARG) == 898, each(@, @ = @ARG)))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -77,7 +77,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with($SKILL._.PROF, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 3, each($, if($ == 0, $ += $ARG))))"
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))"
       }
     ],
     "category": "Origin"
@@ -102,7 +102,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -125,7 +125,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -136,7 +136,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -163,7 +163,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, CON), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, CON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -185,7 +185,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -207,7 +207,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -243,7 +243,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -287,7 +287,7 @@
     "prerequisites": "LEVEL >= 4 and (WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -309,7 +309,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -320,7 +320,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -331,7 +331,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -342,7 +342,7 @@
     "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -353,7 +353,7 @@
     "prerequisites": "LEVEL >= 4 and PROF.LIGHT_ARMOR == 1",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -364,7 +364,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, WIS), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX, WIS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -375,7 +375,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -386,7 +386,7 @@
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -402,7 +402,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -413,7 +413,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG); $ABILITY.SAVE.PROF = max($ABILITY.SAVE.PROF, $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG); @ABILITY.SAVE.PROF = max(@ABILITY.SAVE.PROF, @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -424,7 +424,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -435,7 +435,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -446,7 +446,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -504,7 +504,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -526,7 +526,7 @@
     "prerequisites": "LEVEL >= 4 and (STR >= 13 or DEX >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -537,7 +537,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -559,7 +559,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -570,7 +570,7 @@
     "prerequisites": "LEVEL >= 4 and (INT >= 13 or WIS >= 13 or CHA >= 13)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -602,7 +602,7 @@
     "category": "General",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -617,7 +617,7 @@
     "category": "General",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -713,7 +713,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -724,7 +724,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -735,7 +735,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -755,7 +755,7 @@
     ],
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -777,7 +777,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -797,7 +797,7 @@
     ],
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -808,7 +808,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -830,7 +830,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -841,7 +841,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -873,7 +873,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -2818,7 +2818,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with($SKILL._.PROF, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 2, each($, if($ == 1, $ += $ARG))))"
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))"
       }
     ]
   },
@@ -6507,7 +6507,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with($ABILITY.SAVE.PROF, each($, $ = 1))"
+        "expr": "with(@ABILITY.SAVE.PROF, each(@, @ = 1))"
       }
     ]
   },
@@ -13030,7 +13030,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with($SKILL._.PROF, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 3, each($, if($ == 0, $ += $ARG))))",
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13833,7 +13833,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with($SKILL._.PROF, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ == 0, $ += $ARG))))"
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -13859,7 +13859,7 @@
     "name": "Background Abilities (Acolyte)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13868,7 +13868,7 @@
     "name": "Background Abilities (Artisan)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, INT), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13877,7 +13877,7 @@
     "name": "Background Abilities (Charlatan)",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CON, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13886,7 +13886,7 @@
     "name": "Background Abilities (Criminal)",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CON, INT), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13895,7 +13895,7 @@
     "name": "Background Abilities (Entertainer)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13904,7 +13904,7 @@
     "name": "Background Abilities (Farmer)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, CON, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+        "expr": "with(@ABILITY(STR, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13913,7 +13913,7 @@
     "name": "Background Abilities (Guard)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(STR, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13922,7 +13922,7 @@
     "name": "Background Abilities (Guide)",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CON, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13931,7 +13931,7 @@
     "name": "Background Abilities (Hermit)",
     "assign": [
       {
-        "expr": "with($ABILITY(CON, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "with(@ABILITY(CON, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13940,7 +13940,7 @@
     "name": "Background Abilities (Merchant)",
     "assign": [
       {
-        "expr": "with($ABILITY(CON, INT, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(CON, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13949,7 +13949,7 @@
     "name": "Background Abilities (Noble)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, INT, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13958,7 +13958,7 @@
     "name": "Background Abilities (Sage)",
     "assign": [
       {
-        "expr": "with($ABILITY(CON, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+        "expr": "with(@ABILITY(CON, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13967,7 +13967,7 @@
     "name": "Background Abilities (Sailor)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13976,7 +13976,7 @@
     "name": "Background Abilities (Scribe)",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, INT, WIS), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(DEX, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13985,7 +13985,7 @@
     "name": "Background Abilities (Soldier)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, CON), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, CON), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13994,7 +13994,7 @@
     "name": "Background Abilities (Wayfarer)",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 3, each($, if($ < 20, $ += $ARG)))); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "with(@ABILITY(DEX, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14389,7 +14389,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14400,7 +14400,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14411,7 +14411,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14422,7 +14422,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14433,7 +14433,7 @@
     "prerequisites": "LEVEL >= 4 and CASTER_LEVEL >= 1",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 2) and $ + $ARG <= 20) and fold(+, $, $ARG) == 2, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14449,7 +14449,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX, CON), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX, CON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14471,7 +14471,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -14486,7 +14486,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14497,7 +14497,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14508,7 +14508,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14519,7 +14519,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, CON), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, CON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14530,7 +14530,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14541,7 +14541,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14552,7 +14552,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14563,7 +14563,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14574,7 +14574,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14585,7 +14585,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -14600,7 +14600,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14611,7 +14611,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14633,7 +14633,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(CON, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(CON, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14662,7 +14662,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -14677,7 +14677,7 @@
     "prerequisites": "LEVEL >= 19",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 30, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -14716,7 +14716,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14747,7 +14747,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14763,7 +14763,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14774,7 +14774,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(CON, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(CON, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       },
       {
@@ -14794,7 +14794,7 @@
     "prerequisites": "LEVEL >= 4 and FEAT.`Emerald Enclave Fledgling`",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14805,7 +14805,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(DEX, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14816,7 +14816,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14838,7 +14838,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Detection`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14849,7 +14849,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Finding`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14860,7 +14860,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Handling`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14871,7 +14871,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Healing`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14882,7 +14882,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Hospitality`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14893,7 +14893,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Making`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14904,7 +14904,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Passage`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14915,7 +14915,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Scribing`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14926,7 +14926,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Sentinel`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14937,7 +14937,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Shadow`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14948,7 +14948,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Storm`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14959,7 +14959,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Warding`",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14975,7 +14975,7 @@
     "prerequisites": "LEVEL >= 4 and FEAT.`Harper Agent`",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(DEX, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14986,7 +14986,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -14997,7 +14997,7 @@
     "prerequisites": "LEVEL >= 4 and FEAT.`Lords' Alliance Agent`",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15013,7 +15013,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15084,7 +15084,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15095,7 +15095,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15111,7 +15111,7 @@
     "prerequisites": "LEVEL >= 4 and (FEAT.`Purple Dragon Rook` or PROF.MARTIAL_WEAPONS)",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15127,7 +15127,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15138,7 +15138,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY, guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15154,7 +15154,7 @@
     "prerequisites": "LEVEL >= 4 and (FEAT.`Spellfire Spark` or CASTER_LEVEL >= 1)",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15170,7 +15170,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(STR, DEX), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(STR, DEX), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15186,7 +15186,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15207,7 +15207,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -15228,7 +15228,7 @@
     "prerequisites": "LEVEL >= 4 and FEAT.`Zhentarim Ruffian`",
     "assign": [
       {
-        "expr": "with($ABILITY(DEX, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))",
+        "expr": "with(@ABILITY(DEX, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],

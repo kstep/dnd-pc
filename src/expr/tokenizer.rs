@@ -27,8 +27,8 @@ pub(super) enum Token<'a> {
     Comma,
     Semicolon,
     Bang,
-    GroupRef(&'a str), // $ABILITY, $SKILL._, etc.
-    Dollar,            // bare $ (with-binding reference)
+    GroupRef(&'a str), // @ABILITY, @SKILL._, etc.
+    At,                // bare @ (with-binding reference)
     // Boolean / comparison
     And,
     Or,
@@ -115,16 +115,16 @@ impl<'a> Iterator for Tokenizer<'a> {
                     _ => Token::Ident(ident),
                 }))
             }
-            b'$' => {
-                // $GROUP_NAME — e.g. $ABILITY, $SKILL._.PROF
-                self.rest = &self.rest[1..]; // skip $
+            b'@' => {
+                // @GROUP_NAME — e.g. @ABILITY, @SKILL._.PROF
+                self.rest = &self.rest[1..]; // skip @
                 let len = self
                     .rest
                     .bytes()
                     .take_while(|&b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
                     .count();
                 if len == 0 {
-                    return Some(Ok(Token::Dollar));
+                    return Some(Ok(Token::At));
                 }
                 let (name, rest) = self.rest.split_at(len);
                 self.rest = rest;

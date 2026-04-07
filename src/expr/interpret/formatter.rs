@@ -137,11 +137,11 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Displa
                 self.push(format!("in({}, {}, {})", a.text, b.text, c.text), 3);
             }
             Op::PushGroup(grp) => {
-                self.push(format!("${grp}"), 7);
+                self.push(format!("@{grp}"), 7);
             }
             Op::AssignGroup(grp) => {
                 let val = self.stack.pop()?;
-                self.push(format!("${grp} = {}", val.text), 0);
+                self.push(format!("@{grp} = {}", val.text), 0);
             }
             Op::Eval(_) | Op::EvalIf(_, _) | Op::Each(_) | Op::Next(_) => {} /* intercepted by
                                                                               * format_block */
