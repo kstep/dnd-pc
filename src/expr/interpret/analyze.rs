@@ -207,11 +207,17 @@ impl ExprAnalysis {
         );
 
         if has_arg_group {
-            for idx in 0..size as u8 {
+            let mut pos = 0;
+            while let Some(real_idx) = subgrp.real_index(pos) {
+                if subgrp.inner.member(real_idx).is_none() {
+                    break;
+                }
+                let idx = real_idx as u8;
                 self.active_args.push(idx);
                 if has_in_pattern {
                     self.boolean_args.insert(idx);
                 }
+                pos += 1;
             }
         }
 

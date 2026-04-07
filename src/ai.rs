@@ -956,13 +956,14 @@ pub fn describe_pending_args(
 
                 // Per-ARG description: use group names from ExprAnalysis for
                 // loop expressions, ArgSummarizer info for flat expressions.
-                for &arg_index in &analysis.active_args {
-                    let idx = arg_index as usize;
-
+                for (pos, &arg_index) in analysis.active_args.iter().enumerate() {
                     // Target name: group member name (loop) or ArgSummarizer target (flat)
+                    // group_names uses virtual positions (0, 1, 2…) while active_args
+                    // may contain real group indices (0, 3, 5…) for masked subgroups,
+                    // so index group_names by position within active_args.
                     let group_name = summary
                         .group_names
-                        .get(idx)
+                        .get(pos)
                         .map(|name| friendly_attr_name(name).to_string());
                     let summarizer_name = summary
                         .args
