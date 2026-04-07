@@ -11,8 +11,8 @@ use crate::{
         expr_view::ExprDetails,
         modal::Modal,
     },
-    expr::{DicePool, Expr},
-    model::{AssignInputs, Attribute, Character, FeatureSource},
+    expr::DicePool,
+    model::{AssignInputs, Character, Expr, FeatureSource},
     rules::{ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry},
 };
 
@@ -203,7 +203,7 @@ fn ReplacementPicker(
     let placeholder = Signal::derive(move || move_tr!("replace-with-feat").get());
 
     // Expressions for the currently selected replacement feat (if it needs ARGs)
-    let replacement_exprs: RwSignal<Vec<Expr<Attribute>>> = RwSignal::new(Vec::new());
+    let replacement_exprs: RwSignal<Vec<Expr>> = RwSignal::new(Vec::new());
     // Description of the selected replacement feat
     let replacement_description: RwSignal<String> = RwSignal::new(String::new());
 

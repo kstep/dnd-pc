@@ -272,7 +272,7 @@ mod tests {
 
     #[test]
     fn parse_expr_with_mul_dice() {
-        use crate::{expr::Expr, model::Attribute};
+        use crate::model::{Attribute, Expr};
         let cases = [
             "(SLOT_LEVEL * 2)d4",
             "(SLOT_LEVEL + 2)d6",
@@ -287,7 +287,7 @@ mod tests {
             "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER",
         ];
         for expr_str in cases {
-            let result = expr_str.parse::<Expr<Attribute>>();
+            let result = expr_str.parse::<Expr>();
             assert!(
                 result.is_ok(),
                 "failed to parse '{expr_str}': {:?}",

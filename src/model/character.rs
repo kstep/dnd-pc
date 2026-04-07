@@ -1001,8 +1001,7 @@ pub mod tests {
 
     use super::*;
     use crate::{
-        expr::Expr,
-        model::{Armor, ClassLevel, Currency, FeatureSource, Money, SpellData},
+        model::{Armor, ClassLevel, Currency, Expr, FeatureSource, Money, SpellData},
         vecset::VecSet,
     };
 
@@ -1670,7 +1669,7 @@ pub mod tests {
             ac_expr: if expr_str.is_empty() {
                 None
             } else {
-                Some(expr_str.parse::<Expr<Attribute>>().unwrap())
+                Some(expr_str.parse::<Expr>().unwrap())
             },
         }
     }

@@ -5,10 +5,10 @@ use serde::{Deserialize, Deserializer, de};
 use super::spells::SpellsDefinition;
 use crate::{
     demap::{self, Named},
-    expr::{self, Eval as _, Expr},
+    expr::{self, Eval as _},
     model::{
-        Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition,
-        FeatureCategory, FeatureField, FeatureValue, Translatable,
+        Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition, Expr,
+        FeatureCategory, FeatureField, FeatureValue, Translatable, short_name,
     },
     rules::utils::LevelRules,
 };
@@ -20,7 +20,7 @@ use crate::{
 #[serde(untagged)]
 pub enum ValueOrExpr {
     Value(u32),
-    Expr(Expr<Attribute, i32>),
+    Expr(Expr),
 }
 
 impl Default for ValueOrExpr {
@@ -203,12 +203,12 @@ pub struct FeatureDefinition {
     #[serde(default)]
     pub assign: Option<Vec<Assignment>>,
     #[serde(default)]
-    pub prerequisites: Option<Expr<Attribute>>,
+    pub prerequisites: Option<Expr>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Assignment {
-    pub expr: Expr<Attribute>,
+    pub expr: Expr,
     pub when: WhenCondition,
     #[serde(default)]
     pub scope: Option<String>,
@@ -281,7 +281,7 @@ impl FeatureDefinition {
         if !matches!(field_def.kind, FieldKind::Points { .. }) {
             return None;
         }
-        let short = crate::model::short_name(cost_name);
+        let short = short_name(cost_name);
         Some((cost_name, short))
     }
 
@@ -312,7 +312,7 @@ impl FeatureDefinition {
 
     /// Returns all assignment expressions for the given condition that use
     /// `ARG.n` variables. Each gets its own independent ARG context in the UI.
-    pub fn args_exprs(&self, when: WhenCondition) -> impl Iterator<Item = &Expr<Attribute>> + '_ {
+    pub fn args_exprs(&self, when: WhenCondition) -> impl Iterator<Item = &Expr> + '_ {
         self.assign
             .iter()
             .flatten()
@@ -323,11 +323,7 @@ impl FeatureDefinition {
     /// Returns assignment expressions for the given condition that need user
     /// interaction: either ARG variables or dice rolls. Used to determine
     /// whether the args/dice modal should be shown.
-    pub fn interactive_exprs(
-        &self,
-        when: WhenCondition,
-        character: &Character,
-    ) -> Vec<Expr<Attribute>> {
+    pub fn interactive_exprs(&self, when: WhenCondition, character: &Character) -> Vec<Expr> {
         let is_arg = |var: &Attribute| -> Option<u8> {
             if let Attribute::Arg(n) = var {
                 Some(*n)

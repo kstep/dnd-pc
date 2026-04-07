@@ -5,8 +5,8 @@ use std::{
 
 use super::eval_block;
 use crate::expr::{
-    Context, Expr, Op, avg_hp,
-    ops::{BLOCK_MAIN, BlockIndex},
+    Context, Expr, Op, VarGroup, avg_hp,
+    ops::{BLOCK_MAIN, BLOCK_NOOP, BlockIndex, VarSubgroup},
     stack::Stack,
 };
 
@@ -32,13 +32,14 @@ impl ExprAnalysis {
     /// For `guard(cond, body)` / `if(cond, then)`: if the condition is
     /// non-interactive (no ARGs) and evaluates to false, the then-block is
     /// skipped — its ARGs won't appear in `active_args`.
-    pub fn analyze<Var, Ctx>(
-        expr: &Expr<Var, i32>,
+    pub fn analyze<Var, Ctx, Grp>(
+        expr: &Expr<Var, i32, Grp>,
         ctx: &Ctx,
         is_arg: impl Fn(&Var) -> Option<u8> + Copy,
     ) -> Self
     where
         Var: Copy + fmt::Display,
+        Grp: Copy + VarGroup<Var = Var>,
         Ctx: Context<Var, i32>,
     {
         let mut analysis = Self::default();
@@ -46,27 +47,43 @@ impl ExprAnalysis {
         analysis
     }
 
-    fn analyze_block<Var, Ctx>(
+    fn analyze_block<Var, Ctx, Grp>(
         &mut self,
-        expr: &Expr<Var, i32>,
+        expr: &Expr<Var, i32, Grp>,
         ctx: &Ctx,
         is_arg: impl Fn(&Var) -> Option<u8> + Copy,
         block: BlockIndex,
     ) -> AnalyzedBlock
     where
         Var: Copy + fmt::Display,
+        Grp: Copy + VarGroup<Var = Var>,
         Ctx: Context<Var, i32>,
     {
         let ops = expr.block(block);
         let mut stack = Stack::new();
+        let mut iter_stack = Stack::new();
         let mut has_args = false;
         let mut last_eval_had_args = false;
         // State machine for detecting `in(ARG.n, 0, 1)` patterns inline.
         // Tracks (arg_index, steps_matched): 1 = saw Arg, 2 = saw 0, 3 = saw 1.
         let mut bool_detect: Option<(u8, u8)> = None;
 
-        for &op in ops.iter() {
+        let mut i = 0;
+        let ops_slice = &**ops;
+        while i < ops_slice.len() {
+            let op = ops_slice[i];
             match op {
+                Op::Each(grp) if i + 1 < ops_slice.len() => {
+                    if let Op::EvalIf(body_idx, BLOCK_NOOP) = ops_slice[i + 1] {
+                        // Loop pattern detected. Analyze body as template.
+                        self.analyze_loop_body(expr, is_arg, grp, body_idx);
+                        has_args = true;
+                        // Each pushes a boolean; EvalIf consumes it. Net: 0.
+                        i += 2;
+                        continue;
+                    }
+                    stack.push(1); // Each pushes truthy
+                }
                 Op::PushVar(var) => {
                     if let Some(idx) = is_arg(&var) {
                         has_args = true;
@@ -76,7 +93,13 @@ impl ExprAnalysis {
                         stack.push(ctx.resolve(var).unwrap_or(0));
                     }
                 }
-                Op::Assign(_) => {}
+                Op::AssignVar(_) | Op::AssignGroup(_) => {}
+                Op::Next(_) => {
+                    stack.push(0); // Next pushes falsy (loop done in analysis)
+                }
+                Op::PushGroup(_) => {
+                    stack.push(0);
+                }
                 Op::Roll => {
                     let (count, sides) = stack.pop2().unwrap_or((0, 0));
                     if count > 0 && sides > 0 {
@@ -90,9 +113,6 @@ impl ExprAnalysis {
                 }
                 Op::Eval(idx) => {
                     if let Ok(Some(block_idx)) = eval_block(idx) {
-                        // Eval blocks are conditions — their ARGs are for
-                        // validation display, not input fields. Analyze but
-                        // don't add their ARGs to active_args.
                         let saved_len = self.active_args.len();
                         let sub = self.analyze_block(expr, ctx, is_arg, block_idx);
                         self.active_args.truncate(saved_len);
@@ -103,12 +123,7 @@ impl ExprAnalysis {
                 }
                 Op::EvalIf(then_idx, else_idx) => {
                     let cond = stack.pop().unwrap_or(0);
-                    // Interactive condition (has ARGs) → visit both branches
-                    // to discover all reachable ARGs. Non-interactive false
-                    // condition → prune the then branch.
                     if cond != 0 || last_eval_had_args {
-                        // Visit both branches for ARG discovery; push
-                        // then-branch result for stack continuity.
                         let mut pushed = false;
                         for idx in [then_idx, else_idx] {
                             if let Ok(Some(block_idx)) = eval_block(idx) {
@@ -131,10 +146,10 @@ impl ExprAnalysis {
                     if let Some((arg_idx, 3)) = bool_detect {
                         self.boolean_args.insert(arg_idx);
                     }
-                    let _ = super::eval_op(&mut stack, op);
+                    let _ = super::eval_op(&mut stack, &mut iter_stack, op);
                 }
                 op => {
-                    let _ = super::eval_op(&mut stack, op);
+                    let _ = super::eval_op(&mut stack, &mut iter_stack, op);
                 }
             }
 
@@ -149,11 +164,122 @@ impl ExprAnalysis {
                 }
                 _ => None,
             };
+
+            i += 1;
         }
 
         AnalyzedBlock {
             has_args,
             result: stack.result().unwrap_or(0),
+        }
+    }
+
+    /// Analyze a loop body as a template: determine group size and generate
+    /// active_args. Detects `PushGroup(Arg)` → generates ARG indices 0..N.
+    /// Detects `in($ARG, 0, 1)` → marks all as boolean.
+    fn analyze_loop_body<Var, Grp>(
+        &mut self,
+        expr: &Expr<Var, i32, Grp>,
+        is_arg: impl Fn(&Var) -> Option<u8> + Copy,
+        subgrp: VarSubgroup<Grp>,
+        body_idx: BlockIndex,
+    ) -> usize
+    where
+        Var: Copy + fmt::Display,
+        Grp: Copy + VarGroup<Var = Var>,
+    {
+        // Determine subgroup size
+        let mut size = 0;
+        while subgrp.member(size).is_some() {
+            size += 1;
+        }
+
+        let mut has_arg_group = false;
+        let mut has_in_pattern = false;
+        let mut visited = BTreeSet::new();
+        Self::scan_block_for_args(
+            expr,
+            &is_arg,
+            body_idx,
+            &mut has_arg_group,
+            &mut has_in_pattern,
+            &mut visited,
+        );
+
+        if has_arg_group {
+            for idx in 0..size as u8 {
+                self.active_args.push(idx);
+                if has_in_pattern {
+                    self.boolean_args.insert(idx);
+                }
+            }
+        }
+
+        size
+    }
+
+    /// Recursively scan a block and all reachable sub-blocks for PushGroup(Arg)
+    /// and `in($ARG, 0, 1)` patterns.
+    fn scan_block_for_args<Var, Grp>(
+        expr: &Expr<Var, i32, Grp>,
+        is_arg: &impl Fn(&Var) -> Option<u8>,
+        block_idx: BlockIndex,
+        has_arg_group: &mut bool,
+        has_in_pattern: &mut bool,
+        visited: &mut BTreeSet<BlockIndex>,
+    ) where
+        Var: Copy,
+        Grp: Copy + VarGroup<Var = Var>,
+    {
+        if !visited.insert(block_idx) {
+            return;
+        }
+        let block = expr.block(block_idx);
+        let ops = &**block;
+        for (i, &op) in ops.iter().enumerate() {
+            match op {
+                Op::PushGroup(g) => {
+                    if let Some(var) = g.member(0)
+                        && is_arg(&var).is_some()
+                    {
+                        *has_arg_group = true;
+                        if i + 3 < ops.len()
+                            && matches!(ops[i + 1], Op::PushConst(0))
+                            && matches!(ops[i + 2], Op::PushConst(1))
+                            && matches!(ops[i + 3], Op::In)
+                        {
+                            *has_in_pattern = true;
+                        }
+                    }
+                }
+                Op::Eval(idx) => {
+                    if let Ok(Some(sub_idx)) = eval_block(idx) {
+                        Self::scan_block_for_args(
+                            expr,
+                            is_arg,
+                            sub_idx,
+                            has_arg_group,
+                            has_in_pattern,
+                            visited,
+                        );
+                    }
+                }
+                Op::EvalIf(then_idx, else_idx) => {
+                    for idx in [then_idx, else_idx] {
+                        if let Ok(Some(sub_idx)) = eval_block(idx) {
+                            Self::scan_block_for_args(
+                                expr,
+                                is_arg,
+                                sub_idx,
+                                has_arg_group,
+                                has_in_pattern,
+                                visited,
+                            );
+                        }
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }

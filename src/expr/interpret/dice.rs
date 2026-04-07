@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 use serde::{Deserialize, Serialize};
 
 use super::{Interpreter, eval_op};
-use crate::expr::{Context, Error, Op, ops::BlockIndex, stack::Stack};
+use crate::expr::{Context, Error, Op, VarGroup, ops::BlockIndex, stack::Stack};
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
 
@@ -63,6 +63,7 @@ impl DicePoolIter<'_> {
 
 pub struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
     stack: Stack<i32>,
+    iter_stack: Stack<usize>,
     ctx: &'a mut Ctx,
     pool: &'a mut DicePoolIter<'p>,
     _var: PhantomData<Var>,
@@ -72,6 +73,7 @@ impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePoolIter<'p>) -> Self {
         Self {
             stack: Stack::new(),
+            iter_stack: Stack::new(),
             ctx,
             pool,
             _var: PhantomData,
@@ -79,18 +81,30 @@ impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     }
 }
 
-impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
-    for DicePoolEvaluator<'_, '_, Var, Ctx>
+impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
+    Interpreter<Var, i32, Grp> for DicePoolEvaluator<'_, '_, Var, Ctx>
 {
     type Output = i32;
 
-    fn exec(&mut self, op: Op<Var, i32>) -> Result<Option<BlockIndex>, Error> {
+    fn exec(&mut self, op: Op<Var, i32, Grp>) -> Result<Option<BlockIndex>, Error> {
         match op {
             Op::PushVar(var) => {
                 self.stack.push(self.ctx.resolve(var)?);
                 Ok(None)
             }
-            Op::Assign(var) => {
+            Op::AssignVar(var) => {
+                self.ctx.assign(var, *self.stack.top()?)?;
+                Ok(None)
+            }
+            Op::PushGroup(group) => {
+                let &index = self.iter_stack.top()?;
+                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
+                self.stack.push(self.ctx.resolve(var)?);
+                Ok(None)
+            }
+            Op::AssignGroup(group) => {
+                let &index = self.iter_stack.top()?;
+                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
             }
@@ -108,7 +122,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>> Interpreter<Var, i32>
                 self.stack.push(count);
                 Ok(None)
             }
-            op => eval_op(&mut self.stack, op),
+            op => eval_op(&mut self.stack, &mut self.iter_stack, op),
         }
     }
 

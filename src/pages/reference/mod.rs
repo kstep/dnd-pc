@@ -19,8 +19,8 @@ pub fn encode_name(name: &str) -> String {
 use crate::{
     BASE_URL,
     components::expr_view::ExprView,
-    expr::{BLOCK_ERROR, BLOCK_NOOP, Expr, Interpreter, Op},
-    model::{Attribute, Translatable},
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, VarGroup},
+    model::{Attribute, AttributeGroup, Expr, Op, Translatable},
     rules::{
         Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
         SpellList,
@@ -33,7 +33,7 @@ pub struct InlineSpell {
     pub min_level: u32,
     pub sticky: bool,
     pub description: String,
-    pub effects: Vec<(String, Expr<Attribute>)>,
+    pub effects: Vec<(String, Expr)>,
 }
 
 pub enum FeatureSpells {
@@ -76,7 +76,7 @@ pub struct InlineChoiceOption {
     pub level: u32,
     pub cost: u32,
     pub description: String,
-    pub effects: Vec<(String, Expr<Attribute>)>,
+    pub effects: Vec<(String, Expr)>,
 }
 
 pub struct ChoiceFieldView {
@@ -170,6 +170,7 @@ impl SumEntry {
 
 struct AssignmentSummarizer<'a> {
     stack: Vec<SumEntry>,
+    iter_stack: Vec<usize>,
     i18n: &'a leptos_fluent::I18n,
     registry: RulesRegistry,
     abilities: Vec<String>,
@@ -184,6 +185,7 @@ impl<'a> AssignmentSummarizer<'a> {
     fn new(i18n: &'a leptos_fluent::I18n, registry: RulesRegistry) -> Self {
         Self {
             stack: Vec::new(),
+            iter_stack: Vec::new(),
             i18n,
             registry,
             abilities: Vec::new(),
@@ -205,12 +207,48 @@ impl<'a> AssignmentSummarizer<'a> {
         self.stack.pop().unwrap_or(SumEntry::constant(0))
     }
 
-    fn binary_op(&mut self, op_str: &str, f: impl FnOnce(i32, i32) -> i32) {
+    fn assign_to_attr(&mut self, attr: Attribute, value: SumEntry) {
+        let attr_str = attr.to_string();
+        let (prefix, display) = if let Some((base, op, rhs)) = &value.compound {
+            if *base == attr_str {
+                (op.as_str(), rhs.clone())
+            } else {
+                ("", value.text.clone())
+            }
+        } else {
+            ("", value.text.clone())
+        };
+        match attr {
+            Attribute::Ability(ability) => {
+                let label = self.i18n.tr(ability.tr_abbr_key());
+                self.abilities.push(format!("{label} {prefix}{display}"));
+            }
+            Attribute::SkillProficiency(skill) => {
+                self.skills.push(self.i18n.tr(skill.tr_key()));
+            }
+            Attribute::SaveProficiency(ability) => {
+                self.saves.push(self.i18n.tr(ability.tr_abbr_key()));
+            }
+            Attribute::EquipmentProficiency(prof) => {
+                self.equipment.push(self.i18n.tr(prof.tr_key()));
+            }
+            Attribute::Language(name) => {
+                self.languages.push(name);
+            }
+            _ => {
+                let label = attr.display_name(self.i18n);
+                self.other.push(format!("{label} {prefix}{display}"));
+            }
+        }
+    }
+
+    fn binary_op(&mut self, bin_op: BinOp) {
         let b = self.pop();
         let a = self.pop();
-        let num = a.num.zip(b.num).map(|(a, b)| f(a, b));
+        let num = a.num.zip(b.num).and_then(|(a, b)| bin_op.eval(a, b).ok());
+        let op_str = bin_op.symbol();
         let text = num.map_or_else(
-            || format!("{} {} {}", a.text, op_str, b.text),
+            || format!("{} {op_str} {}", a.text, b.text),
             |n| n.to_string(),
         );
         // Track compound: if `a` is a plain variable, record raw key + op + rhs
@@ -228,13 +266,10 @@ impl<'a> AssignmentSummarizer<'a> {
     }
 }
 
-impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
+impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
     type Output = String;
 
-    fn exec(
-        &mut self,
-        op: Op<Attribute, i32>,
-    ) -> Result<Option<crate::expr::BlockIndex>, crate::expr::Error> {
+    fn exec(&mut self, op: Op) -> Result<Option<BlockIndex>, expr::Error> {
         match op {
             Op::PushConst(n) => self.stack.push(SumEntry::constant(n)),
             Op::PushVar(var) => {
@@ -245,19 +280,32 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                 };
                 self.stack.push(SumEntry::var(text, raw));
             }
-            Op::Add => self.binary_op("+", |a, b| a + b),
-            Op::Sub => self.binary_op("-", |a, b| a - b),
-            Op::Mul => self.binary_op("*", |a, b| a * b),
-            Op::DivFloor => self.binary_op("/", |a, b| if b != 0 { a / b } else { 0 }),
-            Op::DivCeil => {
-                self.binary_op("\\", |a, b| if b != 0 { (a + b - 1) / b } else { 0 });
+            Op::BinOp(BinOp::And) => {
+                let b = self.pop();
+                let a = self.pop();
+                let op = self.i18n.tr("expr-and");
+                self.stack.push(SumEntry {
+                    text: format!("{} {op} {}", a.text, b.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
             }
-            Op::Mod => self.binary_op("%", |a, b| if b != 0 { a % b } else { 0 }),
-            Op::Min => self.binary_op("min", |a, b| a.min(b)),
-            Op::Max => self.binary_op("max", |a, b| a.max(b)),
+            Op::BinOp(BinOp::Or) => {
+                let b = self.pop();
+                let a = self.pop();
+                let op = self.i18n.tr("expr-or");
+                self.stack.push(SumEntry {
+                    text: format!("{} {op} {}", a.text, b.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::BinOp(bin_op) => self.binary_op(bin_op),
             Op::AvgHp => {
                 let a = self.pop();
-                let num = a.num.map(crate::expr::avg_hp);
+                let num = a.num.map(expr::avg_hp);
                 let text = num.map_or_else(|| format!("avg_hp({})", a.text), |n| n.to_string());
                 self.stack.push(SumEntry {
                     text,
@@ -266,41 +314,9 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     compound: None,
                 });
             }
-            Op::Assign(attr) => {
+            Op::AssignVar(attr) => {
                 let value = self.pop();
-                let attr_str = attr.to_string();
-                // Detect compound: X op= expr → show "op rhs", otherwise just "value"
-                let (prefix, display) = if let Some((base, op, rhs)) = &value.compound {
-                    if *base == attr_str {
-                        (op.as_str(), rhs.clone())
-                    } else {
-                        ("", value.text.clone())
-                    }
-                } else {
-                    ("", value.text.clone())
-                };
-                match attr {
-                    Attribute::Ability(ability) => {
-                        let label = self.i18n.tr(ability.tr_abbr_key());
-                        self.abilities.push(format!("{label} {prefix}{display}"));
-                    }
-                    Attribute::SkillProficiency(skill) => {
-                        self.skills.push(self.i18n.tr(skill.tr_key()));
-                    }
-                    Attribute::SaveProficiency(ability) => {
-                        self.saves.push(self.i18n.tr(ability.tr_abbr_key()));
-                    }
-                    Attribute::EquipmentProficiency(prof) => {
-                        self.equipment.push(self.i18n.tr(prof.tr_key()));
-                    }
-                    Attribute::Language(name) => {
-                        self.languages.push(name);
-                    }
-                    _ => {
-                        let label = attr.display_name(self.i18n);
-                        self.other.push(format!("{label} {prefix}{display}"));
-                    }
-                }
+                self.assign_to_attr(attr, value);
             }
             Op::Cmp(cmp) => {
                 let b = self.pop();
@@ -314,28 +330,6 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                 };
                 self.stack.push(SumEntry {
                     text: format!("{} {sym} {}", a.text, b.text),
-                    num: None,
-                    raw_key: None,
-                    compound: None,
-                });
-            }
-            Op::And => {
-                let b = self.pop();
-                let a = self.pop();
-                let op = self.i18n.tr("expr-and");
-                self.stack.push(SumEntry {
-                    text: format!("{} {op} {}", a.text, b.text),
-                    num: None,
-                    raw_key: None,
-                    compound: None,
-                });
-            }
-            Op::Or => {
-                let b = self.pop();
-                let a = self.pop();
-                let op = self.i18n.tr("expr-or");
-                self.stack.push(SumEntry {
-                    text: format!("{} {op} {}", a.text, b.text),
                     num: None,
                     raw_key: None,
                     compound: None,
@@ -362,11 +356,12 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                     compound: None,
                 });
             }
-            // if(): evaluate both branches to collect all possible assignments
+            // if(): evaluate both branches to collect all possible assignments.
+            // Exception: when condition is a known constant(0) — this is a loop
+            // termination from Next. Don't re-enter the body.
             Op::EvalIf(then_idx, else_idx) => {
-                self.pop(); // condition
-                // Return first non-noop block; the runner will recurse into it.
-                if then_idx != BLOCK_NOOP && then_idx != BLOCK_ERROR {
+                let cond = self.pop();
+                if cond.num != Some(0) && then_idx != BLOCK_NOOP && then_idx != BLOCK_ERROR {
                     return Ok(Some(then_idx));
                 }
                 if else_idx != BLOCK_NOOP && else_idx != BLOCK_ERROR {
@@ -389,11 +384,52 @@ impl Interpreter<Attribute, i32> for AssignmentSummarizer<'_> {
                 let top = self.pop();
                 self.stack.push(top);
             }
+            Op::Each(subgrp) => {
+                if let Some(real_idx) = subgrp.real_index(0)
+                    && subgrp.inner.member(real_idx).is_some()
+                {
+                    self.iter_stack.push(real_idx);
+                    self.stack.push(SumEntry::constant(1));
+                } else {
+                    self.stack.push(SumEntry::constant(0));
+                }
+            }
+            Op::Next(subgrp) => {
+                if let Some(&current) = self.iter_stack.last()
+                    && let Some(next_idx) = subgrp.next_real_index(current)
+                    && subgrp.inner.member(next_idx).is_some()
+                {
+                    *self.iter_stack.last_mut().unwrap() = next_idx;
+                    self.stack.push(SumEntry::constant(1));
+                } else {
+                    self.iter_stack.pop();
+                    self.stack.push(SumEntry::constant(0));
+                }
+            }
+            Op::PushGroup(grp) => {
+                if let Some(&idx) = self.iter_stack.last()
+                    && let Some(var) = grp.member(idx)
+                {
+                    let raw = var.to_string();
+                    let text = var.display_name(self.i18n);
+                    self.stack.push(SumEntry::var(text, raw));
+                } else {
+                    self.stack.push(SumEntry::constant(0));
+                }
+            }
+            Op::AssignGroup(grp) => {
+                if let Some(&idx) = self.iter_stack.last()
+                    && let Some(attr) = grp.member(idx)
+                {
+                    let value = self.pop();
+                    self.assign_to_attr(attr, value);
+                }
+            }
         }
         Ok(None)
     }
 
-    fn finish(self) -> Result<Self::Output, crate::expr::Error> {
+    fn finish(self) -> Result<Self::Output, expr::Error> {
         let mut parts = Vec::new();
         if !self.abilities.is_empty() {
             parts.push(self.abilities.join(", "));

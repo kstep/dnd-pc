@@ -1,5 +1,6 @@
 mod ability;
 mod attribute;
+mod attribute_group;
 mod character;
 mod combat;
 mod die;
@@ -13,6 +14,7 @@ mod spell;
 
 pub use ability::*;
 pub use attribute::*;
+pub use attribute_group::*;
 pub use character::*;
 pub use combat::*;
 pub use die::*;
@@ -23,6 +25,12 @@ pub use feature::*;
 pub use identity::*;
 pub use money::*;
 pub use spell::*;
+
+/// Expression type with attribute groups for loop support.
+pub type Expr = crate::expr::Expr<Attribute, i32, AttributeGroup>;
+
+/// Op type matching [`Expr`].
+pub type Op = crate::expr::Op<Attribute, i32, AttributeGroup>;
 
 /// Format an integer as a signed bonus string (e.g. `+3`, `-1`).
 pub fn format_bonus(value: i32) -> String {

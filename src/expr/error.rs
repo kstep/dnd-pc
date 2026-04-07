@@ -15,6 +15,7 @@ pub enum Error {
     InvalidDieSides(i32),
     InvalidBlock(u8),
     GuardFailed,
+    GroupOutOfBounds,
     RngFailed,
 }
 
@@ -54,6 +55,7 @@ impl fmt::Display for Error {
             Error::InvalidDieSides(sides) => write!(f, "invalid die sides: {sides}"),
             Error::InvalidBlock(idx) => write!(f, "invalid block index: {idx}"),
             Error::GuardFailed => write!(f, "guard condition failed"),
+            Error::GroupOutOfBounds => write!(f, "group index out of bounds"),
             Error::RngFailed => write!(f, "random number generation failed"),
         }
     }

@@ -9,9 +9,8 @@ use wasm_bindgen::JsCast;
 use crate::{
     BASE_URL,
     components::{expr_view::ExprView, spinner::Spinner},
-    expr::Expr,
     hooks::use_hash_href,
-    model::Attribute,
+    model::Expr,
     pages::reference::ReferenceSidebar,
     rules::{RulesRegistry, SpellList},
 };
@@ -69,7 +68,7 @@ pub fn SpellReference() -> impl IntoView {
                     description: String,
                     min_level: u32,
                     sticky: bool,
-                    effects: Vec<(String, Expr<Attribute>)>,
+                    effects: Vec<(String, Expr)>,
                 }
                 struct SpellGroup {
                     level: u32,

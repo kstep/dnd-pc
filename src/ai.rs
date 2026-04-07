@@ -8,8 +8,9 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
 use crate::{
-    model::{Attribute, Character},
-    rules::PendingInputs,
+    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, VarGroup},
+    model::{Ability, Attribute, AttributeGroup, Character, Op},
+    rules::{FeatureDefinition, PendingInputs},
 };
 
 // --- Error ---
@@ -304,7 +305,7 @@ impl CharacterContext {
 struct StreamingChatRequest<'a> {
     model: &'a str,
     stream: bool,
-    messages: Vec<ChatMessage<'a>>,
+    messages: Vec<&'a ChatMessage>,
 }
 
 const STORY_SYSTEM_PROMPT: &str = "\
@@ -327,19 +328,18 @@ pub async fn generate_story(
         context.to_prompt_text(),
         prompt
     );
+    let system_msg = ChatMessage {
+        role: Role::System,
+        content: STORY_SYSTEM_PROMPT.to_string(),
+    };
+    let user_msg = ChatMessage {
+        role: Role::User,
+        content: user_content,
+    };
     let request_body = StreamingChatRequest {
         model: &settings.model,
         stream: true,
-        messages: vec![
-            ChatMessage {
-                role: "system",
-                content: STORY_SYSTEM_PROMPT,
-            },
-            ChatMessage {
-                role: "user",
-                content: &user_content,
-            },
-        ],
+        messages: vec![&system_msg, &user_msg],
     };
     let body_str = serde_json::to_string(&request_body)?;
 
@@ -413,16 +413,24 @@ pub async fn generate_story(
 
 // --- Non-streaming chat completion ---
 
-#[derive(Serialize)]
-struct ChatRequest<'a> {
-    model: &'a str,
-    messages: Vec<ChatMessage<'a>>,
+#[derive(Debug, Clone, Copy, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Role {
+    System,
+    User,
+    Assistant,
+}
+
+#[derive(Clone, Serialize)]
+pub struct ChatMessage {
+    pub role: Role,
+    pub content: String,
 }
 
 #[derive(Serialize)]
-struct ChatMessage<'a> {
-    role: &'a str,
-    content: &'a str,
+struct ChatRequest<'a> {
+    model: &'a str,
+    messages: &'a [ChatMessage],
 }
 
 #[derive(Deserialize)]
@@ -440,29 +448,38 @@ struct ChatMessageContent {
     content: String,
 }
 
-/// Non-streaming chat completion that parses the response content as JSON of
-/// type `T`.
-async fn chat_completion<T: DeserializeOwned>(
+fn parse_json_content<T: DeserializeOwned>(content: &str) -> Result<T, AiError> {
+    // Strip markdown code fences if present (models without response_format)
+    let json = content.trim();
+    let json = json
+        .strip_prefix("```json")
+        .or_else(|| json.strip_prefix("```"))
+        .and_then(|rest| rest.strip_suffix("```"))
+        .map(str::trim)
+        .unwrap_or(json);
+    Ok(serde_json::from_str(json)?)
+}
+
+/// Send a chat request with the given messages and return (parsed JSON,
+/// raw content string). The raw content is useful for multi-turn
+/// conversations where it needs to be added back as an assistant message.
+pub async fn send_chat<T: DeserializeOwned>(
     settings: &AiSettings,
-    system_prompt: &str,
-    user_message: &str,
-) -> Result<T, AiError> {
+    messages: &[ChatMessage],
+) -> Result<(T, String), AiError> {
     let request_body = ChatRequest {
         model: &settings.model,
-        messages: vec![
-            ChatMessage {
-                role: "system",
-                content: system_prompt,
-            },
-            ChatMessage {
-                role: "user",
-                content: user_message,
-            },
-        ],
+        messages,
     };
 
-    log::debug!("AI request to {}: system={system_prompt}", settings.model);
-    log::debug!("AI user message:\n{user_message}");
+    log::debug!(
+        "AI request to {} ({} messages)",
+        settings.model,
+        messages.len()
+    );
+    for message in messages {
+        log::debug!("[{:?}] {}", message.role, message.content);
+    }
 
     let response: ChatResponse = api_request(
         settings.provider.api_url(),
@@ -481,16 +498,29 @@ async fn chat_completion<T: DeserializeOwned>(
 
     log::debug!("AI response:\n{content}");
 
-    // Strip markdown code fences if present (models without response_format)
-    let json = content.trim();
-    let json = json
-        .strip_prefix("```json")
-        .or_else(|| json.strip_prefix("```"))
-        .and_then(|rest| rest.strip_suffix("```"))
-        .map(str::trim)
-        .unwrap_or(json);
+    let parsed = parse_json_content(&content)?;
+    Ok((parsed, content))
+}
 
-    Ok(serde_json::from_str(json)?)
+/// Non-streaming chat completion that parses the response content as JSON of
+/// type `T`. Convenience wrapper around `send_chat` for single-turn requests.
+async fn chat_completion<T: DeserializeOwned>(
+    settings: &AiSettings,
+    system_prompt: &str,
+    user_message: &str,
+) -> Result<T, AiError> {
+    let messages = vec![
+        ChatMessage {
+            role: Role::System,
+            content: system_prompt.to_string(),
+        },
+        ChatMessage {
+            role: Role::User,
+            content: user_message.to_string(),
+        },
+    ];
+    let (result, _) = send_chat(settings, &messages).await?;
+    Ok(result)
 }
 
 // --- Character concept ---
@@ -567,6 +597,293 @@ pub struct PendingArgDescription {
     pub args_description: String,
 }
 
+pub struct PendingReplacementDescription {
+    pub feature_name: String,
+    pub feature_description: String,
+    /// (name, description) pairs for eligible replacement features.
+    pub eligible: Vec<(String, String)>,
+}
+
+/// Build AI-readable descriptions of replaceable features (features with
+/// `replace_with`). For each, lists eligible replacement options.
+pub fn describe_pending_replacements(
+    pending: &[PendingInputs],
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &Character,
+) -> Vec<PendingReplacementDescription> {
+    pending
+        .iter()
+        .filter(|input| input.is_replaceable())
+        .filter_map(|input| {
+            let eligible: Vec<(String, String)> = features_index
+                .values()
+                .filter(|feat| {
+                    input.replace_with.matches(feat) && feat.meets_prerequisites(character)
+                })
+                .map(|feat| (feat.name.to_string(), feat.description.clone()))
+                .collect();
+
+            if eligible.is_empty() {
+                return None;
+            }
+
+            Some(PendingReplacementDescription {
+                feature_name: input.feature_name.clone(),
+                feature_description: input.feature_description.clone(),
+                eligible,
+            })
+        })
+        .collect()
+}
+
+// --- ArgSummarizer: Interpreter that extracts ARG descriptions ---
+
+/// Map an Attribute to a human-readable English name for AI prompts.
+fn friendly_attr_name(attr: &Attribute) -> String {
+    match attr {
+        Attribute::Ability(a) => match a {
+            Ability::Strength => "Strength",
+            Ability::Dexterity => "Dexterity",
+            Ability::Constitution => "Constitution",
+            Ability::Intelligence => "Intelligence",
+            Ability::Wisdom => "Wisdom",
+            Ability::Charisma => "Charisma",
+        }
+        .to_string(),
+        Attribute::SkillProficiency(s) => format!("{s} proficiency"),
+        Attribute::SaveProficiency(a) => format!("{a} save proficiency"),
+        Attribute::EquipmentProficiency(p) => format!("{p} proficiency"),
+        Attribute::Ac => "Armor Class".to_string(),
+        Attribute::Speed => "Speed".to_string(),
+        Attribute::MaxHp => "Max HP".to_string(),
+        Attribute::Initiative | Attribute::InitiativeBonus => "Initiative".to_string(),
+        Attribute::Inspiration => "Inspiration".to_string(),
+        other => other.to_string(),
+    }
+}
+
+/// Info about a single ARG extracted by [`ArgSummarizer`].
+struct ArgInfo {
+    target: Option<String>,
+    range: Option<(i32, i32)>,
+}
+
+/// Result produced by [`ArgSummarizer`].
+struct ArgSummary {
+    args: BTreeMap<u8, ArgInfo>,
+    sum_constraint: Option<i32>,
+}
+
+/// Stack entry for the summarizer: tracks whether a value came from an ARG.
+struct ArgStackEntry {
+    /// `Some(idx)` if this value is (or derives from) a single ARG.
+    arg_idx: Option<u8>,
+    /// Numeric value if known at analysis time.
+    num: Option<i32>,
+    /// Number of ARG values summed (for sum constraint detection).
+    sum_count: u32,
+}
+
+impl ArgStackEntry {
+    fn constant(n: i32) -> Self {
+        Self {
+            arg_idx: None,
+            num: Some(n),
+            sum_count: 0,
+        }
+    }
+
+    fn arg(idx: u8) -> Self {
+        Self {
+            arg_idx: Some(idx),
+            num: None,
+            sum_count: 1,
+        }
+    }
+
+    fn other() -> Self {
+        Self {
+            arg_idx: None,
+            num: None,
+            sum_count: 0,
+        }
+    }
+}
+
+struct ArgSummarizer {
+    stack: Vec<ArgStackEntry>,
+    iter_stack: Vec<usize>,
+    args: BTreeMap<u8, ArgInfo>,
+    sum_constraint: Option<i32>,
+}
+
+impl ArgSummarizer {
+    fn new() -> Self {
+        Self {
+            stack: Vec::new(),
+            iter_stack: Vec::new(),
+            args: BTreeMap::new(),
+            sum_constraint: None,
+        }
+    }
+
+    fn pop(&mut self) -> ArgStackEntry {
+        self.stack.pop().unwrap_or(ArgStackEntry::constant(0))
+    }
+
+    fn ensure_arg(&mut self, idx: u8) -> &mut ArgInfo {
+        self.args.entry(idx).or_insert(ArgInfo {
+            target: None,
+            range: None,
+        })
+    }
+
+    fn binary_op(&mut self, bin_op: BinOp) {
+        let b = self.pop();
+        let a = self.pop();
+        // Propagate arg_idx through binary ops (e.g. SKILL.PROF += ARG.0
+        // compiles to PushVar(SKILL) PushVar(ARG.0) Add Assign(SKILL))
+        let arg_idx = a.arg_idx.or(b.arg_idx);
+        // Only track sum_count and numeric value for Add (sum constraint detection)
+        let (num, sum_count) = if matches!(bin_op, BinOp::Add) {
+            (
+                a.num.zip(b.num).map(|(a, b)| a + b),
+                a.sum_count + b.sum_count,
+            )
+        } else {
+            (None, 0)
+        };
+        self.stack.push(ArgStackEntry {
+            arg_idx,
+            num,
+            sum_count,
+        });
+    }
+}
+
+impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
+    type Output = ArgSummary;
+
+    fn exec(&mut self, op: Op) -> Result<Option<BlockIndex>, expr::Error> {
+        match op {
+            Op::PushVar(Attribute::Arg(idx)) => {
+                self.ensure_arg(idx);
+                self.stack.push(ArgStackEntry::arg(idx));
+            }
+            Op::PushVar(_) => {
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::PushConst(n) => {
+                self.stack.push(ArgStackEntry::constant(n));
+            }
+            Op::AssignVar(attr) => {
+                let value = self.pop();
+                if let Some(idx) = value.arg_idx {
+                    let info = self.ensure_arg(idx);
+                    if info.target.is_none() {
+                        info.target = Some(friendly_attr_name(&attr));
+                    }
+                }
+            }
+            Op::In => {
+                // in(value, min, max): value is on stack first, then min, then max
+                // But RPN order: push value, push min, push max, In
+                // Stack: [..., value, min, max] → pop3 → (value, min, max)
+                let max_entry = self.pop();
+                let min_entry = self.pop();
+                let value_entry = self.pop();
+                if let (Some(idx), Some(min), Some(max)) =
+                    (value_entry.arg_idx, min_entry.num, max_entry.num)
+                {
+                    self.ensure_arg(idx).range = Some((min, max));
+                }
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::BinOp(bin_op) => self.binary_op(bin_op),
+            Op::Cmp(Cmp::Eq) => {
+                let b = self.pop();
+                let a = self.pop();
+                // Detect "sum_of_args == N" pattern
+                if a.sum_count > 1 && b.num.is_some() {
+                    self.sum_constraint = b.num;
+                } else if b.sum_count > 1 && a.num.is_some() {
+                    self.sum_constraint = a.num;
+                }
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::Cmp(_) => {
+                self.pop();
+                self.pop();
+                self.stack.push(ArgStackEntry::other());
+            }
+            // Recurse into sub-blocks (guard body, if branches).
+            // Skip when condition is known constant(0) — loop termination from Next.
+            Op::EvalIf(then_idx, _else_idx) => {
+                let cond = self.pop();
+                if cond.num != Some(0)
+                    && then_idx != expr::BLOCK_NOOP
+                    && then_idx != expr::BLOCK_ERROR
+                {
+                    return Ok(Some(then_idx));
+                }
+            }
+            Op::Eval(idx) => {
+                if idx != expr::BLOCK_NOOP {
+                    return Ok(Some(idx));
+                }
+            }
+            Op::Not | Op::AvgHp => {
+                self.pop();
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::Roll | Op::Sum | Op::Explode => {
+                self.pop();
+                self.pop();
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::KeepMax(_) | Op::KeepMin(_) | Op::DropMax(_) | Op::DropMin(_) => {
+                let top = self.pop();
+                self.stack.push(top);
+            }
+            Op::Each(subgrp) => {
+                self.iter_stack.push(subgrp.real_index(0).unwrap_or(0));
+                self.stack.push(ArgStackEntry::constant(
+                    subgrp
+                        .inner
+                        .member(subgrp.real_index(0).unwrap_or(0))
+                        .is_some() as i32,
+                ));
+            }
+            Op::Next(subgrp) => {
+                if let Some(&current) = self.iter_stack.last()
+                    && let Some(next_idx) = subgrp.next_real_index(current)
+                    && subgrp.inner.member(next_idx).is_some()
+                {
+                    *self.iter_stack.last_mut().unwrap() = next_idx;
+                    self.stack.push(ArgStackEntry::constant(1));
+                } else {
+                    self.iter_stack.pop();
+                    self.stack.push(ArgStackEntry::constant(0));
+                }
+            }
+            Op::PushGroup(_) => {
+                self.stack.push(ArgStackEntry::other());
+            }
+            Op::AssignGroup(_) => {
+                self.pop();
+            }
+        }
+        Ok(None)
+    }
+
+    fn finish(self) -> Result<Self::Output, expr::Error> {
+        Ok(ArgSummary {
+            args: self.args,
+            sum_constraint: self.sum_constraint,
+        })
+    }
+}
+
 /// Convert pending feature inputs into AI-readable descriptions of their ARG
 /// parameters. Features with no active ARGs are skipped.
 pub fn describe_pending_args(
@@ -584,90 +901,211 @@ pub fn describe_pending_args(
     pending
         .iter()
         .filter_map(|inputs| {
-            let mut args_lines = Vec::new();
+            let mut description = String::new();
+            let mut had_args = false;
 
             for expr in &inputs.exprs {
                 let analysis = expr.analyze(character, is_arg);
+                if analysis.active_args.is_empty() {
+                    continue;
+                }
+                had_args = true;
 
-                for &arg_index in &analysis.active_args {
-                    if analysis.boolean_args.contains(&arg_index) {
-                        args_lines
-                            .push(format!("ARG.{arg_index}: integer, 0 or 1 (boolean choice)"));
+                // Run the ArgSummarizer to extract structured info
+                let summary = expr.run(ArgSummarizer::new()).unwrap_or(ArgSummary {
+                    args: BTreeMap::new(),
+                    sum_constraint: None,
+                });
+
+                // Summary line with sum constraint
+                let all_boolean = analysis
+                    .active_args
+                    .iter()
+                    .all(|idx| analysis.boolean_args.contains(idx));
+                if let Some(sum) = summary.sum_constraint {
+                    if all_boolean {
+                        let _ = writeln!(
+                            description,
+                            "Pick exactly {sum} (set chosen to 1, rest to 0):"
+                        );
                     } else {
-                        args_lines.push(format!("ARG.{arg_index}: integer"));
+                        let _ = writeln!(description, "Distribute exactly {sum} points total:");
                     }
                 }
 
-                if !analysis.active_args.is_empty() {
-                    args_lines.push(format!("Expression: {expr}"));
+                // Per-ARG description
+                for &arg_index in &analysis.active_args {
+                    let info = summary.args.get(&arg_index);
+                    let target = info
+                        .and_then(|info| info.target.as_deref())
+                        .unwrap_or("unknown");
+
+                    if let Some((min, max)) = info.and_then(|info| info.range) {
+                        if min == 0 && max == 1 {
+                            let _ = writeln!(description, "  ARG.{arg_index}: {target} — 0 or 1");
+                        } else {
+                            let _ = writeln!(
+                                description,
+                                "  ARG.{arg_index}: {target} — integer in [{min}, {max}]"
+                            );
+                        }
+                    } else if analysis.boolean_args.contains(&arg_index) {
+                        let _ = writeln!(description, "  ARG.{arg_index}: {target} — 0 or 1");
+                    } else {
+                        let _ = writeln!(description, "  ARG.{arg_index}: {target} — integer");
+                    }
                 }
             }
 
-            if args_lines.is_empty() {
+            if !had_args {
                 return None;
             }
 
             Some(PendingArgDescription {
                 feature_name: inputs.feature_name.clone(),
                 feature_description: inputs.feature_description.clone(),
-                args_description: args_lines.join("\n"),
+                args_description: description,
             })
         })
         .collect()
 }
 
-pub async fn generate_feature_choices(
-    settings: &AiSettings,
+/// Parse AI response that may contain both ARG values and replacements.
+/// Returns `(args, replacements)`.
+pub fn parse_feature_choices_response(
+    value: serde_json::Value,
+) -> (BTreeMap<String, Vec<i32>>, BTreeMap<String, String>) {
+    let Some(obj) = value.as_object() else {
+        return (BTreeMap::new(), BTreeMap::new());
+    };
+
+    let replacements: BTreeMap<String, String> = obj
+        .get("replacements")
+        .and_then(|v| serde_json::from_value(v.clone()).ok())
+        .unwrap_or_default();
+
+    let args: BTreeMap<String, Vec<i32>> = obj
+        .iter()
+        .filter(|(key, _)| *key != "replacements")
+        .filter_map(|(key, value)| {
+            let arr: Vec<i32> = serde_json::from_value(value.clone()).ok()?;
+            Some((key.clone(), arr))
+        })
+        .collect();
+
+    (args, replacements)
+}
+
+/// Build the initial messages for the feature choices conversation.
+/// Returns `[system, user]` messages ready for `send_chat`.
+pub fn build_feature_choices_messages(
     concept: &CharacterConcept,
     pending_args: &[PendingArgDescription],
-) -> Result<BTreeMap<String, Vec<i32>>, AiError> {
-    if pending_args.is_empty() {
-        return Ok(BTreeMap::new());
-    }
+    pending_replacements: &[PendingReplacementDescription],
+) -> Vec<ChatMessage> {
+    let has_replacements = !pending_replacements.is_empty();
 
-    let system_prompt = "You are a D&D 5e character builder. Given a character concept and \
-        pending feature choices with ARG constraints, pick ARG values that best fit the character. \
+    let mut system_prompt = String::from(
+        "You are a D&D 5e character builder. Given a character concept and \
+        pending feature choices, pick ARG values that best fit the character. \
         Respond with valid JSON only, no markdown.\n\n\
-        Expression language reference:\n\
-        - guard(condition, body): body executes only if condition is true\n\
-        - in(x, min, max): true if min <= x <= max\n\
-        - ARG.N: the Nth argument you must provide (0-indexed)\n\
-        - Boolean ARGs (0 or 1) act as toggles to select options\n\
-        - SKILL.XXXX.PROF: skill proficiency (0=none, 1=proficient)\n\
-        - STR, DEX, CON, INT, WIS, CHA: ability scores\n\
-        - The guard condition is a MANDATORY constraint: if it evaluates to false, \
-        the feature application FAILS. Your ARG values MUST satisfy it.";
+        Each feature lists its ARGs with names and constraints. \
+        Boolean ARGs (0 or 1) are toggles — set to 1 to select, 0 to skip. \
+        When the description says \"Pick exactly N\", exactly N ARGs must be 1. \
+        When it says \"Distribute N points\", the ARG values must sum to N. \
+        Each ARG's valid range is shown after the dash.",
+    );
+
+    if has_replacements {
+        system_prompt.push_str(
+            "\n\nFor replaceable features, choose the best fitting replacement \
+            from the eligible list. Add a \"replacements\" field to your response: \
+            { \"Feature Name\": [ARGs], \"replacements\": { \"Original\": \"Replacement\" } }",
+        );
+    } else {
+        system_prompt.push_str(
+            "\n\nRespond with a JSON object: { \"Feature Name\": [ARG.0, ARG.1, ...], ... }",
+        );
+    }
 
     let features_description: String = pending_args
         .iter()
         .map(|pending| {
             format!(
-                "- \"{}\"\n  Description: {}\n  ARG constraints: {}",
+                "- \"{}\"\n  Description: {}\n{}",
                 pending.feature_name, pending.feature_description, pending.args_description
             )
         })
         .collect::<Vec<_>>()
         .join("\n\n");
 
-    let user_message = format!(
+    let replacements_description: String = pending_replacements
+        .iter()
+        .map(|pending| {
+            let options: String = pending
+                .eligible
+                .iter()
+                .map(|(name, desc)| {
+                    let short_desc = if desc.len() > 80 { &desc[..80] } else { desc };
+                    format!("    - \"{name}\" — {short_desc}")
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+            format!(
+                "- \"{}\" — {}\n  Choose one replacement:\n{}",
+                pending.feature_name, pending.feature_description, options
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n\n");
+
+    let mut user_message = format!(
         "Character concept:\n\
          Name: {name}\n\
          Species: {species}\n\
          Class: {class}\n\
          Background: {background}\n\
          Personality: {personality}\n\
-         Backstory: {backstory}\n\n\
-         Pending feature choices:\n{features}\n\n\
-         Respond with a JSON object where each key is the feature name \
-         and each value is an array of integer ARG values for that feature.",
+         Backstory: {backstory}",
         name = concept.name,
         species = concept.species,
         class = concept.class,
         background = concept.background,
         personality = concept.personality_traits,
         backstory = concept.backstory,
-        features = features_description,
     );
 
-    chat_completion(settings, system_prompt, &user_message).await
+    if !features_description.is_empty() {
+        let _ = write!(
+            user_message,
+            "\n\nPending feature choices:\n{features_description}"
+        );
+    }
+    if !replacements_description.is_empty() {
+        let _ = write!(
+            user_message,
+            "\n\nReplaceable features (pick one replacement for each):\n{replacements_description}"
+        );
+    }
+    user_message.push_str(
+        "\n\nRespond with a JSON object where each key is the exact feature name \
+         and each value is an array of integer ARG values.",
+    );
+    if has_replacements {
+        user_message.push_str(
+            " Include a \"replacements\" field mapping each original feature name \
+             to the exact replacement name from the eligible list.",
+        );
+    }
+
+    vec![
+        ChatMessage {
+            role: Role::System,
+            content: system_prompt,
+        },
+        ChatMessage {
+            role: Role::User,
+            content: user_message,
+        },
+    ]
 }

@@ -805,12 +805,12 @@ mod tests {
     /// for backtick-quoted feature names.
     #[wasm_bindgen_test]
     fn parse_expr_with_backtick_features() {
-        use crate::expr::Expr;
+        use super::super::Expr;
 
-        let expr: Expr<Attribute, i32> = "LEVEL >= 4 and FEAT.`War Caster`".parse().unwrap();
+        let expr: Expr = "LEVEL >= 4 and FEAT.`War Caster`".parse().unwrap();
         assert_eq!(expr.to_string(), "LEVEL >= 4 and FEAT.`War Caster`");
 
-        let expr: Expr<Attribute, i32> = "FEAT.`Spellcasting (Bard)` and not FEAT_CAT.Dragonmark"
+        let expr: Expr = "FEAT.`Spellcasting (Bard)` and not FEAT_CAT.Dragonmark"
             .parse()
             .unwrap();
         assert_eq!(
@@ -819,7 +819,7 @@ mod tests {
         );
 
         // Unquoted works too
-        let expr: Expr<Attribute, i32> = "FEAT.Alert".parse().unwrap();
+        let expr: Expr = "FEAT.Alert".parse().unwrap();
         assert_eq!(expr.to_string(), "FEAT.Alert");
     }
 }

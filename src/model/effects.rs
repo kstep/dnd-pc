@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     demap,
-    expr::{self, Context, DicePool, Expr},
-    model::{Ability, Attribute, Character, WeaponEffect},
+    expr::{self, Context, DicePool},
+    model::{Ability, Attribute, Character, Expr, WeaponEffect},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
@@ -32,7 +32,7 @@ pub struct EffectDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
-    pub expr: Expr<Attribute>,
+    pub expr: Expr,
     #[serde(default)]
     pub range: EffectRange,
     #[serde(default)]
@@ -71,7 +71,7 @@ pub struct ActiveEffect {
     #[serde(default)]
     pub description: String,
     #[serde(default)]
-    pub expr: Option<Expr<Attribute>>,
+    pub expr: Option<Expr>,
     #[serde(skip)]
     pub pool: Option<DicePool>,
     #[serde(default)]

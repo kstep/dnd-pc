@@ -1,10 +1,7 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    expr::Expr,
-    model::{ArmorType, Attribute, DamageType, Money},
-};
+use crate::model::{ArmorType, DamageType, Expr, Money};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
@@ -27,7 +24,7 @@ pub struct Armor {
     #[serde(default)]
     pub armor_type: ArmorType,
     #[serde(default)]
-    pub ac_expr: Option<Expr<Attribute>>,
+    pub ac_expr: Option<Expr>,
 }
 
 impl Armor {
@@ -45,7 +42,7 @@ impl Armor {
 
     /// Generate and parse the default AC formula for the given armor type and
     /// base AC.
-    pub fn default_ac_expr(armor_type: ArmorType, base_ac: u32) -> Option<Expr<Attribute>> {
+    pub fn default_ac_expr(armor_type: ArmorType, base_ac: u32) -> Option<Expr> {
         if armor_type == ArmorType::Natural {
             return None;
         }
@@ -61,7 +58,7 @@ pub struct WeaponEffect {
     #[serde(default)]
     pub damage_type: Option<DamageType>,
     #[serde(default)]
-    pub expr: Expr<Attribute>,
+    pub expr: Expr,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]

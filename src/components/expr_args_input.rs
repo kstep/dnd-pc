@@ -6,8 +6,8 @@ use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, Expr, Op},
-    model::{Attribute, Character},
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, VarGroup},
+    model::{Attribute, AttributeGroup, Character, Expr, Op},
 };
 
 // --- ArgContext: resolves Arg(n) from signals, delegates rest to Character ---
@@ -71,25 +71,15 @@ impl FormBuilder {
         Ok(())
     }
 
-    fn exec_op(
-        &mut self,
-        op: Op<Attribute, i32>,
-        i18n: &leptos_fluent::I18n,
-    ) -> Result<(), expr::Error> {
+    fn exec_op(&mut self, op: Op, i18n: &leptos_fluent::I18n) -> Result<(), expr::Error> {
         match op {
             Op::PushConst(n) => self.push_text(n),
             Op::PushVar(var) => {
                 let i18n = *i18n;
                 self.push_view((move || var.display_name(&i18n)).into_any());
             }
-            Op::Add => self.binary_op("+")?,
-            Op::Sub => self.binary_op("-")?,
-            Op::Mul => self.binary_op("*")?,
-            Op::DivFloor => self.binary_op("/")?,
-            Op::DivCeil => self.binary_op("\\")?,
-            Op::Mod => self.binary_op("%")?,
-            Op::Min => self.binary_func("min")?,
-            Op::Max => self.binary_func("max")?,
+            Op::BinOp(bin_op) if bin_op.is_func() => self.binary_func(bin_op.symbol())?,
+            Op::BinOp(bin_op) => self.binary_op(bin_op.symbol())?,
             Op::Roll => {
                 let (count, sides) = self.pop2()?;
                 self.0.push(view! { <>{count}"d"{sides}</> }.into_any());
@@ -119,14 +109,12 @@ impl FormBuilder {
                 let a = self.pop()?;
                 self.0.push(view! { <>"avg_hp("{a}")"</> }.into_any());
             }
-            Op::And => self.binary_op("and")?,
-            Op::Or => self.binary_op("or")?,
             Op::Not => {
                 let a = self.pop()?;
                 self.0.push(view! { <>"not "{a}</> }.into_any());
             }
             Op::Cmp(cmp) => self.binary_op(cmp.symbol())?,
-            Op::Assign(var) => {
+            Op::AssignVar(var) => {
                 let val = self.pop()?;
                 let i18n = *i18n;
                 let var_s = move || var.display_name(&i18n);
@@ -139,7 +127,12 @@ impl FormBuilder {
                 self.0
                     .push(view! { <>"in("{a}", "{b}", "{c}")"</> }.into_any());
             }
-            Op::Eval(_) | Op::EvalIf(_, _) => {} // intercepted by form_block
+            Op::Eval(_)
+            | Op::EvalIf(_, _)
+            | Op::Each(_)
+            | Op::Next(_)
+            | Op::PushGroup(_)
+            | Op::AssignGroup(_) => {} // intercepted by form_block
         }
         Ok(())
     }
@@ -172,6 +165,7 @@ struct FormCtx {
     active_args: BTreeSet<u8>,
     boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
+    iter_stack: Vec<usize>,
 }
 
 impl FormCtx {
@@ -182,6 +176,7 @@ impl FormCtx {
             active_args: active_args.into_iter().collect(),
             boolean_args,
             i18n,
+            iter_stack: Vec::new(),
         }
     }
 
@@ -195,7 +190,7 @@ impl FormCtx {
 }
 
 fn form_block(
-    expr: &Expr<Attribute, i32>,
+    expr: &Expr,
     block: expr::BlockIndex,
     ctx: &mut FormCtx,
     condition: bool,
@@ -205,8 +200,17 @@ fn form_block(
     let mut fb = FormBuilder::new();
     for stmt in block.statements() {
         if let Some(ca) = Block::detect_compound(stmt) {
-            let assign_var = match stmt.last() {
-                Some(Op::Assign(var)) => *var,
+            let i18n = ctx.i18n;
+            let var_view: AnyView = match stmt.last() {
+                Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
+                Some(&Op::AssignGroup(grp)) => {
+                    let idx = ctx.iter_stack.last().copied().unwrap_or(0);
+                    if let Some(var) = grp.member(idx) {
+                        (move || var.display_name(&i18n)).into_any()
+                    } else {
+                        format!("${grp}").into_any()
+                    }
+                }
                 _ => unreachable!(),
             };
             form_block_ops(
@@ -217,10 +221,8 @@ fn form_block(
                 condition,
             )?;
             let rhs = fb.pop()?;
-            let i18n = ctx.i18n;
-            let var_s = move || assign_var.display_name(&i18n);
             let sym = ca.sym;
-            fb.push_view(view! { <>{var_s}" "{sym}"= "{rhs}</> }.into_any());
+            fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
         } else {
             form_block_ops(&mut fb, expr, stmt, ctx, condition)?;
         }
@@ -263,31 +265,50 @@ fn arg_ref(signal: RwSignal<i32>) -> AnyView {
 
 fn form_block_ops(
     fb: &mut FormBuilder,
-    expr: &Expr<Attribute, i32>,
-    ops: &[Op<Attribute, i32>],
+    expr: &Expr,
+    ops: &[Op],
     ctx: &mut FormCtx,
     condition: bool,
 ) -> Result<(), expr::Error> {
-    for &op in ops {
+    let mut i = 0;
+    while i < ops.len() {
+        let op = ops[i];
         match op {
-            Op::PushVar(Attribute::Arg(n)) => {
-                let idx = n as usize;
-                if ctx.args.len() <= idx {
-                    ctx.args.resize_with(idx + 1, || RwSignal::new(0));
+            // Loop: Each(grp) + EvalIf(body, NOOP) → unroll
+            Op::Each(grp) if i + 1 < ops.len() => {
+                if let Op::EvalIf(body_idx, BLOCK_NOOP) = ops[i + 1] {
+                    form_block_loop(fb, expr, grp, body_idx, ctx, condition)?;
+                    i += 2;
+                    continue;
                 }
-                let signal = ctx.args[idx];
-                // In condition context or inactive ARG: always a ref.
-                // In body context + active + first occurrence: input.
-                fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
-                    if ctx.is_boolean(n) {
-                        arg_checkbox(signal)
-                    } else {
-                        arg_number(signal)
-                    }
-                } else {
-                    arg_ref(signal)
-                });
             }
+            Op::PushVar(Attribute::Arg(n)) => {
+                push_arg_input(fb, ctx, n, condition);
+            }
+            // PushGroup(Arg) → ARG input using iter_stack index
+            Op::PushGroup(grp) => {
+                if let Some(&iter_idx) = ctx.iter_stack.last()
+                    && let Some(var) = grp.member(iter_idx)
+                {
+                    if let Attribute::Arg(n) = var {
+                        push_arg_input(fb, ctx, n, condition);
+                    } else {
+                        let i18n = ctx.i18n;
+                        fb.push_view((move || var.display_name(&i18n)).into_any());
+                    }
+                }
+            }
+            Op::AssignGroup(grp) => {
+                if let Some(&iter_idx) = ctx.iter_stack.last()
+                    && let Some(var) = grp.member(iter_idx)
+                {
+                    let val = fb.pop()?;
+                    let i18n = ctx.i18n;
+                    let var_s = move || var.display_name(&i18n);
+                    fb.push_view(view! { <>{var_s}" = "{val}</> }.into_any());
+                }
+            }
+            Op::Next(_) => {} // handled by loop unroll
             Op::Eval(idx) => {
                 let sub = form_block(expr, idx, ctx, true)?;
                 fb.push_view(sub);
@@ -301,6 +322,7 @@ fn form_block_ops(
                     else_idx != BLOCK_NOOP && expr.block_has_var(else_idx, &is_active_arg);
 
                 if !then_has_args && !else_has_args {
+                    i += 1;
                     continue;
                 }
 
@@ -318,8 +340,53 @@ fn form_block_ops(
             }
             op => fb.exec_op(op, &ctx.i18n)?,
         }
+        i += 1;
     }
     Ok(())
+}
+
+/// Unroll a loop: render the body block once per group member.
+fn form_block_loop(
+    fb: &mut FormBuilder,
+    expr: &Expr,
+    subgrp: expr::VarSubgroup<AttributeGroup>,
+    body_idx: expr::BlockIndex,
+    ctx: &mut FormCtx,
+    condition: bool,
+) -> Result<(), expr::Error> {
+    let body = expr.block(body_idx);
+    let body_ops = &**body;
+    // Strip trailing Next + EvalIf (loop control ops)
+    let content_end = body_ops.len().saturating_sub(2);
+    let mut pos = 0;
+    while let Some(real_idx) = subgrp.real_index(pos) {
+        if subgrp.inner.member(real_idx).is_none() {
+            break;
+        }
+        ctx.iter_stack.push(real_idx);
+        form_block_ops(fb, expr, &body_ops[..content_end], ctx, condition)?;
+        ctx.iter_stack.pop();
+        pos += 1;
+    }
+    Ok(())
+}
+
+/// Push an ARG input (checkbox, number, or ref) for the given ARG index.
+fn push_arg_input(fb: &mut FormBuilder, ctx: &mut FormCtx, n: u8, condition: bool) {
+    let idx = n as usize;
+    if ctx.args.len() <= idx {
+        ctx.args.resize_with(idx + 1, || RwSignal::new(0));
+    }
+    let signal = ctx.args[idx];
+    fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
+        if ctx.is_boolean(n) {
+            arg_checkbox(signal)
+        } else {
+            arg_number(signal)
+        }
+    } else {
+        arg_ref(signal)
+    });
 }
 
 // --- ExprArgsInput ---
@@ -447,7 +514,7 @@ pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, 
 /// `on_ready` synchronously during build with the signals and validation memo.
 #[component]
 pub fn ExprArgsInput(
-    expr: Expr<Attribute, i32>,
+    expr: Expr,
     on_ready: impl FnOnce(ExprArgsInputParts) + 'static,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();

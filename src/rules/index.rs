@@ -4,8 +4,8 @@ use serde::Deserialize;
 
 use crate::{
     demap::{self, Named},
-    expr::{Eval as _, Expr},
-    model::{Attribute, Character},
+    expr::Eval as _,
+    model::{Character, Expr},
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -29,7 +29,7 @@ pub struct ClassIndexEntry {
     #[serde(default)]
     pub description: String,
     #[serde(default)]
-    pub prerequisites: Option<Expr<Attribute>>,
+    pub prerequisites: Option<Expr>,
 }
 
 impl Named for ClassIndexEntry {

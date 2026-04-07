@@ -10,20 +10,20 @@ pub use self::{
     formatter::Formatter,
 };
 use crate::expr::{
-    Error, Op, avg_hp,
-    ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
+    Error, Op, VarGroup, avg_hp,
+    ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex, NoGroup},
     stack::Stack,
 };
 
-pub trait Interpreter<Var, Val> {
+pub trait Interpreter<Var, Val, Grp = NoGroup<Var>> {
     type Output;
 
     /// Execute a single op. Returns `None` to continue, or `Some(block_idx)`
     /// to tell `run_block` to evaluate that sub-block next.
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<BlockIndex>, Error>;
+    fn exec(&mut self, op: Op<Var, Val, Grp>) -> Result<Option<BlockIndex>, Error>;
     fn finish(self) -> Result<Self::Output, Error>;
 
-    fn run(mut self, ops: impl Iterator<Item = Op<Var, Val>>) -> Result<Self::Output, Error>
+    fn run(mut self, ops: impl Iterator<Item = Op<Var, Val, Grp>>) -> Result<Self::Output, Error>
     where
         Self: Sized,
     {
@@ -45,51 +45,16 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
     Ok((n % sides as u32 + 1) as i32)
 }
 
-fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<BlockIndex>, Error> {
+fn eval_op<Var, Grp: VarGroup<Var = Var>>(
+    stack: &mut Stack<i32>,
+    iter_stack: &mut Stack<usize>,
+    op: Op<Var, i32, Grp>,
+) -> Result<Option<BlockIndex>, Error> {
     match op {
         Op::PushConst(n) => stack.push(n),
-        Op::Add => {
+        Op::BinOp(bin_op) => {
             let (a, b) = stack.pop2()?;
-            stack.push(a + b);
-        }
-        Op::Sub => {
-            let (a, b) = stack.pop2()?;
-            stack.push(a - b);
-        }
-        Op::Mul => {
-            let (a, b) = stack.pop2()?;
-            stack.push(a * b);
-        }
-        Op::DivFloor => {
-            let (a, b) = stack.pop2()?;
-            if b == 0 {
-                return Err(Error::DivisionByZero);
-            }
-            stack.push(a.div_euclid(b));
-        }
-        Op::DivCeil => {
-            let (a, b) = stack.pop2()?;
-            if b == 0 {
-                return Err(Error::DivisionByZero);
-            }
-            let d = a.div_euclid(b);
-            let r = a.rem_euclid(b);
-            stack.push(if r != 0 { d + 1 } else { d });
-        }
-        Op::Mod => {
-            let (a, b) = stack.pop2()?;
-            if b == 0 {
-                return Err(Error::DivisionByZero);
-            }
-            stack.push(a.rem_euclid(b));
-        }
-        Op::Min => {
-            let (a, b) = stack.pop2()?;
-            stack.push(a.min(b));
-        }
-        Op::Max => {
-            let (a, b) = stack.pop2()?;
-            stack.push(a.max(b));
+            stack.push(bin_op.eval(a, b)?);
         }
         Op::Roll => {
             let (count, sides) = stack.pop2()?;
@@ -154,14 +119,6 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<Block
             let sides = stack.pop()?;
             stack.push(avg_hp(sides));
         }
-        Op::And => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a != 0 && b != 0) as i32);
-        }
-        Op::Or => {
-            let (a, b) = stack.pop2()?;
-            stack.push((a != 0 || b != 0) as i32);
-        }
         Op::Not => {
             let a = stack.pop()?;
             stack.push((a == 0) as i32);
@@ -179,7 +136,27 @@ fn eval_op<Var>(stack: &mut Stack<i32>, op: Op<Var, i32>) -> Result<Option<Block
             let cond = stack.pop()?;
             return eval_block(if cond != 0 { then_idx } else { else_idx });
         }
-        Op::PushVar(_) | Op::Assign(_) => unreachable!(),
+        Op::Each(subgrp) => {
+            if let Some(real_idx) = subgrp.real_index(0) {
+                iter_stack.push(real_idx);
+                stack.push(subgrp.inner.member(real_idx).is_some() as i32);
+            } else {
+                stack.push(0);
+            }
+        }
+        Op::Next(subgrp) => {
+            let current = *iter_stack.top()?;
+            if let Some(next_idx) = subgrp.next_real_index(current)
+                && subgrp.inner.member(next_idx).is_some()
+            {
+                *iter_stack.top_mut()? = next_idx;
+                stack.push(1);
+            } else {
+                iter_stack.pop()?;
+                stack.push(0);
+            }
+        }
+        Op::PushVar(_) | Op::AssignVar(_) | Op::PushGroup(_) | Op::AssignGroup(_) => unreachable!(),
     }
     Ok(None)
 }

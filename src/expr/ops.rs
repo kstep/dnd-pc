@@ -1,4 +1,138 @@
+use std::{fmt, str::FromStr};
+
 use serde::{Deserialize, Serialize};
+
+use crate::expr::Error;
+
+/// Trait for variable groups used in loop iteration.
+/// Maps a group + index to a concrete variable.
+pub trait VarGroup {
+    type Var;
+
+    /// Get the variable at the given index, or `None` if the group is
+    /// exhausted.
+    fn member(&self, index: usize) -> Option<Self::Var>;
+}
+
+/// A group with an optional bitmask to select a subset of members.
+/// `mask == 0` means all members. Otherwise, only bits set in `mask` are
+/// iterated, and `member(i)` returns the i-th set bit's element.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VarSubgroup<Grp> {
+    pub inner: Grp,
+    pub mask: u32,
+}
+
+impl<Grp> From<Grp> for VarSubgroup<Grp> {
+    fn from(inner: Grp) -> Self {
+        Self {
+            inner,
+            mask: u32::MAX,
+        }
+    }
+}
+
+impl<Grp> VarSubgroup<Grp> {
+    pub fn masked(inner: Grp, mask: u32) -> Self {
+        Self { inner, mask }
+    }
+
+    /// Get the real group index for the i-th set bit in mask.
+    pub fn real_index(&self, position: usize) -> Option<usize> {
+        let mut remaining = position;
+        for bit in 0..32u32 {
+            if self.mask & (1 << bit) != 0 {
+                if remaining == 0 {
+                    return Some(bit as usize);
+                }
+                remaining -= 1;
+            }
+        }
+        None
+    }
+
+    /// Advance from the current real group index to the next set bit.
+    pub fn next_real_index(&self, current: usize) -> Option<usize> {
+        for bit in (current as u32 + 1)..32 {
+            if self.mask & (1 << bit) != 0 {
+                return Some(bit as usize);
+            }
+        }
+        None
+    }
+}
+
+impl<Grp: fmt::Display> VarSubgroup<Grp> {
+    /// Format as `GROUP` or `GROUP(elem, elem, ...)` when masked.
+    pub fn display_with(&self, f: &mut fmt::Formatter) -> fmt::Result
+    where
+        Grp: Copy + VarGroup,
+        Grp::Var: fmt::Display,
+    {
+        write!(f, "{}", self.inner)?;
+        if self.mask != u32::MAX {
+            write!(f, "(")?;
+            let mut first = true;
+            for bit in 0..32u32 {
+                if self.mask & (1 << bit) != 0
+                    && let Some(var) = self.inner.member(bit as usize)
+                {
+                    if !first {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{var}")?;
+                    first = false;
+                }
+            }
+            write!(f, ")")?;
+        }
+        Ok(())
+    }
+}
+
+impl<Grp> VarSubgroup<Grp> {
+    /// Get the i-th member of this (sub)group, using the inner group's member
+    /// lookup.
+    pub fn member(&self, position: usize) -> Option<Grp::Var>
+    where
+        Grp: Copy + VarGroup,
+    {
+        self.real_index(position)
+            .and_then(|idx| self.inner.member(idx))
+    }
+}
+
+/// Default no-op group type for expressions without loop support.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NoGroup<Var = ()>(std::marker::PhantomData<Var>);
+
+impl<Var> Default for NoGroup<Var> {
+    fn default() -> Self {
+        Self(std::marker::PhantomData)
+    }
+}
+
+impl<Var> fmt::Display for NoGroup<Var> {
+    fn fmt(&self, _f: &mut fmt::Formatter) -> fmt::Result {
+        Ok(())
+    }
+}
+
+impl<Var> FromStr for NoGroup<Var> {
+    type Err = &'static str;
+
+    fn from_str(_s: &str) -> Result<Self, Self::Err> {
+        Err("no groups supported")
+    }
+}
+
+impl<Var> VarGroup for NoGroup<Var> {
+    type Var = Var;
+
+    fn member(&self, _index: usize) -> Option<Var> {
+        None
+    }
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Cmp {
@@ -34,6 +168,99 @@ impl Cmp {
     }
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BinOp {
+    Add,      // +
+    Sub,      // -
+    Mul,      // *
+    DivFloor, // /
+    DivCeil,  // \
+    Mod,      // %
+    Min,      // min()
+    Max,      // max()
+    And,      // and
+    Or,       // or
+}
+
+impl BinOp {
+    pub fn eval(self, a: i32, b: i32) -> Result<i32, Error> {
+        match self {
+            Self::Add => Ok(a + b),
+            Self::Sub => Ok(a - b),
+            Self::Mul => Ok(a * b),
+            Self::DivFloor => {
+                if b == 0 {
+                    return Err(Error::DivisionByZero);
+                }
+                Ok(a.div_euclid(b))
+            }
+            Self::DivCeil => {
+                if b == 0 {
+                    return Err(Error::DivisionByZero);
+                }
+                let d = a.div_euclid(b);
+                let r = a.rem_euclid(b);
+                Ok(if r != 0 { d + 1 } else { d })
+            }
+            Self::Mod => {
+                if b == 0 {
+                    return Err(Error::DivisionByZero);
+                }
+                Ok(a.rem_euclid(b))
+            }
+            Self::Min => Ok(a.min(b)),
+            Self::Max => Ok(a.max(b)),
+            Self::And => Ok((a != 0 && b != 0) as i32),
+            Self::Or => Ok((a != 0 || b != 0) as i32),
+        }
+    }
+
+    pub fn symbol(self) -> &'static str {
+        match self {
+            Self::Add => "+",
+            Self::Sub => "-",
+            Self::Mul => "*",
+            Self::DivFloor => "/",
+            Self::DivCeil => "\\",
+            Self::Mod => "%",
+            Self::Min => "min",
+            Self::Max => "max",
+            Self::And => "and",
+            Self::Or => "or",
+        }
+    }
+
+    pub fn precedence(self) -> u8 {
+        match self {
+            Self::Or => 1,
+            Self::And => 2,
+            Self::Min | Self::Max => 3,
+            Self::Add | Self::Sub => 4,
+            Self::Mul | Self::DivFloor | Self::DivCeil | Self::Mod => 5,
+        }
+    }
+
+    pub fn is_right_strict(self) -> bool {
+        matches!(self, Self::Sub | Self::DivFloor | Self::DivCeil | Self::Mod)
+    }
+
+    pub fn is_func(self) -> bool {
+        matches!(self, Self::Min | Self::Max)
+    }
+
+    pub fn compound_sym(self) -> Option<&'static str> {
+        match self {
+            Self::Add => Some("+"),
+            Self::Sub => Some("-"),
+            Self::Mul => Some("*"),
+            Self::DivFloor => Some("/"),
+            Self::DivCeil => Some("\\"),
+            Self::Mod => Some("%"),
+            _ => None,
+        }
+    }
+}
+
 /// Result of compound-assignment detection on an ops slice.
 /// Contains the operator symbol and the index range of the RHS operand ops.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -61,16 +288,10 @@ pub const BLOCK_NOOP: BlockIndex = 0;
 pub const BLOCK_ERROR: BlockIndex = BlockIndex::MAX;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Op<Var, Val> {
+pub enum Op<Var, Val, Grp = NoGroup<Var>> {
     PushVar(Var),
     PushConst(Val),
-    Add,      // +
-    Sub,      // -
-    Mul,      // *
-    DivFloor, // /
-    DivCeil,  // \
-    Min,
-    Max,
+    BinOp(BinOp),
     AvgHp,
     Roll,         // 2d20 -> 2 20 Roll Sum
     KeepMax(Val), // 2d20kh1 -> 2 20 Roll KeepMax(1)
@@ -79,34 +300,25 @@ pub enum Op<Var, Val> {
     DropMin(Val),
     Sum,
     Explode, // Nd8! → roll sequentially, sum until a die rolls less than max (sides)
-    Assign(Var),
-    Mod, // %
-    And, // logical and (0/1)
-    Or,  // logical or (0/1)
+    AssignVar(Var),
     Not, // logical not (0/1)
     Cmp(Cmp),
     In,                             // in(a, b, c) → b <= a && a <= c
     EvalIf(BlockIndex, BlockIndex), // if: pop cond, branch to then/else block
     Eval(BlockIndex),               // evaluate sub-block
+    Each(VarSubgroup<Grp>),         // init loop: push real index to iter_stack, push 1/0
+    Next(VarSubgroup<Grp>),         // advance to next member, push 1 if more, else pop+push 0
+    PushGroup(Grp),                 // push group[iter_stack.last()] via ctx.resolve
+    AssignGroup(Grp),               /* pop value, assign to group[iter_stack.last()] via
+                                     * ctx.assign */
 }
 
-impl<Var: PartialEq, Val> Op<Var, Val> {
+impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
     /// Net stack-depth change of this op (+1 for push, -1 for binary, etc).
     fn stack_delta(&self) -> i32 {
         match self {
             Op::PushVar(_) | Op::PushConst(_) => 1,
-            // Binary ops: pop 2, push 1 → -1
-            Op::Add
-            | Op::Sub
-            | Op::Mul
-            | Op::DivFloor
-            | Op::DivCeil
-            | Op::Mod
-            | Op::Min
-            | Op::Max
-            | Op::And
-            | Op::Or
-            | Op::Cmp(_) => -1,
+            Op::BinOp(_) | Op::Cmp(_) => -1,
             // Unary ops: pop 1, push 1 → 0
             Op::Not | Op::AvgHp => 0,
             // Roll: pop 2 (count, sides), push count+1 items → variable, but
@@ -121,21 +333,19 @@ impl<Var: PartialEq, Val> Op<Var, Val> {
             | Op::KeepMin(_)
             | Op::DropMax(_)
             | Op::DropMin(_) => 0,
-            Op::Assign(_) => -1,
+            Op::AssignVar(_) => -1,
             Op::In => -2, // pop 3, push 1
             Op::Eval(_) => 0,
-            Op::EvalIf(_, _) => -1, // pops condition
+            Op::EvalIf(_, _) => -1,         // pops condition
+            Op::Each(_) | Op::Next(_) => 1, // push boolean
+            Op::PushGroup(_) => 1,
+            Op::AssignGroup(_) => -1,
         }
     }
 
     fn compound_sym(&self) -> Option<&'static str> {
         match self {
-            Op::Add => Some("+"),
-            Op::Sub => Some("-"),
-            Op::Mul => Some("*"),
-            Op::DivFloor => Some("/"),
-            Op::DivCeil => Some("\\"),
-            Op::Mod => Some("%"),
+            Op::BinOp(bin_op) => bin_op.compound_sym(),
             _ => None,
         }
     }
@@ -144,33 +354,35 @@ impl<Var: PartialEq, Val> Op<Var, Val> {
 /// A single block of ops within an expression.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct Block<Var, Val>(Box<[Op<Var, Val>]>);
+pub struct Block<Var, Val, Grp = NoGroup<Var>>(Box<[Op<Var, Val, Grp>]>);
 
-impl<Var: PartialEq, Val: PartialEq> PartialEq<[Op<Var, Val>]> for Block<Var, Val> {
-    fn eq(&self, other: &[Op<Var, Val>]) -> bool {
+impl<Var: PartialEq, Val: PartialEq, Grp: PartialEq> PartialEq<[Op<Var, Val, Grp>]>
+    for Block<Var, Val, Grp>
+{
+    fn eq(&self, other: &[Op<Var, Val, Grp>]) -> bool {
         *self.0 == *other
     }
 }
 
-impl<Var, Val> std::ops::Deref for Block<Var, Val> {
-    type Target = [Op<Var, Val>];
+impl<Var, Val, Grp> std::ops::Deref for Block<Var, Val, Grp> {
+    type Target = [Op<Var, Val, Grp>];
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl<Var, Val> From<Vec<Op<Var, Val>>> for Block<Var, Val> {
-    fn from(ops: Vec<Op<Var, Val>>) -> Self {
+impl<Var, Val, Grp> From<Vec<Op<Var, Val, Grp>>> for Block<Var, Val, Grp> {
+    fn from(ops: Vec<Op<Var, Val, Grp>>) -> Self {
         Self(ops.into_boxed_slice())
     }
 }
 
-impl<Var, Val> Block<Var, Val> {
+impl<Var, Val, Grp> Block<Var, Val, Grp> {
     /// Returns true if this block contains any variable matching the predicate.
     pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool {
         self.0.iter().any(|op| match op {
-            Op::PushVar(v) | Op::Assign(v) => pred(v),
+            Op::PushVar(v) | Op::AssignVar(v) => pred(v),
             _ => false,
         })
     }
@@ -180,38 +392,42 @@ impl<Var, Val> Block<Var, Val> {
     pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool {
         self.0
             .iter()
-            .any(|op| matches!(op, Op::Assign(v) if pred(v)))
+            .any(|op| matches!(op, Op::AssignVar(v) if pred(v)))
     }
 
     /// Create a new block by mapping each op.
-    pub fn map(&self, f: &mut impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) -> Self {
+    pub fn map(&self, f: &mut impl FnMut(&Op<Var, Val, Grp>) -> Op<Var, Val, Grp>) -> Self {
         Self(self.0.iter().map(f).collect())
     }
 }
 
-impl<Var: PartialEq, Val> Block<Var, Val> {
+impl<Var: PartialEq, Val, Grp> Block<Var, Val, Grp> {
     /// Split this block into statements at `Assign` boundaries.
-    pub fn statements(&self) -> impl Iterator<Item = &[Op<Var, Val>]> {
-        self.0.split_inclusive(|op| matches!(op, Op::Assign(_)))
+    pub fn statements(&self) -> impl Iterator<Item = &[Op<Var, Val, Grp>]> {
+        self.0
+            .split_inclusive(|op| matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)))
     }
 
     /// Detect compound assignment pattern in an ops slice (a single statement).
     ///
-    /// Returns `Some(CompoundAssign)` if the ops form `PushVar(X) <rhs>
+    /// Returns `Some(CompoundAssign)` if the ops form `Push(X) <rhs>
     /// BinaryOp Assign(X)` — i.e. a compound assignment like `X += rhs`.
+    /// Works for both `PushVar`/`Assign` and `PushGroup`/`AssignGroup` pairs.
     /// The combining op is identified by stack-depth analysis: it's the first
     /// binary op that would consume the initial variable from the stack.
-    pub fn detect_compound(ops: &[Op<Var, Val>]) -> Option<CompoundAssign> {
+    pub fn detect_compound(ops: &[Op<Var, Val, Grp>]) -> Option<CompoundAssign>
+    where
+        Grp: PartialEq,
+    {
         if ops.len() < 3 {
             return None;
         }
-        let Op::Assign(assign_var) = &ops[ops.len() - 1] else {
-            return None;
+        let is_matching_pair = match (&ops[0], &ops[ops.len() - 1]) {
+            (Op::PushVar(push_var), Op::AssignVar(assign_var)) => push_var == assign_var,
+            (Op::PushGroup(push_grp), Op::AssignGroup(assign_grp)) => push_grp == assign_grp,
+            _ => false,
         };
-        let Op::PushVar(push_var) = &ops[0] else {
-            return None;
-        };
-        if push_var != assign_var {
+        if !is_matching_pair {
             return None;
         }
 

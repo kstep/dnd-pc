@@ -57,10 +57,12 @@ impl Formatter {
     }
 }
 
-impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> for Formatter {
+impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Display>
+    Interpreter<Var, Val, Grp> for Formatter
+{
     type Output = String;
 
-    fn exec(&mut self, op: Op<Var, Val>) -> Result<Option<BlockIndex>, Error> {
+    fn exec(&mut self, op: Op<Var, Val, Grp>) -> Result<Option<BlockIndex>, Error> {
         match op {
             Op::PushConst(n) => {
                 self.push(n.to_string(), 7);
@@ -68,14 +70,17 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
             Op::PushVar(var) => {
                 self.push(var.to_string(), 7);
             }
-            Op::Add => self.binary_op("+", 4, false)?,
-            Op::Sub => self.binary_op("-", 4, true)?,
-            Op::Mul => self.binary_op("*", 5, false)?,
-            Op::DivFloor => self.binary_op("/", 5, true)?,
-            Op::DivCeil => self.binary_op("\\", 5, true)?,
-            Op::Mod => self.binary_op("%", 5, true)?,
-            Op::Min => self.binary_func("min")?,
-            Op::Max => self.binary_func("max")?,
+            Op::BinOp(bin_op) => {
+                if bin_op.is_func() {
+                    self.binary_func(bin_op.symbol())?;
+                } else {
+                    self.binary_op(
+                        bin_op.symbol(),
+                        bin_op.precedence(),
+                        bin_op.is_right_strict(),
+                    )?;
+                }
+            }
             Op::Roll => {
                 let sides = self.stack.pop()?;
                 let count = self.stack.pop()?;
@@ -115,15 +120,13 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 let sides = self.stack.pop()?;
                 self.push(format!("avg_hp({})", sides.text), 7);
             }
-            Op::And => self.binary_op("and", 2, false)?,
-            Op::Or => self.binary_op("or", 1, false)?,
             Op::Not => {
                 let a = self.stack.pop()?;
                 let text = Self::wrap(a, 6);
                 self.push(format!("not {text}"), 6);
             }
             Op::Cmp(cmp) => self.binary_op(cmp.symbol(), 3, false)?,
-            Op::Assign(var) => {
+            Op::AssignVar(var) => {
                 let val = self.stack.pop()?;
                 self.push(format!("{var} = {}", val.text), 0);
             }
@@ -133,7 +136,15 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display> Interpreter<Var, Val> f
                 let a = self.stack.pop()?;
                 self.push(format!("in({}, {}, {})", a.text, b.text, c.text), 3);
             }
-            Op::Eval(_) | Op::EvalIf(_, _) => {} // intercepted by format_block
+            Op::PushGroup(grp) => {
+                self.push(format!("${grp}"), 7);
+            }
+            Op::AssignGroup(grp) => {
+                let val = self.stack.pop()?;
+                self.push(format!("${grp} = {}", val.text), 0);
+            }
+            Op::Eval(_) | Op::EvalIf(_, _) | Op::Each(_) | Op::Next(_) => {} /* intercepted by
+                                                                              * format_block */
         }
         Ok(None)
     }

@@ -3,8 +3,7 @@ use std::collections::BTreeMap;
 use leptos::prelude::*;
 
 use crate::{
-    expr::Expr,
-    model::{AssignInputs, Attribute, Character, Context, FeatureSource, FeatureValue},
+    model::{AssignInputs, Character, Context, Expr, FeatureSource, FeatureValue},
     rules::{
         DefinitionStore, ReplaceWith, RulesRegistry, WhenCondition,
         background::BackgroundDefinition,
@@ -42,7 +41,7 @@ pub struct PendingInputs {
     pub feature_name: String,
     pub feature_label: String,
     pub feature_description: String,
-    pub exprs: Vec<Expr<Attribute>>,
+    pub exprs: Vec<Expr>,
     pub replace_with: ReplaceWith,
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
@@ -489,7 +488,7 @@ impl RulesRegistry {
                     }
 
                     // Group by scope target (None = own feature)
-                    let mut scope_groups: Vec<(Option<&str>, Vec<Expr<Attribute>>)> = Vec::new();
+                    let mut scope_groups: Vec<(Option<&str>, Vec<Expr>)> = Vec::new();
                     for assignment in &assignments {
                         let scope = assignment.scope.as_deref();
                         if let Some(group) = scope_groups.iter_mut().find(|(s, _)| *s == scope) {

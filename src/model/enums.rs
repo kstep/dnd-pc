@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIter, EnumString};
+use strum::{Display, EnumIter, EnumString, VariantArray};
 
 pub trait Translatable {
     fn tr_key(&self) -> &'static str;
@@ -69,7 +69,17 @@ macro_rules! enum_serde_u8 {
 }
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, PartialOrd, Ord
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    EnumIter,
+    Display,
+    PartialOrd,
+    Ord,
+    VariantArray
 )]
 #[repr(u8)]
 pub enum Ability {
@@ -90,7 +100,18 @@ enum_serde_u8!(Ability {
 });
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, EnumString, PartialOrd, Ord
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    EnumIter,
+    Display,
+    EnumString,
+    PartialOrd,
+    Ord,
+    VariantArray
 )]
 #[repr(u8)]
 pub enum Skill {
@@ -287,7 +308,18 @@ enum_serde_u8!(Proficiency {
     MartialWeapons,
 });
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Display, EnumIter)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Display,
+    EnumIter,
+    VariantArray
+)]
 #[repr(u8)]
 pub enum DamageType {
     Acid,

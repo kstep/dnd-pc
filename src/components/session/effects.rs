@@ -11,12 +11,12 @@ use crate::{
         toggle_button::ToggleButton,
     },
     effective::EffectiveCharacter,
-    expr::{DicePool, Expr},
-    model::{ActiveEffect, Attribute, Character},
+    expr::DicePool,
+    model::{ActiveEffect, Character, Expr},
     rules::RulesRegistry,
 };
 
-fn parse_expr(input: &str) -> Result<Option<Expr<Attribute>>, ()> {
+fn parse_expr(input: &str) -> Result<Option<Expr>, ()> {
     if input.trim().is_empty() {
         return Ok(None);
     }
@@ -40,13 +40,13 @@ pub fn EffectsBlock() -> impl IntoView {
 
     // Dice modal state: stores (expr, pending_effect_or_index)
     let show_dice_modal = RwSignal::new(false);
-    let pending_expr = RwSignal::new(Option::<Expr<Attribute>>::None);
+    let pending_expr = RwSignal::new(Option::<Expr>::None);
     let pending_effect = RwSignal::new(Option::<ActiveEffect>::None);
     let reroll_index = RwSignal::new(Option::<usize>::None);
     // Stored parts from ExprArgsInput for dice collection on submit
     let dice_parts: StoredValue<Option<ExprArgsInputParts>> = StoredValue::new(None);
 
-    let open_dice_modal = move |index: Option<usize>, expr: Expr<Attribute>| {
+    let open_dice_modal = move |index: Option<usize>, expr: Expr| {
         dice_parts.set_value(None);
         reroll_index.set(index);
         pending_expr.set(Some(expr));

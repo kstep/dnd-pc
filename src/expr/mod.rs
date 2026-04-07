@@ -20,7 +20,10 @@ mod traits;
 pub use crate::expr::{
     error::Error,
     interpret::{DicePool, ExprAnalysis, Interpreter},
-    ops::{BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, Block, BlockIndex, Op},
+    ops::{
+        BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, BinOp, Block, BlockIndex, Cmp, NoGroup, Op, VarGroup,
+        VarSubgroup,
+    },
     traits::{Context, Eval},
 };
 use crate::expr::{
@@ -34,24 +37,25 @@ pub const fn avg_hp(sides: i32) -> i32 {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Expr<Var, Val = i32>(Arc<[Block<Var, Val>]>);
+pub struct Expr<Var, Val = i32, Grp = NoGroup<Var>>(Arc<[Block<Var, Val, Grp>]>);
 
-impl<Var, Val> Default for Expr<Var, Val> {
+impl<Var, Val, Grp> Default for Expr<Var, Val, Grp> {
     fn default() -> Self {
         Self(Arc::from([]))
     }
 }
 
-impl<Var, Val> Expr<Var, Val> {
+impl<Var, Val, Grp> Expr<Var, Val, Grp> {
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 }
 
-impl<Var, Val> Serialize for Expr<Var, Val>
+impl<Var, Val, Grp> Serialize for Expr<Var, Val, Grp>
 where
     Var: Serialize + Copy + PartialEq + fmt::Display,
     Val: Serialize + Copy + fmt::Display,
+    Grp: Serialize + Copy + VarGroup<Var = Var> + PartialEq + fmt::Display,
 {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         if serializer.is_human_readable() {
@@ -73,8 +77,8 @@ where
     }
 }
 
-impl<Var, Val> Expr<Var, Val> {
-    pub fn block(&self, idx: BlockIndex) -> &Block<Var, Val> {
+impl<Var, Val, Grp> Expr<Var, Val, Grp> {
+    pub fn block(&self, idx: BlockIndex) -> &Block<Var, Val, Grp> {
         &self.0[idx as usize]
     }
 
@@ -111,29 +115,29 @@ impl<Var, Val> Expr<Var, Val> {
     }
 }
 
-impl<Var, Val> Expr<Var, Val> {
+impl<Var, Val, Grp> Expr<Var, Val, Grp> {
     /// Create a new Expr by mapping each op across all blocks.
-    pub fn map(&self, mut f: impl FnMut(&Op<Var, Val>) -> Op<Var, Val>) -> Self {
+    pub fn map(&self, mut f: impl FnMut(&Op<Var, Val, Grp>) -> Op<Var, Val, Grp>) -> Self {
         let blocks: Vec<_> = self.0.iter().map(|block| block.map(&mut f)).collect();
         Self(blocks.into())
     }
 }
 
-impl<Var, Val> Deref for Expr<Var, Val> {
-    type Target = Block<Var, Val>;
+impl<Var, Val, Grp> Deref for Expr<Var, Val, Grp> {
+    type Target = Block<Var, Val, Grp>;
 
     fn deref(&self) -> &Self::Target {
         &self.0[BLOCK_MAIN as usize]
     }
 }
 
-impl<Var: Copy, Val: Copy> Expr<Var, Val> {
-    pub fn run<I: Interpreter<Var, Val>>(&self, mut interp: I) -> Result<I::Output, Error> {
+impl<Var: Copy, Val: Copy, Grp: Copy> Expr<Var, Val, Grp> {
+    pub fn run<I: Interpreter<Var, Val, Grp>>(&self, mut interp: I) -> Result<I::Output, Error> {
         self.run_block(&mut interp, BLOCK_MAIN)?;
         interp.finish()
     }
 
-    fn run_block<I: Interpreter<Var, Val>>(
+    fn run_block<I: Interpreter<Var, Val, Grp>>(
         &self,
         interp: &mut I,
         block: BlockIndex,
@@ -147,7 +151,7 @@ impl<Var: Copy, Val: Copy> Expr<Var, Val> {
     }
 }
 
-impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
     pub fn apply(&self, ctx: &mut impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(Evaluator::new(ctx))
     }
@@ -162,7 +166,7 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
     }
 }
 
-impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
     pub fn eval_block(
         &self,
         block: BlockIndex,
@@ -170,11 +174,13 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
     ) -> Result<i32, Error> {
         let mut interp = ReadOnlyEvaluator::new(ctx);
         self.run_block(&mut interp, block)?;
-        interp.finish()
+        Interpreter::<Var, i32, Grp>::finish(interp)
     }
 }
 
-impl<Var: Copy + fmt::Display> Eval<Var, i32> for Expr<Var, i32> {
+impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32>
+    for Expr<Var, i32, Grp>
+{
     type Output = Result<i32, Error>;
 
     fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
@@ -186,7 +192,7 @@ impl<Var: Copy + fmt::Display> Eval<Var, i32> for Expr<Var, i32> {
     }
 }
 
-impl<Var: Copy + fmt::Display> Expr<Var, i32> {
+impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
     /// Like `eval`, but silently ignores `Assign` ops instead of erroring.
     pub fn eval_lenient(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::lenient(ctx))
@@ -217,14 +223,19 @@ impl<Var: Copy + fmt::Display> Expr<Var, i32> {
     }
 }
 
-impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for Expr<Var, Val> {
+impl<
+    Var: FromStr + Copy + PartialEq,
+    Val: FromStr + Copy + Neg<Output = Val>,
+    Grp: Default + FromStr + Copy + VarGroup<Var = Var>,
+> FromStr for Expr<Var, Val, Grp>
+{
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.trim().is_empty() {
             return Ok(Self::default());
         }
-        let blocks: Arc<[Block<Var, Val>]> = Parser::new(s)
+        let blocks: Arc<[Block<Var, Val, Grp>]> = Parser::new(s)
             .parse()?
             .into_iter()
             .map(Block::from)
@@ -233,30 +244,49 @@ impl<Var: FromStr + Copy, Val: FromStr + Copy + Neg<Output = Val>> FromStr for E
     }
 }
 
-impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> Expr<Var, Val> {
+impl<Grp: Copy + VarGroup + fmt::Display> fmt::Display for VarSubgroup<Grp>
+where
+    Grp::Var: fmt::Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.display_with(f)
+    }
+}
+
+impl<
+    Var: Copy + PartialEq + fmt::Display,
+    Val: Copy + fmt::Display,
+    Grp: Copy + VarGroup<Var = Var> + PartialEq + fmt::Display,
+> Expr<Var, Val, Grp>
+{
     fn format_block(&self, block: BlockIndex) -> Result<String, Error> {
         let block = &self.0[block as usize];
         let mut results: Vec<String> = Vec::new();
         for stmt in block.statements() {
-            if let Some(ca) = Block::detect_compound(stmt) {
-                let var = match stmt.last() {
-                    Some(Op::Assign(v)) => v,
-                    _ => unreachable!(),
-                };
-                let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end])?;
-                results.push(format!("{var} {sym}= {rhs}", sym = ca.sym));
+            if let Some(formatted) = self.try_format_compound(stmt)? {
+                results.push(formatted);
             } else {
-                let text = self.format_ops(stmt)?;
-                results.push(text);
+                results.push(self.format_ops(stmt)?);
             }
         }
         Ok(results.join("; "))
     }
 
-    fn format_ops(&self, ops: &[Op<Var, Val>]) -> Result<String, Error> {
+    fn format_ops(&self, ops: &[Op<Var, Val, Grp>]) -> Result<String, Error> {
         let mut fmt = Formatter::new();
-        for &op in ops {
+        let mut i = 0;
+        while i < ops.len() {
+            let op = ops[i];
             match op {
+                Op::Each(grp) if i + 1 < ops.len() => {
+                    if let Op::EvalIf(body_idx, BLOCK_NOOP) = ops[i + 1] {
+                        let text = self.format_each_or_fold(grp, body_idx)?;
+                        fmt.push_atom(text);
+                        i += 2;
+                        continue;
+                    }
+                    fmt.exec(op)?;
+                }
                 Op::Eval(idx) => {
                     let text = self.format_block(idx)?;
                     fmt.push_atom(text);
@@ -280,13 +310,113 @@ impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> Expr<Var, V
                     fmt.exec(op)?;
                 }
             }
+            i += 1;
         }
-        <Formatter as Interpreter<Var, Val>>::finish(fmt)
+        <Formatter as Interpreter<Var, Val, Grp>>::finish(fmt)
+    }
+
+    /// Detect each vs fold pattern and format accordingly.
+    ///
+    /// each: body ends with `[..., Next(grp), EvalIf(body, NOOP)]`
+    /// fold: body ends with `[..., Next(grp), EvalIf(acc, NOOP)]`
+    ///       where acc = `[Eval(body), BinOp(op)]`
+    fn format_each_or_fold(
+        &self,
+        subgrp: VarSubgroup<Grp>,
+        body_idx: BlockIndex,
+    ) -> Result<String, Error> {
+        let body = &self.0[body_idx as usize];
+        let body_ops = &**body;
+
+        // Body must end with Next(grp), EvalIf(_, NOOP)
+        let len = body_ops.len();
+        if len < 2 {
+            return Err(Error::InvalidBlock(body_idx));
+        }
+        let (Op::EvalIf(target_idx, BLOCK_NOOP), Op::Next(_)) =
+            (body_ops[len - 1], body_ops[len - 2])
+        else {
+            return Err(Error::InvalidBlock(body_idx));
+        };
+
+        // The body content is everything before Next + EvalIf
+        let content_ops = &body_ops[..len - 2];
+
+        use std::fmt::Write;
+        let mut grp_str = String::new();
+        write!(grp_str, "{subgrp}").unwrap();
+
+        if target_idx == body_idx {
+            let body_text = self.format_block_ops(content_ops)?;
+            Ok(format!("each(${grp_str}, {body_text})"))
+        } else {
+            let acc_block = &self.0[target_idx as usize];
+            let acc_ops = &**acc_block;
+            if acc_ops.len() == 2
+                && matches!(acc_ops[0], Op::Eval(idx) if idx == body_idx)
+                && let Op::BinOp(bin_op) = acc_ops[1]
+            {
+                // Shorthand: fold(op, $GROUP) when body is just PushGroup(inner)
+                if content_ops.len() == 1
+                    && matches!(content_ops[0], Op::PushGroup(g) if g == subgrp.inner)
+                {
+                    Ok(format!("fold({}, ${grp_str})", bin_op.symbol()))
+                } else {
+                    let expr_text = self.format_block_ops(content_ops)?;
+                    Ok(format!(
+                        "fold({}, ${grp_str}, {expr_text})",
+                        bin_op.symbol()
+                    ))
+                }
+            } else {
+                Err(Error::InvalidBlock(body_idx))
+            }
+        }
+    }
+
+    /// Format a slice of ops with compound assignment detection for both
+    /// Assign and AssignGroup.
+    fn format_block_ops(&self, ops: &[Op<Var, Val, Grp>]) -> Result<String, Error> {
+        let mut results: Vec<String> = Vec::new();
+        let mut start = 0;
+        for (i, op) in ops.iter().enumerate() {
+            if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)) {
+                let stmt = &ops[start..=i];
+                if let Some(formatted) = self.try_format_compound(stmt)? {
+                    results.push(formatted);
+                } else {
+                    results.push(self.format_ops(stmt)?);
+                }
+                start = i + 1;
+            }
+        }
+        if start < ops.len() {
+            results.push(self.format_ops(&ops[start..])?);
+        }
+        Ok(results.join("; "))
+    }
+
+    /// Try to format a statement as compound assignment (X += Y).
+    /// Works for both PushVar/Assign and PushGroup/AssignGroup patterns.
+    fn try_format_compound(&self, stmt: &[Op<Var, Val, Grp>]) -> Result<Option<String>, Error> {
+        let Some(ca) = Block::detect_compound(stmt) else {
+            return Ok(None);
+        };
+        let var = match stmt.last() {
+            Some(Op::AssignVar(v)) => format!("{v}"),
+            Some(Op::AssignGroup(g)) => format!("${g}"),
+            _ => unreachable!(),
+        };
+        let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end])?;
+        Ok(Some(format!("{var} {sym}= {rhs}", sym = ca.sym)))
     }
 }
 
-impl<Var: Copy + PartialEq + fmt::Display, Val: Copy + fmt::Display> fmt::Display
-    for Expr<Var, Val>
+impl<
+    Var: Copy + PartialEq + fmt::Display,
+    Val: Copy + fmt::Display,
+    Grp: Copy + VarGroup<Var = Var> + PartialEq + fmt::Display,
+> fmt::Display for Expr<Var, Val, Grp>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.0.is_empty() {
@@ -430,9 +560,9 @@ mod tests {
             &[
                 Op::PushConst(10),
                 Op::PushVar(Var::Modifier(Ability::Charisma)),
-                Op::Add,
+                Op::BinOp(BinOp::Add),
                 Op::PushVar(Var::Modifier(Ability::Dexterity)),
-                Op::Add,
+                Op::BinOp(BinOp::Add),
             ]
         );
 
@@ -450,15 +580,15 @@ mod tests {
             &[
                 Op::PushVar(Var::Ac),
                 Op::PushConst(5),
-                Op::Add,
+                Op::BinOp(BinOp::Add),
                 Op::PushVar(Var::Ac),
                 Op::PushConst(5),
-                Op::Sub,
+                Op::BinOp(BinOp::Sub),
                 Op::PushVar(Var::Ac),
                 Op::PushConst(5),
-                Op::Sub,
+                Op::BinOp(BinOp::Sub),
                 Op::PushConst(2),
-                Op::Mul,
+                Op::BinOp(BinOp::Mul),
             ]
         );
 
@@ -1006,5 +1136,352 @@ mod tests {
         let expr: Expr = "guard(in(ARG.0, 0, 7), STR += ARG.0)".parse().unwrap();
         let analysis = expr.analyze(&character, is_arg);
         assert!(!analysis.boolean_args.contains(&0));
+    }
+}
+
+#[cfg(test)]
+mod loop_tests {
+    use strum::VariantArray;
+    use wasm_bindgen_test::*;
+
+    use crate::{
+        expr::{self, Context, Eval},
+        model::{Ability, Attribute, Expr},
+    };
+
+    fn is_arg(var: &Attribute) -> Option<u8> {
+        match var {
+            Attribute::Arg(n) => Some(*n),
+            _ => None,
+        }
+    }
+
+    struct TestCtx {
+        abilities: [i32; 6],
+    }
+
+    impl TestCtx {
+        fn new() -> Self {
+            Self {
+                abilities: [10, 12, 14, 8, 16, 11],
+            }
+        }
+    }
+
+    impl Context<Attribute, i32> for TestCtx {
+        fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+            match var {
+                Attribute::Ability(ability) => {
+                    let idx = Ability::VARIANTS
+                        .iter()
+                        .position(|&a| a == ability)
+                        .unwrap();
+                    Ok(self.abilities[idx])
+                }
+                Attribute::Arg(_) => Ok(0),
+                _ => Ok(0),
+            }
+        }
+
+        fn assign(&mut self, var: Attribute, val: i32) -> Result<(), expr::Error> {
+            match var {
+                Attribute::Ability(ability) => {
+                    let idx = Ability::VARIANTS
+                        .iter()
+                        .position(|&a| a == ability)
+                        .unwrap();
+                    self.abilities[idx] = val;
+                    Ok(())
+                }
+                _ => Ok(()),
+            }
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_each_roundtrip() {
+        let expr: Expr = "each($ABILITY, $ABILITY += $ARG)".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "each($ABILITY, $ABILITY += $ARG)");
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_fold_roundtrip() {
+        let expr: Expr = "fold(+, $ABILITY, $ARG)".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "fold(+, $ABILITY, $ARG)");
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_each_with_condition() {
+        let expr: Expr = "each($ABILITY, if($ABILITY < 20, $ABILITY += $ARG))"
+            .parse()
+            .unwrap();
+        let display = expr.to_string();
+        assert_eq!(
+            display,
+            "each($ABILITY, if($ABILITY < 20, $ABILITY += $ARG))"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_fold_with_and() {
+        let expr: Expr = "fold(and, $ABILITY, in($ARG, 0, 1))".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "fold(and, $ABILITY, in($ARG, 0, 1))");
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_each_assigns_all() {
+        let mut ctx = TestCtx::new();
+        let original = ctx.abilities;
+        let expr: Expr = "each($ABILITY, $ABILITY += 1)".parse().unwrap();
+        expr.apply(&mut ctx).unwrap();
+        for i in 0..6 {
+            assert_eq!(
+                ctx.abilities[i],
+                original[i] + 1,
+                "ability {i} not incremented"
+            );
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_fold_sums() {
+        let ctx = TestCtx::new();
+        // fold(+, $ABILITY, $ABILITY) should sum all ability scores
+        let expr: Expr = "fold(+, $ABILITY, $ABILITY)".parse().unwrap();
+        let result = expr.eval(&ctx).unwrap();
+        let expected: i32 = ctx.abilities.iter().sum();
+        assert_eq!(result, expected);
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_fold_max() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "fold(max, $ABILITY, $ABILITY)".parse().unwrap();
+        let result = expr.eval(&ctx).unwrap();
+        assert_eq!(result, *ctx.abilities.iter().max().unwrap());
+    }
+
+    #[wasm_bindgen_test]
+    fn analyze_each_active_args() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "each($ABILITY, $ABILITY += $ARG)".parse().unwrap();
+        let analysis = expr.analyze(&ctx, is_arg);
+        assert_eq!(analysis.active_args.len(), 6);
+        assert_eq!(analysis.active_args, vec![0, 1, 2, 3, 4, 5]);
+    }
+
+    #[wasm_bindgen_test]
+    fn analyze_fold_boolean_args() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "fold(and, $ABILITY, in($ARG, 0, 1))".parse().unwrap();
+        let analysis = expr.analyze(&ctx, is_arg);
+        assert_eq!(analysis.active_args.len(), 6);
+        for i in 0..6u8 {
+            assert!(
+                analysis.boolean_args.contains(&i),
+                "ARG.{i} should be boolean"
+            );
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_each_resist() {
+        let expr: Expr = "each($RESIST._, $RESIST._ = 1)".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "each($RESIST._, $RESIST._ = 1)");
+    }
+
+    /// Minimal interpreter that mimics AssignmentSummarizer's behavior:
+    /// EvalIf enters then-branch unconditionally (to collect all assignments).
+    /// This must NOT infinite-loop on each/fold expressions.
+    struct NonEvalInterpreter {
+        stack: Vec<Option<i32>>,
+        iter_stack: Vec<usize>,
+    }
+
+    impl NonEvalInterpreter {
+        fn new() -> Self {
+            Self {
+                stack: Vec::new(),
+                iter_stack: Vec::new(),
+            }
+        }
+    }
+
+    impl expr::Interpreter<Attribute, i32, crate::model::AttributeGroup> for NonEvalInterpreter {
+        type Output = ();
+
+        fn exec(
+            &mut self,
+            op: crate::expr::Op<Attribute, i32, crate::model::AttributeGroup>,
+        ) -> Result<Option<expr::BlockIndex>, expr::Error> {
+            use crate::expr::{Op, VarGroup};
+            match op {
+                Op::PushConst(n) => self.stack.push(Some(n)),
+                Op::PushVar(_) => self.stack.push(None),
+                Op::PushGroup(_) => self.stack.push(None),
+                Op::AssignVar(_) | Op::AssignGroup(_) => {
+                    self.stack.pop();
+                }
+                Op::BinOp(_) | Op::Cmp(_) => {
+                    self.stack.pop();
+                    self.stack.pop();
+                    self.stack.push(None);
+                }
+                Op::Not => {
+                    self.stack.pop();
+                    self.stack.push(None);
+                }
+                Op::In => {
+                    self.stack.pop();
+                    self.stack.pop();
+                    self.stack.pop();
+                    self.stack.push(None);
+                }
+                Op::Each(grp) => {
+                    self.iter_stack.push(0);
+                    self.stack.push(Some(grp.member(0).is_some() as i32));
+                }
+                Op::Next(grp) => {
+                    if let Some(index) = self.iter_stack.last_mut() {
+                        *index += 1;
+                        if grp.member(*index).is_some() {
+                            self.stack.push(Some(1));
+                        } else {
+                            self.iter_stack.pop();
+                            self.stack.push(Some(0));
+                        }
+                    } else {
+                        self.stack.push(Some(0));
+                    }
+                }
+                // Mimics AssignmentSummarizer: enter then-branch unless
+                // condition is known constant(0) (loop termination).
+                Op::EvalIf(then_idx, else_idx) => {
+                    let cond = self.stack.pop().flatten();
+                    if cond != Some(0)
+                        && then_idx != expr::BLOCK_NOOP
+                        && then_idx != expr::BLOCK_ERROR
+                    {
+                        return Ok(Some(then_idx));
+                    }
+                    if else_idx != expr::BLOCK_NOOP && else_idx != expr::BLOCK_ERROR {
+                        return Ok(Some(else_idx));
+                    }
+                }
+                Op::Eval(idx) => {
+                    if idx != expr::BLOCK_NOOP {
+                        return Ok(Some(idx));
+                    }
+                }
+                _ => {
+                    self.stack.push(None);
+                }
+            }
+            Ok(None)
+        }
+
+        fn finish(self) -> Result<(), expr::Error> {
+            Ok(())
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_each_terminates() {
+        let expr: Expr = "each($ABILITY, $ABILITY += $ARG)".parse().unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_fold_terminates() {
+        let expr: Expr = "fold(+, $ABILITY, $ARG)".parse().unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_guard_with_fold_terminates() {
+        let expr: Expr =
+            "guard(fold(and, $ABILITY, in($ARG, 0, 1)) and fold(+, $ABILITY, $ARG) == 1, each($ABILITY, if($ABILITY < 20, $ABILITY += $ARG)))"
+                .parse()
+                .unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_each_with_condition_terminates() {
+        let expr: Expr = "each($ABILITY, if($ABILITY < 20, $ABILITY += $ARG))"
+            .parse()
+            .unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_fold_with_complex_body_terminates() {
+        let expr: Expr = "fold(+, $ABILITY, $ARG + max(0, $ARG - 5))"
+            .parse()
+            .unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_with_binding() {
+        let expr: Expr = "with($ABILITY(INT, WIS, CHA), each($, if($ < 20, $ += $ARG)))"
+            .parse()
+            .unwrap();
+        // with expands — display shows the expanded form
+        let display = expr.to_string();
+        assert!(display.contains("each("));
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_with_binding() {
+        let mut ctx = TestCtx::new();
+        // INT=8, WIS=16, CHA=11 → all += 1
+        let expr: Expr = "with($ABILITY(INT, WIS, CHA), each($, $ += 1))"
+            .parse()
+            .unwrap();
+        expr.apply(&mut ctx).unwrap();
+        // STR(0), DEX(1), CON(2) unchanged; INT(3)=9, WIS(4)=17, CHA(5)=12
+        assert_eq!(ctx.abilities[0], 10); // STR unchanged
+        assert_eq!(ctx.abilities[3], 9); // INT +1
+        assert_eq!(ctx.abilities[4], 17); // WIS +1
+        assert_eq!(ctx.abilities[5], 12); // CHA +1
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_with_fold() {
+        let ctx = TestCtx::new();
+        // fold(+, INT+WIS+CHA) = 8+16+11 = 35
+        let expr: Expr = "with($ABILITY(INT, WIS, CHA), fold(+, $, $))"
+            .parse()
+            .unwrap();
+        let result = expr.eval(&ctx).unwrap();
+        assert_eq!(result, 8 + 16 + 11);
+    }
+
+    #[wasm_bindgen_test]
+    fn summarizer_with_terminates() {
+        let expr: Expr =
+            "with($ABILITY(INT, WIS, CHA), guard(fold(and, $, in($ARG, 0, 1)) and fold(+, $, $ARG) == 1, each($, if($ < 20, $ += $ARG))))"
+                .parse()
+                .unwrap();
+        expr.run(NonEvalInterpreter::new()).unwrap();
+    }
+
+    #[wasm_bindgen_test]
+    fn fold_shorthand_roundtrip() {
+        let expr: Expr = "fold(+, $ABILITY)".parse().unwrap();
+        assert_eq!(expr.to_string(), "fold(+, $ABILITY)");
+    }
+
+    #[wasm_bindgen_test]
+    fn eval_fold_shorthand() {
+        let ctx = TestCtx::new();
+        let expr: Expr = "fold(+, $ABILITY)".parse().unwrap();
+        let result = expr.eval(&ctx).unwrap();
+        assert_eq!(result, ctx.abilities.iter().sum::<i32>());
     }
 }

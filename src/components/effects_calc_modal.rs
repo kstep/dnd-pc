@@ -12,10 +12,10 @@ use crate::{
         modal::Modal,
     },
     effective::EffectiveCharacter,
-    expr::{self, DicePool, Expr, Op},
+    expr::{self, DicePool},
     model::{
         ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration,
-        EffectRange, FeatureData, FeatureValue,
+        EffectRange, Expr, FeatureData, FeatureValue, Op,
     },
 };
 
@@ -123,7 +123,7 @@ pub fn has_non_stackable_duplicate(
 fn build_self_expr(
     effects: &[EffectDefinition],
     filter: fn(EffectDuration) -> bool,
-) -> Option<Expr<Attribute>> {
+) -> Option<Expr> {
     let combined = effects
         .iter()
         .filter(|effect| effect.range == EffectRange::Caster && filter(effect.duration))
@@ -139,10 +139,7 @@ fn build_self_expr(
 
 /// Replace contextual PushVar ops with PushConst so the expression is
 /// self-contained when stored as an ActiveEffect.
-fn bind_extra_vars(
-    expr: &Expr<Attribute>,
-    extra_vars: &BTreeMap<Attribute, i32>,
-) -> Expr<Attribute> {
+fn bind_extra_vars(expr: &Expr, extra_vars: &BTreeMap<Attribute, i32>) -> Expr {
     expr.map(|op| match op {
         Op::PushVar(var) if extra_vars.contains_key(var) => Op::PushConst(extra_vars[var]),
         other => *other,
@@ -248,7 +245,7 @@ pub fn EffectsCalcModal(
 
             // Build separate instant and persistent expressions
             let (instant_expr, persistent_expr) = if has_self_effects {
-                let build_expr = |filter: fn(EffectDuration) -> bool| -> Option<Expr<Attribute>> {
+                let build_expr = |filter: fn(EffectDuration) -> bool| -> Option<Expr> {
                     let combined = info
                         .effects
                         .iter()

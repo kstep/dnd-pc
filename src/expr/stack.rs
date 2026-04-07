@@ -64,6 +64,10 @@ impl<T> Stack<T> {
     pub fn top(&self) -> Result<&T, Error> {
         self.0.last().ok_or(Error::StackUnderflow)
     }
+
+    pub fn top_mut(&mut self) -> Result<&mut T, Error> {
+        self.0.last_mut().ok_or(Error::StackUnderflow)
+    }
 }
 
 impl<T> IntoIterator for Stack<T> {
