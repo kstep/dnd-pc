@@ -4810,7 +4810,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+              "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d10"
             }
           ]
         },
@@ -13568,7 +13568,7 @@
           "effects": [
             {
               "name": "Poison Damage",
-              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d12"
+              "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d12"
             }
           ]
         },
@@ -13623,7 +13623,7 @@
           "effects": [
             {
               "name": "Necrotic Damage",
-              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+              "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
             }
           ]
         },
@@ -13678,7 +13678,7 @@
           "effects": [
             {
               "name": "Fire Damage",
-              "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d10"
+              "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d10"
             }
           ]
         },

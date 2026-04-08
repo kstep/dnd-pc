@@ -21,7 +21,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
       }
     ]
   },
@@ -39,7 +39,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
       }
     ]
   },
@@ -49,7 +49,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
       }
     ]
   },
