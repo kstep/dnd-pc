@@ -208,7 +208,7 @@ fn form_block(
                     if let Some(var) = grp.member(idx) {
                         (move || var.display_name(&i18n)).into_any()
                     } else {
-                        format!("${grp}").into_any()
+                        format!("@{grp}").into_any()
                     }
                 }
                 _ => unreachable!(),
@@ -358,9 +358,27 @@ fn form_block_loop(
     let body_ops = &**body;
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_ops.len().saturating_sub(2);
+    let content = &body_ops[..content_end];
     for real_idx in subgrp.real_indices() {
         ctx.iter_stack.push(real_idx);
-        form_block_ops(fb, expr, &body_ops[..content_end], ctx, condition)?;
+        // Check for compound assignment in the loop body slice
+        if let Some(ca) = Block::detect_compound(content) {
+            let i18n = ctx.i18n;
+            let var_view: AnyView = match content.last() {
+                Some(&Op::AssignGroup(grp)) => {
+                    let var = grp.member(real_idx).expect("valid loop index");
+                    (move || var.display_name(&i18n)).into_any()
+                }
+                Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
+                _ => unreachable!(),
+            };
+            form_block_ops(fb, expr, &content[ca.rhs_start..ca.rhs_end], ctx, condition)?;
+            let rhs = fb.pop()?;
+            let sym = ca.sym;
+            fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
+        } else {
+            form_block_ops(fb, expr, content, ctx, condition)?;
+        }
         ctx.iter_stack.pop();
     }
     Ok(())
