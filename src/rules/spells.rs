@@ -272,7 +272,7 @@ mod tests {
 
     #[test]
     fn parse_expr_with_mul_dice() {
-        use crate::model::{Attribute, Expr};
+        use crate::model::Expr;
         let cases = [
             "(SLOT_LEVEL * 2)d4",
             "(SLOT_LEVEL + 2)d6",

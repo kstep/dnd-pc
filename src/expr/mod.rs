@@ -1157,7 +1157,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn tier_basic_lookup() {
-        let mut character = test_character();
+        let character = test_character();
         // STR modifier = 0, DEX modifier = 2, AC = 15
         // Use AC as the variable (15)
         let expr: Expr = "tier(AC, 1:1, 5:2, 11:3, 17:4)".parse().unwrap();
@@ -1202,7 +1202,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn tier_with_dice() {
-        let character = test_character();
         // tier(AC, 1:1, 5:2, 11:3, 17:4)d8 → 3d8
         let expr: Expr = "tier(AC, 1:1, 5:2, 11:3, 17:4)d8".parse().unwrap();
         let display = expr.to_string();
@@ -1316,12 +1315,8 @@ mod loop_tests {
         let original = ctx.abilities;
         let expr: Expr = "each(@ABILITY, @ABILITY += 1)".parse().unwrap();
         expr.apply(&mut ctx).unwrap();
-        for i in 0..6 {
-            assert_eq!(
-                ctx.abilities[i],
-                original[i] + 1,
-                "ability {i} not incremented"
-            );
+        for (i, (&original, &actual)) in original.iter().zip(ctx.abilities.iter()).enumerate() {
+            assert_eq!(actual, original + 1, "ability {i} not incremented");
         }
     }
 

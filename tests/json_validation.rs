@@ -345,7 +345,7 @@ fn locale_features_complete() {
             match locale_map.get(name.as_ref()) {
                 None => missing.push(name.as_ref()),
                 Some(entry) if check_label => {
-                    if !entry.label.as_ref().is_some_and(|l| !l.is_empty()) {
+                    if entry.label.as_ref().is_none_or(|l| l.is_empty()) {
                         missing_labels.push(name.as_ref());
                     }
                 }

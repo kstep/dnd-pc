@@ -2522,6 +2522,11 @@ dialog.modal.closing::backdrop {
   &:invalid {
     border: 2px solid var(--danger);
   }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .expr-formula {

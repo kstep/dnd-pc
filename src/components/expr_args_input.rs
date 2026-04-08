@@ -167,7 +167,7 @@ struct FormCtx {
     boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
     iter_stack: Vec<usize>,
-    is_satisfied: RwSignal<bool>,
+    is_satisfied: Memo<bool>,
 }
 
 impl FormCtx {
@@ -175,7 +175,7 @@ impl FormCtx {
         active_args: Vec<u8>,
         boolean_args: BTreeSet<u8>,
         i18n: leptos_fluent::I18n,
-        is_satisfied: RwSignal<bool>,
+        is_satisfied: Memo<bool>,
     ) -> Self {
         Self {
             args: Vec::new(),
@@ -207,38 +207,42 @@ fn form_block(
 
     let mut fb = FormBuilder::new();
     for stmt in block.statements() {
-        if let Some(ca) = Block::detect_compound(stmt) {
-            let i18n = ctx.i18n;
-            let var_view: AnyView = match stmt.last() {
-                Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
-                Some(&Op::AssignGroup(grp)) => {
-                    let idx = ctx.iter_stack.last().copied().unwrap_or(0);
-                    if let Some(var) = grp.member(idx) {
-                        (move || var.display_name(&i18n)).into_any()
-                    } else {
-                        format!("@{grp}").into_any()
-                    }
-                }
-                _ => unreachable!(),
-            };
-            form_block_ops(
-                &mut fb,
-                expr,
-                &stmt[ca.rhs_start..ca.rhs_end],
-                ctx,
-                condition,
-            )?;
-            let rhs = fb.pop()?;
-            let sym = ca.sym;
-            fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
-        } else {
-            form_block_ops(&mut fb, expr, stmt, ctx, condition)?;
-        }
+        render_statement(&mut fb, expr, stmt, ctx, condition)?;
     }
     fb.finish()
 }
 
-fn arg_checkbox(signal: RwSignal<i32>, is_satisfied: RwSignal<bool>) -> AnyView {
+/// Render a single statement: detect compound assignment (`X += rhs`) and
+/// render as `{label} {op}= {rhs}`, or fall back to `form_block_ops`.
+fn render_statement(
+    fb: &mut FormBuilder,
+    expr: &Expr,
+    stmt: &[Op],
+    ctx: &mut FormCtx,
+    condition: bool,
+) -> Result<(), expr::Error> {
+    if let Some(ca) = Block::detect_compound(stmt) {
+        let i18n = ctx.i18n;
+        let iter_idx = ctx.iter_stack.last().copied().unwrap_or(0);
+        let var_view: AnyView = match stmt.last() {
+            Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
+            Some(&Op::AssignGroup(grp)) => {
+                let var = grp.member(iter_idx).expect("valid index");
+                (move || var.display_name(&i18n)).into_any()
+            }
+            _ => unreachable!(),
+        };
+        form_block_ops(fb, expr, &stmt[ca.rhs_start..ca.rhs_end], ctx, condition)?;
+        let rhs = fb.pop()?;
+        let sym = ca.sym;
+        fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
+    } else {
+        form_block_ops(fb, expr, stmt, ctx, condition)?;
+    }
+    Ok(())
+}
+
+fn arg_checkbox(signal: RwSignal<i32>, is_satisfied: Memo<bool>) -> AnyView {
     view! {
         <input
             type="checkbox"
@@ -253,7 +257,7 @@ fn arg_checkbox(signal: RwSignal<i32>, is_satisfied: RwSignal<bool>) -> AnyView 
     .into_any()
 }
 
-fn arg_number(signal: RwSignal<i32>, is_satisfied: RwSignal<bool>) -> AnyView {
+fn arg_number(signal: RwSignal<i32>, is_satisfied: Memo<bool>) -> AnyView {
     view! {
         <input
             type="number"
@@ -380,24 +384,7 @@ fn form_block_loop(
     let content = &body_ops[..content_end];
     for real_idx in subgrp.real_indices() {
         ctx.iter_stack.push(real_idx);
-        // Check for compound assignment in the loop body slice
-        if let Some(ca) = Block::detect_compound(content) {
-            let i18n = ctx.i18n;
-            let var_view: AnyView = match content.last() {
-                Some(&Op::AssignGroup(grp)) => {
-                    let var = grp.member(real_idx).expect("valid loop index");
-                    (move || var.display_name(&i18n)).into_any()
-                }
-                Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
-                _ => unreachable!(),
-            };
-            form_block_ops(fb, expr, &content[ca.rhs_start..ca.rhs_end], ctx, condition)?;
-            let rhs = fb.pop()?;
-            let sym = ca.sym;
-            fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
-        } else {
-            form_block_ops(fb, expr, content, ctx, condition)?;
-        }
+        render_statement(fb, expr, content, ctx, condition)?;
         ctx.iter_stack.pop();
     }
     Ok(())
@@ -569,15 +556,45 @@ pub fn ExprArgsInput(
 
     let i18n = expect_context::<leptos_fluent::I18n>();
 
+    // Lazy signals — populated after form building, read by is_valid Memo.
+    let read_signals_cell: RwSignal<Vec<Signal<i32>>> = RwSignal::new(Vec::new());
+    let dice_signals_cell: RwSignal<Option<(DiceGroupSignals, u32)>> = RwSignal::new(None);
+
+    // Validation Memo — created before form so it can be passed to FormCtx.
+    // Reads signals lazily; they're populated after form_block runs.
+    let eval_expr = expr.clone();
+    let is_valid = Memo::new(move |_| {
+        let signals = read_signals_cell.read();
+        let args_ok = if signals.is_empty() {
+            true
+        } else {
+            let character = store.read();
+            let ctx = ArgContext {
+                character: &character,
+                args: &signals,
+            };
+            eval_expr.eval_lenient(&ctx).is_ok()
+        };
+
+        let dice_ok = dice_signals_cell
+            .read()
+            .as_ref()
+            .is_none_or(|(groups, total)| {
+                let filled: u32 = groups
+                    .values()
+                    .flat_map(|signals| signals.iter())
+                    .filter(|signal| signal.get() > 0)
+                    .count() as u32;
+                filled == *total
+            });
+
+        args_ok && dice_ok
+    });
+
     // Build formula view with inline ARG inputs (if any)
-    let is_satisfied = RwSignal::new(false);
     let formula_view = if has_args {
-        let mut form_ctx = FormCtx::new(
-            analysis.active_args,
-            analysis.boolean_args,
-            i18n,
-            is_satisfied,
-        );
+        let mut form_ctx =
+            FormCtx::new(analysis.active_args, analysis.boolean_args, i18n, is_valid);
         let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
             .unwrap_or_else(|err| format!("Error: {err}").into_any());
 
@@ -589,62 +606,24 @@ pub fn ExprArgsInput(
         None
     };
 
-    let arg_signals = formula_view
-        .as_ref()
-        .map(|(_, _, write_signals)| write_signals.clone())
-        .unwrap_or_default();
-    let read_signals_stored = formula_view
-        .as_ref()
-        .map(|(_, read_signals, _)| StoredValue::new(read_signals.clone()));
-
-    let formula_el = formula_view.map(|(view, _, _)| view);
-
-    // Build dice input groups (if any)
-    let (dice_signals, dice_groups_el, dice_signals_stored, dice_total_needed) = if has_dice {
-        let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
-        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls);
-        let signals_stored = StoredValue::new(signals.clone());
-        let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
-        (signals, el, Some(signals_stored), total_needed)
-    } else {
-        (BTreeMap::new(), None, None, 0)
+    let (formula_el, arg_signals) = match formula_view {
+        Some((view, read_signals, write_signals)) => {
+            read_signals_cell.set(read_signals);
+            (Some(view), write_signals)
+        }
+        None => (None, Vec::new()),
     };
 
-    // Validation: all ARG inputs eval OK AND all dice inputs filled.
-    // Both args and dice use RwSignals, so this Memo is fully reactive.
-    let eval_expr = expr.clone();
-    let is_valid = Memo::new(move |_| {
-        let args_ok = if let Some(stored) = read_signals_stored {
-            let character = store.read();
-            stored.with_value(|signals| {
-                let ctx = ArgContext {
-                    character: &character,
-                    args: signals,
-                };
-                eval_expr.eval_lenient(&ctx).is_ok()
-            })
-        } else {
-            true
-        };
-
-        let dice_ok = if let Some(stored) = dice_signals_stored {
-            stored.with_value(|groups| {
-                let filled: u32 = groups
-                    .values()
-                    .flat_map(|signals| signals.iter())
-                    .filter(|signal| signal.get() > 0)
-                    .count() as u32;
-                filled == dice_total_needed
-            })
-        } else {
-            true
-        };
-
-        args_ok && dice_ok
-    });
-
-    // Sync is_valid → is_satisfied so inputs disable when guard is met
-    Effect::new(move || is_satisfied.set(is_valid.get()));
+    // Build dice input groups (if any)
+    let (dice_signals, dice_groups_el) = if has_dice {
+        let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
+        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls);
+        dice_signals_cell.set(Some((signals.clone(), total_needed)));
+        let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
+        (signals, el)
+    } else {
+        (BTreeMap::new(), None)
+    };
 
     on_ready(ExprArgsInputParts {
         arg_signals,
