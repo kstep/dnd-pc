@@ -183,17 +183,10 @@ impl ExprAnalysis {
         is_arg: impl Fn(&Var) -> Option<u8> + Copy,
         subgrp: VarSubgroup<Grp>,
         body_idx: BlockIndex,
-    ) -> usize
-    where
+    ) where
         Var: Copy + fmt::Display,
         Grp: Copy + VarGroup<Var = Var>,
     {
-        // Determine subgroup size
-        let mut size = 0;
-        while subgrp.member(size).is_some() {
-            size += 1;
-        }
-
         let mut has_arg_group = false;
         let mut has_in_pattern = false;
         let mut visited = BTreeSet::new();
@@ -207,15 +200,19 @@ impl ExprAnalysis {
         );
 
         if has_arg_group {
-            for idx in 0..size as u8 {
+            let mut pos = 0;
+            while let Some(real_idx) = subgrp.real_index(pos) {
+                if subgrp.inner.member(real_idx).is_none() {
+                    break;
+                }
+                let idx = real_idx as u8;
                 self.active_args.push(idx);
                 if has_in_pattern {
                     self.boolean_args.insert(idx);
                 }
+                pos += 1;
             }
         }
-
-        size
     }
 
     /// Recursively scan a block and all reachable sub-blocks for PushGroup(Arg)
