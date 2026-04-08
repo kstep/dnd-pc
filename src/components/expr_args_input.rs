@@ -327,16 +327,25 @@ fn form_block_ops(
                     continue;
                 }
 
-                let then_view = form_block(expr, then_idx, ctx, false)?;
-                if else_idx == BLOCK_NOOP || else_idx == BLOCK_ERROR {
+                if else_idx == BLOCK_ERROR {
+                    // Guard body: inline into current FormBuilder to avoid
+                    // nested wrapping (loop items + trailing statements
+                    // should all be siblings in the same grid).
+                    let body_ops = expr.block(then_idx);
+                    form_block_ops(fb, expr, body_ops, ctx, condition)?;
+                } else if else_idx == BLOCK_NOOP {
+                    let then_view = form_block(expr, then_idx, ctx, false)?;
                     fb.push_view(then_view);
-                } else if else_has_args {
-                    let else_view = form_block(expr, else_idx, ctx, false)?;
-                    fb.push_view(
-                        view! { <>"if("{cond}", "{then_view}", "{else_view}")"</> }.into_any(),
-                    );
                 } else {
-                    fb.push_view(view! { <>"if("{cond}", "{then_view}")"</> }.into_any());
+                    let then_view = form_block(expr, then_idx, ctx, false)?;
+                    if else_has_args {
+                        let else_view = form_block(expr, else_idx, ctx, false)?;
+                        fb.push_view(
+                            view! { <>"if("{cond}", "{then_view}", "{else_view}")"</> }.into_any(),
+                        );
+                    } else {
+                        fb.push_view(view! { <>"if("{cond}", "{then_view}")"</> }.into_any());
+                    }
                 }
             }
             op => fb.exec_op(op, &ctx.i18n)?,

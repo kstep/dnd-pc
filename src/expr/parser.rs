@@ -553,7 +553,8 @@ impl<
     /// `tier(var, threshold:value, threshold:value, ...)`
     fn parse_tier(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
-        // First argument is always a variable identifier
+        // TODO: first argument accepts only a bare variable name, not an
+        // arbitrary expression. Extend if we ever need tier(expr, ...).
         let var: Var = match self.next()? {
             Some(Token::Ident(name)) => name.parse().map_err(|_| Error::unexpected_token(name))?,
             Some(token) => return Err(Error::unexpected_token(token)),
