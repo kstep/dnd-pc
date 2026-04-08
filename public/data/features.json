@@ -2193,7 +2193,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.3); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.4); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.5))"
+        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -3345,7 +3345,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.2); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.3))"
+        "expr": "with(@SKILL._.PROF(ARCA, HIST, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -3678,7 +3678,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.1); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.2))"
+        "expr": "with(@SKILL._.PROF(ANIM, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -3687,7 +3687,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
+        "expr": "with(@SKILL._.PROF(HIST, INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -4210,7 +4210,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.2); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.3))"
+        "expr": "with(@SKILL._.PROF(ANIM, ATHL, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -4430,7 +4430,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.0); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.1); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.2))"
+        "expr": "with(@SKILL._.PROF(INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -5865,7 +5865,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.1))"
+        "expr": "with(@SKILL._.PROF(ARCA, NATU), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -8172,7 +8172,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
+        "expr": "with(@SKILL._.PROF(ACRO, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -8719,7 +8719,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.0); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.1); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.2))"
+        "expr": "with(@SKILL._.PROF(DECE, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -12842,7 +12842,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3))"
+        "expr": "with(@SKILL._.PROF(ACRO, ATHL, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -12995,7 +12995,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.6))",
+        "expr": "with(@SKILL._.PROF(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13017,7 +13017,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.3); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.4); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.5))",
+        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13052,7 +13052,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 == 2, if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.2); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.3); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.4))",
+        "expr": "with(@SKILL._.PROF(HIST, INSI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13065,7 +13065,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
+        "expr": "with(@SKILL._.PROF(ARCA, ANIM, INSI, MEDI, NATU, PERC, RELI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13078,7 +13078,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 2, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.1); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.2); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.3); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.4); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.5); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
+        "expr": "with(@SKILL._.PROF(ACRO, ANIM, ATHL, HIST, INSI, INTI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13100,7 +13100,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.2); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.3); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.4); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.5))",
+        "expr": "with(@SKILL._.PROF(ACRO, ATHL, HIST, INSI, RELI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13113,7 +13113,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
+        "expr": "with(@SKILL._.PROF(ATHL, INSI, INTI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13126,7 +13126,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 3, if(SKILL.ANIM.PROF == 0, SKILL.ANIM.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.3); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.4); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.5); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.6); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.7))",
+        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INSI, INVE, NATU, PERC, STEA, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13139,7 +13139,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and in(ARG.8, 0, 1) and in(ARG.9, 0, 1) and in(ARG.10, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 + ARG.8 + ARG.9 + ARG.10 == 4, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.2); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.3); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.4); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.5); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.6); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.7); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.8); if(SKILL.SLEI.PROF == 0, SKILL.SLEI.PROF += ARG.9); if(SKILL.STEA.PROF == 0, SKILL.STEA.PROF += ARG.10))",
+        "expr": "with(@SKILL._.PROF(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13152,7 +13152,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
+        "expr": "with(@SKILL._.PROF(ARCA, DECE, INSI, INTI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13165,7 +13165,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.1); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.2); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.3); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.4); if(SKILL.NATU.PROF == 0, SKILL.NATU.PROF += ARG.5); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.6))",
+        "expr": "with(@SKILL._.PROF(ARCA, DECE, HIST, INTI, INVE, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13178,7 +13178,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 == 2, if(SKILL.ARCA.PROF == 0, SKILL.ARCA.PROF += ARG.0); if(SKILL.HIST.PROF == 0, SKILL.HIST.PROF += ARG.1); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.2); if(SKILL.INVE.PROF == 0, SKILL.INVE.PROF += ARG.3); if(SKILL.MEDI.PROF == 0, SKILL.MEDI.PROF += ARG.4); if(SKILL.RELI.PROF == 0, SKILL.RELI.PROF += ARG.5))",
+        "expr": "with(@SKILL._.PROF(ARCA, HIST, INSI, INVE, MEDI, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -13767,7 +13767,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and ARG.0 + ARG.1 + ARG.2 == 1, if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.0); if(SKILL.PERC.PROF == 0, SKILL.PERC.PROF += ARG.1); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.2))"
+        "expr": "with(@SKILL._.PROF(INSI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -14175,7 +14175,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 == 2, if(SKILL.DECE.PROF == 0, SKILL.DECE.PROF += ARG.0); if(SKILL.INSI.PROF == 0, SKILL.INSI.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.PERF.PROF == 0, SKILL.PERF.PROF += ARG.3); if(SKILL.PERS.PROF == 0, SKILL.PERS.PROF += ARG.4))"
+        "expr": "with(@SKILL._.PROF(DECE, INSI, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))"
       }
     ]
   },
@@ -14223,7 +14223,7 @@
     "name": "Bestial Instincts",
     "assign": [
       {
-        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 == 1, if(SKILL.ACRO.PROF == 0, SKILL.ACRO.PROF += ARG.0); if(SKILL.ATHL.PROF == 0, SKILL.ATHL.PROF += ARG.1); if(SKILL.INTI.PROF == 0, SKILL.INTI.PROF += ARG.2); if(SKILL.SURV.PROF == 0, SKILL.SURV.PROF += ARG.3))",
+        "expr": "with(@SKILL._.PROF(ACRO, ATHL, INTI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -14778,7 +14778,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "guard(in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 == 1, RESIST.ACID += ARG.2; RESIST.COLD += ARG.3; RESIST.FIRE += ARG.4; RESIST.LIGHT += ARG.5; RESIST.POISON += ARG.6)",
+        "expr": "with(@RESIST._(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
         "when": "OnFeatureAdd"
       }
     ],

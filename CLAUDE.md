@@ -225,10 +225,11 @@ Both `public/data/` and each locale directory need explicit `<link data-trunk re
 - `each(@GROUP, body)` — side-effect loop over all group members. `@GROUP` = `@ABILITY`, `@SKILL._.PROF`, `@ABILITY.SAVE.PROF`, `@RESIST._`, etc.
 - `fold(op, @GROUP, expr)` — reduce: evaluate expr per member, accumulate with op (`+`, `and`, `max`, etc.)
 - `fold(op, @GROUP)` — shorthand for `fold(op, @GROUP, @GROUP)`, e.g. `fold(+, @ABILITY)` = sum of all ability scores.
-- `with(@GROUP, body)` — bind `$` to GROUP inside body. Avoids repeating long group names. Purely syntactic (compile-time).
-- `@GROUP(X, Y, Z)` — subgroup selecting specific members by name, e.g. `@ABILITY(INT, WIS, CHA)`.
-- `$` — inside `with()`, resolves to the bound group. `@ARG` — companion group, auto-indexed by loop counter.
-- Example: `with(@ABILITY, guard(fold(and, $, in(@ARG, 0, 1)) and fold(+, $, @ARG) == 1, each($, if($ < 20, $ += @ARG))))`
+- `with(@GROUP, body)` — bind `@` to GROUP inside body. Avoids repeating long group names. Purely syntactic (compile-time).
+- `@GROUP(X, Y, Z)` — masked subgroup selecting specific members by name, e.g. `@SKILL._.PROF(ARCA, HIST, NATU, RELI)` selects only Arcana, History, Nature, Religion from the 18-skill group. Member names: abilities (`STR`, `DEX`, ...), skills (`ACRO`, `ANIM`, `ARCA`, `ATHL`, `DECE`, `HIST`, `INSI`, `INTI`, `INVE`, `MEDI`, `NATU`, `PERC`, `PERF`, `PERS`, `RELI`, `SLEI`, `STEA`, `SURV`), damage types (`ACID`, `COLD`, `FIRE`, `LIGHT`, `POISON`, ...).
+- `@` — inside `with()`, resolves to the bound group. `@ARG` — companion ARG group, auto-indexed by loop counter (one ARG per group member).
+- Example: `with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 7)) and fold(+, @, @ARG + max(0, @ARG - 5)) == 27, each(@, @ += @ARG)))`
+- Masked subgroup example: `with(@SKILL._.PROF(ARCA, HIST, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))`
 
 **AttributeGroup** (`src/model/attribute_group.rs`): `VarGroup` impl for `Attribute`. 13 variants: `Ability`(6), `AbilityMod`(6), `AbilitySave`(6), `AbilitySaveProf`(6), `AbilitySaveAdv`(6), `AbilityAdv`(6), `Skill`(18), `SkillProf`(18), `SkillAdv`(18), `Resist`(13), `Vuln`(13), `Immune`(13), `Arg`(unbounded). Uses `strum::VariantArray`. Type aliases: `model::Expr = expr::Expr<Attribute, i32, AttributeGroup>`, `model::Op = expr::Op<Attribute, i32, AttributeGroup>`.
 
