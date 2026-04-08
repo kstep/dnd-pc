@@ -143,6 +143,18 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Displa
                 let val = self.stack.pop()?;
                 self.push(format!("@{grp} = {}", val.text), 0);
             }
+            Op::Tier(count) => {
+                let var = self.stack.pop()?;
+                let mut pairs = Vec::with_capacity(count as usize);
+                for _ in 0..count {
+                    let value = self.stack.pop()?;
+                    let threshold = self.stack.pop()?;
+                    pairs.push(format!("{}:{}", threshold.text, value.text));
+                }
+                pairs.reverse();
+                let text = format!("tier({}, {})", var.text, pairs.join(", "));
+                self.push(text, 7);
+            }
             Op::Eval(_) | Op::EvalIf(_, _) | Op::Each(_) | Op::Next(_) => {} /* intercepted by
                                                                               * format_block */
         }

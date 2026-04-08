@@ -2322,7 +2322,7 @@
             "effects": [
               {
                 "name": "Damage Reduced",
-                "expr": "if(CLASS_LEVEL >= 14, 4, if(CLASS_LEVEL >= 10, 3, 2))d6"
+                "expr": "tier(CLASS_LEVEL, 1:2, 10:3, 14:4)d6"
               }
             ]
           }
@@ -4312,7 +4312,7 @@
             "effects": [
               {
                 "name": "Fire or Radiant Damage",
-                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, if(CLASS_LEVEL >= 5, 2, 1)))d8"
+                "expr": "tier(CLASS_LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
               }
             ]
           }
@@ -5012,7 +5012,7 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "HP += if(CLASS_LEVEL >= 10, 2, 1)d6 + CLASS_LEVEL",
+                "expr": "HP += tier(CLASS_LEVEL, 1:1, 10:2)d6 + CLASS_LEVEL",
                 "range": "Caster",
                 "duration": "Instant"
               }
@@ -5184,7 +5184,7 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "HP += if(CLASS_LEVEL >= 14, 7, if(CLASS_LEVEL >= 10, 5, 3))d6",
+                "expr": "HP += tier(CLASS_LEVEL, 1:3, 10:5, 14:7)d6",
                 "range": "Caster",
                 "duration": "Instant"
               }
@@ -5282,7 +5282,7 @@
             "effects": [
               {
                 "name": "Necrotic Damage",
-                "expr": "if(CLASS_LEVEL >= 14, 4, if(CLASS_LEVEL >= 10, 3, if(CLASS_LEVEL >= 6, 2, 1)))d4"
+                "expr": "tier(CLASS_LEVEL, 1:1, 6:2, 10:3, 14:4)d4"
               }
             ]
           }
@@ -6027,7 +6027,7 @@
             "effects": [
               {
                 "name": "Temp HP",
-                "expr": "TEMP_HP = max(TEMP_HP, if(CLASS_LEVEL >= 15, 15, if(CLASS_LEVEL >= 10, 10, 5)))",
+                "expr": "TEMP_HP = max(TEMP_HP, tier(CLASS_LEVEL, 1:5, 10:10, 15:15))",
                 "range": "Caster",
                 "duration": "Instant"
               }
@@ -6251,7 +6251,7 @@
             "effects": [
               {
                 "name": "Extra Damage",
-                "expr": "if(CLASS_LEVEL >= 18, 2, 1)d6"
+                "expr": "tier(CLASS_LEVEL, 1:1, 18:2)d6"
               }
             ]
           }
@@ -6882,7 +6882,7 @@
             "effects": [
               {
                 "name": "Damage",
-                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, 2))d6"
+                "expr": "tier(CLASS_LEVEL, 1:2, 11:3, 17:4)d6"
               }
             ]
           }
@@ -10449,7 +10449,7 @@
             "effects": [
               {
                 "name": "Ward",
-                "expr": "if(CLASS_LEVEL >= 14, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 6, 3, if(CLASS_LEVEL >= 3, 2, 1))))d8"
+                "expr": "tier(CLASS_LEVEL, 1:1, 3:2, 6:3, 10:4, 14:5)d8"
               }
             ]
           }
@@ -11725,7 +11725,7 @@
             "effects": [
               {
                 "name": "Healing",
-                "expr": "HP += if(CLASS_LEVEL >= 15, 5, if(CLASS_LEVEL >= 10, 4, if(CLASS_LEVEL >= 5, 3, if(CLASS_LEVEL >= 3, 2, 1))))d6",
+                "expr": "HP += tier(CLASS_LEVEL, 1:1, 3:2, 5:3, 10:4, 15:5)d6",
                 "range": "Caster",
                 "duration": "Instant"
               }
@@ -13207,7 +13207,7 @@
             "effects": [
               {
                 "name": "Healing or Radiant Damage",
-                "expr": "if(CLASS_LEVEL >= 17, 4, if(CLASS_LEVEL >= 11, 3, if(CLASS_LEVEL >= 5, 2, 1)))d8"
+                "expr": "tier(CLASS_LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
               }
             ]
           },

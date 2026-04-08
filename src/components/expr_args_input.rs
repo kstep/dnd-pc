@@ -132,7 +132,8 @@ impl FormBuilder {
             | Op::Each(_)
             | Op::Next(_)
             | Op::PushGroup(_)
-            | Op::AssignGroup(_) => {} // intercepted by form_block
+            | Op::AssignGroup(_)
+            | Op::Tier(_) => {} // intercepted by form_block
         }
         Ok(())
     }

@@ -39,6 +39,7 @@ pub(super) enum Token<'a> {
     Ge,
     EqEq,
     NotEq,
+    Colon,
 }
 
 pub(super) struct Tokenizer<'a> {
@@ -131,7 +132,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                 Some(Ok(Token::GroupRef(name)))
             }
             b'+' | b'-' | b'*' | b'/' | b'\\' | b'%' | b'(' | b')' | b',' | b'=' | b';' | b'<'
-            | b'>' | b'!' => {
+            | b'>' | b'!' | b':' => {
                 let second = self.rest.as_bytes().get(1).copied();
                 if second == Some(b'=') {
                     let tok = match first {
@@ -168,6 +169,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                     b')' => Token::RParen,
                     b',' => Token::Comma,
                     b';' => Token::Semicolon,
+                    b':' => Token::Colon,
                     _ => return Some(Err(Error::UnexpectedChar(first as char))),
                 }))
             }

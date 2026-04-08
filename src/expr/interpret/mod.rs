@@ -143,6 +143,20 @@ fn eval_op<Var, Grp: VarGroup<Var = Var>>(
         Op::Next(subgrp) => {
             stack.push(subgrp.advance_loop(iter_stack.as_vec_mut()) as i32);
         }
+        Op::Tier(count) => {
+            let var = stack.pop()?;
+            let mut result = 0;
+            let mut found = false;
+            for _ in 0..count {
+                let value = stack.pop()?;
+                let threshold = stack.pop()?;
+                if !found && var >= threshold {
+                    result = value;
+                    found = true;
+                }
+            }
+            stack.push(result);
+        }
         Op::PushVar(_) | Op::AssignVar(_) | Op::PushGroup(_) | Op::AssignGroup(_) => unreachable!(),
     }
     Ok(None)

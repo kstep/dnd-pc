@@ -370,6 +370,9 @@ impl<
             "fold" => {
                 self.parse_fold(ops)?;
             }
+            "tier" => {
+                self.parse_tier(ops)?;
+            }
             _ => return Err(Error::unexpected_token(name)),
         }
 
@@ -543,6 +546,42 @@ impl<
         self.expect(|token| matches!(token, Token::RParen))?;
         ops.push(Op::Each(subgrp));
         ops.push(Op::EvalIf(body_idx, BLOCK_NOOP));
+        Ok(())
+    }
+
+    /// `tier(var, threshold:value, threshold:value, ...)`
+    fn parse_tier(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        // Push threshold:value pairs first
+        let mut count: u8 = 0;
+        loop {
+            match self.peek() {
+                Some(Token::RParen) => {
+                    self.next()?;
+                    break;
+                }
+                _ => {
+                    if count > 0 {
+                        self.expect(|token| matches!(token, Token::Comma))?;
+                        // Check for trailing comma before RParen
+                        if matches!(self.peek(), Some(Token::RParen)) {
+                            self.next()?;
+                            break;
+                        }
+                    }
+                    // Parse threshold:value pair or the variable (last arg before first comma)
+                    self.parse_or(ops)?;
+                    if matches!(self.peek(), Some(Token::Colon)) {
+                        self.next()?;
+                        self.parse_or(ops)?;
+                        count += 1;
+                    }
+                    // If no colon, this was the variable — it stays on the
+                    // stack
+                }
+            }
+        }
+        ops.push(Op::Tier(count));
         Ok(())
     }
 

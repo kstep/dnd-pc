@@ -411,6 +411,14 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
                     self.assign_to_attr(attr, value);
                 }
             }
+            Op::Tier(count) => {
+                self.pop(); // var
+                for _ in 0..count {
+                    self.pop();
+                    self.pop();
+                }
+                self.stack.push(SumEntry::constant(0));
+            }
         }
         Ok(None)
     }

@@ -182,6 +182,7 @@ pub enum Op<Var, Val, Grp = NoGroup<Var>> {
     PushGroup(Grp),                 // push group[iter_stack.last()] via ctx.resolve
     AssignGroup(Grp),               /* pop value, assign to group[iter_stack.last()] via
                                      * ctx.assign */
+    Tier(u8), // pop var, pop N*(threshold,value) pairs, push matching value
 }
 
 impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
@@ -211,6 +212,7 @@ impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
             Op::Each(_) | Op::Next(_) => 1, // push boolean
             Op::PushGroup(_) => 1,
             Op::AssignGroup(_) => -1,
+            Op::Tier(_) => 0, // variable net: -(1 + 2*n) + 1; approximated for compound detection
         }
     }
 

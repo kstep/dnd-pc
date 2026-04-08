@@ -875,6 +875,14 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
             Op::AssignGroup(_) => {
                 self.pop();
             }
+            Op::Tier(count) => {
+                self.pop(); // var
+                for _ in 0..count {
+                    self.pop(); // value
+                    self.pop(); // threshold
+                }
+                self.stack.push(ArgStackEntry::other());
+            }
         }
         Ok(None)
     }
