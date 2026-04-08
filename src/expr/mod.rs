@@ -1160,8 +1160,8 @@ mod loop_tests {
     use wasm_bindgen_test::*;
 
     use crate::{
-        expr::{self, Context, Eval},
-        model::{Ability, Attribute, Expr},
+        expr::{self, Context, Eval, Op},
+        model::{Ability, Attribute, AttributeGroup, Expr},
     };
 
     fn is_arg(var: &Attribute) -> Option<u8> {
@@ -1355,14 +1355,13 @@ mod loop_tests {
         }
     }
 
-    impl expr::Interpreter<Attribute, i32, crate::model::AttributeGroup> for NonEvalInterpreter {
+    impl expr::Interpreter<Attribute, i32, AttributeGroup> for NonEvalInterpreter {
         type Output = ();
 
         fn exec(
             &mut self,
-            op: crate::expr::Op<Attribute, i32, crate::model::AttributeGroup>,
+            op: Op<Attribute, i32, AttributeGroup>,
         ) -> Result<Option<expr::BlockIndex>, expr::Error> {
-            use crate::expr::{Op, VarGroup};
             match op {
                 Op::PushConst(n) => self.stack.push(Some(n)),
                 Op::PushVar(_) => self.stack.push(None),

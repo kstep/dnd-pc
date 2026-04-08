@@ -1,7 +1,7 @@
 [
   {
     "name": "Generation: Point Buy",
-    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {
         "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 7)) and fold(+, @, @ARG + max(0, @ARG - 5)) == 27, each(@, @ += @ARG)))",
@@ -12,7 +12,7 @@
   },
   {
     "name": "Generation: Random",
-    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {
         "expr": "STR = 4d6kh3; DEX = 4d6kh3; CON = 4d6kh3; INT = 4d6kh3; WIS = 4d6kh3; CHA = 4d6kh3",
@@ -23,7 +23,7 @@
   },
   {
     "name": "Generation: Preset",
-    "prerequisites": "LEVEL == 1 and fold(+, @ABILITY) == 48",
+    "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {
         "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 8, 15) and @ARG != 9 and @ARG != 11) and fold(+, @, @ARG) == 72 and fold(+, @, @ARG * @ARG) == 898, each(@, @ = @ARG)))",
