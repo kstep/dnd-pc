@@ -5713,5 +5713,20 @@
   "Boon of the Night Spirit.field.Actions.option.Shadowy Form": {
     "label": "Shadowy Form",
     "description": "While in Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
+  },
+  "Fey Touched.spell.Misty Step": {
+    "description": "Bonus Action | Self | Instantaneous\n\nBriefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+  },
+  "Shadow Touched.spell.Invisibility": {
+    "description": "Action | Touch | Concentration, up to 1 hour\n\nA creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell.\n\nUsing a Higher-Level Spell Slot. You can target one additional creature for each spell slot level above 2."
+  },
+  "Telepathic.spell.Detect Thoughts": {
+    "description": "Action | Self | Concentration, up to 1 minute\n\nYou activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns.\n\nSense Thoughts. You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic. You don’t read the thoughts, but you know that a thinking creature is present.\n\nThe spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.\n\nRead Thoughts. Target one creature you can see within 30 feet of yourself or one creature within 30 feet of yourself that you detected with the Sense Thoughts option. You learn what is most on the target’s mind right now. If the target doesn’t know any languages and isn’t telepathic, you learn nothing.\n\nAs a Magic action on your next turn, you can try to probe deeper into the target’s mind. If you probe deeper, the target makes a Wisdom saving throw. On a failed save, you discern the target’s reasoning, emotions, and something that looms large in its mind (such as a worry, love, or hate). On a successful save, the spell ends. Either way, the target knows that you are probing into its mind, and until you shift your attention away from the target’s mind, the target can take an action on its turn to make an Intelligence (Arcana) check against your spell save DC, ending the spell on a success."
+  },
+  "Fey Gift.spell.Friends": {
+    "description": "Action | 10 feet | Concentration, up to 1 minute\n\nYou magically emanate a sense of friendship toward one creature you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target succeeds automatically if it isn’t a Humanoid, if you’re fighting it, or if you have cast this spell on it within the past 24 hours.\n\nThe spell ends early if the target takes damage or if you make an attack roll, deal damage, or force anyone to make a saving throw. When the spell ends, the target knows it was Charmed by you."
+  },
+  "Cloying Mists.spell.Fog Cloud": {
+    "description": "Action | 120 feet | Concentration, up to 1 hour\n\nYou create a 20-foot-radius Sphere of fog centered on a point within range. The Sphere is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it.\n\nUsing a Higher-Level Spell Slot. The fog’s radius increases by 20 feet for each spell slot level above 1."
   }
 }
