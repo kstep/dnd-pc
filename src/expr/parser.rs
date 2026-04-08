@@ -550,37 +550,32 @@ impl<
     }
 
     /// `tier(var, threshold:value, threshold:value, ...)`
+    /// `tier(var, threshold:value, threshold:value, ...)`
     fn parse_tier(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         self.expect(|token| matches!(token, Token::LParen))?;
-        // Push threshold:value pairs first
+        // First argument is always a variable identifier
+        let var: Var = match self.next()? {
+            Some(Token::Ident(name)) => name.parse().map_err(|_| Error::unexpected_token(name))?,
+            Some(token) => return Err(Error::unexpected_token(token)),
+            None => return Err(Error::UnexpectedEnd),
+        };
+        // Parse threshold:value pairs
         let mut count: u8 = 0;
-        loop {
-            match self.peek() {
-                Some(Token::RParen) => {
-                    self.next()?;
-                    break;
-                }
-                _ => {
-                    if count > 0 {
-                        self.expect(|token| matches!(token, Token::Comma))?;
-                        // Check for trailing comma before RParen
-                        if matches!(self.peek(), Some(Token::RParen)) {
-                            self.next()?;
-                            break;
-                        }
-                    }
-                    // Parse threshold:value pair or the variable (last arg before first comma)
-                    self.parse_or(ops)?;
-                    if matches!(self.peek(), Some(Token::Colon)) {
-                        self.next()?;
-                        self.parse_or(ops)?;
-                        count += 1;
-                    }
-                    // If no colon, this was the variable — it stays on the
-                    // stack
-                }
+        while matches!(self.peek(), Some(Token::Comma)) {
+            self.next()?;
+            if matches!(self.peek(), Some(Token::RParen)) {
+                break;
             }
+            self.parse_or(ops)?;
+            self.expect(|token| matches!(token, Token::Colon))?;
+            self.parse_or(ops)?;
+            count += 1;
         }
+        self.expect(|token| matches!(token, Token::RParen))?;
+        if count == 0 {
+            return Err(Error::unexpected_token(")"));
+        }
+        ops.push(Op::PushVar(var));
         ops.push(Op::Tier(count));
         Ok(())
     }

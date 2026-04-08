@@ -114,3 +114,21 @@ pub fn use_page_kind() -> Memo<PageKind> {
         }
     })
 }
+
+/// Join an iterator of displayable items with a separator, without
+/// allocating an intermediate `Vec`.
+pub fn join_iter<I, D>(iter: I, sep: &str) -> String
+where
+    I: IntoIterator<Item = D>,
+    D: std::fmt::Display,
+{
+    use std::fmt::Write;
+    let mut result = String::new();
+    for (i, item) in iter.into_iter().enumerate() {
+        if i > 0 {
+            result.push_str(sep);
+        }
+        let _ = write!(result, "{item}");
+    }
+    result
+}

@@ -70,6 +70,15 @@ fn intern(s: &str) -> &'static str {
 }
 
 impl Attribute {
+    /// If this is an `Arg(n)`, returns `Some(n)`.
+    pub fn arg_index(&self) -> Option<u8> {
+        if let Self::Arg(n) = self {
+            Some(*n)
+        } else {
+            None
+        }
+    }
+
     /// Returns true if this attribute represents an advantage/disadvantage
     /// flag.
     pub fn is_advantage(&self) -> bool {

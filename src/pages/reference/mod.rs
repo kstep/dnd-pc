@@ -4,17 +4,13 @@ pub mod feature;
 pub mod sidebar;
 pub mod species;
 pub mod spell;
+
 use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
 pub use sidebar::ReferenceSidebar;
-
-/// Percent-encode a name for use in URL paths (spaces, parens, etc.).
-pub fn encode_name(name: &str) -> String {
-    js_sys::encode_uri_component(name).into()
-}
 
 use crate::{
     BASE_URL,
@@ -26,6 +22,11 @@ use crate::{
         SpellList,
     },
 };
+
+/// Percent-encode a name for use in URL paths (spaces, parens, etc.).
+pub fn encode_name(name: &str) -> String {
+    js_sys::encode_uri_component(name).into()
+}
 
 pub struct InlineSpell {
     pub label: String,
@@ -131,14 +132,8 @@ pub fn feature_choices(
     }
 }
 
-/// Translate an attribute to a human-readable display name using i18n keys.
-/// An interpreter that produces human-readable translated summaries
-/// of assignment operations in an expression. Categorizes by type
-/// (abilities, skill/save/equipment proficiencies, other effects).
-/// Stack entry: display string + optional numeric value for arithmetic.
-/// Stack entry: display string, optional numeric value, and optional
-/// "compound base" variable (tracks `X` in `X + expr` for compound
-/// assignment detection).
+/// Stack entry for [`AssignmentSummarizer`]: display text, optional numeric
+/// value for constant folding, and compound assignment tracking (`X += rhs`).
 struct SumEntry {
     text: String,
     num: Option<i32>,

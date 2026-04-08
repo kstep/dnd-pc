@@ -93,9 +93,9 @@ pub fn apply_with_modal(
 }
 
 /// Read-only context that resolves ARG variables from a slice for validation.
-struct ArgsContext<'a> {
-    character: &'a Character,
-    args: &'a [i32],
+pub struct ArgsContext<'a> {
+    pub character: &'a Character,
+    pub args: &'a [i32],
 }
 
 impl expr::Context<Attribute, i32> for ArgsContext<'_> {

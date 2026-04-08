@@ -9,7 +9,8 @@ use wasm_bindgen_futures::JsFuture;
 
 use crate::{
     expr::{self, BinOp, BlockIndex, Cmp, Interpreter},
-    model::{Attribute, AttributeGroup, Character, Op},
+    hooks::join_iter,
+    model::{Ability, Attribute, AttributeGroup, Character, Op, Skill},
     rules::{FeatureDefinition, PendingInputs},
 };
 
@@ -606,15 +607,20 @@ pub fn describe_pending_replacements(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     character: &Character,
 ) -> Vec<PendingReplacementDescription> {
+    // Pre-filter: evaluate prerequisites once per feature, not per replaceable
+    // input
+    let selectable: Vec<_> = features_index
+        .values()
+        .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(character))
+        .collect();
+
     pending
         .iter()
         .filter(|input| input.is_replaceable())
         .filter_map(|input| {
-            let eligible: Vec<(String, String)> = features_index
-                .values()
-                .filter(|feat| {
-                    input.replace_with.matches(feat) && feat.meets_prerequisites(character)
-                })
+            let eligible: Vec<(String, String)> = selectable
+                .iter()
+                .filter(|feat| input.replace_with.matches(feat))
                 .map(|feat| (feat.name.to_string(), feat.description.clone()))
                 .collect();
 
@@ -633,45 +639,45 @@ pub fn describe_pending_replacements(
 
 // --- ArgSummarizer: Interpreter that extracts ARG descriptions ---
 
-/// Map an Attribute Display string to a human-readable English name for AI
-/// prompts. Accepts the `Display` representation (e.g. "STR",
-/// "SKILL.ACRO.PROF").
-fn friendly_attr_name(attr_str: &str) -> &str {
-    match attr_str {
-        "STR" => "Strength",
-        "DEX" => "Dexterity",
-        "CON" => "Constitution",
-        "INT" => "Intelligence",
-        "WIS" => "Wisdom",
-        "CHA" => "Charisma",
-        "SKILL.ACRO.PROF" => "Acrobatics proficiency",
-        "SKILL.ANIM.PROF" => "Animal Handling proficiency",
-        "SKILL.ARCA.PROF" => "Arcana proficiency",
-        "SKILL.ATHL.PROF" => "Athletics proficiency",
-        "SKILL.DECE.PROF" => "Deception proficiency",
-        "SKILL.HIST.PROF" => "History proficiency",
-        "SKILL.INSI.PROF" => "Insight proficiency",
-        "SKILL.INTI.PROF" => "Intimidation proficiency",
-        "SKILL.INVE.PROF" => "Investigation proficiency",
-        "SKILL.MEDI.PROF" => "Medicine proficiency",
-        "SKILL.NATU.PROF" => "Nature proficiency",
-        "SKILL.PERC.PROF" => "Perception proficiency",
-        "SKILL.PERF.PROF" => "Performance proficiency",
-        "SKILL.PERS.PROF" => "Persuasion proficiency",
-        "SKILL.RELI.PROF" => "Religion proficiency",
-        "SKILL.SLEI.PROF" => "Sleight of Hand proficiency",
-        "SKILL.STEA.PROF" => "Stealth proficiency",
-        "SKILL.SURV.PROF" => "Survival proficiency",
-        "AC" => "Armor Class",
-        "SPEED" => "Speed",
-        "MAX_HP" => "Max HP",
-        other => other,
+/// Map an Attribute to a human-readable English name for AI prompts.
+fn friendly_attr_name(attr: &Attribute) -> &'static str {
+    use Ability::*;
+    use Skill::*;
+    match attr {
+        Attribute::Ability(Strength) => "Strength",
+        Attribute::Ability(Dexterity) => "Dexterity",
+        Attribute::Ability(Constitution) => "Constitution",
+        Attribute::Ability(Intelligence) => "Intelligence",
+        Attribute::Ability(Wisdom) => "Wisdom",
+        Attribute::Ability(Charisma) => "Charisma",
+        Attribute::SkillProficiency(Acrobatics) => "Acrobatics proficiency",
+        Attribute::SkillProficiency(AnimalHandling) => "Animal Handling proficiency",
+        Attribute::SkillProficiency(Arcana) => "Arcana proficiency",
+        Attribute::SkillProficiency(Athletics) => "Athletics proficiency",
+        Attribute::SkillProficiency(Deception) => "Deception proficiency",
+        Attribute::SkillProficiency(History) => "History proficiency",
+        Attribute::SkillProficiency(Insight) => "Insight proficiency",
+        Attribute::SkillProficiency(Intimidation) => "Intimidation proficiency",
+        Attribute::SkillProficiency(Investigation) => "Investigation proficiency",
+        Attribute::SkillProficiency(Medicine) => "Medicine proficiency",
+        Attribute::SkillProficiency(Nature) => "Nature proficiency",
+        Attribute::SkillProficiency(Perception) => "Perception proficiency",
+        Attribute::SkillProficiency(Performance) => "Performance proficiency",
+        Attribute::SkillProficiency(Persuasion) => "Persuasion proficiency",
+        Attribute::SkillProficiency(Religion) => "Religion proficiency",
+        Attribute::SkillProficiency(SleightOfHand) => "Sleight of Hand proficiency",
+        Attribute::SkillProficiency(Stealth) => "Stealth proficiency",
+        Attribute::SkillProficiency(Survival) => "Survival proficiency",
+        Attribute::Ac => "Armor Class",
+        Attribute::Speed => "Speed",
+        Attribute::MaxHp => "Max HP",
+        _ => "unknown",
     }
 }
 
 /// Info about a single ARG extracted by [`ArgSummarizer`].
 struct ArgInfo {
-    target: Option<String>,
+    target: Option<&'static str>,
     range: Option<(i32, i32)>,
 }
 
@@ -679,8 +685,8 @@ struct ArgInfo {
 struct ArgSummary {
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
-    /// For loop expressions: Display names of target group members.
-    group_names: Vec<String>,
+    /// For loop expressions: target group members.
+    group_members: Vec<Attribute>,
 }
 
 /// Stack entry for the summarizer: tracks whether a value came from an ARG.
@@ -724,7 +730,7 @@ struct ArgSummarizer {
     iter_stack: Vec<usize>,
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
-    group_names: Vec<String>,
+    group_members: Vec<Attribute>,
 }
 
 impl ArgSummarizer {
@@ -734,7 +740,7 @@ impl ArgSummarizer {
             iter_stack: Vec::new(),
             args: BTreeMap::new(),
             sum_constraint: None,
-            group_names: Vec::new(),
+            group_members: Vec::new(),
         }
     }
 
@@ -792,7 +798,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 if let Some(idx) = value.arg_idx {
                     let info = self.ensure_arg(idx);
                     if info.target.is_none() {
-                        info.target = Some(friendly_attr_name(&attr.to_string()).to_string());
+                        info.target = Some(friendly_attr_name(&attr));
                     }
                 }
             }
@@ -857,10 +863,9 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 self.stack.push(top);
             }
             Op::Each(subgrp) => {
-                if self.group_names.is_empty() {
-                    self.group_names.extend(
-                        (0..).map_while(|idx| subgrp.member(idx).map(|var| var.to_string())),
-                    );
+                if self.group_members.is_empty() {
+                    self.group_members
+                        .extend((0..).map_while(|idx| subgrp.member(idx)));
                 }
                 let has_items = subgrp.init_loop(&mut self.iter_stack);
                 self.stack.push(ArgStackEntry::constant(has_items as i32));
@@ -891,7 +896,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
         Ok(ArgSummary {
             args: self.args,
             sum_constraint: self.sum_constraint,
-            group_names: self.group_names,
+            group_members: self.group_members,
         })
     }
 }
@@ -902,14 +907,6 @@ pub fn describe_pending_args(
     pending: &[PendingInputs],
     character: &Character,
 ) -> Vec<PendingArgDescription> {
-    let is_arg = |var: &Attribute| -> Option<u8> {
-        if let Attribute::Arg(n) = var {
-            Some(*n)
-        } else {
-            None
-        }
-    };
-
     pending
         .iter()
         .filter_map(|inputs| {
@@ -917,7 +914,7 @@ pub fn describe_pending_args(
             let mut had_args = false;
 
             for expr in &inputs.exprs {
-                let analysis = expr.analyze(character, is_arg);
+                let analysis = expr.analyze(character, Attribute::arg_index);
                 if analysis.active_args.is_empty() {
                     continue;
                 }
@@ -928,7 +925,7 @@ pub fn describe_pending_args(
                 let summary = expr.run(ArgSummarizer::new()).unwrap_or(ArgSummary {
                     args: BTreeMap::new(),
                     sum_constraint: None,
-                    group_names: Vec::new(),
+                    group_members: Vec::new(),
                 });
 
                 let sum_constraint = summary.sum_constraint;
@@ -956,16 +953,11 @@ pub fn describe_pending_args(
                     // may contain real group indices (0, 3, 5…) for masked subgroups,
                     // so index group_names by position within active_args.
                     let group_name = summary
-                        .group_names
+                        .group_members
                         .get(pos)
-                        .map(|name| friendly_attr_name(name).to_string());
-                    let summarizer_name = summary
-                        .args
-                        .get(&arg_index)
-                        .and_then(|info| info.target.clone());
-                    let target = group_name
-                        .or(summarizer_name)
-                        .unwrap_or_else(|| "unknown".to_string());
+                        .map(|attr| friendly_attr_name(attr));
+                    let summarizer_name = summary.args.get(&arg_index).and_then(|info| info.target);
+                    let target = group_name.or(summarizer_name).unwrap_or("unknown");
 
                     // Range: from ArgSummarizer (flat) or boolean from ExprAnalysis
                     let range = summary.args.get(&arg_index).and_then(|info| info.range);
@@ -1019,7 +1011,9 @@ pub fn parse_feature_choices_response(
         .filter(|(key, _)| *key != "replacements")
         .filter_map(|(key, value)| {
             let arr: Vec<i32> = serde_json::from_value(value.clone()).ok()?;
-            Some((key.clone(), arr))
+            // Normalize: strip "Feature: " prefix that some models add
+            let key = key.strip_prefix("Feature: ").unwrap_or(key).to_string();
+            Some((key, arr))
         })
         .collect();
 
@@ -1058,36 +1052,32 @@ pub fn build_feature_choices_messages(
         );
     }
 
-    let features_description: String = pending_args
-        .iter()
-        .map(|pending| {
+    let features_description: String = join_iter(
+        pending_args.iter().map(|pending| {
             format!(
                 "- \"{}\"\n  Description: {}\n{}",
                 pending.feature_name, pending.feature_description, pending.args_description
             )
-        })
-        .collect::<Vec<_>>()
-        .join("\n\n");
+        }),
+        "\n\n",
+    );
 
-    let replacements_description: String = pending_replacements
-        .iter()
-        .map(|pending| {
-            let options: String = pending
-                .eligible
-                .iter()
-                .map(|(name, desc)| {
+    let replacements_description: String = join_iter(
+        pending_replacements.iter().map(|pending| {
+            let options: String = join_iter(
+                pending.eligible.iter().map(|(name, desc)| {
                     let short_desc = if desc.len() > 80 { &desc[..80] } else { desc };
                     format!("    - \"{name}\" — {short_desc}")
-                })
-                .collect::<Vec<_>>()
-                .join("\n");
+                }),
+                "\n",
+            );
             format!(
                 "- \"{}\" — {}\n  Choose one replacement:\n{}",
                 pending.feature_name, pending.feature_description, options
             )
-        })
-        .collect::<Vec<_>>()
-        .join("\n\n");
+        }),
+        "\n\n",
+    );
 
     let mut user_message = format!(
         "Character concept:\n\

@@ -441,13 +441,6 @@ pub fn collect_dice_pool(groups: &DiceGroupSignals) -> DicePool {
     map.into()
 }
 
-fn is_arg(var: &Attribute) -> Option<u8> {
-    match var {
-        Attribute::Arg(n) => Some(*n),
-        _ => None,
-    }
-}
-
 /// Build dice input groups view from roll requirements.
 /// Returns the signal map and the rendered view.
 pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyView) {
@@ -536,7 +529,7 @@ pub fn ExprArgsInput(
     // Analyze: determine which ARGs are reachable and which dice are needed
     let analysis = {
         let character = store.read_untracked();
-        expr.analyze(&*character, is_arg)
+        expr.analyze(&*character, Attribute::arg_index)
     };
 
     let has_args = !analysis.active_args.is_empty();

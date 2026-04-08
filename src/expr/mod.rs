@@ -1152,6 +1152,77 @@ mod tests {
         let analysis = expr.analyze(&character, is_arg);
         assert!(!analysis.boolean_args.contains(&0));
     }
+
+    // --- tier() tests ---
+
+    #[wasm_bindgen_test]
+    fn tier_basic_lookup() {
+        let mut character = test_character();
+        // STR modifier = 0, DEX modifier = 2, AC = 15
+        // Use AC as the variable (15)
+        let expr: Expr = "tier(AC, 1:1, 5:2, 11:3, 17:4)".parse().unwrap();
+        assert_eq!(expr.eval(&character).unwrap(), 3); // 15 >= 11, < 17
+
+        let expr: Expr = "tier(AC, 1:10, 10:20, 20:30)".parse().unwrap();
+        assert_eq!(expr.eval(&character).unwrap(), 20); // 15 >= 10, < 20
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_exact_threshold() {
+        let character = test_character();
+        let expr: Expr = "tier(AC, 1:1, 15:2, 20:3)".parse().unwrap();
+        assert_eq!(expr.eval(&character).unwrap(), 2); // 15 == 15
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_below_first_threshold() {
+        let character = test_character();
+        // STR modifier = 0, threshold starts at 1
+        let expr: Expr = "tier(STR, 1:10, 5:20)".parse().unwrap();
+        assert_eq!(expr.eval(&character).unwrap(), 0); // 0 < 1
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_above_all_thresholds() {
+        let character = test_character();
+        let expr: Expr = "tier(AC, 1:1, 5:2, 10:3)".parse().unwrap();
+        assert_eq!(expr.eval(&character).unwrap(), 3); // 15 >= 10
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_display_roundtrip() {
+        let expr: Expr = "tier(AC, 1:1, 5:2, 11:3, 17:4)".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "tier(AC, 1:1, 5:2, 11:3, 17:4)");
+
+        // Round-trip: parse displayed text back
+        let reparsed: Expr = display.parse().unwrap();
+        assert_eq!(reparsed.to_string(), display);
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_with_dice() {
+        let character = test_character();
+        // tier(AC, 1:1, 5:2, 11:3, 17:4)d8 → 3d8
+        let expr: Expr = "tier(AC, 1:1, 5:2, 11:3, 17:4)d8".parse().unwrap();
+        let display = expr.to_string();
+        assert_eq!(display, "tier(AC, 1:1, 5:2, 11:3, 17:4)d8");
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_compound_assignment() {
+        let mut character = test_character();
+        // HP (AC=15) += tier(AC, 1:1, 5:2) → AC += 2
+        let expr: Expr = "AC += tier(AC, 1:1, 5:2)".parse().unwrap();
+        expr.apply(&mut character).unwrap();
+        assert_eq!(character.ac, 17); // 15 + 2
+    }
+
+    #[wasm_bindgen_test]
+    fn tier_empty_error() {
+        let result: Result<Expr, _> = "tier(AC)".parse();
+        assert!(result.is_err());
+    }
 }
 
 #[cfg(test)]
@@ -1163,13 +1234,6 @@ mod loop_tests {
         expr::{self, Context, Eval, Op},
         model::{Ability, Attribute, AttributeGroup, Expr},
     };
-
-    fn is_arg(var: &Attribute) -> Option<u8> {
-        match var {
-            Attribute::Arg(n) => Some(*n),
-            _ => None,
-        }
-    }
 
     struct TestCtx {
         abilities: [i32; 6],
@@ -1283,7 +1347,7 @@ mod loop_tests {
     fn analyze_each_active_args() {
         let ctx = TestCtx::new();
         let expr: Expr = "each(@ABILITY, @ABILITY += @ARG)".parse().unwrap();
-        let analysis = expr.analyze(&ctx, is_arg);
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 6);
         assert_eq!(analysis.active_args, vec![0, 1, 2, 3, 4, 5]);
     }
@@ -1292,7 +1356,7 @@ mod loop_tests {
     fn analyze_fold_boolean_args() {
         let ctx = TestCtx::new();
         let expr: Expr = "fold(and, @ABILITY, in(@ARG, 0, 1))".parse().unwrap();
-        let analysis = expr.analyze(&ctx, is_arg);
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 6);
         for i in 0..6u8 {
             assert!(
@@ -1308,7 +1372,7 @@ mod loop_tests {
         let expr: Expr = "with(@ABILITY(STR, INT, CHA), each(@, @ += @ARG))"
             .parse()
             .unwrap();
-        let analysis = expr.analyze(&ctx, is_arg);
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
         // Real indices: STR=0, INT=3, CHA=5
         assert_eq!(analysis.active_args, vec![0, 3, 5]);
@@ -1320,7 +1384,7 @@ mod loop_tests {
         let expr: Expr = "with(@ABILITY(STR, INT, CHA), fold(and, @, in(@ARG, 0, 1)))"
             .parse()
             .unwrap();
-        let analysis = expr.analyze(&ctx, is_arg);
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
         assert_eq!(analysis.active_args, vec![0, 3, 5]);
         for &i in &[0u8, 3, 5] {

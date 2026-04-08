@@ -1,13 +1,14 @@
 use std::{collections::BTreeMap, fmt::Write, time::Duration};
 
 use leptos::{either::Either, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
     ai::{self, AiSettings, CharacterConcept, ChatMessage, PendingArgDescription, Role},
     components::{ai_settings_modal::AiSettingsModal, icon::Icon, modal::Modal, spinner::Spinner},
-    expr, hooks,
+    hooks,
+    hooks::join_iter,
     model::{Attribute, Character, FeatureCategory, FeatureSource},
     rules::{
         DefinitionStore, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
@@ -15,6 +16,10 @@ use crate::{
     },
     storage,
 };
+
+const DEFINITION_POLL_ATTEMPTS: u32 = 50;
+const DEFINITION_POLL_INTERVAL: Duration = Duration::from_millis(100);
+const AI_MAX_RETRIES: u32 = 3;
 
 /// Result of the full AI generation pipeline (Phase 1 + Phase 2).
 #[derive(Clone)]
@@ -35,7 +40,6 @@ struct AiGenerateInput {
 
 /// Run both AI phases: generate identity, wait for definitions, generate
 /// feature choices. This is the async body of the Action.
-#[allow(clippy::too_many_lines)]
 async fn run_ai_generation(
     input: AiGenerateInput,
     store: Store<Character>,
@@ -72,14 +76,14 @@ async fn run_ai_generation(
     let species_name = concept.species.clone();
     let background_name = concept.background.clone();
 
-    for _ in 0..50 {
+    for _ in 0..DEFINITION_POLL_ATTEMPTS {
         let all_loaded = (class_name.is_empty() || registry.classes().has(&class_name))
             && (species_name.is_empty() || registry.species().has(&species_name))
             && (background_name.is_empty() || registry.backgrounds().has(&background_name));
         if all_loaded {
             break;
         }
-        hooks::sleep(Duration::from_millis(100)).await;
+        hooks::sleep(DEFINITION_POLL_INTERVAL).await;
     }
 
     // Collect pending features
@@ -131,63 +135,32 @@ async fn run_ai_generation(
             &replacement_descriptions,
         );
 
-        // First round: get ARGs + replacements
-        for attempt in 0..3 {
-            let result: Result<(serde_json::Value, String), _> =
-                ai::send_chat(&input.settings, &messages).await;
-            let Ok((value, raw_content)) = result else {
-                break;
-            };
+        let (choices, raw_replacements) = send_with_retry(
+            &input.settings,
+            &mut messages,
+            &pending_inputs,
+            &store.read_untracked(),
+            phase,
+        )
+        .await;
+        feature_choices.extend(choices);
 
-            let (choices, new_replacements) = ai::parse_feature_choices_response(value);
-
-            for (feature_name, args) in choices {
-                let key = feature_name
-                    .strip_prefix("Feature: ")
-                    .unwrap_or(&feature_name)
-                    .to_string();
-                feature_choices.insert(key, args);
-            }
-
-            // Validate replacements
-            registry.with_features_index_untracked(|fi| {
-                for (original, replacement) in &new_replacements {
-                    let valid = pending_inputs
-                        .iter()
-                        .find(|input| input.feature_name == *original)
-                        .and_then(|input| {
-                            fi.get(replacement.as_str())
-                                .filter(|feat_def| input.replace_with.matches(feat_def))
-                        })
-                        .is_some();
-                    if valid {
-                        replacements.insert(original.clone(), replacement.clone());
-                    }
+        // Validate replacements against replace_with constraints
+        registry.with_features_index_untracked(|fi| {
+            for (original, replacement) in &raw_replacements {
+                let valid = pending_inputs
+                    .iter()
+                    .find(|input| input.feature_name == *original)
+                    .and_then(|input| {
+                        fi.get(replacement.as_str())
+                            .filter(|feat_def| input.replace_with.matches(feat_def))
+                    })
+                    .is_some();
+                if valid {
+                    replacements.insert(original.clone(), replacement.clone());
                 }
-            });
-
-            messages.push(ChatMessage {
-                role: Role::Assistant,
-                content: raw_content,
-            });
-
-            let errors = validate_feature_choices(
-                &feature_choices,
-                &pending_inputs,
-                &store.read_untracked(),
-            );
-            if errors.is_empty() {
-                break;
             }
-
-            if attempt < 2 {
-                phase.set("ai-generate-phase-retry");
-                messages.push(ChatMessage {
-                    role: Role::User,
-                    content: format_validation_feedback(&errors),
-                });
-            }
-        }
+        });
 
         // Follow-up: get ARGs for chosen replacements (with retry)
         if !replacements.is_empty() {
@@ -219,16 +192,15 @@ async fn run_ai_generation(
 
             if !replacement_arg_descriptions.is_empty() {
                 phase.set("ai-generate-phase-choices");
-                let args_text: String = replacement_arg_descriptions
-                    .iter()
-                    .map(|desc| {
+                let args_text: String = join_iter(
+                    replacement_arg_descriptions.iter().map(|desc| {
                         format!(
                             "- \"{}\"\n  Description: {}\n{}",
                             desc.feature_name, desc.feature_description, desc.args_description
                         )
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n\n");
+                    }),
+                    "\n\n",
+                );
 
                 let mut follow_up_messages = vec![
                     ChatMessage {
@@ -251,7 +223,7 @@ async fn run_ai_generation(
                     },
                 ];
 
-                let follow_up_choices = send_with_retry(
+                let (follow_up_choices, _) = send_with_retry(
                     &input.settings,
                     &mut follow_up_messages,
                     &replacement_inputs,
@@ -271,33 +243,29 @@ async fn run_ai_generation(
     })
 }
 
-/// Run a chat request with retry loop: send messages, merge ARG choices,
-/// validate against guard expressions, retry with feedback on failure.
-/// Returns the merged choices from all attempts.
+/// Run a chat request with retry loop: send messages, merge ARG choices
+/// and replacements, validate against guard expressions, retry with
+/// feedback on failure.
 async fn send_with_retry(
     settings: &AiSettings,
     messages: &mut Vec<ChatMessage>,
     pending_inputs: &[PendingInputs],
     character: &Character,
     phase: RwSignal<&'static str>,
-) -> BTreeMap<String, Vec<i32>> {
+) -> (BTreeMap<String, Vec<i32>>, BTreeMap<String, String>) {
     let mut choices = BTreeMap::new();
+    let mut replacements = BTreeMap::new();
 
-    for attempt in 0..3 {
+    for attempt in 0..AI_MAX_RETRIES {
         let result: Result<(serde_json::Value, String), _> =
             ai::send_chat(settings, messages).await;
         let Ok((value, raw_content)) = result else {
             break;
         };
 
-        let (new_choices, _) = ai::parse_feature_choices_response(value);
-        for (feature_name, args) in new_choices {
-            let key = feature_name
-                .strip_prefix("Feature: ")
-                .unwrap_or(&feature_name)
-                .to_string();
-            choices.insert(key, args);
-        }
+        let (new_choices, new_replacements) = ai::parse_feature_choices_response(value);
+        choices.extend(new_choices);
+        replacements.extend(new_replacements);
 
         messages.push(ChatMessage {
             role: Role::Assistant,
@@ -309,7 +277,7 @@ async fn send_with_retry(
             break;
         }
 
-        if attempt < 2 {
+        if attempt + 1 < AI_MAX_RETRIES {
             phase.set("ai-generate-phase-retry");
             messages.push(ChatMessage {
                 role: Role::User,
@@ -318,7 +286,7 @@ async fn send_with_retry(
         }
     }
 
-    choices
+    (choices, replacements)
 }
 
 struct ChoiceValidationError {
@@ -326,28 +294,7 @@ struct ChoiceValidationError {
     message: String,
 }
 
-/// Read-only context for validating ARG values against guard expressions.
-struct ArgsContext<'a> {
-    character: &'a Character,
-    args: &'a [i32],
-}
-
-impl expr::Context<Attribute, i32> for ArgsContext<'_> {
-    fn assign(&mut self, _var: Attribute, _value: i32) -> Result<(), expr::Error> {
-        Ok(())
-    }
-
-    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        match var {
-            Attribute::Arg(n) => self
-                .args
-                .get(n as usize)
-                .copied()
-                .ok_or_else(|| expr::Error::unsupported_var(var)),
-            other => self.character.resolve(other),
-        }
-    }
-}
+use super::apply::ArgsContext;
 
 fn validate_feature_choices(
     choices: &BTreeMap<String, Vec<i32>>,
@@ -427,33 +374,20 @@ pub fn AiGenerateModal(
         let settings = settings.get_untracked();
 
         let species_list = registry.with_species_entries(|entries| {
-            entries
-                .values()
-                .map(|entry| entry.name.as_str())
-                .collect::<Vec<_>>()
-                .join(", ")
+            join_iter(entries.values().map(|entry| entry.name.as_str()), ", ")
         });
 
         let backgrounds_list = registry.with_background_entries(|entries| {
-            entries
-                .values()
-                .map(|entry| entry.name.as_str())
-                .collect::<Vec<_>>()
-                .join(", ")
+            join_iter(entries.values().map(|entry| entry.name.as_str()), ", ")
         });
 
         let classes_list = registry.with_class_entries(|entries| {
-            entries
-                .values()
-                .map(|entry| {
+            join_iter(
+                entries.values().map(|entry| {
                     let subclasses = registry
                         .classes()
                         .with(&entry.name, |def| {
-                            def.subclasses
-                                .values()
-                                .map(|sub| sub.name.as_ref())
-                                .collect::<Vec<_>>()
-                                .join(", ")
+                            join_iter(def.subclasses.values().map(|sub| &*sub.name), ", ")
                         })
                         .unwrap_or_default();
                     if subclasses.is_empty() {
@@ -461,9 +395,9 @@ pub fn AiGenerateModal(
                     } else {
                         format!("{} (subclasses: {subclasses})", entry.name)
                     }
-                })
-                .collect::<Vec<_>>()
-                .join("\n")
+                }),
+                "\n",
+            )
         });
 
         let preset_name = registry
@@ -573,7 +507,7 @@ pub fn AiGenerateModal(
                                     <Show when=move || generating.get()>
                                         <p class="ai-generate-phase">
                                             {move || {
-                                            let i18n = expect_context::<leptos_fluent::I18n>();
+                                            let i18n = expect_context::<I18n>();
                                             i18n.tr(phase.get())
                                         }}
                                         </p>

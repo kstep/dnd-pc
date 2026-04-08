@@ -212,7 +212,7 @@ impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
             Op::Each(_) | Op::Next(_) => 1, // push boolean
             Op::PushGroup(_) => 1,
             Op::AssignGroup(_) => -1,
-            Op::Tier(_) => 0, // variable net: -(1 + 2*n) + 1; approximated for compound detection
+            Op::Tier(n) => -(2 * *n as i32), // pop (1 var + 2*n), push 1 → net -2*n
         }
     }
 
