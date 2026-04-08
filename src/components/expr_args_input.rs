@@ -167,10 +167,16 @@ struct FormCtx {
     boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
     iter_stack: Vec<usize>,
+    is_satisfied: RwSignal<bool>,
 }
 
 impl FormCtx {
-    fn new(active_args: Vec<u8>, boolean_args: BTreeSet<u8>, i18n: leptos_fluent::I18n) -> Self {
+    fn new(
+        active_args: Vec<u8>,
+        boolean_args: BTreeSet<u8>,
+        i18n: leptos_fluent::I18n,
+        is_satisfied: RwSignal<bool>,
+    ) -> Self {
         Self {
             args: Vec::new(),
             seen: BTreeSet::new(),
@@ -178,6 +184,7 @@ impl FormCtx {
             boolean_args,
             i18n,
             iter_stack: Vec::new(),
+            is_satisfied,
         }
     }
 
@@ -231,12 +238,13 @@ fn form_block(
     fb.finish()
 }
 
-fn arg_checkbox(signal: RwSignal<i32>) -> AnyView {
+fn arg_checkbox(signal: RwSignal<i32>, is_satisfied: RwSignal<bool>) -> AnyView {
     view! {
         <input
             type="checkbox"
             class="expr-form-input"
             prop:checked=move || signal.get() != 0
+            prop:disabled=move || is_satisfied.get() && signal.get() == 0
             on:change=move |ev| {
                 signal.set(event_target_checked(&ev) as i32);
             }
@@ -245,12 +253,13 @@ fn arg_checkbox(signal: RwSignal<i32>) -> AnyView {
     .into_any()
 }
 
-fn arg_number(signal: RwSignal<i32>) -> AnyView {
+fn arg_number(signal: RwSignal<i32>, is_satisfied: RwSignal<bool>) -> AnyView {
     view! {
         <input
             type="number"
             class="expr-form-input"
             prop:value=move || signal.get()
+            prop:disabled=move || is_satisfied.get() && signal.get() == 0
             on:input=move |ev| {
                 let value = event_target_value(&ev).parse::<i32>().unwrap_or(0);
                 signal.set(value);
@@ -403,9 +412,9 @@ fn push_arg_input(fb: &mut FormBuilder, ctx: &mut FormCtx, n: u8, condition: boo
     let signal = ctx.args[idx];
     fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
         if ctx.is_boolean(n) {
-            arg_checkbox(signal)
+            arg_checkbox(signal, ctx.is_satisfied)
         } else {
-            arg_number(signal)
+            arg_number(signal, ctx.is_satisfied)
         }
     } else {
         arg_ref(signal)
@@ -561,8 +570,14 @@ pub fn ExprArgsInput(
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     // Build formula view with inline ARG inputs (if any)
+    let is_satisfied = RwSignal::new(false);
     let formula_view = if has_args {
-        let mut form_ctx = FormCtx::new(analysis.active_args, analysis.boolean_args, i18n);
+        let mut form_ctx = FormCtx::new(
+            analysis.active_args,
+            analysis.boolean_args,
+            i18n,
+            is_satisfied,
+        );
         let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
             .unwrap_or_else(|err| format!("Error: {err}").into_any());
 
@@ -627,6 +642,9 @@ pub fn ExprArgsInput(
 
         args_ok && dice_ok
     });
+
+    // Sync is_valid → is_satisfied so inputs disable when guard is met
+    Effect::new(move || is_satisfied.set(is_valid.get()));
 
     on_ready(ExprArgsInputParts {
         arg_signals,
