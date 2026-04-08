@@ -3,15 +3,12 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{apply::apply_with_modal, icon::Icon, panel::Panel},
+    components::{apply::replay_with_modal, icon::Icon, panel::Panel},
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
         format_bonus,
     },
-    rules::{
-        RulesRegistry,
-        apply::{PendingFeature, replay},
-    },
+    rules::RulesRegistry,
 };
 
 #[component]
@@ -252,22 +249,9 @@ pub fn CombatPanel() -> impl IntoView {
                     title=move_tr!("replay")
                     on:click=move |_| {
                         let window = web_sys::window().unwrap();
-                        if window.confirm_with_message("Replay will reset and re-apply all features. Continue?").unwrap_or(false) {
-                            let mut pending: Vec<PendingFeature> = store.with_untracked(|character| {
-                                character.features.iter()
-                                    .filter(|f| f.applied)
-                                    .map(|f| PendingFeature {
-                                        name: f.name.clone(),
-                                        source: f.source.clone(),
-                                        level: f.source.added_at_level(),
-                                    })
-                                    .collect()
-                            });
-                            pending.sort_by_key(|p| p.source.added_at_level());
-
-                            apply_with_modal(store, registry, pending, move |character, pending, inputs, fi| {
-                                replay(fi, character, pending, inputs);
-                            });
+                        let i18n = expect_context::<leptos_fluent::I18n>();
+                        if window.confirm_with_message(&i18n.tr("replay-confirm")).unwrap_or(false) {
+                            replay_with_modal(store, registry);
                         }
                     }
                 >

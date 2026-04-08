@@ -11,7 +11,7 @@ use crate::{
         ApplyInputs, DefinitionStore, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
         apply::{
             PendingFeature, apply_new_features, collect_class_features, collect_pending_features,
-            reapply_existing, resolve_replacements,
+            reapply_existing, replay, resolve_replacements,
         },
         feature::FeatureDefinition,
     },
@@ -89,6 +89,57 @@ pub fn apply_with_modal(
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
         ctx.open(all_inputs, move |inputs| apply(Some(&inputs)));
+    }
+}
+
+/// Replay all applied features from scratch. Clones the character, resets
+/// computed state, collects pending inputs on the clean clone (skipping
+/// features with stored inputs), then either replays directly or shows the
+/// args modal for features missing stored inputs.
+pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
+    let mut clone = store.with_untracked(|character| character.clone());
+    clone.reset_computed();
+
+    let mut pending: Vec<PendingFeature> = clone
+        .features
+        .iter()
+        .filter(|f| f.applied)
+        .map(|f| PendingFeature {
+            name: f.name.clone(),
+            source: f.source.clone(),
+            level: f.source.added_at_level(),
+        })
+        .collect();
+    pending.sort_by_key(|p| p.source.added_at_level());
+
+    let mut all_inputs = registry.with_features_index_untracked(|fi| {
+        pending
+            .iter()
+            .filter_map(|pf| {
+                let feat_def = fi.get(pf.name.as_str())?;
+                pf.pending_inputs(feat_def, &clone)
+            })
+            .collect::<Vec<_>>()
+    });
+    all_inputs.retain(|input| clone.features.get_inputs(&input.feature_name).is_empty());
+
+    let do_replay = move |inputs: Option<&ApplyInputs>| {
+        let empty = ApplyInputs::default();
+        let inputs = inputs.unwrap_or(&empty);
+        store.update(|character| {
+            *character = clone;
+            registry.with_features_index_untracked(|fi| {
+                replay(fi, character, &pending, inputs);
+            });
+            registry.compute(character);
+        });
+    };
+
+    if all_inputs.is_empty() {
+        do_replay(None);
+    } else {
+        let ctx = expect_context::<ArgsModalCtx>();
+        ctx.open(all_inputs, move |inputs| do_replay(Some(&inputs)));
     }
 }
 

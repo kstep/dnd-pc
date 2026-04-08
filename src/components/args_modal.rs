@@ -16,7 +16,7 @@ use crate::{
     rules::{ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry},
 };
 
-type ArgsCallback = Box<dyn Fn(ApplyInputs) + Send + Sync>;
+type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
 type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
 type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
 
@@ -26,7 +26,7 @@ type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
 pub struct ArgsModalCtx {
     show: RwSignal<bool>,
     pending: RwSignal<Vec<PendingInputs>>,
-    callback: StoredValue<RwSignal<Option<StoredValue<ArgsCallback>>>>,
+    callback: StoredValue<Option<ArgsCallback>>,
 }
 
 impl ArgsModalCtx {
@@ -34,29 +34,28 @@ impl ArgsModalCtx {
         Self {
             show: RwSignal::new(false),
             pending: RwSignal::new(Vec::new()),
-            callback: StoredValue::new(RwSignal::new(None)),
+            callback: StoredValue::new(None),
         }
     }
 
     /// Show the modal for a list of features needing interaction. When the user
-    /// submits, `on_complete` is called with the collected `ApplyInputs`.
+    /// submits, `on_complete` is called once with the collected `ApplyInputs`.
     pub fn open(
         &self,
         pending: Vec<PendingInputs>,
-        on_complete: impl Fn(ApplyInputs) + Send + Sync + 'static,
+        on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
     ) {
         self.pending.set(pending);
         self.callback
-            .with_value(|sig| sig.set(Some(StoredValue::new(Box::new(on_complete)))));
+            .update_value(|cb| *cb = Some(Box::new(on_complete)));
         self.show.set(true);
     }
 
     fn complete(&self, inputs: ApplyInputs) {
-        self.callback.with_value(|signal| {
-            if let Some(callback) = signal.get_untracked() {
-                callback.with_value(|on_complete| on_complete(inputs));
+        self.callback.update_value(|cb| {
+            if let Some(callback) = cb.take() {
+                callback(inputs);
             }
-            signal.set(None);
         });
         self.show.set(false);
     }

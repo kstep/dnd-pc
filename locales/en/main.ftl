@@ -65,6 +65,7 @@ panel-notes = Notes
 armor-class = Armor Class
 recalculate = Recalculate
 replay = Replay
+replay-confirm = Replay will reset and re-apply all features. Continue?
 initiative = Initiative
 speed = Speed
 attack-count = Attacks

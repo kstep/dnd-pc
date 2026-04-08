@@ -65,6 +65,7 @@ panel-notes = Заметки
 armor-class = Класс защиты
 recalculate = Пересчитать
 replay = Переприменить
+replay-confirm = Переприменение сбросит и заново применит все фичи. Продолжить?
 initiative = Инициатива
 speed = Скорость
 attack-count = Атаки
