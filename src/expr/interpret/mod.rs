@@ -11,7 +11,8 @@ pub use self::{
 };
 use crate::expr::{
     Error, Op, VarGroup, avg_hp,
-    ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex, NoGroup},
+    group::NoGroup,
+    ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
 
@@ -137,24 +138,10 @@ fn eval_op<Var, Grp: VarGroup<Var = Var>>(
             return eval_block(if cond != 0 { then_idx } else { else_idx });
         }
         Op::Each(subgrp) => {
-            if let Some(real_idx) = subgrp.real_index(0) {
-                iter_stack.push(real_idx);
-                stack.push(subgrp.inner.member(real_idx).is_some() as i32);
-            } else {
-                stack.push(0);
-            }
+            stack.push(subgrp.init_loop(iter_stack.as_vec_mut()) as i32);
         }
         Op::Next(subgrp) => {
-            let current = *iter_stack.top()?;
-            if let Some(next_idx) = subgrp.next_real_index(current)
-                && subgrp.inner.member(next_idx).is_some()
-            {
-                *iter_stack.top_mut()? = next_idx;
-                stack.push(1);
-            } else {
-                iter_stack.pop()?;
-                stack.push(0);
-            }
+            stack.push(subgrp.advance_loop(iter_stack.as_vec_mut()) as i32);
         }
         Op::PushVar(_) | Op::AssignVar(_) | Op::PushGroup(_) | Op::AssignGroup(_) => unreachable!(),
     }

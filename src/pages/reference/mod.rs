@@ -385,26 +385,12 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
                 self.stack.push(top);
             }
             Op::Each(subgrp) => {
-                if let Some(real_idx) = subgrp.real_index(0)
-                    && subgrp.inner.member(real_idx).is_some()
-                {
-                    self.iter_stack.push(real_idx);
-                    self.stack.push(SumEntry::constant(1));
-                } else {
-                    self.stack.push(SumEntry::constant(0));
-                }
+                let has_items = subgrp.init_loop(&mut self.iter_stack);
+                self.stack.push(SumEntry::constant(has_items as i32));
             }
             Op::Next(subgrp) => {
-                if let Some(&current) = self.iter_stack.last()
-                    && let Some(next_idx) = subgrp.next_real_index(current)
-                    && subgrp.inner.member(next_idx).is_some()
-                {
-                    *self.iter_stack.last_mut().unwrap() = next_idx;
-                    self.stack.push(SumEntry::constant(1));
-                } else {
-                    self.iter_stack.pop();
-                    self.stack.push(SumEntry::constant(0));
-                }
+                let more = subgrp.advance_loop(&mut self.iter_stack);
+                self.stack.push(SumEntry::constant(more as i32));
             }
             Op::PushGroup(grp) => {
                 if let Some(&idx) = self.iter_stack.last()

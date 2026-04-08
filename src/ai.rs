@@ -8,7 +8,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
 use crate::{
-    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, VarGroup},
+    expr::{self, BinOp, BlockIndex, Cmp, Interpreter},
     model::{Attribute, AttributeGroup, Character, Op},
     rules::{FeatureDefinition, PendingInputs},
 };
@@ -857,31 +857,17 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 self.stack.push(top);
             }
             Op::Each(subgrp) => {
-                // Collect group member names for AI descriptions
                 if self.group_names.is_empty() {
                     self.group_names.extend(
                         (0..).map_while(|idx| subgrp.member(idx).map(|var| var.to_string())),
                     );
                 }
-                self.iter_stack.push(subgrp.real_index(0).unwrap_or(0));
-                self.stack.push(ArgStackEntry::constant(
-                    subgrp
-                        .inner
-                        .member(subgrp.real_index(0).unwrap_or(0))
-                        .is_some() as i32,
-                ));
+                let has_items = subgrp.init_loop(&mut self.iter_stack);
+                self.stack.push(ArgStackEntry::constant(has_items as i32));
             }
             Op::Next(subgrp) => {
-                if let Some(&current) = self.iter_stack.last()
-                    && let Some(next_idx) = subgrp.next_real_index(current)
-                    && subgrp.inner.member(next_idx).is_some()
-                {
-                    *self.iter_stack.last_mut().unwrap() = next_idx;
-                    self.stack.push(ArgStackEntry::constant(1));
-                } else {
-                    self.iter_stack.pop();
-                    self.stack.push(ArgStackEntry::constant(0));
-                }
+                let more = subgrp.advance_loop(&mut self.iter_stack);
+                self.stack.push(ArgStackEntry::constant(more as i32));
             }
             Op::PushGroup(_) => {
                 self.stack.push(ArgStackEntry::other());

@@ -93,7 +93,7 @@ impl Attribute {
     }
 }
 
-fn parse_ability(s: &str) -> Option<Ability> {
+pub fn parse_ability(s: &str) -> Option<Ability> {
     match s {
         "STR" => Some(Ability::Strength),
         "DEX" => Some(Ability::Dexterity),
@@ -117,7 +117,7 @@ fn parse_proficiency(s: &str) -> Option<Proficiency> {
     }
 }
 
-fn parse_damage_type(s: &str) -> Option<DamageType> {
+pub fn parse_damage_type(s: &str) -> Option<DamageType> {
     match s {
         "ACID" => Some(DamageType::Acid),
         "BLUDG" => Some(DamageType::Bludgeoning),
@@ -169,7 +169,7 @@ impl Proficiency {
     }
 }
 
-fn parse_skill(s: &str) -> Option<Skill> {
+pub fn parse_skill(s: &str) -> Option<Skill> {
     match s {
         "ACRO" => Some(Skill::Acrobatics),
         "ANIM" => Some(Skill::AnimalHandling),

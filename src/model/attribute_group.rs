@@ -5,7 +5,10 @@ use strum::VariantArray;
 
 use crate::{
     expr::VarGroup,
-    model::{Ability, Attribute, DamageType, Skill},
+    model::{
+        Ability, Attribute, DamageType, Skill,
+        attribute::{parse_ability, parse_damage_type, parse_skill},
+    },
 };
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -28,6 +31,29 @@ pub enum AttributeGroup {
 
 impl VarGroup for AttributeGroup {
     type Var = Attribute;
+
+    fn member_by_name(&self, name: &str) -> Option<usize> {
+        match self {
+            Self::Ability
+            | Self::AbilityMod
+            | Self::AbilitySave
+            | Self::AbilitySaveProf
+            | Self::AbilitySaveAdv
+            | Self::AbilityAdv => {
+                let ability = parse_ability(name)?;
+                Ability::VARIANTS.iter().position(|&a| a == ability)
+            }
+            Self::Skill | Self::SkillProf | Self::SkillAdv => {
+                let skill = parse_skill(name)?;
+                Skill::VARIANTS.iter().position(|&s| s == skill)
+            }
+            Self::Resist | Self::Vuln | Self::Immune => {
+                let dmg = parse_damage_type(name)?;
+                DamageType::VARIANTS.iter().position(|&d| d == dmg)
+            }
+            Self::Arg => name.parse::<usize>().ok(),
+        }
+    }
 
     fn member(&self, i: usize) -> Option<Attribute> {
         let ability = || Ability::VARIANTS.get(i).copied();

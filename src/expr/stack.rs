@@ -65,8 +65,8 @@ impl<T> Stack<T> {
         self.0.last().ok_or(Error::StackUnderflow)
     }
 
-    pub fn top_mut(&mut self) -> Result<&mut T, Error> {
-        self.0.last_mut().ok_or(Error::StackUnderflow)
+    pub fn as_vec_mut(&mut self) -> &mut Vec<T> {
+        &mut self.0
     }
 }
 

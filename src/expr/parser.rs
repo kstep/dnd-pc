@@ -3,7 +3,8 @@ use std::{iter::Peekable, marker::PhantomData, ops::Neg, str::FromStr};
 use crate::expr::{
     Op,
     error::Error,
-    ops::{BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Cmp, NoGroup, VarGroup, VarSubgroup},
+    group::{NoGroup, VarGroup, VarSubgroup},
+    ops::{BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Cmp},
     tokenizer::{Token, Tokenizer},
 };
 
@@ -451,48 +452,33 @@ impl<
             return self.with_binding.ok_or(Error::unexpected_token("@"));
         }
         let group = self.expect_group()?;
-        if let Some(Token::LParen) = self.peek() {
-            self.next()?;
-            let mut mask = 0u32;
-            loop {
-                let var: Grp::Var = match self.next()? {
-                    Some(Token::Ident(name)) => {
-                        name.parse().map_err(|_| Error::unexpected_token(name))?
-                    }
-                    Some(token) => return Err(Error::unexpected_token(token)),
-                    None => return Err(Error::UnexpectedEnd),
-                };
-                // Find the index of this var in the group
-                let mut found = false;
-                for bit in 0..32u32 {
-                    if let Some(member) = group.member(bit as usize) {
-                        if member == var {
-                            mask |= 1 << bit;
-                            found = true;
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
+        let Some(Token::LParen) = self.peek() else {
+            return Ok(group.into());
+        };
+        self.next()?;
+        let mut mask = 0u32;
+        loop {
+            let name = match self.next()? {
+                Some(Token::Ident(name)) => name,
+                Some(token) => return Err(Error::unexpected_token(token)),
+                None => return Err(Error::UnexpectedEnd),
+            };
+            let idx = group
+                .member_by_name(name)
+                .ok_or(Error::unexpected_token(name))?;
+            mask |= 1 << idx;
+            match self.peek() {
+                Some(Token::Comma) => {
+                    self.next()?;
                 }
-                if !found {
-                    return Err(Error::unexpected_token("unknown group member"));
+                Some(Token::RParen) => {
+                    self.next()?;
+                    break;
                 }
-                match self.peek() {
-                    Some(Token::Comma) => {
-                        self.next()?;
-                    }
-                    Some(Token::RParen) => {
-                        self.next()?;
-                        break;
-                    }
-                    _ => return Err(Error::UnexpectedEnd),
-                }
+                _ => return Err(Error::UnexpectedEnd),
             }
-            Ok(VarSubgroup::masked(group, mask))
-        } else {
-            Ok(group.into())
         }
+        Ok(VarSubgroup::masked(group, mask))
     }
 
     /// `with(@GROUP, body)` — set a group binding so `$` resolves to it.
@@ -604,57 +590,55 @@ impl<
         }
     }
 
-    // assignment = IDENT '=' expr | IDENT op= expr | @GROUP '=' expr | @GROUP op=
-    // expr | expr
+    /// Parse remaining expression from term level up: term → expr → cmp → bool.
+    fn parse_expr_from_term(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
+        self.parse_term_tail(ops)?;
+        self.parse_expr_tail(ops)?;
+        self.parse_comparison_tail(ops)?;
+        self.parse_and_tail(ops)?;
+        self.parse_or_tail(ops)
+    }
+
+    /// Parse `target = expr`, `target op= expr`, or fall through to expression.
+    fn parse_assign_target(
+        &mut self,
+        ops: &mut Vec<Op<Var, Val, Grp>>,
+        push_op: Op<Var, Val, Grp>,
+        assign_op: Op<Var, Val, Grp>,
+    ) -> Result<(), Error>
+    where
+        Op<Var, Val, Grp>: Copy,
+    {
+        if let Some(Token::Eq) = self.peek() {
+            self.next()?;
+            self.parse_or(ops)?;
+            ops.push(assign_op);
+        } else if let Some(bin_op) = self.peek().and_then(Self::compound_op) {
+            self.next()?;
+            ops.push(push_op);
+            self.parse_or(ops)?;
+            ops.push(Op::BinOp(bin_op));
+            ops.push(assign_op);
+        } else {
+            ops.push(push_op);
+            self.parse_expr_from_term(ops)?;
+        }
+        Ok(())
+    }
+
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         loop {
             if let Some(Token::At) = self.peek() {
                 let group = self.with_binding.ok_or(Error::unexpected_token("@"))?.inner;
                 self.next()?;
-                if let Some(Token::Eq) = self.peek() {
-                    self.next()?;
-                    self.parse_or(ops)?;
-                    ops.push(Op::AssignGroup(group));
-                } else if let Some(bin_op) = self.peek().and_then(Self::compound_op) {
-                    self.next()?;
-                    ops.push(Op::PushGroup(group));
-                    self.parse_or(ops)?;
-                    ops.push(Op::BinOp(bin_op));
-                    ops.push(Op::AssignGroup(group));
-                } else {
-                    ops.push(Op::PushGroup(group));
-                    self.parse_term_tail(ops)?;
-                    self.parse_expr_tail(ops)?;
-                    self.parse_comparison_tail(ops)?;
-                    self.parse_and_tail(ops)?;
-                    self.parse_or_tail(ops)?;
-                }
+                self.parse_assign_target(ops, Op::PushGroup(group), Op::AssignGroup(group))?;
             } else if let Some(&Token::GroupRef(name)) = self.peek() {
                 let group = parse_group::<Grp>(name)?;
                 self.next()?;
-                if let Some(Token::Eq) = self.peek() {
-                    self.next()?;
-                    self.parse_or(ops)?;
-                    ops.push(Op::AssignGroup(group));
-                } else if let Some(bin_op) = self.peek().and_then(Self::compound_op) {
-                    self.next()?;
-                    ops.push(Op::PushGroup(group));
-                    self.parse_or(ops)?;
-                    ops.push(Op::BinOp(bin_op));
-                    ops.push(Op::AssignGroup(group));
-                } else {
-                    // Not an assignment — push group value, finish expr
-                    ops.push(Op::PushGroup(group));
-                    self.parse_term_tail(ops)?;
-                    self.parse_expr_tail(ops)?;
-                    self.parse_comparison_tail(ops)?;
-                    self.parse_and_tail(ops)?;
-                    self.parse_or_tail(ops)?;
-                }
+                self.parse_assign_target(ops, Op::PushGroup(group), Op::AssignGroup(group))?;
             } else if let Some(&Token::Ident(name)) = self.peek()
                 && let Ok(var) = name.parse::<Var>()
             {
-                // Speculatively consume ident, check for '=' or compound
                 self.next()?;
                 if let Some(Token::Eq) = self.peek() {
                     self.next()?;
@@ -677,11 +661,7 @@ impl<
                         ops.push(Op::Roll);
                         self.parse_keep(ops)?;
                     }
-                    self.parse_term_tail(ops)?;
-                    self.parse_expr_tail(ops)?;
-                    self.parse_comparison_tail(ops)?;
-                    self.parse_and_tail(ops)?;
-                    self.parse_or_tail(ops)?;
+                    self.parse_expr_from_term(ops)?;
                 }
             } else {
                 // Not an assignment, parse as or_expr

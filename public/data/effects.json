@@ -136,7 +136,7 @@
   },
   {
     "name": "Bear Totem Spirit",
-    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+    "expr": "with(@RESIST._(ACID, BLUDG, COLD, FIRE, FORCE, LIGHT, NECRO, PIERC, POISON, RADI, SLASH, THUND), each(@, @ = 1))"
   },
   {
     "name": "Stoneskin",
@@ -152,11 +152,11 @@
   },
   {
     "name": "Superior Defense",
-    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+    "expr": "with(@RESIST._(ACID, BLUDG, COLD, FIRE, LIGHT, NECRO, PIERC, POISON, PSYCH, RADI, SLASH, THUND), each(@, @ = 1))"
   },
   {
     "name": "Umbral Form",
-    "expr": "RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.POISON = 1; RESIST.PSYCH = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+    "expr": "with(@RESIST._(ACID, BLUDG, COLD, FIRE, LIGHT, NECRO, PIERC, POISON, PSYCH, SLASH, THUND), each(@, @ = 1))"
   },
   {
     "name": "Fiendish Resilience: Acid",
@@ -438,7 +438,7 @@
   },
   {
     "name": "Primordial Ward",
-    "expr": "RESIST.ACID = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
+    "expr": "with(@RESIST._(ACID, COLD, FIRE, LIGHT, THUND), each(@, @ = 1))"
   },
   {
     "name": "Songal's Elemental Suffusion: Acid",
@@ -478,7 +478,7 @@
   },
   {
     "name": "Feign Death",
-    "expr": "SPEED = 0; RESIST.ACID = 1; RESIST.BLUDG = 1; RESIST.COLD = 1; RESIST.FIRE = 1; RESIST.FORCE = 1; RESIST.LIGHT = 1; RESIST.NECRO = 1; RESIST.PIERC = 1; RESIST.PSYCH = 1; RESIST.RADI = 1; RESIST.SLASH = 1; RESIST.THUND = 1"
+    "expr": "SPEED = 0; with(@RESIST._(ACID, BLUDG, COLD, FIRE, FORCE, LIGHT, NECRO, PIERC, PSYCH, RADI, SLASH, THUND), each(@, @ = 1))"
   },
   {
     "name": "Shadow Blade"

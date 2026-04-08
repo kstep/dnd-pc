@@ -358,15 +358,10 @@ fn form_block_loop(
     let body_ops = &**body;
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_ops.len().saturating_sub(2);
-    let mut pos = 0;
-    while let Some(real_idx) = subgrp.real_index(pos) {
-        if subgrp.inner.member(real_idx).is_none() {
-            break;
-        }
+    for real_idx in subgrp.real_indices() {
         ctx.iter_stack.push(real_idx);
         form_block_ops(fb, expr, &body_ops[..content_end], ctx, condition)?;
         ctx.iter_stack.pop();
-        pos += 1;
     }
     Ok(())
 }

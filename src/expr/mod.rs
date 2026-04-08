@@ -10,6 +10,7 @@ use serde::{Serialize, Serializer, ser::SerializeSeq};
 
 mod de;
 mod error;
+mod group;
 mod interpret;
 mod ops;
 mod parser;
@@ -19,11 +20,9 @@ mod traits;
 
 pub use crate::expr::{
     error::Error,
+    group::{NoGroup, VarGroup, VarSubgroup},
     interpret::{DicePool, ExprAnalysis, Interpreter},
-    ops::{
-        BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, BinOp, Block, BlockIndex, Cmp, NoGroup, Op, VarGroup,
-        VarSubgroup,
-    },
+    ops::{BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, BinOp, Block, BlockIndex, Cmp, Op},
     traits::{Context, Eval},
 };
 use crate::expr::{
@@ -266,15 +265,6 @@ impl<
             .map(Block::from)
             .collect();
         Ok(Self(blocks))
-    }
-}
-
-impl<Grp: Copy + VarGroup + fmt::Display> fmt::Display for VarSubgroup<Grp>
-where
-    Grp::Var: fmt::Display,
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.display_with(f)
     }
 }
 

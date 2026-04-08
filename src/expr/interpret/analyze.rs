@@ -6,7 +6,8 @@ use std::{
 use super::eval_block;
 use crate::expr::{
     Context, Expr, Op, VarGroup, avg_hp,
-    ops::{BLOCK_MAIN, BLOCK_NOOP, BlockIndex, VarSubgroup},
+    group::VarSubgroup,
+    ops::{BLOCK_MAIN, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
 
@@ -200,17 +201,11 @@ impl ExprAnalysis {
         );
 
         if has_arg_group {
-            let mut pos = 0;
-            while let Some(real_idx) = subgrp.real_index(pos) {
-                if subgrp.inner.member(real_idx).is_none() {
-                    break;
-                }
-                let idx = real_idx as u8;
-                self.active_args.push(idx);
+            for real_idx in subgrp.real_indices() {
+                self.active_args.push(real_idx as u8);
                 if has_in_pattern {
-                    self.boolean_args.insert(idx);
+                    self.boolean_args.insert(real_idx as u8);
                 }
-                pos += 1;
             }
         }
     }
