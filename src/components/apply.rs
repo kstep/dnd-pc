@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 
 use leptos::prelude::*;
 use reactive_stores::Store;
@@ -6,7 +6,7 @@ use reactive_stores::Store;
 use crate::{
     components::args_modal::ArgsModalCtx,
     expr,
-    model::{AssignInputs, Attribute, Character},
+    model::{AssignInputs, Attribute, Character, Spell, SpellData},
     rules::{
         ApplyInputs, DefinitionStore, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
         apply::{
@@ -127,10 +127,23 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
         let empty = ApplyInputs::default();
         let inputs = inputs.unwrap_or(&empty);
         store.update(|character| {
+            let original_feature_data = character.feature_data.clone();
             *character = clone;
             registry.with_features_index_untracked(|fi| {
                 replay(fi, character, &pending, inputs);
             });
+            // Restore user spell selections from original character
+            for (feature_name, original_data) in &original_feature_data {
+                if let (Some(original_spells), Some(target_spells)) = (
+                    &original_data.spells,
+                    character
+                        .feature_data
+                        .get_mut(feature_name)
+                        .and_then(|data| data.spells.as_mut()),
+                ) {
+                    restore_spell_selections(original_spells, target_spells);
+                }
+            }
             registry.compute(character);
         });
     };
@@ -140,6 +153,37 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
         ctx.open(all_inputs, move |inputs| do_replay(Some(&inputs)));
+    }
+}
+
+/// Restore user spell selections from original SpellData into replayed target.
+/// Matches by level: for each empty non-sticky slot in target, takes the next
+/// named spell of the same level from original.
+fn restore_spell_selections(original: &SpellData, target: &mut SpellData) {
+    restore_spell_list(&original.spells, &mut target.spells);
+    if let (Some(orig_known), Some(target_known)) = (&original.known, target.known.as_mut()) {
+        restore_spell_list(orig_known, target_known);
+    }
+}
+
+fn restore_spell_list(original: &[Spell], target: &mut [Spell]) {
+    let mut by_level: BTreeMap<u32, VecDeque<&Spell>> = original
+        .iter()
+        .filter(|spell| !spell.sticky && !spell.name.is_empty())
+        .fold(BTreeMap::new(), |mut map, spell| {
+            map.entry(spell.level).or_default().push_back(spell);
+            map
+        });
+
+    for slot in target
+        .iter_mut()
+        .filter(|slot| !slot.sticky && slot.name.is_empty())
+    {
+        if let Some(donor) = by_level.get_mut(&slot.level).and_then(VecDeque::pop_front) {
+            slot.name = donor.name.clone();
+            slot.label = donor.label.clone();
+            slot.description = donor.description.clone();
+        }
     }
 }
 
