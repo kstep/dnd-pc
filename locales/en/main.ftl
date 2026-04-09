@@ -6,6 +6,8 @@ page-not-found = Page not found
 character-not-found = Character not found
 back-to-list = Back to character list
 btn-delete = Delete
+btn-cancel = Cancel
+confirm-delete = Delete this character?
 
 ## Character header
 character-name = Character Name

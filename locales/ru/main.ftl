@@ -6,6 +6,8 @@ page-not-found = Страница не найдена
 character-not-found = Персонаж не найден
 back-to-list = Назад к списку персонажей
 btn-delete = Удалить
+btn-cancel = Отмена
+confirm-delete = Удалить этого персонажа?
 
 ## Заголовок персонажа
 character-name = Имя персонажа
