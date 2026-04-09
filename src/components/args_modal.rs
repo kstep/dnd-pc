@@ -220,7 +220,7 @@ fn ReplacementPicker(
         }));
     });
 
-    let on_input = move |_text: String, resolved: Option<String>| {
+    let on_input = move |text: String, resolved: Option<String>| {
         // Clean up stale signal/dice entries from previous replacement
         if let Some(old_name) = prev_replacement.get_untracked() {
             all_signals.update(|entries| entries.retain(|(name, _)| *name != old_name));
@@ -231,7 +231,7 @@ fn ReplacementPicker(
         replacement_choice.set(resolved.clone());
         prev_replacement.set(resolved.clone());
         if let Some(name) = &resolved {
-            input_value.set(name.clone());
+            input_value.set(text);
             let (description, exprs) = store.with_untracked(|character| {
                 let exprs = source.with_value(|source| {
                     registry

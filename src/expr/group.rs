@@ -2,6 +2,12 @@ use std::{fmt, marker::PhantomData, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
+/// Loop iteration index: `(real_group_index, sequential_position)`.
+/// The real index maps directly to the group's member. The sequential
+/// position counts 0, 1, 2, … across masked iterations and is used by
+/// companion groups (`@ARG`) that provide one value per loop step.
+pub type IterIndex = (usize, usize);
+
 /// Trait for variable groups used in loop iteration.
 /// Maps a group + index to a concrete variable.
 pub trait VarGroup {
@@ -15,6 +21,13 @@ pub trait VarGroup {
     /// Returns `None` by default — override for groups with named members.
     fn member_by_name(&self, _name: &str) -> Option<usize> {
         None
+    }
+
+    /// Companion groups (like `@ARG`) are indexed by sequential loop
+    /// position rather than the real group index. Override to return `true`
+    /// for such groups.
+    fn is_companion(&self) -> bool {
+        false
     }
 }
 
@@ -86,16 +99,16 @@ impl<Grp> VarSubgroup<Grp> {
         })
     }
 
-    /// Initialize loop iteration. Pushes first real index to `iter_stack`.
+    /// Initialize loop iteration. Pushes `(real_index, 0)` to `iter_stack`.
     /// Returns `true` if the group is non-empty (loop should enter body).
-    pub fn init_loop(&self, iter_stack: &mut Vec<usize>) -> bool
+    pub fn init_loop(&self, iter_stack: &mut Vec<IterIndex>) -> bool
     where
         Grp: VarGroup,
     {
         if let Some(real_idx) = self.real_index(0)
             && self.inner.member(real_idx).is_some()
         {
-            iter_stack.push(real_idx);
+            iter_stack.push((real_idx, 0));
             true
         } else {
             false
@@ -104,15 +117,15 @@ impl<Grp> VarSubgroup<Grp> {
 
     /// Advance loop to the next member. Returns `true` if more items remain.
     /// When exhausted, pops `iter_stack` and returns `false`.
-    pub fn advance_loop(&self, iter_stack: &mut Vec<usize>) -> bool
+    pub fn advance_loop(&self, iter_stack: &mut Vec<IterIndex>) -> bool
     where
         Grp: VarGroup,
     {
-        if let Some(&current) = iter_stack.last()
+        if let Some(&(current, seq)) = iter_stack.last()
             && let Some(next_idx) = self.next_real_index(current)
             && self.inner.member(next_idx).is_some()
         {
-            *iter_stack.last_mut().unwrap() = next_idx;
+            *iter_stack.last_mut().unwrap() = (next_idx, seq + 1);
             true
         } else {
             iter_stack.pop();

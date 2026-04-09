@@ -79,12 +79,25 @@ pub fn FeaturesPanel() -> impl IntoView {
                                                     on_input=move |input, resolved| {
                                                         let mut w = features.write();
                                                         if let Some(key) = resolved {
-                                                            w[i].name = key;
-                                                            w[i].label = None;
+                                                            w[i].name = key.clone();
+                                                            let (label, description) =
+                                                                registry.with_features_index(|idx| {
+                                                                    idx.get(key.as_str())
+                                                                        .map(|feat| {
+                                                                            (
+                                                                                feat.label.clone(),
+                                                                                feat.description
+                                                                                    .clone(),
+                                                                            )
+                                                                        })
+                                                                        .unwrap_or_default()
+                                                                });
+                                                            w[i].label = label;
+                                                            w[i].description = description;
                                                         } else {
                                                             w[i].set_label(input);
+                                                            w[i].description.clear();
                                                         }
-                                                        w[i].description.clear();
                                                     }
                                                 />
                                             })

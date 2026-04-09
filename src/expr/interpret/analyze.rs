@@ -6,7 +6,7 @@ use std::{
 use super::eval_block;
 use crate::expr::{
     Context, Expr, Op, VarGroup, avg_hp,
-    group::VarSubgroup,
+    group::{IterIndex, VarSubgroup},
     ops::{BLOCK_MAIN, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
@@ -62,7 +62,7 @@ impl ExprAnalysis {
     {
         let ops = expr.block(block);
         let mut stack = Stack::new();
-        let mut iter_stack = Stack::new();
+        let mut iter_stack: Stack<IterIndex> = Stack::new();
         let mut has_args = false;
         let mut last_eval_had_args = false;
         // State machine for detecting `in(ARG.n, 0, 1)` patterns inline.

@@ -11,7 +11,7 @@ pub use self::{
 };
 use crate::expr::{
     Error, Op, VarGroup, avg_hp,
-    group::NoGroup,
+    group::{IterIndex, NoGroup},
     ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
@@ -48,7 +48,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
 
 fn eval_op<Var, Grp: VarGroup<Var = Var>>(
     stack: &mut Stack<i32>,
-    iter_stack: &mut Stack<usize>,
+    iter_stack: &mut Stack<IterIndex>,
     op: Op<Var, i32, Grp>,
 ) -> Result<Option<BlockIndex>, Error> {
     match op {

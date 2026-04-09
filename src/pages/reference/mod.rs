@@ -15,7 +15,7 @@ pub use sidebar::ReferenceSidebar;
 use crate::{
     BASE_URL,
     components::expr_view::ExprView,
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, VarGroup},
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterIndex, VarGroup},
     model::{Attribute, AttributeGroup, Expr, Op, Translatable},
     rules::{
         Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
@@ -165,7 +165,7 @@ impl SumEntry {
 
 struct AssignmentSummarizer<'a> {
     stack: Vec<SumEntry>,
-    iter_stack: Vec<usize>,
+    iter_stack: Vec<IterIndex>,
     i18n: &'a leptos_fluent::I18n,
     registry: RulesRegistry,
     abilities: Vec<String>,
@@ -388,22 +388,34 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
                 self.stack.push(SumEntry::constant(more as i32));
             }
             Op::PushGroup(grp) => {
-                if let Some(&idx) = self.iter_stack.last()
-                    && let Some(var) = grp.member(idx)
-                {
-                    let raw = var.to_string();
-                    let text = var.display_name(self.i18n);
-                    self.stack.push(SumEntry::var(text, raw));
+                if let Some(&(real_idx, seq_idx)) = self.iter_stack.last() {
+                    let idx = if grp.is_companion() {
+                        seq_idx
+                    } else {
+                        real_idx
+                    };
+                    if let Some(var) = grp.member(idx) {
+                        let raw = var.to_string();
+                        let text = var.display_name(self.i18n);
+                        self.stack.push(SumEntry::var(text, raw));
+                    } else {
+                        self.stack.push(SumEntry::constant(0));
+                    }
                 } else {
                     self.stack.push(SumEntry::constant(0));
                 }
             }
             Op::AssignGroup(grp) => {
-                if let Some(&idx) = self.iter_stack.last()
-                    && let Some(attr) = grp.member(idx)
-                {
-                    let value = self.pop();
-                    self.assign_to_attr(attr, value);
+                if let Some(&(real_idx, seq_idx)) = self.iter_stack.last() {
+                    let idx = if grp.is_companion() {
+                        seq_idx
+                    } else {
+                        real_idx
+                    };
+                    if let Some(attr) = grp.member(idx) {
+                        let value = self.pop();
+                        self.assign_to_attr(attr, value);
+                    }
                 }
             }
             Op::Tier(count) => {

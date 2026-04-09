@@ -55,6 +55,10 @@ impl VarGroup for AttributeGroup {
         }
     }
 
+    fn is_companion(&self) -> bool {
+        matches!(self, Self::Arg)
+    }
+
     fn member(&self, i: usize) -> Option<Attribute> {
         let ability = || Ability::VARIANTS.get(i).copied();
         let skill = || Skill::VARIANTS.get(i).copied();

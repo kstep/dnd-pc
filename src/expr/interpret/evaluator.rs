@@ -1,13 +1,13 @@
 use std::{fmt, marker::PhantomData};
 
 use super::{Interpreter, eval_op};
-use crate::expr::{Context, Error, Op, VarGroup, ops::BlockIndex, stack::Stack};
+use crate::expr::{Context, Error, Op, VarGroup, group::IterIndex, ops::BlockIndex, stack::Stack};
 
 // --- Evaluator (apply mode, mutable context) ---
 
 pub struct Evaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
-    iter_stack: Stack<usize>,
+    iter_stack: Stack<IterIndex>,
     ctx: &'a mut Ctx,
     _var: PhantomData<Var>,
 }
@@ -39,14 +39,24 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
                 Ok(None)
             }
             Op::PushGroup(group) => {
-                let &index = self.iter_stack.top()?;
-                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
+                let &(real_idx, seq_idx) = self.iter_stack.top()?;
+                let idx = if group.is_companion() {
+                    seq_idx
+                } else {
+                    real_idx
+                };
+                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
                 self.stack.push(self.ctx.resolve(var)?);
                 Ok(None)
             }
             Op::AssignGroup(group) => {
-                let &index = self.iter_stack.top()?;
-                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
+                let &(real_idx, seq_idx) = self.iter_stack.top()?;
+                let idx = if group.is_companion() {
+                    seq_idx
+                } else {
+                    real_idx
+                };
+                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
             }
@@ -63,7 +73,7 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
 
 pub struct ReadOnlyEvaluator<'a, Var, Ctx> {
     stack: Stack<i32>,
-    iter_stack: Stack<usize>,
+    iter_stack: Stack<IterIndex>,
     ctx: &'a Ctx,
     lenient: bool,
     _var: PhantomData<Var>,
@@ -106,13 +116,23 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
             Op::AssignVar(var) => Err(Error::assign_at_eval(var)),
             Op::AssignGroup(_) if self.lenient => Ok(None),
             Op::AssignGroup(group) => {
-                let &index = self.iter_stack.top()?;
-                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
+                let &(real_idx, seq_idx) = self.iter_stack.top()?;
+                let idx = if group.is_companion() {
+                    seq_idx
+                } else {
+                    real_idx
+                };
+                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
                 Err(Error::assign_at_eval(var))
             }
             Op::PushGroup(group) => {
-                let &index = self.iter_stack.top()?;
-                let var = group.member(index).ok_or(Error::GroupOutOfBounds)?;
+                let &(real_idx, seq_idx) = self.iter_stack.top()?;
+                let idx = if group.is_companion() {
+                    seq_idx
+                } else {
+                    real_idx
+                };
+                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
                 self.stack.push(self.ctx.resolve(var)?);
                 Ok(None)
             }

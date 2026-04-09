@@ -20,7 +20,7 @@ mod traits;
 
 pub use crate::expr::{
     error::Error,
-    group::{NoGroup, VarGroup, VarSubgroup},
+    group::{IterIndex, NoGroup, VarGroup, VarSubgroup},
     interpret::{DicePool, ExprAnalysis, Interpreter},
     ops::{BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, BinOp, Block, BlockIndex, Cmp, Op},
     traits::{Context, Eval},
@@ -1230,7 +1230,7 @@ mod loop_tests {
     use wasm_bindgen_test::*;
 
     use crate::{
-        expr::{self, Context, Eval, Op},
+        expr::{self, Context, Eval, IterIndex, Op},
         model::{Ability, Attribute, AttributeGroup, Expr},
     };
 
@@ -1402,7 +1402,7 @@ mod loop_tests {
     /// This must NOT infinite-loop on each/fold expressions.
     struct NonEvalInterpreter {
         stack: Vec<Option<i32>>,
-        iter_stack: Vec<usize>,
+        iter_stack: Vec<IterIndex>,
     }
 
     impl NonEvalInterpreter {
@@ -1444,13 +1444,14 @@ mod loop_tests {
                     self.stack.push(None);
                 }
                 Op::Each(grp) => {
-                    self.iter_stack.push(0);
+                    self.iter_stack.push((0, 0));
                     self.stack.push(Some(grp.member(0).is_some() as i32));
                 }
                 Op::Next(grp) => {
-                    if let Some(index) = self.iter_stack.last_mut() {
-                        *index += 1;
-                        if grp.member(*index).is_some() {
+                    if let Some((pos, seq)) = self.iter_stack.last_mut() {
+                        *pos += 1;
+                        *seq += 1;
+                        if grp.member(*pos).is_some() {
                             self.stack.push(Some(1));
                         } else {
                             self.iter_stack.pop();
