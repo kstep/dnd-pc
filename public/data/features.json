@@ -10600,57 +10600,10 @@
   },
   {
     "name": "Elemental Affinity",
-    "fields": [
+    "assign": [
       {
-        "name": "Actions",
-        "kind": "Choice",
-        "options": [
-          {
-            "name": "Acid Resistance",
-            "effects": [
-              {
-                "name": "Elemental Affinity",
-                "expr": "RESIST.ACID = 1"
-              }
-            ]
-          },
-          {
-            "name": "Cold Resistance",
-            "effects": [
-              {
-                "name": "Elemental Affinity",
-                "expr": "RESIST.COLD = 1"
-              }
-            ]
-          },
-          {
-            "name": "Fire Resistance",
-            "effects": [
-              {
-                "name": "Elemental Affinity",
-                "expr": "RESIST.FIRE = 1"
-              }
-            ]
-          },
-          {
-            "name": "Lightning Resistance",
-            "effects": [
-              {
-                "name": "Elemental Affinity",
-                "expr": "RESIST.LIGHT = 1"
-              }
-            ]
-          },
-          {
-            "name": "Poison Resistance",
-            "effects": [
-              {
-                "name": "Elemental Affinity",
-                "expr": "RESIST.POISON = 1"
-              }
-            ]
-          }
-        ]
+        "expr": "with(@RESIST._(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
+        "when": "OnFeatureAdd"
       }
     ]
   },
