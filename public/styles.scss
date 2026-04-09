@@ -143,6 +143,7 @@ html {
 
   &:hover {
     color: var(--accent);
+    box-shadow: none;
   }
 
   &[aria-current="page"] {
@@ -2301,26 +2302,24 @@ select.entry-name {
 }
 
 .datalist-browse-btn {
+  --btn-bg: var(--input-bg);
+  --btn-color: var(--text-secondary);
   flex-shrink: 0;
   width: 1.5rem;
   padding: 0;
   border: 1px solid var(--panel-border);
   border-left: none;
   border-radius: 0 var(--radius-1) var(--radius-1) 0;
-  background: var(--input-bg);
-  color: var(--text-secondary);
   font-size: var(--font-size-1);
   cursor: pointer;
   line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: background 0.15s, color 0.15s;
 
   &:hover,
   &:focus-visible {
-    background: var(--panel-border);
-    color: var(--text-primary);
+    --btn-bg: var(--panel-border);
+    --btn-color: var(--text-primary);
+    box-shadow: none;
   }
 }
 
@@ -2586,6 +2585,8 @@ dialog.modal.closing::backdrop {
 }
 
 .datalist-option {
+  --btn-bg: var(--input-bg);
+  --btn-color: var(--text-primary);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2593,14 +2594,13 @@ dialog.modal.closing::backdrop {
   padding: var(--size-2) var(--size-3);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
-  background: var(--input-bg);
-  color: var(--text-primary);
   cursor: pointer;
   text-align: left;
   transition: background 0.15s, border-color 0.15s;
 
   &:hover,
   &:focus-visible {
+    --btn-bg: var(--panel-border);
     background: var(--panel-border);
     border-color: var(--accent);
   }
