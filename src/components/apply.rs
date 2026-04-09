@@ -103,7 +103,6 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
     let mut pending: Vec<PendingFeature> = clone
         .features
         .iter()
-        .filter(|f| f.applied)
         .map(|f| PendingFeature {
             name: f.name.clone(),
             source: f.source.clone(),

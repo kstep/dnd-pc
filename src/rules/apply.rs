@@ -363,8 +363,9 @@ pub fn replay(
         );
     }
 
-    // Persist supplemental inputs back to Feature entries
+    // Mark all features as applied and persist supplemental inputs
     for feature in character.features.iter_mut() {
+        feature.applied = true;
         if feature.inputs.is_empty() {
             let supp = inputs.get(&feature.name);
             if !supp.is_empty() {
