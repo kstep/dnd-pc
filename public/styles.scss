@@ -258,8 +258,6 @@ html {
   .navbar-ref .navbar-ref-current {
     display: inline;
   }
-
-
   // On mobile: always show dropdown, hide inline
   .navbar-ref:has(~ .navbar-ref-inline) {
     display: block;
@@ -272,9 +270,6 @@ html {
 
 /* --------------------- Base ---------------------------------- */
 button, a.btn-link {
-  --btn-bg: var(--panel-bg);
-  --btn-color: var(--text-primary);
-
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -285,17 +280,22 @@ button, a.btn-link {
   text-shadow: none;
   outline: none;
   box-shadow: none;
-  border: 1px solid var(--btn-bg);
+  border: 1px solid var(--btn-bg, var(--accent));
   border-radius: var(--radius-1);
-  background: var(--btn-bg);
-  color: var(--btn-color);
+  background: var(--btn-bg, transparent);
+  color: var(--btn-color, var(--text-primary));
   cursor: pointer;
   padding: var(--size-1) var(--size-3);
   width: fit-content;
   line-height: 1.2;
 
+  transition: box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+
   &:hover {
-    border-color: var(--accent);
+    background: var(--btn-bg, var(--accent));
+    color: var(--btn-color, white);
+    border-color: var(--btn-bg, var(--accent));
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
   }
 
   &:disabled {
@@ -307,8 +307,6 @@ button, a.btn-link {
     --btn-bg: var(--danger);
     --btn-color: white;
   }
-
-
   &.btn-icon {
     padding: var(--size-1);
   }
@@ -519,8 +517,6 @@ input[type="checkbox"] {
     margin-top: 0;
   }
 }
-
-
 /* --------------------- Character List Page ------------------- */
 .character-list-page {
   text-align: left;
@@ -556,8 +552,6 @@ input[type="checkbox"] {
   gap: var(--size-3);
   justify-content: center;
 }
-
-
 .character-card {
   perspective: 800px;
 
@@ -691,7 +685,7 @@ input[type="checkbox"] {
   }
 
   .btn-level-up {
-    --btn-bg: transparent;
+  
     --btn-color: var(--accent);
     border-color: var(--accent);
     width: 1.5rem;
@@ -798,8 +792,6 @@ input[type="checkbox"] {
     text-align: center;
   }
 }
-
-
 /* --------------------- Editor Grid Layout --------------------- */
 .character-editor {
   max-width: 1400px;
@@ -996,8 +988,6 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
 }
-
-
 .skill-ability {
   font-size: var(--font-size-0);
   color: var(--text-secondary);
@@ -1031,7 +1021,7 @@ input[type="checkbox"] {
 }
 
 .share-toggle {
-  --btn-bg: transparent;
+
   --btn-color: var(--text-secondary);
   border: none;
   line-height: 1;
@@ -1204,6 +1194,7 @@ input[type="checkbox"] {
 
 .btn-rest {
   --btn-bg: var(--success);
+  --btn-border: var(--success);
   --btn-color: white;
   width: 100%;
   white-space: nowrap;
@@ -1265,11 +1256,9 @@ input[type="checkbox"] {
   font-size: var(--font-size-1);
 }
 
-
-
 /* --------------------- Toggle Button ------------------------- */
 .btn-toggle-desc {
-  --btn-bg: transparent;
+
   --btn-color: var(--text-secondary);
   width: 28px;
   height: 28px;
@@ -1518,7 +1507,7 @@ select.entry-name {
 }
 
 .btn-convert {
-  --btn-bg: transparent;
+
   --btn-color: var(--text-secondary);
 
   &:hover {
@@ -1528,7 +1517,7 @@ select.entry-name {
 }
 
 .btn-convert-placeholder {
-  --btn-bg: transparent;
+
   border: none;
 }
 
@@ -1645,6 +1634,7 @@ select.entry-name {
 /* --------------------- Buttons ------------------------------- */
 .btn-primary {
   --btn-bg: var(--accent);
+  --btn-border: var(--accent);
   --btn-color: white;
   margin-top: var(--size-1);
 }
@@ -1657,7 +1647,7 @@ select.entry-name {
 }
 
 .btn-remove {
-  --btn-bg: transparent;
+
   --btn-color: var(--danger);
   vertical-align: middle;
   width: 28px;
@@ -1683,7 +1673,7 @@ select.entry-name {
 }
 
 .btn-apply-level {
-  --btn-bg: transparent;
+
   --btn-color: var(--accent);
   gap: 2px;
   padding: 0;
@@ -1782,7 +1772,7 @@ select.entry-name {
 }
 
 .btn-cancel {
-  --btn-bg: transparent;
+
   --btn-color: var(--text-secondary);
   border-color: var(--panel-border);
   text-decoration: none;
@@ -2051,7 +2041,7 @@ select.entry-name {
 }
 
 .btn-icon {
-  --btn-bg: transparent;
+
   vertical-align: middle;
   width: 28px;
   height: 28px;
@@ -2081,8 +2071,6 @@ select.entry-name {
 .btn-container {
   display: contents;
 }
-
-
 .session-hp-box {
   grid-column: span 2;
 
@@ -2582,8 +2570,6 @@ dialog.modal.closing::backdrop {
   font-weight: 600;
   color: var(--text-primary);
 }
-
-
 .datalist-modal-search {
   margin: var(--size-2) var(--size-3);
   width: calc(100% - 2 * var(--size-3));
@@ -2700,8 +2686,6 @@ dialog.modal.closing::backdrop {
   position: sticky;
   top: 3rem;
 }
-
-
 .reference-nav-item {
   display: block;
   padding: var(--size-2) var(--size-3);

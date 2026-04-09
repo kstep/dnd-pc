@@ -10,6 +10,7 @@ pub mod character_card;
 pub mod character_header;
 pub mod class_field;
 pub mod classes_section;
+pub mod confirm_modal;
 pub mod datalist_input;
 pub mod effects_calc_modal;
 pub mod entity_field;

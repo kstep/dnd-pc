@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
-use leptos_fluent::{move_tr, tr};
+use leptos_fluent::move_tr;
 use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -15,6 +15,7 @@ use crate::{
         apply_field_section::ApplyFieldSection,
         background_field::BackgroundField,
         classes_section::ClassesSection,
+        confirm_modal::ConfirmButton,
         icon::Icon,
         menu_modal::{MenuItem, MenuModal},
         species_field::SpeciesField,
@@ -355,19 +356,15 @@ pub fn CharacterHeader() -> impl IntoView {
                 <button class="btn-primary" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
                 <button class="btn-primary" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
                 <button class="btn-primary" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="book-up" size=18 /></button>
-                <button
+                <ConfirmButton
                     class="btn-primary btn-danger"
                     title=move_tr!("reset-character")
-                    on:click=move |_| {
-                        let msg = tr!("confirm-reset");
-                        let window = leptos::prelude::window();
-                        if window.confirm_with_message(&msg).unwrap_or(false) {
-                            store.update(|c| c.clear());
-                        }
-                    }
+                    confirm_title=move_tr!("reset-character")
+                    confirm_message=move_tr!("confirm-reset")
+                    on_confirm=move || store.update(|character| character.clear())
                 >
                     <Icon name="rotate-ccw" size=18 />
-                </button>
+                </ConfirmButton>
             </div>
             <MenuModal
                 show=show_level_up

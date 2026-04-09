@@ -3,7 +3,9 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{apply::replay_with_modal, icon::Icon, panel::Panel},
+    components::{
+        apply::replay_with_modal, confirm_modal::ConfirmButton, icon::Icon, panel::Panel,
+    },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
         format_bonus,
@@ -244,21 +246,17 @@ pub fn CombatPanel() -> impl IntoView {
                     " "
                     {move_tr!("recalculate")}
                 </button>
-                <button
+                <ConfirmButton
                     class="btn-rest"
                     title=move_tr!("replay")
-                    on:click=move |_| {
-                        let window = web_sys::window().unwrap();
-                        let i18n = expect_context::<leptos_fluent::I18n>();
-                        if window.confirm_with_message(&i18n.tr("replay-confirm")).unwrap_or(false) {
-                            replay_with_modal(store, registry);
-                        }
-                    }
+                    confirm_title=move_tr!("replay")
+                    confirm_message=move_tr!("replay-confirm")
+                    on_confirm=move || replay_with_modal(store, registry)
                 >
                     <Icon name="rotate-ccw" size=14 />
                     " "
                     {move_tr!("replay")}
-                </button>
+                </ConfirmButton>
             </div>
             </div>
         </Panel>
