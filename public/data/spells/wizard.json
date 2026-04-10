@@ -2244,7 +2244,7 @@
     "effects": [
       {
         "name": "Fear",
-        "range": "Caster",
+        "range": { "Feet": 30 },
         "duration": {
           "Rounds": 10
         }
