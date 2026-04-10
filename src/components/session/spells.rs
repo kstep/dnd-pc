@@ -290,14 +290,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     </span>
                                                 }.into_any());
                                             }
-                                            // Ritual
-                                            if sd.ritual {
-                                                badges.push(view! {
-                                                    <span class="spell-meta-icon" title=move_tr!("ref-spell-ritual")>
-                                                        <Icon name="book-open" size=14 />
-                                                    </span>
-                                                }.into_any());
-                                            }
+                                            // // Ritual
+                                            // if sd.ritual {
+                                            //     badges.push(view! {
+                                            //         <span class="spell-meta-icon" title=move_tr!("ref-spell-ritual")>
+                                            //             <Icon name="book-open" size=14 />
+                                            //         </span>
+                                            //     }.into_any());
+                                            // }
                                             badges
                                         })
                                     })
