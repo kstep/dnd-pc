@@ -380,7 +380,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(tier(LEVEL, 1:1, 5:2, 11:3, 17:4) + max(0, CASTER_MODIFIER))d8!",
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8 + max(0, CASTER_MODIFIER)d8!",
         "range": {
           "Feet": 120
         },
