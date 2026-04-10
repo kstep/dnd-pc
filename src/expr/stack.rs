@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use crate::expr::Error;
 
-pub(super) struct Stack<T>(Vec<T>);
+pub(crate) struct Stack<T>(Vec<T>);
 
 impl<T> Deref for Stack<T> {
     type Target = [T];
@@ -65,8 +65,8 @@ impl<T> Stack<T> {
         self.0.last().ok_or(Error::StackUnderflow)
     }
 
-    pub fn as_vec_mut(&mut self) -> &mut Vec<T> {
-        &mut self.0
+    pub fn top_mut(&mut self) -> Result<&mut T, Error> {
+        self.0.last_mut().ok_or(Error::StackUnderflow)
     }
 }
 

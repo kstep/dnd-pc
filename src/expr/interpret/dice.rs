@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 use serde::{Deserialize, Serialize};
 
 use super::{Interpreter, eval_op};
-use crate::expr::{Context, Error, Op, VarGroup, group::IterIndex, ops::BlockIndex, stack::Stack};
+use crate::expr::{Context, Error, Op, VarGroup, group::IterStack, ops::BlockIndex, stack::Stack};
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
 
@@ -63,7 +63,7 @@ impl DicePoolIter<'_> {
 
 pub struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
     stack: Stack<i32>,
-    iter_stack: Stack<IterIndex>,
+    iter_stack: IterStack,
     ctx: &'a mut Ctx,
     pool: &'a mut DicePoolIter<'p>,
     _var: PhantomData<Var>,
@@ -73,7 +73,7 @@ impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePoolIter<'p>) -> Self {
         Self {
             stack: Stack::new(),
-            iter_stack: Stack::new(),
+            iter_stack: IterStack::new(),
             ctx,
             pool,
             _var: PhantomData,
@@ -97,24 +97,14 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
                 Ok(None)
             }
             Op::PushGroup(group) => {
-                let &(real_idx, seq_idx) = self.iter_stack.top()?;
-                let idx = if group.is_companion() {
-                    seq_idx
-                } else {
-                    real_idx
-                };
-                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
+                let idx = self.iter_stack.top()?;
+                let var = group.member(*idx).ok_or(Error::GroupOutOfBounds)?;
                 self.stack.push(self.ctx.resolve(var)?);
                 Ok(None)
             }
             Op::AssignGroup(group) => {
-                let &(real_idx, seq_idx) = self.iter_stack.top()?;
-                let idx = if group.is_companion() {
-                    seq_idx
-                } else {
-                    real_idx
-                };
-                let var = group.member(idx).ok_or(Error::GroupOutOfBounds)?;
+                let idx = self.iter_stack.top()?;
+                let var = group.member(*idx).ok_or(Error::GroupOutOfBounds)?;
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
             }

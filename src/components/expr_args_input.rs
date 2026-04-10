@@ -6,7 +6,9 @@ use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterIndex, VarGroup},
+    expr::{
+        self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterIndex, IterStack, VarGroup,
+    },
     model::{Attribute, AttributeGroup, Character, Expr, Op},
 };
 
@@ -166,7 +168,7 @@ struct FormCtx {
     active_args: BTreeSet<u8>,
     boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
-    iter_stack: Vec<IterIndex>,
+    iter_stack: IterStack,
     is_satisfied: Memo<bool>,
 }
 
@@ -183,7 +185,7 @@ impl FormCtx {
             active_args: active_args.into_iter().collect(),
             boolean_args,
             i18n,
-            iter_stack: Vec::new(),
+            iter_stack: IterStack::new(),
             is_satisfied,
         }
     }
@@ -223,16 +225,11 @@ fn render_statement(
 ) -> Result<(), expr::Error> {
     if let Some(ca) = Block::detect_compound(stmt) {
         let i18n = ctx.i18n;
-        let (real_idx, seq_idx) = ctx.iter_stack.last().copied().unwrap_or((0, 0));
+        let iter_idx = ctx.iter_stack.last().copied().unwrap_or_default();
         let var_view: AnyView = match stmt.last() {
             Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
             Some(&Op::AssignGroup(grp)) => {
-                let idx = if grp.is_companion() {
-                    seq_idx
-                } else {
-                    real_idx
-                };
-                let var = grp.member(idx).expect("valid index");
+                let var = grp.member(iter_idx).expect("valid index");
                 (move || var.display_name(&i18n)).into_any()
             }
             _ => unreachable!(),
@@ -304,38 +301,26 @@ fn form_block_ops(
             Op::PushVar(Attribute::Arg(n)) => {
                 push_arg_input(fb, ctx, n, condition);
             }
-            // PushGroup(Arg) → ARG input using sequential index;
-            // other groups use real index from iter_stack
             Op::PushGroup(grp) => {
-                if let Some(&(real_idx, seq_idx)) = ctx.iter_stack.last() {
-                    let idx = if grp.is_companion() {
-                        seq_idx
+                if let Some(idx) = ctx.iter_stack.last()
+                    && let Some(var) = grp.member(*idx)
+                {
+                    if let Attribute::Arg(n) = var {
+                        push_arg_input(fb, ctx, n, condition);
                     } else {
-                        real_idx
-                    };
-                    if let Some(var) = grp.member(idx) {
-                        if let Attribute::Arg(n) = var {
-                            push_arg_input(fb, ctx, n, condition);
-                        } else {
-                            let i18n = ctx.i18n;
-                            fb.push_view((move || var.display_name(&i18n)).into_any());
-                        }
+                        let i18n = ctx.i18n;
+                        fb.push_view((move || var.display_name(&i18n)).into_any());
                     }
                 }
             }
             Op::AssignGroup(grp) => {
-                if let Some(&(real_idx, seq_idx)) = ctx.iter_stack.last() {
-                    let idx = if grp.is_companion() {
-                        seq_idx
-                    } else {
-                        real_idx
-                    };
-                    if let Some(var) = grp.member(idx) {
-                        let val = fb.pop()?;
-                        let i18n = ctx.i18n;
-                        let var_s = move || var.display_name(&i18n);
-                        fb.push_view(view! { <>{var_s}" = "{val}</> }.into_any());
-                    }
+                if let Some(idx) = ctx.iter_stack.last()
+                    && let Some(var) = grp.member(*idx)
+                {
+                    let val = fb.pop()?;
+                    let i18n = ctx.i18n;
+                    let var_s = move || var.display_name(&i18n);
+                    fb.push_view(view! { <>{var_s}" = "{val}</> }.into_any());
                 }
             }
             Op::Next(_) => {} // handled by loop unroll
@@ -398,10 +383,10 @@ fn form_block_loop(
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_ops.len().saturating_sub(2);
     let content = &body_ops[..content_end];
-    for (seq_idx, real_idx) in subgrp.real_indices().enumerate() {
-        ctx.iter_stack.push((real_idx, seq_idx));
+    for (iter_no, index) in subgrp.real_indices().enumerate() {
+        ctx.iter_stack.push(IterIndex { iter_no, index });
         render_statement(fb, expr, content, ctx, condition)?;
-        ctx.iter_stack.pop();
+        let _ = ctx.iter_stack.pop();
     }
     Ok(())
 }

@@ -2,32 +2,50 @@ use std::{fmt, marker::PhantomData, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-/// Loop iteration index: `(real_group_index, sequential_position)`.
-/// The real index maps directly to the group's member. The sequential
-/// position counts 0, 1, 2, … across masked iterations and is used by
-/// companion groups (`@ARG`) that provide one value per loop step.
-pub type IterIndex = (usize, usize);
+use crate::expr::stack::Stack;
+
+/// Loop iteration state: carries both the real group index and the
+/// sequential iteration number.  Each `VarGroup` decides which field
+/// to use — most groups use `index` (the real position in the full
+/// group), while companion groups like `@ARG` use `iter_no` (the
+/// sequential loop counter).
+#[derive(Debug, Copy, Clone, Default)]
+pub struct IterIndex {
+    /// Sequential iteration number (0, 1, 2, …).
+    pub iter_no: usize,
+    /// Real index into the group's member array.
+    pub index: usize,
+}
+
+impl From<usize> for IterIndex {
+    fn from(index: usize) -> Self {
+        Self {
+            iter_no: index,
+            index,
+        }
+    }
+}
+
+/// Iteration stack used by expression evaluators.
+pub type IterStack = Stack<IterIndex>;
 
 /// Trait for variable groups used in loop iteration.
 /// Maps a group + index to a concrete variable.
 pub trait VarGroup {
     type Var;
 
-    /// Get the variable at the given index, or `None` if the group is
+    /// Get the variable at the given iteration index.
+    ///
+    /// Most groups use `index.index` (the real group position).
+    /// Companion groups (like `@ARG`) use `index.iter_no` (the
+    /// sequential loop counter).  Returns `None` if the group is
     /// exhausted.
-    fn member(&self, index: usize) -> Option<Self::Var>;
+    fn member(&self, index: IterIndex) -> Option<Self::Var>;
 
     /// Find the index of a member by short name (e.g. "ACID" for Resist group).
     /// Returns `None` by default — override for groups with named members.
     fn member_by_name(&self, _name: &str) -> Option<usize> {
         None
-    }
-
-    /// Companion groups (like `@ARG`) are indexed by sequential loop
-    /// position rather than the real group index. Override to return `true`
-    /// for such groups.
-    fn is_companion(&self) -> bool {
-        false
     }
 }
 
@@ -83,8 +101,11 @@ impl<Grp> VarSubgroup<Grp> {
     where
         Grp: VarGroup,
     {
-        self.real_index(position)
-            .and_then(|idx| self.inner.member(idx))
+        let index = self.real_index(position)?;
+        self.inner.member(IterIndex {
+            iter_no: position,
+            index,
+        })
     }
 
     /// Iterate over real group indices of all members in this (sub)group.
@@ -94,21 +115,25 @@ impl<Grp> VarSubgroup<Grp> {
     {
         (0..).map_while(|pos| {
             let real_idx = self.real_index(pos)?;
-            self.inner.member(real_idx)?;
+            self.inner.member(real_idx.into())?;
             Some(real_idx)
         })
     }
 
-    /// Initialize loop iteration. Pushes `(real_index, 0)` to `iter_stack`.
-    /// Returns `true` if the group is non-empty (loop should enter body).
-    pub fn init_loop(&self, iter_stack: &mut Vec<IterIndex>) -> bool
+    /// Initialize loop iteration. Pushes the first `IterIndex` onto the
+    /// stack.  Returns `true` if the group is non-empty (loop should
+    /// enter body).
+    pub(crate) fn init_loop(&self, iter_stack: &mut IterStack) -> bool
     where
         Grp: VarGroup,
     {
         if let Some(real_idx) = self.real_index(0)
-            && self.inner.member(real_idx).is_some()
+            && self.inner.member(real_idx.into()).is_some()
         {
-            iter_stack.push((real_idx, 0));
+            iter_stack.push(IterIndex {
+                iter_no: 0,
+                index: real_idx,
+            });
             true
         } else {
             false
@@ -117,18 +142,22 @@ impl<Grp> VarSubgroup<Grp> {
 
     /// Advance loop to the next member. Returns `true` if more items remain.
     /// When exhausted, pops `iter_stack` and returns `false`.
-    pub fn advance_loop(&self, iter_stack: &mut Vec<IterIndex>) -> bool
+    pub(crate) fn advance_loop(&self, iter_stack: &mut IterStack) -> bool
     where
         Grp: VarGroup,
     {
-        if let Some(&(current, seq)) = iter_stack.last()
-            && let Some(next_idx) = self.next_real_index(current)
-            && self.inner.member(next_idx).is_some()
+        if let Ok(current) = iter_stack.top()
+            && let Some(next_idx) = self.next_real_index(current.index)
+            && self.inner.member(next_idx.into()).is_some()
         {
-            *iter_stack.last_mut().unwrap() = (next_idx, seq + 1);
+            let iter_no = current.iter_no + 1;
+            *iter_stack.top_mut().unwrap() = IterIndex {
+                iter_no,
+                index: next_idx,
+            };
             true
         } else {
-            iter_stack.pop();
+            let _ = iter_stack.pop();
             false
         }
     }
@@ -145,7 +174,7 @@ impl<Grp> VarSubgroup<Grp> {
             let mut first = true;
             for bit in 0..32u32 {
                 if self.mask & (1 << bit) != 0
-                    && let Some(var) = self.inner.member(bit as usize)
+                    && let Some(var) = self.inner.member((bit as usize).into())
                 {
                     if !first {
                         write!(f, ", ")?;
@@ -197,7 +226,7 @@ impl<Var> FromStr for NoGroup<Var> {
 impl<Var> VarGroup for NoGroup<Var> {
     type Var = Var;
 
-    fn member(&self, _index: usize) -> Option<Var> {
+    fn member(&self, _index: IterIndex) -> Option<Var> {
         None
     }
 }

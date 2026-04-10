@@ -260,7 +260,7 @@ impl<Var, Val, Grp> Block<Var, Val, Grp> {
         self.0.iter().any(|op| match op {
             Op::PushVar(v) | Op::AssignVar(v) => pred(v),
             Op::PushGroup(g) | Op::AssignGroup(g) => {
-                (0..32).any(|i| g.member(i).is_some_and(|v| pred(&v)))
+                (0..32).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
             }
             _ => false,
         })
@@ -274,7 +274,7 @@ impl<Var, Val, Grp> Block<Var, Val, Grp> {
     {
         self.0.iter().any(|op| match op {
             Op::AssignVar(v) => pred(v),
-            Op::AssignGroup(g) => (0..32).any(|i| g.member(i).is_some_and(|v| pred(&v))),
+            Op::AssignGroup(g) => (0..32).any(|i| g.member(i.into()).is_some_and(|v| pred(&v))),
             _ => false,
         })
     }

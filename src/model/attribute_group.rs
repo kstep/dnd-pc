@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum::VariantArray;
 
 use crate::{
-    expr::VarGroup,
+    expr::{IterIndex, VarGroup},
     model::{
         Ability, Attribute, DamageType, Skill,
         attribute::{parse_ability, parse_damage_type, parse_skill},
@@ -55,11 +55,8 @@ impl VarGroup for AttributeGroup {
         }
     }
 
-    fn is_companion(&self) -> bool {
-        matches!(self, Self::Arg)
-    }
-
-    fn member(&self, i: usize) -> Option<Attribute> {
+    fn member(&self, idx: IterIndex) -> Option<Attribute> {
+        let i = idx.index;
         let ability = || Ability::VARIANTS.get(i).copied();
         let skill = || Skill::VARIANTS.get(i).copied();
         let dmg = || DamageType::VARIANTS.get(i).copied();
@@ -76,7 +73,7 @@ impl VarGroup for AttributeGroup {
             Self::Resist => dmg().map(Attribute::Resistance),
             Self::Vuln => dmg().map(Attribute::Vulnerability),
             Self::Immune => dmg().map(Attribute::Immunity),
-            Self::Arg => Some(Attribute::Arg(i as u8)),
+            Self::Arg => Some(Attribute::Arg(idx.iter_no as u8)),
         }
     }
 }

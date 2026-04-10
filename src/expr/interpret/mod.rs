@@ -11,7 +11,7 @@ pub use self::{
 };
 use crate::expr::{
     Error, Op, VarGroup, avg_hp,
-    group::{IterIndex, NoGroup},
+    group::{IterStack, NoGroup},
     ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
     stack::Stack,
 };
@@ -48,7 +48,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
 
 fn eval_op<Var, Grp: VarGroup<Var = Var>>(
     stack: &mut Stack<i32>,
-    iter_stack: &mut Stack<IterIndex>,
+    iter_stack: &mut IterStack,
     op: Op<Var, i32, Grp>,
 ) -> Result<Option<BlockIndex>, Error> {
     match op {
@@ -138,10 +138,10 @@ fn eval_op<Var, Grp: VarGroup<Var = Var>>(
             return eval_block(if cond != 0 { then_idx } else { else_idx });
         }
         Op::Each(subgrp) => {
-            stack.push(subgrp.init_loop(iter_stack.as_vec_mut()) as i32);
+            stack.push(subgrp.init_loop(iter_stack) as i32);
         }
         Op::Next(subgrp) => {
-            stack.push(subgrp.advance_loop(iter_stack.as_vec_mut()) as i32);
+            stack.push(subgrp.advance_loop(iter_stack) as i32);
         }
         Op::Tier(count) => {
             let var = stack.pop()?;

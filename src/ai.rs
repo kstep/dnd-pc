@@ -8,7 +8,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
 use crate::{
-    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, IterIndex},
+    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, IterStack},
     hooks::join_iter,
     model::{Ability, Attribute, AttributeGroup, Character, Op, Skill},
     rules::{FeatureDefinition, PendingInputs},
@@ -727,7 +727,7 @@ impl ArgStackEntry {
 
 struct ArgSummarizer {
     stack: Vec<ArgStackEntry>,
-    iter_stack: Vec<IterIndex>,
+    iter_stack: IterStack,
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
     group_members: Vec<Attribute>,
@@ -737,7 +737,7 @@ impl ArgSummarizer {
     fn new() -> Self {
         Self {
             stack: Vec::new(),
-            iter_stack: Vec::new(),
+            iter_stack: IterStack::new(),
             args: BTreeMap::new(),
             sum_constraint: None,
             group_members: Vec::new(),
