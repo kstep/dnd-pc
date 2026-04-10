@@ -3567,3 +3567,9 @@ details.floating-nav {
     opacity: 0.8;
   }
 }
+
+main > *,
+main > * > :first-child {
+  animation: fade-in 200ms ease-out;
+}
+
