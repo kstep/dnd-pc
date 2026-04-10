@@ -2459,7 +2459,7 @@
       {
         "name": "Lightning Damage",
         "expr": "(SLOT_LEVEL + 5)d6",
-        "range": "Caster",
+        "range": { "Feet": 100 },
         "duration": "Instant"
       }
     ]
