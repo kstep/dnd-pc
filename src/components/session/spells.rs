@@ -240,13 +240,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             }
                                             // Range
                                             match sd.effect_range() {
-                                                Some(EffectRange::Caster) => {
-                                                    badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range-self")>
-                                                            <Icon name="person-standing" size=14 />
-                                                        </span>
-                                                    }.into_any());
-                                                }
+                                                Some(EffectRange::Caster) => {}
                                                 Some(EffectRange::Touch) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-range-touch")>
