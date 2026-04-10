@@ -53,8 +53,6 @@ pub fn QuickStart() -> impl IntoView {
         }
     };
 
-    let generation_method = RwSignal::new(String::new());
-
     let generation_options = Memo::new(move |_| {
         registry.with_features_index(|idx| {
             idx.values()
@@ -63,6 +61,14 @@ pub fn QuickStart() -> impl IntoView {
                 .collect::<Vec<_>>()
         })
     });
+
+    let generation_method = RwSignal::new(
+        generation_options
+            .get_untracked()
+            .first()
+            .map(|(name, _)| name.to_string())
+            .unwrap_or_default(),
+    );
 
     let on_create = move |_| {
         create_character(store, registry, generation_method);

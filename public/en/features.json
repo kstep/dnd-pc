@@ -5,7 +5,7 @@
   "Generation: Random": {
     "description": "Roll 4d6 and keep the highest 3 for each ability score."
   },
-  "Generation: Preset": {
+  "Generation: Fixed Preset": {
     "description": "Assign the standard array (15, 14, 13, 12, 10, 8) to your ability scores. Each value can only be used once."
   },
   "Alert": {

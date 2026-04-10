@@ -22,7 +22,7 @@
     "category": "Generation"
   },
   {
-    "name": "Generation: Preset",
+    "name": "Generation: Fixed Preset",
     "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {
