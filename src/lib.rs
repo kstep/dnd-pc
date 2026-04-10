@@ -28,6 +28,9 @@ pub const BASE_URL: &str = match option_env!("BASE_URL") {
     None => "",
 };
 
+const BUILD_COMMIT: &str = env!("BUILD_COMMIT");
+const BUILD_DATE: &str = env!("BUILD_DATE");
+
 pub static LOGO_SVG: &str = include_str!("../public/icons/logo.svg");
 
 static_loader! {
@@ -38,6 +41,7 @@ static_loader! {
 }
 
 use components::{
+    build_info::BuildInfo,
     logo::IsRouting,
     navbar::{ActiveCharacterId, Navbar},
 };
@@ -100,6 +104,7 @@ pub fn App() -> impl IntoView {
                 </Routes>
             </main>
         </Router>
+        <BuildInfo />
     }
 }
 
