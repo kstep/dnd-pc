@@ -103,7 +103,12 @@ pub fn all_self_effects_diceless(
     effects
         .iter()
         .filter(|effect| effect.range.can_target_self())
-        .all(|effect| effect.expr.dice_rolls(&ctx).is_empty())
+        .all(|effect| {
+            effect
+                .expr
+                .as_ref()
+                .is_none_or(|expr| expr.dice_rolls(&ctx).is_empty())
+        })
 }
 
 /// Check whether any non-stackable Caster effect already exists in active
@@ -126,8 +131,10 @@ fn build_self_expr(
 ) -> Option<Expr> {
     let combined = effects
         .iter()
-        .filter(|effect| effect.range.can_target_self() && filter(effect.duration))
-        .map(|effect| effect.expr.to_string())
+        .filter(|effect| {
+            effect.expr.is_some() && effect.range.can_target_self() && filter(effect.duration)
+        })
+        .map(|effect| effect.expr.as_ref().unwrap().to_string())
         .collect::<Vec<_>>()
         .join("; ");
     if combined.is_empty() {
@@ -250,9 +257,11 @@ pub fn EffectsCalcModal(
                         .effects
                         .iter()
                         .filter(|effect| {
-                            effect.range.can_target_self() && filter(effect.duration)
+                            effect.expr.is_some()
+                                && effect.range.can_target_self()
+                                && filter(effect.duration)
                         })
-                        .map(|effect| effect.expr.to_string())
+                        .map(|effect| effect.expr.as_ref().unwrap().to_string())
                         .collect::<Vec<_>>()
                         .join("; ");
                     if combined.is_empty() {
@@ -283,15 +292,16 @@ pub fn EffectsCalcModal(
             let effect_views = info
                 .effects
                 .iter()
+                .filter(|effect| effect.expr.is_some())
                 .map(|effect| {
-                    let expr = effect.expr.clone();
+                    let expr = effect.expr.clone().unwrap();
                     let label = effect.label().to_string();
                     let is_self = effect.range.can_target_self();
-                    let rolls = effect.expr.dice_rolls(&ctx);
+                    let rolls = expr.dice_rolls(&ctx);
 
                     if rolls.is_empty() {
                         // No dice — evaluate immediately
-                        let result = effect.expr.eval_lenient(&ctx).ok();
+                        let result = expr.eval_lenient(&ctx).ok();
                         let result_view = result.map_or_else(
                             || view! { <span class="effects-calc-error">"\u{2014}"</span> }.into_any(),
                             |v| v.into_any(),
@@ -308,8 +318,7 @@ pub fn EffectsCalcModal(
                         .into_any()
                     } else {
                         // Has dice — build inputs and live result
-                        let formula_expr = effect.expr.clone();
-                        let expr = effect.expr.clone();
+                        let formula_expr = expr.clone();
                         let extra_vars = info.extra_vars.clone();
 
                         let total_needed: u32 = rolls.values().copied().sum();

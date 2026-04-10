@@ -2,11 +2,27 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
-    model::{Ability, Character, EffectDefinition, FreeUses, Spell, SpellData, SpellSlotPool},
+    model::{
+        Ability, Character, EffectDefinition, EffectDuration, EffectRange, FreeUses, Spell,
+        SpellData, SpellSlotPool,
+    },
+    rules::{feature::ActionType, utils::LevelRules},
 };
+
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[serde(untagged)]
+pub enum CastTime {
+    Action(ActionType),
+    Rounds(u32),
+}
+
+impl Default for CastTime {
+    fn default() -> Self {
+        CastTime::Action(ActionType::Action)
+    }
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpellDefinition {
@@ -26,12 +42,43 @@ pub struct SpellDefinition {
     #[serde(default)]
     pub ritual: bool,
     #[serde(default)]
+    pub concentration: bool,
+    #[serde(default)]
+    pub cast_time: CastTime,
+    #[serde(default)]
     pub effects: Vec<EffectDefinition>,
+}
+
+#[derive(Clone, Copy)]
+pub struct SpellMeta {
+    pub cast_time: CastTime,
+    pub ritual: bool,
+    pub concentration: bool,
+    pub range: Option<EffectRange>,
+    pub duration: Option<EffectDuration>,
 }
 
 impl SpellDefinition {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+
+    pub fn effect_range(&self) -> Option<EffectRange> {
+        self.effects.iter().map(|e| e.range).max()
+    }
+
+    pub fn effect_duration(&self) -> Option<EffectDuration> {
+        self.effects.iter().map(|e| e.duration).max()
+    }
+
+    pub fn meta(&self) -> SpellMeta {
+        SpellMeta {
+            cast_time: self.cast_time,
+            ritual: self.ritual,
+            concentration: self.concentration,
+            range: self.effect_range(),
+            duration: self.effect_duration(),
+        }
     }
 }
 
@@ -334,13 +381,15 @@ mod tests {
             for (spell_name, spell) in map.0.iter() {
                 for effect in &spell.effects {
                     total_effects += 1;
-                    // Verify the expression can be displayed (round-trip check)
-                    let display = format!("{}", effect.expr);
-                    assert!(
-                        !display.is_empty(),
-                        "{name}/{spell_name}: effect '{}' has empty expression display",
-                        effect.name
-                    );
+                    if let Some(ref expr) = effect.expr {
+                        // Verify the expression can be displayed (round-trip check)
+                        let display = format!("{}", expr);
+                        assert!(
+                            !display.is_empty(),
+                            "{name}/{spell_name}: effect '{}' has empty expression display",
+                            effect.name
+                        );
+                    }
                 }
             }
         }

@@ -324,6 +324,25 @@ ref-spell-level = {$level ->
     }
 ref-spell-min-level = from level {$level}
 ref-spell-always-ready = always ready
+ref-spell-cast-time = Casting Time
+ref-spell-range = Range
+ref-spell-duration = Duration
+ref-spell-concentration = Concentration
+ref-spell-ritual = Ritual
+ref-spell-range-self = Self
+ref-spell-range-touch = Touch
+ref-spell-range-feet = {$feet} ft.
+ref-spell-duration-instant = Instantaneous
+ref-spell-duration-rounds = {$rounds} {$rounds ->
+    [one] round
+   *[other] rounds
+}
+ref-spell-duration-minutes = {$minutes} min.
+ref-spell-duration-hours = {$hours} hr.
+ref-spell-duration-forever = Until dispelled
+ref-spell-cast-rounds = {$rounds} rounds
+ref-spell-cast-minutes = {$minutes} min.
+ref-spell-cast-hours = {$hours} hr.
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
 ref-languages = Languages

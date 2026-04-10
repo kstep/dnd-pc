@@ -6,7 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
-    components::spinner::Spinner,
+    components::{markdown::Markdown, spinner::Spinner},
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -67,7 +67,7 @@ pub fn BackgroundReference() -> impl IntoView {
                 <Title text=title.clone() />
                 <div class="reference-detail">
                     <h1>{title}</h1>
-                    <p class="reference-description">{description}</p>
+                    <Markdown text=description />
 
                     {(!features.is_empty()).then(|| view! {
                         <h2>{move_tr!("ref-features")}</h2>

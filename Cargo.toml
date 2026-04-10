@@ -58,6 +58,7 @@ web-sys = { version = "0.3", features = [
 indexmap = "2.13.0"
 regex = "1.12"
 futures = { version = "0.3.32", default-features = false, features = ["alloc"] }
+pulldown-cmark = { version = "0.13.3", default-features = false, features = ["html"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"

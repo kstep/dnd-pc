@@ -319,6 +319,26 @@ ref-cantrips-level = заговоры
 ref-spell-level = {$level}-й уровень
 ref-spell-min-level = с {$level}-го уровня
 ref-spell-always-ready = всегда подготовлено
+ref-spell-cast-time = Время накладывания
+ref-spell-range = Дистанция
+ref-spell-duration = Длительность
+ref-spell-concentration = Концентрация
+ref-spell-ritual = Ритуал
+ref-spell-range-self = На себя
+ref-spell-range-touch = Касание
+ref-spell-range-feet = {$feet} фт.
+ref-spell-duration-instant = Мгновенное
+ref-spell-duration-rounds = {$rounds} {$rounds ->
+    [one] раунд
+    [few] раунда
+   *[other] раундов
+}
+ref-spell-duration-minutes = {$minutes} мин.
+ref-spell-duration-hours = {$hours} ч.
+ref-spell-duration-forever = Пока не рассеется
+ref-spell-cast-rounds = {$rounds} раундов
+ref-spell-cast-minutes = {$minutes} мин.
+ref-spell-cast-hours = {$hours} ч.
 ref-prerequisites = Требования
 ref-spell-list-link = Список заклинаний
 ref-languages = Языки

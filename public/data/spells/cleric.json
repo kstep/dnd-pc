@@ -1,19 +1,58 @@
 [
   {
     "name": "Guidance",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Guidance",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 10
+        },
+        "expr": "1d4"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Light",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Light",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Mending",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Mending",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Resistance",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Resistance",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 10
+        },
+        "expr": "1d4"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Sacred Flame",
@@ -21,17 +60,41 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Spare the Dying",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Spare the Dying",
+        "range": {
+          "Feet": 15
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Thaumaturgy",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Thaumaturgy",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ]
   },
   {
     "name": "Toll the Dead",
@@ -39,7 +102,11 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -49,7 +116,9 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
@@ -59,9 +128,16 @@
     "effects": [
       {
         "name": "Penalty",
-        "expr": "1d4"
+        "expr": "1d4",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Bless",
@@ -69,22 +145,56 @@
     "effects": [
       {
         "name": "Bonus",
-        "expr": "1d4"
+        "expr": "1d4",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Ceremony",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Ceremony",
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Command",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Command",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Create or Destroy Water",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Create or Destroy Water",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Cure Wounds",
@@ -92,23 +202,55 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Detect Evil and Good",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Detect Evil and Good",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Detect Magic",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Detect Magic",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Detect Poison and Disease",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Detect Poison and Disease",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Guiding Bolt",
@@ -116,7 +258,13 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL + 3)d6"
+        "expr": "(SLOT_LEVEL + 3)d6",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 1
+        }
       }
     ]
   },
@@ -126,9 +274,14 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Inflict Wounds",
@@ -136,22 +289,55 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 1)d10"
+        "expr": "(SLOT_LEVEL + 1)d10",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Protection from Evil and Good",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Protection from Evil and Good",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Purify Food and Drink",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Purify Food and Drink",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Sanctuary",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Sanctuary",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Shield of Faith",
@@ -161,9 +347,13 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Wardaway",
@@ -171,7 +361,11 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "2d4"
+        "expr": "2d4",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -183,59 +377,175 @@
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 4800
+        }
       }
     ]
   },
   {
     "name": "Augury",
     "level": 2,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Augury",
+        "range": "Caster",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Blindness/Deafness",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Blindness/Deafness",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ]
   },
   {
     "name": "Borrowed Knowledge",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Borrowed Knowledge",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Calm Emotions",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Calm Emotions",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Continual Flame",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Continual Flame",
+        "range": "Touch",
+        "duration": "Forever"
+      }
+    ]
   },
   {
     "name": "Deryan's Helpful Homunculi",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Deryan's Helpful Homunculi",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Enhance Ability",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Enhance Ability",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Find Traps",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Find Traps",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Gentle Repose",
     "level": 2,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Gentle Repose",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 144000
+        }
+      }
+    ]
   },
   {
     "name": "Hold Person",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Hold Person",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Lesser Restoration",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Lesser Restoration",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Locate Object",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Locate Object",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Prayer of Healing",
@@ -243,18 +553,44 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8"
+        "expr": "SLOT_LEVEL d8",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 100
+  },
+  {
+    "name": "Protection from Poison",
+    "level": 2,
+    "effects": [
+      {
+        "name": "Protection from Poison",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
       }
     ]
   },
   {
-    "name": "Protection from Poison",
-    "level": 2
-  },
-  {
     "name": "Silence",
     "level": 2,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Silence",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Spiritual Weapon",
@@ -262,9 +598,17 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "1d8 + CASTER_MODIFIER"
+        "expr": "1d8 + CASTER_MODIFIER",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Warding Bond",
@@ -274,17 +618,40 @@
         "name": "Warding Bond",
         "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
       }
     ]
   },
   {
     "name": "Zone of Truth",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Zone of Truth",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Animate Dead",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Animate Dead",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Aura of Vitality",
@@ -292,9 +659,14 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "2d6"
+        "expr": "2d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Beacon of Hope",
@@ -304,33 +676,98 @@
         "name": "Beacon of Hope",
         "expr": "WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Bestow Curse",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Bestow Curse",
+        "expr": "1d8",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Clairvoyance",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Clairvoyance",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 100
+  },
+  {
+    "name": "Create Food and Water",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Create Food and Water",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
-    "name": "Bestow Curse",
-    "level": 3
-  },
-  {
-    "name": "Clairvoyance",
-    "level": 3
-  },
-  {
-    "name": "Create Food and Water",
-    "level": 3
-  },
-  {
     "name": "Daylight",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Daylight",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Dispel Magic",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Dispel Magic",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Fast Friends",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fast Friends",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Feign Death",
@@ -340,7 +777,9 @@
         "name": "Feign Death",
         "expr": "SPEED = 0",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
       }
     ],
     "ritual": true
@@ -351,13 +790,28 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL + 2)d8"
+        "expr": "(SLOT_LEVEL + 2)d8",
+        "range": "Touch",
+        "duration": "Forever"
       }
-    ]
+    ],
+    "cast_time": 600
   },
   {
     "name": "Incite Greed",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Incite Greed",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Laeral's Silver Lance",
@@ -365,7 +819,9 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL)d10"
+        "expr": "(SLOT_LEVEL)d10",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
@@ -381,11 +837,33 @@
   },
   {
     "name": "Linked Glyphs",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Linked Glyphs",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Forever"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Magic Circle",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Magic Circle",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Mass Healing Word",
@@ -393,14 +871,29 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL - 1)d4 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL - 1)d4 + CASTER_MODIFIER",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Meld into Stone",
     "level": 3,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Meld into Stone",
+        "expr": "6d6",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Motivational Speech",
@@ -410,30 +903,74 @@
         "name": "Motivational Speech",
         "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "cast_time": 10
+  },
+  {
+    "name": "Protection from Energy",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Protection from Energy",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Remove Curse",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
-    "name": "Protection from Energy",
-    "level": 3
-  },
-  {
-    "name": "Remove Curse",
-    "level": 3
-  },
-  {
     "name": "Revivify",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Revivify",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Sending",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Sending",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Speak with Dead",
     "level": 3,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Speak with Dead",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Spirit Guardians",
@@ -441,9 +978,14 @@
     "effects": [
       {
         "name": "Radiant/Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d8"
+        "expr": "(SLOT_LEVEL)d8",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Spirit Shroud",
@@ -453,49 +995,154 @@
         "name": "Damage",
         "expr": "((SLOT_LEVEL - 1) / 2)d8"
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Tongues",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Tongues",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Water Walk",
     "level": 3,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Water Walk",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Aura of Life",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Aura of Life",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Aura of Purity",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Aura of Purity",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Banishment",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Banishment",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Control Water",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Control Water",
+        "expr": "2d8",
+        "range": {
+          "Feet": 300
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Death Ward",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Death Ward",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Divination",
     "level": 4,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Divination",
+        "range": "Caster",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Doomtide",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Doomtide",
+        "expr": "5d6",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Freedom of Movement",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Freedom of Movement",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Guardian of Faith",
@@ -503,17 +1150,40 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "20"
+        "expr": "20",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 4800
+        }
       }
     ]
   },
   {
     "name": "Locate Creature",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Locate Creature",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Stone Shape",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Stone Shape",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Circle of Power",
@@ -523,18 +1193,41 @@
         "name": "Circle of Power",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Commune",
     "level": 5,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Commune",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Contagion",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Contagion",
+        "expr": "11d8",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 100800
+        }
+      }
+    ]
   },
   {
     "name": "Dawn",
@@ -544,11 +1237,22 @@
         "name": "Radiant Damage",
         "expr": "(SLOT_LEVEL - 1)d10"
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Dispel Evil and Good",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Dispel Evil and Good",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Flame Strike",
@@ -556,11 +1260,19 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "SLOT_LEVEL d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       },
       {
         "name": "Radiant Damage",
-        "expr": "SLOT_LEVEL d6"
+        "expr": "SLOT_LEVEL d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -570,17 +1282,39 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "5d10"
+        "expr": "5d10",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 432000
+        }
+      }
+    ],
+    "cast_time": 10
+  },
+  {
+    "name": "Greater Restoration",
+    "level": 5,
+    "effects": [
+      {
+        "name": "Greater Restoration",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
-    "name": "Greater Restoration",
-    "level": 5
-  },
-  {
     "name": "Hallow",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Hallow",
+        "range": "Touch",
+        "duration": "Forever"
+      }
+    ],
+    "cast_time": 14400
   },
   {
     "name": "Holy Weapon",
@@ -588,13 +1322,21 @@
     "effects": [
       {
         "name": "Radiant Damage (Hit)",
-        "expr": "2d8"
+        "expr": "2d8",
+        "duration": {
+          "Rounds": 10
+        }
       },
       {
         "name": "Radiant Damage (Burst)",
-        "expr": "4d8"
+        "expr": "4d8",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Insect Plague",
@@ -602,13 +1344,28 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "(SLOT_LEVEL - 1)d10"
+        "expr": "(SLOT_LEVEL - 1)d10",
+        "range": {
+          "Feet": 300
+        },
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Legend Lore",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Legend Lore",
+        "range": "Caster",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Mass Cure Wounds",
@@ -616,25 +1373,72 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER"
+        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Planar Binding",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Planar Binding",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Raise Dead",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Raise Dead",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Scrying",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Scrying",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 100
   },
   {
     "name": "Summon Celestial",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Summon Celestial",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Blade Barrier",
@@ -642,26 +1446,76 @@
     "effects": [
       {
         "name": "Slashing Damage",
-        "expr": "6d10"
+        "expr": "6d10",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Create Undead",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Create Undead",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Dirge",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Dirge",
+        "expr": "3d10",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Find the Path",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Find the Path",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 10
   },
   {
     "name": "Forbiddance",
     "level": 6,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Forbiddance",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 14400
+        },
+        "expr": "5d10"
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Harm",
@@ -669,7 +1523,11 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "14d6"
+        "expr": "14d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -679,7 +1537,11 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL - 5) * 70"
+        "expr": "(SLOT_LEVEL - 5) * 70",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -691,13 +1553,26 @@
         "name": "Heroes' Feast",
         "expr": "WIS.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 14400
+        }
       }
-    ]
+    ],
+    "cast_time": 100
   },
   {
     "name": "Planar Ally",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Planar Ally",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Sunbeam",
@@ -705,29 +1580,84 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "6d8"
+        "expr": "6d8",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "True Seeing",
+    "level": 6,
+    "effects": [
+      {
+        "name": "True Seeing",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
       }
     ]
   },
   {
-    "name": "True Seeing",
-    "level": 6
-  },
-  {
     "name": "Word of Recall",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Word of Recall",
+        "range": {
+          "Feet": 5
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Conjure Celestial",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Conjure Celestial",
+        "expr": "6d12",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Divine Word",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Divine Word",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Etherealness",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Etherealness",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Fire Storm",
@@ -735,13 +1665,24 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "7d10"
+        "expr": "7d10",
+        "range": {
+          "Feet": 150
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Plane Shift",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Plane Shift",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Power Word Fortify",
@@ -761,13 +1702,26 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "4d8 + 15"
+        "expr": "4d8 + 15",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
       }
-    ]
+    ],
+    "cast_time": 10
   },
   {
     "name": "Resurrection",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Resurrection",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Symbol",
@@ -775,17 +1729,39 @@
     "effects": [
       {
         "name": "Necrotic Damage (Death)",
-        "expr": "10d10"
+        "expr": "10d10",
+        "range": "Touch",
+        "duration": "Forever"
       }
-    ]
+    ],
+    "cast_time": 10
   },
   {
     "name": "Temple of the Gods",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Temple of the Gods",
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Antimagic Field",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Antimagic Field",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Control Weather",
@@ -793,13 +1769,32 @@
     "effects": [
       {
         "name": "Duration (minutes)",
-        "expr": "1d4 * 10"
+        "expr": "1d4 * 10",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 4800
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": 100
   },
   {
     "name": "Earthquake",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Earthquake",
+        "expr": "12d6",
+        "range": {
+          "Feet": 500
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Holy Aura",
@@ -809,13 +1804,27 @@
         "name": "Holy Aura",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Holy Star of Mystra",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Holy Star of Mystra",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Sunburst",
@@ -823,17 +1832,43 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "12d6"
+        "expr": "12d6",
+        "range": {
+          "Feet": 150
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Astral Projection",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Astral Projection",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Forever"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Gate",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Gate",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Mass Heal",
@@ -841,16 +1876,37 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "700"
+        "expr": "700",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Power Word Heal",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Power Word Heal",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "True Resurrection",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "True Resurrection",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 600
   }
 ]

@@ -6,7 +6,7 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name};
 use crate::{
     BASE_URL,
-    components::spinner::Spinner,
+    components::{markdown::Markdown, spinner::Spinner},
     hooks::use_hash_href,
     model::{format_bonus, proficiency_bonus_for_level},
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
@@ -255,10 +255,10 @@ pub fn ClassReference() -> impl IntoView {
                         } else {
                             Either::Right(class_label)
                         }}</h1>
-                        <p class="reference-description">{description}</p>
+                        <Markdown text=description />
 
                         {(!subclass_desc.is_empty()).then(|| view! {
-                            <p class="reference-description">{subclass_desc}</p>
+                            <Markdown text=subclass_desc />
                         })}
 
                         <div class="reference-info-bar">

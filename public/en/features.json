@@ -525,16 +525,16 @@
     "description": "When you reach an Artificer level specified in the Alchemist Spells table, you thereafter always have the listed spells prepared."
   },
   "Alchemist Spells.spell.Healing Word": {
-    "description": "Bonus Action | 60 feet | Instantaneous\n\nA creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 2d4 for each spell slot level above 1."
+    "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 2d4 for each spell slot level above 1."
   },
   "Alchemist Spells.spell.Ray of Sickness": {
-    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
+    "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Alchemist Spells.spell.Flaming Sphere": {
-    "description": "Action | 60 feet | Concentration, up to 1 minute\n\nYou create a 5-foot-diameter sphere of fire in an unoccupied space on the ground within range. It lasts for the duration. Any creature that ends its turn within 5 feet of the sphere makes a Dexterity saving throw, taking 2d6 Fire damage on a failed save or half as much damage on a successful one.\n\nAs a Bonus Action, you can move the sphere up to 30 feet, rolling it along the ground. If you move the sphere into a creature's space, that creature makes the save against the sphere, and the sphere stops moving for the turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 2."
+    "description": "You create a 5-foot-diameter sphere of fire in an unoccupied space on the ground within range. It lasts for the duration. Any creature that ends its turn within 5 feet of the sphere makes a Dexterity saving throw, taking 2d6 Fire damage on a failed save or half as much damage on a successful one.\n\nAs a Bonus Action, you can move the sphere up to 30 feet, rolling it along the ground. If you move the sphere into a creature's space, that creature makes the save against the sphere, and the sphere stops moving for the turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 2."
   },
   "Alchemist Spells.spell.Melf's Acid Arrow": {
-    "description": "Action | 90 feet | Instantaneous\n\nA shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 Acid damage and 2d4 Acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage only.\n\nUsing a Higher-Level Spell Slot. The damage (both initial and later) increases by 1d4 for each spell slot level above 2."
+    "description": "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 Acid damage and 2d4 Acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage only.\n\nUsing a Higher-Level Spell Slot. The damage (both initial and later) increases by 1d4 for each spell slot level above 2."
   },
   "Alchemist Spells.spell.Gaseous Form": {
     "description": "A willing creature you touch shape-shifts, along with everything it's wearing and carrying, into a misty cloud for the duration. The spell ends on the target if it drops to 0 Hit Points or if it takes a Magic action to end the spell on itself."
@@ -744,7 +744,7 @@
     "description": "You hurl a bolt of light toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 4d6 Radiant damage, and the next attack roll made against it before the end of your next turn has Advantage.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d6 for each spell slot level above 1."
   },
   "Cartographer Spells.spell.Healing Word": {
-    "description": "Bonus Action | 60 feet | Instantaneous\n\nA creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 2d4 for each spell slot level above 1."
+    "description": "A creature of your choice that you can see within range regains Hit Points equal to 2d4 plus your spellcasting ability modifier.\n\nUsing a Higher-Level Spell Slot. The healing increases by 2d4 for each spell slot level above 1."
   },
   "Cartographer Spells.spell.Locate Object": {
     "description": "Describe or name an object that is familiar to you. You sense the direction to the object's location if that object is within 1,000 feet of you. If the object is in motion, you know the direction of its movement."
@@ -1398,7 +1398,7 @@
     "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell."
   },
   "Trickery Domain Spells.spell.Pass without Trace": {
-    "description": "Action | Self | Concentration, up to 1 hour\n\nYou radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
+    "description": "You radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
   },
   "Trickery Domain Spells.spell.Hypnotic Pattern": {
     "description": "You create a twisting pattern of colors in a 30-foot Cube [Area of Effect] within range. The pattern appears for a moment and vanishes. Each creature in the area who can see the pattern must succeed on a Wisdom saving throw or have the Charmed condition for the duration."
@@ -1770,7 +1770,7 @@
     "description": "You create a 20-foot-radius Sphere [Area of Effect] of fog centered on a point within range. The Sphere [Area of Effect] is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it."
   },
   "Circle of the Land Spells.spell.Ray of Sickness": {
-    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
+    "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Circle of the Land Spells.spell.Sleep": {
     "description": "Each creature of your choice in a 5-foot-radius Sphere [Area of Effect] centered on a point within range must succeed on a Wisdom saving throw or have the Incapacitated condition until the end of its next turn, at which point it must repeat the save."
@@ -5049,7 +5049,7 @@
     "description": "You extend your hand toward a creature you can see within range and project a puff of noxious gas. The creature must succeed on a CON save or take 1d12 poison damage."
   },
   "Abyssal Legacy.spell.Ray of Sickness": {
-    "description": "Action | 60 feet | Instantaneous\n\nYou shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
+    "description": "You shoot a greenish ray at a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn.\n\nUsing a Higher-Level Spell Slot. The damage increases by 1d8 for each spell slot level above 1."
   },
   "Abyssal Legacy.spell.Hold Person": {
     "description": "Choose a humanoid that you can see within range. The target must succeed on a WIS save or be Paralyzed for the duration. Once per Long Rest (racial)."
@@ -5094,7 +5094,7 @@
     "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends. Once per Long Rest (racial)."
   },
   "Elven Lineage (Wood Elf).spell.Pass without Trace": {
-    "description": "Action | Self | Concentration, up to 1 hour\n\nYou radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
+    "description": "You radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks."
   },
   "Celestial Resistance": {
     "description": "You have resistance to Necrotic damage and Radiant damage."
@@ -5715,18 +5715,18 @@
     "description": "While in Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
   },
   "Fey Touched.spell.Misty Step": {
-    "description": "Bonus Action | Self | Instantaneous\n\nBriefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
+    "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see."
   },
   "Shadow Touched.spell.Invisibility": {
-    "description": "Action | Touch | Concentration, up to 1 hour\n\nA creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell.\n\nUsing a Higher-Level Spell Slot. You can target one additional creature for each spell slot level above 2."
+    "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early immediately after the target makes an attack roll, deals damage, or casts a spell.\n\nUsing a Higher-Level Spell Slot. You can target one additional creature for each spell slot level above 2."
   },
   "Telepathic.spell.Detect Thoughts": {
-    "description": "Action | Self | Concentration, up to 1 minute\n\nYou activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns.\n\nSense Thoughts. You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic. You don’t read the thoughts, but you know that a thinking creature is present.\n\nThe spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.\n\nRead Thoughts. Target one creature you can see within 30 feet of yourself or one creature within 30 feet of yourself that you detected with the Sense Thoughts option. You learn what is most on the target’s mind right now. If the target doesn’t know any languages and isn’t telepathic, you learn nothing.\n\nAs a Magic action on your next turn, you can try to probe deeper into the target’s mind. If you probe deeper, the target makes a Wisdom saving throw. On a failed save, you discern the target’s reasoning, emotions, and something that looms large in its mind (such as a worry, love, or hate). On a successful save, the spell ends. Either way, the target knows that you are probing into its mind, and until you shift your attention away from the target’s mind, the target can take an action on its turn to make an Intelligence (Arcana) check against your spell save DC, ending the spell on a success."
+    "description": "You activate one of the effects below. Until the spell ends, you can activate either effect as a Magic action on your later turns.\n\nSense Thoughts. You sense the presence of thoughts within 30 feet of yourself that belong to creatures that know languages or are telepathic. You don’t read the thoughts, but you know that a thinking creature is present.\n\nThe spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.\n\nRead Thoughts. Target one creature you can see within 30 feet of yourself or one creature within 30 feet of yourself that you detected with the Sense Thoughts option. You learn what is most on the target’s mind right now. If the target doesn’t know any languages and isn’t telepathic, you learn nothing.\n\nAs a Magic action on your next turn, you can try to probe deeper into the target’s mind. If you probe deeper, the target makes a Wisdom saving throw. On a failed save, you discern the target’s reasoning, emotions, and something that looms large in its mind (such as a worry, love, or hate). On a successful save, the spell ends. Either way, the target knows that you are probing into its mind, and until you shift your attention away from the target’s mind, the target can take an action on its turn to make an Intelligence (Arcana) check against your spell save DC, ending the spell on a success."
   },
   "Fey Gift.spell.Friends": {
-    "description": "Action | 10 feet | Concentration, up to 1 minute\n\nYou magically emanate a sense of friendship toward one creature you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target succeeds automatically if it isn’t a Humanoid, if you’re fighting it, or if you have cast this spell on it within the past 24 hours.\n\nThe spell ends early if the target takes damage or if you make an attack roll, deal damage, or force anyone to make a saving throw. When the spell ends, the target knows it was Charmed by you."
+    "description": "You magically emanate a sense of friendship toward one creature you can see within range. The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration. The target succeeds automatically if it isn’t a Humanoid, if you’re fighting it, or if you have cast this spell on it within the past 24 hours.\n\nThe spell ends early if the target takes damage or if you make an attack roll, deal damage, or force anyone to make a saving throw. When the spell ends, the target knows it was Charmed by you."
   },
   "Cloying Mists.spell.Fog Cloud": {
-    "description": "Action | 120 feet | Concentration, up to 1 hour\n\nYou create a 20-foot-radius Sphere of fog centered on a point within range. The Sphere is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it.\n\nUsing a Higher-Level Spell Slot. The fog’s radius increases by 20 feet for each spell slot level above 1."
+    "description": "You create a 20-foot-radius Sphere of fog centered on a point within range. The Sphere is Heavily Obscured. It lasts for the duration or until a strong wind (such as one created by Gust of Wind) disperses it.\n\nUsing a Higher-Level Spell Slot. The fog’s radius increases by 20 feet for each spell slot level above 1."
   }
 }

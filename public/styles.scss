@@ -1396,24 +1396,19 @@ select.entry-name {
 
 .entry-desc {
   grid-column: 2 / -1;
+  font-size: var(--font-size-1);
+  overflow-wrap: break-word;
+  max-inline-size: none;
+}
+
+textarea.entry-desc {
   min-height: 40px;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);
   background: var(--input-bg);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: var(--font-size-1);
   resize: vertical;
-
-  &:is(p) {
-    min-height: 0;
-    background: none;
-    border: none;
-    white-space: pre-line;
-    overflow-wrap: break-word;
-    resize: none;
-    max-inline-size: none;
-  }
 }
 
 .entry-full-row {
@@ -2777,13 +2772,13 @@ dialog.modal.closing::backdrop {
   font-size: var(--font-size-1);
   margin: 0 0 var(--size-3);
   max-inline-size: none;
-  white-space: pre-line;
 }
 
 .reference-info-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--size-3);
+  row-gap: var(--size-2);
+  column-gap: var(--size-3);
   padding: var(--size-2) var(--size-3);
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
@@ -2793,7 +2788,7 @@ dialog.modal.closing::backdrop {
   .info-item {
     display: flex;
     flex-direction: column;
-    gap: var(--size-1);
+    gap: 0;
   }
 
   .info-label {
@@ -2900,7 +2895,6 @@ dialog.modal.closing::backdrop {
     font-size: var(--font-size-1);
     color: var(--text-secondary);
     max-inline-size: none;
-    white-space: pre-line;
   }
 }
 
@@ -2908,6 +2902,35 @@ dialog.modal.closing::backdrop {
   font-weight: normal;
   font-size: var(--font-size-1);
   color: var(--text-secondary);
+}
+
+.spell-info-bar {
+  font-size: var(--font-size-1);
+  margin-bottom: var(--size-1);
+}
+
+.spell-tag {
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-left: 0.3em;
+}
+
+.spell-meta-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-0);
+  vertical-align: middle;
+
+  .icon-wrapper {
+    padding-right: 0;
+  }
+
+  & + & {
+    margin-left: 0.3em;
+  }
 }
 
 .feature-spells-inline {
@@ -2924,7 +2947,6 @@ dialog.modal.closing::backdrop {
 
   p {
     margin: var(--size-1) 0 0;
-    white-space: pre-line;
   }
 }
 
@@ -2944,12 +2966,11 @@ dialog.modal.closing::backdrop {
     font-size: var(--font-size-1);
   }
 
-  >p {
+  >p, >.markdown {
     margin: 0;
     font-size: var(--font-size-1);
     color: var(--text-secondary);
     max-inline-size: none;
-    white-space: pre-line;
   }
 }
 
@@ -2967,7 +2988,6 @@ dialog.modal.closing::backdrop {
 
   p {
     margin: var(--size-1) 0 0;
-    white-space: pre-line;
   }
 }
 
@@ -3572,5 +3592,76 @@ details.floating-nav {
 main > *,
 main > * > :first-child {
   animation: fade-in 200ms ease-out;
+}
+
+.markdown {
+  max-inline-size: none;
+  font-size: inherit;
+  color: inherit;
+
+  &, * {
+    font-size: inherit;
+    color: inherit !important;
+    max-inline-size: none;
+  }
+
+  p {
+    margin: 0.5em 0;
+    max-inline-size: none;
+    font-size: inherit;
+  }
+
+  p:first-child {
+    margin-top: 0;
+  }
+
+  h3, h4 {
+    font-size: inherit;
+    font-weight: var(--font-weight-7);
+    margin: 0.75em 0 0.25em;
+  }
+
+  h3 {
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 0.25em;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--panel-border);
+    margin: 0;
+  }
+
+  table {
+    border-collapse: collapse;
+    font-size: inherit;
+    width: auto;
+    border: 1px solid var(--panel-border);
+  }
+
+  th, td {
+    padding: 0.15em 0.5em;
+    border: 1px solid var(--panel-border);
+    text-align: center;
+  }
+
+  th {
+    font-weight: var(--font-weight-6);
+    background: var(--panel-bg);
+  }
+
+  ul, ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+    max-inline-size: none;
+    font-size: inherit;
+  }
+
+  code {
+    font-size: 0.9em;
+    background: var(--panel-bg);
+    padding: 0.1em 0.3em;
+    border-radius: var(--radius-1);
+  }
 }
 

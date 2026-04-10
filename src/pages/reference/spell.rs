@@ -8,11 +8,13 @@ use wasm_bindgen::JsCast;
 
 use crate::{
     BASE_URL,
-    components::{expr_view::ExprView, spinner::Spinner},
+    components::{
+        expr_view::ExprView, markdown::Markdown, spell_info_bar::SpellInfoBar, spinner::Spinner,
+    },
     hooks::use_hash_href,
     model::Expr,
     pages::reference::ReferenceSidebar,
-    rules::{RulesRegistry, SpellList},
+    rules::{RulesRegistry, SpellList, SpellMeta},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -68,6 +70,7 @@ pub fn SpellReference() -> impl IntoView {
                     description: String,
                     min_level: u32,
                     sticky: bool,
+                    meta: SpellMeta,
                     effects: Vec<(String, Expr)>,
                 }
                 struct SpellGroup {
@@ -86,10 +89,13 @@ pub fn SpellReference() -> impl IntoView {
                             description: spell.description.clone(),
                             min_level: spell.min_level,
                             sticky: spell.sticky,
+                            meta: spell.meta(),
                             effects: spell
                                 .effects
                                 .iter()
-                                .map(|e| (e.label().to_string(), e.expr.clone()))
+                                .filter_map(|e| {
+                                    e.expr.clone().map(|expr| (e.label().to_string(), expr))
+                                })
                                 .collect(),
                         });
                 }
@@ -141,7 +147,8 @@ pub fn SpellReference() -> impl IntoView {
                                                         }
                                                     })}
                                                 </h3>
-                                                <p>{spell.description}</p>
+                                                <SpellInfoBar meta=spell.meta />
+                                                <Markdown text=spell.description.clone() />
                                                 {(!spell.effects.is_empty()).then(|| view! {
                                                     <div class="spell-effects">
                                                         {spell.effects.into_iter().map(|(name, expr)| view! {

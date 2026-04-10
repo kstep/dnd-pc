@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{cmp::Ordering, collections::BTreeMap};
 
 use serde::{Deserialize, Serialize};
 
@@ -8,12 +8,31 @@ use crate::{
     model::{Ability, Attribute, Character, Expr, WeaponEffect},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 pub enum EffectRange {
     Caster,
     #[default]
     Touch,
     Feet(u32),
+}
+
+impl Ord for EffectRange {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match (self, other) {
+            (Self::Caster, Self::Caster) | (Self::Touch, Self::Touch) => Ordering::Equal,
+            (Self::Caster, _) => Ordering::Less,
+            (_, Self::Caster) => Ordering::Greater,
+            (Self::Touch, _) => Ordering::Less,
+            (_, Self::Touch) => Ordering::Greater,
+            (Self::Feet(a), Self::Feet(b)) => a.cmp(b),
+        }
+    }
+}
+
+impl PartialOrd for EffectRange {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl EffectRange {
@@ -22,12 +41,29 @@ impl EffectRange {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 pub enum EffectDuration {
     #[default]
     Instant,
     Rounds(u32),
     Forever,
+}
+
+impl Ord for EffectDuration {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match (self, other) {
+            (Self::Instant, Self::Instant) | (Self::Forever, Self::Forever) => Ordering::Equal,
+            (Self::Instant, _) | (_, Self::Forever) => Ordering::Less,
+            (Self::Forever, _) | (_, Self::Instant) => Ordering::Greater,
+            (Self::Rounds(a), Self::Rounds(b)) => a.cmp(b),
+        }
+    }
+}
+
+impl PartialOrd for EffectDuration {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 /// A lightweight effect definition carrying a name and expression.
@@ -38,7 +74,8 @@ pub struct EffectDefinition {
     pub name: String,
     #[serde(default)]
     pub label: Option<String>,
-    pub expr: Expr,
+    #[serde(default)]
+    pub expr: Option<Expr>,
     #[serde(default)]
     pub range: EffectRange,
     #[serde(default)]
@@ -60,7 +97,7 @@ impl From<&WeaponEffect> for EffectDefinition {
         Self {
             name: effect.name.clone(),
             label: None,
-            expr: effect.expr.clone(),
+            expr: Some(effect.expr.clone()),
             range: EffectRange::default(),
             duration: EffectDuration::default(),
             stackable: false,

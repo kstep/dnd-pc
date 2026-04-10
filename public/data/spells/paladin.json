@@ -1,20 +1,64 @@
 [
   {
     "name": "Bless",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Bless",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        },
+        "expr": "1d4"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Ceremony",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Ceremony",
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Command",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Command",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Compelled Duel",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Compelled Duel",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Cure Wounds",
@@ -22,23 +66,55 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER"
+        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Detect Evil and Good",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Detect Evil and Good",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Detect Magic",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Detect Magic",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Detect Poison and Disease",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Detect Poison and Disease",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Divine Favor",
@@ -46,9 +122,14 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "1d4"
+        "expr": "1d4",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Divine Smite",
@@ -56,9 +137,12 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT_LEVEL + 1)d8",
+        "range": "Caster",
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Heroism",
@@ -66,18 +150,42 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "CASTER_MODIFIER"
+        "expr": "CASTER_MODIFIER",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Protection from Evil and Good",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Protection from Evil and Good",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Purify Food and Drink",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Purify Food and Drink",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Searing Smite",
@@ -85,9 +193,14 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL)d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Shield of Faith",
@@ -97,9 +210,13 @@
         "name": "AC",
         "expr": "AC += 2",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Thunderous Smite",
@@ -107,9 +224,12 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL + 1)d6"
+        "expr": "(SLOT_LEVEL + 1)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Wardaway",
@@ -117,7 +237,11 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "2d4"
+        "expr": "2d4",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -127,9 +251,14 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL)d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Aid",
@@ -139,26 +268,64 @@
         "name": "HP Boost",
         "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 4800
+        }
       }
     ]
   },
   {
     "name": "Find Steed",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Find Steed",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Gentle Repose",
     "level": 2,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Gentle Repose",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 144000
+        }
+      }
+    ]
   },
   {
     "name": "Lesser Restoration",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Lesser Restoration",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Locate Object",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Locate Object",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Magic Weapon",
@@ -168,9 +335,12 @@
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Prayer of Healing",
@@ -178,13 +348,27 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8"
+        "expr": "SLOT_LEVEL d8",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": 100
   },
   {
     "name": "Protection from Poison",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Protection from Poison",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Shining Smite",
@@ -192,9 +376,15 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL)d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Warding Bond",
@@ -204,13 +394,26 @@
         "name": "Warding Bond",
         "expr": "AC += 1; STR.SAVE += 1; DEX.SAVE += 1; CON.SAVE += 1; INT.SAVE += 1; WIS.SAVE += 1; CHA.SAVE += 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
       }
     ]
   },
   {
     "name": "Zone of Truth",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Zone of Truth",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Aura of Vitality",
@@ -218,9 +421,14 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "2d6"
+        "expr": "2d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Blinding Smite",
@@ -228,13 +436,27 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL)d8"
+        "expr": "(SLOT_LEVEL)d8",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Create Food and Water",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Create Food and Water",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Crusader's Mantle",
@@ -242,17 +464,42 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "1d4"
+        "expr": "1d4",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Daylight",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Daylight",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
       }
     ]
   },
   {
-    "name": "Daylight",
-    "level": 3
-  },
-  {
     "name": "Dispel Magic",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Dispel Magic",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Elemental Weapon",
@@ -260,27 +507,60 @@
     "effects": [
       {
         "name": "Damage Bonus",
-        "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4"
+        "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
       },
       {
         "name": "Attack Bonus",
         "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Magic Circle",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Magic Circle",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "cast_time": 10
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "effects": [
+      {
+        "name": "Remove Curse",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
   {
-    "name": "Magic Circle",
-    "level": 3
-  },
-  {
-    "name": "Remove Curse",
-    "level": 3
-  },
-  {
     "name": "Revivify",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Revivify",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Spirit Shroud",
@@ -290,31 +570,94 @@
         "name": "Damage",
         "expr": "((SLOT_LEVEL - 1) / 2)d8"
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Aura of Life",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Aura of Life",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Aura of Purity",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Aura of Purity",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Banishment",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Banishment",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Death Ward",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Death Ward",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Find Greater Steed",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Find Greater Steed",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Locate Creature",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Locate Creature",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Staggering Smite",
@@ -322,9 +665,12 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Banishing Smite",
@@ -332,9 +678,15 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "5d10"
+        "expr": "5d10",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Circle of Power",
@@ -344,9 +696,12 @@
         "name": "Circle of Power",
         "expr": "STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Destructive Wave",
@@ -354,17 +709,31 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "5d6"
+        "expr": "5d6",
+        "range": "Caster",
+        "duration": "Instant"
       },
       {
         "name": "Radiant Damage",
-        "expr": "5d6"
+        "expr": "5d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Dispel Evil and Good",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Dispel Evil and Good",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Geas",
@@ -372,13 +741,27 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "5d10"
+        "expr": "5d10",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 432000
+        }
       }
-    ]
+    ],
+    "cast_time": 10
   },
   {
     "name": "Greater Restoration",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Greater Restoration",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Holy Weapon",
@@ -386,20 +769,48 @@
     "effects": [
       {
         "name": "Radiant Damage (Hit)",
-        "expr": "2d8"
+        "expr": "2d8",
+        "duration": {
+          "Rounds": 10
+        }
       },
       {
         "name": "Radiant Damage (Burst)",
-        "expr": "4d8"
+        "expr": "4d8",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Raise Dead",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Raise Dead",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Summon Celestial",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Summon Celestial",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   }
 ]

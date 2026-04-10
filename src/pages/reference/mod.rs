@@ -14,12 +14,12 @@ pub use sidebar::ReferenceSidebar;
 
 use crate::{
     BASE_URL,
-    components::expr_view::ExprView,
+    components::{expr_view::ExprView, markdown::Markdown, spell_info_bar::SpellInfoBar},
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterStack, VarGroup},
     model::{Attribute, AttributeGroup, Expr, Op, Translatable},
     rules::{
         Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
-        SpellList,
+        SpellList, SpellMeta,
     },
 };
 
@@ -34,6 +34,7 @@ pub struct InlineSpell {
     pub min_level: u32,
     pub sticky: bool,
     pub description: String,
+    pub meta: SpellMeta,
     pub effects: Vec<(String, Expr)>,
 }
 
@@ -59,10 +60,13 @@ impl FeatureSpells {
                         min_level: s.min_level,
                         sticky: s.sticky,
                         description: s.description.clone(),
+                        meta: s.meta(),
                         effects: s
                             .effects
                             .iter()
-                            .map(|e| (e.label().to_string(), e.expr.clone()))
+                            .filter_map(|e| {
+                                e.expr.clone().map(|expr| (e.label().to_string(), expr))
+                            })
                             .collect(),
                     })
                     .collect(),
@@ -118,7 +122,9 @@ pub fn feature_choices(
                         effects: opt
                             .effects
                             .iter()
-                            .map(|e| (e.label().to_string(), e.expr.clone()))
+                            .filter_map(|e| {
+                                e.expr.clone().map(|expr| (e.label().to_string(), expr))
+                            })
                             .collect(),
                     })
                     .collect(),
@@ -368,16 +374,75 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
                     return Ok(Some(idx));
                 }
             }
-            // Dice/roll ops: push a placeholder
-            Op::Roll | Op::Sum | Op::Explode => {
-                self.pop();
-                self.pop();
-                self.stack.push(SumEntry::constant(0));
+            // Dice/roll ops: format as dice notation
+            Op::Roll => {
+                let sides = self.pop();
+                let amount = self.pop();
+                let text = format!("{}d{}", amount.text, sides.text);
+                self.stack.push(SumEntry {
+                    text,
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
             }
-            Op::KeepMax(_) | Op::KeepMin(_) | Op::DropMax(_) | Op::DropMin(_) => {
-                // Modifier on a roll result — replace top
+            Op::Sum => {
+                let sides = self.pop();
+                let amount = self.pop();
+                let text = format!("{}d{}", amount.text, sides.text);
+                self.stack.push(SumEntry {
+                    text,
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::Explode => {
+                let sides = self.pop();
+                let amount = self.pop();
+                let text = format!("{}d{}!", amount.text, sides.text);
+                self.stack.push(SumEntry {
+                    text,
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::KeepMax(n) => {
                 let top = self.pop();
-                self.stack.push(top);
+                self.stack.push(SumEntry {
+                    text: format!("{}kh{n}", top.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::KeepMin(n) => {
+                let top = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{}kl{n}", top.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::DropMax(n) => {
+                let top = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{}dh{n}", top.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
+            }
+            Op::DropMin(n) => {
+                let top = self.pop();
+                self.stack.push(SumEntry {
+                    text: format!("{}dl{n}", top.text),
+                    num: None,
+                    raw_key: None,
+                    compound: None,
+                });
             }
             Op::Each(subgrp) => {
                 let has_items = subgrp.init_loop(&mut self.iter_stack);
@@ -531,7 +596,7 @@ pub fn ReferenceFeaturesView(
                                     {" · "}{move_tr!("ref-prerequisites")}{": "}{feat.prerequisites}
                                 })}
                             </p>
-                            <p>{feat.description}</p>
+                            <Markdown text=feat.description.clone() />
                             {(!feat.assignments.is_empty()).then(|| view! {
                                 <p class="feature-assignments">{feat.assignments}</p>
                             })}
@@ -560,7 +625,7 @@ pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldView>>) -> impl IntoVie
                         view! {
                             <div class="feature-choice-field">
                                 <strong>{label}</strong>
-                                {(!desc.is_empty()).then(|| view! { <p>{desc}</p> })}
+                                {(!desc.is_empty()).then(|| view! { <Markdown text=desc.clone() /> })}
                                 <div class="feature-choice-options">
                                     {options
                                         .into_iter()
@@ -606,7 +671,7 @@ pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldView>>) -> impl IntoVie
                                                             }
                                                         })}
                                                     {(!opt_desc.is_empty())
-                                                        .then(|| view! { <p>{opt_desc}</p> })}
+                                                        .then(|| view! { <Markdown text=opt_desc.clone() /> })}
                                                     {(!opt.effects.is_empty()).then(|| view! {
                                                         <div class="spell-effects">
                                                             {opt.effects.into_iter().map(|(name, expr)| view! {
@@ -662,8 +727,9 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                                 {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
                             })}
                             {")"}
+                            <SpellInfoBar meta=spell.meta />
                             {(!spell.description.is_empty()).then(|| view! {
-                                <p>{spell.description}</p>
+                                <Markdown text=spell.description.clone() />
                             })}
                             {(!spell.effects.is_empty()).then(|| view! {
                                 <div class="spell-effects">

@@ -5,9 +5,14 @@
     "effects": [
       {
         "name": "Penalty",
-        "expr": "1d4"
+        "expr": "1d4",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Booming Blade",
@@ -25,7 +30,9 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d10"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d10",
+        "range": "Touch",
+        "duration": "Instant"
       }
     ]
   },
@@ -35,9 +42,16 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Eldritch Blast",
@@ -45,13 +59,29 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "1d10"
+        "expr": "1d10",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Friends",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Friends",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Frostbite",
@@ -59,7 +89,10 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6",
+        "range": {
+          "Feet": 60
+        }
       }
     ]
   },
@@ -79,7 +112,10 @@
     "effects": [
       {
         "name": "Poison Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6",
+        "range": {
+          "Feet": 30
+        }
       }
     ]
   },
@@ -89,13 +125,28 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8",
+        "range": {
+          "Feet": 15
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Mage Hand",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Mage Hand",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ]
   },
   {
     "name": "Magic Stone",
@@ -103,9 +154,14 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "1d6 + CASTER_MODIFIER"
+        "expr": "1d6 + CASTER_MODIFIER",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Mind Sliver",
@@ -113,13 +169,30 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 1
+        }
       }
     ]
   },
   {
     "name": "Minor Illusion",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Minor Illusion",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ]
   },
   {
     "name": "Poison Spray",
@@ -127,13 +200,28 @@
     "effects": [
       {
         "name": "Poison Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d12"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d12",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Prestidigitation",
-    "level": 0
+    "level": 0,
+    "effects": [
+      {
+        "name": "Prestidigitation",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Sword Burst",
@@ -151,7 +239,9 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
@@ -161,7 +251,11 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8"
+        "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d8",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -171,7 +265,9 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d6"
+        "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
@@ -185,7 +281,8 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Arms of Hadar",
@@ -193,39 +290,117 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 1)d6"
+        "expr": "(SLOT_LEVEL + 1)d6",
+        "range": "Caster",
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Bane",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Bane",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        },
+        "expr": "1d4"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Cause Fear",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Cause Fear",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Charm Person",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Charm Person",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Comprehend Languages",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Comprehend Languages",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Detect Magic",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Detect Magic",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Distort Value",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Distort Value",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Expeditious Retreat",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Expeditious Retreat",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Hellish Rebuke",
@@ -233,9 +408,14 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 1)d10"
+        "expr": "(SLOT_LEVEL + 1)d10",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
-    ]
+    ],
+    "cast_time": "Reaction"
   },
   {
     "name": "Hex",
@@ -243,32 +423,92 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "1d6"
+        "expr": "1d6",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Illusory Script",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Illusory Script",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 144000
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Protection from Evil and Good",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Protection from Evil and Good",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Speak with Animals",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Speak with Animals",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Tasha's Hideous Laughter",
-    "level": 1
+    "level": 1,
+    "effects": [
+      {
+        "name": "Tasha's Hideous Laughter",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Unseen Servant",
     "level": 1,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Unseen Servant",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Witch Bolt",
@@ -276,13 +516,29 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL + 1)d12"
+        "expr": "(SLOT_LEVEL + 1)d12",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Borrowed Knowledge",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Borrowed Knowledge",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Cloud of Daggers",
@@ -290,37 +546,125 @@
     "effects": [
       {
         "name": "Slashing Damage",
-        "expr": "(SLOT_LEVEL * 2)d4"
+        "expr": "(SLOT_LEVEL * 2)d4",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Crown of Madness",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Crown of Madness",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Darkness",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Darkness",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Earthbind",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Earthbind",
+        "range": {
+          "Feet": 300
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Enthrall",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Enthrall",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Flock of Familiars",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Flock of Familiars",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 10
   },
   {
     "name": "Hold Person",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Hold Person",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Invisibility",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Invisibility",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Mind Spike",
@@ -328,21 +672,57 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT_LEVEL + 1)d8",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Mirror Image",
+    "level": 2,
+    "effects": [
+      {
+        "name": "Mirror Image",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
     ]
   },
   {
-    "name": "Mirror Image",
-    "level": 2
-  },
-  {
     "name": "Misty Step",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Misty Step",
+        "range": "Caster",
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "BonusAction"
   },
   {
     "name": "Ray of Enfeeblement",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Ray of Enfeeblement",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Shadow Blade",
@@ -350,9 +730,12 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "if(SLOT_LEVEL >= 7, 5, if(SLOT_LEVEL >= 5, 4, if(SLOT_LEVEL >= 3, 3, 2)))d8"
+        "expr": "if(SLOT_LEVEL >= 7, 5, if(SLOT_LEVEL >= 5, 4, if(SLOT_LEVEL >= 3, 3, 2)))d8",
+        "range": "Caster"
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Shatter",
@@ -360,53 +743,167 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT_LEVEL + 1)d8",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Spider Climb",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Spider Climb",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Spray of Cards",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Spray of Cards",
+        "expr": "2d10",
+        "range": {
+          "Feet": 15
+        }
+      }
+    ]
   },
   {
     "name": "Suggestion",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Suggestion",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Warp Sense",
-    "level": 2
+    "level": 2,
+    "effects": [
+      {
+        "name": "Warp Sense",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Antagonize",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Antagonize",
+        "range": {
+          "Feet": 30
+        }
+      }
+    ]
   },
   {
     "name": "Counterspell",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Counterspell",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "Reaction"
   },
   {
     "name": "Dispel Magic",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Dispel Magic",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Enemies Abound",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Enemies Abound",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Fear",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fear",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Fly",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Fly",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Gaseous Form",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Gaseous Form",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Hunger of Hadar",
@@ -414,21 +911,58 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "2d6"
+        "expr": "2d6",
+        "range": {
+          "Feet": 150
+        },
+        "duration": {
+          "Rounds": 10
+        }
       },
       {
         "name": "Acid Damage",
-        "expr": "2d6"
+        "expr": "2d6",
+        "range": {
+          "Feet": 150
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Hypnotic Pattern",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Hypnotic Pattern",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Incite Greed",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Incite Greed",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Intellect Fortress",
@@ -438,21 +972,55 @@
         "name": "Intellect Fortress",
         "expr": "INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 600
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Magic Circle",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Magic Circle",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Major Image",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Major Image",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Remove Curse",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Remove Curse",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Spirit Shroud",
@@ -462,23 +1030,74 @@
         "name": "Damage",
         "expr": "((SLOT_LEVEL - 1) / 2)d8"
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Summon Fey",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Summon Fey",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Summon Lesser Demons",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Summon Lesser Demons",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Summon Shadowspawn",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Summon Shadowspawn",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Summon Undead",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Summon Undead",
+        "expr": "1d10",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Thunder Step",
@@ -486,13 +1105,25 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL)d10"
+        "expr": "(SLOT_LEVEL)d10",
+        "range": {
+          "Feet": 90
+        }
       }
     ]
   },
   {
     "name": "Tongues",
-    "level": 3
+    "level": 3,
+    "effects": [
+      {
+        "name": "Tongues",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Vampiric Touch",
@@ -500,17 +1131,45 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT_LEVEL)d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Backlash",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Backlash",
+        "expr": "4d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": "Reaction"
   },
   {
     "name": "Banishment",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Banishment",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Blight",
@@ -518,37 +1177,116 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 4)d8"
+        "expr": "(SLOT_LEVEL + 4)d8",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Charm Monster",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Charm Monster",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Dimension Door",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Dimension Door",
+        "expr": "4d6",
+        "range": {
+          "Feet": 500
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Doomtide",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Doomtide",
+        "expr": "5d6",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Elemental Bane",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Elemental Bane",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Galder's Speedy Courier",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Galder's Speedy Courier",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Gate Seal",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Gate Seal",
+        "duration": "Forever"
+      }
+    ]
   },
   {
     "name": "Hallucinatory Terrain",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Hallucinatory Terrain",
+        "range": {
+          "Feet": 300
+        },
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Raulothim's Psychic Lance",
@@ -556,13 +1294,27 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 3)d6"
+        "expr": "(SLOT_LEVEL + 3)d6",
+        "range": {
+          "Feet": 120
+        }
       }
     ]
   },
   {
     "name": "Shadow of Moil",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Shadow of Moil",
+        "expr": "2d8",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Sickening Radiance",
@@ -570,34 +1322,106 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "4d10"
+        "expr": "4d10",
+        "range": {
+          "Feet": 120
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Spirit of Death",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Spirit of Death",
+        "range": {
+          "Feet": 60
+        },
+        "expr": "1d8 + 3 + SLOT_LEVEL"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Summon Aberration",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Summon Aberration",
+        "expr": "2d6",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Summon Greater Demon",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Summon Greater Demon",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Contact Other Plane",
     "level": 5,
-    "ritual": true
+    "ritual": true,
+    "effects": [
+      {
+        "name": "Contact Other Plane",
+        "expr": "6d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Danse Macabre",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Danse Macabre",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Dream",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Dream",
+        "expr": "3d6",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Enervation",
@@ -605,29 +1429,89 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL - 1)d8"
+        "expr": "(SLOT_LEVEL - 1)d8",
+        "range": {
+          "Feet": 60
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Far Step",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Far Step",
+        "range": "Caster"
+      }
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Hold Monster",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Hold Monster",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Infernal Calling",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Infernal Calling",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 10
   },
   {
     "name": "Jallarzi's Storm of Radiance",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Jallarzi's Storm of Radiance",
+        "expr": "2d10",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Mislead",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Mislead",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Negative Energy Flood",
@@ -635,17 +1519,43 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "5d12"
+        "expr": "5d12",
+        "range": {
+          "Feet": 60
+        }
       }
     ]
   },
   {
     "name": "Planar Binding",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Planar Binding",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Scrying",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Scrying",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true,
+    "cast_time": 100
   },
   {
     "name": "Synaptic Static",
@@ -653,13 +1563,29 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "8d6"
+        "expr": "8d6",
+        "range": {
+          "Feet": 120
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Teleportation Circle",
-    "level": 5
+    "level": 5,
+    "effects": [
+      {
+        "name": "Teleportation Circle",
+        "range": {
+          "Feet": 10
+        },
+        "duration": {
+          "Rounds": 1
+        }
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Wall of Light",
@@ -667,13 +1593,29 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL - 1)d8"
+        "expr": "(SLOT_LEVEL - 1)d8",
+        "range": {
+          "Feet": 120
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Arcane Gate",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Arcane Gate",
+        "range": {
+          "Feet": 500
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Circle of Death",
@@ -681,37 +1623,118 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(2 * SLOT_LEVEL - 4)d8"
+        "expr": "(2 * SLOT_LEVEL - 4)d8",
+        "range": {
+          "Feet": 150
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Conjure Fey",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Conjure Fey",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 100
+        },
+        "expr": "(SLOT_LEVEL + 2)d12"
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Create Undead",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Create Undead",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Eyebite",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Eyebite",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Flesh to Stone",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Flesh to Stone",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Investiture of Flame",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Investiture of Flame",
+        "expr": "1d10",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Investiture of Ice",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Investiture of Ice",
+        "expr": "4d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Investiture of Stone",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Investiture of Stone",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Investiture of Wind",
@@ -721,13 +1744,27 @@
         "name": "Investiture of Wind",
         "expr": "DEX.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 100
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Mass Suggestion",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Mass Suggestion",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 14400
+        }
+      }
+    ]
   },
   {
     "name": "Mental Prison",
@@ -735,21 +1772,59 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "5d10"
+        "expr": "5d10",
+        "range": {
+          "Feet": 60
+        }
       }
-    ]
+    ],
+    "concentration": true
   },
   {
     "name": "Soul Cage",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Soul Cage",
+        "expr": "2d8",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ],
+    "cast_time": "Reaction"
   },
   {
     "name": "Summon Fiend",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Summon Fiend",
+        "range": {
+          "Feet": 90
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Tasha's Bubbling Cauldron",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "Tasha's Bubbling Cauldron",
+        "range": {
+          "Feet": 5
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ]
   },
   {
     "name": "Tasha's Otherworldly Guise",
@@ -759,13 +1834,26 @@
         "name": "AC",
         "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "True Seeing",
-    "level": 6
+    "level": 6,
+    "effects": [
+      {
+        "name": "True Seeing",
+        "range": "Touch",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Crown of Stars",
@@ -773,17 +1861,39 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "4d12"
+        "expr": "4d12",
+        "range": "Caster"
       }
     ]
   },
   {
     "name": "Dream of the Blue Veil",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Dream of the Blue Veil",
+        "range": {
+          "Feet": 20
+        },
+        "duration": {
+          "Rounds": 3600
+        }
+      }
+    ],
+    "cast_time": 100
   },
   {
     "name": "Etherealness",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Etherealness",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 4800
+        }
+      }
+    ]
   },
   {
     "name": "Finger of Death",
@@ -791,37 +1901,110 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "7d8 + 30"
+        "expr": "7d8 + 30",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
     "name": "Forcecage",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Forcecage",
+        "range": {
+          "Feet": 100
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Plane Shift",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Plane Shift",
+        "range": "Touch",
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Power Word Pain",
-    "level": 7
+    "level": 7,
+    "effects": [
+      {
+        "name": "Power Word Pain",
+        "range": {
+          "Feet": 60
+        }
+      }
+    ]
   },
   {
     "name": "Befuddlement",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Befuddlement",
+        "expr": "10d12",
+        "range": {
+          "Feet": 150
+        },
+        "duration": "Instant"
+      }
+    ]
   },
   {
     "name": "Demiplane",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Demiplane",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Dominate Monster",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Dominate Monster",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Glibness",
-    "level": 8
+    "level": 8,
+    "effects": [
+      {
+        "name": "Glibness",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ]
   },
   {
     "name": "Maddening Darkness",
@@ -829,17 +2012,43 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "8d8"
+        "expr": "8d8",
+        "range": {
+          "Feet": 150
+        },
+        "duration": {
+          "Rounds": 100
+        }
+      }
+    ],
+    "concentration": true
+  },
+  {
+    "name": "Power Word Stun",
+    "level": 8,
+    "effects": [
+      {
+        "name": "Power Word Stun",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
   {
-    "name": "Power Word Stun",
-    "level": 8
-  },
-  {
     "name": "Astral Projection",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Astral Projection",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Forever"
+      }
+    ],
+    "cast_time": 600
   },
   {
     "name": "Blade of Disaster",
@@ -847,9 +2056,17 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "10d6"
+        "expr": "10d6",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
       }
-    ]
+    ],
+    "concentration": true,
+    "cast_time": "BonusAction"
   },
   {
     "name": "Foresight",
@@ -859,17 +2076,42 @@
         "name": "Foresight",
         "expr": "ATK.ADV = 1; STR.ADV = 1; DEX.ADV = 1; CON.ADV = 1; INT.ADV = 1; WIS.ADV = 1; CHA.ADV = 1; STR.SAVE.ADV = 1; DEX.SAVE.ADV = 1; CON.SAVE.ADV = 1; INT.SAVE.ADV = 1; WIS.SAVE.ADV = 1; CHA.SAVE.ADV = 1",
         "range": "Caster",
-        "duration": "Forever"
+        "duration": {
+          "Rounds": 4800
+        }
       }
-    ]
+    ],
+    "cast_time": 10
   },
   {
     "name": "Gate",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Gate",
+        "range": {
+          "Feet": 60
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Imprisonment",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Imprisonment",
+        "range": {
+          "Feet": 30
+        },
+        "duration": "Forever"
+      }
+    ],
+    "cast_time": 10
   },
   {
     "name": "Power Word Kill",
@@ -877,7 +2119,11 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "12d12"
+        "expr": "12d12",
+        "range": {
+          "Feet": 60
+        },
+        "duration": "Instant"
       }
     ]
   },
@@ -887,16 +2133,44 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "14d6"
+        "expr": "14d6",
+        "range": {
+          "Feet": 90
+        }
       }
     ]
   },
   {
     "name": "True Polymorph",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "True Polymorph",
+        "range": {
+          "Feet": 30
+        },
+        "duration": {
+          "Rounds": 600
+        }
+      }
+    ],
+    "concentration": true
   },
   {
     "name": "Weird",
-    "level": 9
+    "level": 9,
+    "effects": [
+      {
+        "name": "Weird",
+        "expr": "10d10",
+        "range": {
+          "Feet": 120
+        },
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "concentration": true
   }
 ]

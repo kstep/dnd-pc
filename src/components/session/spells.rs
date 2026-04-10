@@ -11,16 +11,27 @@ use crate::{
             EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
             inject_resource_vars,
         },
+        icon::Icon,
         session::{FreeUsesBadge, adv_icon},
         session_list::{SessionList, SessionListItem},
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, Attribute, Character, CharacterStoreFields, FeatureValue, SpellSlotLevel,
-        SpellSlotPool, format_bonus,
+        Ability, Attribute, Character, CharacterStoreFields, EffectDuration, EffectRange,
+        FeatureValue, SpellSlotLevel, SpellSlotPool, format_bonus,
     },
-    rules::RulesRegistry,
+    rules::{ActionType, CastTime, RulesRegistry},
 };
+
+fn format_rounds(rounds: u32) -> String {
+    if rounds >= 600 {
+        format!("{}h", rounds / 600)
+    } else if rounds >= 10 {
+        format!("{}m", rounds / 10)
+    } else {
+        format!("{}r", rounds)
+    }
+}
 
 #[component]
 pub fn SpellsBlock() -> impl IntoView {
@@ -195,6 +206,107 @@ pub fn SpellsBlock() -> impl IntoView {
                             tr!("slot-level", {"level" => spell.level})
                         };
 
+                        let meta_badges: Vec<AnyView> = fname.with_value(|key| {
+                            registry.with_feature(key, |feat| {
+                                feat.spells.as_ref().and_then(|spells_def| {
+                                    registry.with_spell_list(&spells_def.list, |spell_map| {
+                                        spell_map.get(spell.name.as_str()).map(|sd| {
+                                            let mut badges: Vec<AnyView> = Vec::new();
+                                            // Cast time (non-Action only)
+                                            match sd.cast_time {
+                                                CastTime::Action(ActionType::BonusAction) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("action-type-bonus-action")>
+                                                            <Icon name="zap" size=14 />
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                CastTime::Action(ActionType::Reaction) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("action-type-reaction")>
+                                                            <Icon name="shield" size=14 />
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                CastTime::Rounds(rounds) => {
+                                                    let label = format_rounds(rounds);
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-cast-time")>
+                                                            <Icon name="clock" size=14 />{label}
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                CastTime::Action(ActionType::Action) => {}
+                                            }
+                                            // Range
+                                            match sd.effect_range() {
+                                                Some(EffectRange::Caster) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range-self")>
+                                                            <Icon name="person-standing" size=14 />
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                Some(EffectRange::Touch) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range-touch")>
+                                                            <Icon name="hand" size=14 />
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                Some(EffectRange::Feet(feet)) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range")>
+                                                            <Icon name="ruler" size=14 />{feet}
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                None => {}
+                                            }
+                                            // Duration (skip Instant)
+                                            match sd.effect_duration() {
+                                                Some(EffectDuration::Rounds(rounds)) => {
+                                                    let label = format_rounds(rounds);
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-duration")>
+                                                            <Icon name="hourglass" size=14 />{label}
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                Some(EffectDuration::Forever) => {
+                                                    badges.push(view! {
+                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-duration-forever")>
+                                                            <Icon name="infinity" size=14 />
+                                                        </span>
+                                                    }.into_any());
+                                                }
+                                                Some(EffectDuration::Instant) | None => {}
+                                            }
+                                            // Concentration
+                                            if sd.concentration {
+                                                badges.push(view! {
+                                                    <span class="spell-meta-icon" title=move_tr!("ref-spell-concentration")>
+                                                        <Icon name="crosshair" size=14 />
+                                                    </span>
+                                                }.into_any());
+                                            }
+                                            // Ritual
+                                            if sd.ritual {
+                                                badges.push(view! {
+                                                    <span class="spell-meta-icon" title=move_tr!("ref-spell-ritual")>
+                                                        <Icon name="book-open" size=14 />
+                                                    </span>
+                                                }.into_any());
+                                            }
+                                            badges
+                                        })
+                                    })
+                                })
+                            })
+                            .flatten()
+                            .unwrap_or_default()
+                        });
+
                         let free_uses_badge = spell.free_uses.as_ref().map(|fu| {
                             let avail = fu.available();
                             let max = fu.max;
@@ -353,6 +465,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let badge = view! {
                             <span class="entry-badge">
                                 <span class="session-spell-level">{level_str}</span>
+                                {meta_badges}
                                 {free_uses_badge}
                                 {cost_badge}
                                 {cast_button}

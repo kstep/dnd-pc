@@ -1,6 +1,6 @@
 use leptos::{either::Either, prelude::*};
 
-use crate::components::toggle_button::ToggleButton;
+use crate::components::{markdown::Markdown, toggle_button::ToggleButton};
 
 pub struct SessionListItem {
     pub name: String,
@@ -31,7 +31,9 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                             </div>
                             <div class="entry-actions" />
                             {has_desc.then(|| view! {
-                                <p class="entry-desc">{item.description.clone()}</p>
+                                <div class="entry-desc">
+                                    <Markdown text=item.description.clone() />
+                                </div>
                             })}
                         </div>
                     }
