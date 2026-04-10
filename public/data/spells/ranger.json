@@ -392,7 +392,15 @@
   },
   {
     "name": "Stoneskin",
-    "level": 4
+    "level": 4,
+    "effects": [
+      {
+        "name": "Stoneskin",
+        "expr": "RESIST.BLUDG = 1; RESIST.PIERC = 1; RESIST.SLASH = 1",
+        "range": "Touch",
+        "duration": "Forever"
+      }
+    ]
   },
   {
     "name": "Summon Elemental",

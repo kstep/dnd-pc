@@ -16,6 +16,12 @@ pub enum EffectRange {
     Feet(u32),
 }
 
+impl EffectRange {
+    pub fn can_target_self(self) -> bool {
+        matches!(self, EffectRange::Caster | EffectRange::Touch)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Default, Deserialize)]
 pub enum EffectDuration {
     #[default]

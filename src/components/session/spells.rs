@@ -16,8 +16,8 @@ use crate::{
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, Attribute, Character, CharacterStoreFields, EffectRange, FeatureValue,
-        SpellSlotLevel, SpellSlotPool, format_bonus,
+        Ability, Attribute, Character, CharacterStoreFields, FeatureValue, SpellSlotLevel,
+        SpellSlotPool, format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -80,7 +80,7 @@ pub fn SpellsBlock() -> impl IntoView {
             }
 
             // All effects are Caster with no dice — apply immediately, skip modal
-            let all_caster = effects.iter().all(|e| e.range == EffectRange::Caster);
+            let all_caster = effects.iter().all(|e| e.range.can_target_self());
             if all_caster && all_self_effects_diceless(&effects, &character, &extra_vars) {
                 drop(character);
                 apply_self_effects_now(

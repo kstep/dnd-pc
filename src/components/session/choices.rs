@@ -16,8 +16,8 @@ use crate::{
         session_list::{SessionList, SessionListItem},
     },
     model::{
-        Attribute, Character, CharacterStoreFields, EffectDefinition, EffectRange, FeatureOption,
-        FeatureValue, Translatable, short_name,
+        Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
+        Translatable, short_name,
     },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -155,7 +155,7 @@ pub fn ChoicesBlock() -> impl IntoView {
             }
 
             // All effects are Caster with no dice — apply immediately, skip modal
-            let all_caster = effects.iter().all(|e| e.range == EffectRange::Caster);
+            let all_caster = effects.iter().all(|e| e.range.can_target_self());
             if all_caster && all_self_effects_diceless(&effects, &character, &extra_vars) {
                 drop(character);
                 apply_self_effects_now(

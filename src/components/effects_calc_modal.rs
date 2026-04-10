@@ -14,8 +14,8 @@ use crate::{
     effective::EffectiveCharacter,
     expr::{self, DicePool},
     model::{
-        ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration,
-        EffectRange, Expr, FeatureData, FeatureValue, Op,
+        ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration, Expr,
+        FeatureData, FeatureValue, Op,
     },
 };
 
@@ -102,7 +102,7 @@ pub fn all_self_effects_diceless(
     };
     effects
         .iter()
-        .filter(|effect| effect.range == EffectRange::Caster)
+        .filter(|effect| effect.range.can_target_self())
         .all(|effect| effect.expr.dice_rolls(&ctx).is_empty())
 }
 
@@ -115,7 +115,7 @@ pub fn has_non_stackable_duplicate(
 ) -> bool {
     let any_non_stackable = effects
         .iter()
-        .any(|effect| effect.range == EffectRange::Caster && !effect.stackable);
+        .any(|effect| effect.range.can_target_self() && !effect.stackable);
     any_non_stackable && active_effects.has_effect(spell_name)
 }
 
@@ -126,7 +126,7 @@ fn build_self_expr(
 ) -> Option<Expr> {
     let combined = effects
         .iter()
-        .filter(|effect| effect.range == EffectRange::Caster && filter(effect.duration))
+        .filter(|effect| effect.range.can_target_self() && filter(effect.duration))
         .map(|effect| effect.expr.to_string())
         .collect::<Vec<_>>()
         .join("; ");
@@ -232,7 +232,7 @@ pub fn EffectsCalcModal(
             let has_self_effects = info
                 .effects
                 .iter()
-                .any(|effect| effect.range == EffectRange::Caster)
+                .any(|effect| effect.range.can_target_self())
                 && !has_non_stackable_duplicate(
                     &info.effects,
                     &effects.read_untracked(),
@@ -250,7 +250,7 @@ pub fn EffectsCalcModal(
                         .effects
                         .iter()
                         .filter(|effect| {
-                            effect.range == EffectRange::Caster && filter(effect.duration)
+                            effect.range.can_target_self() && filter(effect.duration)
                         })
                         .map(|effect| effect.expr.to_string())
                         .collect::<Vec<_>>()
@@ -286,7 +286,7 @@ pub fn EffectsCalcModal(
                 .map(|effect| {
                     let expr = effect.expr.clone();
                     let label = effect.label().to_string();
-                    let is_self = effect.range == EffectRange::Caster;
+                    let is_self = effect.range.can_target_self();
                     let rolls = effect.expr.dice_rolls(&ctx);
 
                     if rolls.is_empty() {
