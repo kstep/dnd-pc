@@ -59,7 +59,9 @@ fn build_choice_items(
             let action_icon = item.action.map(|action_type| {
                 let title = untrack(|| i18n.tr(action_type.tr_key()).into_owned());
                 view! {
-                    <Icon name=action_type.icon_name() size=14 title=title />
+                    <span class="spell-meta-icon" title=title>
+                        <Icon name=action_type.icon_name() size=14 />
+                    </span>
                 }
             });
 
