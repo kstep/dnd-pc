@@ -2372,18 +2372,13 @@ dialog.modal {
   border: none;
   border-radius: var(--radius-2);
   padding: 0;
-  background: var(--panel-bg);
+  background: transparent;
   color: var(--text-primary);
   width: fit-content;
   min-width: 250px;
   max-width: min(600px, 90vw);
   max-height: 80vh;
   animation: modal-slide-in 250ms ease-out;
-}
-
-dialog.modal[open] {
-  display: flex;
-  flex-direction: column;
 }
 
 dialog.modal.closing {
@@ -2403,7 +2398,9 @@ dialog.modal.closing::backdrop {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  flex: 1;
+  max-height: 80vh;
+  background: var(--panel-bg);
+  border-radius: var(--radius-2);
 }
 
 .modal-body {
