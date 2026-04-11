@@ -6,9 +6,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    expr::{
-        self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterIndex, IterStack, VarGroup,
-    },
+    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterStack, VarGroup},
     model::{Attribute, AttributeGroup, Character, Expr, Op},
 };
 
@@ -383,8 +381,8 @@ fn form_block_loop(
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_ops.len().saturating_sub(2);
     let content = &body_ops[..content_end];
-    for (iter_no, index) in subgrp.real_indices().enumerate() {
-        ctx.iter_stack.push(IterIndex { iter_no, index });
+    for idx in subgrp.iter_indices() {
+        ctx.iter_stack.push(idx);
         render_statement(fb, expr, content, ctx, condition)?;
         let _ = ctx.iter_stack.pop();
     }

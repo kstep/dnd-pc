@@ -73,7 +73,7 @@ impl<Grp> VarSubgroup<Grp> {
     }
 
     /// Get the real group index for the i-th set bit in mask.
-    pub fn real_index(&self, position: usize) -> Option<usize> {
+    fn real_index(&self, position: usize) -> Option<usize> {
         let mut remaining = position;
         for bit in 0..32u32 {
             if self.mask & (1 << bit) != 0 {
@@ -87,7 +87,7 @@ impl<Grp> VarSubgroup<Grp> {
     }
 
     /// Advance from the current real group index to the next set bit.
-    pub fn next_real_index(&self, current: usize) -> Option<usize> {
+    fn next_real_index(&self, current: usize) -> Option<usize> {
         for bit in (current as u32 + 1)..32 {
             if self.mask & (1 << bit) != 0 {
                 return Some(bit as usize);
@@ -108,15 +108,16 @@ impl<Grp> VarSubgroup<Grp> {
         })
     }
 
-    /// Iterate over real group indices of all members in this (sub)group.
-    pub fn real_indices(&self) -> impl Iterator<Item = usize> + '_
+    /// Iterate over all members of this (sub)group, yielding `IterIndex`
+    /// with both the sequential iteration number and the real group index.
+    pub fn iter_indices(&self) -> impl Iterator<Item = IterIndex> + '_
     where
         Grp: VarGroup,
     {
-        (0..).map_while(|pos| {
-            let real_idx = self.real_index(pos)?;
-            self.inner.member(real_idx.into())?;
-            Some(real_idx)
+        (0..).map_while(|iter_no| {
+            let index = self.real_index(iter_no)?;
+            self.inner.member(index.into())?;
+            Some(IterIndex { iter_no, index })
         })
     }
 
