@@ -17,8 +17,8 @@ use crate::{
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, Attribute, Character, CharacterStoreFields, EffectDuration, EffectRange,
-        FeatureValue, SpellSlotLevel, SpellSlotPool, format_bonus,
+        Ability, Attribute, Character, CharacterStoreFields, CombatStatsStoreFields,
+        EffectDuration, EffectRange, FeatureValue, SpellSlotLevel, SpellSlotPool, format_bonus,
     },
     rules::{ActionType, CastTime, RulesRegistry},
 };
@@ -404,6 +404,19 @@ pub fn SpellsBlock() -> impl IntoView {
                                         fname.with_value(|key| {
                                             spell_name.with_value(|sname| {
                                                 open_calc(sname, spell_level, key, pool, casting_ability, &opt);
+                                                // Track concentration
+                                                let is_concentration = registry
+                                                    .with_feature(key, |feat| {
+                                                        feat.spells.as_ref().is_some_and(|spells_def| {
+                                                            registry.with_spell_list(&spells_def.list, |spell_map| {
+                                                                spell_map.get(sname.as_str()).is_some_and(|sd| sd.concentration)
+                                                            })
+                                                        })
+                                                    })
+                                                    .unwrap_or(false);
+                                                if is_concentration {
+                                                    store.combat().concentrating().set(Some(sname.to_string()));
+                                                }
                                             });
                                         });
 

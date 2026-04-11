@@ -151,6 +151,7 @@ impl Character {
         self.combat.hp_temp = 0;
         self.combat.death_save_successes = 0;
         self.combat.death_save_failures = 0;
+        self.combat.concentrating = None;
 
         for cl in &mut self.identity.classes {
             cl.hit_dice_used = 0;
@@ -935,6 +936,7 @@ impl Character {
                 .collect(),
             skills: BTreeMap::new(),
             combat: CombatStats {
+                concentrating: None,
                 armor_class: 13,
                 speed: 30,
                 hp_max: 24,
@@ -1045,6 +1047,7 @@ pub mod tests {
                 (Skill::Perception, ProficiencyLevel::Expertise),
             ]),
             combat: CombatStats {
+                concentrating: None,
                 armor_class: 12,
                 speed: 30,
                 hp_max: 44,

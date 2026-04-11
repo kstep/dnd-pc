@@ -1,8 +1,10 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Store)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
+    #[serde(default)]
+    pub concentrating: Option<String>,
     #[serde(default)]
     pub armor_class: u32,
     #[serde(default)]
@@ -34,6 +36,7 @@ fn default_attack_count() -> u32 {
 impl Default for CombatStats {
     fn default() -> Self {
         Self {
+            concentrating: None,
             armor_class: 10,
             speed: 30,
             hp_max: 0,

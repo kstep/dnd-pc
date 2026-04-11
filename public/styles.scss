@@ -1908,6 +1908,33 @@ textarea.entry-desc {
   cursor: pointer;
 }
 
+.concentration-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+  font-size: var(--font-size-1);
+  color: var(--text-secondary);
+
+  .icon-wrapper {
+    line-height: 0.4rem;
+  }
+}
+
+.concentration-drop {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 .session-spell-stats {
   display: flex;
   gap: var(--size-4);

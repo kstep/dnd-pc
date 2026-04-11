@@ -1369,8 +1369,8 @@ mod loop_tests {
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
-        // Real indices: STR=0, INT=3, CHA=5
-        assert_eq!(analysis.active_args, vec![0, 3, 5]);
+        // Iteration indices (iter_no), not real group indices
+        assert_eq!(analysis.active_args, vec![0, 1, 2]);
     }
 
     #[wasm_bindgen_test]
@@ -1381,8 +1381,8 @@ mod loop_tests {
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
-        assert_eq!(analysis.active_args, vec![0, 3, 5]);
-        for &i in &[0u8, 3, 5] {
+        assert_eq!(analysis.active_args, vec![0, 1, 2]);
+        for &i in &[0u8, 1, 2] {
             assert!(
                 analysis.boolean_args.contains(&i),
                 "ARG.{i} should be boolean"

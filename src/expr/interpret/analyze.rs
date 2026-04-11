@@ -201,10 +201,10 @@ impl ExprAnalysis {
         );
 
         if has_arg_group {
-            for real_idx in subgrp.real_indices() {
-                self.active_args.push(real_idx as u8);
+            for (iter_no, _real_idx) in subgrp.real_indices().enumerate() {
+                self.active_args.push(iter_no as u8);
                 if has_in_pattern {
-                    self.boolean_args.insert(real_idx as u8);
+                    self.boolean_args.insert(iter_no as u8);
                 }
             }
         }

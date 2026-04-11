@@ -3,8 +3,11 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
+    components::icon::Icon,
     effective::EffectiveCharacter,
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
+    },
     rules::RulesRegistry,
 };
 
@@ -46,6 +49,18 @@ pub fn SessionHeader() -> impl IntoView {
                 <span class="session-header-stat">
                     {move_tr!("prof-bonus")} ": +" <strong>{prof_bonus}</strong>
                 </span>
+                {move || store.combat().concentrating().with(|name| name.as_ref().map(|name| view! {
+                    <span class="concentration-indicator">
+                        <Icon name="crosshair" size=14 />
+                        {name.clone()}
+                        <button class="concentration-drop"
+                            title=move_tr!("drop-concentration")
+                            on:click=move |_| store.combat().concentrating().set(None)
+                        >
+                            <Icon name="x" size=12 />
+                        </button>
+                    </span>
+                }))}
             </div>
         </div>
     }

@@ -86,6 +86,7 @@ successes = Успехи
 failures = Провалы
 short-rest = Короткий отдых
 long-rest = Длинный отдых
+drop-concentration = Сбросить концентрацию
 reset-stats = Сброс
 
 ## Панель заклинаний

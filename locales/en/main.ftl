@@ -86,6 +86,7 @@ successes = Successes
 failures = Failures
 short-rest = Short Rest
 long-rest = Long Rest
+drop-concentration = Drop Concentration
 reset-stats = Reset
 
 ## Spellcasting panel
