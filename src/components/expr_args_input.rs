@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::icon::Icon,
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterStack, VarGroup},
-    model::{Attribute, AttributeGroup, Character, Expr, Op},
+    model::{AssignInputs, Attribute, AttributeGroup, Character, Expr, Op},
 };
 
 // --- ArgContext: resolves Arg(n) from signals, delegates rest to Character ---
@@ -162,6 +162,7 @@ impl FormBuilder {
 /// and the arg signals.
 struct FormCtx {
     args: Vec<RwSignal<i32>>,
+    prefill: Vec<i32>,
     seen: BTreeSet<u8>,
     active_args: BTreeSet<u8>,
     boolean_args: BTreeSet<u8>,
@@ -176,9 +177,11 @@ impl FormCtx {
         boolean_args: BTreeSet<u8>,
         i18n: leptos_fluent::I18n,
         is_satisfied: Memo<bool>,
+        prefill: Vec<i32>,
     ) -> Self {
         Self {
             args: Vec::new(),
+            prefill,
             seen: BTreeSet::new(),
             active_args: active_args.into_iter().collect(),
             boolean_args,
@@ -392,8 +395,9 @@ fn form_block_loop(
 /// Push an ARG input (checkbox, number, or ref) for the given ARG index.
 fn push_arg_input(fb: &mut FormBuilder, ctx: &mut FormCtx, n: u8, condition: bool) {
     let idx = n as usize;
-    if ctx.args.len() <= idx {
-        ctx.args.resize_with(idx + 1, || RwSignal::new(0));
+    while ctx.args.len() <= idx {
+        let init = ctx.prefill.get(ctx.args.len()).copied().unwrap_or(0);
+        ctx.args.push(RwSignal::new(init));
     }
     let signal = ctx.args[idx];
     fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
@@ -446,12 +450,22 @@ pub fn collect_dice_pool(groups: &DiceGroupSignals) -> DicePool {
 }
 
 /// Build dice input groups view from roll requirements.
-/// Returns the signal map and the rendered view.
-pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, AnyView) {
+/// Returns the signal map and the rendered view. `prefill` supplies initial
+/// values per side (extra requested rolls fall back to 0).
+pub fn build_dice_groups(
+    dice_rolls: &BTreeMap<u32, u32>,
+    prefill: &DicePool,
+) -> (DiceGroupSignals, AnyView) {
     let groups: DiceGroupSignals = dice_rolls
         .iter()
         .map(|(&sides, &count)| {
-            let signals: Vec<_> = (0..count).map(|_| RwSignal::new(0u32)).collect();
+            let preset = prefill.get(sides);
+            let signals: Vec<_> = (0..count)
+                .map(|i| {
+                    let init = preset.get(i as usize).copied().unwrap_or(0);
+                    RwSignal::new(init)
+                })
+                .collect();
             (sides, signals)
         })
         .collect();
@@ -526,6 +540,7 @@ pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, 
 #[component]
 pub fn ExprArgsInput(
     expr: Expr,
+    #[prop(optional)] prefill: AssignInputs,
     on_ready: impl FnOnce(ExprArgsInputParts) + 'static,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
@@ -592,8 +607,13 @@ pub fn ExprArgsInput(
 
     // Build formula view with inline ARG inputs (if any)
     let formula_view = if has_args {
-        let mut form_ctx =
-            FormCtx::new(analysis.active_args, analysis.boolean_args, i18n, is_valid);
+        let mut form_ctx = FormCtx::new(
+            analysis.active_args,
+            analysis.boolean_args,
+            i18n,
+            is_valid,
+            prefill.args.clone(),
+        );
         let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
             .unwrap_or_else(|err| format!("Error: {err}").into_any());
 
@@ -616,7 +636,7 @@ pub fn ExprArgsInput(
     // Build dice input groups (if any)
     let (dice_signals, dice_groups_el) = if has_dice {
         let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
-        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls);
+        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls, &prefill.dice);
         dice_signals_cell.set(Some((signals.clone(), total_needed)));
         let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
         (signals, el)

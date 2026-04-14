@@ -22,6 +22,11 @@ impl DicePool {
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
+
+    /// Look up preset values for a given die side count.
+    pub fn get(&self, sides: u32) -> &[u32] {
+        self.0.get(&sides).map_or(&[], Vec::as_slice)
+    }
 }
 
 impl fmt::Display for DicePool {

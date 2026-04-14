@@ -96,10 +96,13 @@ fn ArgsFeatureInput(
     // bypass it when the user picks a replacement.
     let expr_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
 
+    let prefill = pending_inputs.prefill.clone();
     let expr_views = pending_inputs
         .exprs
         .into_iter()
-        .map(|expr| {
+        .enumerate()
+        .map(|(i, expr)| {
+            let prefill = prefill.get(i).cloned().unwrap_or_default();
             let on_ready = move |parts: ExprArgsInputParts| {
                 signal_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.arg_signals));
@@ -115,7 +118,7 @@ fn ArgsFeatureInput(
             };
             view! {
                 <ExprDetails expr=expr.clone() />
-                <ExprArgsInput expr on_ready />
+                <ExprArgsInput expr prefill on_ready />
             }
         })
         .collect_view();

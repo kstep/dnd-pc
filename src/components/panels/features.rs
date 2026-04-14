@@ -51,25 +51,13 @@ pub fn FeaturesPanel() -> impl IntoView {
             .map(|feature| {
                 let mut entries: Vec<String> = Vec::new();
                 registry.with_feature(&feature.name, |feat_def| {
-                    let Some(assigns) = feat_def.assign.as_deref() else {
-                        return;
+                    let mut ctx = PreviewContext {
+                        character: &mut blank,
+                        captured: Vec::new(),
                     };
-                    for (idx, assignment) in assigns.iter().enumerate() {
-                        if assignment.when != WhenCondition::OnFeatureAdd {
-                            continue;
-                        }
-                        let Some(inputs) = feature.inputs.get(idx) else {
-                            continue;
-                        };
-                        let mut ctx = PreviewContext {
-                            character: &mut blank,
-                            args: &inputs.args,
-                            captured: Vec::new(),
-                        };
-                        let _ = assignment.expr.apply_with_dice(&mut ctx, &inputs.dice);
-                        for (attr, value) in ctx.captured {
-                            entries.push(format!("{}: {value}", attr.display_name(&i18n)));
-                        }
+                    feat_def.assign(&mut ctx, WhenCondition::OnFeatureAdd, &feature.inputs);
+                    for (attr, value) in ctx.captured {
+                        entries.push(format!("{}: {value}", attr.display_name(&i18n)));
                     }
                 });
                 entries

@@ -45,6 +45,7 @@ pub fn CharacterEditor() -> impl IntoView {
                 .is_some_and(|sd| sd.spells.iter().any(|s| s.label().is_empty()))
         })
     });
+    let backstory_has_pending = Signal::derive(move || store.read().personality.history.is_empty());
     let build_has_pending = Signal::derive(move || {
         let character = store.read();
         character.features.iter().any(|f| !f.applied)
@@ -65,7 +66,8 @@ pub fn CharacterEditor() -> impl IntoView {
             .visible_when(has_magic)
             .marked_when(magic_has_pending),
         TabItem::new("inventory", move_tr!("tab-inventory"), "backpack"),
-        TabItem::new("backstory", move_tr!("tab-backstory"), "book-open"),
+        TabItem::new("backstory", move_tr!("tab-backstory"), "book-open")
+            .marked_when(backstory_has_pending),
     ];
 
     let location = use_location();

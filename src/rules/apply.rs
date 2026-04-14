@@ -42,6 +42,10 @@ pub struct PendingInputs {
     pub feature_label: String,
     pub feature_description: String,
     pub exprs: Vec<Expr>,
+    /// Existing stored inputs aligned with `exprs` (by index). Empty when the
+    /// feature is being applied for the first time. Used by the modal to
+    /// pre-fill ARG and dice signals so re-apply behaves as edit.
+    pub prefill: Vec<AssignInputs>,
     pub replace_with: ReplaceWith,
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
@@ -81,11 +85,20 @@ impl PendingFeature {
         if exprs.is_empty() && !feat_def.is_replaceable() {
             return None;
         }
+        let prefill = character
+            .features
+            .iter()
+            .find(|f| {
+                f.name == self.name && f.applied && (!feat_def.stackable || f.source == self.source)
+            })
+            .map(|f| f.inputs.clone())
+            .unwrap_or_default();
         Some(PendingInputs {
             feature_name: self.name.clone(),
             feature_label: feat_def.label().to_string(),
             feature_description: feat_def.description.clone(),
             exprs,
+            prefill,
             replace_with: feat_def.replace_with,
             source: self.source.clone(),
         })
@@ -287,15 +300,28 @@ pub fn apply_new_features(
             log::warn!("Feature '{}' not found in index", pending_feature.name);
             continue;
         };
+        let feature_inputs = inputs
+            .map(|i| i.get(&pending_feature.name))
+            .unwrap_or_default();
         if character
             .features
             .contains(&feat_def.name, feat_def.stackable, &pending_feature.source)
         {
+            // Already applied — re-apply acts as edit: update stored inputs
+            // only. Re-running assignments is unsafe (non-idempotent exprs
+            // like `MAX_HP += 5` would double-apply). User triggers Replay
+            // to recompute effects with the new inputs.
+            if !feature_inputs.is_empty()
+                && let Some(feat) = character.features.iter_mut().find(|f| {
+                    f.name == feat_def.name
+                        && f.applied
+                        && (!feat_def.stackable || f.source == pending_feature.source)
+                })
+            {
+                feat.inputs = feature_inputs.to_vec();
+            }
             continue;
         }
-        let feature_inputs = inputs
-            .map(|i| i.get(&pending_feature.name))
-            .unwrap_or_default();
         character.features.add(
             &pending_feature.name,
             feat_def.label.clone(),
@@ -602,6 +628,7 @@ impl RulesRegistry {
                 feature_label: feat.label().to_string(),
                 feature_description: feat.description.clone(),
                 exprs,
+                prefill: Vec::new(),
                 replace_with: ReplaceWith::None,
                 source: source.cloned().unwrap_or_default(),
             })

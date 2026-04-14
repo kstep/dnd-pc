@@ -322,7 +322,8 @@ pub fn EffectsCalcModal(
                         let extra_vars = info.extra_vars.clone();
 
                         let total_needed: u32 = rolls.values().copied().sum();
-                        let (dice_signals, dice_view) = build_dice_groups(&rolls);
+                        let (dice_signals, dice_view) =
+                            build_dice_groups(&rolls, &DicePool::default());
                         let dice_signals = StoredValue::new(dice_signals);
 
                         // Track self-targeting dice groups for Apply Effect

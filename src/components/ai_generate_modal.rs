@@ -181,6 +181,7 @@ async fn run_ai_generation(
                                 feature_label: feat_def.label().to_string(),
                                 feature_description: feat_def.description.clone(),
                                 exprs,
+                                prefill: Vec::new(),
                                 replace_with: ReplaceWith::None,
                                 source: FeatureSource::User(0),
                             })

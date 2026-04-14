@@ -45,6 +45,7 @@ fn collect_all_inputs(
                         feature_label: feat_def.label().to_string(),
                         feature_description: feat_def.description.clone(),
                         exprs,
+                        prefill: Vec::new(),
                         replace_with: ReplaceWith::None,
                         source: feature.source.clone(),
                     })
@@ -213,20 +214,12 @@ impl expr::Context<Attribute, i32> for ArgsContext<'_> {
 /// while also capturing every assign call (var, value) for display.
 pub struct PreviewContext<'a> {
     pub character: &'a mut Character,
-    pub args: &'a [i32],
     pub captured: Vec<(Attribute, i32)>,
 }
 
 impl expr::Context<Attribute, i32> for PreviewContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        match var {
-            Attribute::Arg(n) => self
-                .args
-                .get(n as usize)
-                .copied()
-                .ok_or_else(|| expr::Error::unsupported_var(var)),
-            other => self.character.resolve(other),
-        }
+        self.character.resolve(var)
     }
 
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
