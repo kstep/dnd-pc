@@ -43,14 +43,14 @@ pub fn BackpackBlock() -> impl IntoView {
                                     equipment.currency().update(|c| { c.spend(amount); });
                                 }
                             }
-                        ><Icon name="circle-minus" size=14 /></button>
+                        ><Icon name="circle-minus" /></button>
                         <button class="btn-icon btn-icon--success" title=move_tr!("gain")
                             on:click=move |_| {
                                 if let Some(amount) = money_value() {
                                     equipment.currency().update(|c| c.gain(amount));
                                 }
                             }
-                        ><Icon name="circle-plus" size=14 /></button>
+                        ><Icon name="circle-plus" /></button>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@ pub fn BackpackBlock() -> impl IntoView {
                         qty_el.set_value("1");
                         desc_input.set_value("");
                     }
-                ><Icon name="circle-plus" size=14 /></button>
+                ><Icon name="circle-plus" /></button>
                 <div class="entry-content">
                     <input type="text" required class="entry-name" placeholder=move_tr!("item-name") node_ref=name_input />
                     <span class="entry-badge">

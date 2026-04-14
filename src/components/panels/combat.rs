@@ -3,9 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{
-        apply::replay_with_modal, confirm_modal::ConfirmButton, icon::Icon, panel::Panel,
-    },
+    components::{icon::Icon, slot_box::SlotBox, stat_box::StatBox},
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
         format_bonus,
@@ -25,28 +23,35 @@ pub fn CombatPanel() -> impl IntoView {
     let init_display = move || format_bonus(initiative.get());
 
     view! {
-        <Panel title=move_tr!("panel-combat") class="combat-panel">
-            <div class="combat-top-row">
-                <div class="combat-stat">
-                    <label>{move_tr!("armor-class")}</label>
-                    <div class="combat-stat-row">
-                        <input
-                            type="number"
-                            prop:value=move || store.read().armor_class()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    combat.armor_class().set(value);
-                                }
+        <section>
+            <h3>{move_tr!("panel-combat")}</h3>
+            <div class="slot-box-list">
+                <StatBox label=move_tr!("armor-class")>
+                    <input
+                        type="number"
+                        prop:value=move || store.read().armor_class()
+                        on:input=move |e| {
+                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                combat.armor_class().set(value);
                             }
-                        />
-                    </div>
-                </div>
-                <div class="combat-stat">
-                    <label>{move_tr!("initiative")}</label>
-                    <span class="computed-value">{init_display}</span>
-                </div>
-                <div class="combat-stat">
-                    <label>{move_tr!("speed")}</label>
+                        }
+                    />
+                </StatBox>
+                <StatBox label=move_tr!("initiative")>
+                    <span class="stat-highlight">{init_display}</span>
+                </StatBox>
+                <StatBox label=move_tr!("inspiration")>
+                    <button
+                        class="inspiration-toggle"
+                        class:active=move || combat.inspiration().get()
+                        on:click=move |_| {
+                            combat.inspiration().update(|v| *v = !*v);
+                        }
+                    >
+                        {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
+                    </button>
+                </StatBox>
+                <StatBox label=move_tr!("speed")>
                     <input
                         type="number"
                         prop:value=move || combat.speed().get().to_string()
@@ -56,9 +61,8 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         }
                     />
-                </div>
-                <div class="combat-stat">
-                    <label>{move_tr!("attack-count")}</label>
+                </StatBox>
+                <StatBox label=move_tr!("attack-count")>
                     <input
                         type="number"
                         min="1"
@@ -69,25 +73,8 @@ pub fn CombatPanel() -> impl IntoView {
                             }
                         }
                     />
-                </div>
-                <div class="combat-stat">
-                    <label>{move_tr!("inspiration")}</label>
-                    <button
-                        class="inspiration-toggle"
-                        class:active=move || combat.inspiration().get()
-                        on:click=move |_| {
-                            combat.inspiration().update(|v| *v = !*v);
-                        }
-                    >
-                        {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
-                    </button>
-                </div>
-            </div>
-
-            <div class="hp-section">
-                <div class="hp-row">
-                    <div class="combat-stat">
-                        <label>{move_tr!("current-hp")}</label>
+                </StatBox>
+                <StatBox label=move_tr!("hp")>
                         <input
                             type="number"
                             prop:value=move || combat.hp_current().get().to_string()
@@ -97,9 +84,7 @@ pub fn CombatPanel() -> impl IntoView {
                                 }
                             }
                         />
-                    </div>
-                    <div class="combat-stat">
-                        <label>{move_tr!("hp-max")}</label>
+                        <span>"/"</span>
                         <input
                             type="number"
                             prop:value=move || combat.hp_max().get().to_string()
@@ -109,20 +94,18 @@ pub fn CombatPanel() -> impl IntoView {
                                 }
                             }
                         />
-                    </div>
-                    <div class="combat-stat">
-                        <label>{move_tr!("temp-hp")}</label>
-                        <input
-                            type="number"
-                            prop:value=move || combat.hp_temp().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse() {
-                                    combat.hp_temp().set(value);
-                                }
+                    </StatBox>
+                <StatBox label=move_tr!("temp-hp")>
+                    <input
+                        type="number"
+                        prop:value=move || combat.hp_temp().get().to_string()
+                        on:input=move |e| {
+                            if let Ok(value) = event_target_value(&e).parse() {
+                                combat.hp_temp().set(value);
                             }
-                        />
-                    </div>
-                </div>
+                        }
+                    />
+                </StatBox>
             </div>
 
             <div class="hit-dice-section">
@@ -132,22 +115,20 @@ pub fn CombatPanel() -> impl IntoView {
                         .read()
                         .iter()
                         .enumerate()
+                        .filter(|(_, c)| c.level > 0)
                         .map(|(i, class)| {
                             let class_label = if class.class.is_empty() {
                                 format!("Class {}", i + 1)
                             } else {
                                 class.class_label().to_string()
                             };
-                            let die_label = format!("d{}", class.hit_die_sides);
-                            let used_val = class.hit_dice_used;
+                            let label = format!("{class_label} d{}", class.hit_die_sides);
                             let total = class.level;
+                            let used_val = class.hit_dice_used;
                             view! {
-                                <div class="hit-dice-entry">
-                                    <span class="hit-dice-class">{class_label}</span>
-                                    <span class="hit-dice-die">{die_label}</span>
+                                <SlotBox label=label>
                                     <input
                                         type="number"
-                                        class="hit-dice-used"
                                         min="0"
                                         prop:max=total
                                         prop:value=used_val
@@ -158,70 +139,22 @@ pub fn CombatPanel() -> impl IntoView {
                                             }
                                         }
                                     />
-                                    <span class="hit-dice-sep">"/"</span>
-                                    <span class="hit-dice-total">{total}</span>
-                                </div>
+                                    " / "
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        prop:value=total
+                                        on:input=move |e| {
+                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                classes.write()[i].level = value;
+                                            }
+                                        }
+                                    />
+                                </SlotBox>
                             }
                         })
                         .collect_view()
                 }}
-            </div>
-
-            <div class="death-saves-row">
-            <div class="death-saves">
-                <h4>{move_tr!("death-saves")}</h4>
-                <div class="death-save-row">
-                    <span>{move_tr!("successes")}</span>
-                    <div class="death-save-boxes">
-                        {(0u8..3)
-                            .map(|i| {
-                                let checked = move || combat.death_save_successes().get() > i;
-                                view! {
-                                    <button
-                                        class="death-save-box"
-                                        class:filled=checked
-                                        on:click=move |_| {
-                                            let current = combat.death_save_successes().get();
-                                            if current > i {
-                                                combat.death_save_successes().set(i);
-                                            } else {
-                                                combat.death_save_successes().set(i + 1);
-                                            }
-                                        }
-                                    >
-                                        {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
-                                    </button>
-                                }
-                            })
-                            .collect_view()}
-                    </div>
-                </div>
-                <div class="death-save-row">
-                    <span>{move_tr!("failures")}</span>
-                    <div class="death-save-boxes">
-                        {(0u8..3)
-                            .map(|i| {
-                                let checked = move || combat.death_save_failures().get() > i;
-                                view! {
-                                    <button
-                                        class="death-save-box"
-                                        class:filled=checked
-                                        on:click=move |_| {
-                                            let current = combat.death_save_failures().get();
-                                            if current > i {
-                                                combat.death_save_failures().set(i);
-                                            } else {
-                                                combat.death_save_failures().set(i + 1);
-                                            }
-                                        }
-                                    >
-                                        {move || if checked() { "\u{25CF}" } else { "\u{25CB}" }}
-                                    </button>
-                                }
-                            })
-                            .collect_view()}
-                    </div>
-                </div>
             </div>
 
             <div class="rest-actions">
@@ -231,7 +164,7 @@ pub fn CombatPanel() -> impl IntoView {
                         store.update(|ch| ch.long_rest());
                     }
                 >
-                    <Icon name="list-restart" size=14 />
+                    <Icon name="list-restart" />
                     " "
                     {move_tr!("reset-stats")}
                 </button>
@@ -242,23 +175,11 @@ pub fn CombatPanel() -> impl IntoView {
                         store.update(|ch| registry.compute(ch));
                     }
                 >
-                    <Icon name="refresh-cw" size=14 />
+                    <Icon name="refresh-cw" />
                     " "
                     {move_tr!("recalculate")}
                 </button>
-                <ConfirmButton
-                    class="btn-rest"
-                    title=move_tr!("replay")
-                    confirm_title=move_tr!("replay")
-                    confirm_message=move_tr!("replay-confirm")
-                    on_confirm=move || replay_with_modal(store, registry)
-                >
-                    <Icon name="rotate-ccw" size=14 />
-                    " "
-                    {move_tr!("replay")}
-                </ConfirmButton>
             </div>
-            </div>
-        </Panel>
+        </section>
     }
 }

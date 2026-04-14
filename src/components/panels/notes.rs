@@ -2,17 +2,15 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
-use crate::{
-    components::panel::Panel,
-    model::{Character, CharacterStoreFields},
-};
+use crate::model::{Character, CharacterStoreFields};
 
 #[component]
 pub fn NotesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     view! {
-        <Panel title=move_tr!("panel-notes") class="notes-panel">
+        <section>
+            <h3>{move_tr!("panel-notes")}</h3>
             <textarea
                 class="notes-textarea"
                 prop:value=move || store.notes().get()
@@ -20,6 +18,6 @@ pub fn NotesPanel() -> impl IntoView {
                     store.notes().set(event_target_value(&e));
                 }
             />
-        </Panel>
+        </section>
     }
 }

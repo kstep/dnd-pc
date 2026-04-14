@@ -2,10 +2,7 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
-use crate::{
-    components::panel::Panel,
-    model::{Character, CharacterStoreFields, PersonalityStoreFields},
-};
+use crate::model::{Character, CharacterStoreFields, PersonalityStoreFields};
 
 #[component]
 pub fn PersonalityPanel() -> impl IntoView {
@@ -14,7 +11,8 @@ pub fn PersonalityPanel() -> impl IntoView {
     let personality = store.personality();
 
     view! {
-        <Panel title=move_tr!("panel-personality") class="personality-panel">
+        <section>
+            <h3>{move_tr!("panel-personality")}</h3>
             <div class="textarea-field">
                 <label>{move_tr!("history")}</label>
                 <textarea
@@ -60,6 +58,6 @@ pub fn PersonalityPanel() -> impl IntoView {
                     }
                 />
             </div>
-        </Panel>
+        </section>
     }
 }

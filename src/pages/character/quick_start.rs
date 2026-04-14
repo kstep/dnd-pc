@@ -121,7 +121,7 @@ pub fn QuickStart() -> impl IntoView {
                         title="Randomize name"
                         on:click=randomize_name
                     >
-                        <Icon name="dices" />
+                        <Icon name="dices" size=16 />
                     </button>
                 </div>
             </div>

@@ -126,7 +126,7 @@ pub fn DatalistInput(
                     show_modal.set(true);
                 }
             >
-                <Icon name="chevron-down" size=14 />
+                <Icon name="chevron-down" />
             </button>
         </div>
         <Modal show=show_modal title=placeholder>

@@ -23,7 +23,7 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
                     on:click=move |_| manually_open.update(|v| *v = !*v)
                 >
                     {move || current_label.get()}
-                    <Icon name="chevron-down" size=14 />
+                    <Icon name="chevron-down" />
                 </button>
             })}
             {move || children()}

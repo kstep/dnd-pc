@@ -43,7 +43,7 @@ pub fn ResourcesBlock() -> impl IntoView {
                 })
                 .collect::<Vec<_>>();
             view! {
-                {many_pools.then(|| view! { <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5> })}
+                {many_pools.then(|| view! { <h5 class="pool-header">{move || i18n.tr(pool.tr_key())}</h5> })}
                 <div class="session-spell-slots">
                     {slots.into_iter().map(|(level, idx, slot)| {
                         let label = tr!("slot-level", {"level" => level});

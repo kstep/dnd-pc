@@ -60,7 +60,7 @@ fn build_choice_items(
                 let title = untrack(|| i18n.tr(action_type.tr_key()).into_owned());
                 view! {
                     <span class="spell-meta-icon" title=title>
-                        <Icon name=action_type.icon_name() size=14 />
+                        <Icon name=action_type.icon_name() />
                     </span>
                 }
             });

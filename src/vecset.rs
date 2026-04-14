@@ -50,6 +50,13 @@ impl<T: PartialEq> VecSet<T> {
             false
         }
     }
+
+    /// Insert the value if absent, remove it if present.
+    pub fn toggle(&mut self, value: T) {
+        if !self.remove(&value) {
+            self.0.push(value);
+        }
+    }
 }
 
 impl<T> VecSet<T> {

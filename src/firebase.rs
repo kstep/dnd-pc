@@ -174,14 +174,25 @@ async fn call_async_with_retry(
 }
 
 fn to_js<T: Serialize>(data: &T) -> Result<JsValue, FirebaseError> {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_maps_as_objects(true)
-        .serialize_missing_as_null(true);
-    Ok(data.serialize(&serializer)?)
+    // Round-trip through JSON because serde_wasm_bindgen rejects Maps with
+    // non-string keys (Skill, DamageType, SpellSlotPool serialize as u8).
+    // JSON.parse stringifies all keys, which Firestore accepts.
+    let json = serde_json::to_string(data)
+        .map_err(|e| FirebaseError::Js(JsValue::from_str(&e.to_string())))?;
+    js_sys::JSON::parse(&json).map_err(FirebaseError::Js)
 }
 
 fn from_js<T: DeserializeOwned>(value: JsValue) -> Result<T, FirebaseError> {
-    Ok(serde_wasm_bindgen::from_value(value)?)
+    // Symmetric with `to_js`: round-trip through JSON so non-string map keys
+    // (Skill, DamageType, SpellSlotPool — all `enum_serde_u8!`) deserialize
+    // via `visit_str`, which serde_wasm_bindgen skips for `deserialize_u8`.
+    let json = js_sys::JSON::stringify(&value)
+        .map_err(FirebaseError::Js)?
+        .as_string()
+        .ok_or_else(|| {
+            FirebaseError::Js(JsValue::from_str("JSON.stringify returned non-string"))
+        })?;
+    serde_json::from_str(&json).map_err(|e| FirebaseError::Js(JsValue::from_str(&e.to_string())))
 }
 
 fn from_js_array<T: DeserializeOwned>(
@@ -365,4 +376,71 @@ fn friendly_js_error(js_err: &JsValue) -> String {
         return text;
     }
     format!("{js_err:?}")
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::{from_js, to_js};
+    use crate::{
+        constvec::ConstVec,
+        model::{
+            Character, DamageModifiers, DamageType, ProficiencyLevel, Skill, SpellSlotLevel,
+            SpellSlotPool,
+        },
+    };
+
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    /// Round-trip a Character with maps keyed by u8-serialized enums
+    /// (Skill, DamageType, SpellSlotPool). Old `to_js` blew up here; the
+    /// JSON round-trip stringifies the keys so Firestore accepts them, and
+    /// `enum_serde_u8!` parses both number and string variants on the way
+    /// back.
+    #[wasm_bindgen_test]
+    fn to_js_handles_u8_keyed_maps() {
+        let mut character = Character::default();
+        character
+            .skills
+            .set(Skill::Athletics, ProficiencyLevel::Proficient);
+        character
+            .skills
+            .set(Skill::Stealth, ProficiencyLevel::Expertise);
+        character.damage_modifiers.insert(
+            DamageType::Fire,
+            DamageModifiers {
+                resistant: true,
+                ..Default::default()
+            },
+        );
+        let mut slots: ConstVec<SpellSlotLevel, 9> = ConstVec::default();
+        slots[0] = SpellSlotLevel { total: 4, used: 1 };
+        character.spell_slots.insert(SpellSlotPool::Arcane, slots);
+
+        let js = to_js(&character).expect("to_js must not fail on u8-keyed maps");
+        let restored: Character = from_js(js).expect("round-trip must deserialize");
+
+        assert_eq!(
+            restored.skills.get(Skill::Athletics),
+            ProficiencyLevel::Proficient,
+        );
+        assert_eq!(
+            restored.skills.get(Skill::Stealth),
+            ProficiencyLevel::Expertise,
+        );
+        assert!(
+            restored
+                .damage_modifiers
+                .get(&DamageType::Fire)
+                .map(|m| m.resistant)
+                .unwrap_or(false)
+        );
+        let arcane = restored
+            .spell_slots
+            .get(&SpellSlotPool::Arcane)
+            .expect("arcane slots present");
+        assert_eq!(arcane[0].total, 4);
+        assert_eq!(arcane[0].used, 1);
+    }
 }

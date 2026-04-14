@@ -33,12 +33,12 @@ pub fn CharacterSession() -> impl IntoView {
                     <button class="session-rest-btn" title=move_tr!("short-rest")
                         on:click=move |_| store.update(|ch| registry.short_rest(ch))
                     >
-                        <Icon name="coffee" size=14 />
+                        <Icon name="coffee" />
                     </button>
                     <button class="session-rest-btn" title=move_tr!("long-rest")
                         on:click=move |_| store.update(|ch| registry.long_rest(ch))
                     >
-                        <Icon name="moon" size=14 />
+                        <Icon name="moon" />
                     </button>
                 </div>
                 <WeaponsBlock />

@@ -11,32 +11,34 @@ use crate::{
 fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl IntoView {
     let i18n = expect_context::<I18n>();
     let icon = damage_type.icon_name();
-    let label = i18n.tr(damage_type.tr_key());
+    let tr_key = damage_type.tr_key();
+    let title = untrack(|| i18n.tr(tr_key).into_owned());
+    let label = Signal::derive(move || i18n.tr(tr_key).into_owned());
 
     view! {
         <div class="entry-item">
-            <span class="damage-dt-icon"><Icon name=icon size=14 title=label.clone() /></span>
+            <span class="damage-dt-icon"><Icon name=icon title=title /></span>
             <div class="entry-content">
                 <span class="entry-name">{label}</span>
                 <span class="entry-badge damage-badge">
                     {modifiers.immune.then(|| view! {
                         <span class="damage-tag" title=move || i18n.tr("damage-immunity")>
-                            <Icon name="shield-check" size=14 />
+                            <Icon name="shield-check" />
                         </span>
                     })}
                     {modifiers.resistant.then(|| view! {
                         <span class="damage-tag" title=move || i18n.tr("damage-resistance")>
-                            <Icon name="shield-half" size=14 />
+                            <Icon name="shield-half" />
                         </span>
                     })}
                     {modifiers.vulnerable.then(|| view! {
                         <span class="damage-tag" title=move || i18n.tr("damage-vulnerability")>
-                            <Icon name="shield-off" size=14 />
+                            <Icon name="shield-off" />
                         </span>
                     })}
                     {(modifiers.reduction > 0).then(|| view! {
                         <span class="damage-tag" title=move || i18n.tr("damage-reduction")>
-                            <Icon name="shield-minus" size=14 />
+                            <Icon name="shield-minus" />
                             {modifiers.reduction}
                         </span>
                     })}

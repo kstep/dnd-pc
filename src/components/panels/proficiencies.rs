@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{icon::Icon, panel::Panel},
+    components::{icon::Icon, slot_box::SlotBox},
     model::{Character, CharacterStoreFields, Proficiency, Translatable},
 };
 
@@ -16,11 +16,9 @@ pub fn ProficienciesPanel() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
-        <Panel title=move_tr!("panel-proficiencies") class="proficiencies-panel">
-
-            // --- Proficiency toggles ---
-            <h4>{move_tr!("proficiencies")}</h4>
-            <div class="proficiencies-grid">
+        <section>
+            <h3>{move_tr!("proficiencies")}</h3>
+            <div class="slot-box-list">
                 {Proficiency::iter()
                     .map(|prof| {
                         let active = Memo::new(move |_| {
@@ -30,28 +28,27 @@ pub fn ProficienciesPanel() -> impl IntoView {
                         let label = Signal::derive(move || i18n.tr(tr_key));
 
                         view! {
-                            <div class="prof-row">
-                                <button
-                                    class="prof-toggle"
-                                    on:click=move |_| {
-                                        store.proficiencies().update(|profs| {
-                                            if !profs.remove(&prof) {
-                                                profs.insert(prof);
-                                            }
-                                        });
-                                    }
-                                >
-                                    <Icon name=Signal::derive(move || if active.get() { "circle-dot" } else { "circle-dashed" }) size=14 />
-                                </button>
-                                <span class="prof-label">{label}</span>
-                            </div>
+                            <SlotBox
+                                label=label
+                                class:clickable=true
+                                class:tag=true
+                                class:highlighted=move || active.get()
+                                on:click=move |_| {
+                                    store.proficiencies().update(|profs| profs.toggle(prof));
+                                }
+                            >
+                                <Icon
+                                    name=Signal::derive(move || if active.get() { "circle-dot" } else { "circle-dashed" })
+                                />
+                            </SlotBox>
                         }
                     })
                     .collect_view()}
             </div>
+        </section>
 
-            // --- Languages ---
-            <h4>{move_tr!("languages")}</h4>
+        <section>
+            <h3>{move_tr!("languages")}</h3>
             <div class="entry-list">
                 {move || {
                     languages
@@ -82,7 +79,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                                 }
                                             }
                                         >
-                                            <Icon name="x" size=14 />
+                                            <Icon name="x" />
                                         </button>
                                     </div>
                                 </div>
@@ -99,6 +96,6 @@ pub fn ProficienciesPanel() -> impl IntoView {
             >
                 {move_tr!("btn-add-language")}
             </button>
-        </Panel>
+        </section>
     }
 }

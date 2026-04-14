@@ -233,7 +233,7 @@ pub fn ClassesSection() -> impl IntoView {
                                                 }
                                             }
                                         >
-                                            <Icon name="x" size=14 />
+                                            <Icon name="x" />
                                         </button>
                                     </Show>
                                     {if let Some(lvl) = next_unapplied {
@@ -248,7 +248,7 @@ pub fn ClassesSection() -> impl IntoView {
                                                             apply_single_level(store, registry, i, lvl);
                                                         }
                                                     >
-                                                        <Icon name="arrow-up" size=14 />
+                                                        <Icon name="arrow-up" />
                                                         {lvl}
                                                     </button>
                                                 </div>

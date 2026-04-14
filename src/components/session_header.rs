@@ -51,7 +51,7 @@ pub fn SessionHeader() -> impl IntoView {
                 </span>
                 {move || store.combat().concentrating().with(|name| name.as_ref().map(|name| view! {
                     <span class="concentration-indicator">
-                        <Icon name="crosshair" size=14 />
+                        <Icon name="crosshair" />
                         {name.clone()}
                         <button class="concentration-drop"
                             title=move_tr!("drop-concentration")

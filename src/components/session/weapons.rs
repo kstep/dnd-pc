@@ -49,7 +49,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                 let first_badge = active_effects.first().map(|effect| {
                     let icon = effect
                         .damage_type
-                        .map(|dt| view! { <Icon name=dt.icon_name() size=14 /> });
+                        .map(|dt| view! { <Icon name=dt.icon_name() /> });
                     let title = if effect.name.is_empty() {
                         None
                     } else {

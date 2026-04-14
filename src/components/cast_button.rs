@@ -28,7 +28,7 @@ impl CastOption {
     fn view(self) -> impl IntoView {
         match self {
             CastOption::FreeUse { available, max } => EitherOf4::A(view! {
-                <Icon name="gift" size=14 />
+                <Icon name="gift" />
                 <sub class="slot-remaining">{available}"/"{max}</sub>
             }),
             CastOption::PointsCost { cost, suffix } => EitherOf4::B(view! {
@@ -41,7 +41,7 @@ impl CastOption {
                 <sub class="slot-remaining">{remaining}</sub>
             }),
             CastOption::Ritual { .. } => EitherOf4::D(view! {
-                <Icon name="book-open" size=14 />
+                <Icon name="book-open" />
             }),
         }
     }
@@ -86,7 +86,7 @@ pub fn CastButton(
                 disabled=disabled
                 on:click=on_click
             >
-                <Icon name="wand" size=14 />
+                <Icon name="wand" />
             </button>
             {(option_count > 1).then(move || {
                 view! {
@@ -115,7 +115,7 @@ pub fn CastButton(
                                 class="btn-icon"
                                 on:click=move |_| picker_open.set(false)
                             >
-                                <Icon name="x" size=14 />
+                                <Icon name="x" />
                             </button>
                         </div>
                     </Show>

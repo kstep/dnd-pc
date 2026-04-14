@@ -379,7 +379,7 @@ pub fn EffectsCalcModal(
                                         title=move_tr!("reset")
                                         on:click=reset
                                     >
-                                        <Icon name="rotate-ccw" size=14 />
+                                        <Icon name="rotate-ccw" />
                                     </button>
                                 </div>
                                 <ExprDetails expr=formula_expr />

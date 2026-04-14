@@ -217,14 +217,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 CastTime::Action(ActionType::BonusAction) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("action-type-bonus-action")>
-                                                            <Icon name="zap" size=14 />
+                                                            <Icon name="zap" />
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 CastTime::Action(ActionType::Reaction) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("action-type-reaction")>
-                                                            <Icon name="shield" size=14 />
+                                                            <Icon name="shield" />
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -232,7 +232,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-cast-time")>
-                                                            <Icon name="clock" size=14 />{label}
+                                                            <Icon name="clock" />{label}
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -244,14 +244,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectRange::Touch) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-range-touch")>
-                                                            <Icon name="hand" size=14 />
+                                                            <Icon name="hand" />
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 Some(EffectRange::Feet(feet)) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-range")>
-                                                            <Icon name="ruler" size=14 />{feet}
+                                                            <Icon name="ruler" />{feet}
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -263,14 +263,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-duration")>
-                                                            <Icon name="hourglass" size=14 />{label}
+                                                            <Icon name="hourglass" />{label}
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 Some(EffectDuration::Forever) => {
                                                     badges.push(view! {
                                                         <span class="spell-meta-icon" title=move_tr!("ref-spell-duration-forever")>
-                                                            <Icon name="infinity" size=14 />
+                                                            <Icon name="infinity" />
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -280,7 +280,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             if sd.concentration {
                                                 badges.push(view! {
                                                     <span class="spell-meta-icon" title=move_tr!("ref-spell-concentration")>
-                                                        <Icon name="crosshair" size=14 />
+                                                        <Icon name="crosshair" />
                                                     </span>
                                                 }.into_any());
                                             }
@@ -288,7 +288,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             // if sd.ritual {
                                             //     badges.push(view! {
                                             //         <span class="spell-meta-icon" title=move_tr!("ref-spell-ritual")>
-                                            //             <Icon name="book-open" size=14 />
+                                            //             <Icon name="book-open" />
                                             //         </span>
                                             //     }.into_any());
                                             // }

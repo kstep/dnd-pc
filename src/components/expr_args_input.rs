@@ -510,7 +510,7 @@ pub fn build_dice_groups(dice_rolls: &BTreeMap<u32, u32>) -> (DiceGroupSignals, 
                 }
             }
         >
-            <Icon name="dices" size=14 />
+            <Icon name="dices" />
         </button>
         {groups_view}
     }

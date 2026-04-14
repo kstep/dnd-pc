@@ -108,6 +108,16 @@ pub fn delete_character_local_only(id: &Uuid) {
     });
 }
 
+const LAST_EDITOR_TAB_KEY: &str = "dnd_pc_last_editor_tab";
+
+pub fn load_last_editor_tab() -> String {
+    LocalStorage::get(LAST_EDITOR_TAB_KEY).unwrap_or_else(|_| "stats".to_string())
+}
+
+pub fn save_last_editor_tab(tab: &str) {
+    let _ = LocalStorage::set(LAST_EDITOR_TAB_KEY, tab);
+}
+
 const AI_SETTINGS_KEY: &str = "dnd_pc_ai_settings";
 
 pub fn load_ai_settings() -> AiSettings {

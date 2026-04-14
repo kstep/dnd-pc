@@ -104,7 +104,11 @@ pub fn collect_class_features<'a>(
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let class_level = &character.identity.classes[class_idx];
-    let source = FeatureSource::Class(class_def.name.clone(), level);
+    let class_source = FeatureSource::Class(class_def.name.clone().into(), level);
+    let subclass_source = class_level
+        .subclass
+        .as_deref()
+        .map(|sc| FeatureSource::Subclass(class_def.name.clone().into(), sc.into(), level));
 
     let rules = class_def.levels.get(level as usize - 1);
     let subclass_rules = class_level
@@ -113,21 +117,28 @@ pub fn collect_class_features<'a>(
         .and_then(|sc| class_def.subclasses.get(sc))
         .and_then(|sc| sc.levels.get(&level));
 
-    let filter_source = source.clone();
-    rules
+    let class_iter = rules
         .into_iter()
         .flat_map(|r| r.features.iter())
-        .chain(subclass_rules.into_iter().flat_map(|r| r.features.iter()))
-        .filter(move |feat_name| {
+        .map(move |feat_name| (feat_name, class_source.clone()));
+
+    let subclass_iter = subclass_rules
+        .into_iter()
+        .flat_map(|r| r.features.iter())
+        .filter_map(move |feat_name| subclass_source.clone().map(|src| (feat_name, src)));
+
+    class_iter
+        .chain(subclass_iter)
+        .filter(move |(feat_name, source)| {
             features_index.get(feat_name.as_str()).is_none_or(|feat| {
                 !character
                     .features
-                    .contains(&feat.name, feat.stackable, &filter_source)
+                    .contains(&feat.name, feat.stackable, source)
             })
         })
-        .map(move |feat_name| PendingFeature {
+        .map(move |(feat_name, source)| PendingFeature {
             name: feat_name.clone(),
-            source: source.clone(),
+            source,
             level,
         })
 }
@@ -139,7 +150,7 @@ pub fn collect_species_features<'a>(
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let total_level = character.level().max(1);
-    let source = FeatureSource::Species(character.identity.species.clone());
+    let source = FeatureSource::Species(character.identity.species.clone().into());
     let filter_source = source.clone();
     species_def
         .features
@@ -165,7 +176,7 @@ pub fn collect_background_features<'a>(
     features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let total_level = character.level().max(1);
-    let source = FeatureSource::Background(character.identity.background.clone());
+    let source = FeatureSource::Background(character.identity.background.clone().into());
     let filter_source = source.clone();
     bg_def
         .features

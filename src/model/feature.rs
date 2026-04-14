@@ -82,10 +82,11 @@ impl Feature {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum FeatureSource {
-    Class(String, u32),
+    Class(Box<str>, u32),
+    Subclass(Box<str>, Box<str>, u32),
     #[serde(alias = "Race")]
-    Species(String),
-    Background(String),
+    Species(Box<str>),
+    Background(Box<str>),
     User(u32),
 }
 
@@ -99,6 +100,9 @@ impl fmt::Display for FeatureSource {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Class(name, level) => write!(f, "Class: {name} ({level})"),
+            Self::Subclass(class_name, subclass_name, level) => {
+                write!(f, "Subclass: {class_name} - {subclass_name} ({level})")
+            }
             Self::Species(name) => write!(f, "Species: {name}"),
             Self::Background(name) => write!(f, "Background: {name}"),
             Self::User(level) => write!(f, "User ({level})"),
@@ -112,6 +116,10 @@ impl FeatureSource {
             Self::Class(name, level) => {
                 let prefix = i18n.tr("source-class");
                 Some(format!("{prefix}: {name} ({level})"))
+            }
+            Self::Subclass(class, name, level) => {
+                let prefix = i18n.tr("source-subclass");
+                Some(format!("{prefix}: {class} — {name} ({level})"))
             }
             Self::Species(name) => {
                 let prefix = i18n.tr("source-species");
@@ -127,7 +135,10 @@ impl FeatureSource {
 
     pub fn name(&self) -> &str {
         match self {
-            Self::Class(name, _) | Self::Species(name) | Self::Background(name) => name,
+            Self::Class(name, _)
+            | Self::Species(name)
+            | Self::Background(name)
+            | Self::Subclass(_, name, _) => name,
             Self::User(_) => "",
         }
     }
@@ -135,13 +146,14 @@ impl FeatureSource {
     pub fn as_class(&self) -> Option<&str> {
         match self {
             Self::Class(name, _) => Some(name),
+            Self::Subclass(name, _, _) => Some(name),
             _ => None,
         }
     }
 
     pub fn added_at_level(&self) -> u32 {
         match self {
-            Self::Class(_, level) | Self::User(level) => *level,
+            Self::Class(_, level) | Self::User(level) | Self::Subclass(_, _, level) => *level,
             Self::Species(_) | Self::Background(_) => 1,
         }
     }

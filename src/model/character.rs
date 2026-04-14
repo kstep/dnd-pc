@@ -11,8 +11,8 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
-        Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality, SpellSlotLevel,
-        enums::*,
+        Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality, Skills,
+        SpellSlotLevel, enums::*,
     },
     vecset::VecSet,
 };
@@ -95,7 +95,7 @@ pub struct Character {
     #[serde(default)]
     saving_throws: VecSet<Ability>,
     #[serde(default)]
-    skills: BTreeMap<Skill, ProficiencyLevel>,
+    pub skills: Skills,
     #[serde(default)]
     pub combat: CombatStats,
     #[serde(default)]
@@ -431,11 +431,11 @@ impl Character {
     /// Class features use their class's current level; others use total level.
     pub fn effective_level_for(&self, source: &FeatureSource) -> u32 {
         match source {
-            FeatureSource::Class(class_name, _) => self
+            FeatureSource::Class(class_name, _) | FeatureSource::Subclass(class_name, _, _) => self
                 .identity
                 .classes
                 .iter()
-                .find(|cl| cl.class == *class_name)
+                .find(|cl| cl.class.as_str() == &**class_name)
                 .map_or(0, |cl| cl.level),
             FeatureSource::Species(_) | FeatureSource::Background(_) | FeatureSource::User(_) => {
                 self.level()
@@ -462,21 +462,6 @@ impl Character {
         self.saving_throws.contains(&ability)
     }
 
-    pub fn update_saving_throw_proficiencies(&mut self, f: impl FnOnce(&mut VecSet<Ability>)) {
-        f(&mut self.saving_throws);
-    }
-
-    pub fn update_skill_proficiencies(
-        &mut self,
-        f: impl FnOnce(&mut BTreeMap<Skill, ProficiencyLevel>),
-    ) {
-        f(&mut self.skills);
-    }
-
-    pub fn update_proficiencies(&mut self, f: impl FnOnce(&mut VecSet<Proficiency>)) {
-        f(&mut self.proficiencies);
-    }
-
     pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
         let modifier = self.ability_modifier(ability);
         let proficient = self.proficient_with(ability);
@@ -488,17 +473,10 @@ impl Character {
             }
     }
 
-    pub fn skill_proficiency(&self, skill: Skill) -> ProficiencyLevel {
-        self.skills
-            .get(&skill)
-            .copied()
-            .unwrap_or(ProficiencyLevel::None)
-    }
-
     pub fn skill_bonus(&self, skill: Skill) -> i32 {
         let ability = skill.ability();
         let modifier = self.ability_modifier(ability);
-        let prof_level = self.skill_proficiency(skill);
+        let prof_level = self.skills.get(skill);
         modifier + prof_level.multiplier() * self.proficiency_bonus()
     }
 
@@ -612,7 +590,7 @@ impl Default for Character {
             identity: CharacterIdentity::default(),
             abilities: AbilityScores::default(),
             saving_throws: VecSet::new(),
-            skills: BTreeMap::new(),
+            skills: Skills::default(),
             combat: CombatStats::default(),
             personality: Personality::default(),
             features: Features::default(),
@@ -678,18 +656,14 @@ impl expr::Context<Attribute, i32> for Character {
                     1 => ProficiencyLevel::Proficient,
                     _ => ProficiencyLevel::Expertise,
                 };
-                self.update_skill_proficiencies(|skills| {
-                    skills.insert(skill, level);
-                });
+                self.skills.set(skill, level);
             }
             Attribute::SaveProficiency(ability) => {
-                self.update_saving_throw_proficiencies(|saves| {
-                    if value != 0 {
-                        saves.insert(ability);
-                    } else {
-                        saves.remove(&ability);
-                    }
-                });
+                if value != 0 {
+                    self.saving_throws.insert(ability);
+                } else {
+                    self.saving_throws.remove(&ability);
+                }
             }
             Attribute::EquipmentProficiency(prof) => {
                 if value != 0 {
@@ -736,7 +710,7 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Modifier(ability) => Ok(self.abilities.modifier(ability)),
             Attribute::SavingThrow(ability) => Ok(self.saving_throw_bonus(ability)),
             Attribute::Skill(skill) => Ok(self.skill_bonus(skill)),
-            Attribute::SkillProficiency(skill) => Ok(self.skill_proficiency(skill).multiplier()),
+            Attribute::SkillProficiency(skill) => Ok(self.skills.get(skill).multiplier()),
             Attribute::SaveProficiency(ability) => Ok(self.proficient_with(ability) as i32),
             Attribute::EquipmentProficiency(prof) => Ok(self.proficiencies.contains(&prof) as i32),
             Attribute::MaxHp => Ok(self.combat.hp_max as i32),
@@ -934,7 +908,7 @@ impl Character {
             saving_throws: [Ability::Dexterity, Ability::Charisma]
                 .into_iter()
                 .collect(),
-            skills: BTreeMap::new(),
+            skills: Skills::default(),
             combat: CombatStats {
                 concentrating: None,
                 armor_class: 13,
@@ -956,7 +930,7 @@ impl Character {
                 description: "Use a bonus action...".to_string(),
                 applied: true,
                 category: FeatureCategory::Class,
-                source: FeatureSource::Class("Bard".to_string(), 1),
+                source: FeatureSource::Class("Bard".into(), 1),
                 inputs: Vec::new(),
             }]
             .into(),
@@ -1042,10 +1016,12 @@ pub mod tests {
             saving_throws: [Ability::Strength, Ability::Constitution]
                 .into_iter()
                 .collect(),
-            skills: BTreeMap::from([
+            skills: [
                 (Skill::Athletics, ProficiencyLevel::Proficient),
                 (Skill::Perception, ProficiencyLevel::Expertise),
-            ]),
+            ]
+            .into_iter()
+            .collect(),
             combat: CombatStats {
                 concentrating: None,
                 armor_class: 12,
@@ -1091,7 +1067,7 @@ pub mod tests {
     ) {
         ch.features.push(Feature {
             name: feature_name.to_string(),
-            source: FeatureSource::Class(class_name.to_string(), 1),
+            source: FeatureSource::Class(class_name.into(), 1),
             applied: true,
             ..Default::default()
         });

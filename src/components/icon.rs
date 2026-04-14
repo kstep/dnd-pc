@@ -5,7 +5,7 @@ use crate::BASE_URL;
 #[component]
 pub fn Icon(
     #[prop(into)] name: Signal<&'static str>,
-    #[prop(default = 16)] size: u16,
+    #[prop(default = 14)] size: u16,
     #[prop(optional, into)] title: Option<String>,
 ) -> impl IntoView {
     let href = move || format!("{BASE_URL}/icons.svg#icon-{}", name.get());

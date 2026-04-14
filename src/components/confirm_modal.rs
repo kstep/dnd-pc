@@ -4,7 +4,7 @@ use leptos_fluent::move_tr;
 use crate::components::modal::Modal;
 
 #[component]
-fn ConfirmModal(
+pub fn ConfirmModal(
     show: RwSignal<bool>,
     #[prop(into)] title: Signal<String>,
     #[prop(into)] message: Signal<String>,
@@ -29,28 +29,5 @@ fn ConfirmModal(
                 </button>
             </div>
         </Modal>
-    }
-}
-
-#[component]
-pub fn ConfirmButton(
-    #[prop(into)] class: String,
-    #[prop(into)] title: Signal<String>,
-    #[prop(into)] confirm_title: Signal<String>,
-    #[prop(into)] confirm_message: Signal<String>,
-    on_confirm: impl Fn() + Copy + Send + Sync + 'static,
-    children: Children,
-) -> impl IntoView {
-    let show = RwSignal::new(false);
-
-    view! {
-        <button
-            class=class
-            title=title
-            on:click=move |_| show.set(true)
-        >
-            {children()}
-        </button>
-        <ConfirmModal show title=confirm_title message=confirm_message on_confirm />
     }
 }

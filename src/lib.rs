@@ -3,7 +3,9 @@ use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
 use leptos_meta::{Html, provide_meta_context};
 use leptos_router::{
-    components::{ParentRoute, Route, Router, Routes},
+    components::{ParentRoute, Redirect, Route, Router, Routes},
+    hooks::use_params,
+    params::Params,
     path,
 };
 
@@ -48,8 +50,16 @@ use components::{
 use hooks::use_theme;
 use pages::{
     character::{
-        editor::CharacterEditor, layout::CharacterLayout, list::CharacterList,
-        quick_start::QuickStart, session::CharacterSession, story::CharacterStory,
+        editor::CharacterEditor,
+        layout::CharacterLayout,
+        list::CharacterList,
+        quick_start::QuickStart,
+        session::CharacterSession,
+        story::CharacterStory,
+        tabs::{
+            backstory::BackstoryTab, build::BuildTab, inventory::InventoryTab, magic::MagicTab,
+            stats::StatsTab,
+        },
     },
     import_character::{ImportCharacter, ImportCloudCharacter},
     not_found::NotFound,
@@ -59,6 +69,23 @@ use pages::{
     },
 };
 use rules::RulesRegistry;
+
+#[derive(Params, Clone, Debug, PartialEq, Eq)]
+struct IdParam {
+    id: uuid::Uuid,
+}
+
+#[component]
+fn RedirectToLastTab() -> impl IntoView {
+    let params = use_params::<IdParam>();
+    move || {
+        params.get().ok().map(|p| {
+            let tab = storage::load_last_editor_tab();
+            let path = format!("/c/{}/{tab}", p.id);
+            view! { <Redirect path=path /> }
+        })
+    }
+}
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -82,7 +109,14 @@ pub fn App() -> impl IntoView {
                 <Routes fallback=|| view! { <NotFound /> }>
                     <Route path=path!("/") view=CharacterList />
                     <ParentRoute path=path!("/c/:id") view=CharacterLayout>
-                        <Route path=path!("") view=CharacterEditor />
+                        <ParentRoute path=path!("") view=CharacterEditor>
+                            <Route path=path!("") view=RedirectToLastTab />
+                            <Route path=path!("/stats") view=StatsTab />
+                            <Route path=path!("/build") view=BuildTab />
+                            <Route path=path!("/magic") view=MagicTab />
+                            <Route path=path!("/inventory") view=InventoryTab />
+                            <Route path=path!("/backstory") view=BackstoryTab />
+                        </ParentRoute>
                         <Route path=path!("/session") view=CharacterSession />
                         <Route path=path!("/quick-start") view=QuickStart />
                         <Route path=path!("/story") view=CharacterStory />

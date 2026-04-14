@@ -231,8 +231,8 @@ impl Character {
         // --- Skills ---
         let sec = "panel-skills";
         for skill in Skill::iter() {
-            let local_level = self.skill_proficiency(skill);
-            let imported_level = imported.skill_proficiency(skill);
+            let local_level = self.skills.get(skill);
+            let imported_level = imported.skills.get(skill);
             if local_level != imported_level {
                 rows.push(DiffRow {
                     section: sec,

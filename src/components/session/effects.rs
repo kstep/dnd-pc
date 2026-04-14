@@ -126,7 +126,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             open_dice_modal(None, expr);
                         }
                     }
-                ><Icon name="circle-plus" size=14 /></button>
+                ><Icon name="circle-plus" /></button>
                 <div class="entry-content">
                     <DatalistInput
                         value=effect_label
@@ -209,7 +209,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 effects.update(|e| { e.remove(i, &store.read()); });
                                             }
                                         >
-                                            <Icon name="circle-minus" size=14 />
+                                            <Icon name="circle-minus" />
                                         </button>
                                     </div>
                                     {scope.map(|s| view! {
@@ -254,7 +254,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                             }
                                                         }
                                                     >
-                                                        <Icon name="dices" size=14 />
+                                                        <Icon name="dices" />
                                                     </button>
                                                 }
                                             })}

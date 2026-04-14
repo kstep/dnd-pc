@@ -1,11 +1,13 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
+use leptos_router::components::A;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
+    BASE_URL,
     components::{
-        datalist_input::DatalistInput, icon::Icon, markdown::Markdown, panel::Panel,
+        datalist_input::DatalistInput, icon::Icon, markdown::Markdown, slot_box::SlotBox,
         spell_info_bar::SpellInfoBar, toggle_button::ToggleButton,
     },
     model::{
@@ -202,13 +204,21 @@ fn FeatureSpellcastingSection(
         }
     });
 
-    view! {
-        <div class="spellcasting-section">
-            <h4 class="skill-group-header">{panel_title}</h4>
+    let anchor_id = feat_name.with_value(|n| n.clone());
+    let char_id = store.read_untracked().id;
+    let build_href = format!("{BASE_URL}/c/{char_id}/build#{anchor_id}");
 
-            <div class="spell-header">
-                <div class="spell-stat">
-                    <label>{move_tr!("casting-ability")}</label>
+    view! {
+        <section id=anchor_id class="spellcasting-section">
+            <div class="section-header">
+                <h3>{panel_title}</h3>
+                <A href=build_href scroll=false attr:class="entry-spell-link">
+                    "← "{move_tr!("tab-build")}
+                </A>
+            </div>
+
+            <div class="slot-box-list">
+                <SlotBox label=move_tr!("casting-ability")>
                     <select
                         on:change=move |e| {
                             let value = event_target_value(&e);
@@ -231,19 +241,17 @@ fn FeatureSpellcastingSection(
                             })
                             .collect_view()}
                     </select>
-                </div>
-                <div class="spell-stat">
-                    <label>{move_tr!("spell-save-dc")}</label>
-                    <span class="computed-value">
+                </SlotBox>
+                <SlotBox label=move_tr!("spell-save-dc")>
+                    <span class="stat-highlight">
                         {move || spell_save_dc.get().to_string()}
                     </span>
-                </div>
-                <div class="spell-stat">
-                    <label>{move_tr!("spell-attack")}</label>
-                    <span class="computed-value">
+                </SlotBox>
+                <SlotBox label=move_tr!("spell-attack")>
+                    <span class="stat-highlight">
                         {move || format_bonus(spell_attack.get())}
                     </span>
-                </div>
+                </SlotBox>
             </div>
 
             // Spellbook section (only for two-tier casters like Wizard)
@@ -265,7 +273,7 @@ fn FeatureSpellcastingSection(
                             });
                         }
                     >
-                        <Icon name="arrow-down-a-z" />
+                        <Icon name="arrow-down-a-z" size=16 />
                     </button>
                 </div>
                 <div class="entry-list">
@@ -350,7 +358,7 @@ fn FeatureSpellcastingSection(
                                                         });
                                                     }
                                                 >
-                                                    <Icon name="x" size=14 />
+                                                    <Icon name="x" />
                                                 </button>
                                             </Show>
                                         </div>
@@ -417,7 +425,7 @@ fn FeatureSpellcastingSection(
                         });
                     }
                 >
-                    <Icon name="arrow-down-a-z" />
+                    <Icon name="arrow-down-a-z" size=16 />
                 </button>
             </div>
             <div class="entry-list">
@@ -515,18 +523,16 @@ fn FeatureSpellcastingSection(
                                                     });
                                                 }
                                             >
-                                                <Icon name="x" size=14 />
+                                                <Icon name="x" />
                                             </button>
                                         </Show>
                                     </div>
                                     <Show when=move || has_free_uses || has_cost_field>
-                                            <div class="entry-full-row spell-cost-row">
-                                                <Show when=move || has_free_uses>
-                                                    <span class="spell-field-group">
-                                                    <span class="spell-free-uses-label">{move_tr!("free-uses")}</span>
+                                        <div class="entry-full-row spell-cost-row">
+                                            <Show when=move || has_free_uses>
+                                                <SlotBox label=move_tr!("free-uses")>
                                                     <input
                                                         type="number"
-                                                        class="short-input"
                                                         min="0"
                                                         prop:value=move || read_spell(feat_name, store, i, |spell| {
                                                             spell.free_uses.as_ref().map(|fu| fu.used.to_string()).unwrap_or_default()
@@ -541,10 +547,9 @@ fn FeatureSpellcastingSection(
                                                             }
                                                         }
                                                     />
-                                                    <span>"/"</span>
+                                                    " / "
                                                     <input
                                                         type="number"
-                                                        class="short-input"
                                                         min="0"
                                                         prop:value=move || read_spell(feat_name, store, i, |spell| {
                                                             spell.free_uses.as_ref().map(|fu| fu.max.to_string()).unwrap_or_default()
@@ -559,13 +564,11 @@ fn FeatureSpellcastingSection(
                                                             }
                                                         }
                                                     />
-                                                    </span>
-                                                </Show>
-                                                <span class="spell-field-group">
-                                                <span class="spell-cost-label">{move_tr!("cost")}</span>
+                                                </SlotBox>
+                                            </Show>
+                                            <SlotBox label=move_tr!("cost")>
                                                 <input
                                                     type="number"
-                                                    class="short-input"
                                                     min="0"
                                                     prop:value=move || read_spell(feat_name, store, i, |spell| spell.cost.to_string())
                                                     on:change=move |e| {
@@ -575,11 +578,11 @@ fn FeatureSpellcastingSection(
                                                     }
                                                 />
                                                 <Show when=move || has_cost_field>
-                                                    <span class="spell-cost-suffix">{cost_short.get_value()}</span>
+                                                    {cost_short.get_value()}
                                                 </Show>
-                                                </span>
-                                            </div>
-                                        </Show>
+                                            </SlotBox>
+                                        </div>
+                                    </Show>
                                         {
                                             let meta = lookup_spell_meta(registry, feat_name, &spell_name);
                                             view! {
@@ -619,7 +622,7 @@ fn FeatureSpellcastingSection(
             >
                 {move_tr!("btn-add-spell")}
             </button>
-        </div>
+        </section>
     }
 }
 
@@ -661,16 +664,18 @@ pub fn SpellcastingPanel() -> impl IntoView {
     });
     let slots_expanded = RwSignal::new(false);
 
+    crate::hooks::use_scroll_to_hash();
+
     view! {
         <Show when=move || has_spells.get()>
-            <Panel title=move_tr!("panel-spellcasting") class="spellcasting-panel">
+            <section>
                 <div class="section-header">
                     <button
                         class="btn-toggle-desc"
                         class:expanded=move || slots_expanded.get()
                         on:click=move |_| slots_expanded.update(|expanded| *expanded = !*expanded)
                     />
-                    <h4>{move_tr!("spell-slots")}</h4>
+                    <h3>{move_tr!("spell-slots")}</h3>
                 </div>
                 {move || {
                     let expanded = slots_expanded.get();
@@ -691,18 +696,17 @@ pub fn SpellcastingPanel() -> impl IntoView {
                             };
                             view! {
                                 {pool_header}
-                                <div class="spell-slots-grid">
+                                <div class="slot-box-list">
                                     {slots
                                         .into_iter()
                                         .filter(|(_, slot)| expanded || slot.total > 0)
                                         .map(|(level, slot)| {
                                             let idx = (level - 1) as usize;
+                                            let label = format!("Lv {level}");
                                             view! {
-                                                <div class="spell-slot-entry">
-                                                    <span class="slot-level">"Lv " {level}</span>
+                                                <SlotBox label=label>
                                                     <input
                                                         type="number"
-                                                        class="short-input"
                                                         min="0"
                                                         placeholder=move_tr!("used")
                                                         prop:value=slot.used.to_string()
@@ -716,10 +720,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                             }
                                                         }
                                                     />
-                                                    <span>"/"</span>
+                                                    " / "
                                                     <input
                                                         type="number"
-                                                        class="short-input"
                                                         min="0"
                                                         placeholder=move_tr!("total")
                                                         prop:value=slot.total.to_string()
@@ -733,7 +736,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                             }
                                                         }
                                                     />
-                                                </div>
+                                                </SlotBox>
                                             }
                                         })
                                         .collect_view()}
@@ -742,25 +745,25 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         })
                         .collect_view()
                 }}
-                {move || {
-                    store
-                        .feature_data()
-                        .read()
-                        .iter()
-                        .filter_map(|(name, entry)| {
-                            entry
-                                .spells
-                                .as_ref()
-                                .map(|sc| (name.clone(), sc.casting_ability))
-                        })
-                        .map(|(feature_name, default_ability)| {
-                            view! {
-                                <FeatureSpellcastingSection feature_name=feature_name default_ability=default_ability />
-                            }
-                        })
-                        .collect_view()
-                }}
-            </Panel>
+            </section>
+            {move || {
+                store
+                    .feature_data()
+                    .read()
+                    .iter()
+                    .filter_map(|(name, entry)| {
+                        entry
+                            .spells
+                            .as_ref()
+                            .map(|sc| (name.clone(), sc.casting_ability))
+                    })
+                    .map(|(feature_name, default_ability)| {
+                        view! {
+                            <FeatureSpellcastingSection feature_name=feature_name default_ability=default_ability />
+                        }
+                    })
+                    .collect_view()
+            }}
         </Show>
     }
 }

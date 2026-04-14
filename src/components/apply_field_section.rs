@@ -42,7 +42,7 @@ pub fn ApplyFieldSection(
                                 title=move || apply_title.get()
                                 on:click=move |_| on_apply()
                             >
-                                <Icon name="arrow-up" size=14 />
+                                <Icon name="arrow-up" />
                             </button>
                         }
                     })

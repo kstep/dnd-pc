@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
-use crate::components::icon::Icon;
+use crate::components::{icon::Icon, slot_box::SlotBox};
 
 #[component]
 pub fn ResourceSlot(
@@ -18,20 +18,18 @@ pub fn ResourceSlot(
         on_change.with_value(|f| f(max - clamped));
     };
     view! {
-        <div class="session-slot">
-            <span class="session-slot-level">{label}</span>
+        <SlotBox label=label>
             <input
                 type="number"
                 min=0
                 max=max
                 prop:value=move || remaining.get()
-                class="session-slot-value"
                 on:change=move |event| {
                     let value = event_target_value(&event).parse().unwrap_or(remaining.get());
                     set_remaining(value);
                 }
             />
-            <span class="session-slot-max">" / " {max}</span>
+            " / " {max}
             <button
                 class="btn-icon"
                 title=move_tr!("spend")
@@ -43,8 +41,8 @@ pub fn ResourceSlot(
                     }
                 }
             >
-                <Icon name="wand" size=14 />
+                <Icon name="wand" />
             </button>
-        </div>
+        </SlotBox>
     }
 }

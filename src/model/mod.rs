@@ -10,6 +10,7 @@ mod equipment;
 mod feature;
 mod identity;
 mod money;
+mod skills;
 mod spell;
 
 pub use ability::*;
@@ -24,6 +25,7 @@ pub use equipment::*;
 pub use feature::*;
 pub use identity::*;
 pub use money::*;
+pub use skills::*;
 pub use spell::*;
 
 /// Expression type with attribute groups for loop support.

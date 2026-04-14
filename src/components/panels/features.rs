@@ -1,17 +1,11 @@
-use leptos::{either::Either, prelude::*};
+use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
-    components::{
-        apply::apply_with_modal, datalist_input::DatalistInput, icon::Icon, panel::Panel,
-        toggle_button::ToggleButton,
-    },
+    components::feature_row::FeatureRow,
     model::{Character, CharacterStoreFields, Feature, FeatureSource},
-    rules::{
-        RulesRegistry,
-        apply::{PendingFeature, apply_new_features},
-    },
+    rules::RulesRegistry,
 };
 
 #[component]
@@ -20,10 +14,16 @@ pub fn FeaturesPanel() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let i18n = expect_context::<I18n>();
 
+    crate::hooks::use_scroll_to_hash();
+
     let features = store.features();
 
     let add_feature = move |_| {
-        features.write().push(Feature::default());
+        let level = store.read_untracked().level();
+        features.write().push(Feature {
+            source: FeatureSource::User(level),
+            ..Feature::default()
+        });
     };
 
     let feature_options = Memo::new(move |_| {
@@ -44,133 +44,31 @@ pub fn FeaturesPanel() -> impl IntoView {
     });
 
     view! {
-        <Panel title=move_tr!("panel-features") class="features-panel">
-            <div class="entry-list">
-                {move || {
-                    let options = feature_options;
-                    features
-                        .read()
-                        .iter()
-                        .enumerate()
-                        .map(|(i, feature)| {
-                            let name = feature.label().to_string();
-                            let desc = feature.description.clone();
-                            let source = &feature.source;
-                            let is_readonly = !matches!(source, FeatureSource::User(_))
-                                || registry.with_features_index(|idx| {
-                                    idx.contains_key(feature.name.as_str())
-                                });
-                            let source_text = registry.source_label(source, i18n);
-                            view! {
-                                <div class="entry-item">
-                                    <ToggleButton />
-                                    <div class="entry-content">
-                                        {if is_readonly {
-                                            Either::Left(view! {
-                                                <span class="entry-name entry-name-readonly">{name.clone()}</span>
-                                            })
-                                        } else {
-                                            Either::Right(view! {
-                                                <DatalistInput
-                                                    value=name
-                                                    placeholder=move_tr!("feature-name")
-                                                    class="entry-name"
-                                                    options=options
-                                                    on_input=move |input, resolved| {
-                                                        let mut w = features.write();
-                                                        if let Some(key) = resolved {
-                                                            w[i].name = key.clone();
-                                                            let (label, description) =
-                                                                registry.with_features_index(|idx| {
-                                                                    idx.get(key.as_str())
-                                                                        .map(|feat| {
-                                                                            (
-                                                                                feat.label.clone(),
-                                                                                feat.description
-                                                                                    .clone(),
-                                                                            )
-                                                                        })
-                                                                        .unwrap_or_default()
-                                                                });
-                                                            w[i].label = label;
-                                                            w[i].description = description;
-                                                        } else {
-                                                            w[i].set_label(input);
-                                                            w[i].description.clear();
-                                                        }
-                                                    }
-                                                />
-                                            })
-                                        }}
-                                    </div>
-                                    <div class="entry-actions">
-                                        <button
-                                            class="btn-apply-level"
-                                            title=move_tr!("btn-apply-feature")
-                                            on:click=move |_| {
-                                                let name = features.read()[i].name.clone();
-                                                let level = store.with_untracked(|character| {
-                                                    registry
-                                                        .feature_class_level(&character.identity, &name)
-                                                        .unwrap_or_else(|| character.level())
-                                                });
-                                                let pending = vec![PendingFeature {
-                                                    name,
-                                                    source: FeatureSource::User(level),
-                                                    level,
-                                                }];
-                                                apply_with_modal(
-                                                    store,
-                                                    registry,
-                                                    pending,
-                                                    move |character, pending, inputs, fi| {
-                                                        apply_new_features(fi, character, pending, Some(inputs));
-                                                    },
-                                                );
-                                            }
-                                        >
-                                            <Icon name="arrow-up" size=14 />
-                                        </button>
-                                        <button
-                                            class="btn-remove"
-                                            on:click=move |_| {
-                                                if i < features.read().len() {
-                                                    let removed = features.write().remove(i);
-                                                    if !features.read().iter().any(|f| f.name == removed.name) {
-                                                        store.feature_data().write().remove(&removed.name);
-                                                    }
-                                                }
-                                            }
-                                        >
-                                            <Icon name="x" size=14 />
-                                        </button>
-                                    </div>
-                                    <span class="entry-sublabel">{source_text}</span>
-                                    {if is_readonly {
-                                        Either::Left(view! {
-                                            <p class="entry-desc">{desc.clone()}</p>
-                                        })
-                                    } else {
-                                        Either::Right(view! {
-                                            <textarea
-                                                class="entry-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=desc.clone()
-                                                on:change=move |e| {
-                                                    features.write()[i].description = event_target_value(&e);
-                                                }
-                                            />
-                                        })
-                                    }}
-                                </div>
-                            }
-                        })
-                        .collect_view()
-                }}
-            </div>
-            <button class="btn-primary" on:click=add_feature>
-                {move_tr!("btn-add-feature")}
-            </button>
-        </Panel>
+        <button class="btn-primary" on:click=add_feature>
+            {move_tr!("btn-add-feature")}
+        </button>
+        <div class="entry-list">
+            {move || {
+                let features_read = features.read();
+                features_read
+                    .iter()
+                    .enumerate()
+                    .rev()
+                    .map(|(i, feature)| {
+                        let is_group_boundary = i == 0
+                            || features_read[i - 1].source != feature.source;
+                        let header = is_group_boundary
+                            .then(|| {
+                                let label = registry.source_label(&feature.source, i18n);
+                                view! { <h3 class="features-group-header">{label}</h3> }
+                            });
+                        view! {
+                            {header}
+                            <FeatureRow feature_idx=i options=feature_options />
+                        }
+                    })
+                    .collect_view()
+            }}
+        </div>
     }
 }

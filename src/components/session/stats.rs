@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::icon::Icon,
+    components::{icon::Icon, stat_box::StatBox},
     effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterStoreFields, CombatStatsStoreFields, DamageType, Skill,
@@ -15,10 +15,10 @@ use crate::{
 pub fn adv_icon(state: AdvantageState) -> impl IntoView {
     match state {
         AdvantageState::Advantage => Some(view! {
-            <span class="adv-up"><Icon name="chevron-up" size=14 /></span>
+            <span class="adv-up"><Icon name="chevron-up" /></span>
         }),
         AdvantageState::Disadvantage => Some(view! {
-            <span class="adv-down"><Icon name="chevron-down" size=14 /></span>
+            <span class="adv-down"><Icon name="chevron-down" /></span>
         }),
         AdvantageState::Flat => None,
     }
@@ -85,7 +85,7 @@ pub fn StatsBlock() -> impl IntoView {
                                                 apply_damage(None);
                                             }
                                         }
-                                    ><Icon name="swords" size=14 /></button>
+                                    ><Icon name="swords" /></button>
                                     <button class="btn-icon btn-icon--success" title=move_tr!("heal")
                                         on:click=move |_| {
                                             let heal = damage_value();
@@ -93,14 +93,14 @@ pub fn StatsBlock() -> impl IntoView {
                                                 combat.update(|combat| combat.heal(heal));
                                             }
                                         }
-                                    ><Icon name="heart-plus" size=14 /></button>
+                                    ><Icon name="heart-plus" /></button>
                                 </div>
                                 <Show when=move || show_damage_picker.get()>
                                     <div class="cast-slot-picker">
                                         <button class="cast-slot-pill natural-level"
                                             title=move_tr!("damage")
                                             on:click=move |_| apply_damage(None)
-                                        ><Icon name="swords" size=14 /></button>
+                                        ><Icon name="swords" /></button>
                                         {modifiers.keys().map(|&damage_type| {
                                             let tr_key = damage_type.tr_key();
                                             let title = Signal::derive(move || i18n.tr(tr_key));
@@ -108,12 +108,12 @@ pub fn StatsBlock() -> impl IntoView {
                                                 <button class="cast-slot-pill"
                                                     title=title
                                                     on:click=move |_| apply_damage(Some(damage_type))
-                                                ><Icon name=damage_type.icon_name() size=14 /></button>
+                                                ><Icon name=damage_type.icon_name() /></button>
                                             }
                                         }).collect_view()}
                                         <button class="btn-icon"
                                             on:click=move |_| show_damage_picker.set(false)
-                                        ><Icon name="x" size=14 /></button>
+                                        ><Icon name="x" /></button>
                                     </div>
                                 </Show>
                             </div>
@@ -223,56 +223,54 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Ability modifiers --
-                <h4 class="session-subsection-title">{move_tr!("session-ability-mods")}</h4>
-                <div class="session-abilities-grid">
+                <h4>{move_tr!("session-ability-mods")}</h4>
+                <div class="slot-box-list">
                     {Ability::iter().map(|ability| {
                         let tr_key = ability.tr_abbr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
                         view! {
-                            <div class="session-ability">
-                                <span class="session-ability-label">{label}</span>
-                                <span class="session-ability-mod">
+                            <StatBox label=label>
+                                <span class="stat-highlight">
                                     {move || format_bonus(eff.ability_modifier(ability))}
                                     {move || adv_icon(eff.ability_advantage(ability))}
                                 </span>
-                            </div>
+                            </StatBox>
                         }
                     }).collect_view()}
                 </div>
 
                 // -- Saving throws --
-                <h4 class="session-subsection-title">{move_tr!("session-saving-throws")}</h4>
-                <div class="session-saves-grid">
+                <h4>{move_tr!("session-saving-throws")}</h4>
+                <div class="slot-box-list">
                     {Ability::iter().map(|ability| {
                         let tr_key = ability.tr_abbr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
+                        let proficient = Signal::derive(move || store.read().proficient_with(ability));
                         view! {
-                            <div class="session-save" class:proficient=move || store.read().proficient_with(ability)>
-                                <span class="session-save-label">{label}</span>
-                                <span class="session-save-value">
+                            <StatBox label=label highlighted=proficient>
+                                <span class="stat-highlight">
                                     {move || format_bonus(eff.saving_throw_bonus(ability))}
                                     {move || adv_icon(eff.save_advantage(ability))}
                                 </span>
-                            </div>
+                            </StatBox>
                         }
                     }).collect_view()}
                 </div>
 
                 // -- Skills --
-                <h4 class="session-subsection-title">{move_tr!("panel-skills")}</h4>
-                <div class="session-saves-grid">
+                <h4>{move_tr!("panel-skills")}</h4>
+                <div class="slot-box-list">
                     {Skill::iter().map(|skill| {
                         let tr_key = skill.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
-                        let proficient = move || store.read().skill_proficiency(skill).is_proficient();
+                        let proficient = Signal::derive(move || store.read().skills.get(skill).is_proficient());
                         view! {
-                            <div class="session-save" class:proficient=proficient>
-                                <span class="session-save-label">{label}</span>
-                                <span class="session-save-value">
+                            <StatBox label=label highlighted=proficient>
+                                <span class="stat-highlight">
                                     {move || format_bonus(eff.skill_bonus(skill))}
                                     {move || adv_icon(eff.skill_advantage(skill))}
                                 </span>
-                            </div>
+                            </StatBox>
                         }
                     }).collect_view()}
                 </div>

@@ -4,3 +4,4 @@ pub mod list;
 pub mod quick_start;
 pub mod session;
 pub mod story;
+pub mod tabs;

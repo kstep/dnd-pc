@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{icon::Icon, panel::Panel, toggle_button::ToggleButton},
+    components::{icon::Icon, slot_box::SlotBox, toggle_button::ToggleButton},
     model::{
         Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields, DamageType,
         EquipmentStoreFields, Item, Translatable, Weapon, WeaponEffect,
@@ -23,18 +23,152 @@ pub fn EquipmentPanel() -> impl IntoView {
     let items = equipment.items();
     let currency = equipment.currency();
 
-    view! {
-        <Panel title=move_tr!("panel-equipment") class="equipment-panel">
+    let currency_expanded = RwSignal::new(false);
+    let show_cp = move || currency_expanded.get() || currency.cp().get() > 0;
+    let show_sp = move || currency_expanded.get() || currency.sp().get() > 0;
+    let show_ep = move || currency_expanded.get() || currency.ep().get() > 0;
+    let show_pp = move || currency_expanded.get() || currency.pp().get() > 0;
 
+    view! {
+        <section>
             <div class="section-header">
-                <h4>{move_tr!("weapons")}</h4>
+                <button
+                    class="btn-toggle-desc"
+                    class:expanded=move || currency_expanded.get()
+                    on:click=move |_| currency_expanded.update(|v| *v = !*v)
+                />
+                <h3>{move_tr!("currency")}</h3>
+            </div>
+            <div class="currency-row">
+                <Show when=show_pp>
+                    <SlotBox label="PP" label_after=true>
+                        <input
+                            type="number"
+                            min="0"
+                            prop:value=move || currency.pp().get().to_string()
+                            on:input=move |e| {
+                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                    currency.pp().set(value);
+                                }
+                            }
+                        />
+                        <button class="btn-convert" title="→ GP" on:click=move |_| {
+                            if currency.pp().get_untracked() >= 1 {
+                                currency.pp().update(|v| *v -= 1);
+                                currency.gp().update(|v| *v += 10);
+                            }
+                        }>">"</button>
+                    </SlotBox>
+                </Show>
+                <SlotBox label="GP" label_after=true>
+                    <button class="btn-convert" title="→ PP" on:click=move |_| {
+                        if currency.gp().get_untracked() >= 10 {
+                            currency.gp().update(|v| *v -= 10);
+                            currency.pp().update(|v| *v += 1);
+                        }
+                    }>"<"</button>
+                    <input
+                        type="number"
+                        min="0"
+                        prop:value=move || currency.gp().get().to_string()
+                        on:input=move |e| {
+                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                currency.gp().set(value);
+                            }
+                        }
+                    />
+                    <button class="btn-convert" title="→ EP" on:click=move |_| {
+                        if currency.gp().get_untracked() >= 1 {
+                            currency.gp().update(|v| *v -= 1);
+                            currency.ep().update(|v| *v += 5);
+                        }
+                    }>">"</button>
+                </SlotBox>
+                <Show when=show_ep>
+                    <SlotBox label="EP" label_after=true>
+                        <button class="btn-convert" title="→ GP" on:click=move |_| {
+                            if currency.ep().get_untracked() >= 5 {
+                                currency.ep().update(|v| *v -= 5);
+                                currency.gp().update(|v| *v += 1);
+                            }
+                        }>"<"</button>
+                        <input
+                            type="number"
+                            min="0"
+                            prop:value=move || currency.ep().get().to_string()
+                            on:input=move |e| {
+                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                    currency.ep().set(value);
+                                }
+                            }
+                        />
+                        <button class="btn-convert" title="→ SP" on:click=move |_| {
+                            if currency.ep().get_untracked() >= 1 {
+                                currency.ep().update(|v| *v -= 1);
+                                currency.sp().update(|v| *v += 5);
+                            }
+                        }>">"</button>
+                    </SlotBox>
+                </Show>
+                <Show when=show_sp>
+                    <SlotBox label="SP" label_after=true>
+                        <button class="btn-convert" title="→ EP" on:click=move |_| {
+                            if currency.sp().get_untracked() >= 5 {
+                                currency.sp().update(|v| *v -= 5);
+                                currency.ep().update(|v| *v += 1);
+                            }
+                        }>"<"</button>
+                        <input
+                            type="number"
+                            min="0"
+                            prop:value=move || currency.sp().get().to_string()
+                            on:input=move |e| {
+                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                    currency.sp().set(value);
+                                }
+                            }
+                        />
+                        <button class="btn-convert" title="→ CP" on:click=move |_| {
+                            if currency.sp().get_untracked() >= 1 {
+                                currency.sp().update(|v| *v -= 1);
+                                currency.cp().update(|v| *v += 10);
+                            }
+                        }>">"</button>
+                    </SlotBox>
+                </Show>
+                <Show when=show_cp>
+                    <SlotBox label="CP" label_after=true>
+                        <button class="btn-convert" title="→ SP" on:click=move |_| {
+                            if currency.cp().get_untracked() >= 10 {
+                                currency.cp().update(|v| *v -= 10);
+                                currency.sp().update(|v| *v += 1);
+                            }
+                        }>"<"</button>
+                        <input
+                            type="number"
+                            min="0"
+                            prop:value=move || currency.cp().get().to_string()
+                            on:input=move |e| {
+                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                    currency.cp().set(value);
+                                }
+                            }
+                        />
+                    </SlotBox>
+                </Show>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h3>{move_tr!("weapons")}</h3>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
                         weapons.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    <Icon name="arrow-down-a-z" />
+                    <Icon name="arrow-down-a-z" size=16 />
                 </button>
             </div>
             {
@@ -86,7 +220,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         }
                                                     }
                                                 >
-                                                    <Icon name="x" size=14 />
+                                                    <Icon name="x" />
                                                 </button>
                                             </div>
                                             {effects.into_iter().map(|(j, eff_name, eff_expr, eff_dmg_type)| {
@@ -146,7 +280,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                                 }
                                                             }
                                                         >
-                                                            <Icon name="x" size=14 />
+                                                            <Icon name="x" />
                                                         </button>
                                                     </div>
                                                 }
@@ -177,16 +311,18 @@ pub fn EquipmentPanel() -> impl IntoView {
             >
                 {move_tr!("btn-add-weapon")}
             </button>
+        </section>
 
+        <section>
             <div class="section-header">
-                <h4>{move_tr!("armor")}</h4>
+                <h3>{move_tr!("armor")}</h3>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
                         armors.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    <Icon name="arrow-down-a-z" />
+                    <Icon name="arrow-down-a-z" size=16 />
                 </button>
             </div>
             {
@@ -222,7 +358,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             }
                                                         }
                                                     >
-                                                        <Icon name="x" size=14 />
+                                                        <Icon name="x" />
                                                     </button>
                                                 </div>
                                                 <span class="entry-sublabel">{ac_expr_str.clone()}</span>
@@ -304,7 +440,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             }
                                                         }
                                                     >
-                                                        <Icon name="x" size=14 />
+                                                        <Icon name="x" />
                                                     </button>
                                                 </div>
                                                 <input
@@ -338,16 +474,18 @@ pub fn EquipmentPanel() -> impl IntoView {
             >
                 {move_tr!("btn-add-armor")}
             </button>
+        </section>
 
+        <section>
             <div class="section-header">
-                <h4>{move_tr!("items")}</h4>
+                <h3>{move_tr!("items")}</h3>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
                         items.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
                     }
                 >
-                    <Icon name="arrow-down-a-z" />
+                    <Icon name="arrow-down-a-z" size=16 />
                 </button>
             </div>
             {
@@ -397,7 +535,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         }
                                                     }
                                                 >
-                                                    <Icon name="x" size=14 />
+                                                    <Icon name="x" />
                                                 </button>
                                             </div>
                                             <textarea
@@ -424,140 +562,6 @@ pub fn EquipmentPanel() -> impl IntoView {
             >
                 {move_tr!("btn-add-item")}
             </button>
-
-            <h4>{move_tr!("currency")}</h4>
-            <div class="currency-row">
-                // CP: only > (combine 10 CP into 1 SP)
-                <div class="currency-field">
-                    <div class="currency-label">
-                        <span class="btn-convert-placeholder" />
-                        <label>"CP"</label>
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.cp().get_untracked() >= 10 {
-                                currency.cp().update(|v| *v -= 10);
-                                currency.sp().update(|v| *v += 1);
-                            }
-                        }>">"</button>
-                    </div>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || currency.cp().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.cp().set(value);
-                            }
-                        }
-                    />
-                </div>
-                // SP: < (break 1 SP into 10 CP), > (combine 5 SP into 1 EP)
-                <div class="currency-field">
-                    <div class="currency-label">
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.sp().get_untracked() >= 1 {
-                                currency.sp().update(|v| *v -= 1);
-                                currency.cp().update(|v| *v += 10);
-                            }
-                        }>"<"</button>
-                        <label>"SP"</label>
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.sp().get_untracked() >= 5 {
-                                currency.sp().update(|v| *v -= 5);
-                                currency.ep().update(|v| *v += 1);
-                            }
-                        }>">"</button>
-                    </div>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || currency.sp().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.sp().set(value);
-                            }
-                        }
-                    />
-                </div>
-                // EP: < (break 1 EP into 5 SP), > (combine 5 EP into 1 GP)
-                <div class="currency-field">
-                    <div class="currency-label">
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.ep().get_untracked() >= 1 {
-                                currency.ep().update(|v| *v -= 1);
-                                currency.sp().update(|v| *v += 5);
-                            }
-                        }>"<"</button>
-                        <label>"EP"</label>
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.ep().get_untracked() >= 5 {
-                                currency.ep().update(|v| *v -= 5);
-                                currency.gp().update(|v| *v += 1);
-                            }
-                        }>">"</button>
-                    </div>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || currency.ep().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.ep().set(value);
-                            }
-                        }
-                    />
-                </div>
-                // GP: < (break 1 GP into 5 EP), > (combine 10 GP into 1 PP)
-                <div class="currency-field">
-                    <div class="currency-label">
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.gp().get_untracked() >= 1 {
-                                currency.gp().update(|v| *v -= 1);
-                                currency.ep().update(|v| *v += 5);
-                            }
-                        }>"<"</button>
-                        <label>"GP"</label>
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.gp().get_untracked() >= 10 {
-                                currency.gp().update(|v| *v -= 10);
-                                currency.pp().update(|v| *v += 1);
-                            }
-                        }>">"</button>
-                    </div>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || currency.gp().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.gp().set(value);
-                            }
-                        }
-                    />
-                </div>
-                // PP: only < (break 1 PP into 10 GP)
-                <div class="currency-field">
-                    <div class="currency-label">
-                        <button class="btn-convert" on:click=move |_| {
-                            if currency.pp().get_untracked() >= 1 {
-                                currency.pp().update(|v| *v -= 1);
-                                currency.gp().update(|v| *v += 10);
-                            }
-                        }>"<"</button>
-                        <label>"PP"</label>
-                        <span class="btn-convert-placeholder" />
-                    </div>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || currency.pp().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.pp().set(value);
-                            }
-                        }
-                    />
-                </div>
-            </div>
-        </Panel>
+        </section>
     }
 }

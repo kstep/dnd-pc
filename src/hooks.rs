@@ -36,6 +36,29 @@ pub fn use_hash_href() -> impl Fn(&str) -> String {
     move |hash: &str| pathname.with_untracked(|path| format!("{path}#{hash}"))
 }
 
+/// Watches the router's URL hash and scrolls the element with that id into
+/// view. Defers one animation frame so the navigated view has time to mount.
+/// Call once near the top of a component that renders sections with `id=...`.
+pub fn use_scroll_to_hash() {
+    let location = use_location();
+    Effect::new(move |_| {
+        let hash = location.hash.get();
+        let id = hash.trim_start_matches('#').to_string();
+        if id.is_empty() {
+            return;
+        }
+        let id = js_sys::decode_uri_component(&id)
+            .ok()
+            .and_then(|v| v.as_string())
+            .unwrap_or(id);
+        request_animation_frame(move || {
+            if let Some(el) = document().get_element_by_id(&id) {
+                el.scroll_into_view();
+            }
+        });
+    });
+}
+
 /// Returns a reactive signal that tracks the current theme name.
 /// Seeds from `window.matchMedia("(prefers-color-scheme: dark)")` and
 /// updates in real time via a `change` event listener.

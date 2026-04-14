@@ -1,11 +1,10 @@
 pub mod ability_scores;
-pub mod class_fields;
 pub mod combat;
+pub mod damage_modifiers;
 pub mod equipment;
 pub mod features;
 pub mod notes;
 pub mod personality;
 pub mod proficiencies;
-pub mod saving_throws;
 pub mod skills;
 pub mod spellcasting;

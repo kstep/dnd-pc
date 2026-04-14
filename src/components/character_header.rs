@@ -11,11 +11,12 @@ use wasm_bindgen::prelude::*;
 use crate::{
     BASE_URL,
     components::{
-        apply::{apply_level, apply_with_modal},
+        apply::{apply_level, apply_with_modal, replay_with_modal},
         apply_field_section::ApplyFieldSection,
         background_field::BackgroundField,
         classes_section::ClassesSection,
-        confirm_modal::ConfirmButton,
+        confirm_modal::ConfirmModal,
+        dropdown::{Dropdown, DropdownTrigger},
         icon::Icon,
         menu_modal::{MenuItem, MenuModal},
         species_field::SpeciesField,
@@ -147,7 +148,7 @@ pub fn CharacterHeader() -> impl IntoView {
 
     let share_copied = RwSignal::new(false);
 
-    let on_share = move |_| {
+    let on_share = move || {
         wasm_bindgen_futures::spawn_local(async move {
             let character = store.get_untracked();
             let origin = leptos::prelude::window()
@@ -185,12 +186,8 @@ pub fn CharacterHeader() -> impl IntoView {
         navigate(&format!("/c/{id}"), Default::default());
     };
 
-    let on_refill = move |_| {
-        store.update(|c| {
-            c.clear_all_labels();
-            registry.fill_from_registry(c);
-        });
-    };
+    let show_replay_confirm = RwSignal::new(false);
+    let show_reset_confirm = RwSignal::new(false);
 
     let i18n = expect_context::<leptos_fluent::I18n>();
 
@@ -318,59 +315,109 @@ pub fn CharacterHeader() -> impl IntoView {
                 <div class="header-field level-field">
                     <label>{move_tr!("total-level")}</label>
                     <div class="level-value-row">
-                        <span class="computed-value">{total_level}</span>
+                        <span class="stat-highlight">{total_level}</span>
                         <Show when=move || store.read().can_level_up()>
                             <button
                                 class="btn-level-up"
                                 title=move_tr!("level-up")
                                 on:click=on_level_up
                             >
-                                <Icon name="arrow-up" size=14 />
+                                <Icon name="arrow-up" />
                             </button>
                         </Show>
                     </div>
                 </div>
                 <div class="header-field level-field">
                     <label>{move_tr!("prof-bonus")}</label>
-                    <span class="computed-value">"+" {prof_bonus}</span>
+                    <span class="stat-highlight">"+" {prof_bonus}</span>
                 </div>
             </div>
 
             <ClassesSection />
 
             <div class="header-actions">
-                <label class="share-toggle" title=move_tr!("share-toggle")>
-                    <input
-                        type="checkbox"
-                        prop:checked=move || store.shared().get()
-                        on:change=move |e| {
-                            store.shared().set(event_target_checked(&e));
+                <Dropdown class="dropdown-end">
+                    <DropdownTrigger slot>
+                        <button class="btn-icon" title=move_tr!("actions-menu")>
+                            <Icon name="ellipsis-vertical" size=18 />
+                        </button>
+                    </DropdownTrigger>
+
+                    <label
+                        class="dropdown-item"
+                        on:click=move |ev| ev.stop_propagation()
+                    >
+                        <input
+                            type="checkbox"
+                            prop:checked=move || store.shared().get()
+                            on:change=move |e| store.shared().set(event_target_checked(&e))
+                        />
+                        <span class="dropdown-item-label">{move_tr!("share-toggle")}</span>
+                    </label>
+                    <button
+                        class="dropdown-item"
+                        on:click=move |ev| {
+                            ev.stop_propagation();
+                            on_share();
                         }
-                    />
-                    <Icon name="globe" size=18 />
-                </label>
-                <button class="btn-primary" title=move_tr!("share-link") on:click=on_share>
-                    <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=18 />
-                </button>
-                <button class="btn-primary" title=move_tr!("export-json") on:click=on_export><Icon name="download" size=18 /></button>
-                <button class="btn-primary" title=move_tr!("import-json") on:click=on_import><Icon name="upload" size=18 /></button>
-                <button class="btn-primary" title=move_tr!("copy-character") on:click=on_copy><Icon name="copy" size=18 /></button>
-                <button class="btn-primary" title=move_tr!("refill-from-registry") on:click=on_refill><Icon name="book-up" size=18 /></button>
-                <ConfirmButton
-                    class="btn-primary btn-danger"
-                    title=move_tr!("reset-character")
-                    confirm_title=move_tr!("reset-character")
-                    confirm_message=move_tr!("confirm-reset")
-                    on_confirm=move || store.update(|character| character.clear())
-                >
-                    <Icon name="rotate-ccw" size=18 />
-                </ConfirmButton>
+                    >
+                        <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=16 />
+                        <span class="dropdown-item-label">{move_tr!("share-link")}</span>
+                    </button>
+
+                    <div class="dropdown-separator"></div>
+
+                    <button class="dropdown-item" on:click=on_export>
+                        <Icon name="download" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("export-json")}</span>
+                    </button>
+                    <button class="dropdown-item" on:click=on_import>
+                        <Icon name="upload" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("import-json")}</span>
+                    </button>
+
+                    <div class="dropdown-separator"></div>
+
+                    <button class="dropdown-item" on:click=on_copy>
+                        <Icon name="copy" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("copy-character")}</span>
+                    </button>
+
+                    <div class="dropdown-separator"></div>
+
+                    <button
+                        class="dropdown-item"
+                        on:click=move |_| show_replay_confirm.set(true)
+                    >
+                        <Icon name="rotate-ccw" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("replay")}</span>
+                    </button>
+                    <button
+                        class="dropdown-item dropdown-item-danger"
+                        on:click=move |_| show_reset_confirm.set(true)
+                    >
+                        <Icon name="rotate-ccw" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("reset-character")}</span>
+                    </button>
+                </Dropdown>
             </div>
             <MenuModal
                 show=show_level_up
                 title=Signal::derive(move || i18n.tr("level-up-choose-class"))
                 items=level_up_items
                 on_select=Callback::new(level_up_class)
+            />
+            <ConfirmModal
+                show=show_replay_confirm
+                title=Signal::derive(move || i18n.tr("replay"))
+                message=Signal::derive(move || i18n.tr("replay-confirm"))
+                on_confirm=move || replay_with_modal(store, registry)
+            />
+            <ConfirmModal
+                show=show_reset_confirm
+                title=Signal::derive(move || i18n.tr("reset-character"))
+                message=Signal::derive(move || i18n.tr("confirm-reset"))
+                on_confirm=move || store.update(|character| character.clear())
             />
         </div>
     }

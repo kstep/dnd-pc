@@ -62,7 +62,7 @@ pub fn SyncIndicator() -> impl IntoView {
                     title="Retry"
                     on:click=move |_| storage::retry_sync()
                 >
-                    <Icon name="refresh-cw" size=14 />
+                    <Icon name="refresh-cw" />
                 </button>
             </Show>
             <Show when=move || show_google_btn.get()>
@@ -71,7 +71,7 @@ pub fn SyncIndicator() -> impl IntoView {
                     title=move || tr_sign_in.get()
                     on:click=move |_| storage::sign_in_with_google()
                 >
-                    <Icon name="log-in" size=14 />
+                    <Icon name="log-in" />
                 </button>
             </Show>
         </div>

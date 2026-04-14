@@ -341,6 +341,22 @@ impl RulesRegistry {
                 let label = self.classes().with(name, |def| def.label().to_string());
                 format!("{prefix}: {} ({level})", label.as_deref().unwrap_or(name))
             }
+            FeatureSource::Subclass(class_name, subclass_name, level) => {
+                let prefix = i18n.tr("source-subclass");
+                let class_label = self
+                    .classes()
+                    .with(class_name, |def| def.label().to_string());
+                let subclass_label = self.classes().with(class_name, |def| {
+                    def.subclasses
+                        .get(&**subclass_name)
+                        .map(|sc| sc.label().to_string())
+                });
+                format!(
+                    "{prefix}: {} — {} ({level})",
+                    class_label.as_deref().unwrap_or(class_name),
+                    subclass_label.flatten().as_deref().unwrap_or(subclass_name),
+                )
+            }
             FeatureSource::Species(name) => {
                 let prefix = i18n.tr("source-species");
                 let label = self.species().with(name, |def| def.label().to_string());
@@ -638,13 +654,13 @@ impl RulesRegistry {
         // migrated characters where level was defaulted to 1).
         for feature in &mut character.features {
             if let FeatureSource::Class(class_name, level) = &mut feature.source
-                && let Some(def) = class_cache.get(class_name.as_str())
+                && let Some(def) = class_cache.get(&**class_name)
             {
                 let subclass = character
                     .identity
                     .classes
                     .iter()
-                    .find(|cl| cl.class == *class_name)
+                    .find(|cl| cl.class.as_str() == &**class_name)
                     .and_then(|cl| cl.subclass.as_deref());
                 let correct_level = def.feature_level(subclass, &feature.name);
                 if correct_level > 0 && *level != correct_level {
