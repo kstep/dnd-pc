@@ -11,14 +11,19 @@ use crate::{
 #[component]
 pub fn CharacterList() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
-    let (characters, set_characters) = signal(storage::load_index());
+    let load_summaries = || {
+        let mut summaries = storage::load_all_summaries();
+        summaries.sort_by(|a, b| a.name.cmp(&b.name));
+        summaries
+    };
+    let (characters, set_characters) = signal(load_summaries());
     let import_state = RwSignal::new(None::<Character>);
 
-    // Re-read index when cloud pull updates it.
+    // Re-read when cloud pull updates characters.
     let index_version = storage::sync_index_version();
     Effect::new(move |prev: Option<u32>| {
         if prev.is_some() {
-            set_characters.set(storage::load_index());
+            set_characters.set(load_summaries());
         }
         index_version.get()
     });
@@ -27,14 +32,14 @@ pub fn CharacterList() -> impl IntoView {
         let mut character = Character::new();
         storage::save_and_sync_character(&mut character);
         let id = character.id;
-        set_characters.set(storage::load_index());
+        set_characters.set(load_summaries());
         let navigate = use_navigate();
         navigate(&format!("/c/{id}/quick-start"), Default::default());
     };
 
     let delete_character = move |id: uuid::Uuid| {
         storage::delete_character(&id);
-        set_characters.set(storage::load_index());
+        set_characters.set(load_summaries());
     };
 
     let load_from_file = move |_| {
@@ -59,7 +64,7 @@ pub fn CharacterList() -> impl IntoView {
                         </div>
                         <div class="character-list">
                             <For
-                                each=move || characters.get().characters.sorted_unstable_by(|_, ch1, _, ch2| ch1.name.cmp(&ch2.name)).map(|(_, ch)| ch)
+                                each=move || characters.get()
                                 key=|c| c.id
                                 let:character
                             >

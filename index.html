@@ -176,8 +176,14 @@
       const snap = await fsGetDoc(fsDoc(db, ...path));
       return snap.exists() ? snap.data() : null;
     },
-    getDocs: async (...path) => {
-      const snap = await fsGetDocs(fsCollection(db, ...path));
+    getDocs: async (conditions, ...path) => {
+      let colRef = fsCollection(db, ...path);
+      if (conditions) {
+        for (const [field, op, value] of conditions) {
+          colRef = fsQuery(colRef, fsWhere(field, op, value));
+        }
+      }
+      const snap = await fsGetDocs(colRef);
       return snap.docs.map((d) => d.data());
     },
     deleteDoc: (...path) => fsDeleteDoc(fsDoc(db, ...path)),

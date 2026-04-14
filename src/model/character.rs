@@ -1,13 +1,11 @@
 use std::collections::BTreeMap;
 
-use indexmap::IndexMap;
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
     constvec::ConstVec,
-    demap::{self, Keyed},
     expr::{self, Eval as _},
     model::{
         AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
@@ -59,12 +57,6 @@ const SPELL_SLOT_TABLE: &[&[u32]] = &[
 
 // --- Character Index (for list page) ---
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct CharacterIndex {
-    #[serde(with = "demap::index_map_as_vec")]
-    pub characters: IndexMap<Uuid, CharacterSummary>,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharacterSummary {
     pub id: Uuid,
@@ -75,12 +67,6 @@ pub struct CharacterSummary {
     pub updated_at: u64,
     #[serde(default)]
     pub shared: bool,
-}
-
-impl Keyed for CharacterSummary {
-    fn key(&self) -> Uuid {
-        self.id
-    }
 }
 
 // --- Main Character ---
@@ -562,24 +548,7 @@ impl Character {
     }
 
     pub fn class_summary(&self) -> String {
-        self.identity
-            .classes
-            .iter()
-            .filter(|c| !c.class.is_empty())
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
-            .join(" / ")
-    }
-
-    pub fn summary(&self) -> CharacterSummary {
-        CharacterSummary {
-            id: self.id,
-            name: self.identity.name.clone(),
-            class: self.class_summary(),
-            level: self.level(),
-            updated_at: self.updated_at,
-            shared: self.shared,
-        }
+        crate::model::format_classes(&self.identity.classes)
     }
 }
 

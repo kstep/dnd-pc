@@ -25,8 +25,7 @@ pub fn FeatureRow(
     let registry = expect_context::<RulesRegistry>();
     let features = store.features();
 
-    let i = feature_idx;
-    let feature = features.read_untracked().get(i).cloned()?;
+    let feature = features.read_untracked().get(feature_idx).cloned()?;
 
     let name = feature.label().to_string();
     let desc = feature.description.clone();
@@ -49,22 +48,24 @@ pub fn FeatureRow(
             (e.fields.len(), e.spells.is_some(), has_empty)
         })
         .unwrap_or((0, false, false));
+    let not_applied = !feature.applied;
     let fname = feature_name.clone();
     let has_pending = Memo::new(move |_| {
-        store
-            .feature_data()
-            .read()
-            .get(&fname)
-            .map(|e| {
-                e.fields.iter().any(|f| {
-                    matches!(
-                        &f.value,
-                        FeatureValue::Choice { options }
-                            if options.iter().any(|o| o.name.is_empty())
-                    )
+        not_applied
+            || store
+                .feature_data()
+                .read()
+                .get(&fname)
+                .map(|e| {
+                    e.fields.iter().any(|f| {
+                        matches!(
+                            &f.value,
+                            FeatureValue::Choice { options }
+                                if options.iter().any(|o| o.name.is_empty())
+                        )
+                    })
                 })
-            })
-            .unwrap_or(false)
+                .unwrap_or(false)
     });
     let fname2 = feature_name.clone();
     let badges = move || {
@@ -126,7 +127,7 @@ pub fn FeatureRow(
                             on_input=move |input, resolved| {
                                 let mut w = features.write();
                                 if let Some(key) = resolved {
-                                    w[i].name = key.clone();
+                                    w[feature_idx].name = key.clone();
                                     let (label, description) =
                                         registry.with_features_index(|idx| {
                                             idx.get(key.as_str())
@@ -138,11 +139,11 @@ pub fn FeatureRow(
                                                 })
                                                 .unwrap_or_default()
                                         });
-                                    w[i].label = label;
-                                    w[i].description = description;
+                                    w[feature_idx].label = label;
+                                    w[feature_idx].description = description;
                                 } else {
-                                    w[i].set_label(input);
-                                    w[i].description.clear();
+                                    w[feature_idx].set_label(input);
+                                    w[feature_idx].description.clear();
                                 }
                             }
                         />
@@ -168,7 +169,7 @@ pub fn FeatureRow(
                     class="btn-apply-level"
                     title=move_tr!("btn-apply-feature")
                     on:click=move |_| {
-                        let name = features.read()[i].name.clone();
+                        let name = features.read()[feature_idx].name.clone();
                         let level = store.with_untracked(|character| {
                             registry
                                 .feature_class_level(&character.identity, &name)
@@ -194,8 +195,8 @@ pub fn FeatureRow(
                 <button
                     class="btn-remove"
                     on:click=move |_| {
-                        if i < features.read().len() {
-                            let removed = features.write().remove(i);
+                        if feature_idx < features.read().len() {
+                            let removed = features.write().remove(feature_idx);
                             if !features.read().iter().any(|f| f.name == removed.name) {
                                 store.feature_data().write().remove(&removed.name);
                             }
@@ -216,7 +217,7 @@ pub fn FeatureRow(
                         placeholder=move_tr!("description")
                         prop:value=desc.clone()
                         on:change=move |e| {
-                            features.write()[i].description = event_target_value(&e);
+                            features.write()[feature_idx].description = event_target_value(&e);
                         }
                     />
                 })

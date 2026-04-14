@@ -77,6 +77,17 @@ impl std::fmt::Display for ClassLevel {
     }
 }
 
+/// Format a list of classes into a human-readable string like
+/// `"Fighter (Champion) 5 / Rogue 3"`. Empty classes are skipped.
+pub fn format_classes(classes: &[ClassLevel]) -> String {
+    classes
+        .iter()
+        .filter(|c| !c.class.is_empty())
+        .map(ToString::to_string)
+        .collect::<Vec<_>>()
+        .join(" / ")
+}
+
 impl Default for ClassLevel {
     fn default() -> Self {
         Self {

@@ -271,11 +271,26 @@ pub async fn get_doc<T: DeserializeOwned>(path: &[&str]) -> Result<Option<T>, Fi
     from_js(result).map(Some)
 }
 
-pub async fn get_all_docs<T: DeserializeOwned>(path: &[&str]) -> Result<Vec<T>, FirebaseError> {
-    let args: Vec<JsValue> = path
-        .iter()
-        .map(|segment| JsValue::from_str(segment))
-        .collect();
+pub async fn get_all_docs<T: DeserializeOwned>(
+    path: &[&str],
+    conditions: &[Where],
+) -> Result<Vec<T>, FirebaseError> {
+    let js_conditions = if conditions.is_empty() {
+        JsValue::NULL
+    } else {
+        let arr = Array::new();
+        for clause in conditions {
+            let triple = Array::of3(
+                &JsValue::from_str(clause.0),
+                &JsValue::from_str(clause.1),
+                &clause.2,
+            );
+            arr.push(&triple);
+        }
+        arr.into()
+    };
+    let mut args: Vec<JsValue> = vec![js_conditions];
+    args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
     let result = call_async_with_retry("getDocs", &args).await?;
     from_js_array(result, "getDocs")
 }
@@ -307,7 +322,13 @@ pub struct DocChange {
     pub id: String,
 }
 
-pub struct WhereClause(pub &'static str, pub &'static str, pub JsValue);
+pub struct Where(pub &'static str, pub &'static str, pub JsValue);
+
+impl Where {
+    pub fn gt(field: &'static str, value: impl Into<JsValue>) -> Self {
+        Self(field, ">", value.into())
+    }
+}
 
 /// An active Firestore subscription. Dropping it unsubscribes.
 pub struct Subscription {
@@ -331,7 +352,7 @@ impl Drop for Subscription {
 /// The returned `Subscription` must be kept alive; dropping it unsubscribes.
 pub fn subscribe_collection(
     path: &[&str],
-    conditions: &[WhereClause],
+    conditions: &[Where],
     on_change: impl Fn(Vec<DocChange>) + 'static,
 ) -> Result<Subscription, FirebaseError> {
     let callback = Closure::wrap(Box::new(move |changes: JsValue| {

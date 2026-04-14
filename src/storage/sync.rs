@@ -10,7 +10,7 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     ai::Story,
-    firebase::{self, ChangeType, FirebaseError},
+    firebase::{self, ChangeType, FirebaseError, Where},
     model::Character,
     storage::{local, migrate, queue, queue::CloudOp},
 };
@@ -139,18 +139,12 @@ pub fn setup_auto_save(store: Store<Character>) {
             let character = store.read_untracked();
             (character.id, character.updated_at)
         };
-        if previous.is_some() {
-            let index_at = local::load_index()
-                .characters
-                .get(&id)
-                .map(|summary| summary.updated_at)
-                .unwrap_or(0);
-            if index_at > local_at
-                && let Some(character) = local::load_character(&id)
-            {
-                cloud_updating.update_untracked(|v| *v = true);
-                store.set(character);
-            }
+        if previous.is_some()
+            && let Some(character) = local::load_character(&id)
+            && character.updated_at > local_at
+        {
+            cloud_updating.update_untracked(|v| *v = true);
+            store.set(character);
         }
         index_version.get()
     });
@@ -306,23 +300,14 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
 }
 
 fn subscribe_to_changes(uid: &str) {
-    let last_sync = local::load_index()
-        .characters
-        .values()
-        .map(|summary| summary.updated_at)
-        .max()
-        .unwrap_or(0);
+    let last_sync = local::load_last_sync();
 
     match firebase::subscribe_collection(
         &["users", uid, "characters"],
-        &[firebase::WhereClause(
-            "updated_at",
-            ">",
-            JsValue::from_f64(last_sync as f64),
-        )],
+        &[Where::gt("updated_at", last_sync as f64)],
         move |changes| {
-            let mut index = local::load_index();
-            let mut index_dirty = false;
+            let mut max_updated = local::load_last_sync();
+            let mut dirty = false;
 
             for change in changes {
                 match change.change_type {
@@ -332,10 +317,8 @@ fn subscribe_to_changes(uid: &str) {
                             log::warn!("Failed to deserialize snapshot character");
                             continue;
                         };
-                        let local_at = index
-                            .characters
-                            .get(&character.id)
-                            .map(|summary| summary.updated_at)
+                        let local_at = local::load_character(&character.id)
+                            .map(|c| c.updated_at)
                             .unwrap_or(0);
                         if character.updated_at > local_at {
                             if let Err(error) =
@@ -344,22 +327,21 @@ fn subscribe_to_changes(uid: &str) {
                                 log::warn!("Failed to save pulled character: {error}");
                                 continue;
                             }
-                            index.characters.insert(character.id, character.summary());
-                            index_dirty = true;
+                            max_updated = max_updated.max(character.updated_at);
+                            dirty = true;
                         }
                     }
                     ChangeType::Removed => {
                         if let Ok(id) = change.id.parse::<Uuid>() {
-                            LocalStorage::delete(local::character_key(&id));
-                            index.characters.shift_remove(&id);
-                            index_dirty = true;
+                            local::delete_character_local_only(&id);
+                            dirty = true;
                         }
                     }
                 }
             }
 
-            if index_dirty {
-                local::save_index(&index);
+            if dirty {
+                local::save_last_sync(max_updated);
                 get_or_init_sync()
                     .index_version
                     .update(|version| *version += 1);
@@ -385,15 +367,19 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
         return Ok(());
     };
     log::info!("sync_all_with_cloud: syncing for uid={uid}");
-    let remote_chars =
-        firebase::get_all_docs::<serde_json::Value>(&["users", &uid, "characters"]).await?;
+    let last_sync = local::load_last_sync();
+    let remote_chars = firebase::get_all_docs::<serde_json::Value>(
+        &["users", &uid, "characters"],
+        &[Where::gt("updated_at", last_sync as f64)],
+    )
+    .await?;
     log::info!(
         "sync_all_with_cloud: got {} remote characters",
         remote_chars.len()
     );
 
-    let mut index = local::load_index();
-    let mut index_dirty = false;
+    let mut max_updated = last_sync;
+    let mut dirty = false;
     let mut push_failures: u32 = 0;
     let mut seen_remote: HashSet<Uuid> = HashSet::with_capacity(remote_chars.len());
 
@@ -407,10 +393,8 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
         };
         seen_remote.insert(remote.id);
 
-        let local_updated_at = index
-            .characters
-            .get(&remote.id)
-            .map(|summary| summary.updated_at)
+        let local_updated_at = local::load_character(&remote.id)
+            .map(|c| c.updated_at)
             .unwrap_or(0);
 
         if local_updated_at >= remote.updated_at {
@@ -426,15 +410,13 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
                 log::warn!("Failed to save pulled character {}: {error}", remote.id);
                 continue;
             }
-
-            let summary = remote.summary();
-            index.characters.insert(summary.id, summary);
-            index_dirty = true;
+            max_updated = max_updated.max(remote.updated_at);
+            dirty = true;
         }
     }
 
     if push_local_only {
-        for summary in index.characters.values() {
+        for summary in local::load_all_summaries() {
             if !seen_remote.contains(&summary.id)
                 && let Some(character) = local::load_character(&summary.id)
             {
@@ -452,8 +434,8 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
         }
     }
 
-    if index_dirty {
-        local::save_index(&index);
+    if dirty {
+        local::save_last_sync(max_updated);
         get_or_init_sync().index_version.update(|v| *v += 1);
     }
 
@@ -483,7 +465,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
 async fn sync_stories_with_cloud(uid: &str, char_id: &Uuid) -> Result<(), FirebaseError> {
     let char_id_str = char_id.to_string();
     let remote_stories: Vec<Story> =
-        firebase::get_all_docs(&["users", uid, "characters", &char_id_str, "stories"]).await?;
+        firebase::get_all_docs(&["users", uid, "characters", &char_id_str, "stories"], &[]).await?;
     if remote_stories.is_empty() {
         return Ok(());
     }
