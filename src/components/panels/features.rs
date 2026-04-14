@@ -3,9 +3,9 @@ use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
-    components::feature_row::FeatureRow,
+    components::{apply::PreviewContext, feature_row::FeatureRow},
     model::{Character, CharacterStoreFields, Feature, FeatureSource},
-    rules::RulesRegistry,
+    rules::{RulesRegistry, WhenCondition},
 };
 
 #[component]
@@ -43,6 +43,40 @@ pub fn FeaturesPanel() -> impl IntoView {
         })
     });
 
+    let assign_previews = Memo::new(move |_| {
+        let mut blank = Character::default();
+        let features_read = store.features().read();
+        features_read
+            .iter()
+            .map(|feature| {
+                let mut entries: Vec<String> = Vec::new();
+                registry.with_feature(&feature.name, |feat_def| {
+                    let Some(assigns) = feat_def.assign.as_deref() else {
+                        return;
+                    };
+                    for (idx, assignment) in assigns.iter().enumerate() {
+                        if assignment.when != WhenCondition::OnFeatureAdd {
+                            continue;
+                        }
+                        let Some(inputs) = feature.inputs.get(idx) else {
+                            continue;
+                        };
+                        let mut ctx = PreviewContext {
+                            character: &mut blank,
+                            args: &inputs.args,
+                            captured: Vec::new(),
+                        };
+                        let _ = assignment.expr.apply_with_dice(&mut ctx, &inputs.dice);
+                        for (attr, value) in ctx.captured {
+                            entries.push(format!("{}: {value}", attr.display_name(&i18n)));
+                        }
+                    }
+                });
+                entries
+            })
+            .collect::<Vec<_>>()
+    });
+
     view! {
         <button class="btn-primary" on:click=add_feature>
             {move_tr!("btn-add-feature")}
@@ -64,7 +98,11 @@ pub fn FeaturesPanel() -> impl IntoView {
                             });
                         view! {
                             {header}
-                            <FeatureRow feature_idx=i options=feature_options />
+                            <FeatureRow
+                                feature_idx=i
+                                options=feature_options
+                                assign_previews=assign_previews
+                            />
                         }
                     })
                     .collect_view()

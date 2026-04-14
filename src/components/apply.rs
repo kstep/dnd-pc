@@ -209,6 +209,39 @@ impl expr::Context<Attribute, i32> for ArgsContext<'_> {
     }
 }
 
+/// Mutating context that simulates applying an assignment to a character
+/// while also capturing every assign call (var, value) for display.
+pub struct PreviewContext<'a> {
+    pub character: &'a mut Character,
+    pub args: &'a [i32],
+    pub captured: Vec<(Attribute, i32)>,
+}
+
+impl expr::Context<Attribute, i32> for PreviewContext<'_> {
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Arg(n) => self
+                .args
+                .get(n as usize)
+                .copied()
+                .ok_or_else(|| expr::Error::unsupported_var(var)),
+            other => self.character.resolve(other),
+        }
+    }
+
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        if self
+            .character
+            .resolve(var)
+            .ok()
+            .is_none_or(|prev| prev != value)
+        {
+            self.captured.push((var, value));
+        }
+        self.character.assign(var, value)
+    }
+}
+
 /// Like [`apply_with_modal`], but accepts pre-filled ARG values (e.g. from AI
 /// generation). Features whose prefilled args validate successfully are applied
 /// directly; any remaining features fall back to the interactive args modal.

@@ -451,9 +451,16 @@ impl Attribute {
     /// Human-readable translated name for this attribute.
     pub fn display_name(&self, i18n: &leptos_fluent::I18n) -> String {
         match self {
-            Self::Ability(a) | Self::Modifier(a) => i18n.tr(a.tr_abbr_key()),
-            Self::Skill(s) | Self::SkillProficiency(s) => i18n.tr(s.tr_key()),
-            Self::SavingThrow(a) | Self::SaveProficiency(a) => i18n.tr(a.tr_abbr_key()),
+            Self::Ability(a) => i18n.tr(a.tr_abbr_key()),
+            Self::Modifier(a) => format!("{}.MOD", i18n.tr(a.tr_abbr_key())),
+            Self::Skill(s) => i18n.tr(s.tr_key()),
+            Self::SkillProficiency(s) => i18n.tr(s.tr_key()),
+            Self::SavingThrow(a) => {
+                format!("{} ({})", i18n.tr("saving-throw"), i18n.tr(a.tr_abbr_key()))
+            }
+            Self::SaveProficiency(a) => {
+                format!("{} ({})", i18n.tr("saving-throw"), i18n.tr(a.tr_abbr_key()))
+            }
             Self::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
             Self::MaxHp => i18n.tr("hp-max"),
             Self::Speed => i18n.tr("speed"),

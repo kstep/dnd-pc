@@ -3099,6 +3099,14 @@ dialog.modal.closing::backdrop {
   border-radius: 0 var(--radius-1) var(--radius-1) 0;
   font-size: var(--font-size-1);
   color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+}
+
+.feature-assignment-entry {
+  font-size: var(--font-size-0);
+  color: var(--text-primary);
 }
 
 .reference-features {

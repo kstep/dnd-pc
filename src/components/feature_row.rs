@@ -20,6 +20,7 @@ use crate::{
 pub fn FeatureRow(
     feature_idx: usize,
     options: Memo<Vec<(String, String, String)>>,
+    assign_previews: Memo<Vec<Vec<String>>>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
@@ -231,6 +232,17 @@ pub fn FeatureRow(
                         .collect_view()}
                 </div>
             })}
+            {move || {
+                let entries = assign_previews
+                    .with(|previews| previews.get(feature_idx).cloned().unwrap_or_default());
+                (!entries.is_empty()).then(|| view! {
+                    <div class="entry-full-row feature-assignments">
+                        {entries.into_iter().map(|entry| view! {
+                            <span class="feature-assignment-entry">{entry}</span>
+                        }).collect_view()}
+                    </div>
+                })
+            }}
         </div>
     })
 }
