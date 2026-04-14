@@ -1475,6 +1475,7 @@ section {
 .entry-spell-link {
   color: var(--accent);
   text-decoration: none;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
