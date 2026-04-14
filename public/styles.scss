@@ -1542,6 +1542,11 @@ section {
   flex: 1;
   min-width: 0;
   font-size: var(--font-size-1);
+  line-height: 1.5rem;
+}
+
+.entry-item.expanded > .entry-content > .entry-name {
+  font-size: var(--font-size-2);
 }
 
 input.entry-name,
