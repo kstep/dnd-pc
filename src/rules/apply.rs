@@ -15,21 +15,47 @@ use crate::{
     },
 };
 
-/// Bundled user inputs from the args/dice modal, keyed by feature name.
-/// Each inner Vec has one entry per interactive assignment expression.
+/// Key for per-feature-instance inputs. Stackable features appear with the
+/// same `name` but different `source`, so both identify the instance.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct FeatureKey {
+    pub name: String,
+    pub source: FeatureSource,
+}
+
+impl FeatureKey {
+    pub fn new(name: impl Into<String>, source: FeatureSource) -> Self {
+        Self {
+            name: name.into(),
+            source,
+        }
+    }
+
+    pub fn from_pending(pending: &PendingFeature) -> Self {
+        Self::new(&*pending.name, pending.source.clone())
+    }
+}
+
+/// Bundled user inputs from the args/dice modal, keyed by `FeatureKey`.
+/// Using `(name, source)` as the key lets stackable features with multiple
+/// instances (e.g. ASI at Monk L4 and Monk L8) carry distinct inputs —
+/// a name-only map would collapse them into one. Each inner `Vec` has one
+/// entry per interactive assignment expression of the feature instance.
 #[derive(Clone, Default)]
 pub struct ApplyInputs {
-    pub feature_inputs: BTreeMap<String, Vec<AssignInputs>>,
+    pub feature_inputs: BTreeMap<FeatureKey, Vec<AssignInputs>>,
     /// Original feature name → replacement feature name.
     pub replacements: BTreeMap<String, String>,
 }
 
 impl ApplyInputs {
-    pub fn get(&self, feature_name: &str) -> &[AssignInputs] {
-        self.feature_inputs
-            .get(feature_name)
-            .map(Vec::as_slice)
-            .unwrap_or_default()
+    pub fn get(&self, feature_name: &str, source: &FeatureSource) -> &[AssignInputs] {
+        // Lookup allocates once to build the key — acceptable: `get` is
+        // called only a handful of times per apply flow, not in any hot
+        // path. In exchange we get O(log n) BTreeMap lookup and a clean
+        // owned-key storage model.
+        let key = FeatureKey::new(feature_name, source.clone());
+        self.feature_inputs.get(&key).map_or(&[], Vec::as_slice)
     }
 }
 
@@ -301,7 +327,7 @@ pub fn apply_new_features(
             continue;
         };
         let feature_inputs = inputs
-            .map(|i| i.get(&pending_feature.name))
+            .map(|i| i.get(&pending_feature.name, &pending_feature.source))
             .unwrap_or_default();
         if character
             .features
@@ -388,7 +414,7 @@ pub fn replay(
             continue;
         };
         let feature_inputs = if stored.is_empty() {
-            inputs.get(&pending_feature.name)
+            inputs.get(&pending_feature.name, &pending_feature.source)
         } else {
             stored.as_slice()
         };
@@ -404,7 +430,7 @@ pub fn replay(
     for feature in character.features.iter_mut() {
         feature.applied = true;
         if feature.inputs.is_empty() {
-            let supp = inputs.get(&feature.name);
+            let supp = inputs.get(&feature.name, &feature.source);
             if !supp.is_empty() {
                 feature.inputs = supp.to_vec();
             }
@@ -412,12 +438,30 @@ pub fn replay(
     }
 
     // Phase 2: OnLevelUp through intermediate levels
-    for pending_feature in pending {
-        let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+    onlevelup_pass(features_index, character);
+}
+
+/// Fire OnLevelUp for every applied feature at every intermediate level from
+/// its `added_at_level + 1` up to its effective level. Extracted so that
+/// rebuild can reuse the OnLevelUp sweep without running the OnFeatureAdd
+/// phase of `replay()`.
+pub fn onlevelup_pass(
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &mut Character,
+) {
+    let applied: Vec<(String, FeatureSource)> = character
+        .features
+        .iter()
+        .filter(|f| f.applied)
+        .map(|f| (f.name.clone(), f.source.clone()))
+        .collect();
+    for (feat_name, source) in &applied {
+        let Some(feat_def) = features_index.get(feat_name.as_str()) else {
             continue;
         };
-        let effective = character.effective_level_for(&pending_feature.source);
-        for level in (pending_feature.level + 1)..=effective {
+        let added_level = source.added_at_level();
+        let effective = character.effective_level_for(source);
+        for level in (added_level + 1)..=effective {
             feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
         }
     }

@@ -5,7 +5,10 @@ use reactive_stores::Store;
 use super::{apply::apply_single_level, character_header::split_resolved};
 use crate::{
     BASE_URL,
-    components::{datalist_input::DatalistInput, icon::Icon},
+    components::{
+        datalist_input::{DatalistInput, DatalistOption},
+        icon::Icon,
+    },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel},
     rules::{DefinitionStore, RulesRegistry},
 };
@@ -26,13 +29,7 @@ pub fn ClassesSection() -> impl IntoView {
         registry.with_class_entries(|entries| {
             entries
                 .values()
-                .map(|entry| {
-                    (
-                        entry.name.clone(),
-                        entry.label().to_string(),
-                        entry.description.clone(),
-                    )
-                })
+                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
                 .collect::<Vec<_>>()
         })
     });
@@ -44,13 +41,7 @@ pub fn ClassesSection() -> impl IntoView {
             entries
                 .values()
                 .filter(|entry| registry.can_multiclass(&character, &entry.name))
-                .map(|entry| {
-                    (
-                        entry.name.clone(),
-                        entry.label().to_string(),
-                        entry.description.clone(),
-                    )
-                })
+                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
                 .collect::<Vec<_>>()
         })
     });
@@ -89,17 +80,17 @@ pub fn ClassesSection() -> impl IntoView {
                                 None
                             };
 
-                            let subclass_options: Vec<(String, String, String)> = registry
+                            let subclass_options: Vec<DatalistOption> = registry
                                 .classes()
                                 .with(&class_key, |def| {
                                     def.subclasses
                                         .values()
                                         .filter(|sc| sc.min_level() <= current_level)
                                         .map(|sc| {
-                                            (
-                                                sc.name.clone(),
-                                                sc.label().to_string(),
-                                                sc.description.clone(),
+                                            DatalistOption::new(
+                                                &sc.name,
+                                                sc.label(),
+                                                &sc.description,
                                             )
                                         })
                                         .collect()

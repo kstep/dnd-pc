@@ -7,8 +7,12 @@ use strum::IntoEnumIterator;
 use crate::{
     BASE_URL,
     components::{
-        datalist_input::DatalistInput, icon::Icon, markdown::Markdown, slot_box::SlotBox,
-        spell_info_bar::SpellInfoBar, toggle_button::ToggleButton,
+        datalist_input::{DatalistInput, DatalistOption},
+        icon::Icon,
+        markdown::Markdown,
+        slot_box::SlotBox,
+        spell_info_bar::SpellInfoBar,
+        toggle_button::ToggleButton,
     },
     model::{
         Ability, Character, CharacterStoreFields, Spell, SpellData, SpellSlotPool, Translatable,
@@ -31,27 +35,6 @@ fn lookup_spell_meta(
                 feat.spells.as_ref().and_then(|spells_def| {
                     registry.with_spell_list(&spells_def.list, |spell_map| {
                         spell_map.get(spell_name).map(|sd| sd.meta())
-                    })
-                })
-            })
-            .flatten()
-    })
-}
-
-fn lookup_spell_level(
-    registry: RulesRegistry,
-    feat_name: StoredValue<String>,
-    spell_name: &str,
-) -> Option<u32> {
-    if spell_name.is_empty() {
-        return None;
-    }
-    feat_name.with_value(|key| {
-        registry
-            .with_feature(key, |feat| {
-                feat.spells.as_ref().and_then(|spells_def| {
-                    registry.with_spell_list(&spells_def.list, |spell_map| {
-                        spell_map.get(spell_name).map(|sd| sd.level)
                     })
                 })
             })
@@ -120,22 +103,16 @@ fn update_known_spell(
 }
 
 fn lookup_pick(
-    registry: RulesRegistry,
-    feat_name: StoredValue<String>,
-    options: Signal<Vec<(String, String, String)>>,
+    options: Signal<Vec<DatalistOption>>,
     resolved: Option<&str>,
 ) -> (String, Option<u32>) {
     resolved
-        .map(|name| {
-            let desc = options
-                .with(|opts| {
-                    opts.iter()
-                        .find(|(n, _, _)| n == name)
-                        .map(|(_, _, d)| d.clone())
-                })
-                .unwrap_or_default();
-            let level = lookup_spell_level(registry, feat_name, name);
-            (desc, level)
+        .and_then(|name| {
+            options.with(|opts| {
+                opts.iter()
+                    .find(|opt| opt.name == name)
+                    .map(|opt| (opt.description.clone(), opt.count))
+            })
         })
         .unwrap_or_default()
 }
@@ -227,7 +204,7 @@ fn FeatureSpellcastingSection(
     });
 
     // Per-level spell suggestions from registry (for spellbook / single-tier)
-    let spell_suggestions: [RwSignal<Vec<(String, String, String)>>; 10] =
+    let spell_suggestions: [RwSignal<Vec<DatalistOption>>; 10] =
         std::array::from_fn(|_| RwSignal::new(Vec::new()));
     Effect::new(move || {
         registry.track_spell_cache();
@@ -265,7 +242,7 @@ fn FeatureSpellcastingSection(
             .unwrap_or(0)
     });
 
-    let pick_suggestions = move |suggestions: &[RwSignal<Vec<(String, String, String)>>; 10]| {
+    let pick_suggestions = move |suggestions: &[RwSignal<Vec<DatalistOption>>; 10]| {
         let max = max_slot_level.get() as usize;
         suggestions[1..=max]
             .iter()
@@ -278,12 +255,12 @@ fn FeatureSpellcastingSection(
     let leveled_suggestions = Memo::new(move |_| pick_suggestions(&spell_suggestions));
 
     // Per-level suggestions from known (spellbook) entries for prepared spells
-    let known_suggestions: [RwSignal<Vec<(String, String, String)>>; 10] =
+    let known_suggestions: [RwSignal<Vec<DatalistOption>>; 10] =
         std::array::from_fn(|_| RwSignal::new(Vec::new()));
 
     let leveled_known = Memo::new(move |_| pick_suggestions(&known_suggestions));
 
-    let pick_options = move |level: u32, prefer_known: bool| -> Signal<Vec<_>> {
+    let pick_options = move |level: u32, prefer_known: bool| -> Signal<Vec<DatalistOption>> {
         if level == 0 {
             spell_suggestions[0].into()
         } else if prefer_known {
@@ -300,15 +277,15 @@ fn FeatureSpellcastingSection(
                 .and_then(|e| e.spells.as_ref())
                 .and_then(|sc| sc.known.as_ref())
         });
-        let mut by_level: [Vec<(String, String, String)>; 10] = Default::default();
+        let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
         if let Some(known) = known {
             for spell in known.iter().filter(|s| !s.name.is_empty()) {
-                if let Some(bucket) = by_level.get_mut(spell.level.min(9) as usize) {
-                    bucket.push((
-                        spell.name.clone(),
-                        spell.label().to_string(),
-                        spell.description.clone(),
-                    ));
+                let level = spell.level.min(9);
+                if let Some(bucket) = by_level.get_mut(level as usize) {
+                    bucket.push(
+                        DatalistOption::new(&spell.name, spell.label(), &spell.description)
+                            .with_count(level),
+                    );
                 }
             }
         }
@@ -421,8 +398,9 @@ fn FeatureSpellcastingSection(
                                                         placeholder=move_tr!("spell-name")
                                                         class="entry-name"
                                                         options=options
+                                                        badge_key="spell-level-badge"
                                                         on_input=move |input, resolved| {
-                                                            let (desc, level) = lookup_pick(registry, feat_name, options, resolved.as_deref());
+                                                            let (desc, level) = lookup_pick(options, resolved.as_deref());
                                                             update_known_spell(feat_name, store, i, |spell| {
                                                                 apply_spell_pick(spell, input, resolved, desc, level);
                                                             });
@@ -563,8 +541,9 @@ fn FeatureSpellcastingSection(
                                                     placeholder=move_tr!("spell-name")
                                                     class="entry-name"
                                                     options=options
+                                                    badge_key="spell-level-badge"
                                                     on_input=move |input, resolved| {
-                                                        let (desc, level) = lookup_pick(registry, feat_name, options, resolved.as_deref());
+                                                        let (desc, level) = lookup_pick(options, resolved.as_deref());
                                                         update_spell(feat_name, store, i, |spell| {
                                                             apply_spell_pick(spell, input, resolved, desc, level);
                                                         });
@@ -706,19 +685,18 @@ fn FeatureSpellcastingSection(
 fn resolve_feature_spell_list(
     registry: &RulesRegistry,
     feature_name: &str,
-) -> [Vec<(String, String, String)>; 10] {
+) -> [Vec<DatalistOption>; 10] {
     registry
         .with_feature(feature_name, |feat| {
             let spells_def = feat.spells.as_ref()?;
             Some(registry.with_spell_list(&spells_def.list, |spells| {
-                let mut by_level: [Vec<(String, String, String)>; 10] = Default::default();
+                let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
                 for spell in spells.values() {
                     if let Some(bucket) = by_level.get_mut(spell.level as usize) {
-                        bucket.push((
-                            spell.name.clone(),
-                            spell.label().to_string(),
-                            spell.description.clone(),
-                        ));
+                        bucket.push(
+                            DatalistOption::new(&spell.name, spell.label(), &spell.description)
+                                .with_count(spell.level),
+                        );
                     }
                 }
                 by_level

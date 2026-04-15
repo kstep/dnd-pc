@@ -3,7 +3,7 @@ use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
-    components::{apply::PreviewContext, feature_row::FeatureRow},
+    components::{apply::PreviewContext, datalist_input::DatalistOption, feature_row::FeatureRow},
     model::{Character, CharacterStoreFields, Feature, FeatureSource},
     rules::{RulesRegistry, WhenCondition},
 };
@@ -32,13 +32,7 @@ pub fn FeaturesPanel() -> impl IntoView {
             features_index
                 .values()
                 .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(&character))
-                .map(|feat| {
-                    (
-                        feat.name.clone(),
-                        feat.label().to_string(),
-                        feat.description.clone(),
-                    )
-                })
+                .map(|feat| DatalistOption::new(&feat.name, feat.label(), &feat.description))
                 .collect::<Vec<_>>()
         })
     });

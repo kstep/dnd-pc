@@ -4,7 +4,10 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::DatalistInput, icon::Icon, slot_box::SlotBox, toggle_button::ToggleButton,
+        datalist_input::{DatalistInput, DatalistOption},
+        icon::Icon,
+        slot_box::SlotBox,
+        toggle_button::ToggleButton,
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureOption, FeatureValue,
@@ -221,10 +224,10 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
 
                 let has_cost = cost_label.is_some();
                 let fld_name = StoredValue::new(field_name.clone());
-                let suggestions: Signal<Vec<(String, String, String)>> = Signal::stored(
+                let suggestions: Signal<Vec<DatalistOption>> = Signal::stored(
                     all_options
                         .iter()
-                        .map(|o| (o.name.clone(), o.label().to_string(), o.description.clone()))
+                        .map(|o| DatalistOption::new(&o.name, o.label(), &o.description))
                         .collect(),
                 );
 

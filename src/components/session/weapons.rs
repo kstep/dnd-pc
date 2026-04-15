@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         cast_button::CastButton,
-        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal},
+        effects_calc_modal::{EffectsCalcInfo, EffectsCalcModal, open_calc_modal},
         icon::Icon,
         session_list::{SessionList, SessionListItem},
     },
@@ -90,14 +90,17 @@ pub fn WeaponsBlock() -> impl IntoView {
                     let title = name_atk.clone();
                     view! {
                         <CastButton on_cast=Callback::new(move |_| {
-                            calc_info.set_value(Some(EffectsCalcInfo {
-                                title: title.clone(),
-                                effects: effects.clone(),
-                                extra_vars: BTreeMap::new(),
-                                spell_name: String::new(),
-                                feature_name: String::new(),
-                            }));
-                            show_calc.set(true);
+                            open_calc_modal(
+                                show_calc,
+                                calc_info,
+                                EffectsCalcInfo {
+                                    title: title.clone(),
+                                    effects: effects.clone(),
+                                    extra_vars: BTreeMap::new(),
+                                    spell_name: String::new(),
+                                    feature_name: String::new(),
+                                },
+                            );
                         }) />
                     }
                 });

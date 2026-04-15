@@ -70,6 +70,8 @@ armor-class = Armor Class
 recalculate = Recalculate
 replay = Replay
 replay-confirm = Replay will reset and re-apply all features. Continue?
+rebuild = Rebuild
+rebuild-confirm = Rebuild will construct a fresh character from identity and User features, checking multiclass prerequisites. In-game counters (HP, used slots, hit dice) are preserved. Continue?
 initiative = Initiative
 speed = Speed
 attack-count = Attacks
@@ -376,3 +378,10 @@ show-expression = Show expression
 points = Points
 points-max = Max points
 reset = Reset
+spell-level-badge = { $count ->
+    [0] Cantrip
+    [1] 1st level
+    [2] 2nd level
+    [3] 3rd level
+   *[other] { $count }th level
+}

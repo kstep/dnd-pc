@@ -22,6 +22,16 @@ pub struct CharacterIdentity {
     pub background_applied: bool,
 }
 
+impl CharacterIdentity {
+    pub fn reset_applied_flags(&mut self) {
+        self.species_applied = false;
+        self.background_applied = false;
+        for class_level in &mut self.classes {
+            class_level.applied_levels.clear();
+        }
+    }
+}
+
 impl Default for CharacterIdentity {
     fn default() -> Self {
         Self {
@@ -100,6 +110,51 @@ impl Default for ClassLevel {
             hit_dice_used: 0,
             applied_levels: VecSet::new(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn reset_applied_flags_clears_everything() {
+        let mut identity = CharacterIdentity {
+            species_applied: true,
+            background_applied: true,
+            classes: vec![
+                ClassLevel {
+                    class: "Monk".into(),
+                    level: 3,
+                    applied_levels: [1, 2, 3].into_iter().collect(),
+                    ..ClassLevel::default()
+                },
+                ClassLevel {
+                    class: "Wizard".into(),
+                    level: 2,
+                    applied_levels: [1, 2].into_iter().collect(),
+                    ..ClassLevel::default()
+                },
+            ],
+            ..CharacterIdentity::default()
+        };
+
+        identity.reset_applied_flags();
+
+        assert!(!identity.species_applied);
+        assert!(!identity.background_applied);
+        for cl in &identity.classes {
+            assert!(
+                cl.applied_levels.is_empty(),
+                "{} still has applied levels",
+                cl.class
+            );
+        }
+        // Levels themselves are preserved.
+        assert_eq!(identity.classes[0].level, 3);
+        assert_eq!(identity.classes[1].level, 2);
     }
 }
 

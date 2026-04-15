@@ -2710,6 +2710,7 @@ dialog.modal.closing::backdrop {
 
 .menu-modal-choice {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
   padding: var(--size-3);
@@ -2845,9 +2846,25 @@ dialog.modal.closing::backdrop {
   }
 }
 
+.datalist-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--size-2);
+  width: 100%;
+}
+
 .datalist-option-value {
   font-weight: 600;
   font-size: var(--font-size-1);
+}
+
+.datalist-option-badge {
+  font-size: var(--font-size-0);
+  line-height: 1.4;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .datalist-option-label {

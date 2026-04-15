@@ -9,7 +9,7 @@ use crate::{
         cast_button::{CastButton, CastOption},
         effects_calc_modal::{
             EffectsCalcInfo, EffectsCalcModal, all_self_effects_diceless, apply_self_effects_now,
-            inject_resource_vars,
+            inject_resource_vars, open_calc_modal,
         },
         icon::Icon,
         session::FreeUsesBadge,
@@ -171,14 +171,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                 return;
             }
 
-            calc_info.set_value(Some(EffectsCalcInfo {
-                title: option_label.clone(),
-                effects,
-                extra_vars,
-                spell_name: option_label,
-                feature_name: feature_name.clone(),
-            }));
-            show_calc.set(true);
+            open_calc_modal(
+                show_calc,
+                calc_info,
+                EffectsCalcInfo {
+                    title: option_label.clone(),
+                    effects,
+                    extra_vars,
+                    spell_name: option_label,
+                    feature_name: feature_name.clone(),
+                },
+            );
         },
     );
 

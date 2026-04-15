@@ -6,19 +6,19 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::DatalistInput,
+        datalist_input::{DatalistInput, DatalistOption},
         expr_args_input::{DiceGroupSignals, ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
         expr_view::ExprDetails,
         modal::Modal,
     },
     expr::DicePool,
     model::{AssignInputs, Character, Expr, FeatureSource},
-    rules::{ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry},
+    rules::{ApplyInputs, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry},
 };
 
 type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
-type ArgsSignals = Vec<(String, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
-type DiceSignals = Vec<(String, Vec<StoredValue<DiceGroupSignals>>)>;
+type ArgsSignals = Vec<(FeatureKey, Vec<StoredValue<Vec<RwSignal<i32>>>>)>;
+type DiceSignals = Vec<(FeatureKey, Vec<StoredValue<DiceGroupSignals>>)>;
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
@@ -89,8 +89,7 @@ fn ArgsFeatureInput(
     let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
         StoredValue::new(Vec::new());
     let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> = StoredValue::new(Vec::new());
-    let name_for_signals = feature_name.clone();
-    let name_for_dice = feature_name.clone();
+    let key = FeatureKey::new(feature_name, source.clone());
 
     // For replaceable features, collect expr validity locally so we can
     // bypass it when the user picks a replacement.
@@ -126,12 +125,12 @@ fn ArgsFeatureInput(
     // Register all signal groups for this feature after building
     all_signals.update(|signals| {
         signal_groups.with_value(|groups| {
-            signals.push((name_for_signals.clone(), groups.clone()));
+            signals.push((key.clone(), groups.clone()));
         });
     });
     all_dice.update(|dice| {
         dice_groups.with_value(|groups| {
-            dice.push((name_for_dice.clone(), groups.clone()));
+            dice.push((key.clone(), groups.clone()));
         });
     });
 
@@ -190,13 +189,7 @@ fn ReplacementPicker(
             features_index
                 .values()
                 .filter(|feat| replace_with.matches(feat) && feat.meets_prerequisites(&character))
-                .map(|feat| {
-                    (
-                        feat.name.clone(),
-                        feat.label().to_string(),
-                        feat.description.clone(),
-                    )
-                })
+                .map(|feat| DatalistOption::new(&feat.name, feat.label(), &feat.description))
                 .collect::<Vec<_>>()
         })
     });
@@ -226,8 +219,8 @@ fn ReplacementPicker(
     let on_input = move |text: String, resolved: Option<String>| {
         // Clean up stale signal/dice entries from previous replacement
         if let Some(old_name) = prev_replacement.get_untracked() {
-            all_signals.update(|entries| entries.retain(|(name, _)| *name != old_name));
-            all_dice.update(|entries| entries.retain(|(name, _)| *name != old_name));
+            all_signals.update(|entries| entries.retain(|(key, _)| key.name != old_name));
+            all_dice.update(|entries| entries.retain(|(key, _)| key.name != old_name));
         }
         replacement_valids.set(Vec::new());
 
@@ -289,18 +282,16 @@ fn ReplacementPicker(
                 </Show>
                 {move || {
                     let exprs = replacement_exprs.get();
-                    let feat_name = replacement_choice.get();
-                    if exprs.is_empty() || feat_name.is_none() {
+                    let feat_name = replacement_choice.get()?;
+                    if exprs.is_empty() {
                         return None;
                     }
-                    let feat_name = feat_name.unwrap();
 
                     let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
                         StoredValue::new(Vec::new());
                     let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> =
                         StoredValue::new(Vec::new());
-                    let name_for_signals = feat_name.clone();
-                    let name_for_dice = feat_name.clone();
+                    let key = FeatureKey::new(feat_name, source.get_value());
 
                     let expr_views: Vec<_> = exprs
                         .into_iter()
@@ -324,12 +315,12 @@ fn ReplacementPicker(
 
                     all_signals.update(|signals| {
                         signal_groups.with_value(|groups| {
-                            signals.push((name_for_signals.clone(), groups.clone()));
+                            signals.push((key.clone(), groups.clone()));
                         });
                     });
                     all_dice.update(|dice| {
                         dice_groups.with_value(|groups| {
-                            dice.push((name_for_dice.clone(), groups.clone()));
+                            dice.push((key.clone(), groups.clone()));
                         });
                     });
 
@@ -387,11 +378,11 @@ pub fn ArgsModal() -> impl IntoView {
                         }
                     });
 
-                    let mut inputs_map: BTreeMap<String, Vec<AssignInputs>> = BTreeMap::new();
+                    let mut inputs_map: BTreeMap<FeatureKey, Vec<AssignInputs>> = BTreeMap::new();
 
                     all_signals.with_untracked(|entries| {
-                        for (name, groups) in entries {
-                            if replacements.contains_key(name) {
+                        for (key, groups) in entries {
+                            if replacements.contains_key(&key.name) {
                                 continue;
                             }
                             let feature_inputs: Vec<AssignInputs> = groups
@@ -406,16 +397,16 @@ pub fn ArgsModal() -> impl IntoView {
                                     }
                                 })
                                 .collect();
-                            inputs_map.insert(name.clone(), feature_inputs);
+                            inputs_map.insert(key.clone(), feature_inputs);
                         }
                     });
 
                     all_dice.with_untracked(|entries| {
-                        for (name, groups) in entries {
-                            if replacements.contains_key(name) {
+                        for (key, groups) in entries {
+                            if replacements.contains_key(&key.name) {
                                 continue;
                             }
-                            let feature_inputs = inputs_map.entry(name.clone()).or_default();
+                            let feature_inputs = inputs_map.entry(key.clone()).or_default();
                             for (i, dice_signals) in groups.iter().enumerate() {
                                 let dice = dice_signals.with_value(collect_dice_pool);
                                 if i < feature_inputs.len() {

@@ -70,6 +70,8 @@ armor-class = Класс защиты
 recalculate = Пересчитать
 replay = Переприменить
 replay-confirm = Переприменение сбросит и заново применит все фичи. Продолжить?
+rebuild = Пересобрать
+rebuild-confirm = Пересборка построит персонажа с нуля из identity и пользовательских фич с проверкой пререквизитов мультикласса. HP, использованные слоты и hit dice сохранятся. Продолжить?
 initiative = Инициатива
 speed = Скорость
 attack-count = Атаки
@@ -372,3 +374,7 @@ show-expression = Показать выражение
 points = Очки
 points-max = Макс. очков
 reset = Сброс
+spell-level-badge = { $count ->
+    [0] Заговор
+   *[other] { $count } ур.
+}

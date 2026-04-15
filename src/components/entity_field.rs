@@ -1,6 +1,9 @@
 use leptos::prelude::*;
 
-use crate::{BASE_URL, components::datalist_input::DatalistInput};
+use crate::{
+    BASE_URL,
+    components::datalist_input::{DatalistInput, DatalistOption},
+};
 
 /// Generic entity selector: DatalistInput with display name resolution and
 /// reference link. No apply button — wrap in `ApplyFieldSection` for that.
@@ -9,9 +12,9 @@ pub fn EntityField(
     /// Current entity key (e.g. class/species/background name).
     #[prop(into)]
     name: Signal<String>,
-    /// Autocomplete options as `(name, label, description)` triples.
+    /// Autocomplete options.
     #[prop(into)]
-    options: Signal<Vec<(String, String, String)>>,
+    options: Signal<Vec<DatalistOption>>,
     /// URL path prefix for the reference link (e.g. `"species"`, `"class"`).
     #[prop(into)]
     ref_prefix: &'static str,
@@ -29,8 +32,8 @@ pub fn EntityField(
         options
             .read()
             .iter()
-            .find(|(n, _, _)| *n == current)
-            .map(|(_, label, _)| label.clone())
+            .find(|opt| opt.name == current)
+            .map(|opt| opt.label.clone())
             .unwrap_or(current)
     });
 

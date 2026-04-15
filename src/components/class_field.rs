@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use super::character_header::split_resolved;
 use crate::{
-    components::entity_field::EntityField,
+    components::{datalist_input::DatalistOption, entity_field::EntityField},
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };
@@ -21,13 +21,7 @@ pub fn ClassField() -> impl IntoView {
         registry.with_class_entries(|entries| {
             entries
                 .values()
-                .map(|entry| {
-                    (
-                        entry.name.clone(),
-                        entry.label().to_string(),
-                        entry.description.clone(),
-                    )
-                })
+                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
                 .collect::<Vec<_>>()
         })
     });
@@ -66,8 +60,8 @@ pub fn ClassField() -> impl IntoView {
                 let resolved = options
                     .read_untracked()
                     .iter()
-                    .find(|(name, label, _)| *name == input || *label == input)
-                    .map(|(name, _, _)| name.clone());
+                    .find(|opt| opt.name == input || opt.label == input)
+                    .map(|opt| opt.name.clone());
                 let (name, label) = split_resolved(input, resolved);
                 let hit_die = registry.classes().with(&name, |def| def.hit_die);
                 {

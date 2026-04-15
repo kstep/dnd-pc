@@ -80,7 +80,7 @@ impl Feature {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum FeatureSource {
     Class(Box<str>, u32),
     Subclass(Box<str>, Box<str>, u32),

@@ -8,6 +8,9 @@
   "Generation: Fixed Preset": {
     "description": "Assign the standard array (15, 14, 13, 12, 10, 8) to your ability scores. Each value can only be used once."
   },
+  "Generation: Custom": {
+    "description": "Assign custom starting ability scores — choose any value for each ability."
+  },
   "Alert": {
     "description": "You add your Proficiency Bonus to Initiative rolls. You can't be Surprised while conscious. Other creatures don't gain Advantage on attack rolls against you as a result of being unseen by you."
   },

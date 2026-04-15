@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::entity_field::EntityField,
+    components::{datalist_input::DatalistOption, entity_field::EntityField},
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };
@@ -19,13 +19,7 @@ pub fn BackgroundField() -> impl IntoView {
         registry.with_background_entries(|entries| {
             entries
                 .values()
-                .map(|entry| {
-                    (
-                        entry.name.clone(),
-                        entry.label().to_string(),
-                        entry.description.clone(),
-                    )
-                })
+                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
                 .collect::<Vec<_>>()
         })
     });

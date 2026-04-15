@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::DatalistInput,
+        datalist_input::{DatalistInput, DatalistOption},
         expr_args_input::{ExprArgsInput, ExprArgsInputParts},
         icon::Icon,
         modal::Modal,
@@ -68,13 +68,7 @@ pub fn EffectsBlock() -> impl IntoView {
         registry.with_effects_index(|index| {
             index
                 .values()
-                .map(|eff| {
-                    (
-                        eff.name.clone(),
-                        eff.label().to_owned(),
-                        eff.description.clone(),
-                    )
-                })
+                .map(|eff| DatalistOption::new(&eff.name, eff.label(), &eff.description))
                 .collect::<Vec<_>>()
         })
     });

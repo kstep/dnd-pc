@@ -11,7 +11,7 @@ use wasm_bindgen::prelude::*;
 use crate::{
     BASE_URL,
     components::{
-        apply::{apply_level, apply_with_modal, replay_with_modal},
+        apply::{apply_level, apply_with_modal, rebuild, replay_with_modal},
         apply_field_section::ApplyFieldSection,
         background_field::BackgroundField,
         classes_section::ClassesSection,
@@ -187,6 +187,7 @@ pub fn CharacterHeader() -> impl IntoView {
     };
 
     let show_replay_confirm = RwSignal::new(false);
+    let show_rebuild_confirm = RwSignal::new(false);
     let show_reset_confirm = RwSignal::new(false);
 
     let i18n = expect_context::<leptos_fluent::I18n>();
@@ -393,6 +394,13 @@ pub fn CharacterHeader() -> impl IntoView {
                         <span class="dropdown-item-label">{move_tr!("replay")}</span>
                     </button>
                     <button
+                        class="dropdown-item"
+                        on:click=move |_| show_rebuild_confirm.set(true)
+                    >
+                        <Icon name="wrench" size=16 />
+                        <span class="dropdown-item-label">{move_tr!("rebuild")}</span>
+                    </button>
+                    <button
                         class="dropdown-item dropdown-item-danger"
                         on:click=move |_| show_reset_confirm.set(true)
                     >
@@ -412,6 +420,12 @@ pub fn CharacterHeader() -> impl IntoView {
                 title=Signal::derive(move || i18n.tr("replay"))
                 message=Signal::derive(move || i18n.tr("replay-confirm"))
                 on_confirm=move || replay_with_modal(store, registry)
+            />
+            <ConfirmModal
+                show=show_rebuild_confirm
+                title=Signal::derive(move || i18n.tr("rebuild"))
+                message=Signal::derive(move || i18n.tr("rebuild-confirm"))
+                on_confirm=move || rebuild(store, registry)
             />
             <ConfirmModal
                 show=show_reset_confirm

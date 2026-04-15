@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 use leptos_router::components::A;
 
 use crate::components::{icon::Icon, modal::Modal};
@@ -12,11 +12,52 @@ fn next_datalist_id() -> usize {
     DATALIST_COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
-fn resolve_name(options: &[(String, String, String)], input: &str) -> Option<String> {
+/// An entry shown in the `DatalistInput` suggestions list.
+///
+/// `name` is the stable key, `label` is the display text, `description` is the
+/// secondary line in the modal. `count` is an optional numeric meta used to
+/// render a localized badge via the `badge_key` Fluent message (see
+/// `DatalistInput::badge_key`).
+#[derive(Clone, Debug, PartialEq)]
+pub struct DatalistOption {
+    pub name: String,
+    pub label: String,
+    pub description: String,
+    pub count: Option<u32>,
+}
+
+impl DatalistOption {
+    pub fn new(
+        name: impl Into<String>,
+        label: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
+        Self {
+            name: name.into(),
+            label: label.into(),
+            description: description.into(),
+            count: None,
+        }
+    }
+
+    pub fn with_count(mut self, count: u32) -> Self {
+        self.count = Some(count);
+        self
+    }
+}
+
+fn resolve_name(options: &[DatalistOption], input: &str) -> Option<String> {
     options
         .iter()
-        .find(|(name, label, _)| label == input || name == input)
-        .map(|(name, _, _)| name.clone())
+        .find(|opt| opt.label == input || opt.name == input)
+        .map(|opt| opt.name.clone())
+}
+
+fn render_badge(i18n: I18n, key: &'static str, count: u32) -> String {
+    use std::collections::HashMap;
+    let mut args = HashMap::new();
+    args.insert("count".into(), count.into());
+    i18n.tr_with_args(key, &args)
 }
 
 /// A text input with an associated `<datalist>` for autocomplete suggestions.
@@ -39,11 +80,15 @@ pub fn DatalistInput(
     /// button. When `None` (default), the icon is hidden.
     #[prop(into, optional)]
     ref_href: Signal<Option<String>>,
-    /// Autocomplete options as `(name, label, description)` triples.
-    /// `name` is the stable key, `label` is the display text, `description` is
-    /// shown below.
+    /// Autocomplete options. `name` is the stable key, `label` is the display
+    /// text, `description` is shown below. Set `count` on an option to render
+    /// a badge (requires `badge_key`).
     #[prop(into)]
-    options: Signal<Vec<(String, String, String)>>,
+    options: Signal<Vec<DatalistOption>>,
+    /// Fluent message id used to render a badge in the modal list for each
+    /// option that has a `count`. The message is called with `$count = n`.
+    #[prop(optional)]
+    badge_key: Option<&'static str>,
     /// Whether the input is required for form validation.
     #[prop(optional)]
     required: bool,
@@ -69,24 +114,26 @@ pub fn DatalistInput(
         let query = search_query.get().to_lowercase();
         options.with(|opts| {
             opts.iter()
-                .filter(|(name, label, description)| {
+                .filter(|opt| {
                     query.is_empty()
-                        || name.to_lowercase().contains(&query)
-                        || label.to_lowercase().contains(&query)
-                        || description.to_lowercase().contains(&query)
+                        || opt.name.to_lowercase().contains(&query)
+                        || opt.label.to_lowercase().contains(&query)
+                        || opt.description.to_lowercase().contains(&query)
                 })
                 .cloned()
                 .collect::<Vec<_>>()
         })
     };
 
+    let i18n = expect_context::<I18n>();
+
     view! {
         <div class=format!("datalist-input-wrapper {}", class.unwrap_or_default())>
             <datalist id=format!("datalist-{id}")>
                 {move || focused.get().then(|| options.with(|opts| {
-                    opts.iter().map(|(_, label, description)| {
-                        let label = label.clone();
-                        let description = description.clone();
+                    opts.iter().map(|opt| {
+                        let label = opt.label.clone();
+                        let description = opt.description.clone();
                         view! {
                             <option value=label>
                                 {(!description.is_empty()).then_some(description)}
@@ -141,10 +188,16 @@ pub fn DatalistInput(
             <div class="datalist-modal-list">
                 <For
                     each=filtered_options
-                    key=|(name, _, _)| name.clone()
-                    children=move |(name, label, description)| {
+                    key=|opt| opt.name.clone()
+                    children=move |opt| {
+                        let DatalistOption { name, label, description, count } = opt;
                         let selected_label = label.clone();
                         let selected_name = name.clone();
+                        let badge = badge_key.zip(count).map(|(key, n)| view! {
+                            <span class="datalist-option-badge">
+                                {move || render_badge(i18n, key, n)}
+                            </span>
+                        });
                         view! {
                             <button
                                 type="button"
@@ -156,7 +209,10 @@ pub fn DatalistInput(
                                     show_modal.set(false);
                                 }
                             >
-                                <span class="datalist-option-value">{label}</span>
+                                <div class="datalist-option-header">
+                                    <span class="datalist-option-value">{label}</span>
+                                    {badge}
+                                </div>
                                 <span class="datalist-option-label">{description}</span>
                             </button>
                         }

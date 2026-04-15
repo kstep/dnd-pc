@@ -69,6 +69,20 @@ pub struct EffectsCalcInfo {
     pub feature_name: String,
 }
 
+/// Open the effects calculator modal if there's anything worth calculating.
+/// When no effect carries a formula, the modal would render empty — skip it.
+pub fn open_calc_modal(
+    show: RwSignal<bool>,
+    slot: StoredValue<Option<EffectsCalcInfo>>,
+    info: EffectsCalcInfo,
+) {
+    if !info.effects.iter().any(|effect| effect.expr.is_some()) {
+        return;
+    }
+    slot.set_value(Some(info));
+    show.set(true);
+}
+
 /// Populate `extra_vars` with resource field values (POINTS/POINTS_MAX) from
 /// a feature's data entry. Index matches the field's position in the `fields`
 /// Vec (not just among Points/Die fields).

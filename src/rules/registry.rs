@@ -650,25 +650,6 @@ impl RulesRegistry {
     pub fn fill_from_registry(&self, character: &mut Character) {
         let class_cache = self.class_cache.read();
 
-        // Fix Feature.source levels from class definitions (corrects
-        // migrated characters where level was defaulted to 1).
-        for feature in &mut character.features {
-            if let FeatureSource::Class(class_name, level) = &mut feature.source
-                && let Some(def) = class_cache.get(&**class_name)
-            {
-                let subclass = character
-                    .identity
-                    .classes
-                    .iter()
-                    .find(|cl| cl.class.as_str() == &**class_name)
-                    .and_then(|cl| cl.subclass.as_deref());
-                let correct_level = def.feature_level(subclass, &feature.name);
-                if correct_level > 0 && *level != correct_level {
-                    *level = correct_level;
-                }
-            }
-        }
-
         self.with_features_index(|features_index| {
             let spell_list_cache = self.spell_list_cache.read();
 

@@ -6,7 +6,9 @@ use reactive_stores::Store;
 use crate::{
     BASE_URL,
     components::{
-        apply::apply_with_modal, datalist_input::DatalistInput, feature_field_row::FeatureFieldRow,
+        apply::apply_with_modal,
+        datalist_input::{DatalistInput, DatalistOption},
+        feature_field_row::FeatureFieldRow,
         icon::Icon,
     },
     model::{Character, CharacterStoreFields, FeatureSource, FeatureValue},
@@ -19,7 +21,7 @@ use crate::{
 #[component]
 pub fn FeatureRow(
     feature_idx: usize,
-    options: Memo<Vec<(String, String, String)>>,
+    options: Memo<Vec<DatalistOption>>,
     assign_previews: Memo<Vec<Vec<String>>>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
@@ -170,17 +172,12 @@ pub fn FeatureRow(
                     class="btn-apply-level"
                     title=move_tr!("btn-apply-feature")
                     on:click=move |_| {
-                        let name = features.read()[feature_idx].name.clone();
-                        let level = store.with_untracked(|character| {
-                            registry
-                                .feature_class_level(&character.identity, &name)
-                                .unwrap_or_else(|| character.level())
-                        });
-                        let pending = vec![PendingFeature {
-                            name,
-                            source: FeatureSource::User(level),
-                            level,
-                        }];
+                        let (name, source) = {
+                            let feature = &features.read()[feature_idx];
+                            (feature.name.clone(), feature.source.clone())
+                        };
+                        let level = source.added_at_level();
+                        let pending = vec![PendingFeature { name, source, level }];
                         apply_with_modal(
                             store,
                             registry,
