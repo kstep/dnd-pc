@@ -11,5 +11,6 @@ pub use local::{
 pub use migrate::deserialize_character_value;
 pub use sync::{
     SyncStatus, delete_character, init_sync, retry_sync, save_and_sync_character, setup_auto_save,
-    sign_in_with_google, sync_index_version, sync_is_anonymous, sync_last_error, sync_status,
+    should_prompt_sign_in, sign_in_with_google, sync_index_version, sync_is_anonymous,
+    sync_last_error, sync_status,
 };

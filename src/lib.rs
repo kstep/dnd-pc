@@ -46,6 +46,8 @@ use components::{
     build_info::BuildInfo,
     logo::IsRouting,
     navbar::{ActiveCharacterId, Navbar},
+    signin_toast::SignInToastTrigger,
+    toast::{ToastContainer, provide_toast_context},
 };
 use hooks::use_theme;
 use pages::{
@@ -98,6 +100,7 @@ pub fn App() -> impl IntoView {
     provide_context(ActiveCharacterId::default());
     let is_routing = IsRouting::default();
     provide_context(is_routing);
+    provide_toast_context();
     storage::init_sync();
 
     view! {
@@ -138,6 +141,8 @@ pub fn App() -> impl IntoView {
                 </Routes>
             </main>
         </Router>
+        <ToastContainer />
+        <SignInToastTrigger />
         <BuildInfo />
     }
 }

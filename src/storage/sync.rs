@@ -104,6 +104,18 @@ pub fn sync_index_version() -> ReadSignal<u32> {
     get_or_init_sync().index_version.read_only()
 }
 
+/// `true` when the user is anonymous and sync has reached a stable state
+/// (not Disabled and not Connecting). Used to decide whether to nudge the
+/// user toward signing in for cross-device sync.
+pub fn should_prompt_sign_in() -> Memo<bool> {
+    let status = sync_status();
+    let is_anonymous = sync_is_anonymous();
+    Memo::new(move |_| {
+        let current = status.get();
+        is_anonymous.get() && current != SyncStatus::Disabled && current != SyncStatus::Connecting
+    })
+}
+
 /// Reactive signal that becomes `true` once the initial cloud sync completes
 /// (success, failure, or disabled). Before this, auto-save preserves existing
 /// timestamps so sync can compare them accurately.

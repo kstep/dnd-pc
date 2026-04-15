@@ -9,6 +9,7 @@ use crate::{
     BASE_URL,
     components::{
         args_modal::{ArgsModal, ArgsModalCtx},
+        cloud_sign_in_hint::CloudSignInHint,
         navbar::ActiveCharacterId,
     },
     effective::EffectiveCharacter,
@@ -35,6 +36,7 @@ pub fn CharacterLayout() -> impl IntoView {
             Either::Right(view! {
                 <div class="not-found">
                     <h1>{move_tr!("character-not-found")}</h1>
+                    <CloudSignInHint message=move_tr!("hint-character-not-found") />
                     <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
                 </div>
             })

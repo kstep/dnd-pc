@@ -11,7 +11,9 @@ use strum::IntoEnumIterator;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL, firebase,
+    BASE_URL,
+    components::cloud_sign_in_hint::CloudSignInHint,
+    firebase,
     model::{Ability, Character, Item, Proficiency, Skill, Translatable},
     share, storage,
 };
@@ -655,6 +657,7 @@ pub fn ImportCloudCharacter() -> impl IntoView {
         view! {
             <div class="panel">
                 <h2>{move_tr!("share-not-found")}</h2>
+                <CloudSignInHint message=move_tr!("hint-character-not-found") />
                 <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
             </div>
         }

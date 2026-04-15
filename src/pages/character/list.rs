@@ -4,8 +4,10 @@ use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 
 use crate::{
-    components::character_card::CharacterCard, model::Character,
-    pages::import_character::import_or_conflict, storage,
+    components::{character_card::CharacterCard, cloud_sign_in_hint::CloudSignInHint},
+    model::Character,
+    pages::import_character::import_or_conflict,
+    storage,
 };
 
 #[component]
@@ -62,10 +64,13 @@ pub fn CharacterList() -> impl IntoView {
                                 {move_tr!("btn-load-character")}
                             </button>
                         </div>
+                        <Show when=move || characters.with(|summaries| summaries.is_empty())>
+                            <CloudSignInHint message=move_tr!("hint-no-characters") />
+                        </Show>
                         <div class="character-list">
                             <For
                                 each=move || characters.get()
-                                key=|c| c.id
+                                key=|summary| summary.id
                                 let:character
                             >
                                 <CharacterCard summary=character on_delete=delete_character />
