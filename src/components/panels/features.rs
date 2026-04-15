@@ -72,18 +72,17 @@ pub fn FeaturesPanel() -> impl IntoView {
         <div class="entry-list">
             {move || {
                 let features_read = features.read();
-                features_read
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .map(|(i, feature)| {
-                        let is_group_boundary = i == 0
-                            || features_read[i - 1].source != feature.source;
-                        let header = is_group_boundary
-                            .then(|| {
-                                let label = registry.source_label(&feature.source, i18n);
-                                view! { <h3 class="features-group-header">{label}</h3> }
-                            });
+                let mut last_source: Option<&FeatureSource> = None;
+                let mut rows = Vec::with_capacity(features_read.len());
+                for (i, feature) in features_read.iter().enumerate().rev() {
+                    let is_new_group = last_source.is_none_or(|s| s != &feature.source);
+                    last_source = Some(&feature.source);
+                    let header = is_new_group
+                        .then(|| {
+                            let label = registry.source_label(&feature.source, i18n);
+                            view! { <h3 class="features-group-header">{label}</h3> }
+                        });
+                    rows.push(
                         view! {
                             {header}
                             <FeatureRow
@@ -91,9 +90,10 @@ pub fn FeaturesPanel() -> impl IntoView {
                                 options=feature_options
                                 assign_previews=assign_previews
                             />
-                        }
-                    })
-                    .collect_view()
+                        },
+                    );
+                }
+                rows.collect_view()
             }}
         </div>
     }

@@ -110,6 +110,7 @@ pub fn CombatPanel() -> impl IntoView {
 
             <div class="hit-dice-section">
                 <h4>{move_tr!("hit-dice")}</h4>
+                <div class="slot-box-list">
                 {move || {
                     classes
                         .read()
@@ -155,6 +156,7 @@ pub fn CombatPanel() -> impl IntoView {
                         })
                         .collect_view()
                 }}
+                </div>
             </div>
 
             <div class="rest-actions">
