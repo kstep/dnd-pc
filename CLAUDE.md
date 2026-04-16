@@ -1,276 +1,153 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code working in this repository.
 
-## Build & Development Commands
+## Build & Dev Commands
 
 ```bash
 trunk serve --port 3000 --open   # Dev server with hot reload
 trunk build --release             # Production build
 cargo clippy                      # Lint
-cargo +nightly fmt                # Format (requires nightly — uses edition 2024 rustfmt features)
-WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown  # Run tests in headless Chrome
+cargo +nightly fmt                # Format (edition 2024 rustfmt features)
+cargo test                        # Native tests (JSON validation)
+WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown  # WASM tests
 ```
 
-Default toolchain is stable (`rust-toolchain.toml`). Nightly is only needed for `cargo +nightly fmt`.
+Default toolchain is stable (`rust-toolchain.toml`). Nightly only needed for `fmt`.
 
-Deployment to GitHub Pages uses `trunk build --release --public-url /dnd-pc/` with `BASE_URL=/dnd-pc`. CI is in `.github/workflows/deploy.yml`. The CI also copies `dist/index.html` to `dist/404.html` for SPA routing on GitHub Pages.
+Deploy to GitHub Pages: `trunk build --release --public-url /dnd-pc/` with `BASE_URL=/dnd-pc`. CI in `.github/workflows/deploy.yml` copies `dist/index.html` → `dist/404.html` for SPA routing.
 
 ## Architecture
 
-Leptos 0.8 CSR (client-side rendered) PWA targeting `wasm32-unknown-unknown`, bundled with Trunk.
+Leptos 0.8 CSR PWA, `wasm32-unknown-unknown`, bundled with Trunk.
 
 ### Routing (`src/lib.rs`)
-- `/` — Character list (create, delete, select)
-- `/c/:id` — `ParentRoute` → `CharacterLayout` with nested:
-  - `""` → `CharacterEditor` (3-column editor grid)
-  - `"/session"` → `CharacterSession` (game session view)
-- `/s/:user_id/:char_id` — Import shared character from Firestore (UUID-based sharing)
-- `/s/:data` — Import shared character from compressed URL (with conflict detection)
-- `/r/class`, `/r/class/:name`, `/r/class/:name/:subname` → `ClassReference`
-- `/r/species`, `/r/species/:name` → `SpeciesReference`
-- `/r/background`, `/r/background/:name` → `BackgroundReference`
-- `/r/feature` → `FeatureReference`
-- `/r/spell`, `/r/spell/:list` → `SpellReference`
+- `/` — character list
+- `/c/:id` — `CharacterLayout` (ParentRoute) with nested tabs:
+  - `/stats`, `/build`, `/magic`, `/inventory`, `/backstory` — `CharacterEditor` tabs
+  - `/session` — game session view
+  - `/quick-start` — guided character creation
+  - `/story`, `/story/:story_id` — AI-generated backstory
+- `/s/:user_id/:char_id` — import shared character from Firestore
+- `/s/:data` — import from compressed URL (with conflict detection)
+- `/r/class[/:name[/:subname]]`, `/r/species[/:name]`, `/r/background[/:name]`, `/r/feature[/:category]`, `/r/spell[/:list]` — reference browsers
 
-Router uses `option_env!("BASE_URL")` for base path. `hooks.rs` defines `use_theme()` for dark/light mode detection via `window.matchMedia`.
+Router uses `option_env!("BASE_URL")` for base path. `use_navigate()` handles the base URL internally — use plain paths like `/c/{id}`, never prepend `BASE_URL`. The `BASE_URL` constant is only for `<A href=...>` and share link construction.
 
-**Component hierarchy:** `App()` calls `provide_i18n_context()`, `provide_meta_context()`, provides `RulesRegistry::new(i18n)`, `ActiveCharacterId`, and `IsRouting` as context, calls `storage::init_sync()`, and renders `Navbar` (with language switcher, sync indicator) and `Router`.
-
-**Navigation:** `use_navigate()` from `leptos_router` handles the base URL internally. Always use plain paths like `/c/{id}` — do NOT prepend `{BASE_URL}`. The `BASE_URL` constant is only needed for `<A href=...>` links and manual URL construction (e.g. share links with `window.location.origin`).
+### Contexts provided at App root
+`RulesRegistry`, `ActiveCharacterId`, `IsRouting`, `ToastContainer`, `ArgsModalCtx`. `EffectiveCharacter` is provided per-character in `character/layout.rs`.
 
 ### Reactive State (`reactive_stores`)
-`Store<Character>` is the core state container. All model structs in `src/model/` derive `Store`, which generates `{Name}StoreFields` traits for field-level reactivity.
 
-**Providing & consuming:**
-```rust
-// In pages/character/layout.rs — provides store to all child components
-let store = Store::new(character);
-provide_context(store);
+`Store<Character>` is the core state container. All model structs derive `Store` (field-level reactivity).
 
-// In any component
-let store = expect_context::<Store<Character>>();
-```
+Provide in `character/layout.rs`, consume with `expect_context::<Store<Character>>()` in child components.
 
-**Field access patterns:**
-- Simple fields: `store.identity().name().get()` / `.set()` / `.update(|v| ...)`
-- Vec fields: `store.features().read()` for iteration, `.write()` for mutation
-- HashMap fields: `store.skills().update(|m| { ... })` — use `.update()` to avoid temporary borrow issues
-- Computed values: `Memo::new(move |_| store.get().initiative())`
-- `Show when=` requires a closure: `move || memo.get()`, not a raw Memo
+**Field access:**
+- Simple: `store.identity().name().get()` / `.set()` / `.update(|v| ...)`
+- Vec: `.read()` for iteration, `.write()` for mutation
+- HashMap: `.update(|m| { ... })` to avoid temporary borrow issues
+- Computed: `Memo::new(move |_| store.get().initiative())`
+- `Show when=` needs a closure: `move || memo.get()`, not a raw Memo
 
-**Effects in `character/layout.rs`:**
-1. **Auto-save:** `store.track()` then `store.update_untracked(storage::save_character)` to save to localStorage on any change.
-2. **Description fill:** `store.update(|c| registry.fill_from_registry(c))` to auto-populate empty labels and descriptions from locale-aware JSON definitions.
-3. **Locale change:** Detects language changes and calls `c.clear_all_labels()`, which triggers the fill effect to re-populate from the new locale's data.
-4. **Cloud sync pull:** `storage::track_cloud_character()` reloads the character from localStorage when `sync_index_version` is bumped and the cloud version is newer than the local `updated_at`.
-5. **Effects recompute:** Watches `store.read()` and recomputes `ActiveEffects` overrides when character data changes.
-6. **Effects auto-save:** Watches `effects.read()` and persists to localStorage via `storage::save_effects()`.
+### Effects in `character/layout.rs`
+1. **Auto-save** — persist to localStorage on any change
+2. **Fill** — `registry.fill_from_registry(c)` populates empty labels/descriptions from cached JSON (re-runs on locale change)
+3. **Fetch** — triggers class/species/background/spell-list fetches based on identity
+4. **Effects recompute** — re-evaluates `ActiveEffects` overrides
+5. **Effects save** — persists effects to separate localStorage key
 
-Character pages live in `src/pages/character/` (`layout.rs`, `list.rs`, `editor.rs`, `session.rs`).
+### Storage (`src/storage/`)
 
-### Storage (`src/storage.rs`)
-Uses `gloo_storage::LocalStorage`. Character index (list of summaries) stored at `dnd_pc_index`, individual characters at `dnd_pc_char_{uuid}`, transient effects at `dnd_pc_effects_{uuid}`. `CharacterSummary` includes `updated_at` for cheap timestamp comparison during sync (avoids full character deserialization). Saving a character calls `touch()` (sets `updated_at`) and updates the index. Panel open/closed state persisted at `dnd_pc_panel_{class}`. Effects are loaded/saved via `load_effects(id)` / `save_effects(id, effects)` — stored separately from character data (not cloud-synced). A `SAVE_IN_FLIGHT` flag lets `track_cloud_character` suppress the auto-save effect when writing cloud-pulled data to the Store, preventing redundant re-push.
+`gloo_storage::LocalStorage`. Keys: `dnd_pc_index` (summaries), `dnd_pc_char_{uuid}`, `dnd_pc_effects_{uuid}`, `dnd_pc_panel_{class}`. `CharacterSummary` has `updated_at` for cheap sync comparison.
 
-**Migration:** `load_character` first tries direct deserialization. On failure, falls back to raw JSON parsing with migrations, then deserializes the patched value:
-- `migrate_v1()` — converts legacy string `damage_type` values to `DamageType` enum u8 representation
-- `migrate_v2()` — converts flat `spell_slots` array to `BTreeMap<SpellSlotPool, ...>` keyed by pool
-- `migrate_v3()` — converts string `Weapon.attack_bonus` to `i32`
-- `migrate_v4()` — converts string `FeatureValue::Die` to structured `{ die, used }` object
-
-`deserialize_character_value(value: Value) -> Option<Character>` applies all migrations to a `serde_json::Value` and deserializes. Used for cloud-fetched data (both sync and UUID-based sharing imports).
-
-**Cloud sync (`src/firebase.rs`):** Firebase/Firestore integration for cross-device character sync. Firebase JS SDK is loaded from CDN in `index.html` and exposed as `window.__firebase`. Key elements:
-- `SyncStatus` enum: `Disabled`, `Connecting`, `Synced`, `Syncing`, `Error`
-- `init_sync()` — called at app startup; waits for Firebase, then does anonymous auth + pull
-- `sign_in_with_google()` — upgrades anonymous session to persistent Google auth, then full sync
-- `schedule_cloud_push(character)` — debounced (2s) push of a single character to Firestore; reads raw JSON from localStorage to avoid re-serialization
-- `sync_index_version()` — reactive signal bumped after cloud pull modifies the index; `track_cloud_character()` in `character/layout.rs` watches this to reload the store when a newer version arrives
-- `sync_all_with_cloud(push_local_only)` — bidirectional sync: pulls remote characters (saves remote-newer locally, pushes local-newer to cloud); when `push_local_only` is true (authenticated users via `SyncOp::FullSync`), also pushes characters that exist only locally. Uses index `updated_at` for cheap timestamp comparison before loading full characters
-- `get_character_doc(uid, char_id)` — fetches a single character document from Firestore by owner UID and character UUID. Used for UUID-based public sharing
+Submodules:
+- `local.rs` — load/save characters, index, effects, panel state
+- `sync.rs` — Firebase/Firestore sync, Google Sign-in, pull/push
+- `queue.rs` — offline-first sync queue
+- `migrate.rs` — 12 migrations (`migrate_v1` … `migrate_v12`). `load_character` falls back to raw JSON + migrations on direct deserialize failure. `deserialize_character_value(Value)` applies all migrations — used for cloud-fetched data.
 
 ### Character Sharing (`src/share.rs`, `src/pages/import_character.rs`)
 
-**Two sharing modes:**
-1. **Firestore UUID sharing** — when `character.shared == true` and the user is authenticated, generates a short URL `/s/{uid}/{char_id}`. The `ImportCloudCharacter` component fetches the character via `firebase::get_character_doc()`, deserializes it with `storage::deserialize_character_value()` (which applies all migrations), and verifies `shared == true` before allowing import. Firestore security rules allow public read access when the document's `shared` field is `true`.
-2. **Compressed URL sharing** — fallback when not authenticated or `shared` is false. Pipeline: `Character` → `strip_for_sharing(character, registry)` → `postcard` binary serialize → browser `CompressionStream` (`deflate-raw`) → `base64` URL-safe no-pad encode → `/s/{encoded_data}`. Decode reverses the pipeline using `DecompressionStream`. Character UUID is preserved for future sync. Encoding/decoding are `async` functions due to the stream-based compression API.
+1. **Firestore UUID** — when `character.shared == true` and authenticated: `/s/{uid}/{char_id}`. `ImportCloudCharacter` fetches via `firebase::get_character_doc()`, runs migrations, verifies `shared == true`. Firestore rules allow public read when `shared == true`.
+2. **Compressed URL** — fallback. Pipeline: `strip_for_sharing(char, registry)` → postcard → `CompressionStream` (deflate-raw) → base64 url-safe → `/s/{data}`. Async due to stream API. `strip_for_sharing` uses `registry.clear_from_registry()` (selective) or falls back to `clear_all_labels()` (blanket) when registry is None.
 
-`strip_for_sharing` takes `registry: Option<&RulesRegistry>`. If registry is available, calls `registry.clear_from_registry()` (selectively clears only registry-matched labels/descriptions for minimal payload). Fallback: calls `character.clear_all_labels()` (blanket clear). `encode_character` also takes `registry: Option<&RulesRegistry>`.
-
-Import page (`src/pages/import_character.rs`) handles both import types: `ImportCharacter` for compressed URLs, `ImportCloudCharacter` for Firestore UUID imports. Both support conflict detection: if the imported character's UUID already exists locally and the local copy is newer, shows a diff table (`ImportConflict`) instead of auto-importing.
+Both import paths support conflict detection — show diff table if local UUID exists and is newer.
 
 ### Rules Registry (`src/rules/`)
-`RulesRegistry` is provided as context at the App root. `RulesRegistry::new(i18n)` takes `leptos_fluent::I18n` to enable locale-aware data fetching. Structural data (classes, species, backgrounds, features) lives in locale-independent `public/data/` JSON files, fetched once and cached. Locale-specific labels/descriptions live in `public/{locale}/` JSON files, re-fetched when the language changes and overlaid onto the cached structural data. Spell lists (JSON in `public/data/spells/`) are also lazily fetched and cached in a separate `spell_list_cache`.
 
-**Global Features Catalog:** All features (class, species, background, feats) live in a single `public/data/features.json` file. `FeaturesIndex` (newtype around `BTreeMap<Box<str>, FeatureDefinition>`) is loaded at startup via `LocalResource` on `RulesRegistry.features_index`. Class, species, and background definitions reference features by name (`VecSet<String>`) rather than containing inline feature definitions. Feature lookup via `resolve::find_feature()` goes directly to `features_index`.
+`RulesRegistry` is `Copy`, provided at App root. Structural data (locale-independent) in `public/data/`, locale overlays in `public/{en,ru}/`. Overlays re-applied on language change.
 
-**Module structure:**
-- `rules/registry.rs` — `RulesRegistry` struct (Copy), `DefinitionStore` accessor methods, index/cache/spell-list/effects-index/features-index access
-- `rules/apply.rs` — unified feature application pipeline: `PendingFeature`, collect functions (`collect_class/species/background_features`), primitives (`apply_new_features`, `reapply_existing`, `resolve_replacements`, `replay`), `long_rest()`, `short_rest()`, `assign()`
-- `rules/resolve.rs` — feature lookup from global index: `find_feature()`, `find_feature_with_source()`, `find_feature_with_class_level()`, `feature_class_level()`
-- `rules/labels.rs` — unified `fill_from_registry()` / `clear_from_registry()` via single-traversal `sync_labels()` with closures
-- `rules/cache.rs` — `FetchCache<T>` generic cache backed by `RwSignal<BTreeMap>` with dedup pending tracking; `DefinitionStore` trait + default methods (has/with/with_tracked/fetch/fetch_tracked)
-- `rules/locale.rs` — `LocaleKey`, `LocalePath`, `LocaleMap`, `SpellLocaleMap`, locale overlay functions (`apply_class_locale`, `apply_species_locale`, `apply_background_locale`, `apply_features_locale`, `apply_effects_locale`, `apply_index_locale`, `apply_spell_map_locale`)
-- `rules/index.rs` — `Index` (private), `ClassIndexEntry`, `SpeciesIndexEntry`, `BackgroundIndexEntry`, `SpellIndexEntry`
-- `rules/class.rs` — `ClassDefinition`, `SubclassDefinition`, `ClassLevelRules`, `SubclassLevelRules`
-- `rules/species.rs` — `SpeciesDefinition`
-- `rules/background.rs` — `BackgroundDefinition`
-- `rules/feature.rs` — `FeaturesIndex`, `FeatureDefinition`, `FieldDefinition`, `FieldKind`, `ChoiceOptions`, `ChoiceOption`, `Assignment`, `WhenCondition`, `ValueOrExpr`, `DieOrExpr`, `ActionType`
-- `rules/spells.rs` — `SpellsDefinition`, `SpellDefinition`, `SpellList`, `SpellMap`, `SpellLevelRules`
-- `rules/utils.rs` — `LevelRules<T>` newtype, `fetch_json()`
-- `rules/mod.rs` — module declarations and re-exports of all public types
+Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `class`, `species`, `background`, `feature`, `spells`, `utils`.
 
-**Key types:**
-- `FeaturesIndex` — newtype around `BTreeMap<Box<str>, FeatureDefinition>`, custom deserialization from JSON array via `Named` trait. Global index of all features loaded at startup
-- `SpellsDefinition` — per-feature spellcasting config: `casting_ability`, `caster_coef` (1=full, 2=half, 3=third), `list` (spell list), `cost: Option<String>` (cost field name for point-based casting), `levels: Vec<SpellLevelRules>` (indexed by class level - 1). Method `cost_info()` returns `(cost_field_name, short_suffix)` tuple. Method `apply(level, character, feature_name, source, free_uses_max)` creates SpellData, updates spell slots, adds cantrip/spell slots, handles sticky spells and free uses
-- `SpellList` — `#[serde(untagged)]` enum: `Ref { from: String }` (path to JSON file) or `Inline(SpellMap)`. Default: `Inline(SpellMap::default())`. Method `ref_name()` extracts short list name from `Ref` path
-- `SpellMap` — newtype around `BTreeMap<Box<str>, SpellDefinition>`, custom deserialization from JSON array via `Named` trait
-- `SpellLevelRules` — per-level config: `cantrips: Option<u32>`, `spells: Option<u32>`, `slots: Option<Vec<u32>>`
-- `SpellDefinition` — `name`, `label`, `level`, `description`, `sticky: bool`, `min_level: u32`
-- `FeatureDefinition` — `name`, `label`, `description`, `languages: VecSet<String>`, `stackable: bool`, `selectable: bool`, `spells: Option<SpellsDefinition>`, `fields: BTreeMap<Box<str>, FieldDefinition>`, `assign: Option<Vec<Assignment>>`, `ac_expr: Option<Expr<Attribute>>` (natural armor expression), `prerequisites: Option<Expr<Attribute>>` (boolean expression for eligibility). Method `meets_prerequisites(&character) -> bool` evaluates the prerequisite expression. Method `cost_info()` returns `(cost_field_name, short_suffix)` if spells have a Points-backed cost field. Method `apply(level, character, source)` populates features, fields, spells, natural armor, and evaluates assignments
-- `FieldDefinition` — `name`, `label`, `description`, `kind: FieldKind`
-- `FieldKind` — `#[serde(tag = "kind")]` enum: `Points`, `Choice` (with `options`, `cost: Option<String>`), `Die`, `Bonus`, `FreeUses` — each with `levels: LevelRules<_>` for per-level progression. `Points` and `FreeUses` use `LevelRules<ValueOrExpr>` (expression-based values). `Die` uses `LevelRules<DieOrExpr>`. Method `to_value(level, character) -> FeatureValue` converts to model value at a given level, evaluating expressions against character state. Method `recompute_dynamic(level, character)` re-evaluates expression-based fields. `FreeUses` is special: when a feature has spells, not converted to `FeatureValue` but instead sets `Spell.free_uses` during apply
-- `ValueOrExpr` — `#[serde(untagged)]` enum: `Value(u32)` or `Expr(Expr<Attribute, i32>)`. Implements `Eval<Attribute, i32>` trait. Used for expression-based field values (e.g. `"max(1, CHA.MOD)"` for Bardic Inspiration uses)
-- `DieOrExpr` — die pool definition accepting either a static die string (`"2d6"`) or an object `{sides, amount}` with expression-based amount. Implements `Eval<Attribute, i32>` with `Output = Die`
-- `LevelRules<T>` — newtype around `BTreeMap<u32, T>` for level-based progressions. `get_for_level(level)` finds the highest key `<= level`. `eval_for_level(level, ctx)` evaluates expression-based values. `is_dynamic(level)` checks if value at level contains expressions. Custom deserialization accepts both numeric and stringified keys
-- `ChoiceOptions` — `#[serde(untagged)]` enum: `List(Vec<ChoiceOption>)` or `Ref { from: String }` (references another field's choices)
-- `ChoiceOption` — has `name`, `label`, `description`, `level: u32` (level-gated choices), `cost: u32` (point cost for point-based choices), `action: Option<ActionType>` (action menu items) fields
-- `ActionType` — enum: `Action`, `BonusAction`, `Reaction`. Has `icon_name()` (swords/zap/shield) and `Translatable` impl. A Choice field with no `levels` and action options is an **action menu** — rendered read-only in the editor, with icon badges in the session view
-- `Assignment` — `{ expr: Expr<Attribute>, when: WhenCondition }` for feature expressions
-- `WhenCondition` — enum: `OnFeatureAdd`, `OnLevelUp`, `OnLongRest`, `OnShortRest`, `OnCompute`
-- `ClassDefinition` — `name`, `label`, `description`, `hit_die: u32`, `levels: Vec<ClassLevelRules>`, `subclasses: BTreeMap<Box<str>, SubclassDefinition>`. No inline features — `ClassLevelRules` and `SubclassLevelRules` contain `features: VecSet<String>` referencing the global index. Method `feature_names(subclass)` returns an iterator of feature name strings from class and subclass level tables
-- `SubclassDefinition` — `name`, `label`, `description`, `levels: LevelRules<SubclassLevelRules>`. Method `min_level()` returns lowest level key
-- `SpeciesDefinition` — `name`, `label`, `description`, `features: VecSet<String>`. No `apply()` method, no traits — species traits have been converted to features in the global index
-- `BackgroundDefinition` — `name`, `label`, `description`, `features: VecSet<String>`. No `apply()` method — background features are referenced by name from the global index
-- All definition types have `label` field and `.label()` method returning `label.as_deref().unwrap_or(&name)`
+**Global Features Catalog:** all features live in `public/data/features.json` → `FeaturesIndex` (`BTreeMap<Box<str>, FeatureDefinition>`). Class/species/background definitions reference features by name (`VecSet<String>`).
 
-**Custom deserializers (`src/demap.rs`):** `named_map` (deserializes `[{"name": ...}, ...]` arrays into `BTreeMap<Box<str>, T>` via `Named` trait). `LevelRules<T>` (`src/rules/utils.rs`) has its own custom deserializer accepting both numeric and stringified u32 keys.
+**Feature application pipeline (`apply.rs` + `character_header.rs`):** `collect → gather_inputs → reapply → apply → compute`. The helper `apply_with_modal()` encapsulates the common flow: collect `ApplyInputs` from `PendingFeature` list, show args modal if needed, resolve replacements, run user callback, `compute()`. Entry points: level-up, species/background apply, quick-start (chains all three), user add, replay (combat panel). Key primitives: `PendingFeature`, `collect_class/species/background_features()`, `apply_new_features()`, `reapply_existing()`, `resolve_replacements()`, `replay()`. `FeatureDefinition::apply(level, character, when, inputs)` populates features, fields, spells, natural armor, and evaluates assignments.
 
-**Key patterns:**
-- `with_features_index(|features_map| ...)` — access the global features index (`BTreeMap<Box<str>, FeatureDefinition>`) with tracked read
-- `with_feature(identity, name, |feat| ...)` — finds a `FeatureDefinition` in the global index, calls the callback with a reference (delegates to `resolve::find_feature`)
-- `with_feature_source(identity, name, |feat, source| ...)` — finds a feature and determines its source by checking which class/bg/species references it
-- `with_spell_list(list, |spells| ...)` — resolves a `SpellList` (inline or fetched ref) and calls the callback with `&SpellMap`
-- `feature_class_level(identity, feature_name)` — returns the class level of the class owning a feature (lives in `resolve.rs`)
-- `get_choice_options(...)` — resolves `ChoiceOptions::List` or `ChoiceOptions::Ref` (dereferences another field's choices)
-- `ensure_definitions_fetched(character)` — triggers fetches for class/species/background definitions and spell lists based on character identity; reads index with tracked read so calling Effect re-runs when data arrives
-- `fill_from_registry(character)` — fills labels, descriptions, spell costs, and free uses from cached definitions (lives in `labels.rs` via `sync_labels()`)
-- `clear_from_registry(character)` — selectively clears only labels/descriptions that match registry definitions (lives in `labels.rs`, inverse of fill)
-- `long_rest(character)` / `short_rest(character)` — rest mechanics with expression evaluation for rest-triggered assignments (lives in `apply.rs`)
-- `assign(character, when)` — evaluates conditional assignment expressions across all features for a given `WhenCondition` (lives in `apply.rs`)
-
-**Feature application pipeline (`apply.rs` + `character_header.rs`):** All feature application follows a unified pipeline: `collect → gather_inputs → reapply → apply → compute`. The top-level helper `apply_with_modal()` in `character_header.rs` encapsulates the common flow: collect `PendingInputs` from `PendingFeature` list, show args modal if needed, resolve replacements, call user callback, then `compute()`. Entry points:
-- **Level-up:** `apply_level()` in `character_header.rs` — `collect_class_features()` → `apply_with_modal` with callback that marks level applied, calls `reapply_existing()` + `apply_new_features()`
-- **Species/Background:** button handlers in `character_header.rs` — `collect_species/background_features()` → `apply_with_modal` with callback that sets applied flag + `apply_new_features()`
-- **Quick start:** `quick_start.rs` — chains all three collect functions into one `Vec<PendingFeature>`, single `apply_with_modal` call
-- **User add:** features panel — single `PendingFeature` → `apply_with_modal` with `apply_new_features()`
-- **Replay:** combat panel — collects `PendingFeature` from `character.features`, `apply_with_modal` with `replay()` callback
-
-Key primitives in `apply.rs`: `PendingFeature` (owned, survives modal closure boundary), `collect_class/species/background_features()` (return `impl Iterator`), `apply_new_features()` (add to character.features + OnFeatureAdd), `reapply_existing()` (OnLevelUp for all applied features at source-aware levels via `Character::effective_level_for()`), `resolve_replacements()`, `replay()` (reset + re-apply all features through intermediate levels). `FeatureDefinition::apply(level, character, when, inputs)` populates `character.features` list, `character.feature_data` entries with spells (via `SpellsDefinition::apply()`), field values, free uses, natural armor (`ac_expr`), and evaluates assignments. `RulesRegistry::long_rest()` / `short_rest()` call `Character::long_rest()` / `short_rest()` then evaluate rest-triggered assignments via `assign()`.
-
-### Enums (`src/model/enums.rs`)
-All enums use `#[repr(u8)]` with a custom `enum_serde_u8!` macro for compact serialization (single byte) while accepting legacy string format on deserialization. Enums implement `Translatable` trait for i18n keys. Key enums: `Ability` (6), `Skill` (18), `Alignment` (9), `ProficiencyLevel` (None/Proficient/Expertise with `multiplier()`, `next()`, `symbol()`), `Proficiency` (6 armor/weapon types), `DamageType` (13 — has `from_name()` parser and `Translatable`), `ArmorType` (Light/Medium/Heavy), `SpellSlotPool` (Arcane/Pact with `Translatable`).
+**Key types:** `FeatureDefinition` (languages, stackable, selectable, spells, fields, assign, ac_expr, prerequisites), `FieldKind` (`Points`, `Choice`, `Die`, `Bonus`, `FreeUses`), `SpellsDefinition`, `SpellList` (`Ref { from }` or `Inline`), `ChoiceOptions` (`List` or `Ref`), `ActionType` (`Action`/`BonusAction`/`Reaction`), `Assignment { expr, when }`, `WhenCondition` (`OnFeatureAdd`/`OnLevelUp`/`OnLongRest`/`OnShortRest`/`OnCompute`).
 
 ### i18n
-Uses `leptos-fluent` with Fluent `.ftl` files in `locales/{en,ru}/main.ftl`. Language detected from browser, persisted in localStorage. Components use `move_tr!("key")` for reactive translations, `tr!("key")` for non-reactive.
 
-### Pages (`src/pages/`)
-- `character/` — character CRUD and views. `layout.rs` is the key file: loads character by UUID, creates `Store`, loads `ActiveEffects`, provides `Store<Character>` and `EffectiveCharacter` as context, runs effects (auto-save, fill, locale, cloud sync, effects recompute, effects save), renders `<Outlet />`. `editor.rs` renders the 3-column character building/editing grid, `session.rs` the game session view.
-- `import_character.rs` — handles both share URL types (compressed and Firestore UUID) with conflict detection
-- `reference/` — reference browsers for classes, species, backgrounds, features, spells. `mod.rs` contains shared view helpers.
-- `not_found.rs` — 404 page
+`leptos-fluent` with `.ftl` files in `locales/{en,ru}/main.ftl`. `move_tr!("key")` reactive, `tr!("key")` non-reactive. Language persisted in localStorage.
 
-### Components (`src/components/`)
-- Top-level components: navbar, character header/card, modals, form inputs (datalist, expression, dice pool), display primitives (icon, panel, resource slot). See `mod.rs` for the full list.
-- `panels/` — character editor panels for building/editing (one per section: abilities, skills, combat, equipment, spellcasting, etc.)
-- `session/` — game session view sections (stats, resources, spells, weapons, backpack, choices, languages, effects)
+### Public data (`public/`)
+- **Structural** (`public/data/`): `features.json`, `classes/*.json`, `species/*.json`, `backgrounds/*.json`, `spells/*.json`, `effects.json`, `index.json`, `names.json`
+- **Locale overlays** (`public/{en,ru}/`): mirrored structure with labels/descriptions only
 
-## Formatting Conventions (rustfmt.toml)
-- Edition 2024 formatting rules
-- `imports_granularity = "Crate"` — merge imports from the same crate
-- `group_imports = "StdExternalCrate"` — std first, then external, then local
-- `merge_derives = false` — keep separate derive attributes as-is
-- `normalize_comments = true`, `reorder_impl_items = true`, `wrap_comments = true`
+Both dirs need explicit `<link data-trunk rel="copy-dir" .../>` in `index.html`.
 
-## Data Files (`public/`)
-Data files are split into locale-independent structural data (`public/data/`) and locale-specific labels/descriptions (`public/{en,ru}/`):
+## Model (`src/model/`)
 
-**Structural data (locale-independent):**
-- `public/data/features.json` — global features index (all features with fields, spells, assignments, prerequisites)
-- `public/data/classes/*.json` — class definitions (structure only: hit_die, levels with feature name lists, subclasses)
-- `public/data/species/*.json` — species definitions (feature name lists only)
-- `public/data/backgrounds/*.json` — background definitions (feature name lists only)
-- `public/data/spells/*.json` — extracted spell lists (referenced via `SpellList::Ref { from }`)
-- `public/data/effects.json` — predefined transient effects index (name, expression)
-- `public/data/index.json` — index of available classes, species, backgrounds, spells
+Split into focused files: `character`, `identity`, `ability`, `skills`, `attribute`, `attribute_group`, `feature`, `combat`, `equipment`, `spell`, `die`, `money`, `effects`, `personality`, `applied`, `enums`. All re-exported from `mod.rs`.
 
-**Locale overlays:**
-- `public/{locale}/features.json` — feature labels and descriptions
-- `public/{locale}/classes/*.json` — class/subclass labels and descriptions
-- `public/{locale}/species/*.json` — species labels and descriptions
-- `public/{locale}/backgrounds/*.json` — background labels and descriptions
-- `public/{locale}/spells/*.json` — spell labels and descriptions
-- `public/{locale}/effects.json` — effect labels and descriptions
-- `public/{locale}/index.json` — index entry labels
+All structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (required for Memo). Root `Character` omits `PartialEq`.
 
-Both `public/data/` and each locale directory need explicit `<link data-trunk rel="copy-dir" .../>` in `index.html` to be included in the build output.
+**Character fields:** `id`, `identity`, `abilities` (private), `saving_throws`, `skills` (private), `combat`, `personality`, `features` (container: list + data), `equipment`, `proficiencies`, `languages`, `damage_modifiers`, `spell_slots`, `applied`, `notes`, `updated_at`, `shared`. Key methods: `level()`, `proficiency_bonus()`, `initiative()`, `ability_modifier()`, `saving_throw_bonus()`, `skill_bonus()`, `spell_save_dc()`, `spell_attack_bonus()`, `caster_level()`, `active_pools()`, `class_summary()`, `clear_all_labels()`, `long_rest()`, `short_rest()`. Implements `expr::Context<Attribute>`.
+
+**Label pattern:** `Feature`, `Spell`, `FeatureField`, `FeatureOption` have optional `label: Option<String>` (`#[serde(default)]`) with `.label()` returning `label.as_deref().unwrap_or(&name)`. `name` is the stable key; `label` is locale-filled from registry.
+
+**Applied** (`applied.rs`): tracks build decisions already materialized. Fields: `species: bool`, `background: bool`, `levels: BTreeMap<String, VecSet<u32>>` (class → applied levels). Prevents double-application.
+
+**Feature system:** `Features { list, data }` container. Each `Feature` has `source: FeatureSource` (`User(u32)`, `Class(String, u32)`, `Species`, `Background`, etc.), `inputs` (user choices), `applied`. Feature data (fields, spells) is stored in `Features.data: BTreeMap<String, FeatureData>`. `FeatureCategory` enum (`Class`, `Origin`, `General`, `FightingStyle`, `EpicBoon`, …) for reference browser filtering.
+
+**Spellcasting:** Per-feature spell data in `FeatureData.spells: Option<SpellData>` keyed by feature name. Spell slots on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>` (pool = `Arcane`/`Pact`). `ClassLevel.caster_coef` (1/2/3 for full/half/third). `caster_level(pool)` sums across caster classes.
+
+**Transient effects (`effects.rs`, `effective.rs`):** `ActiveEffect { name, description, expr, enabled }` applied via expression evaluation without modifying stored character. `ActiveEffects.recompute()` caches overrides in `BTreeMap<Attribute, i32>`. `EffectiveCharacter` (Copy reactive view over `Store<Character>` + `RwSignal<ActiveEffects>`) resolves through overrides first. Effects stored separately at `dnd_pc_effects_{uuid}` — not cloud-synced. Predefined effects in `public/data/effects.json` + locale overlay.
+
+**Attribute** (`attribute.rs`): `Expr` variable type. Variants: `Ability`, `Modifier`, `SavingThrow`, `Skill`, `MaxHp`, `Hp`, `TempHp`, `Level`, `Ac`, `Speed`, `ClassLevel`, `CasterLevel`, `CasterModifier`, `ProfBonus`, `Initiative`, `Inspiration`. Parses dotted notation (`STR.MOD`, `SKILL.ACRO`) and reserved identifiers. Character implements `Context<Attribute>`.
+
+## Expressions (`src/expr/`)
+
+Generic RPN expression evaluator. `Expr<Var, Val, Grp>` (defaults: `Val = i32`, `Grp = NoGroup<Var>`). Features:
+- Arithmetic (`+ - * / \ %`), dice (`2d20kh1`, `2d6dl1`), `min`/`max`, logical/comparison, `if(c,t,e)`, `guard(c){...}`
+- Assignment (`var = e`), compound assignment (`+= -= *= /=`), multi-statement (semicolon)
+- Loops: `each(@GROUP, body)`, `fold(op, @GROUP[, expr])`, `with(@GROUP, body)` (binds `@`), masked subgroups `@GROUP(X, Y)`
+- Custom `Interpreter<Var, Val, Grp>` trait for analysis passes (`Evaluator`, `Formatter`, `DicePoolEvaluator`, `ExprAnalysis`)
+
+Display round-trips to infix via `Formatter`. Custom deserialization accepts strings (parsed) or postfix `Vec<Op>` (postcard).
+
+Type aliases in model: `model::Expr = Expr<Attribute, i32, AttributeGroup>`, `model::Op = Op<Attribute, i32, AttributeGroup>`.
 
 ## Utility Types
-- `ConstVec<T, N>` (`src/constvec.rs`): fixed-size vector that trims trailing defaults on serialization for compact payloads. Used for spell slot levels within each pool.
-- `VecSet<T>` (`src/vecset.rs`): Vec-backed ordered set (maintains insertion order, prevents duplicates). Used for `ClassLevel.applied_levels: VecSet<u32>` and `Character.languages: VecSet<String>`.
-- `Money` (`src/model/money.rs`): copper-based currency value type (`u32` cp internally, 100 cp = 1 gp). Constructors: `from_cp()`, `from_gp()`, `from_gp_cp()`, `from_gp_str()` (parses decimal input). Methods: `as_gp_sp_cp()` → `(gp, sp, cp)`. Implements `Add`, `Sub`, `Display`.
-- `Expr<Var, Val, Grp>` (`src/expr/`): generic expression evaluator module using postfix (RPN) operations. `Val` defaults to `i32`, `Grp` defaults to `NoGroup<Var>`. Submodules: `mod.rs` (core API, `Expr<Var, Val, Grp>`, Display), `traits.rs` (`Context<Var, Val>` trait, `Eval` trait), `ops.rs` (`Op<Var, Val, Grp>` enum, `BinOp` enum, `Cmp` enum, `VarGroup` trait, `VarSubgroup<Grp>`), `de.rs` (custom deserialization), `tokenizer.rs` (lexer), `parser.rs` (recursive descent), `interpret/` subdirectory (`mod.rs` — `Interpreter<Var, Val, Grp>` trait, `evaluator.rs` — `Evaluator`/`ReadOnlyEvaluator`, `analyze.rs` — `ExprAnalysis`, `dice.rs` — `DicePoolEvaluator`, `formatter.rs` — infix `Formatter`), `error.rs` (`Error` enum), `stack.rs` (evaluation stack). Supports arithmetic (`+`, `-`, `*`, `/`, `\` ceiling div, `%` modulo), dice notation (`2d20kh1`, `2d6dl1`), `min`/`max`, boolean/comparison operators (`and`, `or`, `not`, `<`, `>`, `<=`, `>=`, `==`, `!=`), conditional `if(cond, then, else)`, guard blocks (`guard(cond) { ... }`), variable resolution via `Context<Var, Val>` trait, assignment (`var = expr`), compound assignment (`+=`, `-=`, `*=`, `/=`, `\=`, `%=`), multi-statement expressions (semicolon-separated), and loop/iteration (`each(group) { ... }`, `fold(group, init) { ... }`). `Op` enum: `PushVar(Var)`, `PushConst(Val)`, `BinOp(BinOp)`, `Cmp(Cmp)`, `Not`, `In`, `AvgHp`, `Roll`, `KeepMax/Min(Val)`, `DropMax/Min(Val)`, `Sum`, `Explode`, `AssignVar(Var)`, `AssignGroup(Grp)`, `Eval(BlockIndex)`, `EvalIf(BlockIndex, BlockIndex)`, `Each(VarSubgroup<Grp>)`, `Next(VarSubgroup<Grp>)`, `PushGroup(Grp)`. `BinOp` enum: `Add`, `Sub`, `Mul`, `DivFloor`, `DivCeil`, `Mod`, `Min`, `Max`, `And`, `Or` — with `eval()`, `symbol()`, `is_func()`, `compound_sym()` methods. `Cmp` enum: `Lt`, `Le`, `Gt`, `Ge`, `Eq`, `Ne` — with `eval()`, `symbol()`. `VarGroup` trait: `member(&self, index) -> Option<Var>` for group iteration. `VarSubgroup<Grp>`: wraps a group with optional bitmask for subset iteration. `Eval` trait: `eval(ctx) -> Output` and `is_dynamic() -> bool`. Methods: `apply()` (evaluate with assignment), `eval()` (read-only), `run(interpreter)` (run a custom `Interpreter` impl). `Display` impl round-trips to infix notation via `Formatter` interpreter. Custom deserialization accepts strings (parsed) or postfix `Vec<Op>` (for postcard). Used with `Var = Attribute` for feature prerequisites, assignments, effects, and AC expressions.
+- `ConstVec<T, N>` (`src/constvec.rs`) — fixed-size vector, trims trailing defaults on serialization
+- `VecSet<T>` (`src/vecset.rs`) — Vec-backed ordered set
+- `Money` (`src/model/money.rs`) — copper-based currency (`u32` cp, 100 cp = 1 gp)
 
-**Loop syntax** in expressions (features.json `"expr"` fields):
-- `each(@GROUP, body)` — side-effect loop over all group members. `@GROUP` = `@ABILITY`, `@SKILL._.PROF`, `@ABILITY.SAVE.PROF`, `@RESIST._`, etc.
-- `fold(op, @GROUP, expr)` — reduce: evaluate expr per member, accumulate with op (`+`, `and`, `max`, etc.)
-- `fold(op, @GROUP)` — shorthand for `fold(op, @GROUP, @GROUP)`, e.g. `fold(+, @ABILITY)` = sum of all ability scores.
-- `with(@GROUP, body)` — bind `@` to GROUP inside body. Avoids repeating long group names. Purely syntactic (compile-time).
-- `@GROUP(X, Y, Z)` — masked subgroup selecting specific members by name, e.g. `@SKILL._.PROF(ARCA, HIST, NATU, RELI)` selects only Arcana, History, Nature, Religion from the 18-skill group. Member names: abilities (`STR`, `DEX`, ...), skills (`ACRO`, `ANIM`, `ARCA`, `ATHL`, `DECE`, `HIST`, `INSI`, `INTI`, `INVE`, `MEDI`, `NATU`, `PERC`, `PERF`, `PERS`, `RELI`, `SLEI`, `STEA`, `SURV`), damage types (`ACID`, `COLD`, `FIRE`, `LIGHT`, `POISON`, ...).
-- `@` — inside `with()`, resolves to the bound group. `@ARG` — companion ARG group, auto-indexed by loop counter (one ARG per group member).
-- Example: `with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 7)) and fold(+, @, @ARG + max(0, @ARG - 5)) == 27, each(@, @ += @ARG)))`
-- Masked subgroup example: `with(@SKILL._.PROF(ARCA, HIST, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))`
-
-**AttributeGroup** (`src/model/attribute_group.rs`): `VarGroup` impl for `Attribute`. 13 variants: `Ability`(6), `AbilityMod`(6), `AbilitySave`(6), `AbilitySaveProf`(6), `AbilitySaveAdv`(6), `AbilityAdv`(6), `Skill`(18), `SkillProf`(18), `SkillAdv`(18), `Resist`(13), `Vuln`(13), `Immune`(13), `Arg`(unbounded). Uses `strum::VariantArray`. Type aliases: `model::Expr = expr::Expr<Attribute, i32, AttributeGroup>`, `model::Op = expr::Op<Attribute, i32, AttributeGroup>`.
-
-**Loop execution**: `Each`/`Next` ops in `eval_op` use `iter_stack: Stack<usize>` storing real group indices. `VarSubgroup::real_index()`/`next_real_index()` handle bitmask → real index mapping. `PushGroup`/`AssignGroup` in each evaluator use `iter_stack.top()` as index into the group. Custom interpreters (`ArgSummarizer` in `ai.rs`, `AssignmentSummarizer` in `pages/reference/mod.rs`) must check `cond.num != Some(0)` in `EvalIf` to prevent infinite recursion on loop termination.
-
-## Model Essentials (`src/model/`)
-Model is split into focused files: `character.rs` (Character, CharacterIndex, CharacterSummary), `identity.rs` (CharacterIdentity, ClassLevel), `ability.rs` (AbilityScores), `attribute.rs` (Attribute enum), `attribute_group.rs` (AttributeGroup), `feature.rs` (Feature, FeatureData, FeatureField, FeatureValue, FeatureSource, FeatureOption, `short_name()`), `combat.rs` (CombatStats, SpellSlotLevel, FreeUses), `equipment.rs` (Equipment, Weapon, Item, Armor), `spell.rs` (Spell, SpellData, SpellSlotPool), `die.rs` (Die), `money.rs` (Money, Currency), `effects.rs` (ActiveEffect, ActiveEffects, EffectsIndex), `enums.rs` (all enums). All re-exported from `model/mod.rs`.
-
-Model structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (PartialEq is required for Memo). The root `Character` struct derives `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize` (no `PartialEq`). Both `Character` and `CharacterSummary` have a `shared: bool` field (`#[serde(default)]`) that enables public Firestore sharing when `true`.
-
-**Character field encapsulation:** Three fields are private with accessor methods: `abilities: AbilityScores` (via `ability_score()`, `ability_modifier()`, `modify_ability()`), `saving_throws: VecSet<Ability>` (via `proficient_with()`, `saving_throw_bonus()`, `update_saving_throw_proficiencies()`), `skills: BTreeMap<Skill, ProficiencyLevel>` (via `skill_proficiency()`, `skill_bonus()`, `update_skill_proficiencies()`). All other fields remain public. Additional accessor methods: `speed()`, `hp_max()`, `hp_current()`, `hp_temp()`, `armor_class()`, `gain_hp_max()`. Key computed methods: `level()`, `proficiency_bonus()`, `initiative()`, `spell_save_dc(ability)`, `spell_attack_bonus(ability)`, `caster_level(pool)`, `update_spell_slots(pool, slots)`, `spell_slot(pool, level)`, `all_spell_slots_for_pool(pool)`, `active_pools()`, `class_summary()`, `clear_all_labels()`, `long_rest()`, `short_rest()`. Character also implements `expr::Context<Attribute>` for expression evaluation (see Attribute section).
-
-**Label/description pattern:** `Feature`, `Spell`, `FeatureField`, and `FeatureOption` all have an optional `label: Option<String>` field (with `#[serde(default)]` for backward compatibility) and a `.label()` method that returns `label.as_deref().unwrap_or(&name)`. Labels are locale-specific display names filled from the registry; `name` is the stable key. `ClassLevel` has `class_label: Option<String>` and `subclass_label: Option<String>` with corresponding `.class_label()` / `.subclass_label()` methods. `class_summary()` uses these for display. `clear_all_labels()` blanket-clears all labels and descriptions on the character.
-
-**Spellcasting model:** Per-feature spell data lives in `Character.feature_data: BTreeMap<String, FeatureData>` keyed by feature name (e.g. "Spellcasting (Bard)", "Pact Magic", "Infernal Legacy"). Each `FeatureData` has `source: Option<FeatureSource>`, `fields: Vec<FeatureField>`, and `spells: Option<SpellData>`. `FeatureSource` is an enum: `Class(String)`, `Species(String)`, `Background(String)`. `SpellData` contains `casting_ability: Ability`, `caster_coef: u32`, `pool: SpellSlotPool`, and `spells: Vec<Spell>`. Each `Spell` has an optional `free_uses: Option<FreeUses>` for innate casting without slots (`FreeUses { used, max }` with `available()` and `is_available()` methods). Spell slots are keyed by pool on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>`, rendered per pool in the spellcasting panel. `SpellSlotLevel { total, used }` has `available()`, `is_available()`, `is_empty()` methods.
-
-**Feature fields:** `FeatureField { name, label, description, value: FeatureValue }`. `FeatureValue` is an enum: `Points { used, max }` (with `available_points()`), `Choice { options: Vec<FeatureOption> }` (with `choices()`/`choices_mut()`), `Die { die: Die, used: u32 }`, `Bonus(i32)`. `Die { amount, sides }` implements `Display` (e.g. "2d6") and `FromStr`. `short_name(name)` utility derives abbreviation from field names ("Channel Divinity" -> "CD", "Sorcery Points" -> "SP"). Replaces the old `short` field on `FieldKind::Points`.
-
-**Currency:** `Currency { cp, sp, ep, gp, pp }` with `as_money() -> Money`, `gain(Money)`, `spend(Money) -> bool` methods.
-
-**Attribute:** `Attribute` enum (`src/model/attribute.rs`) used as `Expr` variable type. Variants: `Ability(Ability)` (raw score), `Modifier(Ability)` (modifier), `SavingThrow(Ability)` (save bonus), `Skill(Skill)` (skill bonus), `MaxHp`, `Hp`, `TempHp`, `Level`, `Ac`, `Speed`, `ClassLevel`, `CasterLevel`, `CasterModifier`, `ProfBonus`, `Initiative`, `Inspiration`. Parsed from string identifiers with three forms: dotted ability notation (`STR.MOD`, `DEX.SAVE`), dotted skill notation (`SKILL.ACRO`, `SKILL.PERC`, etc. — 18 skill abbreviations), bare ability names (`STR`, `DEX` → `Ability(...)`), and reserved identifiers (`MAX_HP`, `HP`, `TEMP_HP`, `LEVEL`, `AC`, `SPEED`, `CLASS_LEVEL`, `CASTER_LEVEL`, `CASTER_MODIFIER`, `PROF_BONUS`, `INITIATIVE`, `INSPIRATION`). `Character` implements `Context<Attribute>` with assignable fields (`MaxHp`, `Hp`, `TempHp`, `Ac`, `Speed`, `Inspiration`) and read-only fields (all others). A scoped `Context<'a>` wrapper provides transient `ClassLevel`/`CasterLevel`/`CasterModifier` values during level-up and rest expression evaluation.
-
-**Rest mechanics:** `long_rest()` restores HP to max, clears temp HP and death saves, resets hit dice used (half), resets all spell slots and free uses. `short_rest()` clears death saves and restores Pact Magic slots.
-
-**Caster level & spell slots:** `ClassLevel.caster_coef: u8` (1=full, 2=half, 3=third) is set during level-up from the class definition. `ClassLevel.applied_levels: VecSet<u32>` tracks which class levels have been applied. `Character::caster_level(pool)` sums `level / caster_coef` across caster classes for the given pool. `update_spell_slots(pool, slots)` uses a built-in `SPELL_SLOT_TABLE` (full-caster Wizard progression) for multiclass, or the class-specific JSON slots for single-class. Slot totals are editable for manual adjustment. `active_pools()` returns pools that have any non-empty slots.
-
-**Transient effects system (`src/model/effects.rs`, `src/effective.rs`):** Temporary character modifications (spells, items, conditions) applied via expression evaluation without modifying the stored character. `ActiveEffect { name, description, expr: Option<Expr<Attribute>>, enabled }` — individual effect. `ActiveEffects { effects: Vec<ActiveEffect>, overrides: BTreeMap<Attribute, i32> }` — container with methods: `add()`, `remove()`, `toggle()`, `update_field()`, `recompute(character)` (evaluates all enabled expressions, caches results in `overrides`), `resolve(character, attr)` (returns override or delegates to character). `overrides` is `#[serde(skip)]` — recomputed on load. `EffectsIndex` wraps `BTreeMap<Box<str>, ActiveEffect>` for index deserialization. `EffectiveCharacter` (`src/effective.rs`) is a Copy reactive view combining `Store<Character>` + `RwSignal<ActiveEffects>`, provided as context in `character/layout.rs`. Methods: `ability_modifier()`, `saving_throw_bonus()`, `skill_bonus()`, `proficiency_bonus()`, `armor_class()`, `speed()`, `initiative()`, `spell_save_dc()`, `spell_attack_bonus()` — all resolve through effects overrides first. Effects are stored separately from character data at `dnd_pc_effects_{uuid}` in localStorage (not cloud-synced). UI in `components/summary/effects.rs`: add form with `DatalistInput` name field (autocompletes from effects index, auto-fills expression and description on selection), expression input, togglable effect list with inline editing, expandable expression input with validation.
-
-**Effects index (`public/data/effects.json` + `public/{locale}/effects.json`):** Predefined effects (e.g. "Shield of Faith" → `AC += 2`, "Bladesong" → `AC += INT.MOD; SPEED += 10`, "Mage Armor" → `AC = max(AC, 13 + DEX.MOD)`). Structural data in `public/data/effects.json`, locale labels/descriptions overlaid from `public/{locale}/effects.json`. Loaded via `LocalResource` in `RulesRegistry` with `with_effects_index(|map| ...)` accessor. Locale-aware, auto-refetches on language change.
-
-**Postcard serialization:** The share pipeline uses `postcard` (positional binary format). `#[serde(flatten)]` and `#[serde(tag = "...")]` are incompatible with postcard. `FeatureField.value` uses the default (externally-tagged) enum representation without flatten, making the `fields` map postcard-compatible and included in shared URLs. Avoid `#[serde(skip_serializing)]` on fields of postcard-serialized structs as it breaks positional alignment. Label fields use `#[serde(default)]` for backward compatibility with older shared URLs.
+## Formatting (`rustfmt.toml`)
+Edition 2024, `imports_granularity = "Crate"`, `group_imports = "StdExternalCrate"`, `merge_derives = false`, `normalize_comments = true`, `reorder_impl_items = true`, `wrap_comments = true`.
 
 ## Coding Conventions
 
 ### Rust style
-- **Closure parameters:** Use descriptive names (`|character|`, `|active|`, `|pending|`), not single-letter abbreviations (`|c|`, `|e|`, `|p|`).
-- **Leptos rendering:** Don't call `.to_string()` on numeric types (`u32`, `i32`) for views or props — they render directly in `view!` macros.
-- **`bind:value`:** Only use when the signal type matches directly (e.g. `RwSignal<String>`). For type mismatches, use `prop:value` + `on:input`. Don't bridge with Effects.
+- **Closure parameters:** descriptive names (`|character|`, `|pending|`), not `|c|`, `|e|`
+- **Leptos rendering:** don't `.to_string()` numeric types — they render directly in `view!`
+- **`bind:value`:** only when signal type matches directly. For type mismatches use `prop:value` + `on:input` — don't bridge with Effects
 
 ### Locale data
-- **Russian locale:** Never put English placeholder text in `public/ru/` files. The locale overlay system falls back to `en/` automatically for missing entries — omit untranslated content rather than duplicating it in English.
+- **Russian locale:** never put English placeholder text in `public/ru/` — the overlay system falls back to `en/` automatically. Omit untranslated entries.
+
+### Postcard serialization (share pipeline)
+`#[serde(flatten)]` and `#[serde(tag = "...")]` are incompatible with postcard. `FeatureField.value` uses default (externally-tagged) enum representation. Avoid `#[serde(skip_serializing)]` on postcard-serialized fields — breaks positional alignment. Label fields use `#[serde(default)]` for backward compat with older shared URLs.
 
 ### Git workflow
-- **Commits:** One commit per logical task. Don't micro-commit after every small change.
+- One commit per logical task. Don't micro-commit.
