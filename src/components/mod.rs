@@ -42,6 +42,7 @@ pub mod species_field;
 pub mod spell_info_bar;
 pub mod spinner;
 pub mod stat_box;
+pub mod sync_error_toast;
 pub mod sync_indicator;
 pub mod tab_nav;
 pub mod toast;

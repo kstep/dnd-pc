@@ -30,6 +30,7 @@ pub fn SignInToastTrigger() -> impl IntoView {
         // both need the current owner. The Toast captures it so `.show()` can
         // run later from the `set_timeout` callback where no owner is active.
         let toast = Toast::new(tr!("toast-signin-prompt"))
+            .persist()
             .with_action(
                 tr!("toast-signin-action"),
                 Callback::new(|_| storage::sign_in_with_google()),

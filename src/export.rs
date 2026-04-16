@@ -72,8 +72,8 @@ fn export_to_clipboard(json: &str) {
     // Build both toasts up-front in the current owner context. Each toast
     // captures the owner internally, so `.show()` is safe to call from the
     // async block where no owner is active.
-    let ok_toast = Toast::new(tr!("toast-export-copied")).auto_close(Duration::from_secs(8));
-    let fail_toast = Toast::new(tr!("toast-export-copy-failed")).auto_close(Duration::from_secs(8));
+    let ok_toast = Toast::new(tr!("toast-export-copied"));
+    let fail_toast = Toast::new(tr!("toast-export-copy-failed"));
     spawn_local(async move {
         if JsFuture::from(promise).await.is_ok() {
             ok_toast.show();

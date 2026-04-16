@@ -48,6 +48,7 @@ use components::{
     logo::IsRouting,
     navbar::{ActiveCharacterId, Navbar},
     signin_toast::SignInToastTrigger,
+    sync_error_toast::SyncErrorToastTrigger,
     toast::{ToastContainer, provide_toast_context},
 };
 use hooks::use_theme;
@@ -144,6 +145,7 @@ pub fn App() -> impl IntoView {
         </Router>
         <ToastContainer />
         <SignInToastTrigger />
+        <SyncErrorToastTrigger />
         <BuildInfo />
     }
 }

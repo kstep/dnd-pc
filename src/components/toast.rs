@@ -24,11 +24,18 @@ pub struct Toast {
 }
 
 impl Toast {
+    /// Sensible default for transient confirmation/error toasts: long
+    /// enough to read a sentence, short enough to not linger.
+    pub const DEFAULT_DURATION: Duration = Duration::from_secs(5);
+
+    /// Create a toast with the default auto-close duration. Use
+    /// [`Toast::persist`] to make it sticky, or [`Toast::auto_close`] to
+    /// override the duration.
     pub fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into(),
             action: None,
-            auto_close: None,
+            auto_close: Some(Self::DEFAULT_DURATION),
             on_dismiss: None,
             owner: Owner::current(),
         }
@@ -42,8 +49,17 @@ impl Toast {
         self
     }
 
+    /// Override the auto-close duration set by [`Toast::new`].
+    #[allow(dead_code)] // part of the public builder API; not every caller
+    // needs a custom duration
     pub fn auto_close(mut self, after: Duration) -> Self {
         self.auto_close = Some(after);
+        self
+    }
+
+    /// Keep the toast on screen until the user dismisses it manually.
+    pub fn persist(mut self) -> Self {
+        self.auto_close = None;
         self
     }
 
