@@ -84,7 +84,11 @@ impl Toast {
             };
             ctx.0.update(|toasts| toasts.push(entry));
             if let Some(duration) = auto_close {
-                set_timeout(move || dismiss_toast(id), duration);
+                // Capture the signal directly — the timeout callback runs
+                // without an active owner so `use_context::<ToastCtx>()`
+                // would return None from inside it.
+                let signal = ctx.0;
+                set_timeout(move || remove_toast(signal, id), duration);
             }
         };
         match self.owner {
@@ -125,8 +129,12 @@ fn dismiss_toast(id: u64) {
     let Some(ctx) = use_context::<ToastCtx>() else {
         return;
     };
+    remove_toast(ctx.0, id);
+}
+
+fn remove_toast(signal: RwSignal<Vec<Entry>>, id: u64) {
     let mut on_dismiss = None;
-    ctx.0.update(|toasts| {
+    signal.update(|toasts| {
         if let Some(pos) = toasts.iter().position(|entry| entry.id == id) {
             on_dismiss = toasts[pos].on_dismiss;
             toasts.remove(pos);

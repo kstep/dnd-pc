@@ -44,10 +44,10 @@ fn is_telegram_mini_app() -> bool {
     // Detection is heuristic — Telegram doesn't officially document how to
     // recognise a Mini App context. We match the set of signals used by
     // @telegram-apps/sdk:
-    //  1. Hash params like `#tgWebAppPlatform=…` added by Telegram's web clients
-    //     (webk/weba) when launching a Mini App.
-    //  2. Native bridge objects `TelegramWebviewProxy` /
+    //  1. Native bridge objects `TelegramWebviewProxy` /
     //     `TelegramWebviewProxyProto` injected by the Android/iOS clients.
+    //  2. Hash params like `#tgWebAppPlatform=…` added by Telegram's web clients
+    //     (webk/weba) when launching a Mini App.
     let window = window();
     let win: &JsValue = window.as_ref();
     if has_property(win, "TelegramWebviewProxy") || has_property(win, "TelegramWebviewProxyProto") {
