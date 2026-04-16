@@ -109,8 +109,11 @@
     signInAnonymously,
     GoogleAuthProvider,
     signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
     signInWithCredential,
     linkWithPopup,
+    linkWithRedirect,
     onAuthStateChanged,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
   import {
@@ -141,32 +144,52 @@
   const db = getFirestore(app);
   const googleProvider = new GoogleAuthProvider();
 
+  const isTMA = !!window.TelegramWebviewProxy
+    || !!window.TelegramWebviewProxyProto
+    || location.hash.includes("tgWebAppPlatform=");
+
+  // Handle redirect result when returning from Google OAuth (TMA path).
+  // Must be called early — before onAuthStateChanged fires.
+  const redirectResultPromise = getRedirectResult(auth)
+    .then(result => { console.info("getRedirectResult:", result); return result; })
+    .catch(err => { console.warn("getRedirectResult error:", err); return null; });
+
   window.__firebase = {
     signInAnonymously: () => signInAnonymously(auth),
     linkWithGoogle: async () => {
       const user = auth.currentUser;
       if (user) {
         try {
-          return await linkWithPopup(user, googleProvider);
+          return isTMA
+            ? await linkWithRedirect(user, googleProvider)
+            : await linkWithPopup(user, googleProvider);
         } catch (error) {
           if (error.code === "auth/credential-already-in-use") {
             // Google account already linked to another user — sign into that
             // existing account directly (which has the original UID + data).
-            return await signInWithPopup(auth, googleProvider);
+            return isTMA
+              ? await signInWithRedirect(auth, googleProvider)
+              : await signInWithPopup(auth, googleProvider);
           }
           throw error;
         }
       }
       // No current user — sign in directly
-      return signInWithPopup(auth, googleProvider);
+      return isTMA
+        ? signInWithRedirect(auth, googleProvider)
+        : signInWithPopup(auth, googleProvider);
     },
     currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
     // Resolves once auth state is settled (including pending redirects).
     // Returns { uid, isAnonymous } or null if no user.
     waitForAuth: () => new Promise(resolve => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        unsubscribe();
-        resolve(user ? { uid: user.uid, isAnonymous: user.isAnonymous } : null);
+      // Wait for redirect result first so the credential is linked before
+      // onAuthStateChanged fires with the final user.
+      redirectResultPromise.then(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          unsubscribe();
+          resolve(user ? { uid: user.uid, isAnonymous: user.isAnonymous } : null);
+        });
       });
     }),
     onAuthStateChanged: (cb) =>
