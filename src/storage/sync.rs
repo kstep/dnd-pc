@@ -243,6 +243,16 @@ pub fn sign_in_with_google() {
     if !firebase::is_available() {
         return;
     }
+    if crate::export::is_telegram_mini_app() {
+        use leptos_fluent::tr;
+
+        use crate::{BASE_URL, components::toast::Toast};
+        let origin = window().location().origin().unwrap_or_default();
+        let url = format!("{origin}{BASE_URL}/");
+        crate::export::copy_to_clipboard(&url);
+        Toast::new(tr!("toast-login-tma")).show();
+        return;
+    }
     let state = get_or_init_sync();
     state.set_ok(SyncStatus::Connecting);
 

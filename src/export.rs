@@ -40,7 +40,7 @@ pub fn export_character(character: &Character) {
     download_via_anchor(&json, &filename);
 }
 
-fn is_telegram_mini_app() -> bool {
+pub(crate) fn is_telegram_mini_app() -> bool {
     // Detection is heuristic — Telegram doesn't officially document how to
     // recognise a Mini App context. We match the set of signals used by
     // @telegram-apps/sdk:
@@ -64,10 +64,17 @@ fn has_property(target: &JsValue, name: &str) -> bool {
     Reflect::has(target, &JsValue::from_str(name)).unwrap_or(false)
 }
 
+pub(crate) fn copy_to_clipboard(text: &str) {
+    if !window().is_secure_context() {
+        return;
+    }
+    let promise = window().navigator().clipboard().write_text(text);
+    spawn_local(async move {
+        let _ = JsFuture::from(promise).await;
+    });
+}
+
 fn export_to_clipboard(json: &str) {
-    // Kick off the clipboard write synchronously; the returned Promise is
-    // all we need in the async block, so `json` doesn't need to be cloned
-    // into it.
     let promise = window().navigator().clipboard().write_text(json);
     // Build both toasts up-front in the current owner context. Each toast
     // captures the owner internally, so `.show()` is safe to call from the

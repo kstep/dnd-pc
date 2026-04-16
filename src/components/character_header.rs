@@ -118,9 +118,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 format!("{origin}{BASE_URL}/s/{encoded}")
             };
 
-            let clipboard = window().navigator().clipboard();
-            let promise = clipboard.write_text(&url);
-            let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
+            crate::export::copy_to_clipboard(&url);
             share_copied.set(true);
         });
         set_timeout(move || share_copied.set(false), Duration::from_secs(2));

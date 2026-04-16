@@ -45,6 +45,7 @@ toast-dismiss = Dismiss
 toast-export-copied = Character JSON copied to clipboard. Telegram Mini Apps can't save files directly — paste it into Saved Messages (or any chat) to keep the data.
 toast-export-copy-failed = Couldn't copy character JSON to the clipboard.
 toast-sync-error = Sync error: { $error }
+toast-login-tma = Google sign-in doesn't work inside Telegram. The link has been copied — paste it in a browser to sign in.
 copy-character = Copy character
 share-error = Failed to decode shared character
 import-conflict-title = Character already exists

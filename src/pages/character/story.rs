@@ -268,10 +268,8 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
                         .find(|story| story.id == story_id)
                         .map(|story| story.content.clone())
                 });
-                if let Some(text) = content
-                    && let Some(window) = web_sys::window()
-                {
-                    let _ = window.navigator().clipboard().write_text(&text);
+                if let Some(text) = content {
+                    crate::export::copy_to_clipboard(&text);
                 }
             };
 

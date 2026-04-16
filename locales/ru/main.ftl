@@ -45,6 +45,7 @@ toast-dismiss = Закрыть
 toast-export-copied = JSON персонажа скопирован в буфер обмена. Telegram Mini App не умеет сохранять файлы — вставьте в Сохранённые Сообщения (или любой чат), чтобы сохранить данные.
 toast-export-copy-failed = Не удалось скопировать JSON персонажа в буфер обмена.
 toast-sync-error = Ошибка синхронизации: { $error }
+toast-login-tma = Вход через Google не работает внутри Telegram. Ссылка скопирована — вставьте в браузер, чтобы войти.
 copy-character = Копировать персонажа
 share-error = Не удалось декодировать персонажа
 import-conflict-title = Персонаж уже существует
