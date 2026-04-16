@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{datalist_input::DatalistOption, entity_field::EntityField},
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{AppliedStoreFields, Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -35,7 +35,7 @@ pub fn SpeciesField() -> impl IntoView {
                 let old = store.identity().species().get_untracked();
                 store.identity().species().set(name.clone());
                 if name != old {
-                    store.identity().species_applied().set(false);
+                    store.applied().species().set(false);
                 }
                 registry.species().fetch(&name);
             }

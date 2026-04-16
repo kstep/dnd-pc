@@ -77,7 +77,7 @@ pub(super) fn sync_labels(
     // Pre-compute free_uses_max for each feature (needs immutable character
     // borrow, which conflicts with the mutable feature_data iteration below).
     let free_uses_map: BTreeMap<String, u32> = character
-        .feature_data
+        .features
         .keys()
         .filter_map(|key| {
             let feat_def = find_feature(key, features_index)?;
@@ -86,7 +86,7 @@ pub(super) fn sync_labels(
         })
         .collect();
 
-    for (key, entry) in &mut character.feature_data {
+    for (key, entry) in character.features.data_mut() {
         let Some(feat_def) = find_feature(key, features_index) else {
             continue;
         };

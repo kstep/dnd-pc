@@ -132,7 +132,7 @@ pub mod tests {
         assert_eq!(decoded.combat.hp_temp, 0);
 
         // Descriptions should be cleared
-        assert!(decoded.features[0].description.is_empty());
+        assert!(decoded.features.list[0].description.is_empty());
     }
 
     #[wasm_bindgen_test]
@@ -155,11 +155,11 @@ pub mod tests {
         let stripped = strip_for_sharing(&ch, None);
 
         // Feature descriptions cleared
-        assert!(stripped.features[0].description.is_empty());
+        assert!(stripped.features.list[0].description.is_empty());
 
         // Spell descriptions cleared
         let spell_data = stripped
-            .feature_data
+            .features
             .get("Spellcasting (Bard)")
             .unwrap()
             .spells

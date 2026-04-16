@@ -1374,6 +1374,23 @@ mod loop_tests {
     }
 
     #[wasm_bindgen_test]
+    fn analyze_with_guard_masked_fold_each_active_args() {
+        // Elemental Affinity expression pattern: with(@GROUP, guard(COND, BODY))
+        // where both COND and BODY use @ARG. Regression test: analyze should
+        // detect ARGs despite the guard wrapping.
+        let ctx = TestCtx::new();
+        let expr: Expr = "with(@ABILITY(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))"
+            .parse()
+            .unwrap();
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
+        assert!(
+            !analysis.active_args.is_empty(),
+            "expected non-empty active_args, got {:?}",
+            analysis.active_args
+        );
+    }
+
+    #[wasm_bindgen_test]
     fn analyze_masked_fold_boolean_args() {
         let ctx = TestCtx::new();
         let expr: Expr = "with(@ABILITY(STR, INT, CHA), fold(and, @, in(@ARG, 0, 1)))"

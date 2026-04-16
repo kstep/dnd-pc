@@ -4,11 +4,11 @@ use leptos_fluent::{I18n, move_tr};
 use crate::{
     components::icon::Icon,
     effective::EffectiveCharacter,
-    model::{DamageModifiers, DamageType, Translatable},
+    model::{DamageModifier, DamageType, Translatable},
 };
 
 #[component]
-fn DamageEntry(damage_type: DamageType, modifiers: DamageModifiers) -> impl IntoView {
+fn DamageEntry(damage_type: DamageType, modifiers: DamageModifier) -> impl IntoView {
     let i18n = expect_context::<I18n>();
     let icon = damage_type.icon_name();
     let tr_key = damage_type.tr_key();

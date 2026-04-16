@@ -18,7 +18,8 @@ use crate::{
     effective::EffectiveCharacter,
     model::{
         Ability, Attribute, Character, CharacterStoreFields, CombatStatsStoreFields,
-        EffectDuration, EffectRange, FeatureValue, SpellSlotLevel, SpellSlotPool, format_bonus,
+        EffectDuration, EffectRange, FeatureValue, FeaturesStoreFields, SpellSlotLevel,
+        SpellSlotPool, format_bonus,
     },
     rules::{ActionType, CastTime, RulesRegistry},
 };
@@ -39,7 +40,7 @@ pub fn SpellsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
     let spell_slots = store.spell_slots();
-    let feature_data = store.feature_data();
+    let feature_data = store.features().data();
 
     // Modal state
     let show_calc = RwSignal::new(false);
@@ -83,7 +84,7 @@ pub fn SpellsBlock() -> impl IntoView {
             );
 
             // Inject resource field values and spell cost
-            if let Some(entry) = character.feature_data.get(fname) {
+            if let Some(entry) = character.features.get(fname) {
                 inject_resource_vars(&mut extra_vars, entry);
             }
             if let CastOption::PointsCost { cost, .. } = opt {
@@ -106,9 +107,8 @@ pub fn SpellsBlock() -> impl IntoView {
             }
 
             let spell_label = character
-                .feature_data
-                .get(fname)
-                .and_then(|e| e.spells.as_ref())
+                .features
+                .spell_data(fname)
                 .and_then(|sd| sd.spells.iter().find(|s| s.name == spell_name))
                 .map(|s| s.label().to_string())
                 .unwrap_or_else(|| spell_name.to_string());

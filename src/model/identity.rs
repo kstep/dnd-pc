@@ -1,8 +1,6 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::{model::Alignment, vecset::VecSet};
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CharacterIdentity {
     #[serde(default)]
@@ -13,23 +11,8 @@ pub struct CharacterIdentity {
     pub species: String,
     #[serde(default)]
     pub background: String,
-    pub alignment: Alignment,
     #[serde(default)]
     pub experience_points: u32,
-    #[serde(default, alias = "race_applied")]
-    pub species_applied: bool,
-    #[serde(default)]
-    pub background_applied: bool,
-}
-
-impl CharacterIdentity {
-    pub fn reset_applied_flags(&mut self) {
-        self.species_applied = false;
-        self.background_applied = false;
-        for class_level in &mut self.classes {
-            class_level.applied_levels.clear();
-        }
-    }
 }
 
 impl Default for CharacterIdentity {
@@ -39,10 +22,7 @@ impl Default for CharacterIdentity {
             classes: vec![ClassLevel::default()],
             species: String::new(),
             background: String::new(),
-            alignment: Alignment::TrueNeutral,
             experience_points: 0,
-            species_applied: false,
-            background_applied: false,
         }
     }
 }
@@ -63,8 +43,6 @@ pub struct ClassLevel {
     pub hit_die_sides: u32,
     #[serde(default)]
     pub hit_dice_used: u32,
-    #[serde(default)]
-    pub applied_levels: VecSet<u32>,
 }
 
 impl ClassLevel {
@@ -108,58 +86,13 @@ impl Default for ClassLevel {
             level: 1,
             hit_die_sides: 8,
             hit_dice_used: 0,
-            applied_levels: VecSet::new(),
         }
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use wasm_bindgen_test::*;
-
-    use super::*;
-
-    #[wasm_bindgen_test]
-    fn reset_applied_flags_clears_everything() {
-        let mut identity = CharacterIdentity {
-            species_applied: true,
-            background_applied: true,
-            classes: vec![
-                ClassLevel {
-                    class: "Monk".into(),
-                    level: 3,
-                    applied_levels: [1, 2, 3].into_iter().collect(),
-                    ..ClassLevel::default()
-                },
-                ClassLevel {
-                    class: "Wizard".into(),
-                    level: 2,
-                    applied_levels: [1, 2].into_iter().collect(),
-                    ..ClassLevel::default()
-                },
-            ],
-            ..CharacterIdentity::default()
-        };
-
-        identity.reset_applied_flags();
-
-        assert!(!identity.species_applied);
-        assert!(!identity.background_applied);
-        for cl in &identity.classes {
-            assert!(
-                cl.applied_levels.is_empty(),
-                "{} still has applied levels",
-                cl.class
-            );
-        }
-        // Levels themselves are preserved.
-        assert_eq!(identity.classes[0].level, 3);
-        assert_eq!(identity.classes[1].level, 2);
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct Personality {
+    pub alignment: crate::model::Alignment,
     #[serde(default)]
     pub history: String,
     #[serde(default)]
@@ -170,4 +103,17 @@ pub struct Personality {
     pub bonds: String,
     #[serde(default)]
     pub flaws: String,
+}
+
+impl Default for Personality {
+    fn default() -> Self {
+        Self {
+            alignment: crate::model::Alignment::TrueNeutral,
+            history: String::new(),
+            personality_traits: String::new(),
+            ideals: String::new(),
+            bonds: String::new(),
+            flaws: String::new(),
+        }
+    }
 }

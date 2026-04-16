@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{datalist_input::DatalistOption, entity_field::EntityField},
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{AppliedStoreFields, Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -35,7 +35,7 @@ pub fn BackgroundField() -> impl IntoView {
                 let old = store.identity().background().get_untracked();
                 store.identity().background().set(name.clone());
                 if name != old {
-                    store.identity().background_applied().set(false);
+                    store.applied().background().set(false);
                 }
                 registry.backgrounds().fetch(&name);
             }

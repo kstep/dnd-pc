@@ -1,7 +1,15 @@
+use std::{
+    collections::BTreeMap,
+    ops::{Deref, DerefMut},
+};
+
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, SpellSlotPool};
+use crate::{
+    constvec::ConstVec,
+    model::{Ability, SpellSlotPool},
+};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct SpellData {
@@ -61,6 +69,92 @@ impl SpellSlotLevel {
 
     pub fn is_empty(&self) -> bool {
         self.available() == 0
+    }
+}
+
+/// Per-character spell slots keyed by pool, each pool carrying up to 9 slot
+/// levels. Transparent over the underlying `BTreeMap` for serde and postcard
+/// compatibility; accessible as a map via `Deref`/`DerefMut`.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
+#[serde(transparent)]
+pub struct SpellSlots(BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>);
+
+impl Deref for SpellSlots {
+    type Target = BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for SpellSlots {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl From<BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>> for SpellSlots {
+    fn from(map: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>) -> Self {
+        Self(map)
+    }
+}
+
+impl SpellSlots {
+    /// Read a single slot. Returns `SpellSlotLevel::default()` if pool or level
+    /// is absent.
+    pub fn get_slot(&self, pool: SpellSlotPool, level: u32) -> SpellSlotLevel {
+        self.0
+            .get(&pool)
+            .and_then(|slots| slots.get((level - 1) as usize))
+            .copied()
+            .unwrap_or_default()
+    }
+
+    /// Iterate slot levels 1..=9 for the given pool, yielding each level and
+    /// its current `SpellSlotLevel` (defaulted when absent).
+    pub fn iter_pool(
+        &self,
+        pool: SpellSlotPool,
+    ) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
+        (1..=9u32).map(move |level| (level, self.get_slot(pool, level)))
+    }
+
+    /// Pools that have at least one slot level with non-zero `total`.
+    pub fn active_pools(&self) -> impl Iterator<Item = SpellSlotPool> + '_ {
+        self.0
+            .iter()
+            .filter(|(_, slots)| slots.iter().any(|slot| slot.total > 0))
+            .map(|(&pool, _)| pool)
+    }
+
+    /// Low-level write: overwrite `total` for each slot level in `pool` from
+    /// `totals`. Extra levels beyond `totals.len()` are left untouched. `used`
+    /// counters are not modified.
+    pub fn set_totals(&mut self, pool: SpellSlotPool, totals: &[u32]) {
+        if totals.is_empty() {
+            return;
+        }
+        let slot_entry = self.0.entry(pool).or_default();
+        for (i, entry) in slot_entry.iter_mut().enumerate() {
+            let table_total = totals.get(i).copied().unwrap_or(0);
+            entry.total = table_total;
+        }
+    }
+
+    /// Zero `used` on every slot in every pool.
+    pub fn reset_used(&mut self) {
+        self.reset_used_where(|_pool| true);
+    }
+
+    /// Zero `used` on every slot in pools matching `predicate`.
+    pub fn reset_used_where(&mut self, mut predicate: impl FnMut(&SpellSlotPool) -> bool) {
+        for (pool, slots) in self.0.iter_mut() {
+            if predicate(pool) {
+                for slot in slots.iter_mut() {
+                    slot.used = 0;
+                }
+            }
+        }
     }
 }
 

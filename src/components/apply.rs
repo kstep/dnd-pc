@@ -8,8 +8,8 @@ use crate::{
     components::args_modal::ArgsModalCtx,
     expr,
     model::{
-        Ability, AssignInputs, Attribute, Character, Feature, FeatureCategory, FeatureData,
-        FeatureSource, FeatureValue, Spell, SpellData,
+        Ability, Applied, AssignInputs, Attribute, Character, Feature, FeatureCategory,
+        FeatureData, FeatureSource, FeatureValue, Spell, SpellData,
     },
     rules::{
         ApplyInputs, ClassDefinition, ClassIndexEntry, DefinitionStore, FeatureKey, PendingInputs,
@@ -133,12 +133,12 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
         let empty = ApplyInputs::default();
         let inputs = inputs.unwrap_or(&empty);
         store.update(|character| {
-            let original_feature_data = character.feature_data.clone();
+            let original_feature_data = character.features.data().clone();
             *character = clone;
             registry.with_features_index_untracked(|fi| {
                 replay(fi, character, &pending, inputs);
             });
-            restore_all_spell_selections(&original_feature_data, &mut character.feature_data);
+            restore_all_spell_selections(&original_feature_data, character.features.data_mut());
             registry.compute(character);
         });
     };
@@ -425,20 +425,26 @@ pub fn apply_level(store: Store<Character>, registry: RulesRegistry) {
         pending,
         move |character, pending, inputs, fi| {
             // Mark species/background as applied if they had pending features
-            if !character.identity.species_applied && !character.identity.species.is_empty() {
-                character.identity.species_applied = true;
+            if !character.applied.species && !character.identity.species.is_empty() {
+                character.applied.species = true;
             }
-            if !character.identity.background_applied && !character.identity.background.is_empty() {
-                character.identity.background_applied = true;
+            if !character.applied.background && !character.identity.background.is_empty() {
+                character.applied.background = true;
             }
             // Mark class levels as applied
             let class_cache = registry.classes().cache().read_untracked();
-            for class_level in &mut character.identity.classes {
-                for lvl in 1..=class_level.level {
-                    if !class_level.applied_levels.contains(&lvl) {
-                        class_level.applied_levels.insert(lvl);
-                    }
+            let class_updates: Vec<(String, u32)> = character
+                .identity
+                .classes
+                .iter()
+                .map(|cl| (cl.class.clone(), cl.level))
+                .collect();
+            for (class_name, level) in &class_updates {
+                for lvl in 1..=*level {
+                    character.applied.mark_level(class_name, lvl);
                 }
+            }
+            for class_level in &mut character.identity.classes {
                 if let Some(def) = class_cache.get(class_level.class.as_str()) {
                     class_level.hit_die_sides = def.hit_die;
                 }
@@ -482,10 +488,11 @@ pub fn apply_single_level(
         pending,
         move |character, pending, inputs, fi| {
             if let Some(class_level) = character.identity.classes.get_mut(class_index) {
-                class_level.applied_levels.insert(level);
                 registry.classes().with(&class_level.class, |def| {
                     class_level.hit_die_sides = def.hit_die;
                 });
+                let class_name = class_level.class.clone();
+                character.applied.mark_level(&class_name, level);
             }
             reapply_existing(fi, character);
             apply_new_features(fi, character, pending, Some(inputs));
@@ -566,8 +573,9 @@ fn collect_rebuild_pending_inputs(
         let mut snapshot = original.clone();
         snapshot
             .features
+            .list
             .retain(|feature| matches!(feature.source, FeatureSource::User(_)));
-        snapshot.identity.reset_applied_flags();
+        snapshot.applied = Applied::default();
         let identity_pending = collect_pending_features(&snapshot, registry, fi);
 
         // User features from original — rebuild re-applies all of them.
@@ -602,7 +610,7 @@ fn build_clean(
 ) -> Result<Character, RebuildError> {
     let mut clean = Character::default();
     clean.identity = original.identity.clone();
-    clean.identity.reset_applied_flags();
+    clean.applied = Applied::default();
 
     registry.with_features_index_untracked(|fi| -> Result<(), RebuildError> {
         // 1. User(0) features (e.g. Generation: * setting base abilities)
@@ -620,7 +628,7 @@ fn build_clean(
             let pending: Vec<PendingFeature> =
                 collect_species_features(&clean, species_def, fi).collect();
             apply_pending(fi, &mut clean, &pending, original, extra_inputs)?;
-            clean.identity.species_applied = true;
+            clean.applied.species = true;
         }
 
         // 3. Background
@@ -635,7 +643,7 @@ fn build_clean(
             let pending: Vec<PendingFeature> =
                 collect_background_features(&clean, bg_def, fi).collect();
             apply_pending(fi, &mut clean, &pending, original, extra_inputs)?;
-            clean.identity.background_applied = true;
+            clean.applied.background = true;
         }
 
         // 4. Classes — interleave class levels with per-step prereq filter for
@@ -680,7 +688,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
         }
     }
 
-    clean.features.insert(
+    clean.features.list.insert(
         0,
         Feature {
             name: "Generation: Custom".to_string(),
@@ -838,9 +846,7 @@ fn apply_class_level(
     let pending: Vec<PendingFeature> =
         collect_class_features(clean, class_idx, class_level, class_def, fi).collect();
     apply_pending(fi, clean, &pending, original, extra_inputs)?;
-    clean.identity.classes[class_idx]
-        .applied_levels
-        .insert(class_level);
+    clean.applied.mark_level(&class_name, class_level);
     Ok(())
 }
 
@@ -865,7 +871,10 @@ fn apply_pending(
                 name: pending_feature.name.clone(),
             });
         }
-        let inputs_for_one = inputs_for_pending(pending_feature, original, extra_inputs);
+        let stackable = fi
+            .get(pending_feature.name.as_str())
+            .is_some_and(|feat| feat.stackable);
+        let inputs_for_one = inputs_for_pending(pending_feature, original, extra_inputs, stackable);
         apply_new_features(
             fi,
             clean,
@@ -876,14 +885,19 @@ fn apply_pending(
     Ok(())
 }
 
-/// Resolve stored inputs for a single pending feature, matching by source so
-/// stackable features (two ASI instances at different class levels, for
-/// example) don't share storage. Falls back to `extra_inputs` (modal input)
-/// when nothing stored.
+/// Resolve stored inputs for a single pending feature. Stackable features
+/// require exact source match so multiple instances (e.g. ASI at Monk L4 and
+/// L8) don't share storage. Non-stackable features match by name alone —
+/// tolerates source encoding drift between versions (e.g. a subclass feature
+/// stored with `Class(X, N)` on older saves when collect now generates
+/// `Subclass(X, SC, N)`).
+///
+/// Falls back to `extra_inputs` (modal input) when nothing stored.
 fn inputs_for_pending(
     pending_feature: &PendingFeature,
     original: &Character,
     extra_inputs: &ApplyInputs,
+    stackable: bool,
 ) -> ApplyInputs {
     let stored: Vec<AssignInputs> = original
         .features
@@ -891,7 +905,7 @@ fn inputs_for_pending(
         .find(|feature| {
             feature.name == pending_feature.name
                 && feature.applied
-                && feature.source == pending_feature.source
+                && (!stackable || feature.source == pending_feature.source)
         })
         .map(|feature| feature.inputs.clone())
         .unwrap_or_default();
@@ -970,11 +984,8 @@ fn merge_preserved(clean: &mut Character, original: &Character) {
     clean.updated_at = original.updated_at;
 
     // In-game counters on CombatStats — preserve user state, keep recomputed
-    // hp_max.
-    clean.combat.hp_current = original.combat.hp_current.min(clean.combat.hp_max);
-    clean.combat.hp_temp = original.combat.hp_temp;
-    clean.combat.death_save_successes = original.combat.death_save_successes;
-    clean.combat.death_save_failures = original.combat.death_save_failures;
+    // hp_max (hp_current clamps against the new max inside the method).
+    clean.combat.merge_play_state(&original.combat);
 
     // XP: bump to the threshold of the resulting total level (matches
     // `apply_level` behavior so XP stays consistent with level).
@@ -1012,8 +1023,8 @@ fn merge_preserved(clean: &mut Character, original: &Character) {
     // Choice picks (Metamagic, etc.). Clean has the fresh field structure
     // from the current definition; we overlay per-field values from
     // original where applicable.
-    for (name, clean_data) in clean.feature_data.iter_mut() {
-        let Some(orig_data) = original.feature_data.get(name) else {
+    for (name, clean_data) in clean.features.data_mut() {
+        let Some(orig_data) = original.features.get(name) else {
             continue;
         };
         for clean_field in clean_data.fields.iter_mut() {
@@ -1064,7 +1075,7 @@ fn merge_preserved(clean: &mut Character, original: &Character) {
     }
 
     // Restore user-selected spells from the original into clean.
-    restore_all_spell_selections(&original.feature_data, &mut clean.feature_data);
+    restore_all_spell_selections(original.features.data(), clean.features.data_mut());
 }
 
 #[cfg(test)]
@@ -1197,9 +1208,7 @@ mod rebuild_tests {
                 used: 1,
             },
         });
-        original
-            .feature_data
-            .insert("Martial Arts".into(), orig_data);
+        original.features.insert("Martial Arts".into(), orig_data);
 
         let mut clean = Character::default();
         let mut clean_data = FeatureData::default();
@@ -1221,11 +1230,11 @@ mod rebuild_tests {
                 used: 0,
             },
         });
-        clean.feature_data.insert("Martial Arts".into(), clean_data);
+        clean.features.insert("Martial Arts".into(), clean_data);
 
         merge_preserved(&mut clean, &original);
 
-        let data = clean.feature_data.get("Martial Arts").unwrap();
+        let data = clean.features.get("Martial Arts").unwrap();
         let points = &data.fields[0].value;
         assert!(matches!(points, FeatureValue::Points { used: 2, max: 5 }));
         let die = &data.fields[1].value;
@@ -1251,7 +1260,7 @@ mod rebuild_tests {
             description: String::new(),
             value: FeatureValue::Points { used: 10, max: 10 },
         });
-        original.feature_data.insert("Feat".into(), orig_data);
+        original.features.insert("Feat".into(), orig_data);
 
         let mut clean = Character::default();
         let mut clean_data = FeatureData::default();
@@ -1261,11 +1270,11 @@ mod rebuild_tests {
             description: String::new(),
             value: FeatureValue::Points { used: 0, max: 3 },
         });
-        clean.feature_data.insert("Feat".into(), clean_data);
+        clean.features.insert("Feat".into(), clean_data);
 
         merge_preserved(&mut clean, &original);
 
-        let used = match &clean.feature_data.get("Feat").unwrap().fields[0].value {
+        let used = match &clean.features.get("Feat").unwrap().fields[0].value {
             FeatureValue::Points { used, .. } => *used,
             _ => panic!("expected Points"),
         };
@@ -1283,14 +1292,14 @@ mod rebuild_tests {
             args: vec![0, 0, 0, 0, 0, 2],
             dice: Default::default(),
         }];
-        original.features.push(Feature {
+        original.features.list.push(Feature {
             inputs: asi4_inputs.clone(),
             ..feature(
                 "Ability Score Improvement",
                 FeatureSource::Class("Monk".into(), 4),
             )
         });
-        original.features.push(Feature {
+        original.features.list.push(Feature {
             inputs: asi8_inputs.clone(),
             ..feature(
                 "Ability Score Improvement",
@@ -1308,6 +1317,7 @@ mod rebuild_tests {
             },
             &original,
             &empty,
+            true,
         );
         let inputs_at_8 = inputs_for_pending(
             &PendingFeature {
@@ -1317,6 +1327,7 @@ mod rebuild_tests {
             },
             &original,
             &empty,
+            true,
         );
 
         assert_eq!(
@@ -1340,6 +1351,7 @@ mod rebuild_tests {
         let mut original = Character::default();
         original
             .features
+            .list
             .push(feature("Mystery", FeatureSource::User(0)));
 
         let modal_inputs = vec![AssignInputs {
@@ -1360,6 +1372,7 @@ mod rebuild_tests {
             },
             &original,
             &extra,
+            false,
         );
 
         assert_eq!(

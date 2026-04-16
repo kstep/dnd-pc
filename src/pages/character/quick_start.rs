@@ -223,17 +223,27 @@ fn finalize_quick_start(
     inputs: &ApplyInputs,
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
 ) {
-    if !character.identity.species.is_empty() && !character.identity.species_applied {
-        character.identity.species_applied = true;
+    if !character.identity.species.is_empty() && !character.applied.species {
+        character.applied.species = true;
     }
-    if !character.identity.background.is_empty() && !character.identity.background_applied {
-        character.identity.background_applied = true;
+    if !character.identity.background.is_empty() && !character.applied.background {
+        character.applied.background = true;
     }
     let class_cache = registry.classes().cache().read_untracked();
-    for class_level in &mut character.identity.classes {
-        for lvl in 1..=class_level.level {
-            class_level.applied_levels.insert(lvl);
+    // Collect class updates first to avoid borrowing character.applied while
+    // iterating character.identity.classes.
+    let class_updates: Vec<(String, u32)> = character
+        .identity
+        .classes
+        .iter()
+        .map(|cl| (cl.class.clone(), cl.level))
+        .collect();
+    for (class_name, level) in &class_updates {
+        for lvl in 1..=*level {
+            character.applied.mark_level(class_name, lvl);
         }
+    }
+    for class_level in &mut character.identity.classes {
         if let Some(def) = class_cache.get(class_level.class.as_str()) {
             class_level.hit_die_sides = def.hit_die;
         }

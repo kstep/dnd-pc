@@ -74,8 +74,9 @@ pub fn ClassesSection() -> impl IntoView {
                             let class_loaded = registry.classes().has(&class_key);
 
                             let next_unapplied: Option<u32> = if class_loaded {
+                                let applied = store.applied().read();
                                 (1..=current_level)
-                                    .find(|lvl| !cl.applied_levels.contains(lvl))
+                                    .find(|lvl| !applied.contains_level(&class_key, *lvl))
                             } else {
                                 None
                             };

@@ -1,16 +1,13 @@
-use std::collections::BTreeMap;
-
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    constvec::ConstVec,
     expr::{self, Eval as _},
     model::{
-        AbilityScores, Attribute, CharacterIdentity, CombatStats, DamageModifiers, Equipment,
-        Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality, Skills,
-        SpellSlotLevel, enums::*,
+        AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
+        Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality,
+        Skills, SpellSlots, enums::*,
     },
     vecset::VecSet,
 };
@@ -91,15 +88,15 @@ pub struct Character {
     #[serde(default)]
     pub equipment: Equipment,
     #[serde(default)]
-    pub feature_data: BTreeMap<String, FeatureData>,
-    #[serde(default)]
     pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
-    pub damage_modifiers: BTreeMap<DamageType, DamageModifiers>,
+    pub damage_modifiers: DamageModifiers,
     #[serde(default)]
-    pub spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
+    pub spell_slots: SpellSlots,
+    #[serde(default)]
+    pub applied: Applied,
     #[serde(default)]
     pub notes: String,
     #[serde(default)]
@@ -119,12 +116,7 @@ impl Character {
 
     pub fn clear(&mut self) {
         let id = self.id;
-        let mut identity = std::mem::take(&mut self.identity);
-        identity.species_applied = false;
-        identity.background_applied = false;
-        for class_level in &mut identity.classes {
-            class_level.applied_levels.clear();
-        }
+        let identity = std::mem::take(&mut self.identity);
         *self = Self {
             id,
             identity,
@@ -143,42 +135,16 @@ impl Character {
             cl.hit_dice_used = 0;
         }
 
-        for slots in self.spell_slots.values_mut() {
-            for slot in slots.iter_mut() {
-                slot.used = 0;
-            }
-        }
-
-        for feature_data in self.feature_data.values_mut() {
-            for field in &mut feature_data.fields {
-                match &mut field.value {
-                    FeatureValue::Points { used, .. } | FeatureValue::Die { used, .. } => {
-                        *used = 0;
-                    }
-                    _ => {}
-                }
-            }
-            if let Some(spell_data) = &mut feature_data.spells {
-                for spell in &mut spell_data.spells {
-                    if let Some(fu) = &mut spell.free_uses {
-                        fu.used = 0;
-                    }
-                }
-            }
-        }
+        self.spell_slots.reset_used();
+        self.features.reset_uses();
     }
 
     pub fn short_rest(&mut self) {
         self.combat.death_save_failures = 0;
         self.combat.death_save_successes = 0;
 
-        for (&pool, slots) in &mut self.spell_slots {
-            if pool.restore_on_short_rest() {
-                for slot in slots.iter_mut() {
-                    slot.used = 0;
-                }
-            }
-        }
+        self.spell_slots
+            .reset_used_where(SpellSlotPool::restore_on_short_rest);
     }
 
     pub fn touch(&mut self) {
@@ -195,7 +161,7 @@ impl Character {
     }
 
     pub fn features(&self) -> &[Feature] {
-        &self.features
+        &self.features.list
     }
 
     pub fn speed(&self) -> u32 {
@@ -349,7 +315,7 @@ impl Character {
                     if feature.source.as_class() != Some(cl.class.as_str()) {
                         return None;
                     }
-                    let spell_data = self.feature_data.get(&feature.name)?.spells.as_ref()?;
+                    let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
                     (spell_data.pool == pool && spell_data.caster_coef != 0)
                         .then_some(spell_data.caster_coef)
                 })
@@ -384,19 +350,13 @@ impl Character {
         let (_, caster_classes) = self.caster_info(pool);
 
         let table_slots = self.spell_slots_for_caster_level(pool);
-        let slots: &[u32] = match caster_classes {
+        let effective: &[u32] = match caster_classes {
             0 => &[],
             1 => slots.filter(|s| !s.is_empty()).unwrap_or(table_slots),
             _ => table_slots,
         };
 
-        if !slots.is_empty() {
-            let slot_entry = self.spell_slots.entry(pool).or_default();
-            for (i, entry) in slot_entry.iter_mut().enumerate() {
-                let table_total = slots.get(i).copied().unwrap_or(0);
-                entry.total = table_total;
-            }
-        }
+        self.spell_slots.set_totals(pool, effective);
     }
 
     pub fn can_level_up(&self) -> bool {
@@ -478,28 +438,6 @@ impl Character {
         self.proficiency_bonus() + self.ability_modifier(ability)
     }
 
-    pub fn spell_slot(&self, pool: SpellSlotPool, level: u32) -> SpellSlotLevel {
-        self.spell_slots
-            .get(&pool)
-            .and_then(|slots| slots.get((level - 1) as usize))
-            .copied()
-            .unwrap_or_default()
-    }
-
-    pub fn all_spell_slots_for_pool(
-        &self,
-        pool: SpellSlotPool,
-    ) -> impl Iterator<Item = (u32, SpellSlotLevel)> + '_ {
-        (1..=9u32).map(move |level| (level, self.spell_slot(pool, level)))
-    }
-
-    pub fn active_pools(&self) -> impl Iterator<Item = SpellSlotPool> + '_ {
-        self.spell_slots
-            .iter()
-            .filter(|(_, slots)| slots.iter().any(|slot| slot.total > 0))
-            .map(|(&pool, _)| pool)
-    }
-
     /// Reset all derived state for replay. Preserves identity (including
     /// applied flags), equipment, personality, notes, and feature list with
     /// sources intact.
@@ -507,7 +445,7 @@ impl Character {
         self.abilities = AbilityScores::default();
         self.saving_throws.clear();
         self.skills.clear();
-        self.feature_data.clear();
+        self.features.clear();
         self.proficiencies.clear();
         self.languages.clear();
         self.damage_modifiers.clear();
@@ -521,30 +459,7 @@ impl Character {
             cl.class_label = None;
             cl.subclass_label = None;
         }
-        for feature in &mut self.features {
-            feature.label = None;
-            feature.description.clear();
-        }
-        for entry in self.feature_data.values_mut() {
-            for field in &mut entry.fields {
-                field.label = None;
-                field.description.clear();
-                for opt in field.value.choices_mut() {
-                    opt.label = None;
-                    opt.description.clear();
-                }
-            }
-            if let Some(spells) = &mut entry.spells {
-                for spell in &mut spells.spells {
-                    spell.label = None;
-                    spell.description.clear();
-                }
-                for spell in spells.known.iter_mut().flatten() {
-                    spell.label = None;
-                    spell.description.clear();
-                }
-            }
-        }
+        self.features.clear_all_labels();
     }
 
     pub fn class_summary(&self) -> String {
@@ -564,28 +479,15 @@ impl Default for Character {
             personality: Personality::default(),
             features: Features::default(),
             equipment: Equipment::default(),
-            feature_data: BTreeMap::new(),
-            spell_slots: BTreeMap::new(),
+            spell_slots: SpellSlots::default(),
+            applied: Applied::default(),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            damage_modifiers: BTreeMap::new(),
+            damage_modifiers: DamageModifiers::default(),
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
         }
-    }
-}
-
-fn set_damage_flag(
-    map: &mut BTreeMap<DamageType, DamageModifiers>,
-    dt: DamageType,
-    value: i32,
-    field: impl FnOnce(&mut DamageModifiers) -> &mut bool,
-) {
-    let entry = map.entry(dt).or_default();
-    *field(entry) = value != 0;
-    if !entry.is_active() {
-        map.remove(&dt);
     }
 }
 
@@ -652,20 +554,16 @@ impl expr::Context<Attribute, i32> for Character {
                 }
             }
             Attribute::Resistance(dt) => {
-                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.resistant);
+                self.damage_modifiers.set_resistant(dt, value != 0);
             }
             Attribute::Vulnerability(dt) => {
-                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.vulnerable);
+                self.damage_modifiers.set_vulnerable(dt, value != 0);
             }
             Attribute::Immunity(dt) => {
-                set_damage_flag(&mut self.damage_modifiers, dt, value, |m| &mut m.immune);
+                self.damage_modifiers.set_immune(dt, value != 0);
             }
             Attribute::DamageReduction(dt) => {
-                let entry = self.damage_modifiers.entry(dt).or_default();
-                entry.reduction = value.max(0) as u32;
-                if !entry.is_active() {
-                    self.damage_modifiers.remove(&dt);
-                }
+                self.damage_modifiers.set_reduction(dt, value.max(0) as u32);
             }
             other => return Err(expr::Error::read_only_var(other)),
         }
@@ -699,19 +597,10 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
-            Attribute::Resistance(dt) => {
-                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.resistant) as i32)
-            }
-            Attribute::Vulnerability(dt) => {
-                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.vulnerable) as i32)
-            }
-            Attribute::Immunity(dt) => {
-                Ok(self.damage_modifiers.get(&dt).is_some_and(|m| m.immune) as i32)
-            }
-            Attribute::DamageReduction(dt) => Ok(self
-                .damage_modifiers
-                .get(&dt)
-                .map_or(0, |m| m.reduction as i32)),
+            Attribute::Resistance(dt) => Ok(self.damage_modifiers.is_resistant(dt) as i32),
+            Attribute::Vulnerability(dt) => Ok(self.damage_modifiers.is_vulnerable(dt) as i32),
+            Attribute::Immunity(dt) => Ok(self.damage_modifiers.is_immune(dt) as i32),
+            Attribute::DamageReduction(dt) => Ok(self.damage_modifiers.reduction(dt) as i32),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
             Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
             Attribute::FeatCategory(cat) => Ok(self.features.has_category(cat) as i32),
@@ -843,6 +732,8 @@ impl expr::Context<Attribute, i32> for Context<'_> {
 #[cfg(test)]
 impl Character {
     pub fn test_character() -> Character {
+        use std::collections::BTreeMap;
+
         use crate::model::{ClassLevel, FeatureCategory, FeatureSource, Spell, SpellData};
 
         let mut ch = Character {
@@ -857,14 +748,10 @@ impl Character {
                     level: 3,
                     hit_die_sides: 8,
                     hit_dice_used: 0,
-                    applied_levels: VecSet::new(),
                 }],
                 species: "Elf".to_string(),
                 background: "Entertainer".to_string(),
-                alignment: Alignment::ChaoticGood,
                 experience_points: 900,
-                species_applied: true,
-                background_applied: true,
             },
             abilities: AbilityScores {
                 strength: 8,
@@ -892,43 +779,53 @@ impl Character {
                 inspiration: false,
                 attack_count: 1,
             },
-            personality: Personality::default(),
-            features: vec![Feature {
-                name: "Bardic Inspiration".to_string(),
-                label: None,
-                description: "Use a bonus action...".to_string(),
-                applied: true,
-                category: FeatureCategory::Class,
-                source: FeatureSource::Class("Bard".into(), 1),
-                inputs: Vec::new(),
-            }]
-            .into(),
+            personality: Personality {
+                alignment: Alignment::ChaoticGood,
+                ..Personality::default()
+            },
+            features: Features::from_parts(
+                vec![Feature {
+                    name: "Bardic Inspiration".to_string(),
+                    label: None,
+                    description: "Use a bonus action...".to_string(),
+                    applied: true,
+                    category: FeatureCategory::Class,
+                    source: FeatureSource::Class("Bard".into(), 1),
+                    inputs: Vec::new(),
+                }]
+                .into(),
+                BTreeMap::from([(
+                    "Spellcasting (Bard)".to_string(),
+                    FeatureData {
+                        fields: Vec::new(),
+                        spells: Some(SpellData {
+                            casting_ability: Ability::Charisma,
+                            caster_coef: 1,
+                            pool: SpellSlotPool::Arcane,
+                            spells: vec![Spell {
+                                name: "Vicious Mockery".to_string(),
+                                label: None,
+                                level: 0,
+                                description: "Unleash a string of insults...".to_string(),
+                                sticky: false,
+                                cost: 0,
+                                free_uses: None,
+                            }],
+                            known: None,
+                        }),
+                    },
+                )]),
+            ),
             equipment: Equipment::default(),
-            feature_data: BTreeMap::from([(
-                "Spellcasting (Bard)".to_string(),
-                FeatureData {
-                    fields: Vec::new(),
-                    spells: Some(SpellData {
-                        casting_ability: Ability::Charisma,
-                        caster_coef: 1,
-                        pool: SpellSlotPool::Arcane,
-                        spells: vec![Spell {
-                            name: "Vicious Mockery".to_string(),
-                            label: None,
-                            level: 0,
-                            description: "Unleash a string of insults...".to_string(),
-                            sticky: false,
-                            cost: 0,
-                            free_uses: None,
-                        }],
-                        known: None,
-                    }),
-                },
-            )]),
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
-            damage_modifiers: BTreeMap::new(),
-            spell_slots: BTreeMap::new(),
+            damage_modifiers: DamageModifiers::default(),
+            spell_slots: SpellSlots::default(),
+            applied: Applied {
+                species: true,
+                background: true,
+                levels: BTreeMap::new(),
+            },
             notes: String::new(),
             updated_at: 0,
             shared: false,
@@ -965,14 +862,10 @@ pub mod tests {
                     level: 5,
                     hit_die_sides: 10,
                     hit_dice_used: 0,
-                    applied_levels: VecSet::new(),
                 }],
                 species: "Human".to_string(),
                 background: "Soldier".to_string(),
-                alignment: Alignment::TrueNeutral,
                 experience_points: 0,
-                species_applied: false,
-                background_applied: false,
             },
             abilities: AbilityScores {
                 strength: 16,
@@ -1008,7 +901,6 @@ pub mod tests {
             personality: Personality::default(),
             features: Features::default(),
             equipment: Equipment::default(),
-            feature_data: BTreeMap::new(),
             proficiencies: [
                 Proficiency::LightArmor,
                 Proficiency::MediumArmor,
@@ -1018,8 +910,9 @@ pub mod tests {
             .into_iter()
             .collect(),
             languages: VecSet::new(),
-            damage_modifiers: BTreeMap::new(),
-            spell_slots: BTreeMap::new(),
+            damage_modifiers: DamageModifiers::default(),
+            spell_slots: SpellSlots::default(),
+            applied: Applied::default(),
             notes: String::new(),
             updated_at: 0,
             shared: false,
@@ -1034,13 +927,13 @@ pub mod tests {
         caster_coef: u32,
         pool: SpellSlotPool,
     ) {
-        ch.features.push(Feature {
+        ch.features.list.push(Feature {
             name: feature_name.to_string(),
             source: FeatureSource::Class(class_name.into(), 1),
             applied: true,
             ..Default::default()
         });
-        ch.feature_data.insert(
+        ch.features.insert(
             feature_name.to_string(),
             FeatureData {
                 spells: Some(SpellData {
@@ -1740,7 +1633,6 @@ pub mod tests {
             level: 2,
             hit_die_sides: 6,
             hit_dice_used: 0,
-            applied_levels: VecSet::new(),
         });
         let hp = ch.compute_hp_max();
         assert_eq!(hp, 51);

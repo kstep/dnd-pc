@@ -11,7 +11,7 @@ use crate::{
         feature_field_row::FeatureFieldRow,
         icon::Icon,
     },
-    model::{Character, CharacterStoreFields, FeatureSource, FeatureValue},
+    model::{Character, CharacterStoreFields, FeatureSource, FeatureValue, FeaturesStoreFields},
     rules::{
         RulesRegistry,
         apply::{PendingFeature, apply_new_features},
@@ -26,7 +26,7 @@ pub fn FeatureRow(
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
-    let features = store.features();
+    let features = store.features().list();
 
     let feature = features.read_untracked().get(feature_idx).cloned()?;
 
@@ -38,7 +38,8 @@ pub fn FeatureRow(
         || registry.with_features_index_untracked(|idx| idx.contains_key(feature_name.as_str()));
     let stored_name = StoredValue::new(feature_name.clone());
     let (field_count, has_spells, has_empty_choices) = store
-        .feature_data()
+        .features()
+        .data()
         .read_untracked()
         .get(&feature_name)
         .map(|e| {
@@ -56,7 +57,8 @@ pub fn FeatureRow(
     let has_pending = Memo::new(move |_| {
         not_applied
             || store
-                .feature_data()
+                .features()
+                .data()
                 .read()
                 .get(&fname)
                 .map(|e| {
@@ -73,7 +75,8 @@ pub fn FeatureRow(
     let fname2 = feature_name.clone();
     let badges = move || {
         store
-            .feature_data()
+            .features()
+            .data()
             .read()
             .get(&fname2)
             .map(|e| {
@@ -196,7 +199,7 @@ pub fn FeatureRow(
                         if feature_idx < features.read().len() {
                             let removed = features.write().remove(feature_idx);
                             if !features.read().iter().any(|f| f.name == removed.name) {
-                                store.feature_data().write().remove(&removed.name);
+                                store.features().write().remove(&removed.name);
                             }
                         }
                     }

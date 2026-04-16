@@ -265,6 +265,54 @@ fn migrate_v8(value: &mut serde_json::Value) {
     }
 }
 
+/// Move applied flags out of identity/class into a top-level `applied`
+/// struct: `identity.species_applied` → `applied.species`,
+/// `identity.background_applied` → `applied.background`,
+/// `identity.classes[*].applied_levels` → `applied.levels[class_name]`.
+fn migrate_v10(value: &mut serde_json::Value) {
+    if value.get("applied").is_some() {
+        return;
+    }
+
+    let mut species = false;
+    let mut background = false;
+    let mut levels = serde_json::Map::new();
+
+    if let Some(identity) = value.get_mut("identity").and_then(|v| v.as_object_mut()) {
+        if let Some(v) = identity
+            .remove("species_applied")
+            .or_else(|| identity.remove("race_applied"))
+        {
+            species = v.as_bool().unwrap_or(false);
+        }
+        if let Some(v) = identity.remove("background_applied") {
+            background = v.as_bool().unwrap_or(false);
+        }
+        if let Some(classes) = identity.get_mut("classes").and_then(|v| v.as_array_mut()) {
+            for class_entry in classes {
+                if let Some(obj) = class_entry.as_object_mut() {
+                    let class_name = obj
+                        .get("class")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string();
+                    if let Some(applied_levels) = obj.remove("applied_levels")
+                        && !class_name.is_empty()
+                    {
+                        levels.insert(class_name, applied_levels);
+                    }
+                }
+            }
+        }
+    }
+
+    value["applied"] = serde_json::json!({
+        "species": species,
+        "background": background,
+        "levels": serde_json::Value::Object(levels),
+    });
+}
+
 /// Convert weapon `damage` + `damage_type` fields to `effects` array.
 fn migrate_v9(value: &mut serde_json::Value) {
     let Some(weapons) = value
@@ -311,5 +359,56 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v7(&mut value);
     migrate_v8(&mut value);
     migrate_v9(&mut value);
+    migrate_v10(&mut value);
+    migrate_v11(&mut value);
+    migrate_v12(&mut value);
     serde_json::from_value(value).ok()
+}
+
+/// Merge `features: [...]` and `feature_data: {...}` into a single
+/// `features: { list: [...], data: {...} }` container.
+fn migrate_v12(value: &mut serde_json::Value) {
+    // Already migrated if `features` is an object with `list`.
+    if value
+        .get("features")
+        .is_some_and(|v| v.is_object() && v.get("list").is_some())
+    {
+        return;
+    }
+
+    let list = value
+        .get_mut("features")
+        .map(|v| v.take())
+        .unwrap_or_else(|| serde_json::json!([]));
+    let data = value
+        .as_object_mut()
+        .and_then(|o| o.remove("feature_data"))
+        .unwrap_or_else(|| serde_json::json!({}));
+
+    value["features"] = serde_json::json!({
+        "list": list,
+        "data": data,
+    });
+}
+
+/// Move `identity.alignment` → `personality.alignment` (alignment is
+/// descriptive, not a rules input).
+fn migrate_v11(value: &mut serde_json::Value) {
+    let alignment = value
+        .get_mut("identity")
+        .and_then(|id| id.as_object_mut())
+        .and_then(|id| id.remove("alignment"));
+
+    let Some(alignment) = alignment else {
+        return;
+    };
+
+    let personality = value.as_object_mut().and_then(|root| {
+        root.entry("personality")
+            .or_insert_with(|| serde_json::json!({}))
+            .as_object_mut()
+    });
+    if let Some(personality) = personality {
+        personality.entry("alignment").or_insert(alignment);
+    }
 }

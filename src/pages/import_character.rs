@@ -81,9 +81,10 @@ fn format_items(items: &[Item]) -> String {
 
 fn format_spell_slots(ch: &Character, i18n: leptos_fluent::I18n) -> String {
     let mut parts: Vec<String> = Vec::new();
-    for pool in ch.active_pools() {
+    for pool in ch.spell_slots.active_pools() {
         let slots: Vec<String> = ch
-            .all_spell_slots_for_pool(pool)
+            .spell_slots
+            .iter_pool(pool)
             .filter(|(_, slot)| slot.total > 0)
             .map(|(level, slot)| format!("L{level}: {}", slot.total))
             .collect();
@@ -136,12 +137,12 @@ impl Character {
             self.identity.background.clone(),
             imported.identity.background.clone(),
         );
-        if self.identity.alignment != imported.identity.alignment {
+        if self.personality.alignment != imported.personality.alignment {
             rows.push(DiffRow {
                 section: sec,
                 label: "alignment",
-                local: i18n.tr(self.identity.alignment.tr_key()),
-                imported: i18n.tr(imported.identity.alignment.tr_key()),
+                local: i18n.tr(self.personality.alignment.tr_key()),
+                imported: i18n.tr(imported.personality.alignment.tr_key()),
             });
         }
         push_if_diff(
@@ -281,16 +282,13 @@ impl Character {
         );
         {
             let all_keys: BTreeSet<&String> = self
-                .feature_data
+                .features
                 .keys()
-                .chain(imported.feature_data.keys())
+                .chain(imported.features.keys())
                 .collect();
             for key in all_keys {
-                let local_sc = self.feature_data.get(key).and_then(|e| e.spells.as_ref());
-                let imported_sc = imported
-                    .feature_data
-                    .get(key)
-                    .and_then(|e| e.spells.as_ref());
+                let local_sc = self.features.get(key).and_then(|e| e.spells.as_ref());
+                let imported_sc = imported.features.get(key).and_then(|e| e.spells.as_ref());
                 match (local_sc, imported_sc) {
                     (Some(local_sc), Some(imported_sc)) => {
                         if local_sc.casting_ability != imported_sc.casting_ability {
@@ -431,16 +429,16 @@ impl Character {
 
         // Restore descriptions stripped for sharing
         restore_description_by_name(
-            &mut self.features,
-            &local.features,
+            &mut self.features.list,
+            &local.features.list,
             |f| &f.name,
             |f| &mut f.description,
             |f| &f.description,
         );
 
-        for (feature, entry) in &mut self.feature_data {
+        for (feature, entry) in self.features.data_mut() {
             let local_fields = local
-                .feature_data
+                .features
                 .get(feature)
                 .map(|e| e.fields.as_slice())
                 .unwrap_or(&[]);
@@ -458,7 +456,7 @@ impl Character {
             }
 
             if let (Some(imp_sc), Some(loc_entry)) =
-                (&mut entry.spells, local.feature_data.get(feature))
+                (&mut entry.spells, local.features.get(feature))
                 && let Some(loc_sc) = &loc_entry.spells
             {
                 restore_description_by_name(

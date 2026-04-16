@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{apply::PreviewContext, datalist_input::DatalistOption, feature_row::FeatureRow},
-    model::{Character, CharacterStoreFields, Feature, FeatureSource},
+    model::{Character, CharacterStoreFields, Feature, FeatureSource, FeaturesStoreFields},
     rules::{RulesRegistry, WhenCondition},
 };
 
@@ -20,7 +20,7 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     let add_feature = move |_| {
         let level = store.read_untracked().level();
-        features.write().push(Feature {
+        features.list().write().push(Feature {
             source: FeatureSource::User(level),
             ..Feature::default()
         });

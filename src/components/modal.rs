@@ -20,7 +20,9 @@ pub fn Modal(
         if show.get() {
             if !dialog.open() {
                 dialog.class_list().remove_1("closing").ok();
-                let _ = dialog.show_modal();
+                if let Err(error) = dialog.show_modal() {
+                    log::warn!("dialog.show_modal() failed: {error:?}");
+                }
             }
         } else if dialog.open() {
             dialog.class_list().add_1("closing").ok();

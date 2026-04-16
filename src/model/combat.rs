@@ -1,5 +1,12 @@
+use std::{
+    collections::BTreeMap,
+    ops::{Deref, DerefMut},
+};
+
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
+
+use crate::model::DamageType;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
@@ -52,8 +59,10 @@ impl Default for CombatStats {
     }
 }
 
+/// Per-damage-type handling: resistance/vulnerability/immunity flags plus a
+/// flat reduction amount subtracted before multiplicative modifiers.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
-pub struct DamageModifiers {
+pub struct DamageModifier {
     #[serde(default)]
     pub resistant: bool,
     #[serde(default)]
@@ -64,7 +73,7 @@ pub struct DamageModifiers {
     pub reduction: u32,
 }
 
-impl DamageModifiers {
+impl DamageModifier {
     pub fn is_active(&self) -> bool {
         self.resistant || self.vulnerable || self.immune || self.reduction > 0
     }
@@ -88,7 +97,118 @@ impl DamageModifiers {
     }
 }
 
+/// Per-character damage modifier table keyed by damage type. Transparent over
+/// the underlying `BTreeMap` for serde, accessible as a map via `Deref`. Setter
+/// methods auto-remove entries that become inactive (all flags false and
+/// reduction zero), keeping the wire format compact.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct DamageModifiers(BTreeMap<DamageType, DamageModifier>);
+
+impl Deref for DamageModifiers {
+    type Target = BTreeMap<DamageType, DamageModifier>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for DamageModifiers {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl IntoIterator for DamageModifiers {
+    type IntoIter = std::collections::btree_map::IntoIter<DamageType, DamageModifier>;
+    type Item = (DamageType, DamageModifier);
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl DamageModifiers {
+    /// Read a single entry. Returns `DamageModifier::default()` when absent.
+    pub fn get_entry(&self, dt: DamageType) -> DamageModifier {
+        self.0.get(&dt).copied().unwrap_or_default()
+    }
+
+    pub fn is_resistant(&self, dt: DamageType) -> bool {
+        self.0.get(&dt).is_some_and(|m| m.resistant)
+    }
+
+    pub fn is_vulnerable(&self, dt: DamageType) -> bool {
+        self.0.get(&dt).is_some_and(|m| m.vulnerable)
+    }
+
+    pub fn is_immune(&self, dt: DamageType) -> bool {
+        self.0.get(&dt).is_some_and(|m| m.immune)
+    }
+
+    pub fn reduction(&self, dt: DamageType) -> u32 {
+        self.0.get(&dt).map_or(0, |m| m.reduction)
+    }
+
+    pub fn set_resistant(&mut self, dt: DamageType, enabled: bool) {
+        self.set_flag(dt, enabled, |m| &mut m.resistant);
+    }
+
+    pub fn set_vulnerable(&mut self, dt: DamageType, enabled: bool) {
+        self.set_flag(dt, enabled, |m| &mut m.vulnerable);
+    }
+
+    pub fn set_immune(&mut self, dt: DamageType, enabled: bool) {
+        self.set_flag(dt, enabled, |m| &mut m.immune);
+    }
+
+    pub fn set_reduction(&mut self, dt: DamageType, value: u32) {
+        let entry = self.0.entry(dt).or_default();
+        entry.reduction = value;
+        if !entry.is_active() {
+            self.0.remove(&dt);
+        }
+    }
+
+    /// Toggle a bool field on the entry for `dt`. Removes the entry if it
+    /// becomes inactive.
+    pub fn toggle(&mut self, dt: DamageType, field: impl FnOnce(&mut DamageModifier) -> &mut bool) {
+        let entry = self.0.entry(dt).or_default();
+        let flag = field(entry);
+        *flag = !*flag;
+        if !entry.is_active() {
+            self.0.remove(&dt);
+        }
+    }
+
+    fn set_flag(
+        &mut self,
+        dt: DamageType,
+        enabled: bool,
+        field: impl FnOnce(&mut DamageModifier) -> &mut bool,
+    ) {
+        let entry = self.0.entry(dt).or_default();
+        *field(entry) = enabled;
+        if !entry.is_active() {
+            self.0.remove(&dt);
+        }
+    }
+}
+
 impl CombatStats {
+    /// Copy play state fields (hp_current/temp, death saves, concentrating,
+    /// inspiration) from `other` into `self`, clamping `hp_current` to the
+    /// current (possibly shrunken) `hp_max`. Used by rebuild's merge phase
+    /// after fresh derived values have been computed.
+    pub fn merge_play_state(&mut self, other: &Self) {
+        self.hp_current = other.hp_current.min(self.hp_max);
+        self.hp_temp = other.hp_temp;
+        self.death_save_successes = other.death_save_successes;
+        self.death_save_failures = other.death_save_failures;
+        self.concentrating = other.concentrating.clone();
+        self.inspiration = other.inspiration;
+    }
+
     pub fn damage(&mut self, amount: u32) {
         if amount == 0 {
             return;

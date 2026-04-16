@@ -5,7 +5,8 @@ use reactive_stores::Store;
 use crate::{
     components::resource_slot::ResourceSlot,
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureValue, Translatable,
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureValue,
+        FeaturesStoreFields, Translatable,
     },
 };
 
@@ -13,7 +14,7 @@ use crate::{
 pub fn ResourcesBlock() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
     let store = expect_context::<Store<Character>>();
-    let feature_data = store.feature_data();
+    let feature_data = store.features().data();
     let spell_slots = store.spell_slots();
     let classes = store.identity().classes();
 

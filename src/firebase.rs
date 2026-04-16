@@ -407,7 +407,7 @@ mod tests {
     use crate::{
         constvec::ConstVec,
         model::{
-            Character, DamageModifiers, DamageType, ProficiencyLevel, Skill, SpellSlotLevel,
+            Character, DamageModifier, DamageType, ProficiencyLevel, Skill, SpellSlotLevel,
             SpellSlotPool,
         },
     };
@@ -430,7 +430,7 @@ mod tests {
             .set(Skill::Stealth, ProficiencyLevel::Expertise);
         character.damage_modifiers.insert(
             DamageType::Fire,
-            DamageModifiers {
+            DamageModifier {
                 resistant: true,
                 ..Default::default()
             },

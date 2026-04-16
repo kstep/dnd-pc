@@ -1,4 +1,5 @@
 mod ability;
+mod applied;
 mod attribute;
 mod attribute_group;
 mod character;
@@ -14,6 +15,7 @@ mod skills;
 mod spell;
 
 pub use ability::*;
+pub use applied::*;
 pub use attribute::*;
 pub use attribute_group::*;
 pub use character::*;

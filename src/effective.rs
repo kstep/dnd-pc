@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use leptos::prelude::*;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
@@ -138,7 +136,7 @@ impl EffectiveCharacter {
     }
 
     /// Effective damage modifiers: character base merged with effect overrides.
-    pub fn damage_modifiers(&self) -> BTreeMap<DamageType, DamageModifiers> {
+    pub fn damage_modifiers(&self) -> DamageModifiers {
         let character = self.store.read();
         let effects = self.effects.read();
         let mut result = character.damage_modifiers.clone();

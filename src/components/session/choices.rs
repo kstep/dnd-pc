@@ -17,7 +17,7 @@ use crate::{
     },
     model::{
         Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
-        Translatable, short_name,
+        FeaturesStoreFields, Translatable, short_name,
     },
     rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
 };
@@ -136,7 +136,7 @@ pub fn ChoicesBlock() -> impl IntoView {
     let eff = expect_context::<crate::effective::EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
 
-    let feature_data = store.feature_data();
+    let feature_data = store.features().data();
 
     // Effects calculator modal state
     let show_calc = RwSignal::new(false);
@@ -152,7 +152,7 @@ pub fn ChoicesBlock() -> impl IntoView {
             extra_vars.insert(Attribute::ClassLevel, class_level as i32);
 
             // Inject Points field values if feature has one
-            if let Some(entry) = character.feature_data.get(&feature_name) {
+            if let Some(entry) = character.features.get(&feature_name) {
                 inject_resource_vars(&mut extra_vars, entry);
             }
 

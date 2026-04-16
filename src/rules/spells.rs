@@ -116,7 +116,7 @@ impl SpellsDefinition {
         // Ensure SpellData exists so update_spell_slots can count caster classes
         {
             let entry = character
-                .feature_data
+                .features
                 .entry(feature_name.to_string())
                 .or_default();
             let spell_data = entry.spells.get_or_insert_with(|| SpellData {
@@ -141,10 +141,7 @@ impl SpellsDefinition {
             .and_then(|s| s.iter().rposition(|&n| n > 0))
             .map_or(1, |i| (i + 1) as u32);
 
-        let Some(entry) = character.feature_data.get_mut(feature_name) else {
-            return;
-        };
-        let Some(spell_data) = entry.spells.as_mut() else {
+        let Some(spell_data) = character.features.spell_data_mut(feature_name) else {
             return;
         };
 

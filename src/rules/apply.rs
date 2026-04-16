@@ -247,15 +247,13 @@ pub fn collect_pending_features(
 
     let species_iter = species_cache
         .get(character.identity.species.as_str())
-        .filter(|_| !character.identity.species.is_empty() && !character.identity.species_applied)
+        .filter(|_| !character.identity.species.is_empty() && !character.applied.species)
         .into_iter()
         .flat_map(|species_def| collect_species_features(character, species_def, features_index));
 
     let bg_iter = bg_cache
         .get(character.identity.background.as_str())
-        .filter(|_| {
-            !character.identity.background.is_empty() && !character.identity.background_applied
-        })
+        .filter(|_| !character.identity.background.is_empty() && !character.applied.background)
         .into_iter()
         .flat_map(|bg_def| collect_background_features(character, bg_def, features_index));
 
@@ -267,7 +265,7 @@ pub fn collect_pending_features(
             .enumerate()
             .flat_map(|(idx, class_level)| {
                 let unapplied: Vec<u32> = (1..=class_level.level)
-                    .filter(|lvl| !class_level.applied_levels.contains(lvl))
+                    .filter(|lvl| !character.applied.contains_level(&class_level.class, *lvl))
                     .collect();
                 let class_def = class_cache.get(class_level.class.as_str());
                 unapplied.into_iter().flat_map(move |lvl| {
@@ -495,7 +493,7 @@ impl RulesRegistry {
             // Collect (feat_name, field_index, new_value) — feat_name must be
             // owned to release the immutable borrow before the apply phase.
             let mut updates: Vec<(String, usize, FeatureValue)> = Vec::new();
-            for (feat_name, entry) in &character.feature_data {
+            for (feat_name, entry) in character.features.data() {
                 let Some((feat_def, class_level)) = find_feature_with_class_level(
                     &character.identity,
                     feat_name,
@@ -517,7 +515,7 @@ impl RulesRegistry {
 
             // Apply computed values by index
             for (feat_name, field_idx, new_val) in updates {
-                if let Some(entry) = character.feature_data.get_mut(&feat_name)
+                if let Some(entry) = character.features.get_mut(&feat_name)
                     && let Some(field) = entry.fields.get_mut(field_idx)
                 {
                     match (&new_val, &mut field.value) {
@@ -609,7 +607,7 @@ impl RulesRegistry {
                 for (scope, exprs) in scope_groups {
                     let target = scope.as_deref().unwrap_or(&feat_name);
                     let points = character
-                        .feature_data
+                        .features
                         .get(target)
                         .map(Context::extract_points)
                         .unwrap_or_default();
@@ -628,7 +626,7 @@ impl RulesRegistry {
                     }
 
                     // Write back modified points
-                    if let Some(feature_data) = ctx.character.feature_data.get_mut(target) {
+                    if let Some(feature_data) = ctx.character.features.get_mut(target) {
                         Context::writeback_points(feature_data, &ctx.points);
                     }
                 }
@@ -684,7 +682,7 @@ impl RulesRegistry {
     /// the spell list cache read guard.
     pub(super) fn trigger_spell_list_fetches(&self, character: &Character) {
         self.with_features_index_untracked(|features_index| {
-            for key in character.feature_data.keys() {
+            for key in character.features.keys() {
                 if let Some(feat_def) = find_feature(key, features_index)
                     && let Some(spells_def) = &feat_def.spells
                     && let SpellList::Ref { from } = &spells_def.list

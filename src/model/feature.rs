@@ -1,4 +1,8 @@
-use std::{fmt, ops};
+use std::{
+    collections::BTreeMap,
+    fmt,
+    ops::{Deref, DerefMut},
+};
 
 use leptos_fluent::I18n;
 use reactive_stores::Store;
@@ -161,9 +165,9 @@ impl FeatureSource {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 #[serde(transparent)]
-pub struct Features(Vec<Feature>);
+pub struct FeatureList(Vec<Feature>);
 
-impl ops::Deref for Features {
+impl Deref for FeatureList {
     type Target = Vec<Feature>;
 
     fn deref(&self) -> &Self::Target {
@@ -171,13 +175,13 @@ impl ops::Deref for Features {
     }
 }
 
-impl ops::DerefMut for Features {
+impl DerefMut for FeatureList {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
-impl<'a> IntoIterator for &'a Features {
+impl<'a> IntoIterator for &'a FeatureList {
     type IntoIter = std::slice::Iter<'a, Feature>;
     type Item = &'a Feature;
 
@@ -186,7 +190,7 @@ impl<'a> IntoIterator for &'a Features {
     }
 }
 
-impl<'a> IntoIterator for &'a mut Features {
+impl<'a> IntoIterator for &'a mut FeatureList {
     type IntoIter = std::slice::IterMut<'a, Feature>;
     type Item = &'a mut Feature;
 
@@ -195,13 +199,13 @@ impl<'a> IntoIterator for &'a mut Features {
     }
 }
 
-impl From<Vec<Feature>> for Features {
+impl From<Vec<Feature>> for FeatureList {
     fn from(features: Vec<Feature>) -> Self {
         Self(features)
     }
 }
 
-impl Features {
+impl FeatureList {
     /// Does this feature definition + source already have an applied instance?
     /// Non-stackable: any applied by name → true.
     /// Stackable: applied with same name AND source → true.
@@ -272,18 +276,6 @@ impl Features {
         }
     }
 
-    /// Return features sorted by `added_at_level` (stable sort preserves
-    /// insertion order within the same level).
-    pub fn sorted_by_level(&self) -> Vec<(&str, &FeatureSource)> {
-        let mut features: Vec<_> = self
-            .0
-            .iter()
-            .map(|f| (f.name.as_str(), &f.source))
-            .collect();
-        features.sort_by_key(|(_, source)| source.added_at_level());
-        features
-    }
-
     /// Look up stored inputs for a feature by name.
     pub fn get_inputs(&self, name: &str) -> &[AssignInputs] {
         self.0
@@ -291,6 +283,187 @@ impl Features {
             .find(|f| f.name == name)
             .map(|f| f.inputs.as_slice())
             .unwrap_or_default()
+    }
+}
+
+/// Container joining the applied feature list with per-feature data
+/// (fields + spells). Co-located because the two are tightly coupled —
+/// `data` entries are keyed by feature name and should exist for every
+/// applied feature that has fields or spells.
+///
+/// `Deref`/`DerefMut` target the `BTreeMap<String, FeatureData>` data map
+/// so map-style access (`.get()`, `.get_mut()`, `.insert()`, `.keys()`,
+/// `.values()`, `.clear()`) works through the container directly. List
+/// iteration and list-specific queries go through inherent methods
+/// (`iter`, `contains`, `has`, `is_pending`, `add`, `get_inputs`,
+/// `has_category`) which override the BTreeMap accessors where names
+/// clash.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
+pub struct Features {
+    #[serde(default)]
+    pub list: FeatureList,
+    #[serde(default)]
+    data: BTreeMap<String, FeatureData>,
+}
+
+impl Deref for Features {
+    type Target = BTreeMap<String, FeatureData>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl DerefMut for Features {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
+    }
+}
+
+impl<'a> IntoIterator for &'a Features {
+    type IntoIter = std::slice::Iter<'a, Feature>;
+    type Item = &'a Feature;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.list.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut Features {
+    type IntoIter = std::slice::IterMut<'a, Feature>;
+    type Item = &'a mut Feature;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.list.iter_mut()
+    }
+}
+
+impl Features {
+    /// Construct from an existing list + data pair. Only used in tests where
+    /// struct literals would otherwise need access to the private `data`
+    /// field.
+    #[cfg(test)]
+    pub fn from_parts(list: FeatureList, data: BTreeMap<String, FeatureData>) -> Self {
+        Self { list, data }
+    }
+
+    /// Iterate applied feature list (overrides BTreeMap::iter from Deref).
+    pub fn iter(&self) -> std::slice::Iter<'_, Feature> {
+        self.list.iter()
+    }
+
+    /// Mutable iter over list (overrides BTreeMap::iter_mut from Deref).
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, Feature> {
+        self.list.iter_mut()
+    }
+
+    // List-method delegates — same signatures as FeatureList.
+
+    pub fn contains(&self, name: &str, stackable: bool, source: &FeatureSource) -> bool {
+        self.list.contains(name, stackable, source)
+    }
+
+    pub fn has(&self, name: &str) -> bool {
+        self.list.has(name)
+    }
+
+    pub fn has_category(&self, category: FeatureCategory) -> bool {
+        self.list.has_category(category)
+    }
+
+    pub fn is_pending(&self, name: &str) -> bool {
+        self.list.is_pending(name)
+    }
+
+    pub fn get_inputs(&self, name: &str) -> &[AssignInputs] {
+        self.list.get_inputs(name)
+    }
+
+    pub fn add(
+        &mut self,
+        name: &str,
+        label: Option<String>,
+        description: String,
+        category: FeatureCategory,
+        source: FeatureSource,
+        inputs: Vec<AssignInputs>,
+    ) {
+        self.list
+            .add(name, label, description, category, source, inputs);
+    }
+
+    // Raw data accessors for explicit BTreeMap access where Deref coercion
+    // isn't convenient (e.g. cloning, passing as function argument).
+
+    pub fn data(&self) -> &BTreeMap<String, FeatureData> {
+        &self.data
+    }
+
+    pub fn data_mut(&mut self) -> &mut BTreeMap<String, FeatureData> {
+        &mut self.data
+    }
+
+    // Per-feature data helpers.
+
+    /// Shorthand for `data.get(name).and_then(|e| e.spells.as_ref())`.
+    pub fn spell_data(&self, name: &str) -> Option<&SpellData> {
+        self.data.get(name).and_then(|e| e.spells.as_ref())
+    }
+
+    /// Shorthand for `data.get_mut(name).and_then(|e| e.spells.as_mut())`.
+    pub fn spell_data_mut(&mut self, name: &str) -> Option<&mut SpellData> {
+        self.data.get_mut(name).and_then(|e| e.spells.as_mut())
+    }
+
+    /// Zero `used` on every Points/Die field and every spell's `free_uses`
+    /// across all data entries. Used by `Character::long_rest`.
+    pub fn reset_uses(&mut self) {
+        for entry in self.data.values_mut() {
+            for field in &mut entry.fields {
+                match &mut field.value {
+                    FeatureValue::Points { used, .. } | FeatureValue::Die { used, .. } => {
+                        *used = 0;
+                    }
+                    _ => {}
+                }
+            }
+            if let Some(spell_data) = entry.spells.as_mut() {
+                for spell in &mut spell_data.spells {
+                    if let Some(fu) = spell.free_uses.as_mut() {
+                        fu.used = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Clear labels and descriptions on list entries and all data fields/
+    /// spells. Used by `Character::clear_all_labels`.
+    pub fn clear_all_labels(&mut self) {
+        for feature in &mut self.list {
+            feature.label = None;
+            feature.description.clear();
+        }
+        for entry in self.data.values_mut() {
+            for field in &mut entry.fields {
+                field.label = None;
+                field.description.clear();
+                for opt in field.value.choices_mut() {
+                    opt.label = None;
+                    opt.description.clear();
+                }
+            }
+            if let Some(spells) = &mut entry.spells {
+                for spell in &mut spells.spells {
+                    spell.label = None;
+                    spell.description.clear();
+                }
+                for spell in spells.known.iter_mut().flatten() {
+                    spell.label = None;
+                    spell.description.clear();
+                }
+            }
+        }
     }
 }
 

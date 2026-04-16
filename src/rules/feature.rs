@@ -492,14 +492,14 @@ impl FeatureDefinition {
 
     fn apply_fields(&self, level: u32, character: &mut Character) {
         // Always ensure feature_data entry exists, even for field-less features
-        character.feature_data.entry(self.name.clone()).or_default();
+        character.features.entry(self.name.clone()).or_default();
 
         if self.fields.is_empty() {
             return;
         }
 
         let is_new = character
-            .feature_data
+            .features
             .get(&self.name)
             .is_none_or(|e| e.fields.is_empty());
 
@@ -518,12 +518,12 @@ impl FeatureDefinition {
                     value: field_def.kind.to_value(level, character),
                 })
                 .collect();
-            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            let entry = character.features.entry(self.name.clone()).or_default();
             entry.fields = new_fields;
         } else {
             // Pre-compute expression-based values (needs &character before mutation)
             let evaluated: Vec<_> = character
-                .feature_data
+                .features
                 .get(&self.name)
                 .into_iter()
                 .flat_map(|e| e.fields.iter())
@@ -540,7 +540,7 @@ impl FeatureDefinition {
                 })
                 .collect();
 
-            let entry = character.feature_data.entry(self.name.clone()).or_default();
+            let entry = character.features.entry(self.name.clone()).or_default();
             for field in entry.fields.iter_mut() {
                 if let Some(def) = self.fields.get(field.name.as_str()) {
                     match (&def.kind, &mut field.value) {
@@ -590,7 +590,7 @@ impl FeatureDefinition {
                 })
                 .filter(|fd| {
                     !character
-                        .feature_data
+                        .features
                         .get(&self.name)
                         .is_some_and(|e| e.fields.iter().any(|f| f.name == fd.name))
                 })
@@ -602,7 +602,7 @@ impl FeatureDefinition {
                 })
                 .collect();
             if !missing_fields.is_empty() {
-                let entry = character.feature_data.entry(self.name.clone()).or_default();
+                let entry = character.features.entry(self.name.clone()).or_default();
                 entry.fields.extend(missing_fields);
             }
         }

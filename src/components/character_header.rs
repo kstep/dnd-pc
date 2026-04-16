@@ -23,7 +23,8 @@ use crate::{
     export::export_character,
     firebase,
     model::{
-        Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
+        Alignment, AppliedStoreFields, Character, CharacterIdentityStoreFields,
+        CharacterStoreFields, PersonalityStoreFields, Translatable,
     },
     rules::{
         DefinitionStore, RulesRegistry,
@@ -156,7 +157,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 <ApplyFieldSection
                     label=move_tr!("species")
                     class="species-field"
-                    applied=move || store.identity().species_applied().get()
+                    applied=move || store.applied().species().get()
                     ready=move || {
                         let species = store.identity().species().get();
                         registry.species().has_tracked(&species)
@@ -180,7 +181,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry,
                             pending,
                             move |character, pending, inputs, fi| {
-                                character.identity.species_applied = true;
+                                character.applied.species = true;
                                 apply_new_features(fi, character, pending, Some(inputs));
                             },
                         );
@@ -191,7 +192,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 <ApplyFieldSection
                     label=move_tr!("background")
                     class="background-field"
-                    applied=move || store.identity().background_applied().get()
+                    applied=move || store.applied().background().get()
                     ready=move || {
                         let background = store.identity().background().get();
                         registry.backgrounds().has_tracked(&background)
@@ -215,7 +216,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             registry,
                             pending,
                             move |character, pending, inputs, fi| {
-                                character.identity.background_applied = true;
+                                character.applied.background = true;
                                 apply_new_features(fi, character, pending, Some(inputs));
                             },
                         );
@@ -229,7 +230,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         on:change=move |e| {
                             let value = event_target_value(&e);
                             if let Some(alignment) = Alignment::from_u8_str(&value) {
-                                store.identity().alignment().set(alignment);
+                                store.personality().alignment().set(alignment);
                             }
                         }
                     >
@@ -237,7 +238,9 @@ pub fn CharacterHeader() -> impl IntoView {
                             .map(|alignment| {
                                 let tr_key = alignment.tr_key();
                                 let val = (alignment as u8).to_string();
-                                let selected = move || store.identity().alignment().get() == alignment;
+                                let selected = move || {
+                                    store.personality().alignment().get() == alignment
+                                };
                                 let label = Signal::derive(move || i18n.tr(tr_key));
                                 view! {
                                     <option value=val selected=selected>

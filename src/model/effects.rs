@@ -303,7 +303,7 @@ impl ActiveEffects {
 
             let casting_ability = effect.scope.as_ref().and_then(|scope| {
                 character
-                    .feature_data
+                    .features
                     .get(&**scope)
                     .and_then(|e| e.spells.as_ref())
                     .map(|s| s.casting_ability)
@@ -433,7 +433,7 @@ mod tests {
 
     fn character_with_spellcasting(feature: &str, ability: Ability) -> Character {
         let mut character = Character::new();
-        character.feature_data.insert(
+        character.features.insert(
             feature.to_string(),
             FeatureData {
                 spells: Some(SpellData {

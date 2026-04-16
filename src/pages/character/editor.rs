@@ -39,7 +39,7 @@ pub fn CharacterEditor() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let has_magic = Signal::derive(move || !store.read().spell_slots.is_empty());
     let magic_has_pending = Signal::derive(move || {
-        store.read().feature_data.values().any(|fd| {
+        store.read().features.values().any(|fd| {
             fd.spells
                 .as_ref()
                 .is_some_and(|sd| sd.spells.iter().any(|s| s.label().is_empty()))
@@ -49,7 +49,7 @@ pub fn CharacterEditor() -> impl IntoView {
     let build_has_pending = Signal::derive(move || {
         let character = store.read();
         character.features.iter().any(|f| !f.applied)
-            || character.feature_data.values().any(|fd| {
+            || character.features.values().any(|fd| {
                 fd.fields.iter().any(|f| {
                 matches!(
                     &f.value,
