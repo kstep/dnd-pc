@@ -6,7 +6,6 @@ use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 use uuid::Uuid;
-use wasm_bindgen::prelude::*;
 
 use crate::{
     BASE_URL,
@@ -21,6 +20,7 @@ use crate::{
         menu_modal::{MenuItem, MenuModal},
         species_field::SpeciesField,
     },
+    export::export_character,
     firebase,
     model::{
         Alignment, Character, CharacterIdentityStoreFields, CharacterStoreFields, Translatable,
@@ -31,53 +31,6 @@ use crate::{
     },
     share, storage,
 };
-
-fn export_character(character: &Character) {
-    let json = match serde_json::to_string_pretty(character) {
-        Ok(json) => json,
-        Err(error) => {
-            log::error!("Failed to serialize character: {error}");
-            return;
-        }
-    };
-
-    let array = js_sys::Array::new();
-    array.push(&JsValue::from_str(&json));
-
-    let opts = web_sys::BlobPropertyBag::new();
-    opts.set_type("application/json");
-
-    let blob = match web_sys::Blob::new_with_str_sequence_and_options(&array, &opts) {
-        Ok(blob) => blob,
-        Err(error) => {
-            log::error!("Failed to create blob: {error:?}");
-            return;
-        }
-    };
-
-    let url = match web_sys::Url::create_object_url_with_blob(&blob) {
-        Ok(url) => url,
-        Err(error) => {
-            log::error!("Failed to create object URL: {error:?}");
-            return;
-        }
-    };
-
-    let document = leptos::prelude::document();
-    let anchor: web_sys::HtmlAnchorElement = document.create_element("a").unwrap().unchecked_into();
-
-    let filename = if character.identity.name.is_empty() {
-        "character.dnd.json".to_string()
-    } else {
-        format!("{}.dnd.json", character.identity.name)
-    };
-
-    anchor.set_href(&url);
-    anchor.set_download(&filename);
-    anchor.click();
-
-    let _ = web_sys::Url::revoke_object_url(&url);
-}
 
 pub fn split_resolved(input: String, resolved: Option<String>) -> (String, Option<String>) {
     match resolved {
@@ -151,10 +104,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let on_share = move || {
         wasm_bindgen_futures::spawn_local(async move {
             let character = store.get_untracked();
-            let origin = leptos::prelude::window()
-                .location()
-                .origin()
-                .unwrap_or_default();
+            let origin = window().location().origin().unwrap_or_default();
 
             let url = if character.shared
                 && let Some(uid) = firebase::current_uid()
@@ -168,7 +118,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 format!("{origin}{BASE_URL}/s/{encoded}")
             };
 
-            let clipboard = leptos::prelude::window().navigator().clipboard();
+            let clipboard = window().navigator().clipboard();
             let promise = clipboard.write_text(&url);
             let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
             share_copied.set(true);

@@ -54,6 +54,8 @@ web-sys = { version = "0.3", features = [
     "RequestMode",
     "Request",
     "TextDecoder",
+    "ShareData",
+    "FilePropertyBag",
 ] }
 indexmap = "2.13.0"
 regex = "1.12"

@@ -192,7 +192,9 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
         .unchecked_into();
 
     input.set_type("file");
-    input.set_accept(".json");
+    // `.txt` is accepted because the Web Share export path uses a `.txt`
+    // suffix to pass Chrome Android's shareable-file allowlist.
+    input.set_accept(".json,.txt,application/json,text/plain");
 
     let input_clone = input.clone();
     let onchange_js = Closure::once_into_js(move || {
