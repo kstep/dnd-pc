@@ -11,7 +11,7 @@ use wasm_bindgen_futures::spawn_local;
 use crate::{
     ai::Story,
     firebase::{self, ChangeType, FirebaseError, Where},
-    model::Character,
+    model::{Avatar, Character},
     storage::{local, migrate, queue, queue::CloudOp},
 };
 
@@ -64,6 +64,7 @@ impl SyncState {
 thread_local! {
     static SYNC_STATE: RefCell<Option<SyncState>> = const { RefCell::new(None) };
     static SNAPSHOT_SUBSCRIPTION: RefCell<Option<firebase::Subscription>> = const { RefCell::new(None) };
+    static AVATAR_SUBSCRIPTION: RefCell<Option<firebase::Subscription>> = const { RefCell::new(None) };
 }
 
 pub(super) fn get_or_init_sync() -> SyncState {
@@ -83,6 +84,12 @@ pub(super) fn get_or_init_sync() -> SyncState {
 fn set_snapshot_subscription(subscription: firebase::Subscription) {
     // Dropping the previous Subscription automatically unsubscribes
     SNAPSHOT_SUBSCRIPTION.with(|cell| {
+        *cell.borrow_mut() = Some(subscription);
+    });
+}
+
+fn set_avatar_subscription(subscription: firebase::Subscription) {
+    AVATAR_SUBSCRIPTION.with(|cell| {
         *cell.borrow_mut() = Some(subscription);
     });
 }
@@ -162,6 +169,59 @@ pub fn setup_auto_save(store: Store<Character>) {
     });
 }
 
+/// Set up auto-save and cloud sync pull for an avatar signal.
+///
+/// Mirrors `setup_auto_save` for the character store. Uses a `cloud_updating`
+/// flag to suppress the echo loop: when the cloud-pull effect writes to the
+/// signal, the auto-save effect detects the flag on its next run and
+/// short-circuits without calling `save_avatar` (which would immediately
+/// re-push the just-pulled data).
+///
+/// A timestamp guard prevents the cloud-pull effect from overwriting in-flight
+/// user edits: it only updates the signal when the freshly-loaded avatar is
+/// strictly newer than the one currently held in the signal.
+pub fn setup_avatar_auto_save(char_id: Uuid, avatar: RwSignal<Option<Avatar>>) {
+    let cloud_updating = RwSignal::new(false);
+
+    // Auto-save effect. `previous: Option<()>` skips the initial run without
+    // cloning the avatar on every change (avoids requiring Avatar: PartialEq).
+    Effect::new(move |previous: Option<()>| {
+        let current = avatar.get();
+        if previous.is_some() {
+            if cloud_updating.get_untracked() {
+                cloud_updating.update_untracked(|v| *v = false);
+            } else {
+                match &current {
+                    Some(av) if !av.is_empty() => local::save_avatar(&char_id, av),
+                    _ => local::remove_avatar(&char_id),
+                }
+            }
+        }
+    });
+
+    // Cloud-pull effect: reload avatar from localStorage whenever the index
+    // version is bumped, but only overwrite the signal when the loaded avatar
+    // is strictly newer than the current one (timestamp guard).
+    let index_version = sync_index_version();
+    Effect::new(move |previous: Option<u32>| {
+        let version = index_version.get();
+        if previous.is_some() {
+            let loaded = local::load_avatar(&char_id);
+            let loaded_ts = loaded.as_ref().map(|a| a.updated_at).unwrap_or(0);
+            let current_ts = avatar
+                .get_untracked()
+                .as_ref()
+                .map(|a| a.updated_at)
+                .unwrap_or(0);
+            if loaded_ts > current_ts {
+                cloud_updating.set(true);
+                avatar.set(loaded);
+            }
+        }
+        version
+    });
+}
+
 /// Touch, save to localStorage, and schedule a debounced cloud push.
 /// Used by non-reactive callers (import, copy, create).
 pub fn save_and_sync_character(character: &mut Character) {
@@ -189,6 +249,35 @@ fn schedule_cloud_push(character: &Character) {
         uid,
         char_id: character.id,
     });
+}
+
+pub fn schedule_avatar_push(char_id: Uuid) {
+    if !firebase::is_available() {
+        return;
+    }
+    let Some(uid) = get_or_init_sync().uid.get_untracked() else {
+        return;
+    };
+    queue::push(queue::CloudOp::PushAvatar { uid, char_id });
+}
+
+pub fn schedule_avatar_delete(char_id: Uuid) {
+    if !firebase::is_available() {
+        return;
+    }
+    let Some(uid) = get_or_init_sync().uid.get_untracked() else {
+        return;
+    };
+    queue::push(queue::CloudOp::DeleteAvatar { uid, char_id });
+}
+
+pub async fn get_avatar_doc(uid: &str, char_id: Uuid) -> Option<Avatar> {
+    let char_id_str = char_id.to_string();
+    firebase::get_doc::<Avatar>(&["users", uid, "avatars", &char_id_str])
+        .await
+        .ok()
+        .flatten()
+        .filter(|avatar| !avatar.is_empty())
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -308,6 +397,7 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
 
             // Subscribe to realtime changes after initial sync
             subscribe_to_changes(&uid);
+            subscribe_to_avatar_changes(&uid);
 
             match last_err {
                 Some(msg) => state.set_error(msg),
@@ -375,6 +465,59 @@ fn subscribe_to_changes(uid: &str) {
     }
 }
 
+fn subscribe_to_avatar_changes(uid: &str) {
+    let last_sync_avatars = local::load_last_sync_avatars();
+
+    match firebase::subscribe_collection(
+        &["users", uid, "avatars"],
+        &[Where::gt("updated_at", last_sync_avatars as f64)],
+        move |changes| {
+            let mut max_seen = local::load_last_sync_avatars();
+            let mut dirty = false;
+
+            for change in changes {
+                match change.change_type {
+                    ChangeType::Added | ChangeType::Modified => {
+                        let avatar: Avatar = match serde_json::from_value(change.data) {
+                            Ok(avatar) => avatar,
+                            Err(error) => {
+                                log::warn!("Failed to deserialize snapshot avatar: {error}");
+                                continue;
+                            }
+                        };
+                        let Ok(id) = change.id.parse::<Uuid>() else {
+                            log::warn!("avatar doc with unparseable id: {}", change.id);
+                            continue;
+                        };
+                        let local_at = local::load_avatar_timestamp(&id).unwrap_or(0);
+                        if avatar.updated_at > local_at {
+                            local::save_avatar_quiet(&id, &avatar);
+                            max_seen = max_seen.max(avatar.updated_at);
+                            dirty = true;
+                        }
+                    }
+                    ChangeType::Removed => {
+                        if let Ok(char_id) = change.id.parse::<Uuid>() {
+                            local::remove_avatar_quiet(&char_id);
+                            dirty = true;
+                        }
+                    }
+                }
+            }
+
+            if dirty {
+                local::save_last_sync_avatars(max_seen);
+                get_or_init_sync()
+                    .index_version
+                    .update(|version| *version += 1);
+            }
+        },
+    ) {
+        Ok(subscription) => set_avatar_subscription(subscription),
+        Err(error) => log::warn!("Failed to subscribe to avatar changes: {error}"),
+    }
+}
+
 async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), FirebaseError> {
     firebase::set_doc(
         character,
@@ -390,6 +533,11 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     };
     log::info!("sync_all_with_cloud: syncing for uid={uid}");
     let last_sync = local::load_last_sync();
+    let last_avatar_sync = local::load_last_sync_avatars();
+
+    // Hoist once — reused by push-local-only phase and avatar push phase.
+    let all_summaries = local::load_all_summaries();
+
     let remote_chars = firebase::get_all_docs::<serde_json::Value>(
         &["users", &uid, "characters"],
         &[Where::gt("updated_at", last_sync as f64)],
@@ -438,7 +586,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     }
 
     if push_local_only {
-        for summary in local::load_all_summaries() {
+        for summary in &all_summaries {
             if !seen_remote.contains(&summary.id)
                 && let Some(character) = local::load_character(&summary.id)
             {
@@ -456,11 +604,6 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
         }
     }
 
-    if dirty {
-        local::save_last_sync(max_updated);
-        get_or_init_sync().index_version.update(|v| *v += 1);
-    }
-
     // Sync stories only for characters that were seen remotely (changed on another
     // device)
     let story_results = join_all(
@@ -472,6 +615,63 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     for result in story_results {
         if let Err(error) = result {
             log::warn!("Story sync failed: {error:?}");
+        }
+    }
+
+    // --- Avatar pull phase: single batch query instead of N sequential gets ---
+    let remote_avatars: Vec<Avatar> = firebase::get_all_docs(
+        &["users", &uid, "avatars"],
+        &[Where::gt("updated_at", last_avatar_sync as f64)],
+    )
+    .await
+    .unwrap_or_default();
+    log::info!(
+        "sync_all_with_cloud: got {} remote avatars",
+        remote_avatars.len()
+    );
+
+    let mut max_avatar_updated = last_avatar_sync;
+    let mut dirty_avatars = false;
+
+    for remote in remote_avatars {
+        if remote.id.is_nil() {
+            // Legacy doc written before the `id` field was added — can't
+            // identify which character it belongs to. Skip; it will be
+            // backfilled on the next local push.
+            log::warn!("avatar doc with nil id, skipping (legacy)");
+            continue;
+        }
+        let local_ts = local::load_avatar_timestamp(&remote.id).unwrap_or(0);
+        if remote.updated_at > local_ts {
+            if remote.is_empty() {
+                local::remove_avatar_quiet(&remote.id);
+            } else {
+                local::save_avatar_quiet(&remote.id, &remote);
+            }
+            max_avatar_updated = max_avatar_updated.max(remote.updated_at);
+            dirty_avatars = true;
+        }
+    }
+
+    // Push: schedule upload for any local avatar newer than last avatar sync.
+    for summary in &all_summaries {
+        if let Some(local_ts) = summary.avatar_updated_at
+            && local_ts > last_avatar_sync
+        {
+            schedule_avatar_push(summary.id);
+        }
+    }
+
+    if dirty {
+        local::save_last_sync(max_updated);
+        get_or_init_sync().index_version.update(|v| *v += 1);
+    }
+
+    if dirty_avatars {
+        local::save_last_sync_avatars(max_avatar_updated);
+        if !dirty {
+            // Character phase didn't bump version yet — bump it now for avatars.
+            get_or_init_sync().index_version.update(|v| *v += 1);
         }
     }
 

@@ -14,7 +14,7 @@ use crate::{
     BASE_URL,
     components::cloud_sign_in_hint::CloudSignInHint,
     firebase,
-    model::{Ability, Character, Item, Proficiency, Skill, Translatable},
+    model::{Ability, Avatar, Character, Item, Proficiency, Skill, Translatable},
     share, storage,
 };
 
@@ -471,11 +471,14 @@ impl Character {
     }
 }
 
-fn do_import(mut character: Character) -> impl IntoView {
+fn do_import(mut character: Character, avatar: Option<Avatar>) -> impl IntoView {
     if let Some(existing) = storage::load_character(&character.id) {
         character.restore_stripped_fields(&existing);
     }
     storage::save_and_sync_character(&mut character);
+    if let Some(avatar) = avatar {
+        storage::save_avatar(&character.id, &avatar);
+    }
     let id = character.id;
 
     let navigate = use_navigate();
@@ -487,28 +490,38 @@ fn do_import(mut character: Character) -> impl IntoView {
 }
 
 #[component]
-pub fn ImportConflict(incoming: Character, existing: Character) -> impl IntoView {
+pub fn ImportConflict(
+    incoming: Character,
+    existing: Character,
+    avatar: Option<Avatar>,
+) -> impl IntoView {
     let incoming = StoredValue::new(incoming);
     let existing = StoredValue::new(existing);
+    let avatar = StoredValue::new(avatar);
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    let save_character = move |character: &mut Character| {
+    let save_character = move |character: &mut Character, id: Uuid| {
         character.restore_stripped_fields(&existing.read_value());
         storage::save_and_sync_character(character);
+        if let Some(av) = &*avatar.read_value() {
+            storage::save_avatar(&id, av);
+        }
         let navigate = use_navigate();
         navigate(&format!("/c/{}", character.id), Default::default());
     };
 
     let import_anyway = move |_| {
         let mut character = incoming.write_value();
-        save_character(&mut character);
+        let id = character.id;
+        save_character(&mut character, id);
     };
 
     let import_as_copy = move |_| {
         let mut character = incoming.write_value();
-        character.id = Uuid::new_v4();
+        let new_id = Uuid::new_v4();
+        character.id = new_id;
         character.identity.name = format!("{} (Copy)", character.identity.name);
-        save_character(&mut character);
+        save_character(&mut character, new_id);
     };
 
     let name = existing.read_value().identity.name.clone();
@@ -617,7 +630,7 @@ pub fn ImportCharacter() -> impl IntoView {
             {move || {
                 character.get().map(|result| {
                     match result {
-                        Some(ch) => Either::Left(import_or_conflict(ch)),
+                        Some(ch) => Either::Left(import_or_conflict(ch, None)),
                         None => Either::Right(error_view()),
                     }
                 })
@@ -632,7 +645,7 @@ struct CloudImportParams {
     char_id: String,
 }
 
-pub fn import_or_conflict(character: Character) -> impl IntoView {
+pub fn import_or_conflict(character: Character, avatar: Option<Avatar>) -> impl IntoView {
     let existing = storage::load_character(&character.id);
     let has_conflict = existing
         .as_ref()
@@ -640,10 +653,10 @@ pub fn import_or_conflict(character: Character) -> impl IntoView {
 
     if has_conflict {
         Either::Left(view! {
-            <ImportConflict incoming=character existing=existing.unwrap() />
+            <ImportConflict incoming=character existing=existing.unwrap() avatar=avatar />
         })
     } else {
-        Either::Right(do_import(character))
+        Either::Right(do_import(character, avatar))
     }
 }
 
@@ -669,16 +682,26 @@ pub fn ImportCloudCharacter() -> impl IntoView {
     let char_id = params.char_id;
 
     let character = LocalResource::new(move || {
-        let uid = user_id.clone();
-        let cid = char_id.clone();
+        let user_id = user_id.clone();
+        let char_id = char_id.clone();
         async move {
             firebase::wait_ready().await;
-            let value =
-                firebase::get_doc::<serde_json::Value>(&["users", &uid, "characters", &cid])
-                    .await
-                    .ok()??;
-            let ch = storage::deserialize_character_value(value)?;
-            ch.shared.then_some(ch)
+            let value = firebase::get_doc::<serde_json::Value>(&[
+                "users",
+                &user_id,
+                "characters",
+                &char_id,
+            ])
+            .await
+            .ok()??;
+            let character = storage::deserialize_character_value(value)?;
+            let character = character.shared.then_some(character)?;
+            let avatar = if let Ok(char_uuid) = char_id.parse::<Uuid>() {
+                storage::get_avatar_doc(&user_id, char_uuid).await
+            } else {
+                None
+            };
+            Some((character, avatar))
         }
     });
 
@@ -691,7 +714,7 @@ pub fn ImportCloudCharacter() -> impl IntoView {
             {move || {
                 character.get().map(|result| {
                     match result {
-                        Some(ch) => Either::Left(import_or_conflict(ch)),
+                        Some((character, avatar)) => Either::Left(import_or_conflict(character, avatar)),
                         None => Either::Right(not_found_view()),
                     }
                 })

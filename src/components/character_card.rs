@@ -2,7 +2,12 @@ use leptos::prelude::*;
 use leptos_fluent::{move_tr, tr};
 use uuid::Uuid;
 
-use crate::{BASE_URL, model::CharacterSummary};
+use crate::{
+    BASE_URL,
+    components::avatar::Avatar as AvatarView,
+    model::CharacterSummary,
+    storage::{load_avatar, load_avatar_timestamp, sync_index_version},
+};
 
 #[component]
 pub fn CharacterCard(
@@ -10,10 +15,24 @@ pub fn CharacterCard(
     on_delete: impl Fn(Uuid) + Copy + 'static,
 ) -> impl IntoView {
     let id = summary.id;
+    let avatar = RwSignal::new(load_avatar(&id));
+    let index_version = sync_index_version();
+    Effect::new(move |previous: Option<u32>| {
+        let version = index_version.get();
+        if previous.is_some() {
+            let current_ts =
+                avatar.with_untracked(|av| av.as_ref().map(|a| a.updated_at).unwrap_or(0));
+            let new_ts = load_avatar_timestamp(&id).unwrap_or(0);
+            if new_ts != current_ts {
+                avatar.set(load_avatar(&id));
+            }
+        }
+        version
+    });
+    let name = summary.name.clone();
     let href = format!("{BASE_URL}/c/{id}");
     let class_empty = summary.class.is_empty();
     let class_str = summary.class.clone();
-    let name = summary.name.clone();
     let flipped = RwSignal::new(false);
     let deleting = RwSignal::new(false);
 
@@ -24,15 +43,25 @@ pub fn CharacterCard(
             <div class="card-inner">
                 <div class="card-front">
                     <a href=href class="card-link">
-                        <h3>{name.clone()}</h3>
-                        <p class="card-subtitle">
-                            {move_tr!("level-prefix")} " " {summary.level} " "
-                            <span>{move || if class_empty {
-                                tr!("no-class")
-                            } else {
-                                class_str.clone()
-                            }}</span>
-                        </p>
+                        <div class="card-row">
+                            <AvatarView
+                                name=name.clone()
+                                avatar=avatar
+                                char_id=id
+                                size=64
+                            />
+                            <div class="card-text">
+                                <h3>{name.clone()}</h3>
+                                <p class="card-subtitle">
+                                    {move_tr!("level-prefix")} " " {summary.level} " "
+                                    <span>{move || if class_empty {
+                                        tr!("no-class")
+                                    } else {
+                                        class_str.clone()
+                                    }}</span>
+                                </p>
+                            </div>
+                        </div>
                     </a>
                     <button
                         class="btn-danger"

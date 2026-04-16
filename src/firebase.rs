@@ -13,6 +13,7 @@ pub enum FirebaseError {
     Timeout { method: &'static str },
     Js(JsValue),
     Serde(serde_wasm_bindgen::Error),
+    Json(serde_json::Error),
 }
 
 impl std::fmt::Display for FirebaseError {
@@ -22,6 +23,7 @@ impl std::fmt::Display for FirebaseError {
             Self::Timeout { method } => write!(f, "{method} timed out"),
             Self::Js(value) => write!(f, "{}", friendly_js_error(value)),
             Self::Serde(error) => write!(f, "{error}"),
+            Self::Json(error) => write!(f, "JSON: {error}"),
         }
     }
 }
@@ -35,6 +37,12 @@ impl From<JsValue> for FirebaseError {
 impl From<serde_wasm_bindgen::Error> for FirebaseError {
     fn from(error: serde_wasm_bindgen::Error) -> Self {
         Self::Serde(error)
+    }
+}
+
+impl From<serde_json::Error> for FirebaseError {
+    fn from(error: serde_json::Error) -> Self {
+        Self::Json(error)
     }
 }
 

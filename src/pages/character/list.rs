@@ -52,7 +52,7 @@ pub fn CharacterList() -> impl IntoView {
         <Title text=Signal::derive(move || i18n.tr("page-characters")) />
         {move || {
             if let Some(character) = import_state.get() {
-                return Either::Left(import_or_conflict(character));
+                return Either::Left(import_or_conflict(character, None));
             }
             Either::Right(view! {
                     <div class="character-list-page">

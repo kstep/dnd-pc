@@ -63,6 +63,8 @@ pub struct CharacterSummary {
     #[serde(default)]
     pub updated_at: u64,
     #[serde(default)]
+    pub avatar_updated_at: Option<u64>,
+    #[serde(default)]
     pub shared: bool,
 }
 
@@ -105,7 +107,7 @@ pub struct Character {
     pub shared: bool,
 }
 
-fn now_epoch_secs() -> u64 {
+pub fn now_epoch_secs() -> u64 {
     (js_sys::Date::now() / 1000.0) as u64
 }
 
@@ -837,8 +839,6 @@ impl Character {
 
 #[cfg(test)]
 pub mod tests {
-    use std::collections::BTreeMap;
-
     use wasm_bindgen_test::*;
 
     use super::*;

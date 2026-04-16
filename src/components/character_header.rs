@@ -12,6 +12,7 @@ use crate::{
     components::{
         apply::{apply_level, apply_with_modal, rebuild, replay_with_modal},
         apply_field_section::ApplyFieldSection,
+        avatar::Avatar as AvatarView,
         background_field::BackgroundField,
         classes_section::ClassesSection,
         confirm_modal::ConfirmModal,
@@ -23,7 +24,7 @@ use crate::{
     export::export_character,
     firebase,
     model::{
-        Alignment, AppliedStoreFields, Character, CharacterIdentityStoreFields,
+        Alignment, AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields,
         CharacterStoreFields, PersonalityStoreFields, Translatable,
     },
     rules::{
@@ -52,6 +53,8 @@ fn import_character(store: Store<Character>) {
 pub fn CharacterHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
+    let avatar = expect_context::<RwSignal<Option<Avatar>>>();
+    let name_signal = Signal::derive(move || store.identity().name().get());
 
     let total_level = Memo::new(move |_| store.read().level());
     let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
@@ -74,7 +77,7 @@ pub fn CharacterHeader() -> impl IntoView {
         }
     };
 
-    let level_up_items = Signal::derive(move || {
+    let level_up_items = Memo::new(move |_| {
         let level_label = i18n.tr("level");
         classes
             .read()
@@ -139,154 +142,8 @@ pub fn CharacterHeader() -> impl IntoView {
     let show_rebuild_confirm = RwSignal::new(false);
     let show_reset_confirm = RwSignal::new(false);
 
-    let i18n = expect_context::<leptos_fluent::I18n>();
-
     view! {
         <div class="panel character-header">
-            <div class="header-row">
-                <div class="header-field name-field">
-                    <label>{move_tr!("character-name")}</label>
-                    <input
-                        type="text"
-                        prop:value=move || store.identity().name().get()
-                        on:input=move |e| {
-                            store.identity().name().set(event_target_value(&e));
-                        }
-                    />
-                </div>
-                <ApplyFieldSection
-                    label=move_tr!("species")
-                    class="species-field"
-                    applied=move || store.applied().species().get()
-                    ready=move || {
-                        let species = store.identity().species().get();
-                        registry.species().has_tracked(&species)
-                    }
-                    apply_title=move_tr!("btn-apply-species")
-                    on_apply=move || {
-                        let pending = store.with_untracked(|character| {
-                            let species_cache = registry.species().cache().read_untracked();
-                            registry.with_features_index_untracked(|fi| {
-                                species_cache
-                                    .get(character.identity.species.as_str())
-                                    .into_iter()
-                                    .flat_map(|species_def| {
-                                        collect_species_features(character, species_def, fi)
-                                    })
-                                    .collect()
-                            })
-                        });
-                        apply_with_modal(
-                            store,
-                            registry,
-                            pending,
-                            move |character, pending, inputs, fi| {
-                                character.applied.species = true;
-                                apply_new_features(fi, character, pending, Some(inputs));
-                            },
-                        );
-                    }
-                >
-                    <SpeciesField />
-                </ApplyFieldSection>
-                <ApplyFieldSection
-                    label=move_tr!("background")
-                    class="background-field"
-                    applied=move || store.applied().background().get()
-                    ready=move || {
-                        let background = store.identity().background().get();
-                        registry.backgrounds().has_tracked(&background)
-                    }
-                    apply_title=move_tr!("btn-apply-background")
-                    on_apply=move || {
-                        let pending = store.with_untracked(|character| {
-                            let bg_cache = registry.backgrounds().cache().read_untracked();
-                            registry.with_features_index_untracked(|fi| {
-                                bg_cache
-                                    .get(character.identity.background.as_str())
-                                    .into_iter()
-                                    .flat_map(|bg_def| {
-                                        collect_background_features(character, bg_def, fi)
-                                    })
-                                    .collect()
-                            })
-                        });
-                        apply_with_modal(
-                            store,
-                            registry,
-                            pending,
-                            move |character, pending, inputs, fi| {
-                                character.applied.background = true;
-                                apply_new_features(fi, character, pending, Some(inputs));
-                            },
-                        );
-                    }
-                >
-                    <BackgroundField />
-                </ApplyFieldSection>
-                <div class="header-field">
-                    <label>{move_tr!("alignment")}</label>
-                    <select
-                        on:change=move |e| {
-                            let value = event_target_value(&e);
-                            if let Some(alignment) = Alignment::from_u8_str(&value) {
-                                store.personality().alignment().set(alignment);
-                            }
-                        }
-                    >
-                        {Alignment::iter()
-                            .map(|alignment| {
-                                let tr_key = alignment.tr_key();
-                                let val = (alignment as u8).to_string();
-                                let selected = move || {
-                                    store.personality().alignment().get() == alignment
-                                };
-                                let label = Signal::derive(move || i18n.tr(tr_key));
-                                view! {
-                                    <option value=val selected=selected>
-                                        {label}
-                                    </option>
-                                }
-                            })
-                            .collect_view()}
-                    </select>
-                </div>
-                <div class="header-field level-field">
-                    <label>{move_tr!("xp")}</label>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=move || store.identity().experience_points().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                store.identity().experience_points().set(value);
-                            }
-                        }
-                    />
-                </div>
-                <div class="header-field level-field">
-                    <label>{move_tr!("total-level")}</label>
-                    <div class="level-value-row">
-                        <span class="stat-highlight">{total_level}</span>
-                        <Show when=move || store.read().can_level_up()>
-                            <button
-                                class="btn-level-up"
-                                title=move_tr!("level-up")
-                                on:click=on_level_up
-                            >
-                                <Icon name="arrow-up" />
-                            </button>
-                        </Show>
-                    </div>
-                </div>
-                <div class="header-field level-field">
-                    <label>{move_tr!("prof-bonus")}</label>
-                    <span class="stat-highlight">"+" {prof_bonus}</span>
-                </div>
-            </div>
-
-            <ClassesSection />
-
             <div class="header-actions">
                 <Dropdown class="dropdown-end">
                     <DropdownTrigger slot>
@@ -359,6 +216,162 @@ pub fn CharacterHeader() -> impl IntoView {
                         <span class="dropdown-item-label">{move_tr!("reset-character")}</span>
                     </button>
                 </Dropdown>
+            </div>
+            <div class="header-layout">
+                <AvatarView
+                    name=name_signal
+                    avatar=Signal::derive(move || avatar.get())
+                    char_id=store.get_untracked().id
+                    size=80
+                    editable=true
+                    on_change=Callback::new(move |new_avatar| avatar.set(Some(new_avatar)))
+                    on_remove=Callback::new(move |_| avatar.set(None))
+                />
+                <div class="header-content">
+                    <div class="header-row">
+                        <div class="header-field name-field">
+                            <label>{move_tr!("character-name")}</label>
+                            <input
+                                type="text"
+                                prop:value=move || store.identity().name().get()
+                                on:input=move |e| {
+                                    store.identity().name().set(event_target_value(&e));
+                                }
+                            />
+                        </div>
+                        <ApplyFieldSection
+                            label=move_tr!("species")
+                            class="species-field"
+                            applied=move || store.applied().species().get()
+                            ready=move || {
+                                let species = store.identity().species().get();
+                                registry.species().has_tracked(&species)
+                            }
+                            apply_title=move_tr!("btn-apply-species")
+                            on_apply=move || {
+                                let pending = store.with_untracked(|character| {
+                                    let species_cache = registry.species().cache().read_untracked();
+                                    registry.with_features_index_untracked(|fi| {
+                                        species_cache
+                                            .get(character.identity.species.as_str())
+                                            .into_iter()
+                                            .flat_map(|species_def| {
+                                                collect_species_features(character, species_def, fi)
+                                            })
+                                            .collect()
+                                    })
+                                });
+                                apply_with_modal(
+                                    store,
+                                    registry,
+                                    pending,
+                                    move |character, pending, inputs, fi| {
+                                        character.applied.species = true;
+                                        apply_new_features(fi, character, pending, Some(inputs));
+                                    },
+                                );
+                            }
+                        >
+                            <SpeciesField />
+                        </ApplyFieldSection>
+                        <ApplyFieldSection
+                            label=move_tr!("background")
+                            class="background-field"
+                            applied=move || store.applied().background().get()
+                            ready=move || {
+                                let background = store.identity().background().get();
+                                registry.backgrounds().has_tracked(&background)
+                            }
+                            apply_title=move_tr!("btn-apply-background")
+                            on_apply=move || {
+                                let pending = store.with_untracked(|character| {
+                                    let bg_cache = registry.backgrounds().cache().read_untracked();
+                                    registry.with_features_index_untracked(|fi| {
+                                        bg_cache
+                                            .get(character.identity.background.as_str())
+                                            .into_iter()
+                                            .flat_map(|bg_def| {
+                                                collect_background_features(character, bg_def, fi)
+                                            })
+                                            .collect()
+                                    })
+                                });
+                                apply_with_modal(
+                                    store,
+                                    registry,
+                                    pending,
+                                    move |character, pending, inputs, fi| {
+                                        character.applied.background = true;
+                                        apply_new_features(fi, character, pending, Some(inputs));
+                                    },
+                                );
+                            }
+                        >
+                            <BackgroundField />
+                        </ApplyFieldSection>
+                        <div class="header-field">
+                            <label>{move_tr!("alignment")}</label>
+                            <select
+                                on:change=move |e| {
+                                    let value = event_target_value(&e);
+                                    if let Some(alignment) = Alignment::from_u8_str(&value) {
+                                        store.personality().alignment().set(alignment);
+                                    }
+                                }
+                            >
+                                {Alignment::iter()
+                                    .map(|alignment| {
+                                        let tr_key = alignment.tr_key();
+                                        let val = (alignment as u8).to_string();
+                                        let selected = move || {
+                                            store.personality().alignment().get() == alignment
+                                        };
+                                        let label = Signal::derive(move || i18n.tr(tr_key));
+                                        view! {
+                                            <option value=val selected=selected>
+                                                {label}
+                                            </option>
+                                        }
+                                    })
+                                    .collect_view()}
+                            </select>
+                        </div>
+                        <div class="header-field level-field">
+                            <label>{move_tr!("xp")}</label>
+                            <input
+                                type="number"
+                                min="0"
+                                prop:value=move || store.identity().experience_points().get().to_string()
+                                on:input=move |e| {
+                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                        store.identity().experience_points().set(value);
+                                    }
+                                }
+                            />
+                        </div>
+                        <div class="header-field level-field">
+                            <label>{move_tr!("total-level")}</label>
+                            <div class="level-value-row">
+                                <span class="stat-highlight">{total_level}</span>
+                                <Show when=move || store.read().can_level_up()>
+                                    <button
+                                        class="btn-level-up"
+                                        title=move_tr!("level-up")
+                                        on:click=on_level_up
+                                    >
+                                        <Icon name="arrow-up" />
+                                    </button>
+                                </Show>
+                            </div>
+                        </div>
+                        <div class="header-field level-field">
+                            <label>{move_tr!("prof-bonus")}</label>
+                            <span class="stat-highlight">"+" {prof_bonus}</span>
+                        </div>
+                    </div>
+
+                    <ClassesSection />
+                </div>
             </div>
             <MenuModal
                 show=show_level_up

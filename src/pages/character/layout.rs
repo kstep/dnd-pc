@@ -67,6 +67,11 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     let effects = RwSignal::new(initial_effects);
     provide_context(EffectiveCharacter::new(store, effects));
 
+    // Load and provide avatar (separate from character, cloud-synced separately).
+    let initial_avatar = storage::load_avatar(&char_id);
+    let avatar = RwSignal::new(initial_avatar);
+    provide_context(avatar);
+
     // Recompute effects and propagate consumable overrides (Hp, TempHp)
     // once on first appearance (memoized to avoid resetting user edits).
     Effect::new(move || {
@@ -90,6 +95,9 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         let eff = effects.read();
         storage::save_effects(&char_id, &eff);
     });
+
+    // Auto-save avatar + cloud-pull with echo suppression and timestamp guard.
+    storage::setup_avatar_auto_save(char_id, avatar);
 
     // Auto-save + cloud sync pull (touch gated on initial sync).
     storage::setup_auto_save(store);

@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use crate::components::modal::Modal;
 
 /// A menu item with a label and an optional secondary label.
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct MenuItem {
     pub label: String,
     pub detail: String,

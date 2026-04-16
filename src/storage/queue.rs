@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use gloo_storage::{LocalStorage, Storage};
 use indexmap::IndexMap;
 use uuid::Uuid;
-use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::{
@@ -29,6 +29,14 @@ pub enum CloudOp {
         char_id: Uuid,
         story_id: Uuid,
     },
+    PushAvatar {
+        uid: String,
+        char_id: Uuid,
+    },
+    DeleteAvatar {
+        uid: String,
+        char_id: Uuid,
+    },
 }
 
 #[derive(Hash, PartialEq, Eq)]
@@ -36,6 +44,7 @@ enum QueueKey {
     Character(Uuid),
     Stories(Uuid),
     Story(Uuid, Uuid),
+    Avatar(Uuid),
 }
 
 impl CloudOp {
@@ -48,6 +57,9 @@ impl CloudOp {
             Self::DeleteStory {
                 char_id, story_id, ..
             } => QueueKey::Story(*char_id, *story_id),
+            Self::PushAvatar { char_id, .. } | Self::DeleteAvatar { char_id, .. } => {
+                QueueKey::Avatar(*char_id)
+            }
         }
     }
 }
@@ -107,9 +119,7 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
             let Ok(Some(raw)) = LocalStorage::raw().get_item(&char_key) else {
                 return Ok(());
             };
-            let json: serde_json::Value = serde_json::from_str(&raw).map_err(|error| {
-                FirebaseError::Js(JsValue::from_str(&format!("JSON parse: {error}")))
-            })?;
+            let json: serde_json::Value = serde_json::from_str(&raw)?;
             let char_id_str = char_id.to_string();
             firebase::set_doc(&json, &["users", &uid, "characters", &char_id_str]).await
         }
@@ -122,9 +132,7 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
             let Ok(Some(raw)) = LocalStorage::raw().get_item(&story_key) else {
                 return Ok(());
             };
-            let stories: Vec<serde_json::Value> = serde_json::from_str(&raw).map_err(|error| {
-                FirebaseError::Js(JsValue::from_str(&format!("JSON parse: {error}")))
-            })?;
+            let stories: Vec<serde_json::Value> = serde_json::from_str(&raw)?;
             let char_id_str = char_id.to_string();
             for story_value in &stories {
                 let Some(story_id) = story_value["id"].as_str() else {
@@ -161,6 +169,19 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
                 &story_id_str,
             ])
             .await
+        }
+        CloudOp::PushAvatar { uid, char_id } => {
+            let key = super::local::avatar_key(&char_id);
+            let Ok(Some(raw)) = LocalStorage::raw().get_item(&key) else {
+                return Ok(());
+            };
+            let json: serde_json::Value = serde_json::from_str(&raw)?;
+            let char_id_str = char_id.to_string();
+            firebase::set_doc(&json, &["users", &uid, "avatars", &char_id_str]).await
+        }
+        CloudOp::DeleteAvatar { uid, char_id } => {
+            let char_id_str = char_id.to_string();
+            firebase::delete_doc(&["users", &uid, "avatars", &char_id_str]).await
         }
     }
 }

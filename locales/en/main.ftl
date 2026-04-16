@@ -395,3 +395,8 @@ spell-level-badge = { $count ->
     [3] 3rd level
    *[other] { $count }th level
 }
+
+## Avatar
+avatar-change = Change portrait
+avatar-remove = Remove portrait
+avatar-load-failed = Failed to load image

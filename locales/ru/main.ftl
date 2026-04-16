@@ -388,3 +388,8 @@ spell-level-badge = { $count ->
     [0] Заговор
    *[other] { $count } ур.
 }
+
+## Портрет
+avatar-change = Сменить портрет
+avatar-remove = Удалить портрет
+avatar-load-failed = Не удалось загрузить изображение
