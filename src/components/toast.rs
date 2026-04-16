@@ -81,6 +81,7 @@ impl Toast {
                 message: self.message,
                 action: self.action,
                 on_dismiss: self.on_dismiss,
+                exiting: RwSignal::new(false),
             };
             ctx.0.update(|toasts| toasts.push(entry));
             if let Some(duration) = auto_close {
@@ -104,7 +105,12 @@ struct Entry {
     message: String,
     action: Option<ToastAction>,
     on_dismiss: Option<Callback<()>>,
+    exiting: RwSignal<bool>,
 }
+
+/// How long the fade-out animation lasts. Must match the CSS transition on
+/// `.toast.exiting`.
+const EXIT_ANIMATION: Duration = Duration::from_millis(250);
 
 #[derive(Clone)]
 struct ToastAction {
@@ -133,16 +139,32 @@ fn dismiss_toast(id: u64) {
 }
 
 fn remove_toast(signal: RwSignal<Vec<Entry>>, id: u64) {
+    // Trigger the exit animation, then remove from the Vec once it's played
+    // out. Calling remove_toast twice on the same entry is a no-op.
     let mut on_dismiss = None;
-    signal.update(|toasts| {
-        if let Some(pos) = toasts.iter().position(|entry| entry.id == id) {
-            on_dismiss = toasts[pos].on_dismiss;
-            toasts.remove(pos);
+    let mut already_exiting = false;
+    signal.with_untracked(|toasts| {
+        if let Some(entry) = toasts.iter().find(|entry| entry.id == id) {
+            if entry.exiting.get_untracked() {
+                already_exiting = true;
+            } else {
+                entry.exiting.set(true);
+                on_dismiss = entry.on_dismiss;
+            }
         }
     });
+    if already_exiting {
+        return;
+    }
     if let Some(callback) = on_dismiss {
         callback.run(());
     }
+    set_timeout(
+        move || {
+            signal.update(|toasts| toasts.retain(|entry| entry.id != id));
+        },
+        EXIT_ANIMATION,
+    );
 }
 
 #[component]
@@ -167,11 +189,12 @@ fn ToastView(entry: Entry) -> impl IntoView {
         id,
         message,
         action,
+        exiting,
         ..
     } = entry;
     let dismiss_aria = move_tr!("toast-dismiss");
     view! {
-        <div class="toast">
+        <div class="toast" class:exiting=move || exiting.get()>
             <span class="toast-message">{message}</span>
             {action.map(|action| {
                 let on_click = action.on_click;

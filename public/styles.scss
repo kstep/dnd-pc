@@ -3540,6 +3540,11 @@ dialog.modal.closing::backdrop {
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-3, 0 4px 12px rgba(0, 0, 0, 0.15));
   font-size: var(--font-size-0);
+  animation: toast-slide-in 500ms ease-out;
+
+  &.exiting {
+    animation: toast-slide-out 250ms ease-in forwards;
+  }
 
   .toast-message {
     flex: 1;
@@ -3574,6 +3579,35 @@ dialog.modal.closing::backdrop {
 
     &:hover {
       color: var(--text-primary);
+    }
+  }
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  to {
+    transform: translateX(110%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+
+    &.exiting {
+      animation: none;
+      opacity: 0;
     }
   }
 }
