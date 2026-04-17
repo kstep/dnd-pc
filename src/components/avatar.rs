@@ -1,4 +1,4 @@
-use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
+use leptos::{ev::KeyboardEvent, html::Div, prelude::*};
 use leptos_fluent::tr;
 use uuid::Uuid;
 use wasm_bindgen_futures::spawn_local;
@@ -25,13 +25,15 @@ pub fn Avatar(
     #[prop(into, optional)] on_remove: Option<Callback<()>>,
     #[prop(into, optional)] on_generate: Option<Callback<()>>,
 ) -> impl IntoView {
-    let initials = Memo::new(move |_| monogram_initials(&name.get()));
-    let hue = Memo::new(move |_| monogram_hue(&name.get()));
+    let initials = Memo::new(move |_| name.with(|n| monogram_initials(n)));
+    let hue = Memo::new(move |_| name.with(|n| monogram_hue(n)));
     let style = move || format!("--avatar-w: {size}px");
 
-    let touched = RwSignal::new(false);
+    let expanded = RwSignal::new(false);
+    let avatar_ref = NodeRef::<Div>::new();
 
-    let open_picker = move |_| {
+    let open_picker = move |event: web_sys::MouseEvent| {
+        event.stop_propagation();
         pick_file("image/*", move |file| {
             spawn_local(async move {
                 match process_image_file(file).await {
@@ -54,6 +56,16 @@ pub fn Avatar(
         });
     };
 
+    let on_generate_click = move |event: web_sys::MouseEvent| {
+        event.stop_propagation();
+        // Collapse the expand-modal before handing off to the AI generate
+        // modal; stacking two modals is visually messy.
+        expanded.set(false);
+        if let Some(callback) = on_generate {
+            callback.run(());
+        }
+    };
+
     let on_remove_click = move |event: web_sys::MouseEvent| {
         event.stop_propagation();
         if let Some(callback) = on_remove {
@@ -61,36 +73,49 @@ pub fn Avatar(
         }
     };
 
-    let on_generate_click = move |event: web_sys::MouseEvent| {
-        event.stop_propagation();
-        if let Some(callback) = on_generate {
-            callback.run(());
+    let on_root_click = move |_| {
+        if editable && !expanded.get_untracked() {
+            expanded.set(true);
+            // Move focus onto the div so the on:keydown ESC handler receives
+            // events regardless of which element held focus before the click.
+            if let Some(element) = avatar_ref.get() {
+                let _ = element.focus();
+            }
         }
     };
 
-    let on_touch = move |event: web_sys::TouchEvent| {
-        // First tap on touch device: show overlay, suppress the synthetic
-        // click that would otherwise fire the action immediately. Second tap
-        // (while overlay is visible) lets click through to the action.
-        if !touched.get_untracked() {
-            event.prevent_default();
-            touched.set(true);
-            set_timeout(
-                move || touched.set(false),
-                std::time::Duration::from_millis(2500),
-            );
+    let on_close_click = move |event: web_sys::MouseEvent| {
+        event.stop_propagation();
+        expanded.set(false);
+    };
+
+    let on_backdrop_click = move |event: web_sys::MouseEvent| {
+        event.stop_propagation();
+        expanded.set(false);
+    };
+
+    // ESC key dismissal while expanded.
+    let on_keydown = move |event: KeyboardEvent| {
+        if expanded.get_untracked() && event.key() == "Escape" {
+            expanded.set(false);
         }
     };
+
+    let has_avatar =
+        Memo::new(move |_| avatar.with(|av| av.as_ref().is_some_and(|a| !a.is_empty())));
 
     view! {
         <div class="avatar"
+             node_ref=avatar_ref
              class:avatar-editable=move || editable
-             class:touched=move || touched.get()
+             class:avatar-edit=move || expanded.get()
              style=style
-             on:touchstart=on_touch
+             on:click=on_root_click
+             on:keydown=on_keydown
+             tabindex=move || if expanded.get() { "0" } else { "-1" }
         >
             <Show
-                when=move || avatar.with(|av| av.as_ref().is_some_and(|a| !a.is_empty()))
+                when=move || has_avatar.get()
                 fallback=move || view! {
                     <Show
                         when=move || !initials.get().is_empty()
@@ -105,27 +130,42 @@ pub fn Avatar(
                      alt="" />
             </Show>
             <Show when=move || editable>
-                <button class="avatar-overlay"
-                        on:click=open_picker
-                        aria-label=move || tr!("avatar-change")>
-                    <Icon name="camera" />
+                <button class="avatar-close"
+                        on:click=on_close_click
+                        aria-label=move || tr!("avatar-close")
+                        title=move || tr!("avatar-close")
+                        inert=move || !expanded.get()>
+                    <Icon name="x" />
                 </button>
-                <Show when=move || on_generate.is_some()>
-                    <button class="avatar-generate"
-                            on:click=on_generate_click
-                            aria-label=move || tr!("avatar-generate")>
-                        <Icon name="sparkles" />
+                <div class="avatar-actions"
+                     inert=move || !expanded.get()>
+                    <button on:click=open_picker
+                            aria-label=move || tr!("avatar-change")
+                            title=move || tr!("avatar-change")>
+                        <Icon name="camera" />
                     </button>
-                </Show>
-                <Show when=move || avatar.with(|av| av.as_ref().is_some_and(|a| !a.is_empty()))>
-                    <button class="avatar-remove"
-                            on:click=on_remove_click
-                            aria-label=move || tr!("avatar-remove")>
-                        <Icon name="trash-2" />
-                    </button>
-                </Show>
+                    <Show when=move || on_generate.is_some()>
+                        <button class="accent"
+                                on:click=on_generate_click
+                                aria-label=move || tr!("avatar-generate")
+                                title=move || tr!("avatar-generate")>
+                            <Icon name="sparkles" />
+                        </button>
+                    </Show>
+                    <Show when=move || has_avatar.get()>
+                        <button class="danger"
+                                on:click=on_remove_click
+                                aria-label=move || tr!("avatar-remove")
+                                title=move || tr!("avatar-remove")>
+                            <Icon name="trash-2" />
+                        </button>
+                    </Show>
+                </div>
             </Show>
         </div>
+        <Show when=move || expanded.get()>
+            <div class="avatar-backdrop" on:click=on_backdrop_click></div>
+        </Show>
     }
 }
 
