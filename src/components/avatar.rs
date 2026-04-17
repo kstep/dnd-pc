@@ -23,6 +23,7 @@ pub fn Avatar(
     #[prop(default = false)] editable: bool,
     #[prop(into, optional)] on_change: Option<Callback<AvatarData>>,
     #[prop(into, optional)] on_remove: Option<Callback<()>>,
+    #[prop(into, optional)] on_generate: Option<Callback<()>>,
 ) -> impl IntoView {
     let initials = Memo::new(move |_| monogram_initials(&name.get()));
     let hue = Memo::new(move |_| monogram_hue(&name.get()));
@@ -56,6 +57,13 @@ pub fn Avatar(
     let on_remove_click = move |event: web_sys::MouseEvent| {
         event.stop_propagation();
         if let Some(callback) = on_remove {
+            callback.run(());
+        }
+    };
+
+    let on_generate_click = move |event: web_sys::MouseEvent| {
+        event.stop_propagation();
+        if let Some(callback) = on_generate {
             callback.run(());
         }
     };
@@ -102,6 +110,13 @@ pub fn Avatar(
                         aria-label=move || tr!("avatar-change")>
                     <Icon name="camera" />
                 </button>
+                <Show when=move || on_generate.is_some()>
+                    <button class="avatar-generate"
+                            on:click=on_generate_click
+                            aria-label=move || tr!("avatar-generate")>
+                        <Icon name="sparkles" />
+                    </button>
+                </Show>
                 <Show when=move || avatar.with(|av| av.as_ref().is_some_and(|a| !a.is_empty()))>
                     <button class="avatar-remove"
                             on:click=on_remove_click

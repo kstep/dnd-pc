@@ -5,6 +5,7 @@ pub mod apply;
 pub mod apply_field_section;
 pub mod args_modal;
 pub mod avatar;
+pub mod avatar_generate_modal;
 pub mod background_field;
 pub mod build_info;
 pub mod cast_button;

@@ -72,21 +72,7 @@ fn NewStoryView(
 
     let has_key = move || settings.get().has_api_key();
 
-    let build_context = move || {
-        let character = store.read();
-        CharacterContext {
-            name: character.identity.name.clone(),
-            species: character.identity.species.clone(),
-            class_summary: character.class_summary(),
-            level: character.level(),
-            history: character.personality.history.clone(),
-            personality_traits: character.personality.personality_traits.clone(),
-            ideals: character.personality.ideals.clone(),
-            bonds: character.personality.bonds.clone(),
-            flaws: character.personality.flaws.clone(),
-            notes: character.notes.clone(),
-        }
-    };
+    let build_context = move || CharacterContext::from_character(&store.read());
 
     let cancelled = RwSignal::new(false);
 

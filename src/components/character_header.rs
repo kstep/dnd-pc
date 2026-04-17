@@ -13,6 +13,7 @@ use crate::{
         apply::{apply_level, apply_with_modal, rebuild, replay_with_modal},
         apply_field_section::ApplyFieldSection,
         avatar::Avatar as AvatarView,
+        avatar_generate_modal::AvatarGenerateModal,
         background_field::BackgroundField,
         classes_section::ClassesSection,
         confirm_modal::ConfirmModal,
@@ -141,6 +142,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let show_replay_confirm = RwSignal::new(false);
     let show_rebuild_confirm = RwSignal::new(false);
     let show_reset_confirm = RwSignal::new(false);
+    let show_avatar_generate = RwSignal::new(false);
 
     view! {
         <div class="panel character-header">
@@ -226,6 +228,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     editable=true
                     on_change=Callback::new(move |new_avatar| avatar.set(Some(new_avatar)))
                     on_remove=Callback::new(move |_| avatar.set(None))
+                    on_generate=Callback::new(move |_| show_avatar_generate.set(true))
                 />
                 <div class="header-content">
                     <div class="header-row">
@@ -396,6 +399,11 @@ pub fn CharacterHeader() -> impl IntoView {
                 title=Signal::derive(move || i18n.tr("reset-character"))
                 message=Signal::derive(move || i18n.tr("confirm-reset"))
                 on_confirm=move || store.update(|character| character.clear())
+            />
+            <AvatarGenerateModal
+                show=show_avatar_generate
+                char_id=store.get_untracked().id
+                on_result=Callback::new(move |new_avatar| avatar.set(Some(new_avatar)))
             />
         </div>
     }

@@ -380,8 +380,15 @@ button, a.btn-link {
   }
 }
 
-input:user-invalid {
+input:user-invalid,
+input[aria-invalid="true"] {
   border-color: var(--danger);
+}
+
+.field-error {
+  margin: var(--size-1) 0 0;
+  color: var(--danger);
+  font-size: var(--font-size-0);
 }
 
 form:invalid button[type="submit"] {
@@ -1826,7 +1833,6 @@ textarea.entry-desc {
   --btn-bg: var(--accent);
   --btn-border: var(--accent);
   --btn-color: var(--on-accent);
-  margin-top: var(--size-1);
 }
 
 .icon-wrapper {
@@ -2674,6 +2680,7 @@ dialog.modal.closing::backdrop {
   padding: var(--size-2) var(--size-3);
   border-top: 1px solid var(--panel-border);
   display: flex;
+  align-items: stretch;
   justify-content: flex-end;
   gap: var(--size-2);
   flex-shrink: 0;
@@ -4184,7 +4191,8 @@ main > * > :first-child {
   }
 
   .avatar-overlay,
-  .avatar-remove {
+  .avatar-remove,
+  .avatar-generate {
     position: absolute;
     border: 0;
     box-shadow: none;
@@ -4218,10 +4226,24 @@ main > * > :first-child {
     justify-content: center;
   }
 
+  .avatar-generate {
+    bottom: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   &.avatar-editable:hover .avatar-overlay,
   &.avatar-editable:hover .avatar-remove,
+  &.avatar-editable:hover .avatar-generate,
   &.avatar-editable.touched .avatar-overlay,
-  &.avatar-editable.touched .avatar-remove {
+  &.avatar-editable.touched .avatar-remove,
+  &.avatar-editable.touched .avatar-generate {
     opacity: 1;
   }
 }

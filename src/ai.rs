@@ -61,13 +61,25 @@ pub enum AiProvider {
 impl AiProvider {
     pub fn default_model(&self) -> &'static str {
         match self {
-            Self::OpenAI => "gpt-4o-mini",
+            Self::OpenAI => "gpt-4",
+        }
+    }
+
+    pub fn default_image_model(&self) -> &'static str {
+        match self {
+            Self::OpenAI => "gpt-image-1",
         }
     }
 
     pub fn api_url(&self) -> &'static str {
         match self {
             Self::OpenAI => "https://api.openai.com/v1/chat/completions",
+        }
+    }
+
+    pub fn images_url(&self) -> &'static str {
+        match self {
+            Self::OpenAI => "https://api.openai.com/v1/images/generations",
         }
     }
 
@@ -84,15 +96,41 @@ impl AiProvider {
         }
     }
 
-    fn is_chat_model(&self, entry: &ModelEntry) -> bool {
+    fn is_owned(&self, owned_by: &str) -> bool {
+        // OpenAI's `/v1/models` tags its own models under three labels —
+        // "openai" (gpt-3.5, legacy gpt-4), "system" (everything newer
+        // including gpt-4o, gpt-5, o-series, dall-e-*, gpt-image-*), and
+        // "openai-internal" (tts, whisper, embeddings). Anything else is
+        // a user-owned fine-tune.
+        match self {
+            Self::OpenAI => matches!(owned_by, "openai" | "system" | "openai-internal"),
+        }
+    }
+
+    fn is_image_id(&self, id: &str) -> bool {
         match self {
             Self::OpenAI => {
-                entry.owned_by == "openai"
-                    && (entry.id.starts_with("gpt-") || entry.id.starts_with("o"))
-                    && !entry.id.contains("realtime")
-                    && !entry.id.contains("audio")
-                    && !entry.id.contains("search")
-                    && !entry.id.contains("instruct")
+                id.starts_with("dall-e")
+                    || id.starts_with("gpt-image")
+                    || id == "chatgpt-image-latest"
+            }
+        }
+    }
+
+    fn is_chat_id(&self, id: &str) -> bool {
+        if self.is_image_id(id) {
+            return false;
+        }
+        match self {
+            Self::OpenAI => {
+                (id.starts_with("gpt-") || id.starts_with("o"))
+                    && !id.contains("realtime")
+                    && !id.contains("audio")
+                    && !id.contains("search")
+                    && !id.contains("instruct")
+                    && !id.contains("transcribe")
+                    && !id.contains("tts")
+                    && !id.contains("moderation")
             }
         }
     }
@@ -146,10 +184,39 @@ async fn api_fetch(
             .ok()
             .and_then(|value| value.as_string())
             .unwrap_or_default();
-        return Err(AiError::Http { status, body });
+        return Err(AiError::Http {
+            status,
+            body: extract_error_message(&body),
+        });
     }
 
     Ok(resp)
+}
+
+#[derive(Deserialize)]
+struct ApiErrorEnvelope {
+    error: ApiErrorBody,
+}
+
+#[derive(Deserialize)]
+struct ApiErrorBody {
+    message: String,
+}
+
+/// OpenAI errors arrive as `{"error":{"message":"..."}}`. Pull just the
+/// human-readable message out so the UI can show it on one line; fall back
+/// to the raw body if parsing fails. Cuts everything after the first colon
+/// — OpenAI tucks the leaked API key, hint URLs and other noise there.
+fn extract_error_message(body: &str) -> String {
+    let message = serde_json::from_str::<ApiErrorEnvelope>(body)
+        .map(|env| env.error.message)
+        .unwrap_or_else(|_| body.to_string());
+    message
+        .split(':')
+        .next()
+        .unwrap_or(&message)
+        .trim()
+        .to_string()
 }
 
 async fn response_text(resp: web_sys::Response) -> Result<String, AiError> {
@@ -172,8 +239,15 @@ struct ModelEntry {
     owned_by: String,
 }
 
-/// Fetch available chat models from the provider API.
-pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, AiError> {
+#[derive(Debug, Default, Clone)]
+pub struct ModelLists {
+    pub chat: Vec<String>,
+    pub image: Vec<String>,
+}
+
+/// Fetch all available models and split them into chat and image lists.
+/// Single HTTP request, filtered client-side per kind.
+pub async fn fetch_models(settings: &AiSettings) -> Result<ModelLists, AiError> {
     let resp = api_fetch(
         settings.provider.models_url(),
         "GET",
@@ -184,15 +258,19 @@ pub async fn fetch_models(settings: &AiSettings) -> Result<Vec<String>, AiError>
     let text = response_text(resp).await?;
     let parsed: ModelsResponse = serde_json::from_str(&text)?;
 
-    let mut models: Vec<String> = parsed
+    let provider = settings.provider;
+    let (mut chat, mut image): (Vec<String>, Vec<String>) = parsed
         .data
         .into_iter()
-        .filter(|entry| settings.provider.is_chat_model(entry))
-        .map(|entry| entry.id)
-        .collect();
-
-    models.sort();
-    Ok(models)
+        .filter_map(|entry| {
+            (provider.is_owned(&entry.owned_by)
+                && (provider.is_chat_id(&entry.id) || provider.is_image_id(&entry.id)))
+            .then_some(entry.id)
+        })
+        .partition(|id| provider.is_chat_id(id));
+    chat.sort();
+    image.sort();
+    Ok(ModelLists { chat, image })
 }
 
 // --- Settings ---
@@ -202,6 +280,12 @@ pub struct AiSettings {
     pub provider: AiProvider,
     pub api_key: String,
     pub model: String,
+    #[serde(default = "default_image_model")]
+    pub image_model: String,
+}
+
+fn default_image_model() -> String {
+    AiProvider::default().default_image_model().to_string()
 }
 
 impl Default for AiSettings {
@@ -209,6 +293,7 @@ impl Default for AiSettings {
         let provider = AiProvider::default();
         Self {
             model: provider.default_model().to_string(),
+            image_model: provider.default_image_model().to_string(),
             api_key: String::new(),
             provider,
         }
@@ -255,48 +340,73 @@ impl Story {
 pub struct CharacterContext {
     pub name: String,
     pub species: String,
-    pub class_summary: String,
-    pub level: u32,
+    pub class: String,
+    pub subclass: String,
+    pub background: String,
     pub history: String,
     pub personality_traits: String,
     pub ideals: String,
     pub bonds: String,
     pub flaws: String,
-    pub notes: String,
 }
 
 impl CharacterContext {
+    pub fn from_character(character: &Character) -> Self {
+        let class = character
+            .identity
+            .classes
+            .iter()
+            .filter(|c| !c.class.is_empty())
+            .map(|c| c.class_label().to_string())
+            .collect::<Vec<_>>()
+            .join(" / ");
+        let subclass = character
+            .identity
+            .classes
+            .iter()
+            .filter_map(|c| c.subclass_label().map(String::from))
+            .collect::<Vec<_>>()
+            .join(" / ");
+        Self {
+            name: character.identity.name.clone(),
+            species: character.identity.species.clone(),
+            class,
+            subclass,
+            background: character.identity.background.clone(),
+            history: character.personality.history.clone(),
+            personality_traits: character.personality.personality_traits.clone(),
+            ideals: character.personality.ideals.clone(),
+            bonds: character.personality.bonds.clone(),
+            flaws: character.personality.flaws.clone(),
+        }
+    }
+
+    /// Canonical labelled character description, used by every AI prompt.
+    /// Inline single-paragraph form (`Name: X. Race: Y. Class: Z. …`) —
+    /// the previous multi-line `Label:` column made image models render
+    /// the prompt itself as a character sheet template. Empty fields are
+    /// skipped. Backstory comes last because it's typically the longest.
     pub fn to_prompt_text(&self) -> String {
-        let mut out = String::with_capacity(512);
-        let _ = write!(
-            out,
-            "Character: {}, Level {} {} {}",
-            self.name, self.level, self.species, self.class_summary
-        );
-        if !self.history.is_empty() {
-            let _ = write!(out, "\nBackstory: {}", self.history);
-        }
-        if !self.personality_traits.is_empty() {
-            let _ = write!(out, "\nPersonality: {}", self.personality_traits);
-        }
-        if !self.ideals.is_empty() {
-            let _ = write!(out, "\nIdeals: {}", self.ideals);
-        }
-        if !self.bonds.is_empty() {
-            let _ = write!(out, "\nBonds: {}", self.bonds);
-        }
-        if !self.flaws.is_empty() {
-            let _ = write!(out, "\nFlaws: {}", self.flaws);
-        }
-        if !self.notes.is_empty() {
-            let notes = if self.notes.len() > 2000 {
-                &self.notes[..self.notes.floor_char_boundary(2000)]
-            } else {
-                &self.notes
-            };
-            let _ = write!(out, "\nRecent notes: {notes}");
-        }
-        out
+        let fields: [(&str, &str); 10] = [
+            ("Name", &self.name),
+            ("Race", &self.species),
+            ("Class", &self.class),
+            ("Subclass", &self.subclass),
+            ("Background", &self.background),
+            ("Personality", &self.personality_traits),
+            ("Ideals", &self.ideals),
+            ("Bonds", &self.bonds),
+            ("Flaws", &self.flaws),
+            ("Backstory", &self.history),
+        ];
+        fields
+            .into_iter()
+            .filter_map(|(label, value)| {
+                let trimmed = value.trim();
+                (!trimmed.is_empty()).then(|| format!("{label}: {trimmed}"))
+            })
+            .collect::<Vec<_>>()
+            .join(". ")
     }
 }
 
@@ -501,6 +611,91 @@ pub async fn send_chat<T: DeserializeOwned>(
 
     let parsed = parse_json_content(&content)?;
     Ok((parsed, content))
+}
+
+// --- Image generation ---
+
+/// Smallest canvas each model supports. Our downstream pipeline crops to
+/// 3:4 and scales to 384×512, so any oversampling past 1024 is waste.
+/// dall-e-2 is the only family that can go below 1024 per side.
+pub fn image_size_for(model: &str) -> &'static str {
+    if model.starts_with("dall-e-2") {
+        "512x512"
+    } else {
+        "1024x1024"
+    }
+}
+
+#[derive(Serialize)]
+struct ImageRequest<'a> {
+    model: &'a str,
+    prompt: &'a str,
+    n: u8,
+    size: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    response_format: Option<&'a str>,
+}
+
+/// `gpt-image-*` family doesn't accept `response_format` and always
+/// returns base64. Including the parameter 400s the request.
+fn response_format_for(model: &str) -> Option<&'static str> {
+    if model.starts_with("gpt-image") || model == "chatgpt-image-latest" {
+        None
+    } else {
+        Some("b64_json")
+    }
+}
+
+#[derive(Deserialize)]
+struct ImageResponse {
+    data: Vec<ImageItem>,
+}
+
+#[derive(Deserialize)]
+struct ImageItem {
+    b64_json: String,
+}
+
+/// Generate a portrait via the provider's image API. Returns the raw base64
+/// PNG bytes (no `data:` prefix).
+pub async fn generate_avatar_image(settings: &AiSettings, prompt: &str) -> Result<String, AiError> {
+    let request = ImageRequest {
+        model: &settings.image_model,
+        prompt,
+        n: 1,
+        size: image_size_for(&settings.image_model),
+        response_format: response_format_for(&settings.image_model),
+    };
+    let response: ImageResponse =
+        api_request(settings.provider.images_url(), &settings.api_key, &request).await?;
+    response
+        .data
+        .into_iter()
+        .next()
+        .map(|item| item.b64_json)
+        .ok_or(AiError::EmptyResponse)
+}
+
+/// Build an English portrait prompt. Kept deliberately minimal: extra
+/// stylistic guidance ("painterly portrait painting") and anti-sheet
+/// negatives ("NOT a character sheet, NOT infographic") were primes that
+/// pushed the model toward rendering character-sheet templates rather
+/// than away from them. The opener mirrors what the user found worked:
+/// "what kind of artifact" + canvas size + composition, then the shared
+/// labelled character description.
+pub fn build_avatar_prompt(context: &CharacterContext, user_addition: &str, size: &str) -> String {
+    let mut out = String::with_capacity(512);
+    let _ = write!(
+        out,
+        "DnD character avatar. {size} canvas, vertical 3:4 portrait, head-and-shoulders framing. \
+         No text in the image.\n\n",
+    );
+    out.push_str(&context.to_prompt_text());
+    let extra = user_addition.trim();
+    if !extra.is_empty() {
+        let _ = write!(out, "\nExtra details: {extra}");
+    }
+    out
 }
 
 /// Non-streaming chat completion that parses the response content as JSON of

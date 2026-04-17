@@ -1,8 +1,9 @@
-use js_sys::Promise;
+use base64::{Engine, engine::general_purpose::STANDARD};
+use js_sys::{Array, Promise, Uint8Array};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{
-    File, FileReader, ImageBitmap, ImageEncodeOptions, OffscreenCanvas,
+    Blob, File, FileReader, ImageBitmap, ImageEncodeOptions, OffscreenCanvas,
     OffscreenCanvasRenderingContext2d,
 };
 
@@ -14,11 +15,31 @@ const WEBP_QUALITY: f64 = 0.80;
 /// WebP and returns a `data:image/webp;base64,…` URI. Returns the underlying
 /// JS error verbatim — caller is responsible for surfacing it to the user.
 pub async fn process_image_file(file: File) -> Result<String, JsValue> {
+    let bitmap = blob_to_bitmap(&file).await?;
+    bitmap_to_webp_data_uri(bitmap).await
+}
+
+/// Decodes a base64 image (any format the browser can decode), center-crops
+/// to 3:4, scales to 384×512 and re-encodes as WebP. Returns the WebP data
+/// URI. `createImageBitmap` sniffs magic bytes — we don't set a MIME type.
+pub async fn process_image_base64(b64: &str) -> Result<String, JsValue> {
+    let bytes = STANDARD
+        .decode(b64.trim())
+        .map_err(|err| JsValue::from_str(&err.to_string()))?;
+    let parts = Array::of1(&Uint8Array::from(bytes.as_slice()));
+    let blob = Blob::new_with_u8_array_sequence(&parts)?;
+    let bitmap = blob_to_bitmap(&blob).await?;
+    bitmap_to_webp_data_uri(bitmap).await
+}
+
+async fn blob_to_bitmap(blob: &Blob) -> Result<ImageBitmap, JsValue> {
     let bitmap_promise: Promise = web_sys::window()
         .ok_or_else(|| JsValue::from_str("no window"))?
-        .create_image_bitmap_with_blob(&file)?;
-    let bitmap: ImageBitmap = JsFuture::from(bitmap_promise).await?.unchecked_into();
+        .create_image_bitmap_with_blob(blob)?;
+    Ok(JsFuture::from(bitmap_promise).await?.unchecked_into())
+}
 
+async fn bitmap_to_webp_data_uri(bitmap: ImageBitmap) -> Result<String, JsValue> {
     let source_width = f64::from(bitmap.width());
     let source_height = f64::from(bitmap.height());
     let aspect_target = TARGET_WIDTH / TARGET_HEIGHT;
@@ -53,7 +74,7 @@ pub async fn process_image_file(file: File) -> Result<String, JsValue> {
     options.set_type("image/webp");
     options.set_quality(WEBP_QUALITY);
     let blob_promise: Promise = canvas.convert_to_blob_with_options(&options)?;
-    let blob: web_sys::Blob = JsFuture::from(blob_promise).await?.dyn_into()?;
+    let blob: Blob = JsFuture::from(blob_promise).await?.dyn_into()?;
 
     let reader = FileReader::new()?;
     let read_promise = Promise::new(&mut |resolve, reject| {
