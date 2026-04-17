@@ -87,10 +87,7 @@ pub fn BackpackBlock() -> impl IntoView {
                 ><Icon name="circle-plus" /></button>
                 <div class="entry-content">
                     <input type="text" required class="entry-name" placeholder=move_tr!("item-name") node_ref=name_input />
-                    <span class="entry-badge">
-                        "\u{00d7}"
-                        <input type="number" class="session-qty-input" min="1" required value="1" node_ref=qty_input />
-                    </span>
+                    <input type="number" class="entry-name session-qty-input" min="1" required value="1" node_ref=qty_input />
                 </div>
                 <div class="entry-actions" />
                 <textarea class="entry-desc" placeholder=move_tr!("description") node_ref=desc_input />
@@ -115,20 +112,17 @@ pub fn BackpackBlock() -> impl IntoView {
                                         <ToggleButton />
                                         <div class="entry-content">
                                             <span class="entry-name">{name}</span>
-                                            <span class="entry-badge">
-                                                "\u{00d7}"
-                                                <input
-                                                    type="number"
-                                                    class="session-qty-input"
-                                                    min="0"
-                                                    prop:value=qty.to_string()
-                                                    on:input=move |e| {
-                                                        if let Ok(value) = event_target_value(&e).parse() {
-                                                            equipment.items().write()[idx].quantity = value;
-                                                        }
+                                            <input
+                                                type="number"
+                                                class="entry-name session-qty-input"
+                                                min="0"
+                                                prop:value=qty.to_string()
+                                                on:input=move |e| {
+                                                    if let Ok(value) = event_target_value(&e).parse() {
+                                                        equipment.items().write()[idx].quantity = value;
                                                     }
-                                                />
-                                            </span>
+                                                }
+                                            />
                                         </div>
                                         <div class="entry-actions" />
                                         <textarea

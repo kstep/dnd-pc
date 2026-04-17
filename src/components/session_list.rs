@@ -6,6 +6,7 @@ pub struct SessionListItem {
     pub name: String,
     pub description: String,
     pub badge: Option<AnyView>,
+    pub actions: Option<AnyView>,
 }
 
 #[component]
@@ -29,7 +30,7 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                                 <span class="entry-name">{item.name}</span>
                                 {item.badge}
                             </div>
-                            <div class="entry-actions" />
+                            <div class="entry-actions">{item.actions}</div>
                             {has_desc.then(|| view! {
                                 <div class="entry-desc">
                                     <Markdown text=item.description.clone() />

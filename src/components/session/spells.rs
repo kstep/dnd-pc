@@ -219,14 +219,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                             match sd.cast_time {
                                                 CastTime::Action(ActionType::BonusAction) => {
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("action-type-bonus-action")>
+                                                        <span class="entry-badge" title=move_tr!("action-type-bonus-action")>
                                                             <Icon name="zap" />
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 CastTime::Action(ActionType::Reaction) => {
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("action-type-reaction")>
+                                                        <span class="entry-badge" title=move_tr!("action-type-reaction")>
                                                             <Icon name="shield" />
                                                         </span>
                                                     }.into_any());
@@ -234,7 +234,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 CastTime::Rounds(rounds) => {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-cast-time")>
+                                                        <span class="entry-badge" title=move_tr!("ref-spell-cast-time")>
                                                             <Icon name="clock" />{label}
                                                         </span>
                                                     }.into_any());
@@ -246,14 +246,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectRange::Caster) => {}
                                                 Some(EffectRange::Touch) => {
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range-touch")>
+                                                        <span class="entry-badge" title=move_tr!("ref-spell-range-touch")>
                                                             <Icon name="hand" />
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 Some(EffectRange::Feet(feet)) => {
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-range")>
+                                                        <span class="entry-badge" title=move_tr!("ref-spell-range")>
                                                             <Icon name="ruler" />{feet}
                                                         </span>
                                                     }.into_any());
@@ -265,14 +265,14 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectDuration::Rounds(rounds)) => {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-duration")>
+                                                        <span class="entry-badge" title=move_tr!("ref-spell-duration")>
                                                             <Icon name="hourglass" />{label}
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 Some(EffectDuration::Forever) => {
                                                     badges.push(view! {
-                                                        <span class="spell-meta-icon" title=move_tr!("ref-spell-duration-forever")>
+                                                        <span class="entry-badge" title=move_tr!("ref-spell-duration-forever")>
                                                             <Icon name="infinity" />
                                                         </span>
                                                     }.into_any());
@@ -282,7 +282,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             // Concentration
                                             if sd.concentration {
                                                 badges.push(view! {
-                                                    <span class="spell-meta-icon" title=move_tr!("ref-spell-concentration")>
+                                                    <span class="entry-badge" title=move_tr!("ref-spell-concentration")>
                                                         <Icon name="crosshair" />
                                                     </span>
                                                 }.into_any());
@@ -290,7 +290,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             // // Ritual
                                             // if sd.ritual {
                                             //     badges.push(view! {
-                                            //         <span class="spell-meta-icon" title=move_tr!("ref-spell-ritual")>
+                                            //         <span class="entry-badge" title=move_tr!("ref-spell-ritual")>
                                             //             <Icon name="book-open" />
                                             //         </span>
                                             //     }.into_any());
@@ -470,6 +470,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                     })
                                 />
                             }
+                            .into_any()
                         });
 
                         let badge = view! {
@@ -478,7 +479,6 @@ pub fn SpellsBlock() -> impl IntoView {
                                 {meta_badges}
                                 {free_uses_badge}
                                 {cost_badge}
-                                {cast_button}
                             </span>
                         }
                         .into_any();
@@ -487,6 +487,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             name: spell.label().to_string(),
                             description: spell.description.clone(),
                             badge: Some(badge),
+                            actions: cast_button,
                         }
                     })
                     .collect::<Vec<_>>();

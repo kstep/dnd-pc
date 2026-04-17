@@ -59,7 +59,7 @@ fn build_choice_items(
             let action_icon = item.action.map(|action_type| {
                 let title = untrack(|| i18n.tr(action_type.tr_key()).into_owned());
                 view! {
-                    <span class="spell-meta-icon" title=title>
+                    <span class="entry-badge" title=title>
                         <Icon name=action_type.icon_name() />
                     </span>
                 }
@@ -75,7 +75,7 @@ fn build_choice_items(
                     view! { <FreeUsesBadge available=avail max=max /> }.into_any()
                 } else {
                     view! {
-                        <span class="session-choice-cost">{item.cost}</span>
+                        <span class="entry-badge session-choice-cost">{item.cost}</span>
                     }
                     .into_any()
                 }
@@ -100,24 +100,26 @@ fn build_choice_items(
                         ));
                     }
                 });
-                view! { <CastButton on_cast /> }
+                view! { <CastButton on_cast /> }.into_any()
             });
 
             SessionListItem {
                 name: item.name,
                 description: item.description,
-                badge: if action_icon.is_some() || cost_badge.is_some() || cast_button.is_some() {
+                badge: if action_icon.is_some() || cost_badge.is_some() {
                     Some(
                         view! {
-                            {action_icon}
-                            {cost_badge}
-                            {cast_button}
+                            <span class="entry-badge">
+                                {action_icon}
+                                {cost_badge}
+                            </span>
                         }
                         .into_any(),
                     )
                 } else {
                     None
                 },
+                actions: cast_button,
             }
         })
         .collect()

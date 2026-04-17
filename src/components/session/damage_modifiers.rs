@@ -20,29 +20,27 @@ fn DamageEntry(damage_type: DamageType, modifiers: DamageModifier) -> impl IntoV
             <span class="damage-dt-icon"><Icon name=icon title=title /></span>
             <div class="entry-content">
                 <span class="entry-name">{label}</span>
-                <span class="entry-badge damage-badge">
-                    {modifiers.immune.then(|| view! {
-                        <span class="damage-tag" title=move || i18n.tr("damage-immunity")>
-                            <Icon name="shield-check" />
-                        </span>
-                    })}
-                    {modifiers.resistant.then(|| view! {
-                        <span class="damage-tag" title=move || i18n.tr("damage-resistance")>
-                            <Icon name="shield-half" />
-                        </span>
-                    })}
-                    {modifiers.vulnerable.then(|| view! {
-                        <span class="damage-tag" title=move || i18n.tr("damage-vulnerability")>
-                            <Icon name="shield-off" />
-                        </span>
-                    })}
-                    {(modifiers.reduction > 0).then(|| view! {
-                        <span class="damage-tag" title=move || i18n.tr("damage-reduction")>
-                            <Icon name="shield-minus" />
-                            {modifiers.reduction}
-                        </span>
-                    })}
-                </span>
+                {modifiers.immune.then(|| view! {
+                    <span class="damage-tag" title=move || i18n.tr("damage-immunity")>
+                        <Icon name="shield-check" />
+                    </span>
+                })}
+                {modifiers.resistant.then(|| view! {
+                    <span class="damage-tag" title=move || i18n.tr("damage-resistance")>
+                        <Icon name="shield-half" />
+                    </span>
+                })}
+                {modifiers.vulnerable.then(|| view! {
+                    <span class="damage-tag" title=move || i18n.tr("damage-vulnerability")>
+                        <Icon name="shield-off" />
+                    </span>
+                })}
+                {(modifiers.reduction > 0).then(|| view! {
+                    <span class="damage-tag" title=move || i18n.tr("damage-reduction")>
+                        <Icon name="shield-minus" />
+                        {modifiers.reduction}
+                    </span>
+                })}
             </div>
         </div>
     }

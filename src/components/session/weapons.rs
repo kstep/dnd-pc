@@ -103,16 +103,18 @@ pub fn WeaponsBlock() -> impl IntoView {
                             );
                         }) />
                     }
+                    .into_any()
                 });
 
                 SessionListItem {
                     name: name_atk,
                     description,
-                    badge: if first_badge.is_none() && cast_button.is_none() {
+                    badge: if first_badge.is_none() {
                         None
                     } else {
-                        Some(view! { <>{first_badge}{more}{cast_button}</> }.into_any())
+                        Some(view! { <>{first_badge}{more}</> }.into_any())
                     },
+                    actions: cast_button,
                 }
             })
             .collect::<Vec<_>>();

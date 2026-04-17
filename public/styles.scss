@@ -1169,10 +1169,6 @@ section {
   }
 }
 
-.damage-badge {
-  margin-left: auto;
-}
-
 .damage-tag {
   display: inline-flex;
   align-items: center;
@@ -1553,10 +1549,12 @@ section {
   &.expanded {
     background: var(--panel-bg);
     outline: 1px solid var(--panel-border);
+    margin-bottom: var(--size-1);
   }
 
   & + & {
-    margin-top: var(--size-1);
+    margin-top: 0;
+    padding-top: 0;
   }
 
   &.disabled {
@@ -1577,6 +1575,28 @@ section {
 
   .icon-wrapper {
     padding: var(--size-1);
+  }
+}
+
+@media (max-width: 600px) {
+  .entry-content:has(> .entry-badge) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    row-gap: 0;
+
+    &::after {
+      content: '';
+      order: 1;
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    > span.entry-name {
+      order: 0;
+    }
+    > .entry-badge {
+      order: 2;
+    }
   }
 }
 
@@ -1609,10 +1629,11 @@ select.entry-name {
 
 .entry-badge {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--size-1);
   color: var(--text-secondary);
   font-size: var(--font-size-0);
+  line-height: 1.5rem;
   white-space: nowrap;
 
   .btn-icon {
@@ -2163,14 +2184,11 @@ textarea.entry-desc {
   }
 }
 
-.session-spell-level:nth-last-child(n + 3) {
-  padding-right: var(--size-1);
-  border-right: 1px solid var(--panel-border);
-}
-
 .session-qty-input {
+  flex: none;
   width: 4em;
   text-align: center;
+  margin-left: auto;
 }
 
 .session-item-expr {
@@ -3231,23 +3249,6 @@ dialog.modal.closing::backdrop {
   color: var(--text-secondary);
   font-style: italic;
   margin-left: 0.3em;
-}
-
-.spell-meta-icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-  color: var(--text-secondary);
-  font-size: var(--font-size-0);
-  vertical-align: middle;
-
-  .icon-wrapper {
-    padding-right: 0;
-  }
-
-  & + & {
-    margin-left: 0.3em;
-  }
 }
 
 .feature-spells-inline {
