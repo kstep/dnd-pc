@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
 
 use crate::{
-    components::icon::Icon,
+    components::{entry_name::EntryName, icon::Icon},
     effective::EffectiveCharacter,
     model::{DamageModifier, DamageType, Translatable},
 };
@@ -19,7 +19,7 @@ fn DamageEntry(damage_type: DamageType, modifiers: DamageModifier) -> impl IntoV
         <div class="entry-item">
             <span class="damage-dt-icon"><Icon name=icon title=title /></span>
             <div class="entry-content">
-                <span class="entry-name">{label}</span>
+                <EntryName>{label}</EntryName>
                 {modifiers.immune.then(|| view! {
                     <span class="damage-tag" title=move || i18n.tr("damage-immunity")>
                         <Icon name="shield-check" />

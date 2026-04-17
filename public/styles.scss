@@ -1001,10 +1001,6 @@ section {
     letter-spacing: 0.05em;
     margin: var(--size-2) 0 var(--size-1);
   }
-
-  .btn-toggle-desc {
-    margin-right: var(--size-0);
-  }
 }
 
 @media (max-width: 600px) {
@@ -1418,8 +1414,11 @@ section {
 .btn-toggle-desc {
 
   --btn-color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 14px;
-  height: 28px;
+  height: 1.5rem;
   padding: 0;
   line-height: 1;
   border: none;
@@ -1578,6 +1577,14 @@ section {
   }
 }
 
+.entry-item:has(> .entry-content > .short-input) {
+  align-items: center;
+
+  > .entry-content {
+    align-items: center;
+  }
+}
+
 @media (max-width: 600px) {
   .entry-content:has(> .entry-badge) {
     flex-wrap: wrap;
@@ -1612,6 +1619,10 @@ section {
   min-width: 0;
   font-size: var(--font-size-1);
   line-height: 1.5rem;
+}
+
+.entry-item:not(:has(> .btn-toggle-desc[disabled])) > .entry-content > span.entry-name {
+  cursor: pointer;
 }
 
 .entry-item.expanded > .entry-content > .entry-name {
@@ -1686,7 +1697,7 @@ textarea.entry-desc {
 
 /* --------------------- Equipment Panel ----------------------- */
 .armor-natural {
-  .armor-name {
+  .entry-name {
     color: var(--text-secondary);
   }
 

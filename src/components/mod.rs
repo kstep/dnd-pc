@@ -19,6 +19,7 @@ pub mod datalist_input;
 pub mod dropdown;
 pub mod effects_calc_modal;
 pub mod entity_field;
+pub mod entry_name;
 pub mod expr_args_input;
 pub mod expr_view;
 pub mod feature_field_row;

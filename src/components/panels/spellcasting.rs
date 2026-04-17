@@ -8,6 +8,7 @@ use crate::{
     BASE_URL,
     components::{
         datalist_input::{DatalistInput, DatalistOption},
+        entry_name::EntryName,
         icon::Icon,
         markdown::Markdown,
         slot_box::SlotBox,
@@ -394,7 +395,7 @@ fn FeatureSpellcastingSection(
                                         <div class="entry-content">
                                             {if spell_sticky {
                                                 Either::Left(view! {
-                                                    <span class="entry-name entry-name-readonly">{spell_label.clone()}</span>
+                                                    <EntryName>{spell_label.clone()}</EntryName>
                                                 })
                                             } else {
                                                 Either::Right(view! {
@@ -537,7 +538,7 @@ fn FeatureSpellcastingSection(
                                     <div class="entry-content">
                                         {if spell_sticky {
                                             Either::Left(view! {
-                                                <span class="entry-name entry-name-readonly">{spell_label.clone()}</span>
+                                                <EntryName>{spell_label.clone()}</EntryName>
                                             })
                                         } else {
                                             Either::Right(view! {

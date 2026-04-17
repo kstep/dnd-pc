@@ -4,7 +4,9 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{icon::Icon, slot_box::SlotBox, toggle_button::ToggleButton},
+    components::{
+        entry_name::EntryName, icon::Icon, slot_box::SlotBox, toggle_button::ToggleButton,
+    },
     model::{
         Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields, DamageType,
         EquipmentStoreFields, Item, Translatable, Weapon, WeaponEffect,
@@ -344,7 +346,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             <div class="entry-item armor-natural">
                                                 <ToggleButton />
                                                 <div class="entry-content">
-                                                    <span class="entry-name armor-name">{name}</span>
+                                                    <EntryName>{name}</EntryName>
                                                     <span class="armor-type-label">
                                                         {move || i18n.tr(ArmorType::Natural.tr_key())}
                                                     </span>

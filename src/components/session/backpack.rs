@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{icon::Icon, toggle_button::ToggleButton},
+    components::{entry_name::EntryName, icon::Icon, toggle_button::ToggleButton},
     model::{Character, CharacterStoreFields, EquipmentStoreFields, Item, Money},
 };
 
@@ -111,7 +111,7 @@ pub fn BackpackBlock() -> impl IntoView {
                                     <div class="entry-item">
                                         <ToggleButton />
                                         <div class="entry-content">
-                                            <span class="entry-name">{name}</span>
+                                            <EntryName>{name}</EntryName>
                                             <input
                                                 type="number"
                                                 class="entry-name session-qty-input"

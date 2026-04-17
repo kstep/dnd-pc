@@ -3484,7 +3484,13 @@
     "name": "Dance Virtuoso"
   },
   {
-    "name": "Dazzling Footwork"
+    "name": "Dazzling Footwork",
+    "assign": [
+      {
+        "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Inspiring Movement"

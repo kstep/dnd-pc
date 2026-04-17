@@ -5,6 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         datalist_input::{DatalistInput, DatalistOption},
+        entry_name::EntryName,
         icon::Icon,
         slot_box::SlotBox,
         toggle_button::ToggleButton,
@@ -194,11 +195,12 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                 }
                             });
                             let cost_str = (opt.cost > 0).then(|| format!(" ({})", opt.cost));
+                            let label = opt.label().to_string();
                             view! {
                                 <div class="entry-item choice-entry-readonly">
                                     <div class="entry-content">
                                         {action_icon}
-                                        <span class="entry-name">{opt.label().to_string()}</span>
+                                        <EntryName>{label}</EntryName>
                                     </div>
                                     <div class="entry-actions">
                                         {cost_str}

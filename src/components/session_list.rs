@@ -1,6 +1,8 @@
 use leptos::{either::Either, prelude::*};
 
-use crate::components::{markdown::Markdown, toggle_button::ToggleButton};
+use crate::components::{
+    entry_name::EntryName, markdown::Markdown, toggle_button::ToggleButton,
+};
 
 pub struct SessionListItem {
     pub name: String,
@@ -27,7 +29,7 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                                 })
                             }}
                             <div class="entry-content">
-                                <span class="entry-name">{item.name}</span>
+                                <EntryName>{item.name}</EntryName>
                                 {item.badge}
                             </div>
                             <div class="entry-actions">{item.actions}</div>
