@@ -53,7 +53,7 @@ pub fn CharacterEditor() -> impl IntoView {
                 fd.fields.iter().any(|f| {
                 matches!(
                     &f.value,
-                    FeatureValue::Choice { options } if options.iter().any(|o| o.name.is_empty())
+                    FeatureValue::Choice { options } if options.iter().any(|o| o.label().is_empty())
                 )
             })
             })

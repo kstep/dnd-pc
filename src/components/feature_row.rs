@@ -46,7 +46,7 @@ pub fn FeatureRow(
             let has_empty = e.fields.iter().any(|f| {
                 matches!(
                     &f.value,
-                    FeatureValue::Choice { options } if options.iter().any(|o| o.name.is_empty())
+                    FeatureValue::Choice { options } if options.iter().any(|o| o.label().is_empty())
                 )
             });
             (e.fields.len(), e.spells.is_some(), has_empty)
@@ -66,7 +66,7 @@ pub fn FeatureRow(
                         matches!(
                             &f.value,
                             FeatureValue::Choice { options }
-                                if options.iter().any(|o| o.name.is_empty())
+                                if options.iter().any(|o| o.label().is_empty())
                         )
                     })
                 })
