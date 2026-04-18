@@ -488,34 +488,35 @@ pub async fn generate_story(
 
         buffer.push_str(&chunk_text);
 
-        // Process complete SSE lines from the buffer
-        while let Some(newline_pos) = buffer.find('\n') {
-            let line = &buffer[..newline_pos];
-            let trimmed = line.trim();
+        // Process complete SSE lines from the buffer. Advance a cursor
+        // instead of draining line-by-line — a single trailing drain keeps
+        // the inner loop O(n) per chunk instead of O(n²).
+        let mut consumed = 0usize;
+        let mut stop = false;
+        while let Some(rel_pos) = buffer[consumed..].find('\n') {
+            let line_end = consumed + rel_pos;
+            let trimmed = buffer[consumed..line_end].trim();
 
-            let should_break = if trimmed.is_empty() || trimmed.starts_with(':') {
-                false
-            } else if let Some(data) = trimmed.strip_prefix("data: ") {
+            if let Some(data) = trimmed.strip_prefix("data: ") {
                 if data == "[DONE]" {
-                    true
-                } else {
-                    if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(data)
-                        && let Some(content) = parsed["choices"][0]["delta"]["content"].as_str()
-                    {
-                        full_text.push_str(content);
-                        on_chunk(content);
-                    }
-                    false
+                    consumed = line_end + 1;
+                    stop = true;
+                    break;
                 }
-            } else {
-                false
-            };
-
-            buffer.drain(..newline_pos + 1);
-
-            if should_break {
-                break;
+                if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(data)
+                    && let Some(content) = parsed["choices"][0]["delta"]["content"].as_str()
+                {
+                    full_text.push_str(content);
+                    on_chunk(content);
+                }
             }
+
+            consumed = line_end + 1;
+        }
+        buffer.drain(..consumed);
+
+        if stop {
+            break;
         }
     }
 
