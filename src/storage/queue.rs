@@ -7,34 +7,34 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::{
-    firebase::{self, FirebaseError},
-    storage::sync::get_or_init_sync,
+    firebase::{self, FirebaseError, FirebaseUid},
+    storage::{baseline, diff, local, sync::get_or_init_sync},
 };
 
 pub enum CloudOp {
     PushCharacter {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
     },
     DeleteCharacter {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
     },
     PushStories {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
     },
     DeleteStory {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
         story_id: Uuid,
     },
     PushAvatar {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
     },
     DeleteAvatar {
-        uid: String,
+        uid: FirebaseUid,
         char_id: Uuid,
     },
 }
@@ -85,6 +85,11 @@ pub fn start_flush_interval(interval_ms: u32) {
             interval_ms,
         )
         .expect("setInterval failed");
+    // FIXME: Closure::forget leaks the callback permanently. Acceptable
+    // because setInterval lives for the tab's lifetime and this is called
+    // once from init_sync, but if we ever add clearInterval or re-login
+    // flows, store the Closure in a thread_local instead to make the leak
+    // explicit and the function idempotent.
     callback.forget();
 }
 
@@ -97,15 +102,23 @@ fn flush() {
     spawn_local(async move {
         let state = get_or_init_sync();
         state.set_syncing();
-        let mut had_error = false;
+        let mut failed_count: u32 = 0;
+        let mut last_error: Option<FirebaseError> = None;
         for op in ops {
             if let Err(error) = execute_op(op).await {
                 log::warn!("Cloud op failed: {error}");
-                had_error = true;
+                failed_count += 1;
+                last_error = Some(error);
             }
         }
-        if had_error {
-            state.set_error("Some cloud operations failed".into());
+        if let Some(last) = last_error {
+            state.set_error(
+                FirebaseError::BatchFailed {
+                    count: failed_count,
+                    last: Box::new(last),
+                }
+                .to_string(),
+            );
         } else {
             state.set_synced();
         }
@@ -115,20 +128,42 @@ fn flush() {
 async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
     match op {
         CloudOp::PushCharacter { uid, char_id } => {
-            let char_key = super::local::character_key(&char_id);
-            let Ok(Some(raw)) = LocalStorage::raw().get_item(&char_key) else {
+            // Go through load_character so any legacy-schema blob in
+            // localStorage is migrated before diffing against the baseline
+            // (which is always post-migration).
+            //
+            // This path does three passes over the Character tree per flush:
+            // deserialize (inside load_character), serialize to Value, then
+            // sparse_diff. Acceptable because (a) queue coalescing via
+            // IndexMap<QueueKey, _> limits this to at most one run per 2s
+            // debounce per character, and (b) for a typical character the
+            // total pre-network work is a few hundred microseconds in wasm.
+            let Some(current) = local::load_character_value(&char_id) else {
                 return Ok(());
             };
-            let json: serde_json::Value = serde_json::from_str(&raw)?;
+            // Fallback to empty object ⇒ sparse_diff yields whole current ⇒ first
+            // push after fresh sign-in pushes the full document. Distinct from the
+            // pull path's fallback in subscribe_to_changes (which uses local as
+            // baseline so merge_3way blind-adopts remote) — the choice is
+            // context-dependent and both are correct for their direction.
+            let empty = serde_json::Value::Object(Default::default());
+            let Some(diff) = baseline::with(&char_id, |baseline| {
+                diff::sparse_diff(&current, baseline.unwrap_or(&empty))
+            }) else {
+                return Ok(());
+            };
             let char_id_str = char_id.to_string();
-            firebase::set_doc(&json, &["users", &uid, "characters", &char_id_str]).await
+            firebase::merge_doc(&diff, &["users", uid.as_str(), "characters", &char_id_str])
+                .await?;
+            baseline::insert(char_id, current);
+            Ok(())
         }
         CloudOp::DeleteCharacter { uid, char_id } => {
             let char_id_str = char_id.to_string();
-            firebase::delete_doc(&["users", &uid, "characters", &char_id_str]).await
+            firebase::delete_doc(&["users", uid.as_str(), "characters", &char_id_str]).await
         }
         CloudOp::PushStories { uid, char_id } => {
-            let story_key = super::local::stories_key(&char_id);
+            let story_key = local::stories_key(&char_id);
             let Ok(Some(raw)) = LocalStorage::raw().get_item(&story_key) else {
                 return Ok(());
             };
@@ -142,7 +177,7 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
                     story_value,
                     &[
                         "users",
-                        &uid,
+                        uid.as_str(),
                         "characters",
                         &char_id_str,
                         "stories",
@@ -162,7 +197,7 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
             let story_id_str = story_id.to_string();
             firebase::delete_doc(&[
                 "users",
-                &uid,
+                uid.as_str(),
                 "characters",
                 &char_id_str,
                 "stories",
@@ -171,17 +206,17 @@ async fn execute_op(op: CloudOp) -> Result<(), FirebaseError> {
             .await
         }
         CloudOp::PushAvatar { uid, char_id } => {
-            let key = super::local::avatar_key(&char_id);
+            let key = local::avatar_key(&char_id);
             let Ok(Some(raw)) = LocalStorage::raw().get_item(&key) else {
                 return Ok(());
             };
             let json: serde_json::Value = serde_json::from_str(&raw)?;
             let char_id_str = char_id.to_string();
-            firebase::set_doc(&json, &["users", &uid, "avatars", &char_id_str]).await
+            firebase::set_doc(&json, &["users", uid.as_str(), "avatars", &char_id_str]).await
         }
         CloudOp::DeleteAvatar { uid, char_id } => {
             let char_id_str = char_id.to_string();
-            firebase::delete_doc(&["users", &uid, "avatars", &char_id_str]).await
+            firebase::delete_doc(&["users", uid.as_str(), "avatars", &char_id_str]).await
         }
     }
 }

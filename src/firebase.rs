@@ -1,19 +1,80 @@
+use std::borrow::Cow;
+
 use js_sys::{Array, Object, Promise, Reflect};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use wasm_bindgen::{JsCast, closure::Closure, prelude::*};
 use wasm_bindgen_futures::JsFuture;
 
+/// Firebase Auth UID. Opaque ~28-char identifier from Firebase, not a UUID.
+/// Newtype-wrapped so that future optimizations (inlining, Arc-sharing) are
+/// localized.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FirebaseUid(String);
+
+impl FirebaseUid {
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::ops::Deref for FirebaseUid {
+    type Target = str;
+
+    fn deref(&self) -> &str {
+        &self.0
+    }
+}
+
+impl From<String> for FirebaseUid {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
+impl std::fmt::Display for FirebaseUid {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
 /// Timeout for Firestore operations in ms (setDoc can hang with offline
 /// persistence).
 const FIRESTORE_TIMEOUT_MS: u32 = 10_000;
 
+/// Describes why a bridge-contract check failed (JS API didn't return the
+/// expected type).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BridgeReason {
+    /// The JS property was not a callable function.
+    NotAFunction,
+    /// The function return value was not a `Promise`.
+    NotAPromise,
+    /// The return value was not a JS `Array`.
+    NotAnArray,
+    /// A stringify call returned a non-string value.
+    NonStringResult,
+}
+
 #[derive(Debug)]
 pub enum FirebaseError {
     NotAvailable,
-    Timeout { method: &'static str },
+    Timeout {
+        method: &'static str,
+    },
+    /// A real JS error originating from a rejected Promise or JS runtime.
     Js(JsValue),
     Serde(serde_wasm_bindgen::Error),
     Json(serde_json::Error),
+    /// The JS bridge violated the expected API contract.
+    BridgeContract {
+        method: Cow<'static, str>,
+        reason: BridgeReason,
+    },
+    /// Multiple operations failed; carries the count and last real error.
+    BatchFailed {
+        count: u32,
+        last: Box<FirebaseError>,
+    },
 }
 
 impl std::fmt::Display for FirebaseError {
@@ -24,6 +85,23 @@ impl std::fmt::Display for FirebaseError {
             Self::Js(value) => write!(f, "{}", friendly_js_error(value)),
             Self::Serde(error) => write!(f, "{error}"),
             Self::Json(error) => write!(f, "JSON: {error}"),
+            Self::BridgeContract { method, reason } => match reason {
+                BridgeReason::NotAFunction => {
+                    write!(f, "__firebase.{method} is not a function")
+                }
+                BridgeReason::NotAPromise => {
+                    write!(f, "__firebase.{method} did not return a Promise")
+                }
+                BridgeReason::NotAnArray => {
+                    write!(f, "{method} did not return an array")
+                }
+                BridgeReason::NonStringResult => {
+                    write!(f, "{method} returned non-string")
+                }
+            },
+            Self::BatchFailed { count, last } => {
+                write!(f, "{count} operation(s) failed, last error: {last}")
+            }
         }
     }
 }
@@ -76,34 +154,38 @@ pub async fn wait_ready() -> bool {
 
 /// Call a `window.__firebase` method and return the result as a Promise.
 /// Fails immediately on structural errors (missing object, not a function).
-fn call_to_promise(method: &str, args: &[JsValue]) -> Result<Promise, FirebaseError> {
+fn call_to_promise(method: &'static str, args: &[JsValue]) -> Result<Promise, FirebaseError> {
     let fb = firebase_obj().ok_or(FirebaseError::NotAvailable)?;
     let func = Reflect::get(&fb, &method.into())?;
-    let func: js_sys::Function = func
-        .dyn_into()
-        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} is not a function")))?;
+    let func: js_sys::Function = func.dyn_into().map_err(|_| FirebaseError::BridgeContract {
+        method: Cow::Borrowed(method),
+        reason: BridgeReason::NotAFunction,
+    })?;
     let js_args: Array = args.iter().collect();
     let result = Reflect::apply(&func, &fb, &js_args)?;
     result
         .dyn_into()
-        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} did not return a Promise")))
-        .map_err(FirebaseError::Js)
+        .map_err(|_| FirebaseError::BridgeContract {
+            method: Cow::Borrowed(method),
+            reason: BridgeReason::NotAPromise,
+        })
 }
 
 /// Call a `window.__firebase` method synchronously (non-Promise return value).
-fn call(method: &str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
+fn call(method: &'static str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
     let fb = firebase_obj().ok_or(FirebaseError::NotAvailable)?;
     let func = Reflect::get(&fb, &method.into())?;
-    let func: js_sys::Function = func
-        .dyn_into()
-        .map_err(|_| JsValue::from_str(&format!("__firebase.{method} is not a function")))?;
+    let func: js_sys::Function = func.dyn_into().map_err(|_| FirebaseError::BridgeContract {
+        method: Cow::Borrowed(method),
+        reason: BridgeReason::NotAFunction,
+    })?;
     let js_args: Array = args.iter().collect();
     Ok(Reflect::apply(&func, &fb, &js_args)?)
 }
 
 /// Call a `window.__firebase` method and await its Promise (no retry, no
 /// timeout). Used for auth operations that are interactive/non-retriable.
-async fn call_async(method: &str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
+async fn call_async(method: &'static str, args: &[JsValue]) -> Result<JsValue, FirebaseError> {
     let promise = call_to_promise(method, args)?;
     Ok(JsFuture::from(promise).await?)
 }
@@ -185,8 +267,7 @@ fn to_js<T: Serialize>(data: &T) -> Result<JsValue, FirebaseError> {
     // Round-trip through JSON because serde_wasm_bindgen rejects Maps with
     // non-string keys (Skill, DamageType, SpellSlotPool serialize as u8).
     // JSON.parse stringifies all keys, which Firestore accepts.
-    let json = serde_json::to_string(data)
-        .map_err(|e| FirebaseError::Js(JsValue::from_str(&e.to_string())))?;
+    let json = serde_json::to_string(data)?;
     js_sys::JSON::parse(&json).map_err(FirebaseError::Js)
 }
 
@@ -197,21 +278,23 @@ fn from_js<T: DeserializeOwned>(value: JsValue) -> Result<T, FirebaseError> {
     let json = js_sys::JSON::stringify(&value)
         .map_err(FirebaseError::Js)?
         .as_string()
-        .ok_or_else(|| {
-            FirebaseError::Js(JsValue::from_str("JSON.stringify returned non-string"))
+        .ok_or_else(|| FirebaseError::BridgeContract {
+            method: Cow::Borrowed("JSON.stringify"),
+            reason: BridgeReason::NonStringResult,
         })?;
-    serde_json::from_str(&json).map_err(|e| FirebaseError::Js(JsValue::from_str(&e.to_string())))
+    serde_json::from_str(&json).map_err(FirebaseError::Json)
 }
 
 fn from_js_array<T: DeserializeOwned>(
     value: JsValue,
-    label: &str,
+    label: &'static str,
 ) -> Result<Vec<T>, FirebaseError> {
-    let array: Array = value.dyn_into().map_err(|_| {
-        FirebaseError::Js(JsValue::from_str(&format!(
-            "{label} did not return an array"
-        )))
-    })?;
+    let array: Array = value
+        .dyn_into()
+        .map_err(|_| FirebaseError::BridgeContract {
+            method: Cow::Borrowed(label),
+            reason: BridgeReason::NotAnArray,
+        })?;
     let mut items = Vec::with_capacity(array.length() as usize);
     for i in 0..array.length() {
         match from_js::<T>(array.get(i)) {
@@ -230,27 +313,36 @@ pub async fn sign_in_anonymously() -> Result<JsValue, FirebaseError> {
 /// returning a Promise to await for the result.
 pub fn link_with_google_start() -> Result<Promise, FirebaseError> {
     let result = call("linkWithGoogle", &[])?;
-    result.dyn_into::<Promise>().map_err(|_| {
-        FirebaseError::Js(JsValue::from_str("linkWithGoogle did not return a Promise"))
-    })
+    result
+        .dyn_into::<Promise>()
+        .map_err(|_| FirebaseError::BridgeContract {
+            method: Cow::Borrowed("linkWithGoogle"),
+            reason: BridgeReason::NotAPromise,
+        })
 }
 
 pub async fn link_with_google_finish(promise: Promise) -> Result<JsValue, FirebaseError> {
     Ok(JsFuture::from(promise).await?)
 }
 
-pub fn current_uid() -> Option<String> {
-    call("currentUid", &[]).ok()?.as_string()
+pub fn current_uid() -> Option<FirebaseUid> {
+    call("currentUid", &[])
+        .ok()?
+        .as_string()
+        .map(FirebaseUid::from)
 }
 
 /// Wait for Firebase auth state to settle (including pending redirects).
 /// Returns `(uid, is_anonymous)` or `None` if no user.
-pub async fn wait_for_auth() -> Option<(String, bool)> {
+pub async fn wait_for_auth() -> Option<(FirebaseUid, bool)> {
     let result = call_async("waitForAuth", &[]).await.ok()?;
     if result.is_null() || result.is_undefined() {
         return None;
     }
-    let uid = Reflect::get(&result, &"uid".into()).ok()?.as_string()?;
+    let uid = Reflect::get(&result, &"uid".into())
+        .ok()?
+        .as_string()
+        .map(FirebaseUid::from)?;
     let is_anon = Reflect::get(&result, &"isAnonymous".into())
         .ok()?
         .as_bool()
@@ -264,6 +356,13 @@ pub async fn set_doc(data: &impl Serialize, path: &[&str]) -> Result<(), Firebas
     let mut args = vec![to_js(data)?];
     args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
     call_async_with_retry("setDoc", &args).await?;
+    Ok(())
+}
+
+pub async fn merge_doc(data: &impl Serialize, path: &[&str]) -> Result<(), FirebaseError> {
+    let mut args = vec![to_js(data)?];
+    args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
+    call_async_with_retry("mergeDoc", &args).await?;
     Ok(())
 }
 
@@ -283,20 +382,7 @@ pub async fn get_all_docs<T: DeserializeOwned>(
     path: &[&str],
     conditions: &[Where],
 ) -> Result<Vec<T>, FirebaseError> {
-    let js_conditions = if conditions.is_empty() {
-        JsValue::NULL
-    } else {
-        let arr = Array::new();
-        for clause in conditions {
-            let triple = Array::of3(
-                &JsValue::from_str(clause.0),
-                &JsValue::from_str(clause.1),
-                &clause.2,
-            );
-            arr.push(&triple);
-        }
-        arr.into()
-    };
+    let js_conditions = Where::as_js(conditions);
     let mut args: Vec<JsValue> = vec![js_conditions];
     args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
     let result = call_async_with_retry("getDocs", &args).await?;
@@ -336,6 +422,22 @@ impl Where {
     pub fn gt(field: &'static str, value: impl Into<JsValue>) -> Self {
         Self(field, ">", value.into())
     }
+
+    pub fn as_js(conditions: &[Where]) -> JsValue {
+        if conditions.is_empty() {
+            return JsValue::NULL;
+        }
+        let arr = Array::new();
+        for clause in conditions {
+            let triple = Array::of3(
+                &JsValue::from_str(clause.0),
+                &JsValue::from_str(clause.1),
+                &clause.2,
+            );
+            arr.push(&triple);
+        }
+        arr.into()
+    }
 }
 
 /// An active Firestore subscription. Dropping it unsubscribes.
@@ -363,26 +465,15 @@ pub fn subscribe_collection(
     conditions: &[Where],
     on_change: impl Fn(Vec<DocChange>) + 'static,
 ) -> Result<Subscription, FirebaseError> {
-    let callback = Closure::wrap(Box::new(move |changes: JsValue| {
-        if let Ok(parsed) = from_js::<Vec<DocChange>>(changes) {
-            on_change(parsed);
-        }
-    }) as Box<dyn Fn(JsValue)>);
+    let callback =
+        Closure::wrap(Box::new(
+            move |changes: JsValue| match from_js::<Vec<DocChange>>(changes) {
+                Ok(parsed) => on_change(parsed),
+                Err(error) => log::warn!("Failed to parse Firestore snapshot batch: {error}"),
+            },
+        ) as Box<dyn Fn(JsValue)>);
 
-    let js_conditions = if conditions.is_empty() {
-        JsValue::NULL
-    } else {
-        let arr = Array::new();
-        for clause in conditions {
-            let triple = Array::of3(
-                &JsValue::from_str(clause.0),
-                &JsValue::from_str(clause.1),
-                &clause.2,
-            );
-            arr.push(&triple);
-        }
-        arr.into()
-    };
+    let js_conditions = Where::as_js(conditions);
 
     let mut args: Vec<JsValue> = vec![callback.as_ref().clone(), js_conditions];
     args.extend(path.iter().map(|segment| JsValue::from_str(segment)));

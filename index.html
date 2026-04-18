@@ -172,6 +172,7 @@
     onAuthStateChanged: (cb) =>
       onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
     setDoc: (data, ...path) => fsSetDoc(fsDoc(db, ...path), data),
+    mergeDoc: (data, ...path) => fsSetDoc(fsDoc(db, ...path), data, { merge: true }),
     getDoc: async (...path) => {
       const snap = await fsGetDoc(fsDoc(db, ...path));
       return snap.exists() ? snap.data() : null;

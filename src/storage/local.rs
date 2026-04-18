@@ -9,7 +9,7 @@ use crate::{
     ai::{AiSettings, Story},
     model::{ActiveEffects, Avatar, Character, CharacterSummary, ClassLevel, format_classes},
     storage::{
-        migrate::deserialize_character_value,
+        migrate::{self, deserialize_character_value},
         sync::{schedule_avatar_delete, schedule_avatar_push},
     },
 };
@@ -174,11 +174,11 @@ pub fn load_last_sync() -> u64 {
     if let Ok(legacy) = LocalStorage::get::<serde_json::Value>(LEGACY_INDEX_KEY) {
         let seed = legacy
             .get("characters")
-            .and_then(|v| v.as_array())
+            .and_then(|value| value.as_array())
             .map(|entries| {
                 entries
                     .iter()
-                    .filter_map(|entry| entry.get("updated_at").and_then(|v| v.as_u64()))
+                    .filter_map(|entry| entry.get("updated_at").and_then(|value| value.as_u64()))
                     .max()
                     .unwrap_or(0)
             })
@@ -215,6 +215,34 @@ pub fn load_character(id: &Uuid) -> Option<Character> {
     let raw = LocalStorage::raw().get_item(&key).ok()??;
     let value: serde_json::Value = serde_json::from_str(&raw).ok()?;
     deserialize_character_value(value)
+}
+
+/// Load the character blob for `id` from localStorage as a migrated
+/// `serde_json::Value`. Skips the typed `Character` deserialize round-trip
+/// used by `load_character` — the sync layer only needs the `Value` shape.
+pub fn load_character_value(id: &Uuid) -> Option<serde_json::Value> {
+    let key = character_key(id);
+    let raw = LocalStorage::raw().get_item(&key).ok()??;
+    let value: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    Some(migrate::migrate_value(value))
+}
+
+/// Save a character as JSON to localStorage from a `serde_json::Value`.
+/// Returns true on success. Logs and returns false on serialize or storage
+/// error. Mirrors `load_character_value` for the write direction.
+pub fn save_character_value(id: &Uuid, value: &serde_json::Value) -> bool {
+    let serialized = match serde_json::to_string(value) {
+        Ok(serialized) => serialized,
+        Err(error) => {
+            log::warn!("Failed to serialize character {id}: {error}");
+            return false;
+        }
+    };
+    if let Err(error) = LocalStorage::raw().set_item(&character_key(id), &serialized) {
+        log::warn!("Failed to save character {id}: {error:?}");
+        return false;
+    }
+    true
 }
 
 /// Pure save: write character to localStorage.
@@ -398,14 +426,14 @@ mod avatar_tests {
 
         let summary = load_all_summaries()
             .into_iter()
-            .find(|s| s.id == character.id)
+            .find(|summary| summary.id == character.id)
             .expect("summary must exist");
         assert_eq!(summary.avatar_updated_at, Some(42));
 
         remove_avatar(&character.id);
         let summary = load_all_summaries()
             .into_iter()
-            .find(|s| s.id == character.id)
+            .find(|summary| summary.id == character.id)
             .expect("summary must exist");
         assert_eq!(summary.avatar_updated_at, None);
 

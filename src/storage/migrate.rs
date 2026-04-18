@@ -2,6 +2,11 @@ use std::collections::HashMap;
 
 use crate::model::{Character, DamageType};
 
+/// Latest schema version. Bumped when a new migration step is added.
+/// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
+/// the migration loop entirely.
+pub const CURRENT_SCHEMA_VERSION: u32 = 1;
+
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut serde_json::Value) {
     fn damage_type_from_name(s: &str) -> Option<DamageType> {
@@ -347,9 +352,17 @@ fn migrate_v9(value: &mut serde_json::Value) {
     }
 }
 
-/// Deserialize a `serde_json::Value` into a `Character`, applying all
-/// migrations. Used for cloud-fetched data.
-pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Character> {
+/// Apply all schema migrations to a raw `serde_json::Value`, returning the
+/// migrated `Value`. Preserves unknown fields that are not part of the current
+/// `Character` model — forward-compat safe.
+pub fn migrate_value(mut value: serde_json::Value) -> serde_json::Value {
+    let version = value
+        .get("schema_version")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0) as u32;
+    if version >= CURRENT_SCHEMA_VERSION {
+        return value;
+    }
     migrate_v1(&mut value);
     migrate_v2(&mut value);
     migrate_v3(&mut value);
@@ -362,7 +375,20 @@ pub fn deserialize_character_value(mut value: serde_json::Value) -> Option<Chara
     migrate_v10(&mut value);
     migrate_v11(&mut value);
     migrate_v12(&mut value);
-    serde_json::from_value(value).ok()
+    if let serde_json::Value::Object(map) = &mut value {
+        map.insert(
+            "schema_version".into(),
+            serde_json::Value::from(CURRENT_SCHEMA_VERSION),
+        );
+    }
+    value
+}
+
+/// Deserialize a `serde_json::Value` into a `Character`, applying all
+/// migrations. Used for cloud-fetched data.
+pub fn deserialize_character_value(value: serde_json::Value) -> Option<Character> {
+    let migrated = migrate_value(value);
+    serde_json::from_value(migrated).ok()
 }
 
 /// Merge `features: [...]` and `feature_data: {...}` into a single
@@ -410,5 +436,58 @@ fn migrate_v11(value: &mut serde_json::Value) {
     });
     if let Some(personality) = personality {
         personality.entry("alignment").or_insert(alignment);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn migrate_value_preserves_unknown_top_level_fields() {
+        let input = serde_json::json!({
+            "id": "00000000-0000-0000-0000-000000000000",
+            "updated_at": 100,
+            "abilities": {"str": {"base": 10}},
+            "future_unknown_field": {"x": 1, "y": "hi"}
+        });
+        let migrated = migrate_value(input);
+        assert!(
+            migrated.get("future_unknown_field").is_some(),
+            "unknown field was dropped"
+        );
+        assert_eq!(
+            migrated["schema_version"].as_u64(),
+            Some(u64::from(CURRENT_SCHEMA_VERSION))
+        );
+    }
+
+    #[test]
+    fn migrate_value_adds_schema_version_to_legacy_blob() {
+        let input = serde_json::json!({
+            "id": "00000000-0000-0000-0000-000000000000",
+            "updated_at": 100,
+        });
+        let migrated = migrate_value(input);
+        assert_eq!(
+            migrated["schema_version"].as_u64(),
+            Some(u64::from(CURRENT_SCHEMA_VERSION))
+        );
+    }
+
+    #[test]
+    fn migrate_value_skips_when_already_current() {
+        let input = serde_json::json!({
+            "id": "00000000-0000-0000-0000-000000000000",
+            "updated_at": 100,
+            "schema_version": CURRENT_SCHEMA_VERSION,
+            "marker": "unchanged",
+        });
+        let migrated = migrate_value(input);
+        assert_eq!(migrated["marker"].as_str(), Some("unchanged"));
+        assert_eq!(
+            migrated["schema_version"].as_u64(),
+            Some(u64::from(CURRENT_SCHEMA_VERSION))
+        );
     }
 }

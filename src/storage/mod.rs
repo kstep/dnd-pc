@@ -1,3 +1,5 @@
+mod baseline;
+mod diff;
 pub mod image;
 mod local;
 mod migrate;

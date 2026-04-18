@@ -1,8 +1,6 @@
 use leptos::{either::Either, prelude::*};
 
-use crate::components::{
-    entry_name::EntryName, markdown::Markdown, toggle_button::ToggleButton,
-};
+use crate::components::{entry_name::EntryName, markdown::Markdown, toggle_button::ToggleButton};
 
 pub struct SessionListItem {
     pub name: String,

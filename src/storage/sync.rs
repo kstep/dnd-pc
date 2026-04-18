@@ -1,18 +1,19 @@
 use std::{cell::RefCell, collections::HashSet};
 
 use futures::future::join_all;
-use gloo_storage::{LocalStorage, Storage};
 use leptos::prelude::*;
+use leptos_fluent::tr;
 use reactive_stores::Store;
 use uuid::Uuid;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::{
+    BASE_URL,
     ai::Story,
-    firebase::{self, ChangeType, FirebaseError, Where},
+    components::toast::Toast,
+    firebase::{self, ChangeType, FirebaseError, FirebaseUid, Where},
     model::{Avatar, Character},
-    storage::{local, migrate, queue, queue::CloudOp},
+    storage::{baseline, diff, local, migrate, queue},
 };
 
 /// 2 s debounce — balances responsiveness vs. Firestore write-per-second cost.
@@ -29,7 +30,7 @@ pub enum SyncStatus {
 #[derive(Clone, Copy)]
 pub(super) struct SyncState {
     status: RwSignal<SyncStatus>,
-    uid: RwSignal<Option<String>>,
+    uid: RwSignal<Option<FirebaseUid>>,
     anon: RwSignal<bool>,
     last_error: RwSignal<Option<String>>,
     /// Bumped after cloud pull modifies the character index, so the UI can
@@ -138,7 +139,7 @@ pub fn setup_auto_save(store: Store<Character>) {
     Effect::new(move || {
         store.track();
         if cloud_updating.get_untracked() {
-            cloud_updating.update_untracked(|v| *v = false);
+            cloud_updating.update_untracked(|updating| *updating = false);
             return;
         }
         if sync_done.get() {
@@ -154,15 +155,11 @@ pub fn setup_auto_save(store: Store<Character>) {
 
     let index_version = sync_index_version();
     Effect::new(move |previous: Option<u32>| {
-        let (id, local_at) = {
-            let character = store.read_untracked();
-            (character.id, character.updated_at)
-        };
+        let id = store.read_untracked().id;
         if previous.is_some()
             && let Some(character) = local::load_character(&id)
-            && character.updated_at > local_at
         {
-            cloud_updating.update_untracked(|v| *v = true);
+            cloud_updating.update_untracked(|updating| *updating = true);
             store.set(character);
         }
         index_version.get()
@@ -189,7 +186,7 @@ pub fn setup_avatar_auto_save(char_id: Uuid, avatar: RwSignal<Option<Avatar>>) {
         let current = avatar.get();
         if previous.is_some() {
             if cloud_updating.get_untracked() {
-                cloud_updating.update_untracked(|v| *v = false);
+                cloud_updating.update_untracked(|updating| *updating = false);
             } else {
                 match &current {
                     Some(av) if !av.is_empty() => local::save_avatar(&char_id, av),
@@ -207,11 +204,11 @@ pub fn setup_avatar_auto_save(char_id: Uuid, avatar: RwSignal<Option<Avatar>>) {
         let version = index_version.get();
         if previous.is_some() {
             let loaded = local::load_avatar(&char_id);
-            let loaded_ts = loaded.as_ref().map(|a| a.updated_at).unwrap_or(0);
+            let loaded_ts = loaded.as_ref().map(|avatar| avatar.updated_at).unwrap_or(0);
             let current_ts = avatar
                 .get_untracked()
                 .as_ref()
-                .map(|a| a.updated_at)
+                .map(|avatar| avatar.updated_at)
                 .unwrap_or(0);
             if loaded_ts > current_ts {
                 cloud_updating.set(true);
@@ -232,43 +229,36 @@ pub fn save_and_sync_character(character: &mut Character) {
 
 pub fn delete_character(id: &Uuid) {
     local::delete_character_local_only(id);
+    baseline::remove(id);
 
     if let Some(uid) = firebase::current_uid() {
-        queue::push(CloudOp::DeleteCharacter { uid, char_id: *id });
+        queue::push(queue::CloudOp::DeleteCharacter { uid, char_id: *id });
+    }
+}
+
+/// Run `f` with the current Firebase UID if available and Firebase is
+/// reachable. No-op otherwise. Consolidates the guard boilerplate that
+/// all `schedule_*` helpers would otherwise repeat.
+fn with_uid(f: impl FnOnce(FirebaseUid)) {
+    if !firebase::is_available() {
+        return;
+    }
+    if let Some(uid) = get_or_init_sync().uid.get_untracked() {
+        f(uid);
     }
 }
 
 fn schedule_cloud_push(character: &Character) {
-    if !firebase::is_available() {
-        return;
-    }
-    let Some(uid) = get_or_init_sync().uid.get_untracked() else {
-        return;
-    };
-    queue::push(CloudOp::PushCharacter {
-        uid,
-        char_id: character.id,
-    });
+    let char_id = character.id;
+    with_uid(|uid| queue::push(queue::CloudOp::PushCharacter { uid, char_id }));
 }
 
 pub fn schedule_avatar_push(char_id: Uuid) {
-    if !firebase::is_available() {
-        return;
-    }
-    let Some(uid) = get_or_init_sync().uid.get_untracked() else {
-        return;
-    };
-    queue::push(queue::CloudOp::PushAvatar { uid, char_id });
+    with_uid(|uid| queue::push(queue::CloudOp::PushAvatar { uid, char_id }));
 }
 
 pub fn schedule_avatar_delete(char_id: Uuid) {
-    if !firebase::is_available() {
-        return;
-    }
-    let Some(uid) = get_or_init_sync().uid.get_untracked() else {
-        return;
-    };
-    queue::push(queue::CloudOp::DeleteAvatar { uid, char_id });
+    with_uid(|uid| queue::push(queue::CloudOp::DeleteAvatar { uid, char_id }));
 }
 
 pub async fn get_avatar_doc(uid: &str, char_id: Uuid) -> Option<Avatar> {
@@ -333,9 +323,6 @@ pub fn sign_in_with_google() {
         return;
     }
     if crate::export::is_telegram_mini_app() {
-        use leptos_fluent::tr;
-
-        use crate::{BASE_URL, components::toast::Toast};
         let origin = window().location().origin().unwrap_or_default();
         let url = format!("{origin}{BASE_URL}/");
         crate::export::copy_to_clipboard(&url);
@@ -346,7 +333,7 @@ pub fn sign_in_with_google() {
     state.set_ok(SyncStatus::Connecting);
 
     let promise = match firebase::link_with_google_start() {
-        Ok(p) => p,
+        Ok(promise) => promise,
         Err(error) => {
             log::warn!("Google sign-in failed: {error:?}");
             state.set_error(format!("Google sign-in failed: {error}"));
@@ -385,8 +372,7 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
             log::info!("finish_sign_in: uid={uid}, op={sync_op:?}");
             state.uid.set(Some(uid.clone()));
             state.set_ok(SyncStatus::Syncing);
-            let push_local_only = matches!(sync_op, SyncOp::FullSync);
-            let last_err = match sync_all_with_cloud(push_local_only).await {
+            let last_err = match sync_all_with_cloud(sync_op).await {
                 Ok(()) => None,
                 Err(error) => {
                     log::warn!("Cloud sync failed: {error:?}");
@@ -411,122 +397,146 @@ async fn finish_sign_in(state: SyncState, is_anon: bool, sync_op: SyncOp) {
     }
 }
 
-fn subscribe_to_changes(uid: &str) {
-    let last_sync = local::load_last_sync();
-
+fn subscribe_sync_collection<PerChange>(
+    uid: &FirebaseUid,
+    collection: &'static str,
+    load_cursor: fn() -> u64,
+    save_cursor: fn(u64),
+    store_subscription: fn(firebase::Subscription),
+    per_change: PerChange,
+) where
+    PerChange: FnMut(firebase::DocChange, &mut u64) -> bool + 'static,
+{
+    let last_sync = load_cursor();
+    let path = ["users", uid.as_str(), collection];
+    let per_change = RefCell::new(per_change);
     match firebase::subscribe_collection(
-        &["users", uid, "characters"],
+        &path,
         &[Where::gt("updated_at", last_sync as f64)],
         move |changes| {
-            let mut max_updated = local::load_last_sync();
+            let mut max_updated = load_cursor();
             let mut dirty = false;
-
             for change in changes {
-                match change.change_type {
-                    ChangeType::Added | ChangeType::Modified => {
-                        let Some(character) = migrate::deserialize_character_value(change.data)
-                        else {
-                            log::warn!("Failed to deserialize snapshot character");
-                            continue;
-                        };
-                        let local_at = local::load_character(&character.id)
-                            .map(|c| c.updated_at)
-                            .unwrap_or(0);
-                        if character.updated_at > local_at {
-                            if let Err(error) =
-                                LocalStorage::set(local::character_key(&character.id), &character)
-                            {
-                                log::warn!("Failed to save pulled character: {error}");
-                                continue;
-                            }
-                            max_updated = max_updated.max(character.updated_at);
-                            dirty = true;
-                        }
-                    }
-                    ChangeType::Removed => {
-                        if let Ok(id) = change.id.parse::<Uuid>() {
-                            local::delete_character_local_only(&id);
-                            dirty = true;
-                        }
-                    }
+                if per_change.borrow_mut()(change, &mut max_updated) {
+                    dirty = true;
                 }
             }
-
             if dirty {
-                local::save_last_sync(max_updated);
+                save_cursor(max_updated);
                 get_or_init_sync()
                     .index_version
                     .update(|version| *version += 1);
             }
         },
     ) {
-        Ok(subscription) => set_snapshot_subscription(subscription),
-        Err(error) => log::warn!("Failed to subscribe to character changes: {error}"),
+        Ok(subscription) => store_subscription(subscription),
+        Err(error) => log::warn!("Failed to subscribe to {collection}: {error}"),
     }
 }
 
-fn subscribe_to_avatar_changes(uid: &str) {
-    let last_sync_avatars = local::load_last_sync_avatars();
+fn subscribe_to_changes(uid: &FirebaseUid) {
+    subscribe_sync_collection(
+        uid,
+        "characters",
+        local::load_last_sync,
+        local::save_last_sync,
+        set_snapshot_subscription,
+        |change, max_updated| match change.change_type {
+            ChangeType::Added | ChangeType::Modified => {
+                // Migrate remote to current schema, preserving unknown fields.
+                let remote_value = migrate::migrate_value(change.data);
+                let Some(id) = remote_value
+                    .get("id")
+                    .and_then(|value| value.as_str())
+                    .and_then(|string| string.parse::<Uuid>().ok())
+                else {
+                    log::warn!("Snapshot character missing/invalid id");
+                    return false;
+                };
+                let remote_ts = remote_value
+                    .get("updated_at")
+                    .and_then(|value| value.as_u64())
+                    .unwrap_or(0);
 
-    match firebase::subscribe_collection(
-        &["users", uid, "avatars"],
-        &[Where::gt("updated_at", last_sync_avatars as f64)],
-        move |changes| {
-            let mut max_seen = local::load_last_sync_avatars();
-            let mut dirty = false;
+                // Load local as Value (via migration-aware load_character_value).
+                let local_value = local::load_character_value(&id)
+                    .unwrap_or_else(|| serde_json::Value::Object(Default::default()));
 
-            for change in changes {
-                match change.change_type {
-                    ChangeType::Added | ChangeType::Modified => {
-                        let avatar: Avatar = match serde_json::from_value(change.data) {
-                            Ok(avatar) => avatar,
-                            Err(error) => {
-                                log::warn!("Failed to deserialize snapshot avatar: {error}");
-                                continue;
-                            }
-                        };
-                        let Ok(id) = change.id.parse::<Uuid>() else {
-                            log::warn!("avatar doc with unparseable id: {}", change.id);
-                            continue;
-                        };
-                        let local_at = local::load_avatar_timestamp(&id).unwrap_or(0);
-                        if avatar.updated_at > local_at {
-                            local::save_avatar_quiet(&id, &avatar);
-                            max_seen = max_seen.max(avatar.updated_at);
-                            dirty = true;
-                        }
-                    }
-                    ChangeType::Removed => {
-                        if let Ok(char_id) = change.id.parse::<Uuid>() {
-                            local::remove_avatar_quiet(&char_id);
-                            dirty = true;
-                        }
-                    }
+                // Fallback to local ⇒ every field appears clean (local == baseline) ⇒
+                // merge_3way blind-adopts remote on first snapshot after fresh sign-in.
+                // Distinct from the push path's empty-object fallback in queue.rs; each
+                // direction uses the fallback appropriate for its operation.
+                let merged = baseline::with(&id, |baseline| {
+                    diff::merge_3way(
+                        &local_value,
+                        baseline.unwrap_or(&local_value),
+                        &remote_value,
+                    )
+                });
+
+                if !local::save_character_value(&id, &merged) {
+                    return false;
                 }
+                baseline::insert(id, remote_value);
+                *max_updated = (*max_updated).max(remote_ts);
+                true
             }
-
-            if dirty {
-                local::save_last_sync_avatars(max_seen);
-                get_or_init_sync()
-                    .index_version
-                    .update(|version| *version += 1);
+            ChangeType::Removed => {
+                if let Ok(id) = change.id.parse::<Uuid>() {
+                    local::delete_character_local_only(&id);
+                    baseline::remove(&id);
+                    return true;
+                }
+                false
             }
         },
-    ) {
-        Ok(subscription) => set_avatar_subscription(subscription),
-        Err(error) => log::warn!("Failed to subscribe to avatar changes: {error}"),
-    }
+    );
 }
 
-async fn push_to_cloud(uid: &str, character: &Character) -> Result<(), FirebaseError> {
-    firebase::set_doc(
-        character,
-        &["users", uid, "characters", &character.id.to_string()],
-    )
-    .await
+fn subscribe_to_avatar_changes(uid: &FirebaseUid) {
+    subscribe_sync_collection(
+        uid,
+        "avatars",
+        local::load_last_sync_avatars,
+        local::save_last_sync_avatars,
+        set_avatar_subscription,
+        |change, max_seen| match change.change_type {
+            ChangeType::Added | ChangeType::Modified => {
+                let avatar: Avatar = match serde_json::from_value(change.data) {
+                    Ok(avatar) => avatar,
+                    Err(error) => {
+                        log::warn!("Failed to deserialize snapshot avatar: {error}");
+                        return false;
+                    }
+                };
+                let Ok(id) = change.id.parse::<Uuid>() else {
+                    log::warn!("avatar doc with unparseable id: {}", change.id);
+                    return false;
+                };
+                let local_at = local::load_avatar_timestamp(&id).unwrap_or(0);
+                if avatar.updated_at > local_at {
+                    local::save_avatar_quiet(&id, &avatar);
+                    *max_seen = (*max_seen).max(avatar.updated_at);
+                    return true;
+                }
+                false
+            }
+            ChangeType::Removed => {
+                if let Ok(char_id) = change.id.parse::<Uuid>() {
+                    local::remove_avatar_quiet(&char_id);
+                    return true;
+                }
+                false
+            }
+        },
+    );
 }
 
-async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError> {
+// TODO: this function is ~200 lines and runs multiple distinct phases
+// (character fetch/compare loop, push local-only, stories sync, avatar
+// pull, avatar push scheduling). Split into per-phase functions when the
+// next phase is added or when we invest in unit-testing the sync layer.
+async fn sync_all_with_cloud(sync_op: SyncOp) -> Result<(), FirebaseError> {
     let Some(uid) = firebase::current_uid() else {
         log::info!("sync_all_with_cloud: no UID, skipping");
         return Ok(());
@@ -539,7 +549,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     let all_summaries = local::load_all_summaries();
 
     let remote_chars = firebase::get_all_docs::<serde_json::Value>(
-        &["users", &uid, "characters"],
+        &["users", uid.as_str(), "characters"],
         &[Where::gt("updated_at", last_sync as f64)],
     )
     .await?;
@@ -551,52 +561,95 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     let mut max_updated = last_sync;
     let mut dirty = false;
     let mut push_failures: u32 = 0;
+    let mut last_push_error: Option<FirebaseError> = None;
     let mut seen_remote: HashSet<Uuid> = HashSet::with_capacity(remote_chars.len());
 
-    for remote_value in remote_chars {
-        let remote: Character = match migrate::deserialize_character_value(remote_value) {
-            Some(character) => character,
-            None => {
-                log::warn!("Failed to deserialize remote character (migration failed)");
-                continue;
-            }
+    for raw_value in remote_chars {
+        let migrated = migrate::migrate_value(raw_value);
+        let Some(id) = migrated
+            .get("id")
+            .and_then(|value| value.as_str())
+            .and_then(|string| string.parse::<Uuid>().ok())
+        else {
+            log::warn!("Remote character missing/invalid id");
+            continue;
         };
-        seen_remote.insert(remote.id);
+        let remote_ts = migrated
+            .get("updated_at")
+            .and_then(|value| value.as_u64())
+            .unwrap_or(0);
+        seen_remote.insert(id);
 
-        let local_updated_at = local::load_character(&remote.id)
-            .map(|c| c.updated_at)
+        let local_value = local::load_character_value(&id);
+        let local_updated_at = local_value
+            .as_ref()
+            .and_then(|value| value.get("updated_at"))
+            .and_then(|value| value.as_u64())
             .unwrap_or(0);
 
-        if local_updated_at >= remote.updated_at {
-            if local_updated_at > remote.updated_at
-                && let Some(local_character) = local::load_character(&remote.id)
-                && let Err(error) = push_to_cloud(&uid, &local_character).await
-            {
-                log::warn!("Failed to push local-newer character: {error:?}");
-                push_failures += 1;
+        if local_updated_at > remote_ts {
+            // Local has unpushed edits; push them as a diff against remote.
+            let Some(local_value) = local_value else {
+                continue;
+            };
+            let char_path = ["users", uid.as_str(), "characters", &id.to_string()];
+            if let Some(diff) = diff::sparse_diff(&local_value, &migrated) {
+                match firebase::merge_doc(&diff, &char_path).await {
+                    Ok(()) => baseline::insert(id, local_value),
+                    Err(error) => {
+                        log::warn!("Failed to push local-newer character: {error:?}");
+                        push_failures += 1;
+                        last_push_error = Some(error);
+                    }
+                }
+            } else {
+                // No actual diff despite different timestamps. Seed baseline from the
+                // server-canonical form so future diffs stay consistent with the shape
+                // of incoming snapshots.
+                baseline::insert(id, migrated);
             }
-        } else {
-            if let Err(error) = LocalStorage::set(local::character_key(&remote.id), &remote) {
-                log::warn!("Failed to save pulled character {}: {error}", remote.id);
+        } else if local_updated_at < remote_ts {
+            // Remote is newer; blind save and seed baseline from remote.
+            if !local::save_character_value(&id, &migrated) {
                 continue;
             }
-            max_updated = max_updated.max(remote.updated_at);
+            baseline::insert(id, migrated);
+            max_updated = max_updated.max(remote_ts);
             dirty = true;
+        } else {
+            // Timestamps equal → synchronized. Seed baseline. We deliberately
+            // do NOT advance max_updated here: the invariant "cursor only
+            // advances when we pulled something" is simpler, and the redundant
+            // re-fetch on next sign-in (when last_sync stays below remote_ts)
+            // is bounded by the per-character count.
+            baseline::insert(id, migrated);
         }
     }
 
-    if push_local_only {
+    if matches!(sync_op, SyncOp::FullSync) {
         for summary in &all_summaries {
             if !seen_remote.contains(&summary.id)
                 && let Some(character) = local::load_character(&summary.id)
             {
                 log::info!("sync_all_with_cloud: pushing local-only {}", summary.id);
-                if let Err(error) = push_to_cloud(&uid, &character).await {
-                    log::warn!("Failed to push local-only character: {error:?}");
-                    push_failures += 1;
+                let char_value = match serde_json::to_value(&character) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        log::warn!("Failed to serialize local-only character: {error}");
+                        continue;
+                    }
+                };
+                let path = ["users", uid.as_str(), "characters", &summary.id.to_string()];
+                match firebase::set_doc(&char_value, &path).await {
+                    Ok(()) => baseline::insert(summary.id, char_value),
+                    Err(error) => {
+                        log::warn!("Failed to push local-only character: {error:?}");
+                        push_failures += 1;
+                        last_push_error = Some(error);
+                    }
                 }
                 // Also push stories for local-only characters
-                queue::push(CloudOp::PushStories {
+                queue::push(queue::CloudOp::PushStories {
                     uid: uid.clone(),
                     char_id: summary.id,
                 });
@@ -609,7 +662,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
     let story_results = join_all(
         seen_remote
             .iter()
-            .map(|char_id| sync_stories_with_cloud(&uid, char_id)),
+            .map(|char_id| sync_stories_with_cloud(uid.as_str(), char_id)),
     )
     .await;
     for result in story_results {
@@ -620,7 +673,7 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
 
     // --- Avatar pull phase: single batch query instead of N sequential gets ---
     let remote_avatars: Vec<Avatar> = firebase::get_all_docs(
-        &["users", &uid, "avatars"],
+        &["users", uid.as_str(), "avatars"],
         &[Where::gt("updated_at", last_avatar_sync as f64)],
     )
     .await
@@ -664,21 +717,21 @@ async fn sync_all_with_cloud(push_local_only: bool) -> Result<(), FirebaseError>
 
     if dirty {
         local::save_last_sync(max_updated);
-        get_or_init_sync().index_version.update(|v| *v += 1);
     }
-
     if dirty_avatars {
         local::save_last_sync_avatars(max_avatar_updated);
-        if !dirty {
-            // Character phase didn't bump version yet — bump it now for avatars.
-            get_or_init_sync().index_version.update(|v| *v += 1);
-        }
+    }
+    if dirty || dirty_avatars {
+        get_or_init_sync()
+            .index_version
+            .update(|version| *version += 1);
     }
 
-    if push_failures > 0 {
-        Err(FirebaseError::Js(JsValue::from_str(&format!(
-            "Failed to push {push_failures} character(s)"
-        ))))
+    if let Some(last_error) = last_push_error {
+        Err(FirebaseError::BatchFailed {
+            count: push_failures,
+            last: Box::new(last_error),
+        })
     } else {
         Ok(())
     }

@@ -105,6 +105,7 @@ pub struct Character {
     pub updated_at: u64,
     #[serde(default)]
     pub shared: bool,
+    pub schema_version: u32,
 }
 
 pub fn now_epoch_secs() -> u64 {
@@ -489,6 +490,7 @@ impl Default for Character {
             notes: String::new(),
             updated_at: now_epoch_secs(),
             shared: false,
+            schema_version: 1,
         }
     }
 }
@@ -831,6 +833,7 @@ impl Character {
             notes: String::new(),
             updated_at: 0,
             shared: false,
+            schema_version: 0,
         };
         ch.update_spell_slots(SpellSlotPool::Arcane, None);
         ch
@@ -916,6 +919,7 @@ pub mod tests {
             notes: String::new(),
             updated_at: 0,
             shared: false,
+            schema_version: 0,
         }
     }
 
