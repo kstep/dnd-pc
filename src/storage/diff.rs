@@ -95,6 +95,7 @@ mod tests {
     use serde_json::json;
 
     use super::*;
+    use crate::model::{Skills, SpellSlots};
 
     #[test]
     fn sparse_diff_identity_returns_none() {
@@ -302,5 +303,62 @@ mod tests {
         let baseline = json!(10);
         let remote = json!(20);
         assert_eq!(merge_3way(&local, &baseline, &remote), json!(20));
+    }
+
+    // --- Null-corruption hypothesis: demonstrates how removing a pruned
+    // BTreeMap entry (e.g. a skill that drops to ProficiencyLevel::None)
+    // produces a `null`-valued field in the Firestore document, which then
+    // travels back to localStorage via the subscribe path and breaks
+    // Character deserialization on reload.
+
+    #[test]
+    fn sparse_diff_removed_nested_skill_emits_null_tombstone() {
+        // Baseline: character had proficiency in skill "10" (Nature).
+        let baseline = json!({"skills": {"5": 1, "10": 1}});
+        // User removes it: Skills::set(Nature, None) prunes the entry.
+        let current = json!({"skills": {"5": 1}});
+        // Diff emits a null at "10" — Firestore-merge tombstone semantics.
+        assert_eq!(
+            sparse_diff(&current, &baseline),
+            Some(json!({"skills": {"10": null}}))
+        );
+    }
+
+    #[test]
+    fn merge_3way_protracts_null_from_remote_when_local_clean() {
+        // Scenario: client A removed skill "10" and pushed the diff to
+        // Firestore via merge_doc. Firestore's `setDoc(..., {merge:true})`
+        // stores `null` as a literal field value (NOT delete — that would
+        // require FieldValue.delete() sentinel which sparse_diff never emits).
+        // A subsequent snapshot on client B (or after reload on A with stale
+        // baseline) contains the null.
+        let local = json!({"skills": {"5": 1, "10": 1}});
+        let baseline = json!({"skills": {"5": 1, "10": 1}});
+        let remote = json!({"skills": {"5": 1, "10": null}});
+        // local == baseline on "skills.10" → adopt remote → null adopted.
+        assert_eq!(
+            merge_3way(&local, &baseline, &remote),
+            json!({"skills": {"5": 1, "10": null}})
+        );
+    }
+
+    #[test]
+    fn merged_skills_with_null_deserializes_as_tombstone_drop() {
+        // End-to-end: after merge_3way pipes `null` into `skills`, read-time
+        // defence in `Skills::Deserialize` (via
+        // `serde_util::deserialize_map_dropping_nulls`) tolerates the
+        // tombstone — null entry is dropped, the valid one survives.
+        let merged = json!({"skills": {"5": 1, "10": null}});
+        let skills: Skills =
+            serde_json::from_value(merged["skills"].clone()).expect("skills must load");
+        assert_eq!(skills.iter().count(), 1);
+    }
+
+    #[test]
+    fn merged_spell_slots_with_null_deserializes_as_tombstone_drop() {
+        let merged = json!({"spell_slots": {"0": null}});
+        let slots: SpellSlots =
+            serde_json::from_value(merged["spell_slots"].clone()).expect("spell_slots must load");
+        assert!(slots.is_empty());
     }
 }

@@ -77,7 +77,10 @@ impl SpellSlotLevel {
 /// compatibility; accessible as a map via `Deref`/`DerefMut`.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 #[serde(transparent)]
-pub struct SpellSlots(BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>);
+pub struct SpellSlots(
+    #[serde(deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls")]
+    BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>,
+);
 
 impl Deref for SpellSlots {
     type Target = BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>;
@@ -201,5 +204,35 @@ impl Spell {
 
     pub fn set_label(&mut self, value: String) {
         self.label = Some(value);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::*;
+
+    #[test]
+    fn spell_slots_deserialize_skips_null_pool_entries() {
+        // Null pool values arrive via the Firestore merge-tombstone path.
+        // Dropping them on read keeps Character loadable.
+        let value = json!({"0": null});
+        let slots: SpellSlots = serde_json::from_value(value).expect("must deserialize");
+        assert!(
+            slots.is_empty(),
+            "null pools must be dropped, got {slots:?}"
+        );
+    }
+
+    #[test]
+    fn spell_slots_deserialize_mixed_null_and_valid_pools() {
+        let value = json!({
+            "0": [{"total": 4, "used": 0}],
+            "1": null,
+        });
+        let slots: SpellSlots = serde_json::from_value(value).expect("must deserialize");
+        assert_eq!(slots.len(), 1, "only valid pool must remain");
+        assert!(slots.contains_key(&SpellSlotPool::Arcane));
     }
 }

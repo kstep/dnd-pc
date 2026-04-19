@@ -9,7 +9,10 @@ use crate::model::{ProficiencyLevel, Skill};
 /// stays minimal.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct Skills(BTreeMap<Skill, ProficiencyLevel>);
+pub struct Skills(
+    #[serde(deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls")]
+    BTreeMap<Skill, ProficiencyLevel>,
+);
 
 impl Skills {
     pub fn get(&self, skill: Skill) -> ProficiencyLevel {
@@ -48,5 +51,35 @@ impl FromIterator<(Skill, ProficiencyLevel)> for Skills {
             skills.set(skill, level);
         }
         skills
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::*;
+
+    #[test]
+    fn deserialize_skips_null_entries_and_preserves_valid_ones() {
+        // Null values arrive via the Firestore merge-tombstone path. Dropping
+        // them on read keeps Character loadable instead of failing with
+        // "Invalid character file".
+        let value = json!({
+            "0": 1,
+            "10": null,
+            "11": 2,
+            "14": null,
+        });
+        let skills: Skills = serde_json::from_value(value).expect("must deserialize");
+        assert_eq!(skills.get(Skill::Acrobatics), ProficiencyLevel::Proficient);
+        assert_eq!(skills.get(Skill::Nature), ProficiencyLevel::None);
+        assert_eq!(skills.get(Skill::Perception), ProficiencyLevel::Expertise);
+        assert_eq!(skills.get(Skill::Religion), ProficiencyLevel::None);
+    }
+
+    #[test]
+    fn deserialize_empty_map_ok() {
+        let _: Skills = serde_json::from_value(json!({})).expect("empty must deserialize");
     }
 }

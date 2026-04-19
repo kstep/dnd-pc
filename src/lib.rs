@@ -22,6 +22,7 @@ mod model;
 mod names;
 mod pages;
 pub mod rules;
+mod serde_util;
 mod share;
 mod storage;
 pub mod vecset;

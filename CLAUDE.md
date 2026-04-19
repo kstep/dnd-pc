@@ -59,7 +59,7 @@ Provide in `character/layout.rs`, consume with `expect_context::<Store<Character
 
 ### Storage (`src/storage/`)
 
-`gloo_storage::LocalStorage`. Keys: `dnd_pc_index` (summaries), `dnd_pc_char_{uuid}`, `dnd_pc_effects_{uuid}`, `dnd_pc_panel_{class}`. `CharacterSummary` has `updated_at` for cheap sync comparison.
+`gloo_storage::LocalStorage`. Keys: `dnd_pc_char_{uuid}`, `dnd_pc_effects_{uuid}`, `dnd_pc_avatar_{uuid}`, `dnd_pc_stories_{uuid}`, `dnd_pc_panel_{class}`, `dnd_pc_last_sync`, `dnd_pc_last_sync_avatars`. Summaries are derived on demand by scanning keys with the `dnd_pc_char_` prefix — no separate index. Legacy `dnd_pc_index` is read once in `load_last_sync()` to seed `dnd_pc_last_sync`, then deleted. `CharacterSummary` carries `updated_at` for cheap sync comparison.
 
 Submodules:
 - `local.rs` — load/save characters, index, effects, panel state
