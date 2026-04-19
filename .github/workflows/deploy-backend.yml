@@ -1,0 +1,71 @@
+name: Deploy proxy backend to Cloud Run
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cloud-run-backend
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test -p dnd-pc-proxy
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: cloud-run
+    env:
+      IMAGE: gcr.io/${{ vars.GCP_PROJECT_ID }}/dnd-pc-proxy:${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_EMAIL }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Build and push image
+        run: |
+          gcloud builds submit \
+            --config backend/cloudbuild.yaml \
+            --substitutions "_IMAGE=${IMAGE}" \
+            --project "${{ vars.GCP_PROJECT_ID }}" \
+            .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy dnd-pc-proxy \
+            --image "${IMAGE}" \
+            --region "${{ vars.CLOUD_RUN_REGION }}" \
+            --project "${{ vars.GCP_PROJECT_ID }}" \
+            --set-env-vars "FIREBASE_PROJECT_ID=${{ vars.GCP_PROJECT_ID }},FIREBASE_API_KEY=${{ vars.FIREBASE_API_KEY }},ALLOWED_ORIGINS=${{ vars.ALLOWED_ORIGINS }}" \
+            --set-secrets OPENAI_API_KEY=openai-api-key:latest \
+            --allow-unauthenticated \
+            --max-instances 3 \
+            --cpu 1 \
+            --memory 256Mi \
+            --quiet

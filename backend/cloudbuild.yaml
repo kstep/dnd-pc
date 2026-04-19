@@ -1,0 +1,26 @@
+# Build the proxy image from the repo-root build context so the workspace
+# Cargo.toml and root `src/` are available when Cargo resolves crates. The
+# Dockerfile only compiles `-p dnd-pc-proxy`; the frontend crate's sources
+# are needed for the workspace manifest but aren't built.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - backend/Dockerfile
+      - -t
+      - $_IMAGE
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - $_IMAGE
+
+images:
+  - $_IMAGE
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _IMAGE: gcr.io/$PROJECT_ID/dnd-pc-proxy:$SHORT_SHA

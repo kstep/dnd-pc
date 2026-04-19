@@ -19,4 +19,5 @@ fn main() {
 
     println!("cargo:rustc-env=BUILD_COMMIT={commit}");
     println!("cargo:rustc-env=BUILD_DATE={date}");
+    println!("cargo:rerun-if-env-changed=PROXY_URL");
 }

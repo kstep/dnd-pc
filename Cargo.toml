@@ -3,6 +3,9 @@ name = "dnd-pc"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = [".", "backend"]
+
 [dependencies]
 leptos = { version = "0.8", features = ["csr"] }
 leptos_meta = { version = "0.8" }

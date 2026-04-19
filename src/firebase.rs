@@ -332,6 +332,20 @@ pub fn current_uid() -> Option<FirebaseUid> {
         .map(FirebaseUid::from)
 }
 
+/// Returns the sign-in provider for the current user: "google.com",
+/// "anonymous", etc. `None` if no user is signed in.
+pub fn current_provider() -> Option<String> {
+    call("currentProvider", &[]).ok()?.as_string()
+}
+
+/// Fetch a Firebase ID token for the current user. Returns `None` if no user
+/// is signed in. Firebase caches the token and refreshes ~5 minutes before
+/// expiry, so this is cheap to call on every request.
+pub async fn get_id_token() -> Result<Option<String>, FirebaseError> {
+    let value = call_async("getIdToken", &[JsValue::from_bool(false)]).await?;
+    Ok(value.as_string())
+}
+
 /// Wait for Firebase auth state to settle (including pending redirects).
 /// Returns `(uid, is_anonymous)` or `None` if no user.
 pub async fn wait_for_auth() -> Option<(FirebaseUid, bool)> {

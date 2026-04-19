@@ -9,20 +9,31 @@ use wasm_bindgen_futures::JsFuture;
 
 use crate::{
     expr::{self, BinOp, BlockIndex, Cmp, Interpreter, IterStack},
+    firebase,
     hooks::join_iter,
     model::{Ability, Attribute, AttributeGroup, Character, Op, Skill},
     rules::{FeatureDefinition, PendingInputs},
 };
+
+/// Hosted proxy base URL injected at build time (`PROXY_URL` env). When set,
+/// `AiProvider::Proxy` becomes the default and hosted AI is available.
+pub const PROXY_BASE: Option<&str> = option_env!("PROXY_URL");
 
 // --- Error ---
 
 #[derive(Debug, Clone)]
 pub enum AiError {
     NoWindow,
-    Http { status: u16, body: String },
+    Http {
+        status: u16,
+        body: String,
+    },
     Js(JsValue),
     Json(String),
     EmptyResponse,
+    /// Proxy mode: no Firebase user / token. Caller should prompt the user
+    /// to sign in with Google or switch to BYOK.
+    AuthRequired,
 }
 
 impl std::fmt::Display for AiError {
@@ -33,7 +44,14 @@ impl std::fmt::Display for AiError {
             Self::Js(error) => write!(f, "{error:?}"),
             Self::Json(error) => write!(f, "{error}"),
             Self::EmptyResponse => write!(f, "no choices in API response"),
+            Self::AuthRequired => write!(f, "sign-in required"),
         }
+    }
+}
+
+impl From<firebase::FirebaseError> for AiError {
+    fn from(error: firebase::FirebaseError) -> Self {
+        Self::Json(format!("{error:?}"))
     }
 }
 
@@ -55,44 +73,56 @@ impl From<serde_json::Error> for AiError {
 pub enum AiProvider {
     #[default]
     OpenAI,
-    // TODO: Anthropic (requires CORS proxy or backend)
+    /// Hosted proxy — key lives server-side, auth via Firebase Google token.
+    Proxy,
 }
 
 impl AiProvider {
     pub fn default_model(&self) -> &'static str {
         match self {
-            Self::OpenAI => "gpt-4",
+            Self::OpenAI | Self::Proxy => "gpt-4",
         }
     }
 
     pub fn default_image_model(&self) -> &'static str {
         match self {
-            Self::OpenAI => "gpt-image-1",
+            Self::OpenAI | Self::Proxy => "gpt-image-1",
         }
     }
 
-    pub fn api_url(&self) -> &'static str {
+    fn base_url(&self) -> &'static str {
         match self {
-            Self::OpenAI => "https://api.openai.com/v1/chat/completions",
+            Self::OpenAI => "https://api.openai.com",
+            Self::Proxy => PROXY_BASE.unwrap_or(""),
         }
     }
 
-    pub fn images_url(&self) -> &'static str {
-        match self {
-            Self::OpenAI => "https://api.openai.com/v1/images/generations",
-        }
+    pub fn api_url(&self) -> String {
+        format!("{}/v1/chat/completions", self.base_url())
+    }
+
+    pub fn images_url(&self) -> String {
+        format!("{}/v1/images/generations", self.base_url())
     }
 
     #[allow(dead_code)]
     pub fn name(&self) -> &'static str {
         match self {
             Self::OpenAI => "OpenAI",
+            Self::Proxy => "Hosted",
         }
     }
 
-    fn models_url(&self) -> &'static str {
+    fn models_url(&self) -> String {
+        format!("{}/v1/models", self.base_url())
+    }
+
+    /// Available iff this variant can actually be used at runtime. `Proxy` is
+    /// only usable when `PROXY_URL` was set at build time.
+    pub fn is_available(&self) -> bool {
         match self {
-            Self::OpenAI => "https://api.openai.com/v1/models",
+            Self::OpenAI => true,
+            Self::Proxy => PROXY_BASE.is_some_and(|url| !url.is_empty()),
         }
     }
 
@@ -103,13 +133,15 @@ impl AiProvider {
         // "openai-internal" (tts, whisper, embeddings). Anything else is
         // a user-owned fine-tune.
         match self {
-            Self::OpenAI => matches!(owned_by, "openai" | "system" | "openai-internal"),
+            Self::OpenAI | Self::Proxy => {
+                matches!(owned_by, "openai" | "system" | "openai-internal")
+            }
         }
     }
 
     fn is_image_id(&self, id: &str) -> bool {
         match self {
-            Self::OpenAI => {
+            Self::OpenAI | Self::Proxy => {
                 id.starts_with("dall-e")
                     || id.starts_with("gpt-image")
                     || id == "chatgpt-image-latest"
@@ -122,7 +154,7 @@ impl AiProvider {
             return false;
         }
         match self {
-            Self::OpenAI => {
+            Self::OpenAI | Self::Proxy => {
                 (id.starts_with("gpt-") || id.starts_with("o"))
                     && !id.contains("realtime")
                     && !id.contains("audio")
@@ -138,15 +170,27 @@ impl AiProvider {
 
 // --- HTTP helpers ---
 
+/// Resolve the bearer token for a request. OpenAI provider uses the stored
+/// API key; Proxy provider fetches a short-lived Firebase ID token.
+async fn auth_token(settings: &AiSettings) -> Result<String, AiError> {
+    match settings.provider {
+        AiProvider::OpenAI => Ok(settings.api_key.clone()),
+        AiProvider::Proxy => firebase::get_id_token()
+            .await?
+            .filter(|token| !token.is_empty())
+            .ok_or(AiError::AuthRequired),
+    }
+}
+
 /// Send an authenticated API request: serialize body, fetch, deserialize
 /// response.
 async fn api_request<T: Serialize, R: DeserializeOwned>(
+    settings: &AiSettings,
     url: &str,
-    api_key: &str,
     request: &T,
 ) -> Result<R, AiError> {
     let body_str = serde_json::to_string(request)?;
-    let resp = api_fetch(url, "POST", api_key, Some(&body_str)).await?;
+    let resp = api_fetch(settings, url, "POST", Some(&body_str)).await?;
     let text = response_text(resp).await?;
     Ok(serde_json::from_str(&text)?)
 }
@@ -154,16 +198,18 @@ async fn api_request<T: Serialize, R: DeserializeOwned>(
 /// Low-level authenticated fetch returning raw `web_sys::Response`.
 /// Used by `api_request` and streaming endpoints.
 async fn api_fetch(
+    settings: &AiSettings,
     url: &str,
     method: &str,
-    api_key: &str,
     body: Option<&str>,
 ) -> Result<web_sys::Response, AiError> {
+    let token = auth_token(settings).await?;
+
     let opts = web_sys::RequestInit::new();
     opts.set_method(method);
 
     let headers = web_sys::Headers::new()?;
-    headers.set("Authorization", &format!("Bearer {api_key}"))?;
+    headers.set("Authorization", &format!("Bearer {token}"))?;
     if let Some(body_str) = body {
         headers.set("Content-Type", "application/json")?;
         opts.set_body(&JsValue::from_str(body_str));
@@ -248,13 +294,7 @@ pub struct ModelLists {
 /// Fetch all available models and split them into chat and image lists.
 /// Single HTTP request, filtered client-side per kind.
 pub async fn fetch_models(settings: &AiSettings) -> Result<ModelLists, AiError> {
-    let resp = api_fetch(
-        settings.provider.models_url(),
-        "GET",
-        &settings.api_key,
-        None,
-    )
-    .await?;
+    let resp = api_fetch(settings, &settings.provider.models_url(), "GET", None).await?;
     let text = response_text(resp).await?;
     let parsed: ModelsResponse = serde_json::from_str(&text)?;
 
@@ -290,7 +330,11 @@ fn default_image_model() -> String {
 
 impl Default for AiSettings {
     fn default() -> Self {
-        let provider = AiProvider::default();
+        let provider = if AiProvider::Proxy.is_available() {
+            AiProvider::Proxy
+        } else {
+            AiProvider::OpenAI
+        };
         Self {
             model: provider.default_model().to_string(),
             image_model: provider.default_image_model().to_string(),
@@ -301,8 +345,14 @@ impl Default for AiSettings {
 }
 
 impl AiSettings {
+    /// Returns `true` when the current settings can authenticate a request.
+    /// For OpenAI this means a non-empty stored key; for Proxy it means the
+    /// user is currently signed in with Google.
     pub fn has_api_key(&self) -> bool {
-        !self.api_key.trim().is_empty()
+        match self.provider {
+            AiProvider::OpenAI => !self.api_key.trim().is_empty(),
+            AiProvider::Proxy => firebase::current_provider().as_deref() == Some("google.com"),
+        }
     }
 }
 
@@ -455,9 +505,9 @@ pub async fn generate_story(
     let body_str = serde_json::to_string(&request_body)?;
 
     let resp = api_fetch(
-        settings.provider.api_url(),
+        settings,
+        &settings.provider.api_url(),
         "POST",
-        &settings.api_key,
         Some(&body_str),
     )
     .await?;
@@ -593,12 +643,8 @@ pub async fn send_chat<T: DeserializeOwned>(
         log::debug!("[{:?}] {}", message.role, message.content);
     }
 
-    let response: ChatResponse = api_request(
-        settings.provider.api_url(),
-        &settings.api_key,
-        &request_body,
-    )
-    .await?;
+    let response: ChatResponse =
+        api_request(settings, &settings.provider.api_url(), &request_body).await?;
 
     let content = response
         .choices
@@ -668,7 +714,7 @@ pub async fn generate_avatar_image(settings: &AiSettings, prompt: &str) -> Resul
         response_format: response_format_for(&settings.image_model),
     };
     let response: ImageResponse =
-        api_request(settings.provider.images_url(), &settings.api_key, &request).await?;
+        api_request(settings, &settings.provider.images_url(), &request).await?;
     response
         .data
         .into_iter()

@@ -161,6 +161,17 @@
       return signInWithPopup(auth, googleProvider);
     },
     currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
+    currentProvider: () => {
+      const user = auth.currentUser;
+      if (!user) return null;
+      if (user.isAnonymous) return "anonymous";
+      return user.providerData[0]?.providerId ?? null;
+    },
+    getIdToken: (forceRefresh) => {
+      const user = auth.currentUser;
+      if (!user) return Promise.resolve(null);
+      return user.getIdToken(!!forceRefresh);
+    },
     // Resolves once auth state is settled (including pending redirects).
     // Returns { uid, isAnonymous } or null if no user.
     waitForAuth: () => new Promise(resolve => {

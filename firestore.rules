@@ -12,5 +12,21 @@ service cloud.firestore {
         allow read: if get(/databases/$(database)/documents/users/$(userId)/characters/$(charId)).data.shared == true;
       }
     }
+
+    // Character avatars live in a sibling collection, keyed by char id.
+    // Owner read/write; public read is wide open (no `shared` check) so
+    // import links stay viewable without a Firestore doc-get round-trip.
+    match /users/{userId}/avatars/{charId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if true;
+    }
+
+    // Proxy config — read is public so the Cloud Run proxy can fetch
+    // the email whitelist with just the public Firebase Web API key.
+    // Writes are restricted to the owner uid (replace placeholder below).
+    match /config/{id} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == "REPLACE_WITH_OWNER_UID";
+    }
   }
 }

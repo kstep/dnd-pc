@@ -1,6 +1,10 @@
 /target
 /dist
 
+.env
+.env.*
+!.env.example
+
 .playwright-mcp/
 .claude/worktrees/
 .worktrees/

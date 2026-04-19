@@ -1,0 +1,14 @@
+target/
+dist/
+.git/
+.github/
+docs/
+tests/
+locales/
+public/
+node_modules/
+*.md
+!backend/README.md
+.env
+.env.*
+!.env.example

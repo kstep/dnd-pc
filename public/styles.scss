@@ -2703,7 +2703,7 @@ dialog.modal.closing::backdrop {
   padding: var(--size-3);
   display: flex;
   flex-direction: column;
-  gap: var(--size-3);
+  gap: var(--size-1);
   overflow-y: auto;
   flex: 1;
 }
@@ -3925,6 +3925,10 @@ details.floating-nav {
 
 .ai-settings-modal {
   min-width: 350px;
+
+  input[type="checkbox"] {
+    width: auto;
+  }
 
   input,
   select {
