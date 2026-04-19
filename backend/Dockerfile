@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 FROM rust:slim-bookworm AS builder
 
 WORKDIR /build
@@ -11,10 +10,8 @@ COPY src ./src
 COPY build.rs ./build.rs
 COPY backend ./backend
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/build/target \
-    cargo build --release --bin dnd-pc-proxy -p dnd-pc-proxy && \
-    cp target/release/dnd-pc-proxy /usr/local/bin/dnd-pc-proxy
+RUN cargo build --release --bin dnd-pc-proxy -p dnd-pc-proxy \
+    && cp target/release/dnd-pc-proxy /usr/local/bin/dnd-pc-proxy
 
 FROM gcr.io/distroless/cc-debian12:nonroot
 
