@@ -72,29 +72,35 @@ impl Toast {
     /// captured at construction time is used, so this is safe to call from
     /// timers and async tasks.
     pub fn show(self) {
-        let run = move || {
-            let ctx = expect_context::<ToastCtx>();
-            let id = next_toast_id();
-            let auto_close = self.auto_close;
-            let entry = Entry {
-                id,
-                message: self.message,
-                action: self.action,
-                on_dismiss: self.on_dismiss,
-                exiting: RwSignal::new(false),
-            };
-            ctx.0.update(|toasts| toasts.push(entry));
-            if let Some(duration) = auto_close {
-                // Capture the signal directly — the timeout callback runs
-                // without an active owner so `use_context::<ToastCtx>()`
-                // would return None from inside it.
-                let signal = ctx.0;
-                set_timeout(move || remove_toast(signal, id), duration);
-            }
+        let resolve_ctx = || use_context::<ToastCtx>();
+        let ctx = match self.owner.as_ref() {
+            Some(owner) => owner.with(resolve_ctx),
+            None => resolve_ctx(),
         };
-        match self.owner {
-            Some(owner) => owner.with(run),
-            None => run(),
+        let Some(ctx) = ctx else {
+            return;
+        };
+        // Allocate entry signals under the context's owner (app root) so they
+        // survive past the caller's scope — e.g. when an Effect that created
+        // the toast re-runs before the user clicks dismiss.
+        let (entry, auto_close) = ctx.owner.with(|| {
+            let id = next_toast_id();
+            (
+                Entry {
+                    id,
+                    message: self.message,
+                    action: self.action,
+                    on_dismiss: self.on_dismiss,
+                    exiting: RwSignal::new(false),
+                },
+                self.auto_close,
+            )
+        });
+        let id = entry.id;
+        let signal = ctx.entries;
+        signal.update(|toasts| toasts.push(entry));
+        if let Some(duration) = auto_close {
+            set_timeout(move || remove_toast(signal, id), duration);
         }
     }
 }
@@ -118,8 +124,15 @@ struct ToastAction {
     on_click: Callback<()>,
 }
 
-#[derive(Clone, Copy)]
-pub struct ToastCtx(RwSignal<Vec<Entry>>);
+#[derive(Clone)]
+pub struct ToastCtx {
+    entries: RwSignal<Vec<Entry>>,
+    // Owner of the scope where the context was provided (app root). Used to
+    // allocate per-entry signals so they outlive the caller's scope — e.g. an
+    // Effect that re-runs or a component that unmounts while the toast is
+    // still on screen.
+    owner: Owner,
+}
 
 static TOAST_COUNTER: AtomicU64 = AtomicU64::new(1);
 
@@ -128,14 +141,18 @@ fn next_toast_id() -> u64 {
 }
 
 pub fn provide_toast_context() {
-    provide_context(ToastCtx(RwSignal::new(Vec::new())));
+    let owner = Owner::current().expect("provide_toast_context needs an active owner");
+    provide_context(ToastCtx {
+        entries: RwSignal::new(Vec::new()),
+        owner,
+    });
 }
 
 fn dismiss_toast(id: u64) {
     let Some(ctx) = use_context::<ToastCtx>() else {
         return;
     };
-    remove_toast(ctx.0, id);
+    remove_toast(ctx.entries, id);
 }
 
 fn remove_toast(signal: RwSignal<Vec<Entry>>, id: u64) {
@@ -169,11 +186,11 @@ fn remove_toast(signal: RwSignal<Vec<Entry>>, id: u64) {
 
 #[component]
 pub fn ToastContainer() -> impl IntoView {
-    let ctx = expect_context::<ToastCtx>();
+    let entries = expect_context::<ToastCtx>().entries;
     view! {
         <div class="toast-container">
             <For
-                each=move || ctx.0.get()
+                each=move || entries.get()
                 key=|entry| entry.id
                 let:entry
             >
