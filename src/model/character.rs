@@ -117,6 +117,16 @@ impl Character {
         Self::default()
     }
 
+    /// Fresh character carrying only the given identity — every other field
+    /// starts from `Default`. Used by rebuild's `build_clean` as the accretion
+    /// target and by the rebuild args-modal as the cascade base.
+    pub fn from_identity(identity: CharacterIdentity) -> Self {
+        Self {
+            identity,
+            ..Self::default()
+        }
+    }
+
     pub fn clear(&mut self) {
         let id = self.id;
         let identity = std::mem::take(&mut self.identity);

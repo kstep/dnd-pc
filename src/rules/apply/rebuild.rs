@@ -56,9 +56,7 @@ pub fn build_clean(
     registry: &RulesRegistry,
     extra_inputs: &ApplyInputs,
 ) -> Result<Character, RebuildError> {
-    let mut clean = Character::default();
-    clean.identity = original.identity.clone();
-    clean.applied = Applied::default();
+    let mut clean = Character::from_identity(original.identity.clone());
 
     registry.with_features_index_untracked(|fi| -> Result<(), RebuildError> {
         // 1. User(0) features (e.g. Generation: * setting base abilities)

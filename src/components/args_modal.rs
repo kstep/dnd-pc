@@ -27,6 +27,13 @@ pub struct ArgsModalCtx {
     show: RwSignal<bool>,
     pending: RwSignal<Vec<PendingInputs>>,
     callback: StoredValue<Option<ArgsCallback>>,
+    /// Optional seed for the cascade snapshot[0]. When `None`, the modal reads
+    /// the live store — correct for level-up / user-add flows that apply on
+    /// top of the existing character. Rebuild sets this to
+    /// `Character::default()` with identity cloned so the cascade previews
+    /// against a clean build-from- scratch state, matching what
+    /// `build_clean` will produce.
+    cascade_base: StoredValue<Option<Arc<Character>>>,
 }
 
 impl ArgsModalCtx {
@@ -35,6 +42,7 @@ impl ArgsModalCtx {
             show: RwSignal::new(false),
             pending: RwSignal::new(Vec::new()),
             callback: StoredValue::new(None),
+            cascade_base: StoredValue::new(None),
         }
     }
 
@@ -45,9 +53,23 @@ impl ArgsModalCtx {
         pending: Vec<PendingInputs>,
         on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
     ) {
+        self.open_with_base(pending, None, on_complete);
+    }
+
+    /// Like [`open`], but seeds the cascade snapshot[0] from the given base
+    /// `Character` instead of the live store. Used by rebuild to preview
+    /// against a fresh-from-identity state rather than the live sheet's
+    /// residual PROF / abilities / skills from prior applies.
+    pub fn open_with_base(
+        &self,
+        pending: Vec<PendingInputs>,
+        base: Option<Arc<Character>>,
+        on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
+    ) {
         self.pending.set(pending);
         self.callback
             .update_value(|cb| *cb = Some(Box::new(on_complete)));
+        self.cascade_base.set_value(base);
         self.show.set(true);
     }
 
@@ -405,25 +427,21 @@ pub fn ArgsModal() -> impl IntoView {
                 // Build cascade chain: snapshot[i] = character with pending
                 // features 0..i applied (via FeatureDefinition::assign — the
                 // expression-only subset of apply, sufficient for analyze).
-                // snapshot[0] = `Character::default()` seeded with the live
-                // identity (classes/level/species) so derived attributes
-                // like PROF_BONUS / CLASS_LEVEL resolve correctly.
+                // snapshot[0] seeded from either a caller-supplied base (rebuild
+                // passes a fresh identity-only Character so the cascade matches
+                // the build-from-scratch state) or from the live store (level-up
+                // / user-add apply on top of the current sheet).
+                //
+                // INVARIANT: the seed is one-shot, never re-synced while the
+                // modal is open. The modal blocks the UI so user mutations can't
+                // happen concurrently; background writes (auto-save, cloud sync)
+                // don't touch Attributes the cascade resolves.
                 let store = expect_context::<Store<Character>>();
                 let registry = expect_context::<RulesRegistry>();
-                // Seed from the live character (cloned once at modal open) so
-                // snapshots[0] reflects all features already applied to the
-                // sheet. Subsequent per-tick cascades clone this Arc's target
-                // — not the live store — keeping reactivity isolated.
-                //
-                // INVARIANT: this seed is intentionally one-shot, never re-synced
-                // with `store`. Modal blocks the UI so user mutations cannot
-                // happen concurrently. Background writes (auto-save `updated_at`,
-                // cloud sync) currently do not touch any Attribute the cascade
-                // expressions resolve, so staleness is harmless. If a future
-                // background path mutates analysis-relevant Attributes while the
-                // modal is open, subscribe to `store` here — expect extra
-                // cascade ticks on every unrelated store write.
-                let shared_base: Arc<Character> = Arc::new(store.get_untracked());
+                let shared_base: Arc<Character> = ctx
+                    .cascade_base
+                    .get_value()
+                    .unwrap_or_else(|| Arc::new(store.get_untracked()));
 
                 let feature_keys: Vec<FeatureKey> = pending
                     .iter()
