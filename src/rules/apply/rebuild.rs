@@ -163,11 +163,15 @@ fn collect_rebuild_pending_inputs(
 
 /// If `original` has no feature in the `Generation` category (legacy
 /// character pre-dating the generation-feature system), synthesize a
-/// `Generation: Custom` User(0) feature with `inputs` set to the "base"
-/// abilities (original scores minus identity contributions), prepend it to
+/// generation User(0) feature with `inputs` set to the "base" abilities
+/// (original scores minus identity contributions), prepend it to
 /// `clean.features`, and bump `clean.abilities` to match `original`. On
 /// the next rebuild the synthesized feature is applied first and the same
 /// identity contributions stack on top, landing at `original.abilities`.
+///
+/// Prefers `Generation: Fixed Preset` when the base scores form a permutation
+/// of the standard 5e 2024 array `[15, 14, 13, 12, 10, 8]`; otherwise falls
+/// back to `Generation: Custom`.
 fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
     if original.features.has_category(FeatureCategory::Generation) {
         return;
@@ -183,10 +187,16 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
         }
     }
 
+    let name = if is_fixed_preset(&args) {
+        "Generation: Fixed Preset"
+    } else {
+        "Generation: Custom"
+    };
+
     clean.features.list.insert(
         0,
         Feature {
-            name: "Generation: Custom".to_string(),
+            name: name.to_string(),
             label: None,
             description: String::new(),
             applied: true,
@@ -198,6 +208,13 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
             }],
         },
     );
+}
+
+/// Match the standard 5e 2024 preset `[15, 14, 13, 12, 10, 8]` in any order.
+fn is_fixed_preset(args: &[i32]) -> bool {
+    let mut sorted = args.to_vec();
+    sorted.sort_unstable_by(|a, b| b.cmp(a));
+    sorted == [15, 14, 13, 12, 10, 8]
 }
 
 /// Apply class levels in canonical order.
@@ -823,5 +840,21 @@ mod tests {
         );
 
         assert_eq!(inputs, modal_inputs);
+    }
+
+    #[wasm_bindgen_test]
+    fn is_fixed_preset_accepts_standard_array_in_any_order() {
+        assert!(is_fixed_preset(&[15, 14, 13, 12, 10, 8]));
+        assert!(is_fixed_preset(&[8, 10, 12, 13, 14, 15]));
+        assert!(is_fixed_preset(&[13, 15, 8, 14, 10, 12]));
+    }
+
+    #[wasm_bindgen_test]
+    fn is_fixed_preset_rejects_mismatch() {
+        assert!(!is_fixed_preset(&[15, 15, 13, 12, 10, 8])); // duplicate 15
+        assert!(!is_fixed_preset(&[16, 14, 13, 12, 10, 8])); // out-of-set
+        assert!(!is_fixed_preset(&[14, 14, 13, 12, 10, 9])); // 9 disallowed, sum off
+        assert!(!is_fixed_preset(&[15, 14, 13, 12, 10])); // wrong length
+        assert!(!is_fixed_preset(&[8, 8, 8, 8, 8, 8])); // all defaults
     }
 }

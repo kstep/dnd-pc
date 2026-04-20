@@ -46,7 +46,7 @@ pub fn FeatureReference() -> impl IntoView {
 
     let features_view = move || {
         let category = category();
-        let query = search.read().clone().unwrap_or_default();
+        let query = search.get().unwrap_or_default();
         let regex = if query.is_empty() {
             None
         } else {
