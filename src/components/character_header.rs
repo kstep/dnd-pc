@@ -270,7 +270,12 @@ pub fn CharacterHeader() -> impl IntoView {
                                     pending,
                                     move |character, pending, inputs, fi| {
                                         character.applied.species = true;
-                                        apply_new_features(fi, character, pending, Some(inputs));
+                                        apply_new_features(
+                                            fi,
+                                            character,
+                                            pending,
+                                            Some(&inputs.feature_inputs),
+                                        );
                                     },
                                 );
                             }
@@ -305,7 +310,12 @@ pub fn CharacterHeader() -> impl IntoView {
                                     pending,
                                     move |character, pending, inputs, fi| {
                                         character.applied.background = true;
-                                        apply_new_features(fi, character, pending, Some(inputs));
+                                        apply_new_features(
+                                            fi,
+                                            character,
+                                            pending,
+                                            Some(&inputs.feature_inputs),
+                                        );
                                     },
                                 );
                             }

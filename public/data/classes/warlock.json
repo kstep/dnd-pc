@@ -1,126 +1,103 @@
 {
   "name": "Warlock",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Eldritch Invocations",
         "Pact Magic",
         "Class Proficiencies (Warlock)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Magical Cunning"
       ]
     },
-    {
+    "3": {
       "features": [
         "Warlock Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Contact Patron"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "11": {
       "features": [
         "Mystic Arcanum (6th)"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "13": {
       "features": [
         "Mystic Arcanum (7th)"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "15": {
       "features": [
         "Mystic Arcanum (8th)"
       ]
     },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "17": {
       "features": [
         "Mystic Arcanum (9th)"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Eldritch Master"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "The Undying",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Among the Dead"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Defy Death"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Undying Nature"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Indestructible Life"
           ]
@@ -131,30 +108,25 @@
       "name": "The Hexblade",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Hex Warrior",
             "Hexblade's Curse"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Accursed Specter"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Armor of Hexes"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Master of Hexes"
           ]
@@ -165,31 +137,26 @@
       "name": "The Fathomless",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Gift of the Sea",
             "Tentacle of the Deeps"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Guardian Coil",
             "Oceanic Soul"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Grasping Tentacles"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Fathomless Plunge"
           ]
@@ -200,7 +167,6 @@
       "name": "The Genie",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
@@ -208,23 +174,19 @@
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Elemental Gift"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Sanctuary Vessel"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Limited Wish"
           ]
@@ -235,29 +197,24 @@
       "name": "The Undead",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Form of Dread"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Grave Touched"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Necrotic Husk"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Spirit Projection"
           ]
@@ -268,26 +225,22 @@
       "name": "Archfey Patron",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Archfey Spells",
             "Steps of the Fey"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Misty Escape"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Beguiling Defenses"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Bewitching Magic"
           ]
@@ -298,26 +251,22 @@
       "name": "Celestial Patron",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Celestial Spells",
             "Healing Light"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Radiant Soul"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Celestial Resilience"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Searing Vengeance"
           ]
@@ -328,26 +277,22 @@
       "name": "Fiend Patron",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Dark One's Blessing",
             "Fiend Spells"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Dark One's Own Luck"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Fiendish Resilience"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Hurl Through Hell"
           ]
@@ -358,7 +303,6 @@
       "name": "Great Old One Patron",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Awakened Mind",
             "Great Old One Spells",
@@ -366,20 +310,17 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Clairvoyant Combatant"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Eldritch Hex",
             "Thought Shield"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Create Thrall"
           ]

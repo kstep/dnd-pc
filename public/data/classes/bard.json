@@ -1,118 +1,97 @@
 {
   "name": "Bard",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Bardic Inspiration",
         "Spellcasting (Bard)",
         "Class Proficiencies (Bard)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Expertise",
         "Jack of All Trades"
       ]
     },
-    {
+    "3": {
       "features": [
         "Bard Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Font of Inspiration"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "7": {
       "features": [
         "Countercharm"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Expertise"
       ]
     },
-    {
+    "10": {
       "features": [
         "Magical Secrets"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Superior Inspiration"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Words of Creation"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "College of Lore",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bonus Proficiencies",
             "Cutting Words"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Magical Discoveries"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Peerless Skill"
           ]
@@ -123,20 +102,17 @@
       "name": "College of Valor",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Combat Inspiration",
             "Martial Training"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Extra Attack"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Battle Magic"
           ]
@@ -147,20 +123,17 @@
       "name": "College of Glamour",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Beguiling Magic",
             "Mantle of Inspiration"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Mantle of Majesty"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Unbreakable Majesty"
           ]
@@ -171,7 +144,6 @@
       "name": "College of Swords",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Defensive Flourish",
             "Mobile Flourish",
@@ -182,13 +154,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Extra Attack"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Master's Flourish"
           ]
@@ -199,20 +169,17 @@
       "name": "College of Whispers",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Psychic Blades",
             "Words of Terror"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Mantle of Whispers"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Shadow Lore"
           ]
@@ -223,20 +190,17 @@
       "name": "College of Creation",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Mote of Potential",
             "Performance of Creation"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Animating Performance"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Creative Crescendo"
           ]
@@ -247,21 +211,18 @@
       "name": "College of Eloquence",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Silver Tongue",
             "Unsettling Words"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Unfailing Inspiration",
             "Universal Speech"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Infectious Inspiration"
           ]
@@ -272,7 +233,6 @@
       "name": "College of Spirits",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Guiding Whispers",
             "Spiritual Focus",
@@ -280,13 +240,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Spirit Session"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Mystical Connection"
           ]
@@ -297,7 +255,6 @@
       "name": "College of Dance",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Agile Strikes",
             "Bardic Damage",
@@ -306,14 +263,12 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Inspiring Movement",
             "Tandem Footwork"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Leading Evasion"
           ]
@@ -324,20 +279,17 @@
       "name": "College of the Moon",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Moon's Inspiration",
             "Primal Lore"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Blessing of Moonlight"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Eventide's Splendor"
           ]

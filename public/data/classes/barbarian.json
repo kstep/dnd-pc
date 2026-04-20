@@ -1,8 +1,8 @@
 {
   "name": "Barbarian",
   "hit_die": 12,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Rage",
         "Unarmored Defense (Barbarian)",
@@ -10,124 +10,111 @@
         "Class Proficiencies (Barbarian)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Danger Sense",
         "Reckless Attack"
       ]
     },
-    {
+    "3": {
       "features": [
         "Barbarian Subclass",
         "Primal Knowledge"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Extra Attack",
         "Fast Movement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "7": {
       "features": [
         "Feral Instinct",
         "Instinctive Pounce"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Brutal Strike"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "11": {
       "features": [
         "Relentless Rage"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "13": {
       "features": [
         "Improved Brutal Strike"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "15": {
       "features": [
         "Persistent Rage"
       ]
     },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "17": {
       "features": [
         "Improved Brutal Strike 2"
       ]
     },
-    {
+    "18": {
       "features": [
         "Indomitable Might"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Primal Champion"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Path of the Berserker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Frenzy"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Mindless Rage"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Retaliation"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Intimidating Presence"
           ]
@@ -138,26 +125,22 @@
       "name": "Path of the Battlerager",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Battlerager Armor",
             "Restriction—Dwarves Only"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Reckless Abandon"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Battlerager Charge"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Spiked Retribution"
           ]
@@ -168,25 +151,21 @@
       "name": "Path of the Ancestral Guardian",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Ancestral Protectors"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Spirit Shield"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Consult the Spirits"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Vengeful Ancestors"
           ]
@@ -197,7 +176,6 @@
       "name": "Path of the Storm Herald",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Desert",
             "Sea",
@@ -206,7 +184,6 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Desert",
             "Sea",
@@ -215,13 +192,11 @@
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Shielding Storm"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Desert",
             "Sea",
@@ -235,26 +210,22 @@
       "name": "Path of the Zealot",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Divine Fury",
             "Warrior of the Gods"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Fanatical Focus"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Zealous Presence"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Rage of the Gods"
           ]
@@ -265,25 +236,21 @@
       "name": "Path of the Beast",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Form of the Beast"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Bestial Soul"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Infectious Fury"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Call the Hunt"
           ]
@@ -294,26 +261,22 @@
       "name": "Path of Wild Magic",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Magic Awareness",
             "Wild Surge"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Bolstering Magic"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Unstable Backlash"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Controlled Surge"
           ]
@@ -324,26 +287,22 @@
       "name": "Path of the Giant",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Giant Power",
             "Giant's Havoc"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Elemental Cleaver"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Mighty Impel"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Demiurgic Colossus"
           ]
@@ -354,26 +313,22 @@
       "name": "Path of the Wild Heart",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Animal Speaker",
             "Rage of the Wilds"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Aspect of the Wilds"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Nature Speaker"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Power of the Wilds"
           ]
@@ -384,25 +339,21 @@
       "name": "Path of the World Tree",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Vitality of the Tree"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Branches of the Tree"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Battering Roots"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Travel Along the Tree"
           ]

@@ -1,8 +1,8 @@
 {
   "name": "Fighter",
   "hit_die": 10,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Fighting Style",
         "Second Wind",
@@ -10,101 +10,85 @@
         "Class Proficiencies (Fighter)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Action Surge",
         "Tactical Mind"
       ]
     },
-    {
+    "3": {
       "features": [
         "Fighter Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Extra Attack",
         "Tactical Shift"
       ]
     },
-    {
+    "6": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Indomitable",
         "Tactical Master"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "11": {
       "features": [
         "Two Extra Attacks"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "13": {
       "features": [
         "Studied Attacks"
       ]
     },
-    {
+    "14": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Three Extra Attacks"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Battle Master",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Combat Superiority",
             "Maneuver Options",
@@ -112,25 +96,21 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Know Your Enemy"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Improved Combat Superiority"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Relentless"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Ultimate Combat Superiority"
           ]
@@ -141,32 +121,27 @@
       "name": "Champion",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Improved Critical",
             "Remarkable Athlete"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Additional Fighting Style"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Heroic Warrior"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Superior Critical"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Survivor"
           ]
@@ -177,32 +152,27 @@
       "name": "Eldritch Knight",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Spellcasting (Eldritch Knight)",
             "War Bond"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "War Magic"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Eldritch Strike"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Arcane Charge"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Improved War Magic"
           ]
@@ -213,32 +183,27 @@
       "name": "Purple Dragon Knight (Banneret)",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Rallying Cry",
             "Restriction: Knighthood"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Royal Envoy"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Inspiring Surge"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Bulwark"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Inspiring Surge"
           ]
@@ -249,31 +214,26 @@
       "name": "Arcane Archer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Arcane Archer Lore",
             "Arcane Shot"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Curving Shot",
             "Magic Arrow"
           ]
         },
         "10": {
-          "level": 10,
           "features": []
         },
         "15": {
-          "level": 15,
           "features": [
             "Ever-Ready Shot"
           ]
         },
         "18": {
-          "level": 18,
           "features": []
         }
       }
@@ -282,7 +242,6 @@
       "name": "Cavalier",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bonus Proficiency",
             "Born to the Saddle",
@@ -290,25 +249,21 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Warding Maneuver"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Hold the Line"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Ferocious Charger"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Vigilant Defender"
           ]
@@ -319,32 +274,27 @@
       "name": "Samurai",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bonus Proficiency",
             "Fighting Spirit"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Elegant Courtier"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Tireless Spirit"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Rapid Strike"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Strength before Death"
           ]
@@ -355,32 +305,27 @@
       "name": "Echo Knight",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Manifest Echo",
             "Unleash Incarnation"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Echo Avatar"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Shadow Martyr"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Reclaim Potential"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Legion of One"
           ]
@@ -391,7 +336,6 @@
       "name": "Psi Warrior",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Psionic Power",
             "Protective Field",
@@ -400,7 +344,6 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Psi-Powered Leap",
             "Telekinetic Adept",
@@ -408,19 +351,16 @@
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Guarded Mind"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Bulwark of Force"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Telekinetic Master"
           ]
@@ -431,7 +371,6 @@
       "name": "Rune Knight",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bonus Proficiencies",
             "Giant's Might",
@@ -439,28 +378,24 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Additional Rune Known",
             "Runic Shield"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Additional Rune Known",
             "Great Stature"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Additional Rune Known",
             "Master of Runes"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Runic Juggernaut"
           ]
@@ -471,32 +406,27 @@
       "name": "Banneret",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Group Recovery",
             "Knightly Envoy"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Team Tactics"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Rallying Surge"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Shared Resilience"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Inspiring Commander"
           ]

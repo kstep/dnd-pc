@@ -1,133 +1,106 @@
 {
   "name": "Cleric",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Divine Order",
         "Spellcasting (Cleric)",
         "Class Proficiencies (Cleric)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Channel Divinity (Cleric)"
       ]
     },
-    {
+    "3": {
       "features": [
         "Cleric Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Sear Undead"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "7": {
       "features": [
         "Blessed Strikes"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "10": {
       "features": [
         "Divine Intervention"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "14": {
       "features": [
         "Improved Blessed Strikes"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Greater Divine Intervention"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Knowledge Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Blessings of Knowledge"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Knowledge of the Ages"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Knowledge of the Ages"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Channel Divinity: Read Thoughts"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Potent Spellcasting"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Visions of the Past"
           ]
@@ -138,7 +111,6 @@
       "name": "Life Domain",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Disciple of Life",
             "Life Domain Spells",
@@ -146,13 +118,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Blessed Healer"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Supreme Healing"
           ]
@@ -163,7 +133,6 @@
       "name": "Light Domain",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Light Domain Spells",
             "Radiance of the Dawn",
@@ -171,13 +140,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Improved Warding Flare"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Corona of Light"
           ]
@@ -188,39 +155,33 @@
       "name": "Nature Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Acolyte of Nature",
             "Bonus Proficiency"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Charm Animals and Plants"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Charm Animals and Plants"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Dampen Elements"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Master of Nature"
           ]
@@ -231,39 +192,33 @@
       "name": "Tempest Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiencies",
             "Wrath of the Storm"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Destructive Wrath"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Destructive Wrath"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Thunderbolt Strike"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Stormborn"
           ]
@@ -274,7 +229,6 @@
       "name": "Trickery Domain",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Blessing of the Trickster",
             "Invoke Duplicity",
@@ -282,13 +236,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Trickster's Transposition"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Improved Duplicity"
           ]
@@ -299,7 +251,6 @@
       "name": "War Domain",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Guided Strike",
             "War Domain Spells",
@@ -307,13 +258,11 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "War God's Blessing"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Avatar of Battle"
           ]
@@ -324,39 +273,33 @@
       "name": "Death Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiency",
             "Reaper"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Touch of Death"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Touch of Death"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Inescapable Destruction"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Improved Reaper"
           ]
@@ -367,38 +310,32 @@
       "name": "Arcana Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Arcane Initiate"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Arcane Abjuration"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Arcane Abjuration"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Spell Breaker"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Potent Spellcasting"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Arcane Mastery"
           ]
@@ -409,38 +346,32 @@
       "name": "Ambition Domain (PSA)",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Warding Flare (Ambition Domain)"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Invoke Duplicity"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Invoke Duplicity"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Channel Divinity: Cloak of Shadows"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Potent Spellcasting"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Improved Duplicity"
           ]
@@ -451,11 +382,9 @@
       "name": "Knowledge Domain (PSA)",
       "levels": {
         "1": {
-          "level": 1,
           "features": []
         },
         "3": {
-          "level": 3,
           "features": []
         }
       }
@@ -464,39 +393,33 @@
       "name": "Solidarity Domain (PSA)",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiency",
             "Solidarity's Action"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Preserve Life"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Preserve Life"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Oketra's Blessing"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Supreme Healing"
           ]
@@ -507,39 +430,33 @@
       "name": "Strength Domain (PSA)",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Acolyte of Strength",
             "Bonus Proficiency"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Feat of Strength"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Feat of Strength"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Rhonas's Blessing"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Avatar of Battle"
           ]
@@ -550,39 +467,33 @@
       "name": "Zeal Domain (PSA)",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiencies",
             "Priest of Zeal"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Consuming Fervor"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Consuming Fervor"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Resounding Strike"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Blaze of Glory"
           ]
@@ -593,39 +504,33 @@
       "name": "Forge Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Blessing of the Forge",
             "Bonus Proficiency"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Artisan's Blessing"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Artisan's Blessing"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Soul of the Forge"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Saint of Forge and Fire"
           ]
@@ -636,39 +541,33 @@
       "name": "Grave Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Circle of Mortality",
             "Eyes of the Grave"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Path to the Grave"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Path to the Grave"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Sentinel at Death's Door"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Potent Spellcasting"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Keeper of Souls"
           ]
@@ -679,39 +578,33 @@
       "name": "Order Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiencies",
             "Voice of Authority"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Order's Demand"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Order's Demand"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Embodiment of the Law"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Order's Wrath"
           ]
@@ -722,39 +615,33 @@
       "name": "Peace Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Emboldening Bond",
             "Implement of Peace"
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Balm of Peace"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Balm of Peace"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Protective Bond"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Potent Spellcasting"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Expansive Bond"
           ]
@@ -765,7 +652,6 @@
       "name": "Twilight Domain",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Bonus Proficiencies",
             "Eyes of Night",
@@ -773,32 +659,27 @@
           ]
         },
         "2": {
-          "level": 2,
           "features": [
             "Channel Divinity: Twilight Sanctuary"
           ]
         },
         "3": {
-          "level": 3,
           "features": [
             "Channel Divinity: Twilight Sanctuary"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Steps of Night"
           ]
         },
         "8": {
-          "level": 8,
           "features": [
             "Blessed Strikes",
             "Divine Strike"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Twilight Shroud"
           ]

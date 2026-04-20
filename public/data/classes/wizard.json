@@ -1,8 +1,8 @@
 {
   "name": "Wizard",
   "hit_die": 6,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Arcane Recovery",
         "Ritual Adept",
@@ -10,113 +10,81 @@
         "Class Proficiencies (Wizard)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Scholar"
       ]
     },
-    {
+    "3": {
       "features": [
         "Wizard Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Memorize Spell"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Spell Mastery"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Signature Spells"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "School of Conjuration",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Conjuration Savant",
             "Minor Conjuration"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Benign Transposition"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Focused Conjuration"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Durable Summons"
           ]
@@ -127,30 +95,25 @@
       "name": "School of Enchantment",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Enchantment Savant",
             "Hypnotic Gaze"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Instinctive Charm"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Split Enchantment"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Alter Memories"
           ]
@@ -161,30 +124,25 @@
       "name": "School of Necromancy",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Grim Harvest",
             "Necromancy Savant"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Undead Thralls"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Inured to Undeath"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Command Undead"
           ]
@@ -195,30 +153,25 @@
       "name": "School of Transmutation",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Minor Alchemy",
             "Transmutation Savant"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Transmuter's Stone"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Shapechanger"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Master Transmuter"
           ]
@@ -229,30 +182,25 @@
       "name": "War Magic",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Arcane Deflection",
             "Tactical Wit"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Power Surge"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Durable Magic"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Deflecting Shroud"
           ]
@@ -263,30 +211,25 @@
       "name": "Chronurgy Magic",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Chronal Shift",
             "Temporal Awareness"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Momentary Stasis"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Arcane Abeyance"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Convergent Future"
           ]
@@ -297,29 +240,24 @@
       "name": "Graviturgy Magic",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Adjust Density"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Gravity Well"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Violent Attraction"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Event Horizon"
           ]
@@ -330,30 +268,25 @@
       "name": "Order of Scribes",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Awakened Spellbook",
             "Wizardly Quill"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Manifest Mind"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Master Scrivener"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "One with the Word"
           ]
@@ -364,26 +297,22 @@
       "name": "Abjurer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Abjuration Savant",
             "Arcane Ward"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Projected Ward"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Spell Breaker"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Spell Resistance"
           ]
@@ -394,26 +323,22 @@
       "name": "Diviner",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Divination Savant",
             "Portent"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Expert Divination"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "The Third Eye"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Greater Portent"
           ]
@@ -424,26 +349,22 @@
       "name": "Evoker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Evocation Savant",
             "Potent Cantrip"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Sculpt Spells"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Empowered Evocation"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Overchannel"
           ]
@@ -454,26 +375,22 @@
       "name": "Illusionist",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Illusion Savant",
             "Improved Illusions"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Phantasmal Creatures"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Illusory Self"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Illusory Reality"
           ]
@@ -484,26 +401,22 @@
       "name": "Bladesinger",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bladesong",
             "Training in War and Song"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Extra Attack"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Song of Defense"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Song of Victory"
           ]

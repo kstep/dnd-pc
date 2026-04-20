@@ -1,106 +1,90 @@
 {
   "name": "Artificer",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Spellcasting (Artificer)",
         "Tinker's Magic",
         "Class Proficiencies (Artificer)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Replicate Magic Item"
       ]
     },
-    {
+    "3": {
       "features": [
         "Artificer Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "6": {
       "features": [
         "Magic Item Tinker"
       ]
     },
-    {
+    "7": {
       "features": [
         "Flash of Genius"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "10": {
       "features": [
         "Magic Item Adept"
       ]
     },
-    {
+    "11": {
       "features": [
         "Spell-Storing Item"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "14": {
       "features": [
         "Advanced Artifice"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Magic Item Master"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Soul of Artifice"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Alchemist",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Alchemist Spells",
             "Experimental Elixir",
@@ -108,19 +92,16 @@
           ]
         },
         "5": {
-          "level": 5,
           "features": [
             "Alchemical Savant"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Restorative Reagents"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Chemical Mastery"
           ]
@@ -131,7 +112,6 @@
       "name": "Armorer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Arcane Armor",
             "Armor Model",
@@ -143,19 +123,16 @@
           ]
         },
         "5": {
-          "level": 5,
           "features": [
             "Extra Attack"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Improved Armorer"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Perfected Armor"
           ]
@@ -166,7 +143,6 @@
       "name": "Artillerist",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Artillerist Spells",
             "Eldritch Cannon",
@@ -174,19 +150,16 @@
           ]
         },
         "5": {
-          "level": 5,
           "features": [
             "Arcane Firearm"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Explosive Cannon"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Fortified Position"
           ]
@@ -197,7 +170,6 @@
       "name": "Battle Smith",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Battle Ready",
             "Battle Smith Spells",
@@ -206,19 +178,16 @@
           ]
         },
         "5": {
-          "level": 5,
           "features": [
             "Extra Attack"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Arcane Jolt"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Improved Defender"
           ]
@@ -229,7 +198,6 @@
       "name": "Cartographer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Adventurer's Atlas",
             "Cartographer Spells",
@@ -238,19 +206,16 @@
           ]
         },
         "5": {
-          "level": 5,
           "features": [
             "Guided Precision"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Ingenious Movement"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Superior Atlas"
           ]

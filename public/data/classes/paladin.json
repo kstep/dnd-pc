@@ -1,8 +1,8 @@
 {
   "name": "Paladin",
   "hit_die": 10,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Lay on Hands",
         "Spellcasting (Paladin)",
@@ -10,120 +10,101 @@
         "Class Proficiencies (Paladin)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Fighting Style",
         "Paladin's Smite"
       ]
     },
-    {
+    "3": {
       "features": [
         "Channel Divinity (Paladin)",
         "Paladin Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Extra Attack",
         "Faithful Steed"
       ]
     },
-    {
+    "6": {
       "features": [
         "Aura of Protection"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Abjure Foes"
       ]
     },
-    {
+    "10": {
       "features": [
         "Aura of Courage"
       ]
     },
-    {
+    "11": {
       "features": [
         "Radiant Strikes"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "14": {
       "features": [
         "Restoring Touch"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Aura Expansion"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
-    },
-    {
-      "features": []
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Oath of Devotion",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Oath of Devotion Spells",
             "Sacred Weapon"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Devotion"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Smite of Protection"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Holy Nimbus"
           ]
@@ -134,26 +115,22 @@
       "name": "Oath of the Ancients",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Nature's Wrath",
             "Oath of the Ancients Spells"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Warding"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Undying Sentinel"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Elder Champion"
           ]
@@ -164,26 +141,22 @@
       "name": "Oath of Vengeance",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Oath of Vengeance Spells",
             "Vow of Enmity"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Relentless Avenger"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Soul of Vengeance"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Avenging Angel"
           ]
@@ -194,7 +167,6 @@
       "name": "Oathbreaker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Control Undead",
             "Dreadful Aspect",
@@ -202,19 +174,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Hate"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Supernatural Resistance"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Dread Lord"
           ]
@@ -225,7 +194,6 @@
       "name": "Oath of the Crown",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Champion Challenge",
             "Oath Spells",
@@ -234,19 +202,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Divine Allegiance"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Unyielding Spirit"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Exalted Champion"
           ]
@@ -257,7 +222,6 @@
       "name": "Oath of Conquest",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Conquering Presence",
             "Guided Strike",
@@ -266,19 +230,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Conquest"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Scornful Rebuke"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Invincible Conqueror"
           ]
@@ -289,7 +250,6 @@
       "name": "Oath of Redemption",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Emissary of Peace",
             "Oath Spells",
@@ -298,19 +258,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of the Guardian"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Protective Spirit"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Emissary of Redemption"
           ]
@@ -321,7 +278,6 @@
       "name": "Oath of Glory",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Inspiring Smite",
             "Oath of Glory Spells",
@@ -329,19 +285,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Alacrity"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Glorious Defense"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Living Legend"
           ]
@@ -352,7 +305,6 @@
       "name": "Oath of the Watchers",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Oath Spells",
             "Tenets of the Watchers",
@@ -361,19 +313,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of the Sentinel"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Vigilant Rebuke"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Mortal Bulwark"
           ]
@@ -384,7 +333,6 @@
       "name": "Oath of the Noble Genies",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Dao's Crush",
             "Djinni's Escape",
@@ -396,19 +344,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Aura of Elemental Shielding"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Elemental Rebuke"
           ]
         },
         "20": {
-          "level": 20,
           "features": [
             "Noble Scion"
           ]

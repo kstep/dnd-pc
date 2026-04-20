@@ -1,8 +1,8 @@
 {
   "name": "Druid",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Druidic",
         "Primal Order",
@@ -10,114 +10,89 @@
         "Class Proficiencies (Druid)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Wild Companion",
         "Wild Shape"
       ]
     },
-    {
+    "3": {
       "features": [
         "Druid Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Wild Resurgence"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "7": {
       "features": [
         "Elemental Fury"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "15": {
       "features": [
         "Improved Elemental Fury"
       ]
     },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Beast Spells"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Archdruid"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Circle of the Land",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Circle of the Land Spells",
             "Land's Aid"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Natural Recovery"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Nature's Ward"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Nature's Sanctuary"
           ]
@@ -128,26 +103,22 @@
       "name": "Circle of the Moon",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Circle Forms",
             "Circle of the Moon Spells"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Improved Circle Forms"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Moonlight Step"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Lunar Form"
           ]
@@ -158,29 +129,24 @@
       "name": "Circle of Dreams",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Balm of the Summer Court"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Hearth of Moonlight and Shadow"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Hidden Paths"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Walker in Dreams"
           ]
@@ -191,30 +157,25 @@
       "name": "Circle of the Shepherd",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Speech of the Woods",
             "Spirit Totem"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Mighty Summoner"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Guardian Spirit"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Faithful Summons"
           ]
@@ -225,7 +186,6 @@
       "name": "Circle of Spores",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Circle Spells",
             "Halo of Spores",
@@ -233,23 +193,19 @@
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Fungal Infestation"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Spreading Spores"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Fungal Body"
           ]
@@ -260,30 +216,25 @@
       "name": "Circle of Wildfire",
       "levels": {
         "2": {
-          "level": 2,
           "features": [
             "Circle Spells",
             "Summon Wildfire Spirit"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Enhanced Bond"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Cauterizing Flames"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Blazing Revival"
           ]
@@ -294,26 +245,22 @@
       "name": "Circle of the Sea",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Circle of the Sea Spells",
             "Wrath of the Sea"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Aquatic Affinity"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Stormborn"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Oceanic Gift"
           ]
@@ -324,7 +271,6 @@
       "name": "Circle of the Stars",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Star Map",
             "Starry Form",
@@ -334,19 +280,16 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Cosmic Omen"
           ]
         },
         "10": {
-          "level": 10,
           "features": [
             "Twinkling Constellations"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Full of Stars"
           ]

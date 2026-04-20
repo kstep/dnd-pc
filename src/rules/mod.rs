@@ -15,7 +15,7 @@ pub mod utils;
 
 pub use background::BackgroundDefinition;
 pub use cache::DefinitionStore;
-pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition, SubclassLevelRules};
+pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition};
 pub use feature::{
     ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition,
     FeaturesIndex, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr, WhenCondition,

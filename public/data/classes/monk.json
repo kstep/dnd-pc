@@ -1,136 +1,126 @@
 {
   "name": "Monk",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Martial Arts",
         "Unarmored Defense (Monk)",
         "Class Proficiencies (Monk)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Monk's Focus",
         "Unarmored Movement",
         "Uncanny Metabolism"
       ]
     },
-    {
+    "3": {
       "features": [
         "Deflect Attacks",
         "Monk Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement",
         "Slow Fall"
       ]
     },
-    {
+    "5": {
       "features": [
         "Extra Attack",
         "Stunning Strike"
       ]
     },
-    {
+    "6": {
       "features": [
         "Empowered Strikes"
       ]
     },
-    {
+    "7": {
       "features": [
         "Evasion"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Acrobatic Movement"
       ]
     },
-    {
+    "10": {
       "features": [
         "Heightened Focus",
         "Self-Restoration"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "13": {
       "features": [
         "Deflect Energy"
       ]
     },
-    {
+    "14": {
       "features": [
         "Disciplined Survivor"
       ]
     },
-    {
+    "15": {
       "features": [
         "Perfect Focus"
       ]
     },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Superior Defense"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Body and Mind"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Way of the Long Death",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Touch of Death"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Hour of Reaping"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Mastery of Death"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Touch of the Long Death"
           ]
@@ -141,14 +131,12 @@
       "name": "Way of the Drunken Master",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bonus Proficiencies",
             "Drunken Technique"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Leap to Your Feet",
             "Redirect Attack",
@@ -156,13 +144,11 @@
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Drunkard's Luck"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Intoxicated Frenzy"
           ]
@@ -173,7 +159,6 @@
       "name": "Way of the Kensei",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Agile Parry",
             "Kensei's Shot",
@@ -181,19 +166,16 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "One with the Blade"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Sharpen the Blade"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Unerring Accuracy"
           ]
@@ -204,25 +186,21 @@
       "name": "Way of the Sun Soul",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Radiant Sun Bolt"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Searing Arc Strike"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Searing Sunburst"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Sun Shield"
           ]
@@ -233,26 +211,22 @@
       "name": "Way of the Astral Self",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Arms of the Astral Self",
             "Forms of Your Astral Self"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Visage of the Astral Self"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Body of the Astral Self"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Awakened Astral Self"
           ]
@@ -263,26 +237,22 @@
       "name": "Way of the Ascendant Dragon",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Breath of the Dragon",
             "Draconic Disciple"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Wings Unfurled"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Aspect of the Wyrm"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Ascendant Aspect"
           ]
@@ -293,7 +263,6 @@
       "name": "Warrior of Mercy",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Hand of Harm",
             "Hand of Healing",
@@ -301,19 +270,16 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Physician's Touch"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Flurry of Healing and Harm"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Hand of Ultimate Mercy"
           ]
@@ -324,7 +290,6 @@
       "name": "Warrior of Shadow",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Shadow Arts",
             "Darkness",
@@ -333,19 +298,16 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Shadow Step"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Improved Shadow Step"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Cloak of Shadows"
           ]
@@ -356,26 +318,22 @@
       "name": "Warrior of the Elements",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Elemental Attunement",
             "Manipulate Elements"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Elemental Burst"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Stride of the Elements"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Elemental Epitome"
           ]
@@ -386,25 +344,21 @@
       "name": "Warrior of the Open Hand",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Open Hand Technique"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Wholeness of Body"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Fleet Step"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Quivering Palm"
           ]

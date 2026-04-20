@@ -17,7 +17,7 @@ pub struct ClassDefinition {
     pub description: String,
     pub hit_die: u32,
     #[serde(default)]
-    pub levels: Vec<ClassLevelRules>,
+    pub levels: LevelRules<ClassLevelRules>,
     #[serde(default, deserialize_with = "demap::named_map")]
     pub subclasses: BTreeMap<Box<str>, SubclassDefinition>,
 }
@@ -30,9 +30,9 @@ impl ClassDefinition {
     /// Find the class level at which a feature first appears (checking both
     /// base class and subclass level tables). Returns 0 if not found.
     pub fn feature_level(&self, subclass: Option<&str>, feature_name: &str) -> u32 {
-        for (index, level_rules) in self.levels.iter().enumerate() {
+        for (level, level_rules) in self.levels.iter() {
             if level_rules.features.iter().any(|name| name == feature_name) {
-                return index as u32 + 1;
+                return *level;
             }
         }
         if let Some(subclass_def) = subclass.and_then(|sc| self.subclasses.get(sc)) {
@@ -53,7 +53,7 @@ impl ClassDefinition {
             .flat_map(|sc| sc.levels.values())
             .flat_map(|lr| lr.features.iter().map(String::as_str));
         self.levels
-            .iter()
+            .values()
             .flat_map(|lr| lr.features.iter().map(String::as_str))
             .chain(sc_features)
     }
@@ -67,7 +67,7 @@ pub struct SubclassDefinition {
     #[serde(default)]
     pub description: String,
     #[serde(default)]
-    pub levels: LevelRules<SubclassLevelRules>,
+    pub levels: LevelRules<ClassLevelRules>,
 }
 
 impl Named for SubclassDefinition {
@@ -84,13 +84,6 @@ impl SubclassDefinition {
     pub fn min_level(&self) -> u32 {
         self.levels.keys().next().copied().unwrap_or(1)
     }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct SubclassLevelRules {
-    pub level: u32,
-    #[serde(default)]
-    pub features: VecSet<String>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]

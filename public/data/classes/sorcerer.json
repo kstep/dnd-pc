@@ -1,126 +1,100 @@
 {
   "name": "Sorcerer",
   "hit_die": 6,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Innate Sorcery",
         "Spellcasting (Sorcerer)",
         "Class Proficiencies (Sorcerer)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Font of Magic",
         "Metamagic"
       ]
     },
-    {
+    "3": {
       "features": [
         "Sorcerer Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Sorcerous Restoration"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "7": {
       "features": [
         "Sorcery Incarnate"
       ],
       "sorcery_points": 7
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "10": {
       "features": [
         "Metamagic"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "17": {
       "features": [
         "Metamagic"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Arcane Apotheosis"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Pyromancer (PSK)",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Heart of Fire"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Fire in the Veins"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Pyromancer's Fury"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Fiery Soul"
           ]
@@ -131,30 +105,25 @@
       "name": "Divine Soul",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Divine Magic",
             "Favored by the Gods"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Empowered Healing"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Otherworldly Wings"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Unearthly Recovery"
           ]
@@ -165,30 +134,25 @@
       "name": "Shadow Magic",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Eyes of the Dark",
             "Strength of the Grave"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Hound of Ill Omen"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Shadow Walk"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Umbral Form"
           ]
@@ -199,31 +163,26 @@
       "name": "Storm Sorcery",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Tempestuous Magic",
             "Wind Speaker"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Heart of the Storm",
             "Storm Guide"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Storm's Fury"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Wind Soul"
           ]
@@ -234,31 +193,26 @@
       "name": "Lunar Sorcery",
       "levels": {
         "1": {
-          "level": 1,
           "features": [
             "Lunar Embodiment",
             "Moon Fire"
           ]
         },
         "3": {
-          "level": 3,
           "features": []
         },
         "6": {
-          "level": 6,
           "features": [
             "Lunar Boons",
             "Waxing and Waning"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Lunar Empowerment"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Lunar Phenomenon"
           ]
@@ -269,27 +223,23 @@
       "name": "Aberrant Sorcery",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Psionic Spells",
             "Telepathic Speech"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Psionic Sorcery",
             "Psychic Defenses"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Revelation in Flesh"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Warping Implosion"
           ]
@@ -300,26 +250,22 @@
       "name": "Clockwork Sorcery",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Clockwork Spells",
             "Restore Balance"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Bastion of Law"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Trance of Order"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Clockwork Cavalcade"
           ]
@@ -330,26 +276,22 @@
       "name": "Draconic Sorcery",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Draconic Spells",
             "Draconic Resilience"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Elemental Affinity"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Dragon Wings"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Dragon Companion"
           ]
@@ -360,26 +302,22 @@
       "name": "Wild Magic Sorcery",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Tides of Chaos",
             "Wild Magic Surge"
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Bend Luck"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Controlled Chaos"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Tamed Surge"
           ]
@@ -390,7 +328,6 @@
       "name": "Spellfire Sorcery",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bolstering Flames",
             "Radiant Fire",
@@ -399,19 +336,16 @@
           ]
         },
         "6": {
-          "level": 6,
           "features": [
             "Absorb Spells"
           ]
         },
         "14": {
-          "level": 14,
           "features": [
             "Honed Spellfire"
           ]
         },
         "18": {
-          "level": 18,
           "features": [
             "Crown of Spellfire"
           ]

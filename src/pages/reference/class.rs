@@ -125,7 +125,7 @@ pub fn ClassReference() -> impl IntoView {
 
                         let mut features: Vec<(String, String)> = Vec::new();
                         registry.with_features_index(|features_index| {
-                            if let Some(rules) = def.levels.get(level as usize - 1) {
+                            if let Some(rules) = def.levels.get(&level) {
                                 for feat_name in &rules.features {
                                     let label = features_index
                                         .get(feat_name.as_str())

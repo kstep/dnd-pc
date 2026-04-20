@@ -249,7 +249,12 @@ fn finalize_quick_start(
         }
     }
 
-    apply_new_features(features_index, character, pending, Some(inputs));
+    apply_new_features(
+        features_index,
+        character,
+        pending,
+        Some(&inputs.feature_inputs),
+    );
     character.combat.hp_current = character.hp_max();
 
     navigate_to_editor(character.id);

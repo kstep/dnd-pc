@@ -147,6 +147,10 @@ impl FeatureSource {
         }
     }
 
+    pub fn is_user(&self) -> bool {
+        matches!(self, Self::User(_))
+    }
+
     pub fn as_class(&self) -> Option<&str> {
         match self {
             Self::Class(name, _) => Some(name),

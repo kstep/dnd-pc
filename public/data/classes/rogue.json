@@ -1,8 +1,8 @@
 {
   "name": "Rogue",
   "hit_die": 8,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Expertise",
         "Sneak Attack",
@@ -11,124 +11,111 @@
         "Class Proficiencies (Rogue)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Cunning Action"
       ]
     },
-    {
+    "3": {
       "features": [
         "Rogue Subclass",
         "Steady Aim"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Cunning Strike",
         "Uncanny Dodge"
       ]
     },
-    {
+    "6": {
       "features": [
         "Expertise"
       ]
     },
-    {
+    "7": {
       "features": [
         "Evasion",
         "Reliable Talent"
       ]
     },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "10": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "11": {
       "features": [
         "Improved Cunning Strike"
       ]
     },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "14": {
       "features": [
         "Devious Strikes"
       ]
     },
-    {
+    "15": {
       "features": [
         "Slippery Mind"
       ]
     },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "18": {
       "features": [
         "Elusive"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Stroke of Luck"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Arcane Trickster",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Mage Hand Legerdemain",
             "Spellcasting (Arcane Trickster)"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Magical Ambush"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Versatile Trickster"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Spell Thief"
           ]
@@ -139,26 +126,22 @@
       "name": "Assassin",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Assassin's Tools",
             "Assassinate"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Infiltration Expertise"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Envenom Weapons"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Death Strike"
           ]
@@ -169,26 +152,22 @@
       "name": "Thief",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Fast Hands",
             "Second-Story Work"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Supreme Sneak"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Use Magic Device"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Thief's Reflexes"
           ]
@@ -199,7 +178,6 @@
       "name": "Inquisitive",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Ear for Deceit",
             "Eye for Detail",
@@ -207,19 +185,16 @@
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Steady Eye"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Unerring Eye"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Eye for Weakness"
           ]
@@ -230,26 +205,22 @@
       "name": "Mastermind",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Master of Intrigue",
             "Master of Tactics"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Insightful Manipulator"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Misdirection"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Soul of Deceit"
           ]
@@ -260,26 +231,22 @@
       "name": "Scout",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Skirmisher",
             "Survivalist"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Superior Mobility"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Ambush Master"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Sudden Strike"
           ]
@@ -290,26 +257,22 @@
       "name": "Swashbuckler",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Fancy Footwork",
             "Rakish Audacity"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Panache"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Elegant Maneuver"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Master Duelist"
           ]
@@ -320,26 +283,22 @@
       "name": "Phantom",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Wails from the Grave",
             "Whispers of the Dead"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Tokens of the Departed"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Ghost Walk"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Death's Friend"
           ]
@@ -350,7 +309,6 @@
       "name": "Soulknife",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Psionic Power",
             "Psychic Blades",
@@ -359,7 +317,6 @@
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Homing Strikes",
             "Psychic Teleportation",
@@ -367,13 +324,11 @@
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Psychic Veil"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Rend Mind"
           ]
@@ -384,26 +339,22 @@
       "name": "Scion of the Three",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Bloodthirst",
             "Dread Allegiance"
           ]
         },
         "9": {
-          "level": 9,
           "features": [
             "Strike Fear"
           ]
         },
         "13": {
-          "level": 13,
           "features": [
             "Aura of Malevolence"
           ]
         },
         "17": {
-          "level": 17,
           "features": [
             "Dread Incarnate"
           ]

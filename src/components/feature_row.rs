@@ -11,7 +11,7 @@ use crate::{
         feature_field_row::FeatureFieldRow,
         icon::Icon,
     },
-    model::{Character, CharacterStoreFields, FeatureSource, FeatureValue, FeaturesStoreFields},
+    model::{Character, CharacterStoreFields, FeatureValue, FeaturesStoreFields},
     rules::{
         RulesRegistry,
         apply::{PendingFeature, apply_new_features},
@@ -34,7 +34,7 @@ pub fn FeatureRow(
     let desc = feature.description.clone();
     let feature_name = feature.name.clone();
     let source = feature.source.clone();
-    let is_readonly = !matches!(source, FeatureSource::User(_))
+    let is_readonly = !source.is_user()
         || registry.with_features_index_untracked(|idx| idx.contains_key(feature_name.as_str()));
     let stored_name = StoredValue::new(feature_name.clone());
     let (field_count, has_spells, has_empty_choices) = store
@@ -191,7 +191,12 @@ pub fn FeatureRow(
                             registry,
                             pending,
                             move |character, pending, inputs, fi| {
-                                apply_new_features(fi, character, pending, Some(inputs));
+                                apply_new_features(
+                                    fi,
+                                    character,
+                                    pending,
+                                    Some(&inputs.feature_inputs),
+                                );
                             },
                         );
                     }

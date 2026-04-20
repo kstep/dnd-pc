@@ -1,8 +1,8 @@
 {
   "name": "Ranger",
   "hit_die": 10,
-  "levels": [
-    {
+  "levels": {
+    "1": {
       "features": [
         "Favored Enemy",
         "Spellcasting (Ranger)",
@@ -10,121 +10,108 @@
         "Class Proficiencies (Ranger)"
       ]
     },
-    {
+    "2": {
       "features": [
         "Deft Explorer",
         "Fighting Style"
       ]
     },
-    {
+    "3": {
       "features": [
         "Ranger Subclass"
       ]
     },
-    {
+    "4": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "5": {
       "features": [
         "Extra Attack"
       ]
     },
-    {
+    "6": {
       "features": [
         "Roving"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "8": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "9": {
       "features": [
         "Expertise"
       ]
     },
-    {
+    "10": {
       "features": [
         "Tireless"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "12": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "13": {
       "features": [
         "Relentless Hunter"
       ]
     },
-    {
+    "14": {
       "features": [
         "Nature's Veil"
       ]
     },
-    {
-      "features": []
-    },
-    {
+    "16": {
       "features": [
         "Ability Score Improvement"
       ]
     },
-    {
+    "17": {
       "features": [
         "Precise Hunter"
       ]
     },
-    {
+    "18": {
       "features": [
         "Feral Senses"
       ]
     },
-    {
+    "19": {
       "features": [
         "Epic Boon"
       ]
     },
-    {
+    "20": {
       "features": [
         "Foe Slayer"
       ]
     }
-  ],
+  },
   "subclasses": [
     {
       "name": "Beast Master",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Primal Companion"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Exceptional Training"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Bestial Fury"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Share Spells"
           ]
@@ -135,26 +122,22 @@
       "name": "Hunter",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Hunter's Lore",
             "Hunter's Prey"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Defensive Tactics"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Superior Hunter's Prey"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Superior Hunter's Defense"
           ]
@@ -165,7 +148,6 @@
       "name": "Gloom Stalker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Dread Ambusher",
             "Gloom Stalker Spells",
@@ -173,19 +155,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Iron Mind"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Stalker's Flurry"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Shadowy Dodge"
           ]
@@ -196,7 +175,6 @@
       "name": "Horizon Walker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Detect Portal",
             "Horizon Walker Magic",
@@ -204,19 +182,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Ethereal Step"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Distant Strike"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Spectral Defense"
           ]
@@ -227,7 +202,6 @@
       "name": "Monster Slayer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Hunter's Sense",
             "Monster Slayer Magic",
@@ -235,19 +209,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Supernatural Defense"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Magic-User's Nemesis"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Slayer's Counter"
           ]
@@ -258,7 +229,6 @@
       "name": "Fey Wanderer",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Dreadful Strikes",
             "Fey Wanderer Spells",
@@ -266,19 +236,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Beguiling Twist"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Fey Reinforcements"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Misty Wanderer"
           ]
@@ -289,26 +256,22 @@
       "name": "Swarmkeeper",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Gathered Swarm",
             "Swarmkeeper Magic"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Writhing Tide"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Mighty Swarm"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Swarming Dispersal"
           ]
@@ -319,26 +282,22 @@
       "name": "Drakewarden",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Draconic Gift",
             "Drake Companion"
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Bond of Fang and Scale"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Drake's Breath"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Perfected Bond"
           ]
@@ -349,7 +308,6 @@
       "name": "Winter Walker",
       "levels": {
         "3": {
-          "level": 3,
           "features": [
             "Frigid Explorer",
             "Hunter's Rime",
@@ -357,19 +315,16 @@
           ]
         },
         "7": {
-          "level": 7,
           "features": [
             "Fortifying Soul"
           ]
         },
         "11": {
-          "level": 11,
           "features": [
             "Chilling Retribution"
           ]
         },
         "15": {
-          "level": 15,
           "features": [
             "Frozen Haunt"
           ]
