@@ -1,12 +1,16 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::Arc,
+};
 
-use leptos::{either::Either, prelude::*};
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, IterStack, VarGroup},
+    expr::{
+        self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, ExprAnalysis, IterStack, VarGroup,
+    },
     model::{AssignInputs, Attribute, AttributeGroup, Character, Expr, Op},
 };
 
@@ -20,7 +24,7 @@ struct ArgContext<'a> {
 impl Context<Attribute, i32> for ArgContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
-            Attribute::Arg(n) => Ok(self.args.get(n as usize).map_or(0, |s| s.get())),
+            Attribute::Arg(n) => Ok(self.args.get(n as usize).map_or(0, |signal| signal.get())),
             other => self.character.resolve(other),
         }
     }
@@ -149,7 +153,7 @@ impl FormBuilder {
         Ok(self
             .0
             .into_iter()
-            .map(|v| view! { <div class="expr-formula-line">{v}</div> }.into_any())
+            .map(|element| view! { <div class="expr-formula-line">{element}</div> }.into_any())
             .collect_view()
             .into_any())
     }
@@ -160,9 +164,8 @@ impl FormBuilder {
 /// Context for form building: tracks which ARGs are active (from analysis),
 /// which have been seen (first occurrence = input, later = read-only ref),
 /// and the arg signals.
-struct FormCtx {
-    args: Vec<RwSignal<i32>>,
-    prefill: Vec<i32>,
+struct FormCtx<'a> {
+    args: &'a [RwSignal<i32>],
     seen: BTreeSet<u8>,
     active_args: BTreeSet<u8>,
     boolean_args: BTreeSet<u8>,
@@ -171,19 +174,18 @@ struct FormCtx {
     is_satisfied: Memo<bool>,
 }
 
-impl FormCtx {
+impl<'a> FormCtx<'a> {
     fn new(
-        active_args: Vec<u8>,
+        args: &'a [RwSignal<i32>],
+        active_args: BTreeSet<u8>,
         boolean_args: BTreeSet<u8>,
         i18n: leptos_fluent::I18n,
         is_satisfied: Memo<bool>,
-        prefill: Vec<i32>,
     ) -> Self {
         Self {
-            args: Vec::new(),
-            prefill,
+            args,
             seen: BTreeSet::new(),
-            active_args: active_args.into_iter().collect(),
+            active_args,
             boolean_args,
             i18n,
             iter_stack: IterStack::new(),
@@ -203,7 +205,7 @@ impl FormCtx {
 fn form_block(
     expr: &Expr,
     block: expr::BlockIndex,
-    ctx: &mut FormCtx,
+    ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<AnyView, expr::Error> {
     let block = expr.block(block);
@@ -221,7 +223,7 @@ fn render_statement(
     fb: &mut FormBuilder,
     expr: &Expr,
     stmt: &[Op],
-    ctx: &mut FormCtx,
+    ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<(), expr::Error> {
     if let Some(ca) = Block::detect_compound(stmt) {
@@ -284,7 +286,7 @@ fn form_block_ops(
     fb: &mut FormBuilder,
     expr: &Expr,
     ops: &[Op],
-    ctx: &mut FormCtx,
+    ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<(), expr::Error> {
     let mut i = 0;
@@ -371,12 +373,16 @@ fn form_block_ops(
 }
 
 /// Unroll a loop: render the body block once per group member.
+/// Skips iterations where the body references `@ARG` (companion ARG group)
+/// for an iter_no not in `ctx.active_args` — their assignments would be
+/// `SKILL[i].PROF += ARG.i = 0` which pollutes the view with zero-effect
+/// rows the user can't interact with.
 fn form_block_loop(
     fb: &mut FormBuilder,
     expr: &Expr,
     subgrp: expr::VarSubgroup<AttributeGroup>,
     body_idx: expr::BlockIndex,
-    ctx: &mut FormCtx,
+    ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<(), expr::Error> {
     let body = expr.block(body_idx);
@@ -384,7 +390,11 @@ fn form_block_loop(
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_ops.len().saturating_sub(2);
     let content = &body_ops[..content_end];
+    let body_uses_arg_group = expr.block_has_var(body_idx, &|var| matches!(var, Attribute::Arg(_)));
     for idx in subgrp.iter_indices() {
+        if body_uses_arg_group && !ctx.is_active(idx.iter_no as u8) {
+            continue;
+        }
         ctx.iter_stack.push(idx);
         render_statement(fb, expr, content, ctx, condition)?;
         let _ = ctx.iter_stack.pop();
@@ -393,13 +403,17 @@ fn form_block_loop(
 }
 
 /// Push an ARG input (checkbox, number, or ref) for the given ARG index.
-fn push_arg_input(fb: &mut FormBuilder, ctx: &mut FormCtx, n: u8, condition: bool) {
-    let idx = n as usize;
-    while ctx.args.len() <= idx {
-        let init = ctx.prefill.get(ctx.args.len()).copied().unwrap_or(0);
-        ctx.args.push(RwSignal::new(init));
-    }
-    let signal = ctx.args[idx];
+/// `ctx.args` is pre-sized by `arg_slot_count` during component build, so
+/// indexing is always in bounds. `debug_assert!` catches desync between the
+/// sizing scan and the runtime interpreter (both must use the same `arg_index`
+/// extractor) during development.
+fn push_arg_input(fb: &mut FormBuilder, ctx: &mut FormCtx<'_>, n: u8, condition: bool) {
+    debug_assert!(
+        (n as usize) < ctx.args.len(),
+        "ARG.{n} out of bounds (len={}): arg_slot_count and runtime disagree",
+        ctx.args.len()
+    );
+    let signal = ctx.args[n as usize];
     fb.push_view(if !condition && ctx.is_active(n) && ctx.seen.insert(n) {
         if ctx.is_boolean(n) {
             arg_checkbox(signal, ctx.is_satisfied)
@@ -540,52 +554,54 @@ pub fn build_dice_groups(
 #[component]
 pub fn ExprArgsInput(
     expr: Expr,
+    /// Snapshot of the character as seen by this feature during cascade
+    /// analysis — the character with all upstream pending features already
+    /// applied. Non-cascade call sites can pass a derived signal over the
+    /// live `Store<Character>`.
+    character: Signal<Arc<Character>>,
     #[prop(optional)] prefill: AssignInputs,
     on_ready: impl FnOnce(ExprArgsInputParts) + 'static,
 ) -> impl IntoView {
-    let store = expect_context::<Store<Character>>();
-
-    // Analyze: determine which ARGs are reachable and which dice are needed
-    let analysis = {
-        let character = store.read_untracked();
+    // Initial analysis — used to size dice inputs (dice are assumed static
+    // w.r.t. cascade upstream). active_args are read reactively below.
+    let initial_analysis = {
+        let character = character.get_untracked();
         expr.analyze(&*character, Attribute::arg_index)
     };
 
-    let has_args = !analysis.active_args.is_empty();
-    let has_dice = !analysis.dice_rolls.is_empty();
-
-    if !has_args && !has_dice {
-        let has_any_args = expr.has_var(|v| matches!(v, Attribute::Arg(_)));
-        on_ready(ExprArgsInputParts {
-            arg_signals: Vec::new(),
-            dice_signals: BTreeMap::new(),
-            is_valid: Memo::new(move |_| !has_any_args),
-        });
-        return Either::Left(if has_any_args {
-            Either::Left(view! { <p class="expr-form-empty">{move_tr!("no-eligible-options")}</p> })
-        } else {
-            Either::Right(view! { <span class="expr-form-plain">{expr.to_string()}</span> })
-        });
-    }
+    let has_any_args = expr.has_var(|var| matches!(var, Attribute::Arg(_)));
+    let has_dice = !initial_analysis.dice_rolls.is_empty();
 
     let i18n = expect_context::<leptos_fluent::I18n>();
 
-    // Lazy signals — populated after form building, read by is_valid Memo.
-    let read_signals_cell: RwSignal<Vec<Signal<i32>>> = RwSignal::new(Vec::new());
+    // Pre-allocate ARG signals up to the largest index the expression can
+    // possibly reach. Stable across reactive re-analyses — user input
+    // survives cascade rebuilds.
+    let arg_slots = expr.arg_slot_count(Attribute::arg_index);
+    let arg_signals: Vec<RwSignal<i32>> = (0..arg_slots)
+        .map(|i| RwSignal::new(prefill.args.get(i).copied().unwrap_or(0)))
+        .collect();
+    let read_signals: Vec<Signal<i32>> = arg_signals.iter().copied().map(Into::into).collect();
+
+    // Reactive analysis — re-runs whenever the character snapshot changes.
+    let expr_for_analysis = expr.clone();
+    let analysis: Memo<ExprAnalysis> = Memo::new(move |_| {
+        let character = character.get();
+        expr_for_analysis.analyze(&*character, Attribute::arg_index)
+    });
+
+    // Dice signals fixed at build time from initial analysis (dice rarely
+    // depend on upstream cascade state). dice_signals_cell used by is_valid.
     let dice_signals_cell: RwSignal<Option<(DiceGroupSignals, u32)>> = RwSignal::new(None);
 
-    // Validation Memo — created before form so it can be passed to FormCtx.
-    // Reads signals lazily; they're populated after form_block runs.
+    // Validation Memo — reads character + arg signals reactively.
     let eval_expr = expr.clone();
     let is_valid = Memo::new(move |_| {
-        let signals = read_signals_cell.read();
-        let args_ok = if signals.is_empty() {
-            true
-        } else {
-            let character = store.read();
+        let args_ok = {
+            let character = character.get();
             let ctx = ArgContext {
                 character: &character,
-                args: &signals,
+                args: &read_signals,
             };
             eval_expr.eval_lenient(&ctx).is_ok()
         };
@@ -605,43 +621,56 @@ pub fn ExprArgsInput(
         args_ok && dice_ok
     });
 
-    // Build formula view with inline ARG inputs (if any)
-    let formula_view = if has_args {
-        let mut form_ctx = FormCtx::new(
-            analysis.active_args,
-            analysis.boolean_args,
-            i18n,
-            is_valid,
-            prefill.args.clone(),
-        );
-        let view = form_block(&expr, expr::BLOCK_MAIN, &mut form_ctx, false)
-            .unwrap_or_else(|err| format!("Error: {err}").into_any());
+    // `is_satisfied` drives the auto-disable of untouched inputs once the
+    // expression's guard is satisfied. Without a guard, `eval_lenient` is
+    // trivially Ok, so `is_valid` is always true — using it to disable
+    // untouched fields would lock every zero-valued input on first render
+    // (e.g. Generation: Custom). Gate on `has_guard` to restrict the
+    // auto-disable to expressions that actually enforce cardinality.
+    let is_satisfied =
+        Memo::new(move |_| analysis.with(|snapshot| snapshot.has_guard) && is_valid.get());
 
-        let read_signals: Vec<Signal<i32>> = form_ctx.args.iter().map(|s| (*s).into()).collect();
-        let write_signals = form_ctx.args;
-
-        Some((view, read_signals, write_signals))
-    } else {
-        None
-    };
-
-    let (formula_el, arg_signals) = match formula_view {
-        Some((view, read_signals, write_signals)) => {
-            read_signals_cell.set(read_signals);
-            (Some(view), write_signals)
-        }
-        None => (None, Vec::new()),
-    };
-
-    // Build dice input groups (if any)
+    // Build dice input groups (fixed from initial_analysis).
     let (dice_signals, dice_groups_el) = if has_dice {
-        let total_needed: u32 = analysis.dice_rolls.values().copied().sum();
-        let (signals, groups_view) = build_dice_groups(&analysis.dice_rolls, &prefill.dice);
+        let total_needed: u32 = initial_analysis.dice_rolls.values().copied().sum();
+        let (signals, groups_view) = build_dice_groups(&initial_analysis.dice_rolls, &prefill.dice);
         dice_signals_cell.set(Some((signals.clone(), total_needed)));
         let el = Some(view! { <div class="dice-pool-groups">{groups_view}</div> });
         (signals, el)
     } else {
         (BTreeMap::new(), None)
+    };
+
+    // Reactive formula — rebuilds on analysis change. Signals are stable;
+    // only the view nodes (disabled / checkbox-vs-number / visible) reflect
+    // the latest active_args / boolean_args.
+    let expr_for_render = expr.clone();
+    let arg_signals_for_render = arg_signals.clone();
+    // Formula view: reactively picks between "interactive form" and "no
+    // eligible options". When the expr has no ARGs at all (or no active
+    // ARGs and no structural ARGs), nothing is rendered — the expression
+    // itself is already available via the `ExprDetails` toggle sibling.
+    let formula_el = view! {
+        {move || {
+            let snapshot = analysis.get();
+            let has_args = !snapshot.active_args.is_empty();
+            if has_args {
+                let mut form_ctx = FormCtx::new(
+                    &arg_signals_for_render,
+                    snapshot.active_args,
+                    snapshot.boolean_args,
+                    i18n,
+                    is_satisfied,
+                );
+                form_block(&expr_for_render, expr::BLOCK_MAIN, &mut form_ctx, false)
+                    .unwrap_or_else(|err| format!("Error: {err}").into_any())
+            } else if has_any_args {
+                view! { <p class="expr-form-empty">{move_tr!("no-eligible-options")}</p> }
+                    .into_any()
+            } else {
+                ().into_any()
+            }
+        }}
     };
 
     on_ready(ExprArgsInputParts {
@@ -650,10 +679,10 @@ pub fn ExprArgsInput(
         is_valid,
     });
 
-    Either::Right(view! {
+    view! {
         <div class="expr-formula" class:invalid=move || !is_valid.get()>
             {formula_el}
             {dice_groups_el}
         </div>
-    })
+    }
 }

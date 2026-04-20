@@ -1,8 +1,8 @@
-use std::ops::Deref;
+use std::{ops::Deref, vec::IntoIter as VecIntoIter};
 
 use crate::expr::Error;
 
-pub(crate) struct Stack<T>(Vec<T>);
+pub struct Stack<T>(Vec<T>);
 
 impl<T> Deref for Stack<T> {
     type Target = [T];
@@ -71,7 +71,7 @@ impl<T> Stack<T> {
 }
 
 impl<T> IntoIterator for Stack<T> {
-    type IntoIter = std::vec::IntoIter<T>;
+    type IntoIter = VecIntoIter<T>;
     type Item = T;
 
     fn into_iter(self) -> Self::IntoIter {

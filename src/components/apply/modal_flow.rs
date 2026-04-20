@@ -3,12 +3,11 @@ use std::collections::BTreeMap;
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use super::context::ArgsContext;
 use crate::{
     components::args_modal::ArgsModalCtx,
-    model::{AssignInputs, Attribute, Character},
+    model::{AssignInputs, Character},
     rules::{
-        ApplyInputs, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
+        ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
         apply::{PendingFeature, replay, resolve_replacements, restore_all_spell_selections},
         feature::FeatureDefinition,
     },
@@ -39,16 +38,14 @@ pub(super) fn collect_all_inputs(
             .filter(|feature| feature.applied)
             .filter_map(|feature| {
                 let feat_def = fi.get(feature.name.as_str())?;
-                let exprs = feat_def.interactive_exprs(WhenCondition::OnLevelUp, &character);
-                (!exprs.is_empty()).then_some(PendingInputs {
-                    feature_name: feature.name.clone(),
-                    feature_label: feat_def.label().to_string(),
-                    feature_description: feat_def.description.clone(),
-                    exprs,
-                    prefill: Vec::new(),
-                    replace_with: ReplaceWith::None,
-                    source: feature.source.clone(),
-                })
+                PendingInputs::from_feature(
+                    feature.name.clone(),
+                    feat_def,
+                    feature.source.clone(),
+                    WhenCondition::OnLevelUp,
+                    Vec::new(),
+                    ReplaceWith::None,
+                )
             });
 
         new_inputs.chain(levelup_inputs).collect()
@@ -146,8 +143,9 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
 }
 
 /// Like [`apply_with_modal`], but accepts pre-filled ARG values (e.g. from AI
-/// generation). Features whose prefilled args validate successfully are applied
-/// directly; any remaining features fall back to the interactive args modal.
+/// generation). All pending features — validated and invalid alike — go through
+/// the args modal with their prefill populated. The user can review/edit AI's
+/// picks before committing; cancelling leaves the character untouched.
 pub fn apply_with_prefilled_args(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -163,151 +161,61 @@ pub fn apply_with_prefilled_args(
     + Sync
     + 'static,
 ) {
-    let all_inputs = collect_all_inputs(&store, &registry, &pending);
-
-    // Partition inputs into pre-filled (validated) and fallback (needs modal)
-    let mut validated_inputs = ApplyInputs::default();
-    let mut fallback_names: Vec<String> = Vec::new();
-
-    {
-        let character = store.read_untracked();
-        for pending_input in &all_inputs {
-            // Check for prefilled replacement
+    // Build PendingInputs for every feature that needs interaction, populating
+    // prefill + prefilled_replacement from AI's choices. Cascade snapshots in
+    // the modal propagate state correctly, so feature N's analysis sees
+    // pending[0..N] applied — no need to commit validated features to the
+    // store upfront.
+    let all_inputs: Vec<PendingInputs> = collect_all_inputs(&store, &registry, &pending)
+        .into_iter()
+        .map(|mut pending_input| {
             if pending_input.is_replaceable()
                 && let Some(replacement) = prefilled_replacements.get(&pending_input.feature_name)
             {
-                validated_inputs
-                    .replacements
-                    .insert(pending_input.feature_name.clone(), replacement.clone());
-                // If the replacement has ARGs, validate them too
+                pending_input.prefilled_replacement = Some(replacement.clone());
                 if let Some(args) = prefilled.get(replacement) {
-                    let expr_inputs = pending_input
-                        .exprs
-                        .iter()
-                        .map(|_| AssignInputs {
-                            args: args.clone(),
-                            dice: Default::default(),
-                        })
-                        .collect();
-                    validated_inputs.feature_inputs.insert(
-                        FeatureKey::new(
-                            pending_input.feature_name.clone(),
-                            pending_input.source.clone(),
-                        ),
-                        expr_inputs,
-                    );
+                    // Replacement's exprs aren't known here (they depend on
+                    // the chosen replacement feat). Single AssignInputs with
+                    // AI-provided args — ReplacementPicker broadcasts it to
+                    // each interactive expr at render time.
+                    pending_input.replacement_prefill = Some(AssignInputs {
+                        args: args.clone(),
+                        dice: Default::default(),
+                    });
                 }
-                continue;
-            }
-
-            if let Some(args) = prefilled.get(&pending_input.feature_name) {
-                let all_valid = pending_input.exprs.iter().all(|expression| {
-                    let ctx = ArgsContext {
-                        character: &character,
-                        args,
-                    };
-                    expression.eval_lenient(&ctx).is_ok()
-                });
-
-                if all_valid {
-                    let expr_inputs = pending_input
-                        .exprs
-                        .iter()
-                        .map(|_| AssignInputs {
-                            args: args.clone(),
-                            dice: Default::default(),
-                        })
-                        .collect();
-                    validated_inputs.feature_inputs.insert(
-                        FeatureKey::new(
-                            pending_input.feature_name.clone(),
-                            pending_input.source.clone(),
-                        ),
-                        expr_inputs,
-                    );
-                    continue;
-                }
-            }
-            fallback_names.push(pending_input.feature_name.clone());
-        }
-    }
-
-    // Features that have interactive assign expressions but weren't in
-    // all_inputs (e.g. Expertise whose guard prunes all ARGs before
-    // proficiencies are applied) also need to go to fallback.
-    let inputs_names: Vec<_> = all_inputs
-        .iter()
-        .map(|input| input.feature_name.as_str())
-        .collect();
-    registry.with_features_index_untracked(|fi| {
-        for pf in &pending {
-            let already_validated = validated_inputs
-                .feature_inputs
-                .keys()
-                .any(|key| key.name == pf.name);
-            if !inputs_names.contains(&pf.name.as_str())
-                && !already_validated
-                && let Some(feat_def) = fi.get(pf.name.as_str())
-            {
-                let has_args = feat_def.assign.as_ref().is_some_and(|assigns| {
-                    assigns.iter().any(|assignment| {
-                        assignment
-                            .expr
-                            .has_var(|var| matches!(var, Attribute::Arg(_)))
+            } else if let Some(args) = prefilled.get(&pending_input.feature_name) {
+                pending_input.prefill = pending_input
+                    .exprs
+                    .iter()
+                    .map(|_| AssignInputs {
+                        args: args.clone(),
+                        dice: Default::default(),
                     })
-                });
-                if has_args {
-                    fallback_names.push(pf.name.clone());
-                }
+                    .collect();
             }
-        }
-    });
+            pending_input
+        })
+        .collect();
 
-    if fallback_names.is_empty() {
-        apply_batch(store, registry, &pending, &validated_inputs, &callback);
+    let seeded_inputs = ApplyInputs {
+        feature_inputs: BTreeMap::new(),
+        replacements: prefilled_replacements,
+    };
+
+    if all_inputs.is_empty() {
+        apply_batch(store, registry, &pending, &seeded_inputs, &callback);
     } else {
-        // Split: apply validated features first, then modal for the rest
-        log::debug!("Fallback features needing modal: {fallback_names:?}");
-
-        let validated_pending: Vec<_> = pending
-            .iter()
-            .filter(|pf| !fallback_names.contains(&pf.name))
-            .cloned()
-            .collect();
-        let fallback_pending: Vec<_> = pending
-            .into_iter()
-            .filter(|pf| fallback_names.contains(&pf.name))
-            .collect();
-
-        apply_batch(
-            store,
-            registry,
-            &validated_pending,
-            &validated_inputs,
-            &callback,
-        );
-
-        // Re-collect inputs for fallback features now that character state
-        // has changed (e.g. Expertise needs proficiencies from Class Proficiencies)
-        let refreshed_inputs: Vec<PendingInputs> = registry.with_features_index_untracked(|fi| {
-            let character = store.read_untracked();
-            fallback_pending
-                .iter()
-                .filter_map(|pending_feature| {
-                    let feat_def = fi.get(pending_feature.name.as_str())?;
-                    pending_feature.pending_inputs(feat_def, &character)
-                })
-                .collect()
+        let ctx = expect_context::<ArgsModalCtx>();
+        ctx.open(all_inputs, move |modal_inputs| {
+            // Merge AI-seeded replacements with user-submitted (user wins).
+            // `seeded_inputs.feature_inputs` is always empty here — the modal
+            // owns all feature_inputs — so this is an assignment rather than
+            // a merge.
+            let mut merged = seeded_inputs;
+            merged.replacements.extend(modal_inputs.replacements);
+            merged.feature_inputs = modal_inputs.feature_inputs;
+            apply_batch(store, registry, &pending, &merged, &callback);
         });
-
-        // Show modal for remaining features
-        if let Some(ctx) = use_context::<ArgsModalCtx>() {
-            ctx.open(refreshed_inputs, move |modal_inputs| {
-                apply_batch(store, registry, &fallback_pending, &modal_inputs, &callback);
-            });
-        } else {
-            log::warn!("Skipping features without valid ARGs (no modal): {fallback_names:?}");
-        }
     }
 }
 

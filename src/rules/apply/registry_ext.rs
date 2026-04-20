@@ -209,16 +209,14 @@ impl RulesRegistry {
                     }
                 }
             };
-            let exprs = feat.interactive_exprs(when, character);
-            (!exprs.is_empty()).then_some(PendingInputs {
-                feature_name: name.to_string(),
-                feature_label: feat.label().to_string(),
-                feature_description: feat.description.clone(),
-                exprs,
-                prefill: Vec::new(),
-                replace_with: ReplaceWith::None,
-                source: source.cloned().unwrap_or_default(),
-            })
+            PendingInputs::from_feature(
+                name.to_string(),
+                feat,
+                source.cloned().unwrap_or_default(),
+                when,
+                Vec::new(),
+                ReplaceWith::None,
+            )
         })
     }
 

@@ -6,7 +6,10 @@ use reactive_stores::Store;
 
 use crate::{
     ai::{self, AiSettings, CharacterConcept, ChatMessage, PendingArgDescription, Role},
-    components::{ai_settings_modal::AiSettingsModal, icon::Icon, modal::Modal, spinner::Spinner},
+    components::{
+        ai_settings_modal::AiSettingsModal, apply::ArgsContext, icon::Icon, modal::Modal,
+        spinner::Spinner,
+    },
     hooks,
     hooks::join_iter,
     model::{Attribute, Character, FeatureCategory, FeatureSource},
@@ -150,10 +153,10 @@ async fn run_ai_generation(
             for (original, replacement) in &raw_replacements {
                 let valid = pending_inputs
                     .iter()
-                    .find(|input| input.feature_name == *original)
-                    .and_then(|input| {
+                    .find(|pending_input| pending_input.feature_name == *original)
+                    .and_then(|pending_input| {
                         fi.get(replacement.as_str())
-                            .filter(|feat_def| input.replace_with.matches(feat_def))
+                            .filter(|feat_def| pending_input.replace_with.matches(feat_def))
                     })
                     .is_some();
                 if valid {
@@ -171,20 +174,14 @@ async fn run_ai_generation(
                         .values()
                         .filter_map(|replacement_name| {
                             let feat_def = fi.get(replacement_name.as_str())?;
-                            let exprs =
-                                feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, &character);
-                            if exprs.is_empty() {
-                                return None;
-                            }
-                            Some(PendingInputs {
-                                feature_name: replacement_name.clone(),
-                                feature_label: feat_def.label().to_string(),
-                                feature_description: feat_def.description.clone(),
-                                exprs,
-                                prefill: Vec::new(),
-                                replace_with: ReplaceWith::None,
-                                source: FeatureSource::User(0),
-                            })
+                            PendingInputs::from_feature(
+                                replacement_name.clone(),
+                                feat_def,
+                                FeatureSource::User(0),
+                                WhenCondition::OnFeatureAdd,
+                                Vec::new(),
+                                ReplaceWith::None,
+                            )
                         })
                         .collect();
                     let descriptions = ai::describe_pending_args(&inputs, &character);
@@ -295,32 +292,30 @@ struct ChoiceValidationError {
     message: String,
 }
 
-use super::apply::ArgsContext;
-
 fn validate_feature_choices(
     choices: &BTreeMap<String, Vec<i32>>,
     pending_inputs: &[PendingInputs],
     character: &Character,
 ) -> Vec<ChoiceValidationError> {
     let mut errors = Vec::new();
-    for input in pending_inputs {
-        let Some(args) = choices.get(&input.feature_name) else {
+    for pending_input in pending_inputs {
+        let Some(args) = choices.get(&pending_input.feature_name) else {
             errors.push(ChoiceValidationError {
-                feature_name: input.feature_name.clone(),
+                feature_name: pending_input.feature_name.clone(),
                 message: format!(
                     "missing from response (expected {} ARG values)",
-                    input
+                    pending_input
                         .exprs
                         .iter()
-                        .flat_map(|e| {
-                            let is_arg = |var: &Attribute| {
+                        .flat_map(|expr| {
+                            let arg_index = |var: &Attribute| {
                                 if let Attribute::Arg(n) = var {
                                     Some(*n)
                                 } else {
                                     None
                                 }
                             };
-                            e.analyze(character, is_arg).active_args
+                            expr.analyze(character, arg_index).active_args
                         })
                         .count()
                 ),
@@ -329,10 +324,10 @@ fn validate_feature_choices(
         };
 
         let ctx = ArgsContext { character, args };
-        for expression in &input.exprs {
+        for expression in &pending_input.exprs {
             if expression.eval_lenient(&ctx).is_err() {
                 errors.push(ChoiceValidationError {
-                    feature_name: input.feature_name.clone(),
+                    feature_name: pending_input.feature_name.clone(),
                     message: format!("guard constraint failed with ARG values {args:?}"),
                 });
                 break;

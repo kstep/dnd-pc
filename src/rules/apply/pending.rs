@@ -63,6 +63,16 @@ pub struct PendingInputs {
     /// pre-fill ARG and dice signals so re-apply behaves as edit.
     pub prefill: Vec<AssignInputs>,
     pub replace_with: ReplaceWith,
+    /// Pre-chosen replacement feature name (e.g. from AI generation). When set,
+    /// `ReplacementPicker` initializes `replacement_choice` with this value and
+    /// shows the replacement UI expanded. User can still override.
+    pub prefilled_replacement: Option<String>,
+    /// Pre-filled ARG values for the replacement feature's expressions. Used
+    /// only when `prefilled_replacement` is `Some`. Same value broadcast to
+    /// every expr of the replacement (matches non-replacement `prefill`
+    /// semantics — one AI-supplied `args` vec applies to all interactive
+    /// exprs of the feature).
+    pub replacement_prefill: Option<AssignInputs>,
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
     pub source: FeatureSource,
@@ -75,6 +85,35 @@ impl PendingInputs {
 
     pub fn is_replace_only(&self) -> bool {
         self.is_replaceable() && self.exprs.is_empty()
+    }
+
+    /// Build a `PendingInputs` from a feature definition. Returns `None` if
+    /// the feature has no interactive exprs under `when` and is not
+    /// replaceable (by the supplied `replace_with`).
+    pub fn from_feature(
+        name: String,
+        feat_def: &FeatureDefinition,
+        source: FeatureSource,
+        when: WhenCondition,
+        prefill: Vec<AssignInputs>,
+        replace_with: ReplaceWith,
+    ) -> Option<Self> {
+        let exprs = feat_def.interactive_exprs(when);
+        let is_replaceable = !matches!(replace_with, ReplaceWith::None);
+        if exprs.is_empty() && !is_replaceable {
+            return None;
+        }
+        Some(Self {
+            feature_name: name,
+            feature_label: feat_def.label().to_string(),
+            feature_description: feat_def.description.clone(),
+            exprs,
+            prefill,
+            replace_with,
+            prefilled_replacement: None,
+            replacement_prefill: None,
+            source,
+        })
     }
 }
 
@@ -97,10 +136,6 @@ impl PendingFeature {
         feat_def: &FeatureDefinition,
         character: &Character,
     ) -> Option<PendingInputs> {
-        let exprs = feat_def.interactive_exprs(WhenCondition::OnFeatureAdd, character);
-        if exprs.is_empty() && !feat_def.is_replaceable() {
-            return None;
-        }
         let prefill = character
             .features
             .iter()
@@ -111,14 +146,13 @@ impl PendingFeature {
             })
             .map(|feature| feature.inputs.clone())
             .unwrap_or_default();
-        Some(PendingInputs {
-            feature_name: self.name.clone(),
-            feature_label: feat_def.label().to_string(),
-            feature_description: feat_def.description.clone(),
-            exprs,
+        PendingInputs::from_feature(
+            self.name.clone(),
+            feat_def,
+            self.source.clone(),
+            WhenCondition::OnFeatureAdd,
             prefill,
-            replace_with: feat_def.replace_with,
-            source: self.source.clone(),
-        })
+            feat_def.replace_with,
+        )
     }
 }

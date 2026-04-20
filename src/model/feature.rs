@@ -479,6 +479,12 @@ pub struct AssignInputs {
     pub dice: DicePool,
 }
 
+impl AssignInputs {
+    pub fn is_empty(&self) -> bool {
+        self.args.is_empty() && self.dice.is_empty()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct FeatureData {
     #[serde(default)]

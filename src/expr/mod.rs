@@ -1,6 +1,6 @@
 use std::{
     collections::{BTreeMap, BTreeSet},
-    fmt,
+    fmt::{self, Write},
     ops::{Deref, Neg},
     str::FromStr,
     sync::Arc,
@@ -88,6 +88,45 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
         Grp: VarGroup<Var = Var>,
     {
         self.0.iter().any(|block| block.has_var(&pred))
+    }
+
+    /// Returns true if any block contains a dice roll (`Op::Roll`).
+    /// Structural check — does not evaluate guards.
+    pub fn has_dice(&self) -> bool {
+        self.0.iter().any(|block| block.has_dice())
+    }
+
+    /// Smallest `N` such that ARG indices used by this expression are all
+    /// `< N`. Covers both direct `Op::PushVar(Arg(n))` references and loop
+    /// subgroups whose companion `@ARG(iter_no)` resolves to `Arg(iter_no)`
+    /// at run time. `iter_no` is sequential (0, 1, 2, ...) regardless of
+    /// mask values — e.g. `@G(3, 5)` binds iterations to `iter_no` 0 and 1,
+    /// not 3 and 5. Returns `0` if no ARGs are referenced.
+    ///
+    /// `arg_index` extracts an ARG's numeric slot from a variable (`Var ->
+    /// Option<u8>`); non-ARG variables return `None`.
+    pub fn arg_slot_count(&self, arg_index: impl Fn(&Var) -> Option<u8>) -> usize
+    where
+        Var: Copy,
+        Val: Copy,
+        Grp: Copy + VarGroup<Var = Var>,
+    {
+        self.0
+            .iter()
+            .flat_map(|block| block.iter().copied())
+            .filter_map(|op| match op {
+                Op::PushVar(var) => arg_index(&var).map(|n| n as usize),
+                // Each/Next carry a `VarSubgroup` — masked iteration domain.
+                // PushGroup/AssignGroup carry the bare `Grp` (attach to the
+                // surrounding Each's iter_stack) and contribute no new
+                // iter_no range, so they're not scanned here.
+                Op::Each(subgrp) | Op::Next(subgrp) => {
+                    subgrp.iter_indices().map(|i| i.iter_no).max()
+                }
+                _ => None,
+            })
+            .max()
+            .map_or(0, |m| m + 1)
     }
 
     /// Returns true if any block assigns to a variable matching the predicate.
@@ -233,7 +272,7 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     /// Analyze the expression: collect dice requirements and determine which
     /// ARG variables are reachable.
     ///
-    /// `is_arg` returns `Some(index)` for ARG-like variables (resolved as 0
+    /// `arg_index` returns `Some(index)` for ARG-like variables (resolved as 0
     /// during analysis), `None` for regular variables.
     ///
     /// Guards with non-interactive false conditions prune their ARGs from
@@ -241,9 +280,9 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     pub fn analyze(
         &self,
         ctx: &impl Context<Var, i32>,
-        is_arg: impl Fn(&Var) -> Option<u8> + Copy,
+        arg_index: impl Fn(&Var) -> Option<u8> + Copy,
     ) -> ExprAnalysis {
-        ExprAnalysis::analyze(self, ctx, is_arg)
+        ExprAnalysis::analyze(self, ctx, arg_index)
     }
 }
 
@@ -357,7 +396,6 @@ impl<
         // The body content is everything before Next + EvalIf
         let content_ops = &body_ops[..len - 2];
 
-        use std::fmt::Write;
         let mut grp_str = String::new();
         write!(grp_str, "{subgrp}").unwrap();
 
@@ -444,7 +482,7 @@ impl<
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
+    use std::collections::{BTreeMap, BTreeSet};
 
     use serde::Deserialize;
     use wasm_bindgen_test::*;
@@ -1067,7 +1105,7 @@ mod tests {
         assert_eq!(expr.to_string(), "if(1, guard(AC >= 13, AC += 1))");
     }
 
-    fn is_arg(var: &Var) -> Option<u8> {
+    fn arg_index(var: &Var) -> Option<u8> {
         match var {
             Var::Arg(n) => Some(*n),
             _ => None,
@@ -1080,12 +1118,12 @@ mod tests {
 
         // guard(AC >= 13, AC += ARG.0) — AC=15 >= 13, so ARG.0 is active
         let expr: Expr = "guard(AC >= 13, AC += ARG.0)".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
-        assert_eq!(analysis.active_args, vec![0]);
+        let analysis = expr.analyze(&character, arg_index);
+        assert_eq!(analysis.active_args, BTreeSet::from([0]));
 
         // guard(AC >= 20, AC += ARG.0) — AC=15 < 20, so ARG.0 is pruned
         let expr: Expr = "guard(AC >= 20, AC += ARG.0)".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert!(analysis.active_args.is_empty());
 
         // Expertise-like pattern: outer if with interactive sum check, inner guards
@@ -1094,13 +1132,11 @@ mod tests {
             "if(ARG.0 + ARG.1 + ARG.2 == 2, guard(AC >= 13, AC += ARG.0); guard(AC >= 20, AC += ARG.1); guard(AC >= 10, AC += ARG.2))"
                 .parse()
                 .unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         // Outer cond ARGs are NOT in active_args (conditions excluded).
         // Only body ARGs from true guards: AC>=13 → ARG.0, AC>=20 false → pruned,
         // AC>=10 → ARG.2.
-        let mut active = analysis.active_args.clone();
-        active.sort();
-        assert_eq!(active, vec![0, 2]);
+        assert_eq!(analysis.active_args, BTreeSet::from([0, 2]));
 
         // Same pattern with if() instead of guard(): non-interactive false
         // conditions still prune. AC=15 → if(AC>=20) false → ARG.1 pruned.
@@ -1108,17 +1144,15 @@ mod tests {
             "if(ARG.0 + ARG.1 + ARG.2 == 2, if(AC >= 13, AC += ARG.0); if(AC >= 20, AC += ARG.1); if(AC >= 10, AC += ARG.2))"
                 .parse()
                 .unwrap();
-        let analysis = expr.analyze(&character, is_arg);
-        let mut active = analysis.active_args.clone();
-        active.sort();
-        assert_eq!(active, vec![0, 2]);
+        let analysis = expr.analyze(&character, arg_index);
+        assert_eq!(analysis.active_args, BTreeSet::from([0, 2]));
     }
 
     #[wasm_bindgen_test]
     fn analyze_collects_dice() {
         let character = test_character();
         let expr: Expr = "2d6 + 1d8".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert_eq!(analysis.dice_rolls.get(&6), Some(&2));
         assert_eq!(analysis.dice_rolls.get(&8), Some(&1));
         assert!(analysis.active_args.is_empty());
@@ -1130,12 +1164,12 @@ mod tests {
 
         // in(ARG.0, 0, 1) constrains ARG.0 to boolean
         let expr: Expr = "guard(in(ARG.0, 0, 1), STR += ARG.0)".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert!(analysis.boolean_args.contains(&0));
 
         // in(ARG.0, 0, 2) does NOT make ARG.0 boolean
         let expr: Expr = "guard(in(ARG.0, 0, 2), STR += ARG.0)".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert!(!analysis.boolean_args.contains(&0));
 
         // Multiple args, mixed boolean and non-boolean
@@ -1143,13 +1177,13 @@ mod tests {
             "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and ARG.0 + ARG.1 == 1, STR += ARG.0; DEX += ARG.1)"
                 .parse()
                 .unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert!(analysis.boolean_args.contains(&0));
         assert!(analysis.boolean_args.contains(&1));
 
         // Non-boolean arg not in boolean_args
         let expr: Expr = "guard(in(ARG.0, 0, 7), STR += ARG.0)".parse().unwrap();
-        let analysis = expr.analyze(&character, is_arg);
+        let analysis = expr.analyze(&character, arg_index);
         assert!(!analysis.boolean_args.contains(&0));
     }
 
@@ -1226,6 +1260,8 @@ mod tests {
 
 #[cfg(test)]
 mod loop_tests {
+    use std::collections::BTreeSet;
+
     use strum::VariantArray;
     use wasm_bindgen_test::*;
 
@@ -1344,7 +1380,7 @@ mod loop_tests {
         let expr: Expr = "each(@ABILITY, @ABILITY += @ARG)".parse().unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 6);
-        assert_eq!(analysis.active_args, vec![0, 1, 2, 3, 4, 5]);
+        assert_eq!(analysis.active_args, BTreeSet::from([0, 1, 2, 3, 4, 5]));
     }
 
     #[wasm_bindgen_test]
@@ -1370,7 +1406,7 @@ mod loop_tests {
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
         // Iteration indices (iter_no), not real group indices
-        assert_eq!(analysis.active_args, vec![0, 1, 2]);
+        assert_eq!(analysis.active_args, BTreeSet::from([0, 1, 2]));
     }
 
     #[wasm_bindgen_test]
@@ -1398,7 +1434,7 @@ mod loop_tests {
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 3);
-        assert_eq!(analysis.active_args, vec![0, 1, 2]);
+        assert_eq!(analysis.active_args, BTreeSet::from([0, 1, 2]));
         for &i in &[0u8, 1, 2] {
             assert!(
                 analysis.boolean_args.contains(&i),

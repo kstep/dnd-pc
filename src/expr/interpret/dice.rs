@@ -102,14 +102,16 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
                 Ok(None)
             }
             Op::PushGroup(group) => {
-                let idx = self.iter_stack.top()?;
-                let var = group.member(*idx).ok_or(Error::GroupOutOfBounds)?;
+                let var = group
+                    .top_member(&self.iter_stack)
+                    .ok_or(Error::GroupOutOfBounds)?;
                 self.stack.push(self.ctx.resolve(var)?);
                 Ok(None)
             }
             Op::AssignGroup(group) => {
-                let idx = self.iter_stack.top()?;
-                let var = group.member(*idx).ok_or(Error::GroupOutOfBounds)?;
+                let var = group
+                    .top_member(&self.iter_stack)
+                    .ok_or(Error::GroupOutOfBounds)?;
                 self.ctx.assign(var, *self.stack.top()?)?;
                 Ok(None)
             }

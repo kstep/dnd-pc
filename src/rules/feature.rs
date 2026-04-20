@@ -214,6 +214,16 @@ pub struct Assignment {
     pub scope: Option<String>,
 }
 
+impl Assignment {
+    /// Structural check: the expression references `@ARG` / `Arg(_)` or
+    /// contains dice rolls. Such assignments consume user-supplied
+    /// `AssignInputs` at apply time; non-interactive assignments run
+    /// against the raw character context only.
+    pub fn is_interactive(&self) -> bool {
+        self.expr.has_var(|var| matches!(var, Attribute::Arg(_))) || self.expr.has_dice()
+    }
+}
+
 #[derive(Debug, Copy, Clone, Deserialize, PartialEq, Eq)]
 pub enum WhenCondition {
     OnFeatureAdd,
@@ -320,25 +330,21 @@ impl FeatureDefinition {
             .map(|a| &a.expr)
     }
 
-    /// Returns assignment expressions for the given condition that need user
-    /// interaction: either ARG variables or dice rolls. Used to determine
-    /// whether the args/dice modal should be shown.
-    pub fn interactive_exprs(&self, when: WhenCondition, character: &Character) -> Vec<Expr> {
-        let is_arg = |var: &Attribute| -> Option<u8> {
-            if let Attribute::Arg(n) = var {
-                Some(*n)
-            } else {
-                None
-            }
-        };
+    /// Returns assignment expressions for the given condition that could
+    /// structurally need user interaction — i.e. reference an ARG variable
+    /// or contain dice rolls somewhere in the IR. Context-dependent pruning
+    /// (which ARGs are actually reachable given current guards) is done
+    /// per-snapshot by the cascade chain in the args modal.
+    ///
+    /// Over-inclusive by design: an expr whose ARG is guarded-unreachable in
+    /// every possible character state will reach the modal, where the per-
+    /// snapshot `ExprAnalysis` computes empty `active_args` and the modal
+    /// renders a "no-eligible-options" placeholder instead of inputs.
+    pub fn interactive_exprs(&self, when: WhenCondition) -> Vec<Expr> {
         self.assign
             .iter()
             .flatten()
-            .filter(|assignment| assignment.when == when)
-            .filter(|assignment| {
-                let analysis = assignment.expr.analyze(character, is_arg);
-                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
-            })
+            .filter(|assignment| assignment.when == when && assignment.is_interactive())
             .map(|assignment| assignment.expr.clone())
             .collect()
     }
@@ -348,6 +354,29 @@ impl FeatureDefinition {
         context: &mut impl expr::Context<Attribute, i32>,
         when: WhenCondition,
         inputs: &[AssignInputs],
+    ) {
+        self.assign_inner(context, when, inputs, true);
+    }
+
+    /// Like [`assign`], but silently swallows evaluation errors. Used by the
+    /// args-modal cascade where `inputs` may be empty mid-interaction (user
+    /// hasn't typed yet) and `@ARG` refs failing is expected — the logged
+    /// errors otherwise flood the console per keystroke.
+    pub fn assign_silent(
+        &self,
+        context: &mut impl expr::Context<Attribute, i32>,
+        when: WhenCondition,
+        inputs: &[AssignInputs],
+    ) {
+        self.assign_inner(context, when, inputs, false);
+    }
+
+    fn assign_inner(
+        &self,
+        context: &mut impl expr::Context<Attribute, i32>,
+        when: WhenCondition,
+        inputs: &[AssignInputs],
+        log_errors: bool,
     ) {
         let Some(assign) = &self.assign else { return };
 
@@ -372,44 +401,27 @@ impl FeatureDefinition {
             }
         }
 
-        let is_arg_var = |var: &Attribute| -> Option<u8> {
-            if let Attribute::Arg(n) = var {
-                Some(*n)
-            } else {
-                None
-            }
-        };
-
-        // Pre-classify which expressions are interactive before the loop,
-        // using the same analyze() logic as interactive_exprs(). This avoids
-        // re-evaluating against a mutated context mid-loop and ensures the
-        // iterator consumption matches what the modal collected.
-        let interactive: Vec<bool> = assign
-            .iter()
-            .filter(|assignment| assignment.when == when)
-            .map(|assignment| {
-                let analysis = assignment.expr.analyze(context, is_arg_var);
-                !analysis.active_args.is_empty() || !analysis.dice_rolls.is_empty()
-            })
-            .collect();
-
+        // `inputs` is aligned with INTERACTIVE assignments only (those with
+        // `@ARG` or dice — see `interactive_exprs`). Non-interactive assigns
+        // have no matching input and must not consume one. Align by taking
+        // inputs only for interactive assignments.
+        //
+        // Classify by structural presence of ARGs/dice, not by re-analyzing
+        // on the mutable context: during replay/reapply the character is
+        // already mutated by prior assignments, and context-aware analyze()
+        // can wrongly report "no active ARGs" for an expression whose ARGs
+        // were resolved at original-apply time (e.g. Expertise after the
+        // target skills were bumped from Proficient to Expertise).
         let mut input_iter = inputs.iter();
-        for (assignment, is_interactive) in assign
-            .iter()
-            .filter(|assignment| assignment.when == when)
-            .zip(interactive)
-        {
-            if !is_interactive {
-                if let Err(error) = assignment.expr.apply(context) {
-                    log::error!(
-                        "Failed to apply assignment for feature '{}': {error:?}",
-                        self.name,
-                    );
-                }
-                continue;
-            }
+        for assignment in assign.iter().filter(|assignment| assignment.when == when) {
+            let input = assignment
+                .is_interactive()
+                .then(|| input_iter.next())
+                .flatten();
 
-            let result = if let Some(input) = input_iter.next() {
+            let result = if let Some(input) = input
+                && !input.is_empty()
+            {
                 let mut ctx = WithArgs {
                     inner: context,
                     args: &input.args,
@@ -423,7 +435,7 @@ impl FeatureDefinition {
                 assignment.expr.apply(context)
             };
 
-            if let Err(error) = result {
+            if log_errors && let Err(error) = result {
                 log::error!(
                     "Failed to apply assignment for feature '{}': {error:?}",
                     self.name,

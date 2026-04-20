@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use leptos::{html, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -111,7 +113,7 @@ pub fn EffectsBlock() -> impl IntoView {
                         };
 
                         // Check if expression has dice rolls
-                        let rolls = effect.expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
+                        let rolls = effect.expr.as_ref().map(|expr_ref| expr_ref.dice_rolls(&*store.read())).unwrap_or_default();
                         if rolls.is_empty() {
                             commit_effect(effect);
                         } else {
@@ -164,7 +166,7 @@ pub fn EffectsBlock() -> impl IntoView {
                             let name = effect.label().to_owned();
                             let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
                             let pool_str = effect.pool.as_ref().map(ToString::to_string);
-                            let dice_rolls = effect.expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
+                            let dice_rolls = effect.expr.as_ref().map(|expr_ref| expr_ref.dice_rolls(&*store.read())).unwrap_or_default();
                             let description = effect.description.clone();
                             let scope = effect.scope.clone();
                             let enabled = effect.enabled;
@@ -178,7 +180,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 type="checkbox"
                                                 prop:checked=enabled
                                                 on:change=move |_| {
-                                                    effects.update(|e| e.toggle(i, &store.read()));
+                                                    effects.update(|active| active.toggle(i, &store.read()));
                                                 }
                                             />
                                         </label>
@@ -189,7 +191,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             on:change=move |ev| {
                                                 let new_name = event_target_value(&ev).trim().to_string();
                                                 if new_name.is_empty() { return; }
-                                                effects.update(|e| e.update_field(i, |eff| {
+                                                effects.update(|active| active.update_field(i, |eff| {
                                                     eff.set_label(new_name);
                                                 }));
                                             }
@@ -200,7 +202,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             class="btn-icon btn-icon--danger"
                                             title=move_tr!("effect-remove")
                                             on:click=move |_| {
-                                                effects.update(|e| { e.remove(i, &store.read()); });
+                                                effects.update(|active| { active.remove(i, &store.read()); });
                                             }
                                         >
                                             <Icon name="circle-minus" />
@@ -219,7 +221,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                     let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
                                                         return;
                                                     };
-                                                    let rolls = expr.as_ref().map(|e| e.dice_rolls(&*store.read())).unwrap_or_default();
+                                                    let rolls = expr.as_ref().map(|parsed| parsed.dice_rolls(&*store.read())).unwrap_or_default();
                                                     let has_dice = !rolls.is_empty();
                                                     let dice_expr = expr.clone();
                                                     effects.update(|effects| {
@@ -264,7 +266,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             prop:value=description.clone()
                                             on:input=move |ev| {
                                                 let val = event_target_value(&ev);
-                                                effects.update(|e| e.update_field(i, |eff| eff.description = val));
+                                                effects.update(|active| active.update_field(i, |eff| eff.description = val));
                                             }
                                         />
                                 </div>
@@ -312,7 +314,9 @@ pub fn EffectsBlock() -> impl IntoView {
                         pending_expr.set(None);
                     };
 
-                    let expr_input = view! { <ExprArgsInput expr=expr on_ready /> };
+                    let character: Signal<Arc<Character>> =
+                        Signal::derive(move || Arc::new(store.get()));
+                    let expr_input = view! { <ExprArgsInput expr=expr character on_ready /> };
                     Some(view! {
                         <form class="dice-pool-form" on:submit=on_submit>
                             {expr_input}

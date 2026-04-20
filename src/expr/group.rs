@@ -42,6 +42,13 @@ pub trait VarGroup {
     /// exhausted.
     fn member(&self, index: IterIndex) -> Option<Self::Var>;
 
+    /// Resolve the current (top-of-stack) iteration to a concrete variable.
+    /// Returns `None` if the loop stack is empty or the group is exhausted.
+    fn top_member(&self, iter_stack: &IterStack) -> Option<Self::Var> {
+        let idx = iter_stack.top().ok().copied()?;
+        self.member(idx)
+    }
+
     /// Find the index of a member by short name (e.g. "ACID" for Resist group).
     /// Returns `None` by default — override for groups with named members.
     fn member_by_name(&self, _name: &str) -> Option<usize> {

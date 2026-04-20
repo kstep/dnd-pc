@@ -251,6 +251,15 @@ impl<Var, Val, Grp> From<Vec<Op<Var, Val, Grp>>> for Block<Var, Val, Grp> {
     }
 }
 
+/// Upper bound on group member index scanned by `Block::has_var` /
+/// `assigns_to`. `VarSubgroup` masks use u32 flags, so any subgroup resolves
+/// to ≤32 members; standalone `Grp` members currently fit too. If a future
+/// bounded group exceeds this, its members at index 32+ are silently skipped.
+/// Unbounded groups (e.g. `Arg` indexed by arbitrary `u8`) use this as a
+/// practical cap — an expression with 32+ distinct ARG slots is not a real
+/// feature.
+const MAX_GROUP_SCAN: usize = 32;
+
 impl<Var, Val, Grp> Block<Var, Val, Grp> {
     /// Returns true if this block contains any variable matching the predicate.
     pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool
@@ -260,10 +269,15 @@ impl<Var, Val, Grp> Block<Var, Val, Grp> {
         self.0.iter().any(|op| match op {
             Op::PushVar(v) | Op::AssignVar(v) => pred(v),
             Op::PushGroup(g) | Op::AssignGroup(g) => {
-                (0..32).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
+                (0..MAX_GROUP_SCAN).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
             }
             _ => false,
         })
+    }
+
+    /// Returns true if this block contains a dice roll (`Op::Roll`).
+    pub fn has_dice(&self) -> bool {
+        self.0.iter().any(|op| matches!(op, Op::Roll))
     }
 
     /// Returns true if this block assigns to any variable matching the
@@ -274,7 +288,9 @@ impl<Var, Val, Grp> Block<Var, Val, Grp> {
     {
         self.0.iter().any(|op| match op {
             Op::AssignVar(v) => pred(v),
-            Op::AssignGroup(g) => (0..32).any(|i| g.member(i.into()).is_some_and(|v| pred(&v))),
+            Op::AssignGroup(g) => {
+                (0..MAX_GROUP_SCAN).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
+            }
             _ => false,
         })
     }

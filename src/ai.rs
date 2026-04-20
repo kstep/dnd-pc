@@ -69,12 +69,23 @@ impl From<serde_json::Error> for AiError {
 
 // --- Provider ---
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AiProvider {
-    #[default]
     OpenAI,
     /// Hosted proxy — key lives server-side, auth via Firebase Google token.
     Proxy,
+}
+
+impl Default for AiProvider {
+    /// Prefer the hosted proxy when it's available at build time; otherwise
+    /// fall back to the direct OpenAI provider.
+    fn default() -> Self {
+        if Self::Proxy.is_available() {
+            Self::Proxy
+        } else {
+            Self::OpenAI
+        }
+    }
 }
 
 impl AiProvider {
@@ -330,11 +341,7 @@ fn default_image_model() -> String {
 
 impl Default for AiSettings {
     fn default() -> Self {
-        let provider = if AiProvider::Proxy.is_available() {
-            AiProvider::Proxy
-        } else {
-            AiProvider::OpenAI
-        };
+        let provider = AiProvider::default();
         Self {
             model: provider.default_model().to_string(),
             image_model: provider.default_image_model().to_string(),
