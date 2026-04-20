@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, sync::Arc};
 
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -182,9 +182,19 @@ fn ArgsFeatureInput(
 
     let is_replacing = Memo::new(move |_| replacement_choice.get().is_some());
 
+    let source_label = {
+        let registry = expect_context::<RulesRegistry>();
+        let i18n = expect_context::<I18n>();
+        let source = source.clone();
+        move || registry.source_label(&source, i18n)
+    };
+
     view! {
         <div class="args-modal-feature">
-            <h4>{pending_inputs.feature_label.clone()}</h4>
+            <h4>
+                {pending_inputs.feature_label.clone()}
+                <span class="args-modal-source">{source_label}</span>
+            </h4>
             <Show when=move || has_description>
                 <p class="args-modal-description">{description.clone()}</p>
             </Show>

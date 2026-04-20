@@ -2837,6 +2837,16 @@ dialog.modal.closing::backdrop {
   font-size: var(--font-size-3);
   font-weight: var(--font-weight-7);
   color: var(--panel-header);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--size-3);
+}
+
+.args-modal-source {
+  color: var(--text-secondary);
+  font-size: var(--font-size-1);
+  font-weight: normal;
 }
 
 .args-modal-description {
