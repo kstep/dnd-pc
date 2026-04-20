@@ -23,6 +23,7 @@ pub fn apply_level(store: Store<Character>, registry: RulesRegistry) {
         store,
         registry,
         pending,
+        None,
         move |character, pending, inputs, fi| {
             // Mark species/background as applied if they had pending features
             if !character.applied.species && !character.identity.species.is_empty() {
@@ -86,6 +87,7 @@ pub fn apply_single_level(
         store,
         registry,
         pending,
+        None,
         move |character, pending, inputs, fi| {
             if let Some(class_level) = character.identity.classes.get_mut(class_index) {
                 registry.classes().with(&class_level.class, |def| {

@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
@@ -14,7 +16,7 @@ use crate::{
     model::{Character, CharacterStoreFields, FeatureValue, FeaturesStoreFields},
     rules::{
         RulesRegistry,
-        apply::{PendingFeature, apply_new_features},
+        apply::{FeatureKey, PendingFeature, apply_new_features, build_cascade_base_before},
     },
 };
 
@@ -180,16 +182,29 @@ pub fn FeatureRow(
                     class="btn-apply-level"
                     title=move_tr!("btn-apply-feature")
                     on:click=move |_| {
-                        let (name, source) = {
+                        let (name, source, is_applied) = {
                             let feature = &features.read()[feature_idx];
-                            (feature.name.clone(), feature.source.clone())
+                            (feature.name.clone(), feature.source.clone(), feature.applied)
                         };
                         let level = source.added_at_level();
+                        // Edit mode: seed cascade with a pre-edit snapshot so the
+                        // expression analysis doesn't treat the feature's own
+                        // prior @ARG contributions as already-taken.
+                        let base = if is_applied {
+                            let key = FeatureKey::new(name.clone(), source.clone());
+                            let clean = registry.with_features_index_untracked(|fi| {
+                                build_cascade_base_before(fi, &store.read_untracked(), &key)
+                            });
+                            Some(Arc::new(clean))
+                        } else {
+                            None
+                        };
                         let pending = vec![PendingFeature { name, source, level }];
                         apply_with_modal(
                             store,
                             registry,
                             pending,
+                            base,
                             move |character, pending, inputs, fi| {
                                 apply_new_features(
                                     fi,

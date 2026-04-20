@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, sync::Arc};
 
 use leptos::prelude::*;
 use reactive_stores::Store;
@@ -55,10 +55,16 @@ pub(super) fn collect_all_inputs(
 /// Top-level helper for the unified feature application pipeline.
 /// Collects PendingInputs from pending features, shows the args modal if
 /// needed, resolves replacements, calls the user callback, then computes.
+///
+/// `base` seeds the cascade snapshot[0]: `None` for the live-store default
+/// (level-up / user-add), `Some(character)` for flows that need a custom
+/// pre-state (edit mode passes a pre-edit snapshot so analysis doesn't see
+/// the feature's own prior contributions).
 pub fn apply_with_modal(
     store: Store<Character>,
     registry: RulesRegistry,
     pending: Vec<PendingFeature>,
+    base: Option<Arc<Character>>,
     callback: impl Fn(
         &mut Character,
         &[PendingFeature],
@@ -86,7 +92,7 @@ pub fn apply_with_modal(
         apply(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, move |inputs| apply(Some(&inputs)));
+        ctx.open(all_inputs, base, move |inputs| apply(Some(&inputs)));
     }
 }
 
@@ -138,7 +144,7 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
         do_replay(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, move |inputs| do_replay(Some(&inputs)));
+        ctx.open(all_inputs, None, move |inputs| do_replay(Some(&inputs)));
     }
 }
 
@@ -206,7 +212,7 @@ pub fn apply_with_prefilled_args(
         apply_batch(store, registry, &pending, &seeded_inputs, &callback);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, move |modal_inputs| {
+        ctx.open(all_inputs, None, move |modal_inputs| {
             // Merge AI-seeded replacements with user-submitted (user wins).
             // `seeded_inputs.feature_inputs` is always empty here — the modal
             // owns all feature_inputs — so this is an assignment rather than

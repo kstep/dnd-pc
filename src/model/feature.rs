@@ -396,6 +396,22 @@ impl Features {
             .add(name, label, description, category, source, inputs);
     }
 
+    /// Truncate the feature list at the position of the entry matching
+    /// `name` + `source`, dropping that feature and everything after it.
+    /// Returns `true` if a match was found. Does not touch `data` — callers
+    /// typically follow with `Character::reset_computed` + `replay`.
+    pub fn truncate(&mut self, name: &str, source: &FeatureSource) -> bool {
+        let Some(idx) = self
+            .list
+            .iter()
+            .position(|f| f.name == name && &f.source == source)
+        else {
+            return false;
+        };
+        self.list.truncate(idx);
+        true
+    }
+
     // Raw data accessors for explicit BTreeMap access where Deref coercion
     // isn't convenient (e.g. cloning, passing as function argument).
 

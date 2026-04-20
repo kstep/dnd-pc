@@ -48,7 +48,7 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
         // (possibly half-migrated) applies.
         let base = Arc::new(Character::from_identity(original.identity.clone()));
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open_with_base(pending_inputs, Some(base), move |inputs| {
+        ctx.open(pending_inputs, Some(base), move |inputs| {
             do_rebuild(Some(&inputs))
         });
     }

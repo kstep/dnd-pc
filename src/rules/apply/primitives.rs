@@ -178,6 +178,40 @@ pub fn replay(
     onlevelup_pass(features_index, character);
 }
 
+/// Build a lean cascade-base character representing the state just before
+/// `edited` was added. Used by the args modal's edit flow so the expression
+/// analysis sees a pre-edit snapshot (edited feature's own contributions
+/// absent), allowing its `@ARG` positions to resolve as if picking fresh.
+///
+/// If `edited` isn't in the feature list, returns the lean clone unchanged
+/// (no truncation, no replay — cascade sees all applied features).
+pub fn build_cascade_base_before(
+    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    character: &Character,
+    edited: &FeatureKey,
+) -> Character {
+    let mut clone = character.clone_lean();
+    if !clone.features.truncate(&edited.name, &edited.source) {
+        return clone; // edited не найден в list — cascade видит весь lean-клон
+    }
+    let pending: Vec<PendingFeature> = clone
+        .features
+        .iter()
+        .map(|feature| PendingFeature {
+            name: feature.name.clone(),
+            source: feature.source.clone(),
+            level: feature.source.added_at_level(),
+        })
+        .collect();
+    replay(
+        features_index,
+        &mut clone,
+        &pending,
+        &ApplyInputs::default(),
+    );
+    clone
+}
+
 /// Fire OnLevelUp for every applied feature at every intermediate level from
 /// its `added_at_level + 1` up to its effective level. Extracted so that
 /// rebuild can reuse the OnLevelUp sweep without running the OnFeatureAdd

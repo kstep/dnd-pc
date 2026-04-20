@@ -268,6 +268,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     store,
                                     registry,
                                     pending,
+                                    None,
                                     move |character, pending, inputs, fi| {
                                         character.applied.species = true;
                                         apply_new_features(
@@ -308,6 +309,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                     store,
                                     registry,
                                     pending,
+                                    None,
                                     move |character, pending, inputs, fi| {
                                         character.applied.background = true;
                                         apply_new_features(

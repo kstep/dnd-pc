@@ -29,10 +29,10 @@ pub struct ArgsModalCtx {
     callback: StoredValue<Option<ArgsCallback>>,
     /// Optional seed for the cascade snapshot[0]. When `None`, the modal reads
     /// the live store — correct for level-up / user-add flows that apply on
-    /// top of the existing character. Rebuild sets this to
-    /// `Character::default()` with identity cloned so the cascade previews
-    /// against a clean build-from- scratch state, matching what
-    /// `build_clean` will produce.
+    /// top of the existing character. Rebuild passes a fresh identity-only
+    /// character so the cascade previews against a clean build-from-scratch
+    /// state; the feature-edit flow passes a pre-edit snapshot built via
+    /// `build_cascade_base_before`.
     cascade_base: StoredValue<Option<Arc<Character>>>,
 }
 
@@ -46,21 +46,13 @@ impl ArgsModalCtx {
         }
     }
 
-    /// Show the modal for a list of features needing interaction. When the user
-    /// submits, `on_complete` is called once with the collected `ApplyInputs`.
+    /// Show the modal for a list of features needing interaction. When the
+    /// user submits, `on_complete` is called once with the collected
+    /// `ApplyInputs`. `base` seeds the cascade snapshot[0]: `None` uses the
+    /// live store (level-up / user-add / quick-start); `Some(character)`
+    /// overrides — rebuild passes an identity-only character, edit flow
+    /// passes a pre-edit snapshot.
     pub fn open(
-        &self,
-        pending: Vec<PendingInputs>,
-        on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
-    ) {
-        self.open_with_base(pending, None, on_complete);
-    }
-
-    /// Like [`open`], but seeds the cascade snapshot[0] from the given base
-    /// `Character` instead of the live store. Used by rebuild to preview
-    /// against a fresh-from-identity state rather than the live sheet's
-    /// residual PROF / abilities / skills from prior applies.
-    pub fn open_with_base(
         &self,
         pending: Vec<PendingInputs>,
         base: Option<Arc<Character>>,
@@ -79,6 +71,7 @@ impl ArgsModalCtx {
                 callback(inputs);
             }
         });
+        self.cascade_base.set_value(None);
         self.show.set(false);
     }
 }
@@ -451,7 +444,7 @@ pub fn ArgsModal() -> impl IntoView {
                 let shared_base: Arc<Character> = ctx
                     .cascade_base
                     .get_value()
-                    .unwrap_or_else(|| Arc::new(store.get_untracked()));
+                    .unwrap_or_else(|| Arc::new(store.read_untracked().clone_lean()));
 
                 let feature_keys: Vec<FeatureKey> = pending
                     .iter()

@@ -458,6 +458,34 @@ impl Character {
         weapon.effective_attack_expr().eval(self).unwrap_or(0)
     }
 
+    /// Clone containing only fields that participate in Expr analysis and
+    /// `compute`. Large free-text fields (`personality`, `notes`) are skipped
+    /// — they don't feed `Attribute` resolution but may carry kilobytes of
+    /// backstory/session text. Used for transient cascade bases in the args
+    /// modal where the clone is read-only and discarded on modal close.
+    pub fn clone_lean(&self) -> Self {
+        Self {
+            id: self.id,
+            identity: self.identity.clone(),
+            abilities: self.abilities,
+            saving_throws: self.saving_throws.clone(),
+            skills: self.skills.clone(),
+            combat: self.combat.clone(),
+            personality: Personality::default(),
+            features: self.features.clone(),
+            equipment: self.equipment.clone(),
+            proficiencies: self.proficiencies.clone(),
+            languages: self.languages.clone(),
+            damage_modifiers: self.damage_modifiers.clone(),
+            spell_slots: self.spell_slots.clone(),
+            applied: self.applied.clone(),
+            notes: String::new(),
+            updated_at: self.updated_at,
+            shared: self.shared,
+            schema_version: self.schema_version,
+        }
+    }
+
     /// Reset all derived state for replay. Preserves identity (including
     /// applied flags), equipment, personality, notes, and feature list with
     /// sources intact.

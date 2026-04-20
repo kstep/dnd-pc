@@ -287,6 +287,7 @@ fn create_character(
         store,
         registry,
         all_pending,
+        None,
         move |character, pending, inputs, fi| {
             finalize_quick_start(registry, character, pending, inputs, fi);
         },
