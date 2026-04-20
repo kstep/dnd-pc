@@ -28,22 +28,26 @@ pub fn WeaponsBlock() -> impl IntoView {
     let calc_info = StoredValue::new(None::<EffectsCalcInfo>);
 
     let content = move || {
-        let global_atk = eff.attack_bonus();
         let items = weapons
             .read()
             .iter()
-            .filter(|w| !w.name.is_empty())
-            .map(|w| {
-                let total_atk = w.attack_bonus + global_atk;
-                let name_atk = if total_atk != 0 {
-                    format!("{} {:+}", w.name, total_atk)
-                } else {
-                    w.name.clone()
-                };
+            .enumerate()
+            .filter(|(_, w)| !w.name.is_empty())
+            .map(|(idx, w)| {
+                let total_atk = eff.weapon_attack_bonus(w);
+                let name_atk = w.name.clone();
+                let quantity = w.quantity;
 
                 let active_effects: Vec<_> =
                     w.effects.iter().filter(|e| !e.expr.is_empty()).collect();
                 let has_effects = !active_effects.is_empty();
+
+                let attack_badge = view! {
+                    <span class="entry-badge">
+                        <Icon name="swords" />
+                        " " {move_tr!("attack")} " " {format!("{total_atk:+}")}
+                    </span>
+                };
 
                 // First effect as inline badge, "…" if more
                 let first_badge = active_effects.first().map(|effect| {
@@ -106,15 +110,27 @@ pub fn WeaponsBlock() -> impl IntoView {
                     .into_any()
                 });
 
+                let qty_input = view! {
+                    <input
+                        type="number"
+                        class="session-qty-input"
+                        min="1"
+                        prop:value=quantity.to_string()
+                        on:input=move |e| {
+                            let Ok(value) = event_target_value(&e).parse::<u32>() else { return };
+                            weapons.write()[idx].quantity = value.max(1);
+                        }
+                    />
+                }
+                .into_any();
+
                 SessionListItem {
                     name: name_atk,
                     description,
-                    badge: if first_badge.is_none() {
-                        None
-                    } else {
-                        Some(view! { <>{first_badge}{more}</> }.into_any())
-                    },
+                    badge: Some(view! { <>{attack_badge}{first_badge}{more}</> }.into_any()),
                     actions: cast_button,
+                    name_extra: Some(qty_input),
+                    description_view: None,
                 }
             })
             .collect::<Vec<_>>();

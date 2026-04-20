@@ -7,7 +7,7 @@ use crate::{
     model::{
         AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
         Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality,
-        Skills, SpellSlots, enums::*,
+        Skills, SpellSlots, Weapon, enums::*,
     },
     vecset::VecSet,
 };
@@ -439,6 +439,13 @@ impl Character {
 
     pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
         self.proficiency_bonus() + self.ability_modifier(ability)
+    }
+
+    /// Evaluate a weapon's attack-bonus expression against this character.
+    /// Uses the weapon's explicit `attack_expr` when set, otherwise the
+    /// default derived from its `category` / `ability` / `magic_bonus`.
+    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
+        weapon.effective_attack_expr().eval(self).unwrap_or(0)
     }
 
     /// Reset all derived state for replay. Preserves identity (including

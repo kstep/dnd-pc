@@ -508,7 +508,7 @@ impl Attribute {
 }
 
 impl Ability {
-    fn abbr(self) -> &'static str {
+    pub fn abbr(self) -> &'static str {
         match self {
             Self::Strength => "STR",
             Self::Dexterity => "DEX",

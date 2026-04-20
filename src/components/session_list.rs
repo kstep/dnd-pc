@@ -7,6 +7,14 @@ pub struct SessionListItem {
     pub description: String,
     pub badge: Option<AnyView>,
     pub actions: Option<AnyView>,
+    /// Optional view rendered between badges and actions, visually trailing
+    /// the name row. Used for inline controls like quantity inputs that
+    /// belong with the item's content, not its actions.
+    pub name_extra: Option<AnyView>,
+    /// Optional override for the description rendering. When `Some`, this
+    /// view replaces the Markdown rendering of `description`. Used for
+    /// editable descriptions (backpack) etc.
+    pub description_view: Option<AnyView>,
 }
 
 #[component]
@@ -16,7 +24,15 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
             {items
                 .into_iter()
                 .map(|item| {
-                    let has_desc = !item.description.is_empty();
+                    let has_desc = !item.description.is_empty() || item.description_view.is_some();
+                    let description_content = item.description_view.or_else(|| {
+                        (!item.description.is_empty()).then(|| {
+                            view! { <Markdown text=item.description.clone() /> }.into_any()
+                        })
+                    });
+                    let description = description_content.map(|content| {
+                        view! { <div class="entry-desc">{content}</div> }
+                    });
                     view! {
                         <div class="entry-item">
                             {if has_desc {
@@ -28,14 +44,15 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                             }}
                             <div class="entry-content">
                                 <EntryName>{item.name}</EntryName>
-                                {item.badge}
                             </div>
-                            <div class="entry-actions">{item.actions}</div>
-                            {has_desc.then(|| view! {
-                                <div class="entry-desc">
-                                    <Markdown text=item.description.clone() />
-                                </div>
+                            {item.badge.map(|badges| view! {
+                                <div class="entry-badges">{badges}</div>
                             })}
+                            <div class="entry-actions">
+                                {item.name_extra}
+                                {item.actions}
+                            </div>
+                            {description}
                         </div>
                     }
                 })

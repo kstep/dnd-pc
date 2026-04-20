@@ -120,6 +120,8 @@ fn build_choice_items(
                     None
                 },
                 actions: cast_button,
+                name_extra: None,
+                description_view: None,
             }
         })
         .collect()

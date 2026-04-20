@@ -2,8 +2,11 @@ use leptos::prelude::*;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
-use crate::model::{
-    Ability, ActiveEffects, Attribute, Character, DamageModifiers, DamageType, Skill,
+use crate::{
+    expr::{self, Context, Eval as _},
+    model::{
+        Ability, ActiveEffects, Attribute, Character, DamageModifiers, DamageType, Skill, Weapon,
+    },
 };
 
 /// Advantage/disadvantage state for a roll type.
@@ -30,6 +33,16 @@ impl From<i32> for AdvantageState {
 pub struct EffectiveCharacter {
     store: Store<Character>,
     effects: RwSignal<ActiveEffects>,
+}
+
+impl Context<Attribute, i32> for EffectiveCharacter {
+    fn assign(&mut self, var: Attribute, _value: i32) -> Result<(), expr::Error> {
+        Err(expr::Error::read_only_var(var))
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        Ok(self.get(var))
+    }
 }
 
 impl EffectiveCharacter {
@@ -69,8 +82,11 @@ impl EffectiveCharacter {
         self.get(Attribute::Speed)
     }
 
-    pub fn attack_bonus(&self) -> i32 {
-        self.get(Attribute::AttackBonus)
+    /// Evaluate a weapon's attack-bonus expression with effect overlays
+    /// applied. `ATK` in the expression resolves through the overlay, so
+    /// global buffs (Bless, Bardic Inspiration) are included automatically.
+    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
+        weapon.effective_attack_expr().eval(self).unwrap_or(0)
     }
 
     pub fn attack_count(&self) -> i32 {

@@ -477,6 +477,25 @@ impl ArmorType {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
+#[repr(u8)]
+pub enum WeaponCategory {
+    #[default]
+    Simple,
+    Martial,
+}
+enum_serde_u8!(WeaponCategory { Simple, Martial });
+
+impl WeaponCategory {
+    /// Returns the `Proficiency` required to wield this weapon category.
+    pub fn required_proficiency(self) -> Proficiency {
+        match self {
+            Self::Simple => Proficiency::SimpleWeapons,
+            Self::Martial => Proficiency::MartialWeapons,
+        }
+    }
+}
+
 impl Translatable for DamageType {
     fn tr_key(&self) -> &'static str {
         match self {
@@ -514,6 +533,15 @@ impl Translatable for ArmorType {
             Self::Heavy => "armor-type-heavy",
             Self::Shield => "armor-type-shield",
             Self::Natural => "armor-type-natural",
+        }
+    }
+}
+
+impl Translatable for WeaponCategory {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Simple => "weapon-category-simple",
+            Self::Martial => "weapon-category-martial",
         }
     }
 }

@@ -1541,7 +1541,8 @@ section {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: var(--size-1);
-  align-items: flex-start;
+  row-gap: 0;
+  align-items: center;
   padding: var(--size-1);
   border-radius: var(--radius-2);
 
@@ -1577,33 +1578,37 @@ section {
   }
 }
 
-.entry-item:has(> .entry-content > .short-input) {
+.entry-item:has(> .entry-content > .short-input) > .entry-content {
   align-items: center;
+}
 
-  > .entry-content {
-    align-items: center;
+.entry-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-2);
+  min-width: 0;
+  grid-column: 3;
+}
+
+/* Desktop: grid gets a 4th column for badges. Actions shift to col 4. */
+@media (min-width: 601px) {
+  .entry-item:has(> .entry-badges) {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+
+    > .entry-actions {
+      grid-column: 4;
+    }
   }
 }
 
+/* Mobile: badges go on their own row below, spanning col 2 to end.
+ * Explicit grid-row: 2 prevents auto-placement from pushing actions
+ * (which wants col 3 on row 1) to a new row. */
 @media (max-width: 600px) {
-  .entry-content:has(> .entry-badge) {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    row-gap: 0;
-
-    &::after {
-      content: '';
-      order: 1;
-      flex-basis: 100%;
-      height: 0;
-    }
-
-    > span.entry-name {
-      order: 0;
-    }
-    > .entry-badge {
-      order: 2;
-    }
+  .entry-badges {
+    grid-column: 2 / -1;
+    grid-row: 2;
   }
 }
 
@@ -1640,7 +1645,7 @@ select.entry-name {
 
 .entry-badge {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--size-1);
   color: var(--text-secondary);
   font-size: var(--font-size-0);
@@ -1649,6 +1654,10 @@ select.entry-name {
 
   .btn-icon {
     margin-left: var(--size-1);
+  }
+
+  .icon-wrapper {
+    padding-right: 0;
   }
 }
 
@@ -1672,12 +1681,14 @@ select.entry-name {
 
 .entry-desc {
   grid-column: 2 / -1;
+  margin-top: var(--size-1);
   font-size: var(--font-size-1);
   overflow-wrap: break-word;
   max-inline-size: none;
 }
 
 textarea.entry-desc {
+  width: 100%;
   min-height: 40px;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-1);

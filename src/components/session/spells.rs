@@ -474,12 +474,12 @@ pub fn SpellsBlock() -> impl IntoView {
                         });
 
                         let badge = view! {
-                            <span class="entry-badge">
-                                <span class="session-spell-level">{level_str}</span>
+                            <>
+                                <span class="entry-badge">{level_str}</span>
                                 {meta_badges}
                                 {free_uses_badge}
                                 {cost_badge}
-                            </span>
+                            </>
                         }
                         .into_any();
 
@@ -488,6 +488,8 @@ pub fn SpellsBlock() -> impl IntoView {
                             description: spell.description.clone(),
                             badge: Some(badge),
                             actions: cast_button,
+                            name_extra: None,
+                            description_view: None,
                         }
                     })
                     .collect::<Vec<_>>();

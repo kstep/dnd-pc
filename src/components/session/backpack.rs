@@ -3,7 +3,10 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{entry_name::EntryName, icon::Icon, toggle_button::ToggleButton},
+    components::{
+        icon::Icon,
+        session_list::{SessionList, SessionListItem},
+    },
     model::{Character, CharacterStoreFields, EquipmentStoreFields, Item, Money},
 };
 
@@ -94,50 +97,52 @@ pub fn BackpackBlock() -> impl IntoView {
             </div>
 
             {move || {
-                let items = equipment.items().read().iter()
+                let items_store = equipment.items();
+                let items = items_store.read().iter()
                     .enumerate()
                     .filter(|(_, item)| !item.name.is_empty())
-                    .map(|(idx, item)| (idx, item.name.clone(), item.quantity, item.description.clone()))
+                    .map(|(idx, item)| {
+                        let qty = item.quantity;
+                        let desc = item.description.clone();
+                        let qty_input = view! {
+                            <input
+                                type="number"
+                                class="session-qty-input"
+                                min="0"
+                                prop:value=qty.to_string()
+                                on:input=move |e| {
+                                    let Ok(value) = event_target_value(&e).parse() else { return };
+                                    items_store.write()[idx].quantity = value;
+                                }
+                            />
+                        }
+                        .into_any();
+                        let desc_edit = view! {
+                            <textarea
+                                class="entry-desc"
+                                prop:value=desc
+                                on:input=move |e| {
+                                    items_store.write()[idx].description = event_target_value(&e);
+                                }
+                            />
+                        }
+                        .into_any();
+                        SessionListItem {
+                            name: item.name.clone(),
+                            description: String::new(),
+                            badge: None,
+                            actions: None,
+                            name_extra: Some(qty_input),
+                            description_view: Some(desc_edit),
+                        }
+                    })
                     .collect::<Vec<_>>();
                 if items.is_empty() {
                     Either::Left(view! {
                         <p class="session-empty">{move_tr!("session-no-items")}</p>
                     })
                 } else {
-                    Either::Right(view! {
-                        <div class="entry-list">
-                            {items.into_iter().map(|(idx, name, qty, desc)| {
-                                view! {
-                                    <div class="entry-item">
-                                        <ToggleButton />
-                                        <div class="entry-content">
-                                            <EntryName>{name}</EntryName>
-                                            <input
-                                                type="number"
-                                                class="entry-name session-qty-input"
-                                                min="0"
-                                                prop:value=qty.to_string()
-                                                on:input=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse() {
-                                                        equipment.items().write()[idx].quantity = value;
-                                                    }
-                                                }
-                                            />
-                                        </div>
-                                        <div class="entry-actions" />
-                                        <textarea
-                                            class="entry-desc"
-                                            prop:value=desc.clone()
-                                            on:input=move |e| {
-                                                let value = event_target_value(&e);
-                                                equipment.items().write()[idx].description = value;
-                                            }
-                                        />
-                                    </div>
-                                }
-                            }).collect_view()}
-                        </div>
-                    })
+                    Either::Right(view! { <SessionList items=items /> })
                 }
             }}
 

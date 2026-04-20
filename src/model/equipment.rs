@@ -1,7 +1,7 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{ArmorType, DamageType, Expr, Money};
+use crate::model::{Ability, ArmorType, DamageType, Expr, Money, WeaponCategory};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
@@ -61,14 +61,87 @@ pub struct WeaponEffect {
     pub expr: Expr,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct Weapon {
     #[serde(default)]
     pub name: String,
+    #[serde(default = "default_quantity")]
+    pub quantity: u32,
     #[serde(default)]
-    pub attack_bonus: i32,
+    pub category: WeaponCategory,
+    #[serde(default = "default_weapon_ability")]
+    pub ability: Ability,
+    #[serde(default)]
+    pub magic_bonus: i32,
+    #[serde(default)]
+    pub attack_expr: Option<Expr>,
     #[serde(default)]
     pub effects: Vec<WeaponEffect>,
+}
+
+fn default_quantity() -> u32 {
+    1
+}
+
+fn default_weapon_ability() -> Ability {
+    Ability::Strength
+}
+
+impl Default for Weapon {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            quantity: default_quantity(),
+            category: WeaponCategory::default(),
+            ability: default_weapon_ability(),
+            magic_bonus: 0,
+            attack_expr: None,
+            effects: Vec::new(),
+        }
+    }
+}
+
+impl Weapon {
+    /// Generate the default attack-bonus formula for the given weapon
+    /// parameters. The formula is fully reactive: it uses `PROF.XXX_WEAPONS`
+    /// to include proficiency bonus only when the character is proficient,
+    /// and `ATK` to incorporate global attack-bonus overrides from effects.
+    pub fn default_attack_expr_str(
+        category: WeaponCategory,
+        ability: Ability,
+        magic: i32,
+    ) -> String {
+        let ab = ability.abbr();
+        let prof = match category {
+            WeaponCategory::Simple => "PROF.SIMPLE_WEAPONS",
+            WeaponCategory::Martial => "PROF.MARTIAL_WEAPONS",
+        };
+        let mut s = format!("{ab}.MOD + if({prof}, PROF_BONUS, 0) + ATK");
+        if magic != 0 {
+            s = format!("{s} {magic:+}");
+        }
+        s
+    }
+
+    pub fn default_attack_expr(
+        category: WeaponCategory,
+        ability: Ability,
+        magic: i32,
+    ) -> Option<Expr> {
+        Self::default_attack_expr_str(category, ability, magic)
+            .parse()
+            .ok()
+    }
+
+    /// Returns the expression to evaluate for this weapon's attack bonus:
+    /// the explicit `attack_expr` when set, otherwise the default derived
+    /// from `category` / `ability` / `magic_bonus`.
+    pub fn effective_attack_expr(&self) -> Expr {
+        self.attack_expr.clone().unwrap_or_else(|| {
+            Self::default_attack_expr(self.category, self.ability, self.magic_bonus)
+                .unwrap_or_default()
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
