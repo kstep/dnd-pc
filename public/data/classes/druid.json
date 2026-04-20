@@ -4,10 +4,10 @@
   "levels": {
     "1": {
       "features": [
-        "Druidic",
-        "Primal Order",
+        "Class Proficiencies (Druid)",
         "Spellcasting (Druid)",
-        "Class Proficiencies (Druid)"
+        "Druidic",
+        "Primal Order"
       ]
     },
     "2": {

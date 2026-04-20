@@ -4,9 +4,9 @@
   "levels": {
     "1": {
       "features": [
-        "Bardic Inspiration",
+        "Class Proficiencies (Bard)",
         "Spellcasting (Bard)",
-        "Class Proficiencies (Bard)"
+        "Bardic Inspiration"
       ]
     },
     "2": {

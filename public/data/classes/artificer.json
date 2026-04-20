@@ -4,9 +4,9 @@
   "levels": {
     "1": {
       "features": [
+        "Class Proficiencies (Artificer)",
         "Spellcasting (Artificer)",
-        "Tinker's Magic",
-        "Class Proficiencies (Artificer)"
+        "Tinker's Magic"
       ]
     },
     "2": {

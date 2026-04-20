@@ -4,10 +4,10 @@
   "levels": {
     "1": {
       "features": [
-        "Rage",
+        "Class Proficiencies (Barbarian)",
         "Unarmored Defense (Barbarian)",
         "Weapon Mastery (Barbarian)",
-        "Class Proficiencies (Barbarian)"
+        "Rage"
       ]
     },
     "2": {

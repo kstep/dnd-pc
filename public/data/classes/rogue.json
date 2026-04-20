@@ -4,11 +4,11 @@
   "levels": {
     "1": {
       "features": [
+        "Class Proficiencies (Rogue)",
+        "Weapon Mastery (Rogue)",
         "Expertise",
         "Sneak Attack",
-        "Thieves' Cant",
-        "Weapon Mastery (Rogue)",
-        "Class Proficiencies (Rogue)"
+        "Thieves' Cant"
       ]
     },
     "2": {

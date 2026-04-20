@@ -4,10 +4,10 @@
   "levels": {
     "1": {
       "features": [
-        "Arcane Recovery",
-        "Ritual Adept",
+        "Class Proficiencies (Wizard)",
         "Spellcasting (Wizard)",
-        "Class Proficiencies (Wizard)"
+        "Arcane Recovery",
+        "Ritual Adept"
       ]
     },
     "2": {

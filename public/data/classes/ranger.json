@@ -4,10 +4,10 @@
   "levels": {
     "1": {
       "features": [
-        "Favored Enemy",
+        "Class Proficiencies (Ranger)",
         "Spellcasting (Ranger)",
         "Weapon Mastery (Ranger)",
-        "Class Proficiencies (Ranger)"
+        "Favored Enemy"
       ]
     },
     "2": {

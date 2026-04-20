@@ -4,10 +4,10 @@
   "levels": {
     "1": {
       "features": [
-        "Fighting Style",
-        "Second Wind",
+        "Class Proficiencies (Fighter)",
         "Weapon Mastery (Fighter)",
-        "Class Proficiencies (Fighter)"
+        "Fighting Style",
+        "Second Wind"
       ]
     },
     "2": {
