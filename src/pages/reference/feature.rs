@@ -7,11 +7,11 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use regex::RegexBuilder;
 use strum::IntoEnumIterator as _;
 
-use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views};
 use crate::{
     BASE_URL,
     hooks::use_query_signal,
     model::{FeatureCategory, Translatable},
+    pages::reference::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views},
     rules::RulesRegistry,
 };
 

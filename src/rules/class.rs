@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-use super::utils::LevelRules;
 use crate::{
     demap::{self, Named},
+    rules::utils::LevelRules,
     vecset::VecSet,
 };
 

@@ -29,7 +29,7 @@ pub fn SignInToastTrigger() -> impl IntoView {
         // Build the toast synchronously in the Effect — tr!() and Toast::new
         // both need the current owner. The Toast captures it so `.show()` can
         // run later from the `set_timeout` callback where no owner is active.
-        let toast = Toast::new(tr!("toast-signin-prompt"))
+        let toast = Toast::i18n("toast-signin-prompt")
             .persist()
             .with_action(
                 tr!("toast-signin-action"),

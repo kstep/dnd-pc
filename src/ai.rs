@@ -1113,8 +1113,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
             }
             Op::Each(subgrp) => {
                 if self.group_members.is_empty() {
-                    self.group_members
-                        .extend((0..).map_while(|idx| subgrp.member(idx)));
+                    self.group_members.extend(subgrp.members());
                 }
                 let has_items = subgrp.init_loop(&mut self.iter_stack);
                 self.stack.push(ArgStackEntry::constant(has_items as i32));

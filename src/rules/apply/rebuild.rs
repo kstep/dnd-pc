@@ -3,24 +3,25 @@ use std::collections::BTreeMap;
 use leptos::prelude::ReadUntracked;
 use strum::VariantArray;
 
-use super::{
-    pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
-    primitives::{apply_new_feature, onlevelup_pass, restore_all_spell_selections},
-    reconcile::reconcile_user_feature_sources,
-};
 use crate::{
     model::{
-        Ability, Applied, AssignInputs, Character, Feature, FeatureCategory, FeatureSource,
-        FeatureValue,
+        Ability, Applied, AssignInputs, Attribute, Character, Feature, FeatureCategory,
+        FeatureSource, FeatureValue,
     },
     rules::{
-        ClassDefinition, ClassIndexEntry, DefinitionStore, RulesRegistry,
+        ClassDefinition, ClassIndexEntry, DefinitionStore, RulesRegistry, WhenCondition,
         apply::{
             collect::{
                 collect_background_features, collect_class_features, collect_pending_features,
                 collect_species_features,
             },
-            primitives::resolve_replacements,
+            pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
+            primitives::{
+                apply_new_feature, onlevelup_pass, resolve_replacements,
+                restore_all_spell_selections,
+            },
+            reconcile::reconcile_user_feature_sources,
+            solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
         feature::FeatureDefinition,
     },
@@ -147,16 +148,119 @@ fn collect_rebuild_pending_inputs(
 
         let all_pending: Vec<PendingFeature> = user_pending.chain(identity_pending).collect();
 
-        let mut inputs: Vec<PendingInputs> = all_pending
-            .iter()
-            .filter_map(|pf| {
-                let feat_def = fi.get(pf.name.as_str())?;
-                pf.pending_inputs(feat_def, original)
-            })
-            .collect();
-        inputs.retain(|input| original.features.get_inputs(&input.feature_name).is_empty());
+        // Build FeatState for every pending — stored-input feats go in
+        // too, their interactive assigns marked `forced` with the stored
+        // args so enumerate_assign yields that single candidate. Keeping
+        // stored and unsolved in one list preserves pipeline order: e.g.
+        // an Expertise-style feat whose `if(@==1)` gate depends on PROFs
+        // granted by an earlier unsolved feat sees the right baseline.
+        let mut baseline = Character::from_identity(original.identity.clone());
+        let mut feat_states: Vec<FeatState> = Vec::new();
+        for pending in &all_pending {
+            let Some(feat_def) = fi.get(pending.name.as_str()) else {
+                continue;
+            };
+            let Some(assign_defs) = feat_def.assign.as_ref() else {
+                continue;
+            };
+            let stored = original.features.get_inputs(&pending.name);
+            let stored_usable = stored_inputs_usable(feat_def, stored);
+
+            // Index into the interactive-filtered position matches the
+            // order `FeatureDefinition::assign_inner` uses to consume
+            // stored inputs (feature.rs:393). Using the index (not a
+            // `stored_iter.next()` that advances inside `filter_map`)
+            // keeps alignment stable when `outer_group(expr)` returns
+            // `None` — that skip must drop the stored slot too.
+            let assigns: Vec<AssignData> = assign_defs
+                .iter()
+                .filter(|assignment| {
+                    assignment.when == WhenCondition::OnFeatureAdd && assignment.is_interactive()
+                })
+                .enumerate()
+                .filter_map(|(idx, assignment)| {
+                    let mask = outer_group(&assignment.expr)?;
+                    let arg_range = scan_arg_range(&assignment.expr)?;
+                    let arg_count = assignment.expr.arg_slot_count(Attribute::arg_index);
+                    let forced = stored_usable
+                        .then(|| stored.get(idx).map(|input| input.args.clone()))
+                        .flatten();
+                    Some(AssignData {
+                        expr: assignment.expr.clone(),
+                        mask,
+                        arg_range,
+                        args: vec![0; arg_count],
+                        forced,
+                    })
+                })
+                .collect();
+            if assigns.is_empty() {
+                continue;
+            }
+            feat_states.push(FeatState {
+                def: feat_def,
+                pending,
+                assigns,
+            });
+        }
+
+        // Solve. Ignore the success flag — even on partial solve the
+        // last-tried args in each assign are the best-effort prefill that
+        // the modal will pick up.
+        let _ = solve_all(&mut feat_states, &baseline, original);
+
+        // Apply solved args to advance baseline + emit PendingInputs with
+        // prefill (skip stored feats — they already have real inputs in
+        // `original`, the modal won't show them).
+        let mut inputs: Vec<PendingInputs> = Vec::new();
+        for state in &feat_states {
+            let inputs_vec: Vec<AssignInputs> = state
+                .assigns
+                .iter()
+                .map(|assign| AssignInputs {
+                    args: assign.args.clone(),
+                    ..AssignInputs::default()
+                })
+                .collect();
+            state.def.apply(
+                state.pending.level,
+                &mut baseline,
+                WhenCondition::OnFeatureAdd,
+                &inputs_vec,
+            );
+            let was_forced = state.assigns.iter().all(|assign| assign.forced.is_some());
+            if was_forced {
+                continue;
+            }
+            if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
+                pi.prefill = inputs_vec;
+                inputs.push(pi);
+            }
+        }
         inputs
     })
+}
+
+/// Check whether stored `inputs` align with the feature's interactive
+/// assigns — every `AssignInputs.args` must be sized to its corresponding
+/// expression's `arg_slot_count`. Returns `false` for the empty-slice case
+/// too, so callers can branch on a single predicate.
+fn stored_inputs_usable(feat_def: &FeatureDefinition, stored: &[AssignInputs]) -> bool {
+    if stored.is_empty() {
+        return false;
+    }
+    let Some(assigns) = feat_def.assign.as_ref() else {
+        return true;
+    };
+    let interactive_exprs = assigns.iter().filter(|assignment| {
+        assignment.when == WhenCondition::OnFeatureAdd && assignment.is_interactive()
+    });
+    stored
+        .iter()
+        .zip(interactive_exprs)
+        .all(|(input, assignment)| {
+            input.args.len() == assignment.expr.arg_slot_count(Attribute::arg_index)
+        })
 }
 
 /// If `original` has no feature in the `Generation` category (legacy
@@ -181,7 +285,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
         let current = clean.ability_score(ability) as i32;
         args.push(orig - (current - 8));
         if orig != current {
-            clean.modify_ability(ability, orig - current);
+            clean.set_ability(ability, orig as u32);
         }
     }
 
@@ -202,7 +306,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
             source: FeatureSource::User(0),
             inputs: vec![AssignInputs {
                 args,
-                dice: Default::default(),
+                ..AssignInputs::default()
             }],
         },
     );
@@ -210,9 +314,11 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
 
 /// Match the standard 5e 2024 preset `[15, 14, 13, 12, 10, 8]` in any order.
 fn is_fixed_preset(args: &[i32]) -> bool {
-    let mut sorted = args.to_vec();
-    sorted.sort_unstable_by(|a, b| b.cmp(a));
-    sorted == [15, 14, 13, 12, 10, 8]
+    let Ok(mut sorted): Result<[i32; 6], _> = args.try_into() else {
+        return false;
+    };
+    sorted.sort_unstable();
+    sorted == [8, 10, 12, 13, 14, 15]
 }
 
 /// Apply class levels in canonical order.
@@ -287,7 +393,9 @@ fn apply_classes_interleaved(
         .zip(&targets)
         .enumerate()
         .skip(1)
-        .find(|(i, (a, t))| a < t && !clean.identity.classes[*i].class.is_empty())
+        .find(|(i, (applied, target))| {
+            applied < target && !clean.identity.classes[*i].class.is_empty()
+        })
         .map_or(Ok(()), |(i, _)| {
             Err(RebuildError::MulticlassPrereq {
                 class: clean.identity.classes[i].class.clone(),
@@ -323,8 +431,10 @@ fn pick_next_class(
             .iter()
             .enumerate()
             .skip(1)
-            .find(|(i, cl)| {
-                !cl.class.is_empty() && applied[*i] < targets[*i] && meets_prereq(cl.class.as_str())
+            .find(|(i, class_level)| {
+                !class_level.class.is_empty()
+                    && applied[*i] < targets[*i]
+                    && meets_prereq(class_level.class.as_str())
             })
             .map_or(0, |(i, _)| i)
     } else {

@@ -173,6 +173,23 @@ impl Character {
         self.abilities.set(ability, (current + delta).max(1) as u32);
     }
 
+    pub fn set_ability(&mut self, ability: Ability, value: u32) {
+        self.abilities.set(ability, value.max(1));
+    }
+
+    /// Compare the derived state (what feature-apply produces) between two
+    /// characters. Ignores identity (user input), build (features.list —
+    /// rebuild restructures it), personality (untouched), and
+    /// compute-derived fields (hp/ac/spell_slots re-derive after commit).
+    pub fn eq_derived(&self, other: &Self) -> bool {
+        self.abilities == other.abilities
+            && self.saving_throws == other.saving_throws
+            && self.skills == other.skills
+            && self.proficiencies == other.proficiencies
+            && self.languages == other.languages
+            && self.damage_modifiers == other.damage_modifiers
+    }
+
     pub fn features(&self) -> &[Feature] {
         &self.features.list
     }
@@ -221,24 +238,27 @@ impl Character {
             .equipment
             .armors
             .iter()
-            .filter(|a| a.armor_type != ArmorType::Shield && a.armor_type != ArmorType::Natural)
-            .filter(|a| {
-                a.armor_type
-                    .required_proficiency()
-                    .is_none_or(|p| self.proficiencies.contains(&p))
+            .filter(|armor| {
+                armor.armor_type != ArmorType::Shield && armor.armor_type != ArmorType::Natural
             })
-            .filter_map(|a| {
-                let expr = a.ac_expr.as_ref()?;
+            .filter(|armor| {
+                armor
+                    .armor_type
+                    .required_proficiency()
+                    .is_none_or(|prof| self.proficiencies.contains(&prof))
+            })
+            .filter_map(|armor| {
+                let expr = armor.ac_expr.as_ref()?;
                 match expr.eval(self) {
                     Ok(value) => Some(value),
                     Err(error) => {
-                        log::warn!("AC expr eval failed for '{}': {error}", a.name);
+                        log::warn!("AC expr eval failed for '{}': {error}", armor.name);
                         None
                     }
                 }
             })
             .max()
-            .map(|v| v.max(0) as u32)
+            .map(|ac| ac.max(0) as u32)
         {
             self.combat.armor_class = baseline.max(body_ac);
         }
@@ -251,13 +271,13 @@ impl Character {
             .equipment
             .armors
             .iter()
-            .filter(|a| a.armor_type == ArmorType::Shield)
-            .filter_map(|a| {
-                let expr = a.ac_expr.as_ref()?;
+            .filter(|armor| armor.armor_type == ArmorType::Shield)
+            .filter_map(|armor| {
+                let expr = armor.ac_expr.as_ref()?;
                 match expr.eval(self) {
                     Ok(value) => Some(value),
                     Err(error) => {
-                        log::warn!("AC expr eval failed for '{}': {error}", a.name);
+                        log::warn!("AC expr eval failed for '{}': {error}", armor.name);
                         None
                     }
                 }
@@ -365,7 +385,9 @@ impl Character {
         let table_slots = self.spell_slots_for_caster_level(pool);
         let effective: &[u32] = match caster_classes {
             0 => &[],
-            1 => slots.filter(|s| !s.is_empty()).unwrap_or(table_slots),
+            1 => slots
+                .filter(|override_slots| !override_slots.is_empty())
+                .unwrap_or(table_slots),
             _ => table_slots,
         };
 

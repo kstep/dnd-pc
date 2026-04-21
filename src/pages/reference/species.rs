@@ -3,10 +3,12 @@ use leptos_fluent::move_tr;
 use leptos_meta::Title;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 
-use super::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name};
 use crate::{
     BASE_URL,
     components::{markdown::Markdown, spinner::Spinner},
+    pages::reference::{
+        ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name,
+    },
     rules::{DefinitionStore, RulesRegistry},
 };
 

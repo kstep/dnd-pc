@@ -2,15 +2,17 @@ use std::{borrow::Borrow, collections::BTreeMap, fmt};
 
 use serde::Deserialize;
 
-use super::{
-    background::BackgroundDefinition,
-    class::ClassDefinition,
-    feature::{ChoiceOptions, FeaturesIndex, FieldKind},
-    index::Index,
-    species::SpeciesDefinition,
-    spells::SpellMap,
+use crate::{
+    model::EffectsIndex,
+    rules::{
+        background::BackgroundDefinition,
+        class::ClassDefinition,
+        feature::{ChoiceOptions, FeaturesIndex, FieldKind},
+        index::Index,
+        species::SpeciesDefinition,
+        spells::SpellMap,
+    },
 };
-use crate::model::EffectsIndex;
 
 /// A dot-separated key in a locale map.
 ///

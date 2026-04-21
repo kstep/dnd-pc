@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use js_sys::{Array, Reflect};
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
-use leptos_fluent::tr;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{JsFuture, spawn_local};
 use web_sys::{Blob, BlobPropertyBag, File, FilePropertyBag, HtmlAnchorElement, ShareData, Url};
@@ -79,8 +78,8 @@ fn export_to_clipboard(json: &str) {
     // Build both toasts up-front in the current owner context. Each toast
     // captures the owner internally, so `.show()` is safe to call from the
     // async block where no owner is active.
-    let ok_toast = Toast::new(tr!("toast-export-copied"));
-    let fail_toast = Toast::new(tr!("toast-export-copy-failed"));
+    let ok_toast = Toast::i18n("toast-export-copied");
+    let fail_toast = Toast::i18n("toast-export-copy-failed");
     spawn_local(async move {
         if JsFuture::from(promise).await.is_ok() {
             ok_toast.show();

@@ -14,7 +14,7 @@ mod group;
 mod interpret;
 mod ops;
 mod parser;
-mod stack;
+pub mod stack;
 mod tokenizer;
 mod traits;
 
@@ -81,6 +81,16 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
         &self.0[idx as usize]
     }
 
+    /// Iterate every block in this expression (main plus sub-blocks).
+    pub fn blocks(&self) -> impl Iterator<Item = &Block<Var, Val, Grp>> {
+        self.0.iter()
+    }
+
+    /// Iterate every op across all blocks, flattened.
+    pub fn ops(&self) -> impl Iterator<Item = &Op<Var, Val, Grp>> {
+        self.blocks().flat_map(|block| block.iter())
+    }
+
     /// Returns true if any block in this expression contains a variable
     /// matching the predicate.
     pub fn has_var(&self, pred: impl Fn(&Var) -> bool) -> bool
@@ -93,7 +103,7 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
     /// Returns true if any block contains a dice roll (`Op::Roll`).
     /// Structural check — does not evaluate guards.
     pub fn has_dice(&self) -> bool {
-        self.0.iter().any(|block| block.has_dice())
+        self.ops().any(|op| matches!(op, Op::Roll))
     }
 
     /// Smallest `N` such that ARG indices used by this expression are all

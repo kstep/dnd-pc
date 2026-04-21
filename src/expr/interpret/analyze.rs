@@ -3,10 +3,10 @@ use std::{
     fmt,
 };
 
-use super::eval_block;
 use crate::expr::{
     Context, Expr, Op, VarGroup, avg_hp,
     group::IterStack,
+    interpret::eval_block,
     ops::{BLOCK_ERROR, BLOCK_MAIN, BlockIndex},
     stack::Stack,
 };

@@ -4,7 +4,7 @@ use std::{
 };
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*, reactive::owner::Owner};
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 
 use crate::components::icon::Icon;
 
@@ -39,6 +39,14 @@ impl Toast {
             on_dismiss: None,
             owner: Owner::current(),
         }
+    }
+
+    /// Create a toast whose message is looked up from the active i18n bundle
+    /// at call time. Use for plain translations with no arguments; for
+    /// interpolated messages use [`Toast::new`] with the `tr!`/`move_tr!`
+    /// macro.
+    pub fn i18n(key: &str) -> Self {
+        Self::new(expect_context::<I18n>().tr(key))
     }
 
     pub fn with_action(mut self, label: impl Into<String>, on_click: Callback<()>) -> Self {

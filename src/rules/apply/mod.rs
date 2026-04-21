@@ -1,9 +1,11 @@
+pub mod args_ctx;
 mod collect;
 mod pending;
 mod primitives;
 mod rebuild;
 mod reconcile;
 mod registry_ext;
+mod solver;
 
 pub use collect::{
     collect_background_features, collect_class_features, collect_pending_features,

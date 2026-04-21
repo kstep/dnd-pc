@@ -128,6 +128,18 @@ impl<Grp> VarSubgroup<Grp> {
         })
     }
 
+    /// Iterate the concrete member values (`Var`s) permitted by this
+    /// subgroup's mask, in iteration order.
+    pub fn members(&self) -> impl Iterator<Item = Grp::Var> + '_
+    where
+        Grp: VarGroup,
+    {
+        (0..).map_while(|iter_no| {
+            let index = self.real_index(iter_no)?;
+            self.inner.member(IterIndex { iter_no, index })
+        })
+    }
+
     /// Initialize loop iteration. Pushes the first `IterIndex` onto the
     /// stack.  Returns `true` if the group is non-empty (loop should
     /// enter body).

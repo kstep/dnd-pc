@@ -2,19 +2,18 @@ use std::collections::{BTreeMap, VecDeque};
 
 use leptos::prelude::ReadUntracked;
 
-use super::collect::class_level_sources;
 use crate::{
     model::{Character, CharacterIdentity, FeatureSource},
     rules::{
-        DefinitionStore, RulesRegistry, background::BackgroundDefinition, class::ClassDefinition,
-        species::SpeciesDefinition,
+        DefinitionStore, RulesRegistry, apply::collect::class_level_sources,
+        background::BackgroundDefinition, class::ClassDefinition, species::SpeciesDefinition,
     },
 };
 
 // Local grouping for reconcile's two pure entry points — keeps the signature
 // tight without committing to a project-wide `Caches` abstraction. Promote to
 // `src/rules/` if a second call site ever needs the same bundle.
-pub(crate) struct DefinitionCaches<'a> {
+pub struct DefinitionCaches<'a> {
     pub classes: &'a BTreeMap<Box<str>, ClassDefinition>,
     pub species: &'a BTreeMap<Box<str>, SpeciesDefinition>,
     pub backgrounds: &'a BTreeMap<Box<str>, BackgroundDefinition>,
@@ -44,7 +43,7 @@ pub fn reconcile_user_feature_sources(character: &mut Character, registry: &Rule
 // the guard + pre-subtract requires splitting `character` borrows around a
 // lazy-init closure; the borrow-checker gymnastics aren't worth saving
 // ~80 comparisons on a button-click path.
-pub(crate) fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'_>) {
+pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'_>) {
     if !character
         .features
         .iter()
@@ -80,7 +79,7 @@ pub(crate) fn reconcile_with_defs(character: &mut Character, caches: DefinitionC
 // Reconcile relies on FIFO ordering of the queue: stackable features like ASI
 // appear at multiple class levels and each instance must bind to the earliest
 // unclaimed slot so stored inputs align with increasing level order.
-pub(crate) fn build_canonical_slots(
+pub fn build_canonical_slots(
     identity: &CharacterIdentity,
     caches: DefinitionCaches<'_>,
 ) -> BTreeMap<Box<str>, VecDeque<FeatureSource>> {

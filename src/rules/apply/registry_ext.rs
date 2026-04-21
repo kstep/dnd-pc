@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 
-use super::pending::PendingInputs;
 use crate::{
     model::{Character, Context, Expr, FeatureSource, FeatureValue},
     rules::{
         ReplaceWith, RulesRegistry, WhenCondition,
+        apply::pending::PendingInputs,
         resolve::{find_feature, find_feature_with_class_level},
         spells::SpellList,
     },

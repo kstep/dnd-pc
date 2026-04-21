@@ -82,6 +82,7 @@ replay = Replay
 replay-confirm = Replay will reset and re-apply all features. Continue?
 rebuild = Rebuild
 rebuild-confirm = Rebuild will construct a fresh character from identity and User features, checking multiclass prerequisites. In-game counters (HP, used slots, hit dice) are preserved. Continue?
+toast-rebuild-done = Character rebuilt
 initiative = Initiative
 speed = Speed
 attack-count = Attacks

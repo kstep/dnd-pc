@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
 
-use super::{class::ClassDefinition, feature::FeatureDefinition};
-use crate::model::{CharacterIdentity, ClassLevel};
+use crate::{
+    model::{CharacterIdentity, ClassLevel},
+    rules::{class::ClassDefinition, feature::FeatureDefinition},
+};
 
 /// Find a feature definition by name in the global features index.
 pub(super) fn find_feature<'a>(

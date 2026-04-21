@@ -1,7 +1,6 @@
 use std::fmt;
 
-use super::Interpreter;
-use crate::expr::{Error, Op, ops::BlockIndex, stack::Stack};
+use crate::expr::{Error, Op, interpret::Interpreter, ops::BlockIndex, stack::Stack};
 
 struct Frag {
     text: String,

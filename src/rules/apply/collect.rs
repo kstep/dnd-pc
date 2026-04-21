@@ -2,18 +2,18 @@ use std::collections::BTreeMap;
 
 use leptos::prelude::*;
 
-use super::pending::PendingFeature;
 use crate::{
     model::{Character, ClassLevel, FeatureSource},
     rules::{
-        DefinitionStore, RulesRegistry, background::BackgroundDefinition, class::ClassDefinition,
-        feature::FeatureDefinition, species::SpeciesDefinition,
+        DefinitionStore, RulesRegistry, apply::pending::PendingFeature,
+        background::BackgroundDefinition, class::ClassDefinition, feature::FeatureDefinition,
+        species::SpeciesDefinition,
     },
 };
 
 /// Names and canonical sources granted by a class at one level, including the
 /// selected subclass if any. No filtering — callers apply their own.
-pub(crate) fn class_level_sources<'a>(
+pub fn class_level_sources<'a>(
     class_level: &'a ClassLevel,
     level: u32,
     class_def: &'a ClassDefinition,

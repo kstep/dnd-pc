@@ -49,7 +49,7 @@ pub fn Avatar(
                     }
                     Err(error) => {
                         log::error!("avatar processing failed: {error:?}");
-                        Toast::new(tr!("avatar-load-failed")).show();
+                        Toast::i18n("avatar-load-failed").show();
                     }
                 }
             });

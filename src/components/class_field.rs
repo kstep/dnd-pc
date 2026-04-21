@@ -2,9 +2,10 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
-use super::character_header::split_resolved;
 use crate::{
-    components::{datalist_input::DatalistOption, entity_field::EntityField},
+    components::{
+        character_header::split_resolved, datalist_input::DatalistOption, entity_field::EntityField,
+    },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };

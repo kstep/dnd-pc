@@ -1,9 +1,12 @@
 use std::collections::{BTreeMap, VecDeque};
 
-use super::pending::{ApplyInputs, FeatureKey, PendingFeature};
 use crate::{
     model::{AssignInputs, Character, FeatureData, FeatureSource, Spell, SpellData},
-    rules::{WhenCondition, feature::FeatureDefinition},
+    rules::{
+        WhenCondition,
+        apply::pending::{ApplyInputs, FeatureKey, PendingFeature},
+        feature::FeatureDefinition,
+    },
 };
 
 /// Resolve replacement choices from modal inputs. For each pending feature
@@ -61,7 +64,7 @@ pub fn apply_new_features(
 /// updates stored inputs — assignments don't re-run (non-idempotent exprs like
 /// `MAX_HP += 5` would double-apply; user triggers Replay to recompute with new
 /// inputs).
-pub(crate) fn apply_new_feature(
+pub fn apply_new_feature(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     character: &mut Character,
     pending_feature: &PendingFeature,

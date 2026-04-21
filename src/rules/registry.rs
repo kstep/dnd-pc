@@ -2,24 +2,24 @@ use std::collections::BTreeMap;
 
 use leptos::prelude::*;
 
-use super::{
-    background::BackgroundDefinition,
-    cache::{DefinitionStore, FetchCache},
-    class::ClassDefinition,
-    feature::{ChoiceOption, FeatureDefinition, FeaturesIndex, FieldKind},
-    index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry},
-    labels,
-    locale::{self, LocaleMap, SpellLocaleMap},
-    resolve,
-    species::SpeciesDefinition,
-    spells::{SpellDefinition, SpellList, SpellMap},
-    utils::fetch_json,
-};
 use crate::{
     BASE_URL,
     model::{
         ActiveEffect, Character, CharacterIdentity, ClassLevel, EffectsIndex, FeatureField,
         FeatureSource, FreeUses,
+    },
+    rules::{
+        background::BackgroundDefinition,
+        cache::{DefinitionStore, FetchCache},
+        class::ClassDefinition,
+        feature::{ChoiceOption, FeatureDefinition, FeaturesIndex, FieldKind},
+        index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry},
+        labels,
+        locale::{self, LocaleMap, SpellLocaleMap},
+        resolve,
+        species::SpeciesDefinition,
+        spells::{SpellDefinition, SpellList, SpellMap},
+        utils::fetch_json,
     },
 };
 

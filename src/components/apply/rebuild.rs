@@ -4,17 +4,19 @@ use leptos::prelude::*;
 use reactive_stores::Store;
 
 use crate::{
-    components::args_modal::ArgsModalCtx,
+    components::{args_modal::ArgsModalCtx, toast::Toast},
     model::Character,
     rules::{
         ApplyInputs, RulesRegistry,
-        apply::{RebuildError, build_clean, prepare_rebuild},
+        apply::{FeatureKey, PendingInputs, RebuildError, build_clean, prepare_rebuild},
     },
 };
 
 /// Transactional rebuild: reconcile User-sourced features against identity
-/// slots, collect pending user inputs, open the args modal if any are
-/// outstanding, then `build_clean` → swap store + compute.
+/// slots, collect pending user inputs. Try to commit silently by feeding the
+/// guessed prefill through `build_clean` and checking whether the simulated
+/// character matches `original` on the derived state. If so — swap and show
+/// a toast. Otherwise — open the args modal with the partial prefill.
 ///
 /// Aborts with a browser alert on multiclass prereq failure or missing
 /// class/species/background definitions — the store is never written in that
@@ -41,16 +43,53 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
 
     if pending_inputs.is_empty() {
         do_rebuild(None);
-    } else {
-        // Seed cascade with a fresh identity-only character — matches what
-        // `build_clean` starts from, so modal preview sees PROF=0 / default
-        // abilities instead of the live sheet's residual state from prior
-        // (possibly half-migrated) applies.
-        let base = Arc::new(Character::from_identity(original.identity.clone()));
-        let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(pending_inputs, Some(base), move |inputs| {
-            do_rebuild(Some(&inputs))
+        return;
+    }
+
+    // Try silent commit: feed the guessed prefill straight into build_clean,
+    // compare simulated vs original on derived state. Match → commit without
+    // opening the modal.
+    let guessed = synthesize_apply_inputs(&pending_inputs);
+    if let Ok(simulated) = build_clean(&original, &registry, &guessed)
+        && simulated.eq_derived(&original)
+    {
+        log::info!("rebuild: silent-applied; derived state matches original");
+        store.update(|character| {
+            *character = simulated;
+            registry.compute(character);
         });
+        Toast::i18n("toast-rebuild-done").show();
+        return;
+    }
+
+    log::info!("rebuild: guess incomplete — opening modal with partial prefill");
+    // Seed cascade with a fresh identity-only character — matches what
+    // `build_clean` starts from, so modal preview sees PROF=0 / default
+    // abilities instead of the live sheet's residual state from prior
+    // (possibly half-migrated) applies.
+    let base = Arc::new(Character::from_identity(original.identity.clone()));
+    let ctx = expect_context::<ArgsModalCtx>();
+    ctx.open(pending_inputs, Some(base), move |inputs| {
+        do_rebuild(Some(&inputs))
+    });
+}
+
+/// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
+/// trial `build_clean`. `replacements` stays empty — solver doesn't
+/// recover replacement choices; features requiring one fall through to
+/// the modal via `eq_derived` mismatch.
+fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
+    ApplyInputs {
+        feature_inputs: pending
+            .iter()
+            .map(|pending| {
+                (
+                    FeatureKey::new(&pending.feature_name, pending.source.clone()),
+                    pending.prefill.clone(),
+                )
+            })
+            .collect(),
+        ..ApplyInputs::default()
     }
 }
 

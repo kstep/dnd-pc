@@ -1,7 +1,12 @@
 use std::{fmt, marker::PhantomData};
 
-use super::{Interpreter, eval_op};
-use crate::expr::{Context, Error, Op, VarGroup, group::IterStack, ops::BlockIndex, stack::Stack};
+use crate::expr::{
+    Context, Error, Op, VarGroup,
+    group::IterStack,
+    interpret::{Interpreter, eval_op, handle_context_op, handle_push_op, resolve_group_var},
+    ops::BlockIndex,
+    stack::Stack,
+};
 
 // --- Evaluator (apply mode, mutable context) ---
 
@@ -29,30 +34,9 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
     type Output = i32;
 
     fn exec(&mut self, op: Op<Var, i32, Grp>) -> Result<Option<BlockIndex>, Error> {
-        match op {
-            Op::PushVar(var) => {
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
-            }
-            Op::AssignVar(var) => {
-                self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
-            }
-            Op::PushGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
-            }
-            Op::AssignGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
-                self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
-            }
-            op => eval_op(&mut self.stack, &mut self.iter_stack, op),
+        match handle_context_op(op, &mut self.stack, &self.iter_stack, self.ctx)? {
+            None => Ok(None),
+            Some(op) => eval_op(&mut self.stack, &mut self.iter_stack, op),
         }
     }
 
@@ -99,26 +83,15 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
     type Output = i32;
 
     fn exec(&mut self, op: Op<Var, i32, Grp>) -> Result<Option<BlockIndex>, Error> {
+        let Some(op) = handle_push_op(op, &mut self.stack, &self.iter_stack, self.ctx)? else {
+            return Ok(None);
+        };
         match op {
-            Op::PushVar(var) => {
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
-            }
-            Op::AssignVar(_) if self.lenient => Ok(None),
+            Op::AssignVar(_) | Op::AssignGroup(_) if self.lenient => Ok(None),
             Op::AssignVar(var) => Err(Error::assign_at_eval(var)),
-            Op::AssignGroup(_) if self.lenient => Ok(None),
             Op::AssignGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
+                let var = resolve_group_var(group, &self.iter_stack)?;
                 Err(Error::assign_at_eval(var))
-            }
-            Op::PushGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
             }
             op => eval_op(&mut self.stack, &mut self.iter_stack, op),
         }

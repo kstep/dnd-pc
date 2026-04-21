@@ -2,8 +2,13 @@ use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 
 use serde::{Deserialize, Serialize};
 
-use super::{Interpreter, eval_op};
-use crate::expr::{Context, Error, Op, VarGroup, group::IterStack, ops::BlockIndex, stack::Stack};
+use crate::expr::{
+    Context, Error, Op, VarGroup,
+    group::IterStack,
+    interpret::{Interpreter, eval_op, handle_context_op},
+    ops::BlockIndex,
+    stack::Stack,
+};
 
 // --- DicePool + DicePoolEvaluator (preset dice rolls) ---
 
@@ -92,44 +97,23 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
     type Output = i32;
 
     fn exec(&mut self, op: Op<Var, i32, Grp>) -> Result<Option<BlockIndex>, Error> {
-        match op {
-            Op::PushVar(var) => {
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
+        if let Op::Roll = op {
+            let (count, sides) = self.stack.pop2()?;
+            let sides_u32 = sides as u32;
+            for _ in 0..count {
+                let value = self
+                    .pool
+                    .roll(sides_u32)
+                    .ok_or(Error::DicePoolExhausted(sides_u32))?;
+                self.stack.push(value as i32);
             }
-            Op::AssignVar(var) => {
-                self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
-            }
-            Op::PushGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
-                self.stack.push(self.ctx.resolve(var)?);
-                Ok(None)
-            }
-            Op::AssignGroup(group) => {
-                let var = group
-                    .top_member(&self.iter_stack)
-                    .ok_or(Error::GroupOutOfBounds)?;
-                self.ctx.assign(var, *self.stack.top()?)?;
-                Ok(None)
-            }
-            Op::Roll => {
-                let (count, sides) = self.stack.pop2()?;
-                let sides_u32 = sides as u32;
-                for _ in 0..count {
-                    let value = self
-                        .pool
-                        .roll(sides_u32)
-                        .ok_or(Error::DicePoolExhausted(sides_u32))?;
-                    self.stack.push(value as i32);
-                }
-                self.stack.push(sides);
-                self.stack.push(count);
-                Ok(None)
-            }
-            op => eval_op(&mut self.stack, &mut self.iter_stack, op),
+            self.stack.push(sides);
+            self.stack.push(count);
+            return Ok(None);
+        }
+        match handle_context_op(op, &mut self.stack, &self.iter_stack, self.ctx)? {
+            None => Ok(None),
+            Some(op) => eval_op(&mut self.stack, &mut self.iter_stack, op),
         }
     }
 

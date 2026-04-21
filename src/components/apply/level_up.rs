@@ -1,8 +1,8 @@
 use leptos::prelude::*;
 use reactive_stores::Store;
 
-use super::modal_flow::apply_with_modal;
 use crate::{
+    components::apply::modal_flow::apply_with_modal,
     model::Character,
     rules::{
         DefinitionStore, RulesRegistry,

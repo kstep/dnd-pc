@@ -101,7 +101,7 @@ impl DamageModifier {
 /// the underlying `BTreeMap` for serde, accessible as a map via `Deref`. Setter
 /// methods auto-remove entries that become inactive (all flags false and
 /// reduction zero), keeping the wire format compact.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DamageModifiers(BTreeMap<DamageType, DamageModifier>);
 

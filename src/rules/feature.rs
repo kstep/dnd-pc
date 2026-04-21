@@ -2,7 +2,6 @@ use std::{collections::BTreeMap, fmt};
 
 use serde::{Deserialize, Deserializer, de};
 
-use super::spells::SpellsDefinition;
 use crate::{
     demap::{self, Named},
     expr::{self, Eval as _},
@@ -10,7 +9,7 @@ use crate::{
         Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition, Expr,
         FeatureCategory, FeatureField, FeatureValue, Translatable, short_name,
     },
-    rules::utils::LevelRules,
+    rules::{apply::args_ctx::WithArgs, spells::SpellsDefinition, utils::LevelRules},
 };
 
 /// A field value that is either a static number or an expression evaluated
@@ -379,27 +378,6 @@ impl FeatureDefinition {
         log_errors: bool,
     ) {
         let Some(assign) = &self.assign else { return };
-
-        struct WithArgs<'a, C> {
-            inner: &'a mut C,
-            args: &'a [i32],
-        }
-        impl<C: expr::Context<Attribute, i32>> expr::Context<Attribute, i32> for WithArgs<'_, C> {
-            fn assign(&mut self, var: Attribute, val: i32) -> Result<(), expr::Error> {
-                self.inner.assign(var, val)
-            }
-
-            fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-                match var {
-                    Attribute::Arg(n) => self
-                        .args
-                        .get(n as usize)
-                        .copied()
-                        .ok_or_else(|| expr::Error::unsupported_var(var)),
-                    other => self.inner.resolve(other),
-                }
-            }
-        }
 
         // `inputs` is aligned with INTERACTIVE assignments only (those with
         // `@ARG` or dice — see `interactive_exprs`). Non-interactive assigns

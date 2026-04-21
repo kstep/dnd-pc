@@ -1,12 +1,14 @@
 use std::collections::BTreeMap;
 
-use super::{
-    class::ClassDefinition,
-    feature::{FeatureDefinition, FieldKind},
-    resolve::find_feature,
-    spells::{SpellDefinition, SpellList, SpellMap},
+use crate::{
+    model::{Character, Spell, SpellData},
+    rules::{
+        class::ClassDefinition,
+        feature::{FeatureDefinition, FieldKind},
+        resolve::find_feature,
+        spells::{SpellDefinition, SpellList, SpellMap},
+    },
 };
-use crate::model::{Character, Spell, SpellData};
 
 /// Resolve a spell definition from an inline list or a cached reference list.
 /// O(log n) lookup via BTreeMap.

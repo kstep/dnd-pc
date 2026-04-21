@@ -9,9 +9,11 @@ trunk serve --port 3000 --open   # Dev server with hot reload
 trunk build --release             # Production build
 cargo clippy                      # Lint
 cargo +nightly fmt                # Format (edition 2024 rustfmt features)
-cargo test                        # Native tests (JSON validation)
-WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown  # WASM tests
+cargo test --lib                  # Native subset (fast — JSON validation, parsers, etc.)
+WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown --lib  # ★ Authoritative
 ```
+
+**Testing rule:** this is a `wasm32-unknown-unknown` Leptos CSR PWA. The **wasm suite is the primary test signal** — most `rules::apply::*` and Leptos-integration tests use `#[wasm_bindgen_test]`, not `#[test]`, and native `cargo test` silently skips them. Always run the wasm command above before claiming green. Native `--lib` is OK as a quick sanity check alongside, never as a replacement.
 
 Default toolchain is stable (`rust-toolchain.toml`). Nightly only needed for `fmt`.
 
@@ -82,7 +84,15 @@ Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `
 
 **Global Features Catalog:** all features live in `public/data/features.json` → `FeaturesIndex` (`BTreeMap<Box<str>, FeatureDefinition>`). Class/species/background definitions reference features by name (`VecSet<String>`).
 
-**Feature application pipeline (`apply.rs` + `character_header.rs`):** `collect → gather_inputs → reapply → apply → compute`. The helper `apply_with_modal()` encapsulates the common flow: collect `ApplyInputs` from `PendingFeature` list, show args modal if needed, resolve replacements, run user callback, `compute()`. Entry points: level-up, species/background apply, quick-start (chains all three), user add, replay (combat panel). Key primitives: `PendingFeature`, `collect_class/species/background_features()`, `apply_new_features()`, `reapply_existing()`, `resolve_replacements()`, `replay()`. `FeatureDefinition::apply(level, character, when, inputs)` populates features, fields, spells, natural armor, and evaluates assignments.
+**Feature application pipeline (`src/rules/apply/`):** `collect → gather_inputs → reapply → apply → compute`. The helper `apply_with_modal()` encapsulates the common flow: collect `ApplyInputs` from `PendingFeature` list, show args modal if needed, resolve replacements, run user callback, `compute()`. Entry points: level-up, species/background apply, quick-start (chains all three), user add, replay (combat panel). Key primitives: `PendingFeature`, `collect_class/species/background_features()`, `apply_new_features()`, `reapply_existing()`, `resolve_replacements()`, `replay()`. `FeatureDefinition::apply(level, character, when, inputs)` populates features, fields, spells, natural armor, and evaluates assignments.
+
+**Rebuild (`apply/rebuild.rs`)** reconciles `User(_)` feature sources against identity slots and reconstructs the character. Half-migrated characters (`feature.inputs == []` but target state reflects prior picks) are recovered by the **MCV solver** (`apply/solver.rs`):
+
+- `FeatState { def, pending, assigns: Vec<AssignData> }` — one per pending feat with interactive assigns.
+- `solve_all(feats, baseline, target)` — pipeline-order recursion over `(feat_idx, assign_idx)` with backtracking. Per-assign `enumerate_assign` yields priority-ordered candidates (diff-exact → zero → brute over active slots), `passes_guard` via `eval_lenient` rejects invalid, `feat_def.apply` advances `baseline.clone_lean()` on each recursion step. Budget cap `MAX_TOTAL_ATTEMPTS = 5000` prevents runaway.
+- `args_ctx::{WithArgs, WithArgsRef}` — `Context<Attribute, i32>` wrappers that intercept `@ARG(n)` lookups (mutable for apply, read-only for `eval_lenient`).
+- `Character::eq_derived(&other)` — silent-commit gate; compares `abilities + saving_throws + skills + proficiencies + languages + damage_modifiers` (the derived surface feature-apply writes to). If `simulated.eq_derived(original)` passes → commit silently with toast, else open modal with partial solver prefill.
+- `stored_inputs_usable(feat_def, stored)` — guards Phase 1 against half-migrated `[AssignInputs { args: [] }]` entries that would crash apply with `UnsupportedVar("ARG.0")`; unusable stored falls through to the solver.
 
 **Key types:** `FeatureDefinition` (languages, stackable, selectable, spells, fields, assign, ac_expr, prerequisites), `FieldKind` (`Points`, `Choice`, `Die`, `Bonus`, `FreeUses`), `SpellsDefinition`, `SpellList` (`Ref { from }` or `Inline`), `ChoiceOptions` (`List` or `Ref`), `ActionType` (`Action`/`BonusAction`/`Reaction`), `Assignment { expr, when }`, `WhenCondition` (`OnFeatureAdd`/`OnLevelUp`/`OnLongRest`/`OnShortRest`/`OnCompute`).
 
@@ -139,9 +149,11 @@ Edition 2024, `imports_granularity = "Crate"`, `group_imports = "StdExternalCrat
 ## Coding Conventions
 
 ### Rust style
-- **Closure parameters:** descriptive names (`|character|`, `|pending|`), not `|c|`, `|e|`
+- **Closure parameters:** descriptive names (`|character|`, `|pending|`, `|armor|`, `|assignment|`), not `|c|`, `|e|`. Exceptions: `|ch|` for character, `|cl|` for `ClassLevel` — only in one-liner closures (single-expression body). Sort/cmp closures `|a, b|` OK.
+- **Imports:** always `use crate::...` (absolute paths), never `use super::...`. Single-crate project — prefer plain `pub` over `pub(crate)`; they're equivalent.
 - **Leptos rendering:** don't `.to_string()` numeric types — they render directly in `view!`
 - **`bind:value`:** only when signal type matches directly. For type mismatches use `prop:value` + `on:input` — don't bridge with Effects
+- **Testing:** wasm is the primary test suite (`WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown --lib`). Native `cargo test --lib` skips `#[wasm_bindgen_test]`-only tests — never the authoritative green signal.
 
 ### Locale data
 - **Russian locale:** never put English placeholder text in `public/ru/` — the overlay system falls back to `en/` automatically. Omit untranslated entries.

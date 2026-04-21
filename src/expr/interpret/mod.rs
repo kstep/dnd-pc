@@ -14,6 +14,7 @@ use crate::expr::{
     group::{IterStack, NoGroup},
     ops::{BLOCK_ERROR, BLOCK_NOOP, BlockIndex},
     stack::Stack,
+    traits::Context,
 };
 
 pub trait Interpreter<Var, Val, Grp = NoGroup<Var>> {
@@ -46,7 +47,7 @@ fn roll_die(sides: i32) -> Result<i32, Error> {
     Ok((n % sides as u32 + 1) as i32)
 }
 
-fn eval_op<Var, Grp: VarGroup<Var = Var>>(
+pub fn eval_op<Var, Grp: VarGroup<Var = Var>>(
     stack: &mut Stack<i32>,
     iter_stack: &mut IterStack,
     op: Op<Var, i32, Grp>,
@@ -164,10 +165,95 @@ fn eval_op<Var, Grp: VarGroup<Var = Var>>(
 
 /// Resolve a block index: [`BLOCK_NOOP`] = noop, [`BLOCK_ERROR`] = error,
 /// otherwise run block.
-fn eval_block(idx: BlockIndex) -> Result<Option<BlockIndex>, Error> {
+pub fn eval_block(idx: BlockIndex) -> Result<Option<BlockIndex>, Error> {
     match idx {
         BLOCK_NOOP => Ok(None),
         BLOCK_ERROR => Err(Error::GuardFailed),
         _ => Ok(Some(idx)),
     }
+}
+
+/// Resolve a group op's top-of-iter member, or emit `GroupOutOfBounds`.
+pub fn resolve_group_var<Var, Grp: VarGroup<Var = Var>>(
+    group: Grp,
+    iter_stack: &IterStack,
+) -> Result<Var, Error> {
+    group.top_member(iter_stack).ok_or(Error::GroupOutOfBounds)
+}
+
+/// Handle the two push ops (`PushVar`, `PushGroup`) by resolving the var
+/// through `ctx` and pushing onto `stack`. Returns `Ok(None)` if handled,
+/// `Ok(Some(op))` for any other op — caller composes with further
+/// dispatchers (e.g. [`handle_assign_op`] or [`eval_op`]).
+pub fn handle_push_op<Var, Grp, Ctx>(
+    op: Op<Var, i32, Grp>,
+    stack: &mut Stack<i32>,
+    iter_stack: &IterStack,
+    ctx: &Ctx,
+) -> Result<Option<Op<Var, i32, Grp>>, Error>
+where
+    Var: Copy,
+    Grp: VarGroup<Var = Var>,
+    Ctx: Context<Var, i32>,
+{
+    match op {
+        Op::PushVar(var) => {
+            stack.push(ctx.resolve(var)?);
+            Ok(None)
+        }
+        Op::PushGroup(group) => {
+            let var = resolve_group_var(group, iter_stack)?;
+            stack.push(ctx.resolve(var)?);
+            Ok(None)
+        }
+        other => Ok(Some(other)),
+    }
+}
+
+/// Handle the two assign ops (`AssignVar`, `AssignGroup`) by forwarding the
+/// stack top to `ctx.assign`. Returns `Ok(None)` if handled, `Ok(Some(op))`
+/// for any other op.
+pub fn handle_assign_op<Var, Grp, Ctx>(
+    op: Op<Var, i32, Grp>,
+    stack: &Stack<i32>,
+    iter_stack: &IterStack,
+    ctx: &mut Ctx,
+) -> Result<Option<Op<Var, i32, Grp>>, Error>
+where
+    Var: Copy,
+    Grp: VarGroup<Var = Var>,
+    Ctx: Context<Var, i32>,
+{
+    match op {
+        Op::AssignVar(var) => {
+            ctx.assign(var, *stack.top()?)?;
+            Ok(None)
+        }
+        Op::AssignGroup(group) => {
+            let var = resolve_group_var(group, iter_stack)?;
+            ctx.assign(var, *stack.top()?)?;
+            Ok(None)
+        }
+        other => Ok(Some(other)),
+    }
+}
+
+/// Compose [`handle_push_op`] and [`handle_assign_op`]. Returns `Ok(None)`
+/// if the op was one of the four context-delegating ops; `Ok(Some(op))` for
+/// anything else.
+pub fn handle_context_op<Var, Grp, Ctx>(
+    op: Op<Var, i32, Grp>,
+    stack: &mut Stack<i32>,
+    iter_stack: &IterStack,
+    ctx: &mut Ctx,
+) -> Result<Option<Op<Var, i32, Grp>>, Error>
+where
+    Var: Copy,
+    Grp: VarGroup<Var = Var>,
+    Ctx: Context<Var, i32>,
+{
+    let Some(op) = handle_push_op(op, stack, iter_stack, ctx)? else {
+        return Ok(None);
+    };
+    handle_assign_op(op, stack, iter_stack, ctx)
 }

@@ -2,7 +2,6 @@ use std::{cell::RefCell, collections::HashSet};
 
 use futures::future::join_all;
 use leptos::prelude::*;
-use leptos_fluent::tr;
 use reactive_stores::Store;
 use uuid::Uuid;
 use wasm_bindgen_futures::spawn_local;
@@ -326,7 +325,7 @@ pub fn sign_in_with_google() {
         let origin = window().location().origin().unwrap_or_default();
         let url = format!("{origin}{BASE_URL}/");
         crate::export::copy_to_clipboard(&url);
-        Toast::new(tr!("toast-login-tma")).show();
+        Toast::i18n("toast-login-tma").show();
         return;
     }
     let state = get_or_init_sync();
