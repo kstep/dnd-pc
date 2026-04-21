@@ -40,7 +40,7 @@ pub fn export_character(character: &Character) {
     download_via_anchor(&json, &filename);
 }
 
-pub(crate) fn is_telegram_mini_app() -> bool {
+pub fn is_telegram_mini_app() -> bool {
     // Detection is heuristic — Telegram doesn't officially document how to
     // recognise a Mini App context. We match the set of signals used by
     // @telegram-apps/sdk:
@@ -64,7 +64,7 @@ fn has_property(target: &JsValue, name: &str) -> bool {
     Reflect::has(target, &JsValue::from_str(name)).unwrap_or(false)
 }
 
-pub(crate) fn copy_to_clipboard(text: &str) {
+pub fn copy_to_clipboard(text: &str) {
     if !window().is_secure_context() {
         return;
     }
