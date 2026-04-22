@@ -1707,6 +1707,30 @@ textarea.entry-desc {
   margin-top: var(--size-1);
 }
 
+.note-level {
+  font-size: var(--font-size-0);
+  padding: 2px var(--size-1);
+  border-radius: var(--radius-1);
+  background: var(--input-bg);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.note-date {
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.note-preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
 /* --------------------- Equipment Panel ----------------------- */
 .armor-natural {
   .entry-name {

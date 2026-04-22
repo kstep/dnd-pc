@@ -12,6 +12,7 @@ mod equipment;
 mod feature;
 mod identity;
 mod money;
+mod note;
 mod skills;
 mod spell;
 
@@ -29,6 +30,7 @@ pub use equipment::*;
 pub use feature::*;
 pub use identity::*;
 pub use money::*;
+pub use note::Note;
 pub use skills::*;
 pub use spell::*;
 

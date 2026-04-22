@@ -74,6 +74,8 @@ panel-features = Features
 panel-personality = Personality
 panel-proficiencies = Proficiencies & Languages
 panel-notes = Notes
+btn-add-note = + Add Note
+note-level-abbr = Lvl
 
 ## Combat panel
 armor-class = Armor Class

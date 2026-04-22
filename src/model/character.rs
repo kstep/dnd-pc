@@ -6,7 +6,7 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
-        Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Personality,
+        Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Note, Personality,
         Skills, SpellSlots, Weapon, enums::*,
     },
     vecset::VecSet,
@@ -100,7 +100,7 @@ pub struct Character {
     #[serde(default)]
     pub applied: Applied,
     #[serde(default)]
-    pub notes: String,
+    pub notes: Vec<Note>,
     #[serde(default)]
     pub updated_at: u64,
     #[serde(default)]
@@ -559,7 +559,7 @@ impl Default for Character {
             proficiencies: VecSet::new(),
             languages: VecSet::new(),
             damage_modifiers: DamageModifiers::default(),
-            notes: String::new(),
+            notes: Vec::new(),
             updated_at: now_epoch_secs(),
             shared: false,
             schema_version: 1,
@@ -902,7 +902,7 @@ impl Character {
                 background: true,
                 levels: BTreeMap::new(),
             },
-            notes: String::new(),
+            notes: Vec::new(),
             updated_at: 0,
             shared: false,
             schema_version: 0,
@@ -988,7 +988,7 @@ pub mod tests {
             damage_modifiers: DamageModifiers::default(),
             spell_slots: SpellSlots::default(),
             applied: Applied::default(),
-            notes: String::new(),
+            notes: Vec::new(),
             updated_at: 0,
             shared: false,
             schema_version: 0,

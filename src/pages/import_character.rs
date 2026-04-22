@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use js_sys::Date;
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::{
@@ -9,12 +10,13 @@ use leptos_router::{
 };
 use strum::IntoEnumIterator;
 use uuid::Uuid;
+use wasm_bindgen::JsValue;
 
 use crate::{
     BASE_URL,
     components::cloud_sign_in_hint::CloudSignInHint,
     firebase,
-    model::{Ability, Avatar, Character, Item, Proficiency, Skill, Translatable},
+    model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
     share, storage,
 };
 
@@ -51,6 +53,29 @@ fn truncate(s: &str, max: usize) -> String {
         let truncated: String = s.chars().take(max).collect();
         format!("{truncated}...")
     }
+}
+
+/// Compact one-line summary of a notes vector for import diff: shows the
+/// last note with its level/date plus the total count. Empty vector returns
+/// an empty string so equal-empty states don't trigger a diff row.
+fn notes_diff_summary(notes: &[Note]) -> String {
+    let Some(last) = notes.last() else {
+        return String::new();
+    };
+    let level_label = if last.level > 0 {
+        format!("Ур.{}", last.level)
+    } else {
+        "\u{2014}".into()
+    };
+    let date_label: String = if last.created_at > 0 {
+        let date = Date::new(&((last.created_at as f64) * 1000.0).into());
+        date.to_locale_date_string("ru-RU", &JsValue::NULL).into()
+    } else {
+        "\u{2014}".into()
+    };
+    let text_preview = truncate(&last.text, 50);
+    let count = notes.len();
+    format!("«{text_preview}» · {level_label} · {date_label} (всего {count})")
 }
 
 fn format_names<T>(items: &[T], name_fn: impl Fn(&T) -> &str) -> String {
@@ -394,8 +419,8 @@ impl Character {
             &mut rows,
             sec,
             "panel-notes",
-            truncate(&self.notes, 50),
-            truncate(&imported.notes, 50),
+            notes_diff_summary(&self.notes),
+            notes_diff_summary(&imported.notes),
         );
 
         rows

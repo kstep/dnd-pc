@@ -7,7 +7,7 @@ use crate::model::{Character, DamageType};
 /// Latest schema version. Bumped when a new migration step is added.
 /// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
 /// the migration loop entirely.
-pub const CURRENT_SCHEMA_VERSION: u32 = 2;
+pub const CURRENT_SCHEMA_VERSION: u32 = 3;
 
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut Value) {
@@ -364,19 +364,40 @@ pub fn migrate_value(mut value: Value) -> Value {
     if version >= CURRENT_SCHEMA_VERSION {
         return value;
     }
-    migrate_v1(&mut value);
-    migrate_v2(&mut value);
-    migrate_v3(&mut value);
-    migrate_v4(&mut value);
-    migrate_v5(&mut value);
-    migrate_v6(&mut value);
-    migrate_v7(&mut value);
-    migrate_v8(&mut value);
-    migrate_v9(&mut value);
-    migrate_v10(&mut value);
-    migrate_v11(&mut value);
-    migrate_v12(&mut value);
-    migrate_v13(&mut value);
+
+    // Migrations are grouped by the schema version they produce. A block
+    // `if version < N { … }` runs the steps needed to bring a character up
+    // to schema version N. Individual steps stay idempotent — already-
+    // migrated shapes are detected and skipped inside each function.
+
+    // → schema version 1: initial batch of data normalizations and
+    // structural splits (introduced when the schema_version field was added).
+    if version < 1 {
+        migrate_v1(&mut value);
+        migrate_v2(&mut value);
+        migrate_v3(&mut value);
+        migrate_v4(&mut value);
+        migrate_v5(&mut value);
+        migrate_v6(&mut value);
+        migrate_v7(&mut value);
+        migrate_v8(&mut value);
+        migrate_v9(&mut value);
+        migrate_v10(&mut value);
+        migrate_v11(&mut value);
+        migrate_v12(&mut value);
+    }
+
+    // → schema version 2: legacy `Weapon.attack_bonus` replaced by
+    // `quantity`/`category`/`ability`/`magic_bonus`/`attack_expr`.
+    if version < 2 {
+        migrate_v13(&mut value);
+    }
+
+    // → schema version 3: notes become Vec<Note> with level/date metadata.
+    if version < 3 {
+        migrate_v14(&mut value);
+    }
+
     if let Value::Object(map) = &mut value {
         map.insert("schema_version".into(), Value::from(CURRENT_SCHEMA_VERSION));
     }
@@ -458,6 +479,29 @@ fn migrate_v13(value: &mut Value) {
     }
 }
 
+/// Wrap legacy `notes: String` into a single-entry `Vec<Note>` with
+/// `created_at = 0` / `level = 0` markers (unknown metadata for pre-Note data).
+/// Empty strings become an empty vector.
+fn migrate_v14(value: &mut Value) {
+    if value.get("notes").is_some_and(Value::is_array) {
+        return;
+    }
+    let text = value
+        .get("notes")
+        .and_then(Value::as_str)
+        .map(str::to_owned)
+        .unwrap_or_default();
+    value["notes"] = if text.is_empty() {
+        serde_json::json!([])
+    } else {
+        serde_json::json!([{
+            "created_at": 0,
+            "level": 0,
+            "text": text,
+        }])
+    };
+}
+
 /// Move `identity.alignment` → `personality.alignment` (alignment is
 /// descriptive, not a rules input).
 fn migrate_v11(value: &mut Value) {
@@ -514,6 +558,38 @@ mod tests {
             migrated["schema_version"].as_u64(),
             Some(u64::from(CURRENT_SCHEMA_VERSION))
         );
+    }
+
+    #[test]
+    fn migrate_v14_wraps_string_notes_into_single_entry() {
+        let mut input = serde_json::json!({"notes": "hello world"});
+        migrate_v14(&mut input);
+        let notes = input["notes"].as_array().expect("notes must be array");
+        assert_eq!(notes.len(), 1);
+        assert_eq!(notes[0]["text"].as_str(), Some("hello world"));
+        assert_eq!(notes[0]["created_at"].as_u64(), Some(0));
+        assert_eq!(notes[0]["level"].as_u64(), Some(0));
+    }
+
+    #[test]
+    fn migrate_v14_empty_string_becomes_empty_vec() {
+        let mut input = serde_json::json!({"notes": ""});
+        migrate_v14(&mut input);
+        let notes = input["notes"].as_array().expect("notes must be array");
+        assert!(notes.is_empty());
+    }
+
+    #[test]
+    fn migrate_v14_is_noop_when_already_array() {
+        let mut input = serde_json::json!({
+            "notes": [{"created_at": 123, "level": 2, "text": "kept"}]
+        });
+        migrate_v14(&mut input);
+        let notes = input["notes"].as_array().expect("notes must be array");
+        assert_eq!(notes.len(), 1);
+        assert_eq!(notes[0]["created_at"].as_u64(), Some(123));
+        assert_eq!(notes[0]["level"].as_u64(), Some(2));
+        assert_eq!(notes[0]["text"].as_str(), Some("kept"));
     }
 
     #[test]

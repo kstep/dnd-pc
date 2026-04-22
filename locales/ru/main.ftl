@@ -74,6 +74,8 @@ panel-features = Способности
 panel-personality = Личность
 panel-proficiencies = Владения и языки
 panel-notes = Заметки
+btn-add-note = + Добавить заметку
+note-level-abbr = Ур.
 
 ## Панель боя
 armor-class = Класс защиты

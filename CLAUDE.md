@@ -67,7 +67,7 @@ Submodules:
 - `local.rs` — load/save characters, index, effects, panel state
 - `sync.rs` — Firebase/Firestore sync, Google Sign-in, pull/push
 - `queue.rs` — offline-first sync queue
-- `migrate.rs` — 12 migrations (`migrate_v1` … `migrate_v12`). `load_character` falls back to raw JSON + migrations on direct deserialize failure. `deserialize_character_value(Value)` applies all migrations — used for cloud-fetched data.
+- `migrate.rs` — sequence of migration functions (`migrate_v1`, `migrate_v2`, …) organized into **version-gated blocks**. `load_character` falls back to raw JSON + migrations on direct deserialize failure. `deserialize_character_value(Value)` applies migrations — used for cloud-fetched data. **Schema version ≠ migration count.** `CURRENT_SCHEMA_VERSION` is independent of migration-function ordinals. Inside `migrate_value`, migrations are grouped as `if version < N { … }` blocks: each block contains the steps needed to bring a character up to schema version N, and only the blocks with `version < N` run for a given input. When adding a new migration, put it in a new block gated by the next schema version (or an existing block if it logically belongs) and bump `CURRENT_SCHEMA_VERSION` accordingly. One schema version can cover many migration functions; one migration function lives in exactly one version block. All migration functions must stay idempotent (they can still run multiple times because characters may move in and out of blocks as the version history evolves).
 
 ### Character Sharing (`src/share.rs`, `src/pages/import_character.rs`)
 

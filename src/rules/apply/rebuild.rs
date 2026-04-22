@@ -866,7 +866,7 @@ mod tests {
 
     use super::*;
     use crate::model::{
-        AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue,
+        AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -881,16 +881,22 @@ mod tests {
     #[wasm_bindgen_test]
     fn merge_preserves_equipment_personality_notes() {
         let mut original = Character::default();
-        original.notes = "important notes".into();
+        original.notes = vec![Note {
+            created_at: 42,
+            level: 3,
+            text: "important notes".into(),
+        }];
         original.personality.history = "backstory".into();
 
         let mut clean = Character::default();
-        clean.notes = String::new();
+        clean.notes = Vec::new();
         clean.personality.history = String::new();
 
         merge_preserved(&mut clean, &original);
 
-        assert_eq!(clean.notes, "important notes");
+        assert_eq!(clean.notes.len(), 1);
+        assert_eq!(clean.notes[0].text, "important notes");
+        assert_eq!(clean.notes[0].level, 3);
         assert_eq!(clean.personality.history, "backstory");
     }
 
