@@ -64,9 +64,18 @@ pub fn NotesPanel() -> impl IntoView {
                         .unwrap_or("")
                         .to_string();
                     view! {
-                        <div class="entry-item" class:expanded=initial_expanded>
+                        <div class="entry-item note-entry" class:expanded=initial_expanded>
                             <ToggleButton />
-                            <div class="entry-content">
+                            <div
+                                class="entry-content"
+                                on:click=move |e| {
+                                    let target: web_sys::HtmlElement = event_target(&e);
+                                    let Ok(Some(entry)) = target.closest(".entry-item") else {
+                                        return;
+                                    };
+                                    let _ = entry.class_list().toggle("expanded");
+                                }
+                            >
                                 <span class="note-level">{level_label}</span>
                                 <span class="note-date">{date_label}</span>
                                 <span class="note-preview">{preview}</span>

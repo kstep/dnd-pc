@@ -1755,6 +1755,10 @@ textarea.entry-desc {
   color: var(--text-primary);
 }
 
+.note-entry > .entry-content {
+  cursor: pointer;
+}
+
 /* --------------------- Equipment Panel ----------------------- */
 .armor-natural {
   .entry-name {
