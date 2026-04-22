@@ -108,7 +108,7 @@ fn enumerate_assign<'a>(
     target: &'a Character,
 ) -> Box<dyn Iterator<Item = Vec<i32>> + 'a> {
     if let Some(forced_args) = forced {
-        return Box::new(std::iter::once(forced_args.to_vec()));
+        return Box::new(once(forced_args.to_vec()));
     }
     let (lo, hi) = arg_range;
 

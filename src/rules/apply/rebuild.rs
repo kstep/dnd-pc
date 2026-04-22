@@ -197,40 +197,88 @@ fn collect_rebuild_pending_inputs(
         // but falling between editable siblings). Capture `cascade_base`
         // the first time we hit an emit-worthy feat: everything strictly
         // before it is already folded into that baseline.
+        // Combined walk: advance `validation_baseline` through effective-
+        // stored / non-interactive feats, build `feat_states` for
+        // interactive ones, capture `cascade_base` right before the first
+        // interactive feat. `state_idx_by_pending[i]` = index of the
+        // feat_state built at `all_pending[i]` (or None) so the emit loop
+        // skips owned-key map lookups.
+        //
+        // TODO(perf): `stored_inputs_effective` clones the whole baseline
+        // via `clone_lean` for its dry-run diff; the clone grows every
+        // iteration → O(N² × feature_count) on L20. Same in
+        // `solver::candidate_changes_baseline`. Proper fix needs a
+        // derived-only clone, deferred to avoid breaking a future
+        // spells-through-assign refactor (may write to features.data).
         let mut validation_baseline = Character::from_identity(original.identity.clone());
         let mut cascade_base: Option<Character> = None;
-        let mut forced_usable: BTreeMap<(String, FeatureSource), bool> = BTreeMap::new();
+        let mut feat_states: Vec<FeatState> = Vec::new();
+        let mut state_idx_by_pending: Vec<Option<usize>> = Vec::with_capacity(all_pending.len());
         let mut had_rejections = false;
         for pending in &all_pending {
             let Some(feat_def) = fi.get(pending.name.as_str()) else {
+                state_idx_by_pending.push(None);
                 continue;
             };
-            let Some(assigns) = feat_def.assign.as_ref() else {
+            let Some(assign_defs) = feat_def.assign.as_ref() else {
+                state_idx_by_pending.push(None);
                 continue;
             };
-            let has_interactive_onadd = assigns
+            let has_interactive_onadd = assign_defs
                 .iter()
-                .any(|a| a.when == WhenCondition::OnFeatureAdd && a.is_interactive());
-            // Cascade seed = validation state BEFORE the first interactive
-            // feat. Every interactive feat will be emitted (editable) and
-            // the modal cascade re-applies it from the seed, so capturing
-            // AFTER an interactive apply would double-apply. Non-interactive
-            // feats before the first interactive are folded into the seed
-            // via the `validation_baseline.apply` below.
+                .any(|asn| asn.when == WhenCondition::OnFeatureAdd && asn.is_interactive());
             if has_interactive_onadd && cascade_base.is_none() {
                 cascade_base = Some(validation_baseline.clone_lean());
             }
             let stored = original.features.get_inputs(&pending.name, &pending.source);
             let effective = !has_interactive_onadd
                 || stored_inputs_effective(feat_def, pending.level, &validation_baseline, stored);
-            forced_usable.insert((pending.name.clone(), pending.source.clone()), effective);
             if has_interactive_onadd && !effective && !stored.is_empty() {
-                // Stored was present but ineffective — corruption (e.g.
-                // Expertise on now non-proficient skills). Silent-commit
-                // must not run or it'd just replay the corruption; caller
-                // opens the modal instead.
+                // Corrupt stored (e.g. Expertise on now non-proficient skills).
+                // Silent-commit would replay it; caller opens the modal instead.
                 had_rejections = true;
             }
+
+            if has_interactive_onadd {
+                // Idx = position in the interactive-filtered stream — the
+                // same order `FeatureDefinition::assign_inner` uses to
+                // consume stored inputs (feature.rs:393). Stable when
+                // `outer_group` returns `None` (that filter_map skip drops
+                // the stored slot with it).
+                let assigns: Vec<AssignData> = assign_defs
+                    .iter()
+                    .filter(|asn| asn.when == WhenCondition::OnFeatureAdd && asn.is_interactive())
+                    .enumerate()
+                    .filter_map(|(idx, assignment)| {
+                        let mask = outer_group(&assignment.expr)?;
+                        let arg_range = scan_arg_range(&assignment.expr)?;
+                        let arg_count = assignment.expr.arg_slot_count(Attribute::arg_index);
+                        let forced = effective
+                            .then(|| stored.get(idx).map(|input| input.args.clone()))
+                            .flatten();
+                        Some(AssignData {
+                            expr: assignment.expr.clone(),
+                            mask,
+                            arg_range,
+                            args: vec![0; arg_count],
+                            forced,
+                        })
+                    })
+                    .collect();
+                if !assigns.is_empty() {
+                    state_idx_by_pending.push(Some(feat_states.len()));
+                    feat_states.push(FeatState {
+                        def: feat_def,
+                        pending,
+                        assigns,
+                    });
+                } else {
+                    state_idx_by_pending.push(None);
+                }
+            } else {
+                state_idx_by_pending.push(None);
+            }
+
             if effective {
                 feat_def.apply(
                     pending.level,
@@ -240,101 +288,29 @@ fn collect_rebuild_pending_inputs(
                 );
             }
         }
-        // No interactive feats → cascade seed is the fully-advanced baseline
-        // (caller will short-circuit via `pending.is_empty()` in that case).
-        let cascade_base = cascade_base.unwrap_or(validation_baseline);
+        // No interactive feats → caller short-circuits via `pending.is_empty()`;
+        // fallback seed is the fully-advanced validation_baseline.
+        let cascade_base = cascade_base.unwrap_or_else(|| validation_baseline.clone_lean());
 
-        // Build FeatState for every pending — stored-input feats go in
-        // too, their interactive assigns marked `forced` with the stored
-        // args so enumerate_assign yields that single candidate. Keeping
-        // stored and unsolved in one list preserves pipeline order: e.g.
-        // an Expertise-style feat whose `if(@==1)` gate depends on PROFs
-        // granted by an earlier unsolved feat sees the right baseline.
-        let mut baseline = Character::from_identity(original.identity.clone());
-        let mut feat_states: Vec<FeatState> = Vec::new();
-        for pending in &all_pending {
-            let Some(feat_def) = fi.get(pending.name.as_str()) else {
-                continue;
-            };
-            let Some(assign_defs) = feat_def.assign.as_ref() else {
-                continue;
-            };
-            let stored = original.features.get_inputs(&pending.name, &pending.source);
-            let stored_usable = forced_usable
-                .get(&(pending.name.clone(), pending.source.clone()))
-                .copied()
-                .unwrap_or(false);
+        // Solver starts from identity (it re-applies every feat through
+        // its own pipeline walk). Ignore the success flag — even a partial
+        // solve leaves the best-effort prefill in each assign's `args`.
+        let solver_baseline = Character::from_identity(original.identity.clone());
+        let _ = solve_all(&mut feat_states, &solver_baseline, original);
 
-            // Index into the interactive-filtered position matches the
-            // order `FeatureDefinition::assign_inner` uses to consume
-            // stored inputs (feature.rs:393). Using the index (not a
-            // `stored_iter.next()` that advances inside `filter_map`)
-            // keeps alignment stable when `outer_group(expr)` returns
-            // `None` — that skip must drop the stored slot too.
-            let assigns: Vec<AssignData> = assign_defs
-                .iter()
-                .filter(|assignment| {
-                    assignment.when == WhenCondition::OnFeatureAdd && assignment.is_interactive()
-                })
-                .enumerate()
-                .filter_map(|(idx, assignment)| {
-                    let mask = outer_group(&assignment.expr)?;
-                    let arg_range = scan_arg_range(&assignment.expr)?;
-                    let arg_count = assignment.expr.arg_slot_count(Attribute::arg_index);
-                    let forced = stored_usable
-                        .then(|| stored.get(idx).map(|input| input.args.clone()))
-                        .flatten();
-                    Some(AssignData {
-                        expr: assignment.expr.clone(),
-                        mask,
-                        arg_range,
-                        args: vec![0; arg_count],
-                        forced,
-                    })
-                })
-                .collect();
-            if assigns.is_empty() {
-                continue;
-            }
-            feat_states.push(FeatState {
-                def: feat_def,
-                pending,
-                assigns,
-            });
-        }
-
-        // Solve. Ignore the success flag — even on partial solve the
-        // last-tried args in each assign are the best-effort prefill that
-        // the modal will pick up.
-        let _ = solve_all(&mut feat_states, &baseline, original);
-
-        // Emit phase: walk `all_pending` in pipeline order. Every feat with
-        // interactive assigns comes from `feat_states` (solver-solved args).
-        // Non-interactive feats with an `assign` block ride along as hidden
-        // pending so the cascade applies them in the right spot. The first
-        // emit-worthy (non-forced interactive) feat opens the visible
-        // section; everything before it is already folded into `cascade_base`
-        // via the pre-validation walk, so we skip emit for those. Non-
-        // interactive feats applied on `baseline` too so `detect_replacement`
-        // sees a pipeline-correct state for later feats.
-        let state_by_key: BTreeMap<(String, FeatureSource), usize> = feat_states
-            .iter()
-            .enumerate()
-            .map(|(i, state)| {
-                (
-                    (state.pending.name.clone(), state.pending.source.clone()),
-                    i,
-                )
-            })
-            .collect();
+        // Emit: walk all_pending. Interactive feats emit editable from
+        // their solver-solved args; non-interactive with `assign` ride as
+        // hidden once the visible section has opened. `emit_baseline`
+        // advances through every applied feat so `detect_replacement`
+        // sees the pre-apply state for each.
+        let mut emit_baseline = Character::from_identity(original.identity.clone());
         let mut inputs: Vec<PendingInputs> = Vec::new();
         let mut emit_started = false;
-        for pending in &all_pending {
+        for (pending_idx, pending) in all_pending.iter().enumerate() {
             let Some(feat_def) = fi.get(pending.name.as_str()) else {
                 continue;
             };
-            let key = (pending.name.clone(), pending.source.clone());
-            if let Some(&state_idx) = state_by_key.get(&key) {
+            if let Some(state_idx) = state_idx_by_pending[pending_idx] {
                 let state = &feat_states[state_idx];
                 let inputs_vec: Vec<AssignInputs> = state
                     .assigns
@@ -351,12 +327,12 @@ fn collect_rebuild_pending_inputs(
                     original,
                     fi,
                     &pending_keys,
-                    &baseline,
+                    &emit_baseline,
                 );
 
                 state.def.apply(
                     state.pending.level,
-                    &mut baseline,
+                    &mut emit_baseline,
                     WhenCondition::OnFeatureAdd,
                     &inputs_vec,
                 );
@@ -368,13 +344,12 @@ fn collect_rebuild_pending_inputs(
                 }
                 emit_started = true;
             } else if feat_def.assign.is_some() {
-                // Non-interactive feat with assignments. Apply on baseline
-                // regardless (detect_replacement for later feats needs it);
-                // emit as hidden only once the visible section has opened,
-                // so its effect reaches downstream cascade snapshots.
+                // Non-interactive: apply unconditionally (downstream
+                // `detect_replacement` needs its effect); emit as hidden
+                // only after the visible section has opened.
                 feat_def.apply(
                     pending.level,
-                    &mut baseline,
+                    &mut emit_baseline,
                     WhenCondition::OnFeatureAdd,
                     &[],
                 );
@@ -415,30 +390,32 @@ fn detect_replacement(
     if matches!(feat_def.replace_with, ReplaceWith::None) {
         return None;
     }
-    let already_present = original
-        .features
-        .iter()
-        .any(|feature| feature.name == pending.name && feature.source == pending.source);
-    if already_present {
-        return None;
+    // Single pass: F itself present in the slot → no replacement; else
+    // first candidate whose def matches the filter + prerequisites wins.
+    let mut candidate_name: Option<String> = None;
+    for feature in original.features.iter() {
+        if feature.source != pending.source {
+            continue;
+        }
+        if feature.name == pending.name {
+            return None;
+        }
+        if candidate_name.is_some() {
+            continue;
+        }
+        if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
+            continue;
+        }
+        let Some(candidate_def) = fi.get(feature.name.as_str()) else {
+            continue;
+        };
+        if feat_def.replace_with.matches(candidate_def)
+            && candidate_def.meets_prerequisites(baseline)
+        {
+            candidate_name = Some(feature.name.clone());
+        }
     }
-    original
-        .features
-        .iter()
-        .find(|candidate| {
-            if candidate.source != pending.source {
-                return false;
-            }
-            if pending_keys.contains(&(candidate.name.as_str(), &candidate.source)) {
-                return false;
-            }
-            let Some(candidate_def) = fi.get(candidate.name.as_str()) else {
-                return false;
-            };
-            feat_def.replace_with.matches(candidate_def)
-                && candidate_def.meets_prerequisites(baseline)
-        })
-        .map(|candidate| candidate.name.clone())
+    candidate_name
 }
 
 /// Check whether a dry-run of `feat_def.apply(stored)` on `baseline` would

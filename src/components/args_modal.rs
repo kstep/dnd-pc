@@ -78,21 +78,9 @@ impl ArgsModalCtx {
 
 /// Register `all_signals` / `all_dice` entries for a `hidden` pending feat
 /// without rendering a form. The cascade's per-pending Effect reads these
-/// signals to reconstruct `AssignInputs` and apply the feat to the next
-/// snapshot — hidden feats must participate in the cascade so downstream
-/// (user-editable) feats see a pipeline-correct baseline, even though the
-/// user has nothing to choose here.
-///
-/// Dice from `prefill.dice` are not restored (no public iterator over
-/// `DicePool`). Hidden feats are either non-interactive (no dice by
-/// definition) or effective-stored feats whose cascade effect is dominated
-/// by `args`; hidden dice would be an edge worth fixing by extending
-/// `DicePool` with an `entries()` API.
-fn register_hidden_signals(
-    pending_inputs: &PendingInputs,
-    all_signals: RwSignal<ArgsSignals>,
-    all_dice: RwSignal<DiceSignals>,
-) {
+/// signals to apply the feat to the next snapshot. Dice from `prefill.dice`
+/// are not restored (non-interactive feats have no dice by definition).
+fn register_hidden_signals(pending_inputs: &PendingInputs, all_signals: RwSignal<ArgsSignals>) {
     let key = FeatureKey::new(
         pending_inputs.feature_name.clone(),
         pending_inputs.source.clone(),
@@ -101,21 +89,16 @@ fn register_hidden_signals(
         .prefill
         .iter()
         .map(|input| {
-            let signals: Vec<RwSignal<i32>> =
-                input.args.iter().map(|v| RwSignal::new(*v)).collect();
+            let signals: Vec<RwSignal<i32>> = input
+                .args
+                .iter()
+                .map(|value| RwSignal::new(*value))
+                .collect();
             StoredValue::new(signals)
         })
         .collect();
-    let dice_groups: Vec<StoredValue<DiceGroupSignals>> = pending_inputs
-        .prefill
-        .iter()
-        .map(|_| StoredValue::new(BTreeMap::new()))
-        .collect();
     all_signals.update(|signals| {
-        signals.insert(key.clone(), signal_groups);
-    });
-    all_dice.update(|dice| {
-        dice.insert(key, dice_groups);
+        signals.insert(key, signal_groups);
     });
 }
 
@@ -516,17 +499,10 @@ pub fn ArgsModal() -> impl IntoView {
                     let key = feature_keys[i].clone();
                     Effect::new(move |_| {
                         let prev = prev_sig.get();
-                        // TODO(perf): per-keystroke cascade does N full
-                        // Character clones (N = pending.len()). In realistic
-                        // modal scenarios N is small (edit single = 1,
-                        // level-up = 1-3, quick-start ≤ 10), so cost is
-                        // negligible. Revisit if we ever open a modal with
-                        // the full character chain (e.g. ~30 pending features
-                        // at Rogue 20 via `collect_rebuild_pending_inputs`)
-                        // — if ticks become sluggish, bench first. Candidates:
-                        // partial snapshot (skills/abilities/proficiencies
-                        // only), or structural sharing via a shadow overlay.
-                        let mut ch = (*prev).clone();
+                        // TODO(perf): N `clone_lean` per keystroke. Small
+                        // for level-up / user-add; rebuild chains ~20+
+                        // entries at L20 — bench if it gets sluggish.
+                        let mut ch = (*prev).clone_lean();
                         // Effective feature: user-picked replacement (reactive)
                         // or the original. Replacement's args/dice are stored
                         // under its own FeatureKey in all_signals/all_dice.
@@ -606,7 +582,7 @@ pub fn ArgsModal() -> impl IntoView {
                     .map(|(i, pending_inputs)| {
                         let character: Signal<Arc<Character>> = snapshots[i].into();
                         if pending_inputs.hidden {
-                            register_hidden_signals(&pending_inputs, all_signals, all_dice);
+                            register_hidden_signals(&pending_inputs, all_signals);
                             ().into_any()
                         } else {
                             view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements /> }.into_any()
