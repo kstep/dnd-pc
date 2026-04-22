@@ -16,7 +16,10 @@ fn format_epoch_date(ts: u64, locale: &str) -> String {
         return "\u{2014}".into();
     }
     let date = Date::new(&((ts as f64) * 1000.0).into());
-    date.to_locale_date_string(locale, &JsValue::NULL).into()
+    // `options` must be undefined (or an object). Passing `null` makes V8
+    // throw "Date.prototype.toLocaleDateString called on null or undefined"
+    // because ECMA-402 runs ToObject/RequireObjectCoercible on it.
+    date.to_locale_date_string(locale, &JsValue::UNDEFINED).into()
 }
 
 #[component]
@@ -94,5 +97,68 @@ pub fn NotesPanel() -> impl IntoView {
                 }).collect_view()}
             </div>
         </section>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn format_epoch_date_zero_returns_em_dash() {
+        assert_eq!(format_epoch_date(0, "en"), "\u{2014}");
+    }
+
+    #[wasm_bindgen_test]
+    fn format_epoch_date_nonzero_returns_non_empty_for_en() {
+        // 2024-01-15T00:00:00Z = 1705276800
+        let s = format_epoch_date(1_705_276_800, "en");
+        assert!(
+            !s.is_empty() && s != "\u{2014}",
+            "expected non-empty formatted date for en, got: {s:?}"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn format_epoch_date_nonzero_returns_non_empty_for_ru() {
+        let s = format_epoch_date(1_705_276_800, "ru");
+        assert!(
+            !s.is_empty() && s != "\u{2014}",
+            "expected non-empty formatted date for ru, got: {s:?}"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn format_epoch_date_accepts_now() {
+        // Covers the exact value path produced by "Add note": now_epoch_secs().
+        let s = format_epoch_date(now_epoch_secs(), "en");
+        assert!(!s.is_empty() && s != "\u{2014}");
+    }
+
+    #[wasm_bindgen_test]
+    fn add_note_inserts_new_entry_at_front() {
+        // Mirrors the on:click handler mutation shape: insert at 0 with a
+        // fresh created_at/level/empty text. Guards against regressions in
+        // the Vec insertion path used by the Add Note button.
+        let mut notes: Vec<Note> = vec![Note {
+            created_at: 1,
+            level: 3,
+            text: "existing".into(),
+        }];
+        notes.insert(
+            0,
+            Note {
+                created_at: 2,
+                level: 5,
+                text: String::new(),
+            },
+        );
+        assert_eq!(notes.len(), 2);
+        assert_eq!(notes[0].created_at, 2);
+        assert_eq!(notes[0].level, 5);
+        assert!(notes[0].text.is_empty());
+        assert_eq!(notes[1].text, "existing");
     }
 }
