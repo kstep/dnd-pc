@@ -64,7 +64,7 @@ pub fn BuildReplayHint() -> impl IntoView {
             icon="wand-sparkles"
             class="hint-banner-wide"
             visible=visible
-            action_label=move_tr!("btn-replay-all")
+            action_label=move_tr!("replay")
             on_action=Callback::new(move |()| replay_with_modal(store, registry))
         >
             <p class="hint-banner-text">{move_tr!("build-replay-hint-title")}</p>

@@ -26,7 +26,6 @@ btn-edit-feature = Edit feature inputs
 apply-features-title = Apply features
 build-replay-hint-title = These features were edited or not yet applied. Click Replay to re-apply.
 build-choice-hint-title = These features need a choice selected:
-btn-replay-all = Replay
 prerequisites-label = Requires
 replace-with-feat = Replace with a feat
 no-eligible-options = No eligible options available

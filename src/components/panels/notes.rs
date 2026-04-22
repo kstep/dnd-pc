@@ -19,7 +19,8 @@ fn format_epoch_date(ts: u64, locale: &str) -> String {
     // `options` must be undefined (or an object). Passing `null` makes V8
     // throw "Date.prototype.toLocaleDateString called on null or undefined"
     // because ECMA-402 runs ToObject/RequireObjectCoercible on it.
-    date.to_locale_date_string(locale, &JsValue::UNDEFINED).into()
+    date.to_locale_date_string(locale, &JsValue::UNDEFINED)
+        .into()
 }
 
 #[component]
