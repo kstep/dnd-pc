@@ -21,11 +21,13 @@ classes = Классы
 class = Класс
 subclass = Подкласс
 btn-add-class = + Добавить класс
-btn-apply-level = Ур. { $level }
-btn-apply-species = Применить расовые способности
-btn-apply-background = Применить предысторию
 btn-apply-feature = Применить способность
+btn-edit-feature = Редактировать параметры способности
 apply-features-title = Применить способности
+build-replay-hint-title = Эти способности отредактированы или не применены. Нажмите Replay чтобы пересчитать персонажа.
+build-choice-hint-title = В этих способностях нужно выбрать опцию:
+btn-replay-all = Replay
+prerequisites-label = Требуется
 replace-with-feat = Заменить на черту
 no-eligible-options = Нет доступных вариантов
 export-json = Сохранить в файл
@@ -75,7 +77,7 @@ panel-personality = Личность
 panel-proficiencies = Владения и языки
 panel-notes = Заметки
 btn-add-note = + Добавить заметку
-note-level-abbr = Ур.
+diff-notes-summary = «{ $text }» · { $level } · { $date } · всего: { $count }
 
 ## Панель боя
 armor-class = Класс защиты

@@ -5,10 +5,12 @@ use reactive_stores::Store;
 
 use crate::{
     components::args_modal::ArgsModalCtx,
-    model::{AssignInputs, Character},
+    model::{AssignInputs, Character, FeatureSource},
     rules::{
         ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
-        apply::{PendingFeature, replay, resolve_replacements, restore_all_spell_selections},
+        apply::{
+            FeatureKey, PendingFeature, replay, resolve_replacements, restore_all_spell_selections,
+        },
         feature::FeatureDefinition,
     },
 };
@@ -94,6 +96,52 @@ pub fn apply_with_modal(
         let ctx = expect_context::<ArgsModalCtx>();
         ctx.open(all_inputs, base, move |inputs| apply(Some(&inputs)));
     }
+}
+
+/// Edit inputs of an already-applied feature. Opens the args modal with
+/// current inputs prefilled against a pre-edit cascade snapshot. On submit,
+/// stores the new inputs and marks the feature dirty (`applied = false`).
+/// The full-character re-apply happens later when the user clicks Replay;
+/// editing one feature should not silently cascade through the rest.
+pub fn edit_inputs_modal(
+    store: Store<Character>,
+    registry: RulesRegistry,
+    name: String,
+    source: FeatureSource,
+    base: Option<Arc<Character>>,
+) {
+    let pending_input = registry.with_features_index_untracked(|fi| {
+        let feat_def = fi.get(name.as_str())?;
+        let character = store.read_untracked();
+        let prefill = character.features.get_inputs(&name, &source).to_vec();
+        PendingInputs::from_feature(
+            name.clone(),
+            feat_def,
+            source.clone(),
+            WhenCondition::OnFeatureAdd,
+            prefill,
+            feat_def.replace_with,
+        )
+    });
+
+    let Some(pending_input) = pending_input else {
+        return;
+    };
+
+    let key = FeatureKey::new(name, source);
+    let ctx = expect_context::<ArgsModalCtx>();
+    ctx.open(vec![pending_input], base, move |inputs| {
+        let new_inputs = inputs.feature_inputs.get(&key).cloned().unwrap_or_default();
+        store.update(|character| {
+            for feature in character.features.iter_mut() {
+                if feature.name == key.name && feature.source == key.source {
+                    feature.inputs = new_inputs.clone();
+                    feature.applied = false;
+                    break;
+                }
+            }
+        });
+    });
 }
 
 /// Replay all applied features from scratch. Clones the character, resets

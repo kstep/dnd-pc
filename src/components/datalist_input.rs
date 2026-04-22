@@ -24,6 +24,9 @@ pub struct DatalistOption {
     pub label: String,
     pub description: String,
     pub count: Option<u32>,
+    /// When set, the option is shown but not selectable in the modal list,
+    /// with this string as the reason.
+    pub blocked_reason: Option<String>,
 }
 
 impl DatalistOption {
@@ -37,11 +40,17 @@ impl DatalistOption {
             label: label.into(),
             description: description.into(),
             count: None,
+            blocked_reason: None,
         }
     }
 
     pub fn with_count(mut self, count: u32) -> Self {
         self.count = Some(count);
+        self
+    }
+
+    pub fn with_blocked_reason(mut self, reason: impl Into<String>) -> Self {
+        self.blocked_reason = Some(reason.into());
         self
     }
 }
@@ -190,7 +199,13 @@ pub fn DatalistInput(
                     each=filtered_options
                     key=|opt| opt.name.clone()
                     children=move |opt| {
-                        let DatalistOption { name, label, description, count } = opt;
+                        let DatalistOption {
+                            name,
+                            label,
+                            description,
+                            count,
+                            blocked_reason,
+                        } = opt;
                         let selected_label = label.clone();
                         let selected_name = name.clone();
                         let badge = badge_key.zip(count).map(|(key, n)| view! {
@@ -198,10 +213,13 @@ pub fn DatalistInput(
                                 {move || render_badge(i18n, key, n)}
                             </span>
                         });
+                        let is_blocked = blocked_reason.is_some();
                         view! {
                             <button
                                 type="button"
                                 class="datalist-option"
+                                class:datalist-option-blocked=is_blocked
+                                disabled=is_blocked
                                 on:click=move |_| {
                                     let label = selected_label.clone();
                                     display_value.set(label.clone());
@@ -214,6 +232,9 @@ pub fn DatalistInput(
                                     {badge}
                                 </div>
                                 <span class="datalist-option-label">{description}</span>
+                                {blocked_reason.map(|reason| view! {
+                                    <span class="datalist-option-blocked-reason">{reason}</span>
+                                })}
                             </button>
                         }
                     }

@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Background name selector. Sets `identity.background` and triggers
-/// definition fetch. No apply button — wrap in `ApplyFieldSection` for that.
+/// definition fetch. Identity changes apply via the header's Rebuild action.
 #[component]
 pub fn BackgroundField() -> impl IntoView {
     let store = expect_context::<Store<Character>>();

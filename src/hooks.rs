@@ -39,6 +39,7 @@ pub fn use_hash_href() -> impl Fn(&str) -> String {
 /// Watches the router's URL hash and scrolls the element with that id into
 /// view. Defers one animation frame so the navigated view has time to mount.
 /// Call once near the top of a component that renders sections with `id=...`.
+/// Visual flash on arrival is handled by CSS via `:target`.
 pub fn use_scroll_to_hash() {
     let location = use_location();
     Effect::new(move |_| {

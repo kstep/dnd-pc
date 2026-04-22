@@ -10,8 +10,7 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     components::{
-        apply::{apply_level, apply_with_modal, rebuild, replay_with_modal},
-        apply_field_section::ApplyFieldSection,
+        apply::{rebuild, replay_with_modal},
         avatar::Avatar as AvatarView,
         avatar_generate_modal::AvatarGenerateModal,
         background_field::BackgroundField,
@@ -28,10 +27,7 @@ use crate::{
         Alignment, AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields,
         CharacterStoreFields, PersonalityStoreFields, Translatable,
     },
-    rules::{
-        DefinitionStore, RulesRegistry,
-        apply::{apply_new_features, collect_background_features, collect_species_features},
-    },
+    rules::{DefinitionStore, RulesRegistry},
     share, storage,
 };
 
@@ -66,7 +62,8 @@ pub fn CharacterHeader() -> impl IntoView {
 
     let level_up_class = move |class_idx: usize| {
         classes.write()[class_idx].level += 1;
-        apply_level(store, registry);
+        // No auto-apply: new class level shows a pending-dot on the class row.
+        // User must click Rebuild to apply identity changes.
     };
 
     let on_level_up = move |_| {
@@ -242,88 +239,36 @@ pub fn CharacterHeader() -> impl IntoView {
                                 }
                             />
                         </div>
-                        <ApplyFieldSection
-                            label=move_tr!("species")
-                            class="species-field"
-                            applied=move || store.applied().species().get()
-                            ready=move || {
-                                let species = store.identity().species().get();
-                                registry.species().has_tracked(&species)
-                            }
-                            apply_title=move_tr!("btn-apply-species")
-                            on_apply=move || {
-                                let pending = store.with_untracked(|character| {
-                                    let species_cache = registry.species().cache().read_untracked();
-                                    registry.with_features_index_untracked(|fi| {
-                                        species_cache
-                                            .get(character.identity.species.as_str())
-                                            .into_iter()
-                                            .flat_map(|species_def| {
-                                                collect_species_features(character, species_def, fi)
-                                            })
-                                            .collect()
-                                    })
-                                });
-                                apply_with_modal(
-                                    store,
-                                    registry,
-                                    pending,
-                                    None,
-                                    move |character, pending, inputs, fi| {
-                                        character.applied.species = true;
-                                        apply_new_features(
-                                            fi,
-                                            character,
-                                            pending,
-                                            Some(&inputs.feature_inputs),
-                                        );
-                                    },
-                                );
-                            }
-                        >
-                            <SpeciesField />
-                        </ApplyFieldSection>
-                        <ApplyFieldSection
-                            label=move_tr!("background")
-                            class="background-field"
-                            applied=move || store.applied().background().get()
-                            ready=move || {
-                                let background = store.identity().background().get();
-                                registry.backgrounds().has_tracked(&background)
-                            }
-                            apply_title=move_tr!("btn-apply-background")
-                            on_apply=move || {
-                                let pending = store.with_untracked(|character| {
-                                    let bg_cache = registry.backgrounds().cache().read_untracked();
-                                    registry.with_features_index_untracked(|fi| {
-                                        bg_cache
-                                            .get(character.identity.background.as_str())
-                                            .into_iter()
-                                            .flat_map(|bg_def| {
-                                                collect_background_features(character, bg_def, fi)
-                                            })
-                                            .collect()
-                                    })
-                                });
-                                apply_with_modal(
-                                    store,
-                                    registry,
-                                    pending,
-                                    None,
-                                    move |character, pending, inputs, fi| {
-                                        character.applied.background = true;
-                                        apply_new_features(
-                                            fi,
-                                            character,
-                                            pending,
-                                            Some(&inputs.feature_inputs),
-                                        );
-                                    },
-                                );
-                            }
-                        >
-                            <BackgroundField />
-                        </ApplyFieldSection>
+                        <div class="header-field species-field">
+                            <label>
+                                {move_tr!("species")}
+                                <Show when=move || {
+                                    let species = store.identity().species().get();
+                                    registry.species().has_tracked(&species)
+                                        && !store.applied().species().get()
+                                }>
+                                    <span class="pending-dot" />
+                                </Show>
+                            </label>
+                            <div class="entity-input-row">
+                                <SpeciesField />
+                            </div>
+                        </div>
+                        <div class="header-field background-field">
+                            <label>
+                                {move_tr!("background")}
+                                <Show when=move || {
+                                    let background = store.identity().background().get();
+                                    registry.backgrounds().has_tracked(&background)
+                                        && !store.applied().background().get()
+                                }>
+                                    <span class="pending-dot" />
+                                </Show>
+                            </label>
+                            <div class="entity-input-row">
+                                <BackgroundField />
+                            </div>
+                        </div>
                         <div class="header-field">
                             <label>{move_tr!("alignment")}</label>
                             <select

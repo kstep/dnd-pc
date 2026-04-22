@@ -3,7 +3,12 @@ use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
-    components::{apply::PreviewContext, datalist_input::DatalistOption, feature_row::FeatureRow},
+    components::{
+        apply::PreviewContext,
+        build_hints::{BuildChoiceFillHint, BuildReplayHint},
+        datalist_input::DatalistOption,
+        feature_row::FeatureRow,
+    },
     model::{Character, CharacterStoreFields, Feature, FeatureSource, FeaturesStoreFields},
     rules::{RulesRegistry, WhenCondition},
 };
@@ -28,11 +33,21 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     let feature_options = Memo::new(move |_| {
         let character = store.read();
+        let prereq_prefix = i18n.tr("prerequisites-label");
         registry.with_features_index(|features_index| {
             features_index
                 .values()
-                .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(&character))
-                .map(|feat| DatalistOption::new(&feat.name, feat.label(), &feat.description))
+                .filter(|feat| feat.is_selectable())
+                .map(|feat| {
+                    let opt = DatalistOption::new(&feat.name, feat.label(), &feat.description);
+                    if let Some(expr) = &feat.prerequisites
+                        && !feat.meets_prerequisites(&character)
+                    {
+                        opt.with_blocked_reason(format!("{prereq_prefix}: {expr}"))
+                    } else {
+                        opt
+                    }
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -60,6 +75,8 @@ pub fn FeaturesPanel() -> impl IntoView {
     });
 
     view! {
+        <BuildChoiceFillHint />
+        <BuildReplayHint />
         <button class="btn-primary" on:click=add_feature>
             {move_tr!("btn-add-feature")}
         </button>

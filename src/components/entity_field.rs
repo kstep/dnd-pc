@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// Generic entity selector: DatalistInput with display name resolution and
-/// reference link. No apply button — wrap in `ApplyFieldSection` for that.
+/// reference link.
 #[component]
 pub fn EntityField(
     /// Current entity key (e.g. class/species/background name).

@@ -27,6 +27,13 @@ impl ClassDefinition {
         self.label.as_deref().unwrap_or(&self.name)
     }
 
+    /// Maximum class level declared in the progression table. Falls back to
+    /// the D&D 5e standard cap of 20 for classes that haven't been fetched
+    /// yet or provide no explicit level rules.
+    pub fn max_level(&self) -> u32 {
+        self.levels.keys().next_back().copied().unwrap_or(20)
+    }
+
     /// Find the class level at which a feature first appears (checking both
     /// base class and subclass level tables). Returns 0 if not found.
     pub fn feature_level(&self, subclass: Option<&str>, feature_name: &str) -> u32 {

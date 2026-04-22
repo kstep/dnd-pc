@@ -267,6 +267,17 @@ impl FeatureDefinition {
             .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
     }
 
+    /// Structural check: does this feature have any @ARG / dice assignments
+    /// that require user input through the args modal? Replaceable features
+    /// (subclass picks, epic boon replacement) also count as interactive.
+    pub fn has_interactive_inputs(&self) -> bool {
+        self.is_replaceable()
+            || self
+                .assign
+                .as_ref()
+                .is_some_and(|assignments| assignments.iter().any(|a| a.is_interactive()))
+    }
+
     /// Returns the single `OnCompute` assignment that writes to `AC`, if
     /// exactly one such assignment exists. Used to auto-create a Natural
     /// armor entry for display.

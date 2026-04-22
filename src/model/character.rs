@@ -15,6 +15,12 @@ use crate::{
 /// Default walking speed in feet (most species).
 const DEFAULT_SPEED: u32 = 30;
 
+/// Maximum class level a user can enter. D&D 5e standard progression caps at
+/// 20; we allow up to 40 for epic-tier campaigns and homebrew content. Tables
+/// like `XP_THRESHOLDS` and `SPELL_SLOT_TABLE` only cover 1–20 — levels above
+/// 20 reuse the level-20 row for spell slots and report a 0 XP threshold.
+pub const MAX_CLASS_LEVEL: u32 = 40;
+
 /// Proficiency bonus for a given character level (D&D 5e standard
 /// progression).
 pub fn proficiency_bonus_for_level(level: u32) -> i32 {

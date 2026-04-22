@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Species name selector. Sets `identity.species` and triggers definition
-/// fetch. No apply button — wrap in `ApplyFieldSection` for that.
+/// fetch. Identity changes apply via the header's Rebuild action.
 #[component]
 pub fn SpeciesField() -> impl IntoView {
     let store = expect_context::<Store<Character>>();

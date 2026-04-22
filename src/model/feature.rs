@@ -1,6 +1,7 @@
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, hash_map::DefaultHasher},
     fmt,
+    hash::{Hash, Hasher},
     ops::{Deref, DerefMut},
 };
 
@@ -82,9 +83,30 @@ impl Feature {
     pub fn set_label(&mut self, value: String) {
         self.label = Some(value);
     }
+
+    pub fn dom_id(&self) -> String {
+        feature_dom_id(&self.name, &self.source)
+    }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub fn feature_dom_id(name: &str, source: &FeatureSource) -> String {
+    let mut h = DefaultHasher::new();
+    name.hash(&mut h);
+    source.hash(&mut h);
+    format!("f-{:016x}", h.finish())
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize
+)]
 pub enum FeatureSource {
     Class(Box<str>, u32),
     Subclass(Box<str>, Box<str>, u32),

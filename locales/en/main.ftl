@@ -21,11 +21,13 @@ classes = Classes
 class = Class
 subclass = Subclass
 btn-add-class = + Add Class
-btn-apply-level = Apply Lvl { $level }
-btn-apply-species = Apply species traits
-btn-apply-background = Apply background
 btn-apply-feature = Apply feature
+btn-edit-feature = Edit feature inputs
 apply-features-title = Apply features
+build-replay-hint-title = These features were edited or not yet applied. Click Replay to re-apply.
+build-choice-hint-title = These features need a choice selected:
+btn-replay-all = Replay
+prerequisites-label = Requires
 replace-with-feat = Replace with a feat
 no-eligible-options = No eligible options available
 export-json = Save to file
@@ -75,7 +77,7 @@ panel-personality = Personality
 panel-proficiencies = Proficiencies & Languages
 panel-notes = Notes
 btn-add-note = + Add Note
-note-level-abbr = Lvl
+diff-notes-summary = "{ $text }" · { $level } · { $date } · total: { $count }
 
 ## Combat panel
 armor-class = Armor Class

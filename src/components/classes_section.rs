@@ -1,16 +1,17 @@
 use leptos::prelude::*;
-use leptos_fluent::{move_tr, tr};
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
     BASE_URL,
     components::{
-        apply::apply_single_level,
         character_header::split_resolved,
         datalist_input::{DatalistInput, DatalistOption},
         icon::Icon,
     },
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel},
+    model::{
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel, MAX_CLASS_LEVEL,
+    },
     rules::{DefinitionStore, RulesRegistry},
 };
 
@@ -59,7 +60,6 @@ pub fn ClassesSection() -> impl IntoView {
                         .map(|(i, cl)| {
                             let class_key = cl.class.clone();
                             let subclass_key = cl.subclass.clone().unwrap_or_default();
-                            let level_val = cl.level.to_string();
                             let current_level = cl.level;
                             let class_name = cl.class_label().to_string();
                             let subclass_name = cl
@@ -74,13 +74,17 @@ pub fn ClassesSection() -> impl IntoView {
 
                             let class_loaded = registry.classes().has(&class_key);
 
-                            let next_unapplied: Option<u32> = if class_loaded {
+                            let has_pending_level = if class_loaded {
                                 let applied = store.applied().read();
                                 (1..=current_level)
-                                    .find(|lvl| !applied.contains_level(&class_key, *lvl))
+                                    .any(|lvl| !applied.contains_level(&class_key, lvl))
                             } else {
-                                None
+                                false
                             };
+                            let class_max_level = registry
+                                .classes()
+                                .with(&class_key, |def| def.max_level())
+                                .unwrap_or(MAX_CLASS_LEVEL);
 
                             let subclass_options: Vec<DatalistOption> = registry
                                 .classes()
@@ -208,12 +212,14 @@ pub fn ClassesSection() -> impl IntoView {
                                         type="number"
                                         class="class-level"
                                         min="1"
-                                        max="20"
-                                        prop:value=level_val
-                                        on:change=move |e| {
-                                            if let Ok(value) = event_target_value(&e).parse::<u32>()
+                                        max=class_max_level
+                                        prop:value=current_level
+                                        on:change=move |event| {
+                                            if let Ok(value) =
+                                                event_target_value(&event).parse::<u32>()
                                             {
-                                                classes.write()[i].level = value.clamp(1, 20);
+                                                classes.write()[i].level =
+                                                    value.clamp(1, class_max_level);
                                             }
                                         }
                                     />
@@ -229,27 +235,9 @@ pub fn ClassesSection() -> impl IntoView {
                                             <Icon name="x" />
                                         </button>
                                     </Show>
-                                    {if let Some(lvl) = next_unapplied {
-                                        let title = tr!("btn-apply-level", { "level" => lvl });
-                                        Some(
-                                            view! {
-                                                <div class="apply-levels">
-                                                    <button
-                                                        class="btn-apply-level"
-                                                        title=title
-                                                        on:click=move |_| {
-                                                            apply_single_level(store, registry, i, lvl);
-                                                        }
-                                                    >
-                                                        <Icon name="arrow-up" />
-                                                        {lvl}
-                                                    </button>
-                                                </div>
-                                            },
-                                        )
-                                    } else {
-                                        None
-                                    }}
+                                    {has_pending_level.then(|| view! {
+                                        <span class="pending-dot" />
+                                    })}
                                 </div>
                             }
                         })

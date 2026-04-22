@@ -302,7 +302,16 @@ fn FeatureSpellcastingSection(
 
     let anchor_id = feat_name.with_value(|n| n.clone());
     let char_id = store.read_untracked().id;
-    let build_href = format!("{BASE_URL}/c/{char_id}/build#{anchor_id}");
+    let build_anchor = feat_name.with_value(|n| {
+        store
+            .read_untracked()
+            .features
+            .iter()
+            .find(|f| f.name.as_str() == n.as_str())
+            .map(|f| f.dom_id())
+            .unwrap_or_else(|| n.clone())
+    });
+    let build_href = format!("{BASE_URL}/c/{char_id}/build#{build_anchor}");
 
     view! {
         <section id=anchor_id class="spellcasting-section">
