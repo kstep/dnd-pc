@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use js_sys::Date;
 use leptos::{either::Either, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{move_tr, tr};
 use leptos_router::{
     components::A,
     hooks::{use_navigate, use_params},
@@ -58,24 +58,28 @@ fn truncate(s: &str, max: usize) -> String {
 /// Compact one-line summary of a notes vector for import diff: shows the
 /// last note with its level/date plus the total count. Empty vector returns
 /// an empty string so equal-empty states don't trigger a diff row.
-fn notes_diff_summary(notes: &[Note]) -> String {
+fn notes_diff_summary(notes: &[Note], i18n: leptos_fluent::I18n) -> String {
     let Some(last) = notes.last() else {
         return String::new();
     };
     let level_label = if last.level > 0 {
-        format!("Ур.{}", last.level)
+        tr!("slot-level", {"level" => last.level})
     } else {
         "\u{2014}".into()
     };
     let date_label: String = if last.created_at > 0 {
         let date = Date::new(&((last.created_at as f64) * 1000.0).into());
-        date.to_locale_date_string("ru-RU", &JsValue::NULL).into()
+        date.to_locale_date_string(i18n.language.get().id, &JsValue::NULL)
+            .into()
     } else {
         "\u{2014}".into()
     };
-    let text_preview = truncate(&last.text, 50);
-    let count = notes.len();
-    format!("«{text_preview}» · {level_label} · {date_label} (всего {count})")
+    tr!("diff-notes-summary", {
+        "text" => truncate(&last.text, 50),
+        "level" => level_label,
+        "date" => date_label,
+        "count" => notes.len(),
+    })
 }
 
 fn format_names<T>(items: &[T], name_fn: impl Fn(&T) -> &str) -> String {
@@ -419,8 +423,8 @@ impl Character {
             &mut rows,
             sec,
             "panel-notes",
-            notes_diff_summary(&self.notes),
-            notes_diff_summary(&imported.notes),
+            notes_diff_summary(&self.notes, i18n),
+            notes_diff_summary(&imported.notes, i18n),
         );
 
         rows

@@ -1,6 +1,6 @@
 use js_sys::Date;
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
+use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 use wasm_bindgen::JsValue;
 
@@ -9,13 +9,14 @@ use crate::{
     model::{Character, CharacterStoreFields, Note, now_epoch_secs},
 };
 
-/// Render an epoch-seconds timestamp as `DD.MM.YYYY`, or `—` when unknown.
-fn format_epoch_date(ts: u64) -> String {
+/// Render an epoch-seconds timestamp in the current UI locale, or `—` when
+/// unknown.
+fn format_epoch_date(ts: u64, locale: &str) -> String {
     if ts == 0 {
         return "\u{2014}".into();
     }
     let date = Date::new(&((ts as f64) * 1000.0).into());
-    date.to_locale_date_string("ru-RU", &JsValue::NULL).into()
+    date.to_locale_date_string(locale, &JsValue::NULL).into()
 }
 
 #[component]
@@ -49,11 +50,11 @@ pub fn NotesPanel() -> impl IntoView {
                     let created_at = note.created_at;
                     let initial_expanded = text.is_empty();
                     let level_label = if level > 0 {
-                        format!("{} {}", i18n.tr("note-level-abbr"), level)
+                        tr!("slot-level", {"level" => level})
                     } else {
                         "\u{2014}".into()
                     };
-                    let date_label = format_epoch_date(created_at);
+                    let date_label = format_epoch_date(created_at, i18n.language.get().id);
                     let preview = text
                         .lines()
                         .next()
