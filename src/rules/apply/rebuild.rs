@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use leptos::prelude::ReadUntracked;
 use strum::VariantArray;
@@ -23,7 +23,7 @@ use crate::{
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
-        feature::FeatureDefinition,
+        feature::{FeatureDefinition, ReplaceWith},
     },
 };
 
@@ -148,6 +148,15 @@ fn collect_rebuild_pending_inputs(
 
         let all_pending: Vec<PendingFeature> = user_pending.chain(identity_pending).collect();
 
+        // Precompute keys of every pending (name, source) so
+        // `detect_replacement` can tell "not in the rebuilt list" from "in
+        // the list under a different slot". Borrows from `all_pending` which
+        // outlives this closure's inputs list.
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> = all_pending
+            .iter()
+            .map(|pending| (pending.name.as_str(), &pending.source))
+            .collect();
+
         // Build FeatState for every pending — stored-input feats go in
         // too, their interactive assigns marked `forced` with the stored
         // args so enumerate_assign yields that single candidate. Keeping
@@ -209,9 +218,12 @@ fn collect_rebuild_pending_inputs(
         // the modal will pick up.
         let _ = solve_all(&mut feat_states, &baseline, original);
 
-        // Apply solved args to advance baseline + emit PendingInputs with
-        // prefill (skip stored feats — they already have real inputs in
-        // `original`, the modal won't show them).
+        // Emit PendingInputs per feat, detecting replacement choices against
+        // the pre-apply baseline (so `meets_prerequisites` sees the character
+        // as it existed right before this feat). Then apply the feat to
+        // advance baseline for the next iteration. Stored-input feats are
+        // skipped for emit — their inputs live in `original`, modal won't
+        // show them — but they still `apply` to move baseline forward.
         let mut inputs: Vec<PendingInputs> = Vec::new();
         for state in &feat_states {
             let inputs_vec: Vec<AssignInputs> = state
@@ -222,23 +234,89 @@ fn collect_rebuild_pending_inputs(
                     ..AssignInputs::default()
                 })
                 .collect();
+            let was_forced = state.assigns.iter().all(|assign| assign.forced.is_some());
+
+            let prefilled_replacement = (!was_forced)
+                .then(|| {
+                    detect_replacement(
+                        state.pending,
+                        state.def,
+                        original,
+                        fi,
+                        &pending_keys,
+                        &baseline,
+                    )
+                })
+                .flatten();
+
             state.def.apply(
                 state.pending.level,
                 &mut baseline,
                 WhenCondition::OnFeatureAdd,
                 &inputs_vec,
             );
-            let was_forced = state.assigns.iter().all(|assign| assign.forced.is_some());
+
             if was_forced {
                 continue;
             }
             if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
                 pi.prefill = inputs_vec;
+                pi.prefilled_replacement = prefilled_replacement;
                 inputs.push(pi);
             }
         }
         inputs
     })
+}
+
+/// Find a replacement feature in `original.features` that the user chose for
+/// `pending`. Returns the stored feature's name if:
+///
+/// 1. `pending` has a non-`None` `replace_with` filter.
+/// 2. `original.features` does NOT already contain `(pending.name,
+///    pending.source)` — if it does, F is present and wasn't replaced.
+/// 3. An original feature X exists with `X.source == pending.source`, `(X.name,
+///    X.source) ∉ pending_keys` (X isn't a separate slot the identity already
+///    expects), `fi.get(X.name).replace_with_matches(F)`, and
+///    `X_def.meets_prerequisites(baseline)`.
+///
+/// First match wins — `original.features` preserves insertion order, and a
+/// single slot hosts exactly one replacement.
+fn detect_replacement(
+    pending: &PendingFeature,
+    feat_def: &FeatureDefinition,
+    original: &Character,
+    fi: &BTreeMap<Box<str>, FeatureDefinition>,
+    pending_keys: &BTreeSet<(&str, &FeatureSource)>,
+    baseline: &Character,
+) -> Option<String> {
+    if matches!(feat_def.replace_with, ReplaceWith::None) {
+        return None;
+    }
+    let already_present = original
+        .features
+        .iter()
+        .any(|feature| feature.name == pending.name && feature.source == pending.source);
+    if already_present {
+        return None;
+    }
+    original
+        .features
+        .iter()
+        .find(|candidate| {
+            if candidate.source != pending.source {
+                return false;
+            }
+            if pending_keys.contains(&(candidate.name.as_str(), &candidate.source)) {
+                return false;
+            }
+            let Some(candidate_def) = fi.get(candidate.name.as_str()) else {
+                return false;
+            };
+            feat_def.replace_with.matches(candidate_def)
+                && candidate_def.meets_prerequisites(baseline)
+        })
+        .map(|candidate| candidate.name.clone())
 }
 
 /// Check whether stored `inputs` align with the feature's interactive
@@ -964,5 +1042,134 @@ mod tests {
         assert!(!is_fixed_preset(&[14, 14, 13, 12, 10, 9])); // 9 disallowed, sum off
         assert!(!is_fixed_preset(&[15, 14, 13, 12, 10])); // wrong length
         assert!(!is_fixed_preset(&[8, 8, 8, 8, 8, 8])); // all defaults
+    }
+
+    fn feat_def(
+        name: &str,
+        category: FeatureCategory,
+        replace_with: ReplaceWith,
+    ) -> FeatureDefinition {
+        FeatureDefinition {
+            name: name.to_string(),
+            label: None,
+            description: String::new(),
+            stackable: false,
+            category,
+            replace_with,
+            spells: None,
+            fields: BTreeMap::new(),
+            assign: None,
+            prerequisites: None,
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_finds_user_swap_in_slot() {
+        let slot_source = FeatureSource::Class("Rogue".into(), 3);
+        let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
+        let swap_def = feat_def(
+            "Arcane Trickster",
+            FeatureCategory::General,
+            ReplaceWith::None,
+        );
+
+        let mut fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        fi.insert(slot_def.name.clone().into(), slot_def.clone());
+        fi.insert(swap_def.name.clone().into(), swap_def.clone());
+
+        let mut original = Character::default();
+        original
+            .features
+            .list
+            .push(feature("Arcane Trickster", slot_source.clone()));
+
+        let pending = PendingFeature {
+            name: "Rogue Subclass".into(),
+            source: slot_source.clone(),
+            level: 3,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            &fi,
+            &pending_keys,
+            &baseline,
+        );
+        assert_eq!(found, Some("Arcane Trickster".into()));
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_skips_when_slot_already_present() {
+        let slot_source = FeatureSource::Class("Rogue".into(), 3);
+        let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
+        let fi: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
+
+        let mut original = Character::default();
+        // F itself is in original — user never swapped.
+        original
+            .features
+            .list
+            .push(feature("Rogue Subclass", slot_source.clone()));
+
+        let pending = PendingFeature {
+            name: "Rogue Subclass".into(),
+            source: slot_source.clone(),
+            level: 3,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            &fi,
+            &pending_keys,
+            &baseline,
+        );
+        assert!(found.is_none());
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_returns_none_when_not_replaceable() {
+        let slot_source = FeatureSource::Class("Rogue".into(), 3);
+        let slot_def = feat_def("Cunning Action", FeatureCategory::Class, ReplaceWith::None);
+        let fi: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
+
+        let original = Character::default();
+        let pending = PendingFeature {
+            name: "Cunning Action".into(),
+            source: slot_source.clone(),
+            level: 3,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        assert!(
+            detect_replacement(
+                &pending,
+                &slot_def,
+                &original,
+                &fi,
+                &pending_keys,
+                &baseline
+            )
+            .is_none()
+        );
     }
 }

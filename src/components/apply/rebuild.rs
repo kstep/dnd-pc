@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use leptos::prelude::*;
 use reactive_stores::Store;
@@ -75,10 +75,20 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
 }
 
 /// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
-/// trial `build_clean`. `replacements` stays empty — solver doesn't
-/// recover replacement choices; features requiring one fall through to
-/// the modal via `eq_derived` mismatch.
+/// trial `build_clean`. `replacements` carries over `prefilled_replacement`
+/// so subclass/Epic-Boon swaps recovered from `original.features` feed
+/// back into `resolve_replacements` and the simulated character mirrors
+/// the user's original choice.
 fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
+    let replacements: BTreeMap<String, String> = pending
+        .iter()
+        .filter_map(|pending| {
+            pending
+                .prefilled_replacement
+                .clone()
+                .map(|replacement| (pending.feature_name.clone(), replacement))
+        })
+        .collect();
     ApplyInputs {
         feature_inputs: pending
             .iter()
@@ -89,7 +99,7 @@ fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
                 )
             })
             .collect(),
-        ..ApplyInputs::default()
+        replacements,
     }
 }
 
