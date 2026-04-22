@@ -9,10 +9,19 @@ pub fn PersonalityPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     let personality = store.personality();
+    let expanded = RwSignal::new(false);
+    let toggle = move |_| expanded.update(|v| *v = !*v);
 
     view! {
-        <section>
-            <h3>{move_tr!("panel-personality")}</h3>
+        <section class:expanded=move || expanded.get()>
+            <div class="section-header">
+                <button
+                    class="btn-toggle-desc"
+                    class:expanded=move || expanded.get()
+                    on:click=toggle
+                />
+                <h3 class="clickable" on:click=toggle>{move_tr!("panel-personality")}</h3>
+            </div>
             <div class="textarea-field">
                 <label>{move_tr!("history")}</label>
                 <textarea

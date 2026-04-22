@@ -331,7 +331,10 @@ impl FeatureList {
 pub struct Features {
     #[serde(default)]
     pub list: FeatureList,
-    #[serde(default)]
+    #[serde(
+        default,
+        deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
+    )]
     data: BTreeMap<String, FeatureData>,
 }
 
@@ -624,5 +627,24 @@ impl FeatureOption {
 
     pub fn set_label(&mut self, value: String) {
         self.label = Some(value);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn features_data_drops_null_entries() {
+        let json = serde_json::json!({
+            "list": [],
+            "data": {
+                "Tough": null,
+                "Versatile": { "fields": [], "spells": null }
+            }
+        });
+        let features: Features = serde_json::from_value(json).expect("deserialize");
+        assert!(!features.data.contains_key("Tough"));
+        assert!(features.data.contains_key("Versatile"));
     }
 }

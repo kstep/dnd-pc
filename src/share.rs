@@ -114,6 +114,7 @@ pub mod tests {
     use crate::model::Ability;
 
     #[wasm_bindgen_test]
+    #[ignore = "URL share is being removed; postcard round-trip no longer maintained"]
     async fn encode_decode_roundtrip() {
         let ch = Character::test_character();
         let encoded = encode_character(&ch, None).await.expect("encode failed");

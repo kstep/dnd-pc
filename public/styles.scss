@@ -1927,6 +1927,14 @@ textarea.entry-desc {
   }
 }
 
+section:not(.expanded) > .textarea-field {
+  display: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
 /* --------------------- Buttons ------------------------------- */
 .btn-primary {
   --btn-bg: var(--accent);
@@ -2476,10 +2484,6 @@ textarea.entry-desc {
     border-color: var(--accent);
   }
 
-  &.clickable {
-    cursor: pointer;
-  }
-
   &.glow {
     box-shadow: 0 0 0.5rem var(--accent);
   }
@@ -2563,10 +2567,6 @@ textarea.entry-desc {
     outline: 2px solid var(--accent);
     outline-offset: -1px;
     border-color: var(--accent);
-  }
-
-  &.clickable {
-    cursor: pointer;
   }
 
   &.tag {
