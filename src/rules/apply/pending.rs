@@ -76,12 +76,15 @@ pub struct PendingInputs {
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
     pub source: FeatureSource,
-    /// When `true`, the modal hides this feat's form — `prefill` is already
-    /// determined (stored inputs from a previous apply) and the user isn't
-    /// editing it. The cascade still applies it so downstream snapshot
-    /// indices see its effects, preserving pipeline order. Used by rebuild
-    /// for effective-stored feats that fall *between* emitted (user-visible)
-    /// feats in the pipeline.
+    /// When `true`, the input is fully determined and the modal hides the
+    /// form; the cascade still applies the feat so downstream snapshots
+    /// see its effect in pipeline order. Two sources set this:
+    ///
+    /// - Non-interactive feats (no `@ARG`/dice anywhere) — nothing to pick, but
+    ///   we want the effect (e.g. `SKILL.PERC.PROF = 1`) in the cascade
+    ///   baseline.
+    /// - Effective-stored interactive feats — args already decided in a
+    ///   previous apply; re-asking would be noise.
     pub hidden: bool,
 }
 
@@ -122,9 +125,30 @@ impl PendingInputs {
             source,
             hidden: false,
         })
-        // Note: callers set `hidden = true` on the returned value when the
-        // feat is effective-stored but falls between emitted feats in the
-        // rebuild pipeline.
+    }
+
+    /// Build a hidden `PendingInputs` for a non-interactive feat that still
+    /// needs to participate in the cascade (e.g. feats with hardcoded
+    /// `SKILL.X.PROF = 1`). No form is rendered; the cascade's per-pending
+    /// Effect applies the feat with empty inputs so downstream snapshots
+    /// include its derived-state effect.
+    pub fn hidden_for_cascade(
+        name: String,
+        feat_def: &FeatureDefinition,
+        source: FeatureSource,
+    ) -> Self {
+        Self {
+            feature_name: name,
+            feature_label: feat_def.label().to_string(),
+            feature_description: feat_def.description.clone(),
+            exprs: Vec::new(),
+            prefill: Vec::new(),
+            replace_with: feat_def.replace_with,
+            prefilled_replacement: None,
+            replacement_prefill: None,
+            source,
+            hidden: true,
+        }
     }
 }
 

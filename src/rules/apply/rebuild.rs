@@ -208,29 +208,28 @@ fn collect_rebuild_pending_inputs(
             let Some(assigns) = feat_def.assign.as_ref() else {
                 continue;
             };
-            // Non-interactive feats (hardcoded effects like `LANG.X = 1`,
-            // `SKILL.Y.PROF = 1`) always apply in pipeline order — there's
-            // nothing for the user to pick, and their effects must land in
-            // the cascade baseline so downstream pending sees them.
             let has_interactive_onadd = assigns
                 .iter()
                 .any(|a| a.when == WhenCondition::OnFeatureAdd && a.is_interactive());
+            // Cascade seed = validation state BEFORE the first interactive
+            // feat. Every interactive feat will be emitted (editable) and
+            // the modal cascade re-applies it from the seed, so capturing
+            // AFTER an interactive apply would double-apply. Non-interactive
+            // feats before the first interactive are folded into the seed
+            // via the `validation_baseline.apply` below.
+            if has_interactive_onadd && cascade_base.is_none() {
+                cascade_base = Some(validation_baseline.clone_lean());
+            }
             let stored = original.features.get_inputs(&pending.name, &pending.source);
             let effective = !has_interactive_onadd
                 || stored_inputs_effective(feat_def, pending.level, &validation_baseline, stored);
             forced_usable.insert((pending.name.clone(), pending.source.clone()), effective);
-            if has_interactive_onadd && !effective {
-                // First emit-worthy feat freezes the cascade seed.
-                if cascade_base.is_none() {
-                    cascade_base = Some(validation_baseline.clone_lean());
-                }
-                if !stored.is_empty() {
-                    // Stored was present but ineffective — corruption
-                    // (e.g. Expertise on now non-proficient skills). The
-                    // silent-commit path must not run or it'd just replay
-                    // the corruption; caller opens the modal instead.
-                    had_rejections = true;
-                }
+            if has_interactive_onadd && !effective && !stored.is_empty() {
+                // Stored was present but ineffective — corruption (e.g.
+                // Expertise on now non-proficient skills). Silent-commit
+                // must not run or it'd just replay the corruption; caller
+                // opens the modal instead.
+                had_rejections = true;
             }
             if effective {
                 feat_def.apply(
@@ -241,7 +240,7 @@ fn collect_rebuild_pending_inputs(
                 );
             }
         }
-        // No emit-worthy feats → cascade seed is the fully-advanced baseline
+        // No interactive feats → cascade seed is the fully-advanced baseline
         // (caller will short-circuit via `pending.is_empty()` in that case).
         let cascade_base = cascade_base.unwrap_or(validation_baseline);
 
@@ -309,57 +308,83 @@ fn collect_rebuild_pending_inputs(
         // the modal will pick up.
         let _ = solve_all(&mut feat_states, &baseline, original);
 
-        // Emit PendingInputs starting from the first non-forced feat. Feats
-        // before that are already folded into `cascade_base` — no need to
-        // re-apply them through the modal cascade. Between emitted feats,
-        // effective-stored siblings ride along as `hidden=true` so the
-        // cascade applies them in pipeline order (downstream editable feats
-        // see the right baseline). `baseline` still advances through every
-        // feat so `detect_replacement` sees the pre-apply state.
+        // Emit phase: walk `all_pending` in pipeline order. Every feat with
+        // interactive assigns comes from `feat_states` (solver-solved args).
+        // Non-interactive feats with an `assign` block ride along as hidden
+        // pending so the cascade applies them in the right spot. The first
+        // emit-worthy (non-forced interactive) feat opens the visible
+        // section; everything before it is already folded into `cascade_base`
+        // via the pre-validation walk, so we skip emit for those. Non-
+        // interactive feats applied on `baseline` too so `detect_replacement`
+        // sees a pipeline-correct state for later feats.
+        let state_by_key: BTreeMap<(String, FeatureSource), usize> = feat_states
+            .iter()
+            .enumerate()
+            .map(|(i, state)| {
+                (
+                    (state.pending.name.clone(), state.pending.source.clone()),
+                    i,
+                )
+            })
+            .collect();
         let mut inputs: Vec<PendingInputs> = Vec::new();
         let mut emit_started = false;
-        for state in &feat_states {
-            let inputs_vec: Vec<AssignInputs> = state
-                .assigns
-                .iter()
-                .map(|assign| AssignInputs {
-                    args: assign.args.clone(),
-                    ..AssignInputs::default()
-                })
-                .collect();
-            let was_forced = state.assigns.iter().all(|assign| assign.forced.is_some());
+        for pending in &all_pending {
+            let Some(feat_def) = fi.get(pending.name.as_str()) else {
+                continue;
+            };
+            let key = (pending.name.clone(), pending.source.clone());
+            if let Some(&state_idx) = state_by_key.get(&key) {
+                let state = &feat_states[state_idx];
+                let inputs_vec: Vec<AssignInputs> = state
+                    .assigns
+                    .iter()
+                    .map(|assign| AssignInputs {
+                        args: assign.args.clone(),
+                        ..AssignInputs::default()
+                    })
+                    .collect();
 
-            let prefilled_replacement = (!was_forced)
-                .then(|| {
-                    detect_replacement(
-                        state.pending,
-                        state.def,
-                        original,
-                        fi,
-                        &pending_keys,
-                        &baseline,
-                    )
-                })
-                .flatten();
+                let prefilled_replacement = detect_replacement(
+                    state.pending,
+                    state.def,
+                    original,
+                    fi,
+                    &pending_keys,
+                    &baseline,
+                );
 
-            state.def.apply(
-                state.pending.level,
-                &mut baseline,
-                WhenCondition::OnFeatureAdd,
-                &inputs_vec,
-            );
+                state.def.apply(
+                    state.pending.level,
+                    &mut baseline,
+                    WhenCondition::OnFeatureAdd,
+                    &inputs_vec,
+                );
 
-            if !emit_started {
-                if was_forced {
-                    continue;
+                if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
+                    pi.prefill = inputs_vec;
+                    pi.prefilled_replacement = prefilled_replacement;
+                    inputs.push(pi);
                 }
                 emit_started = true;
-            }
-            if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
-                pi.prefill = inputs_vec;
-                pi.prefilled_replacement = prefilled_replacement;
-                pi.hidden = was_forced;
-                inputs.push(pi);
+            } else if feat_def.assign.is_some() {
+                // Non-interactive feat with assignments. Apply on baseline
+                // regardless (detect_replacement for later feats needs it);
+                // emit as hidden only once the visible section has opened,
+                // so its effect reaches downstream cascade snapshots.
+                feat_def.apply(
+                    pending.level,
+                    &mut baseline,
+                    WhenCondition::OnFeatureAdd,
+                    &[],
+                );
+                if emit_started {
+                    inputs.push(PendingInputs::hidden_for_cascade(
+                        pending.name.clone(),
+                        feat_def,
+                        pending.source.clone(),
+                    ));
+                }
             }
         }
         (inputs, had_rejections, cascade_base)

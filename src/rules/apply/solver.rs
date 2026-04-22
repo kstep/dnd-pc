@@ -232,9 +232,17 @@ fn solve_assign(
             continue;
         }
         // Remember the first *informative* candidate as fallback for the
-        // modal prefill: guard-passing and non-zero. Skipping zero here is
-        // intentional — a blank modal is useless.
-        if fallback.is_none() && !is_zero {
+        // modal prefill: guard-passing, non-zero, AND whose apply actually
+        // changes derived state on `baseline`. Without the effectiveness
+        // check, a guard that sums ARGs over the full mask (e.g.
+        // `fold(+, @, @ARG) == 2`) would accept args on non-active slots
+        // (e.g. Expertise bumps on non-proficient skills, body `if(@==1,…)`
+        // no-ops). The modal then sees `is_satisfied=true` from hidden
+        // signals and disables every visible checkbox.
+        if fallback.is_none()
+            && !is_zero
+            && candidate_changes_baseline(feats, feat_idx, assign_idx, &candidate, baseline)
+        {
             fallback = Some(candidate.clone());
         }
         feats[feat_idx].assigns[assign_idx].args = candidate;
@@ -242,11 +250,50 @@ fn solve_assign(
             return true;
         }
     }
-    // Exhausted — restore the first non-zero guard-passing candidate so the
-    // modal opens pre-filled with a plausible choice. If nothing matched,
-    // fall back to zeros.
+    // Exhausted — restore the first effective guard-passing candidate so
+    // the modal opens pre-filled with a plausible choice. If nothing
+    // matched, fall back to zeros (is_satisfied will be false, all
+    // active checkboxes stay enabled).
     feats[feat_idx].assigns[assign_idx].args = fallback.unwrap_or_else(|| vec![0; arg_count]);
     false
+}
+
+/// Dry-run apply the whole feat (substituting `candidate` for
+/// `assigns[assign_idx]`) on `baseline`; return true when derived state
+/// actually changes. Used by fallback-prefill selection to reject
+/// candidates that satisfy the guard via non-active slots but whose body
+/// evaluates to no-op.
+fn candidate_changes_baseline(
+    feats: &[FeatState<'_>],
+    feat_idx: usize,
+    assign_idx: usize,
+    candidate: &[i32],
+    baseline: &Character,
+) -> bool {
+    let inputs: Vec<AssignInputs> = feats[feat_idx]
+        .assigns
+        .iter()
+        .enumerate()
+        .map(|(i, assign)| {
+            let args = if i == assign_idx {
+                candidate.to_vec()
+            } else {
+                assign.args.clone()
+            };
+            AssignInputs {
+                args,
+                ..AssignInputs::default()
+            }
+        })
+        .collect();
+    let mut trial = baseline.clone_lean();
+    feats[feat_idx].def.apply(
+        feats[feat_idx].pending.level,
+        &mut trial,
+        WhenCondition::OnFeatureAdd,
+        &inputs,
+    );
+    !baseline.eq_derived(&trial)
 }
 
 /// Top-level entry. Returns `true` when the solver found args that make the

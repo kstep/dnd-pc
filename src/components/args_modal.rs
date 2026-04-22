@@ -83,10 +83,11 @@ impl ArgsModalCtx {
 /// (user-editable) feats see a pipeline-correct baseline, even though the
 /// user has nothing to choose here.
 ///
-/// Dice from `prefill.dice` are not restored (there's no public iterator
-/// over `DicePool`); hidden feats with dice will cascade-apply with zero
-/// dice values. In practice rebuild's hidden feats are skill-pickers and
-/// ASIs with no dice, so this is currently a non-issue.
+/// Dice from `prefill.dice` are not restored (no public iterator over
+/// `DicePool`). Hidden feats are either non-interactive (no dice by
+/// definition) or effective-stored feats whose cascade effect is dominated
+/// by `args`; hidden dice would be an edge worth fixing by extending
+/// `DicePool` with an `entries()` API.
 fn register_hidden_signals(
     pending_inputs: &PendingInputs,
     all_signals: RwSignal<ArgsSignals>,
