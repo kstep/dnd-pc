@@ -76,6 +76,13 @@ pub struct PendingInputs {
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
     pub source: FeatureSource,
+    /// When `true`, the modal hides this feat's form — `prefill` is already
+    /// determined (stored inputs from a previous apply) and the user isn't
+    /// editing it. The cascade still applies it so downstream snapshot
+    /// indices see its effects, preserving pipeline order. Used by rebuild
+    /// for effective-stored feats that fall *between* emitted (user-visible)
+    /// feats in the pipeline.
+    pub hidden: bool,
 }
 
 impl PendingInputs {
@@ -113,7 +120,11 @@ impl PendingInputs {
             prefilled_replacement: None,
             replacement_prefill: None,
             source,
+            hidden: false,
         })
+        // Note: callers set `hidden = true` on the returned value when the
+        // feat is effective-stored but falls between emitted feats in the
+        // rebuild pipeline.
     }
 }
 

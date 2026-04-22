@@ -145,7 +145,7 @@ pub fn replay(
         .map(|pending_feature| {
             character
                 .features
-                .get_inputs(&pending_feature.name)
+                .get_inputs(&pending_feature.name, &pending_feature.source)
                 .to_vec()
         })
         .collect();

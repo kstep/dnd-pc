@@ -124,7 +124,12 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
             })
             .collect::<Vec<_>>()
     });
-    all_inputs.retain(|input| clone.features.get_inputs(&input.feature_name).is_empty());
+    all_inputs.retain(|input| {
+        clone
+            .features
+            .get_inputs(&input.feature_name, &input.source)
+            .is_empty()
+    });
 
     let do_replay = move |inputs: Option<&ApplyInputs>| {
         let empty = ApplyInputs::default();

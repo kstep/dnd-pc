@@ -33,16 +33,38 @@ pub enum RebuildError {
     MulticlassPrereq { class: String },
 }
 
+/// Output of `prepare_rebuild`: everything the rebuild caller needs to drive
+/// silent-commit or the args modal.
+pub struct RebuildPreview {
+    /// Reconciled original character — feeds into `build_clean`.
+    pub original: Character,
+    /// Feats the modal cascade walks, in pipeline order. Starts at the first
+    /// unsolved / rejected feat; `hidden=true` entries between editable
+    /// ones are effective-stored feats the cascade applies silently.
+    pub pending: Vec<PendingInputs>,
+    /// Cascade seed: identity + every effective-stored feat applied in
+    /// pipeline order up to (but not including) the first emitted feat.
+    /// The modal layers `pending` on top of this, so `expr.analyze` on the
+    /// first editable feat sees a correct baseline out of the gate.
+    pub cascade_base: Character,
+    /// `true` when pre-validation discarded non-empty stored inputs as
+    /// ineffective — forces the modal to open even if `build_clean` would
+    /// silent-match.
+    pub had_rejections: bool,
+}
+
 /// Snapshot-level step 1: reconcile User-sourced features against identity
-/// slots, then collect pending inputs that need user interaction. The returned
-/// `Character` is the reconciled snapshot ready to feed into `build_clean`.
-pub fn prepare_rebuild(
-    mut original: Character,
-    registry: &RulesRegistry,
-) -> (Character, Vec<PendingInputs>) {
+/// slots, then collect pending inputs that need user interaction.
+pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> RebuildPreview {
     reconcile_user_feature_sources(&mut original, registry);
-    let pending_inputs = collect_rebuild_pending_inputs(&original, registry);
-    (original, pending_inputs)
+    let (pending, had_rejections, cascade_base) =
+        collect_rebuild_pending_inputs(&original, registry);
+    RebuildPreview {
+        original,
+        pending,
+        cascade_base,
+        had_rejections,
+    }
 }
 
 /// Snapshot-level step 2: build a fresh `Character` from `default()`,
@@ -120,7 +142,8 @@ pub fn build_clean(
 fn collect_rebuild_pending_inputs(
     original: &Character,
     registry: &RulesRegistry,
-) -> Vec<PendingInputs> {
+) -> (Vec<PendingInputs>, bool, Character) {
+    // Returns (pending, had_rejections, cascade_base).
     registry.with_features_index_untracked(|fi| {
         // Identity pending: what `collect_pending_features` would add if no
         // identity feature were yet applied. Snapshot keeps only User features
@@ -157,6 +180,71 @@ fn collect_rebuild_pending_inputs(
             .map(|pending| (pending.name.as_str(), &pending.source))
             .collect();
 
+        // Pre-validate stored inputs: walk pending in pipeline order, dry-
+        // run `feat_def.apply(stored)` on a running baseline, and accept
+        // `forced` for the solver only when that apply actually changes the
+        // derived state. This rejects corrupted stored inputs whose args
+        // fall outside the current mask — e.g. old Expertise picks on
+        // skills the character is no longer proficient in, or empty-arg
+        // feat entries from half-migrated characters. Unusable stored →
+        // solver re-enumerates. We advance `validation_baseline` only on
+        // effective stored so downstream dry-runs see a realistic state;
+        // rejected feats will be advanced later via solver-solved args.
+        // Walk pending in pipeline order. Apply stored inputs whose dry-run
+        // actually changes the derived state (`effective`). Feats whose
+        // stored is ineffective or missing are the ones the modal will show
+        // — either as editable (no stored / rejected) or hidden (effective
+        // but falling between editable siblings). Capture `cascade_base`
+        // the first time we hit an emit-worthy feat: everything strictly
+        // before it is already folded into that baseline.
+        let mut validation_baseline = Character::from_identity(original.identity.clone());
+        let mut cascade_base: Option<Character> = None;
+        let mut forced_usable: BTreeMap<(String, FeatureSource), bool> = BTreeMap::new();
+        let mut had_rejections = false;
+        for pending in &all_pending {
+            let Some(feat_def) = fi.get(pending.name.as_str()) else {
+                continue;
+            };
+            let Some(assigns) = feat_def.assign.as_ref() else {
+                continue;
+            };
+            // Non-interactive feats (hardcoded effects like `LANG.X = 1`,
+            // `SKILL.Y.PROF = 1`) always apply in pipeline order — there's
+            // nothing for the user to pick, and their effects must land in
+            // the cascade baseline so downstream pending sees them.
+            let has_interactive_onadd = assigns
+                .iter()
+                .any(|a| a.when == WhenCondition::OnFeatureAdd && a.is_interactive());
+            let stored = original.features.get_inputs(&pending.name, &pending.source);
+            let effective = !has_interactive_onadd
+                || stored_inputs_effective(feat_def, pending.level, &validation_baseline, stored);
+            forced_usable.insert((pending.name.clone(), pending.source.clone()), effective);
+            if has_interactive_onadd && !effective {
+                // First emit-worthy feat freezes the cascade seed.
+                if cascade_base.is_none() {
+                    cascade_base = Some(validation_baseline.clone_lean());
+                }
+                if !stored.is_empty() {
+                    // Stored was present but ineffective — corruption
+                    // (e.g. Expertise on now non-proficient skills). The
+                    // silent-commit path must not run or it'd just replay
+                    // the corruption; caller opens the modal instead.
+                    had_rejections = true;
+                }
+            }
+            if effective {
+                feat_def.apply(
+                    pending.level,
+                    &mut validation_baseline,
+                    WhenCondition::OnFeatureAdd,
+                    stored,
+                );
+            }
+        }
+        // No emit-worthy feats → cascade seed is the fully-advanced baseline
+        // (caller will short-circuit via `pending.is_empty()` in that case).
+        let cascade_base = cascade_base.unwrap_or(validation_baseline);
+
         // Build FeatState for every pending — stored-input feats go in
         // too, their interactive assigns marked `forced` with the stored
         // args so enumerate_assign yields that single candidate. Keeping
@@ -172,8 +260,11 @@ fn collect_rebuild_pending_inputs(
             let Some(assign_defs) = feat_def.assign.as_ref() else {
                 continue;
             };
-            let stored = original.features.get_inputs(&pending.name);
-            let stored_usable = stored_inputs_usable(feat_def, stored);
+            let stored = original.features.get_inputs(&pending.name, &pending.source);
+            let stored_usable = forced_usable
+                .get(&(pending.name.clone(), pending.source.clone()))
+                .copied()
+                .unwrap_or(false);
 
             // Index into the interactive-filtered position matches the
             // order `FeatureDefinition::assign_inner` uses to consume
@@ -218,13 +309,15 @@ fn collect_rebuild_pending_inputs(
         // the modal will pick up.
         let _ = solve_all(&mut feat_states, &baseline, original);
 
-        // Emit PendingInputs per feat, detecting replacement choices against
-        // the pre-apply baseline (so `meets_prerequisites` sees the character
-        // as it existed right before this feat). Then apply the feat to
-        // advance baseline for the next iteration. Stored-input feats are
-        // skipped for emit — their inputs live in `original`, modal won't
-        // show them — but they still `apply` to move baseline forward.
+        // Emit PendingInputs starting from the first non-forced feat. Feats
+        // before that are already folded into `cascade_base` — no need to
+        // re-apply them through the modal cascade. Between emitted feats,
+        // effective-stored siblings ride along as `hidden=true` so the
+        // cascade applies them in pipeline order (downstream editable feats
+        // see the right baseline). `baseline` still advances through every
+        // feat so `detect_replacement` sees the pre-apply state.
         let mut inputs: Vec<PendingInputs> = Vec::new();
+        let mut emit_started = false;
         for state in &feat_states {
             let inputs_vec: Vec<AssignInputs> = state
                 .assigns
@@ -256,16 +349,20 @@ fn collect_rebuild_pending_inputs(
                 &inputs_vec,
             );
 
-            if was_forced {
-                continue;
+            if !emit_started {
+                if was_forced {
+                    continue;
+                }
+                emit_started = true;
             }
             if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
                 pi.prefill = inputs_vec;
                 pi.prefilled_replacement = prefilled_replacement;
+                pi.hidden = was_forced;
                 inputs.push(pi);
             }
         }
-        inputs
+        (inputs, had_rejections, cascade_base)
     })
 }
 
@@ -317,6 +414,28 @@ fn detect_replacement(
                 && candidate_def.meets_prerequisites(baseline)
         })
         .map(|candidate| candidate.name.clone())
+}
+
+/// Check whether a dry-run of `feat_def.apply(stored)` on `baseline` would
+/// change any derived state. Rejects stored inputs that pass
+/// `stored_inputs_usable` by shape but apply to slots no longer valid — e.g.
+/// Expertise stored on skills the character has since dropped proficiency in,
+/// so `if(@==1, @ += @ARG)` silently no-ops. Such stored inputs are "corrupted"
+/// from the solver's viewpoint: their apply produces no observable change, so
+/// forcing them freezes an invalid pick. Returning `false` downgrades them to
+/// unsolved and lets the solver re-enumerate candidates.
+fn stored_inputs_effective(
+    feat_def: &FeatureDefinition,
+    level: u32,
+    baseline: &Character,
+    stored: &[AssignInputs],
+) -> bool {
+    if !stored_inputs_usable(feat_def, stored) {
+        return false;
+    }
+    let mut trial = baseline.clone_lean();
+    feat_def.apply(level, &mut trial, WhenCondition::OnFeatureAdd, stored);
+    !baseline.eq_derived(&trial)
 }
 
 /// Check whether stored `inputs` align with the feature's interactive
@@ -575,21 +694,31 @@ fn apply_pending(
     Ok(())
 }
 
-/// Resolve stored inputs for a single pending feature. Stackable features
-/// require exact source match so multiple instances (e.g. ASI at Monk L4 and
-/// L8) don't share storage. Non-stackable features match by name alone —
-/// tolerates source encoding drift between versions (e.g. a subclass feature
-/// stored with `Class(X, N)` on older saves when collect now generates
+/// Resolve inputs for a single pending feature. Modal-supplied
+/// `extra_inputs` win over `original`'s stored inputs — the modal
+/// pre-fills its forms from stored (or solver-solved args) and lets the
+/// user override, so whatever comes back from submit is the authoritative
+/// choice. Stackable features require exact source match so multiple
+/// instances (e.g. ASI at Monk L4 and Monk L8) don't share storage;
+/// non-stackable features match by name alone — tolerates source encoding
+/// drift between versions (e.g. a subclass feature stored with
+/// `Class(X, N)` on older saves when collect now generates
 /// `Subclass(X, SC, N)`).
 ///
-/// Falls back to `extra_inputs` (modal input) when nothing stored.
+/// Returns empty when neither source has inputs.
 fn inputs_for_pending(
     pending_feature: &PendingFeature,
     original: &Character,
     extra_inputs: &ApplyInputs,
     stackable: bool,
 ) -> Vec<AssignInputs> {
-    let stored: Vec<AssignInputs> = original
+    let key = FeatureKey::from_pending(pending_feature);
+    if let Some(inputs) = extra_inputs.feature_inputs.get(&key)
+        && !inputs.is_empty()
+    {
+        return inputs.clone();
+    }
+    original
         .features
         .iter()
         .find(|feature| {
@@ -598,18 +727,7 @@ fn inputs_for_pending(
                 && (!stackable || feature.source == pending_feature.source)
         })
         .map(|feature| feature.inputs.clone())
-        .unwrap_or_default();
-
-    if !stored.is_empty() {
-        stored
-    } else {
-        let key = FeatureKey::from_pending(pending_feature);
-        extra_inputs
-            .feature_inputs
-            .get(&key)
-            .cloned()
-            .unwrap_or_default()
-    }
+        .unwrap_or_default()
 }
 
 fn apply_user_features_at_level(
@@ -997,6 +1115,44 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn inputs_for_pending_prefers_extra_over_stored() {
+        // Modal-submitted inputs override `original`'s stored inputs so
+        // corrupted stored (e.g. Expertise on skills no longer proficient)
+        // can be overwritten by the user's fresh pick in the modal.
+        let stored_inputs = vec![AssignInputs {
+            args: vec![99],
+            ..AssignInputs::default()
+        }];
+        let mut stored_feature = feature("Mystery", FeatureSource::User(0));
+        stored_feature.inputs = stored_inputs;
+        let mut original = Character::default();
+        original.features.list.push(stored_feature);
+
+        let modal_inputs = vec![AssignInputs {
+            args: vec![42],
+            ..AssignInputs::default()
+        }];
+        let mut extra = ApplyInputs::default();
+        extra.feature_inputs.insert(
+            FeatureKey::new("Mystery", FeatureSource::User(0)),
+            modal_inputs.clone(),
+        );
+
+        let inputs = inputs_for_pending(
+            &PendingFeature {
+                name: "Mystery".into(),
+                source: FeatureSource::User(0),
+                level: 0,
+            },
+            &original,
+            &extra,
+            false,
+        );
+
+        assert_eq!(inputs, modal_inputs);
+    }
+
+    #[wasm_bindgen_test]
     fn inputs_for_pending_falls_back_to_extra_inputs_when_stored_empty() {
         let mut original = Character::default();
         original
@@ -1139,6 +1295,51 @@ mod tests {
             &baseline,
         );
         assert!(found.is_none());
+    }
+
+    #[wasm_bindgen_test]
+    fn stored_inputs_effective_rejects_noop_expertise_on_non_proficient_skill() {
+        use crate::model::{ProficiencyLevel, Skill};
+        let expertise_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
+            "name": "Expertise",
+            "stackable": true,
+            "assign": [{
+                "when": "OnFeatureAdd",
+                "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                         fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))",
+            }],
+        }))
+        .unwrap();
+        // Expertise args[5]=1 (History), args[14]=1 (Religion). Baseline has
+        // neither Proficient → apply body `if(@==1,…)` no-ops for both →
+        // derived state unchanged → effective == false.
+        let stored = [AssignInputs {
+            args: vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            ..AssignInputs::default()
+        }];
+        let baseline = Character::default();
+        assert!(!stored_inputs_effective(
+            &expertise_def,
+            1,
+            &baseline,
+            &stored
+        ));
+
+        // Same stored, but now History is Proficient — apply bumps it to
+        // Expertise (value 2) → skills map mutated → effective == true.
+        let mut baseline_prof = Character::default();
+        baseline_prof
+            .skills
+            .set(Skill::History, ProficiencyLevel::Proficient);
+        baseline_prof
+            .skills
+            .set(Skill::Religion, ProficiencyLevel::Proficient);
+        assert!(stored_inputs_effective(
+            &expertise_def,
+            1,
+            &baseline_prof,
+            &stored
+        ));
     }
 
     #[wasm_bindgen_test]

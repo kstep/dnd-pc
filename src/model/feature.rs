@@ -280,11 +280,14 @@ impl FeatureList {
         }
     }
 
-    /// Look up stored inputs for a feature by name.
-    pub fn get_inputs(&self, name: &str) -> &[AssignInputs] {
+    /// Look up stored inputs for a feature by (name, source). Required for
+    /// stackable features (e.g. Expertise at Rogue L1 and L6) where a
+    /// name-only lookup would collapse distinct slots into the first match
+    /// and reuse its inputs for every subsequent instance.
+    pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
         self.0
             .iter()
-            .find(|f| f.name == name)
+            .find(|f| f.name == name && &f.source == source)
             .map(|f| f.inputs.as_slice())
             .unwrap_or_default()
     }
@@ -379,8 +382,8 @@ impl Features {
         self.list.is_pending(name)
     }
 
-    pub fn get_inputs(&self, name: &str) -> &[AssignInputs] {
-        self.list.get_inputs(name)
+    pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
+        self.list.get_inputs(name, source)
     }
 
     pub fn add(

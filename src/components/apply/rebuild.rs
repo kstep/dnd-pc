@@ -8,7 +8,9 @@ use crate::{
     model::Character,
     rules::{
         ApplyInputs, RulesRegistry,
-        apply::{FeatureKey, PendingInputs, RebuildError, build_clean, prepare_rebuild},
+        apply::{
+            FeatureKey, PendingInputs, RebuildError, RebuildPreview, build_clean, prepare_rebuild,
+        },
     },
 };
 
@@ -22,7 +24,12 @@ use crate::{
 /// class/species/background definitions — the store is never written in that
 /// case.
 pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
-    let (original, pending_inputs) = prepare_rebuild(store.get_untracked(), &registry);
+    let RebuildPreview {
+        original,
+        pending,
+        cascade_base,
+        had_rejections,
+    } = prepare_rebuild(store.get_untracked(), &registry);
 
     let do_rebuild = {
         let original = original.clone();
@@ -41,37 +48,46 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
         }
     };
 
-    if pending_inputs.is_empty() {
+    if pending.is_empty() {
         do_rebuild(None);
         return;
     }
 
-    // Try silent commit: feed the guessed prefill straight into build_clean,
-    // compare simulated vs original on derived state. Match → commit without
-    // opening the modal.
-    let guessed = synthesize_apply_inputs(&pending_inputs);
-    if let Ok(simulated) = build_clean(&original, &registry, &guessed)
-        && simulated.eq_derived(&original)
-    {
-        log::info!("rebuild: silent-applied; derived state matches original");
-        store.update(|character| {
-            *character = simulated;
-            registry.compute(character);
-        });
-        Toast::i18n("toast-rebuild-done").show();
-        return;
+    // Try silent commit only when pre-validation didn't reject any stored
+    // inputs. Rejections signal corruption (e.g. Expertise picks on
+    // no-longer-proficient skills) — silently re-applying the same guessed
+    // prefill would just replay that corruption without giving the user a
+    // chance to fix it.
+    if !had_rejections {
+        let guessed = synthesize_apply_inputs(&pending);
+        if let Ok(simulated) = build_clean(&original, &registry, &guessed)
+            && simulated.eq_derived(&original)
+        {
+            log::info!("rebuild: silent-applied; derived state matches original");
+            store.update(|character| {
+                *character = simulated;
+                registry.compute(character);
+            });
+            Toast::i18n("toast-rebuild-done").show();
+            return;
+        }
     }
 
-    log::info!("rebuild: guess incomplete — opening modal with partial prefill");
-    // Seed cascade with a fresh identity-only character — matches what
-    // `build_clean` starts from, so modal preview sees PROF=0 / default
-    // abilities instead of the live sheet's residual state from prior
-    // (possibly half-migrated) applies.
-    let base = Arc::new(Character::from_identity(original.identity.clone()));
+    log::info!(
+        "rebuild: {} — opening modal with partial prefill",
+        if had_rejections {
+            "rejected corrupted stored inputs"
+        } else {
+            "guess incomplete"
+        }
+    );
+    // Cascade seed = identity + every effective-stored feat applied up to
+    // the first emitted pending. Feats between emitted ones ride in
+    // `pending` as `hidden=true` and are applied by the cascade Effect,
+    // keeping `expr.analyze` pipeline-correct for every editable step.
+    let base = Arc::new(cascade_base);
     let ctx = expect_context::<ArgsModalCtx>();
-    ctx.open(pending_inputs, Some(base), move |inputs| {
-        do_rebuild(Some(&inputs))
-    });
+    ctx.open(pending, Some(base), move |inputs| do_rebuild(Some(&inputs)));
 }
 
 /// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit

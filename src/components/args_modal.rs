@@ -76,6 +76,48 @@ impl ArgsModalCtx {
     }
 }
 
+/// Register `all_signals` / `all_dice` entries for a `hidden` pending feat
+/// without rendering a form. The cascade's per-pending Effect reads these
+/// signals to reconstruct `AssignInputs` and apply the feat to the next
+/// snapshot — hidden feats must participate in the cascade so downstream
+/// (user-editable) feats see a pipeline-correct baseline, even though the
+/// user has nothing to choose here.
+///
+/// Dice from `prefill.dice` are not restored (there's no public iterator
+/// over `DicePool`); hidden feats with dice will cascade-apply with zero
+/// dice values. In practice rebuild's hidden feats are skill-pickers and
+/// ASIs with no dice, so this is currently a non-issue.
+fn register_hidden_signals(
+    pending_inputs: &PendingInputs,
+    all_signals: RwSignal<ArgsSignals>,
+    all_dice: RwSignal<DiceSignals>,
+) {
+    let key = FeatureKey::new(
+        pending_inputs.feature_name.clone(),
+        pending_inputs.source.clone(),
+    );
+    let signal_groups: Vec<StoredValue<Vec<RwSignal<i32>>>> = pending_inputs
+        .prefill
+        .iter()
+        .map(|input| {
+            let signals: Vec<RwSignal<i32>> =
+                input.args.iter().map(|v| RwSignal::new(*v)).collect();
+            StoredValue::new(signals)
+        })
+        .collect();
+    let dice_groups: Vec<StoredValue<DiceGroupSignals>> = pending_inputs
+        .prefill
+        .iter()
+        .map(|_| StoredValue::new(BTreeMap::new()))
+        .collect();
+    all_signals.update(|signals| {
+        signals.insert(key.clone(), signal_groups);
+    });
+    all_dice.update(|dice| {
+        dice.insert(key, dice_groups);
+    });
+}
+
 #[component]
 fn ArgsFeatureInput(
     pending_inputs: PendingInputs,
@@ -562,7 +604,12 @@ pub fn ArgsModal() -> impl IntoView {
                     .enumerate()
                     .map(|(i, pending_inputs)| {
                         let character: Signal<Arc<Character>> = snapshots[i].into();
-                        view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements /> }
+                        if pending_inputs.hidden {
+                            register_hidden_signals(&pending_inputs, all_signals, all_dice);
+                            ().into_any()
+                        } else {
+                            view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements /> }.into_any()
+                        }
                     })
                     .collect_view();
 
