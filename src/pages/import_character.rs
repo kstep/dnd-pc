@@ -69,7 +69,7 @@ fn notes_diff_summary(notes: &[Note], i18n: leptos_fluent::I18n) -> String {
     };
     let date_label: String = if last.created_at > 0 {
         let date = Date::new(&((last.created_at as f64) * 1000.0).into());
-        date.to_locale_date_string(i18n.language.get().id, &JsValue::NULL)
+        date.to_locale_date_string(i18n.language.get().id, &JsValue::UNDEFINED)
             .into()
     } else {
         "\u{2014}".into()
