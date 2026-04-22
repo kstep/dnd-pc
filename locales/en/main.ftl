@@ -120,6 +120,7 @@ name = Name
 atk-bonus = Atk Bonus
 atk-formula = Attack formula
 atk-magic = Magic
+weapon-ability = Ability
 attack = Attack
 damage = Damage
 heal = Heal

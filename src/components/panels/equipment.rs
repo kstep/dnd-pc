@@ -13,6 +13,11 @@ use crate::{
     },
 };
 
+/// Stable (locale-independent) name used to identify the auto-created
+/// damage effect on a new weapon. Kept in English so that ability-change
+/// auto-fill keeps matching even after the UI locale is switched.
+const DAMAGE_EFFECT_NAME: &str = "Damage";
+
 #[component]
 pub fn EquipmentPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
@@ -48,10 +53,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                             type="number"
                             min="0"
                             prop:value=move || currency.pp().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    currency.pp().set(value);
-                                }
+                            on:change=move |e| {
+                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                currency.pp().set(value);
                             }
                         />
                         <button class="btn-convert" title="→ GP" on:click=move |_| {
@@ -73,10 +77,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                         type="number"
                         min="0"
                         prop:value=move || currency.gp().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                currency.gp().set(value);
-                            }
+                        on:change=move |e| {
+                            let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                            currency.gp().set(value);
                         }
                     />
                     <button class="btn-convert" title="→ EP" on:click=move |_| {
@@ -98,10 +101,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                             type="number"
                             min="0"
                             prop:value=move || currency.ep().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    currency.ep().set(value);
-                                }
+                            on:change=move |e| {
+                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                currency.ep().set(value);
                             }
                         />
                         <button class="btn-convert" title="→ SP" on:click=move |_| {
@@ -124,10 +126,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                             type="number"
                             min="0"
                             prop:value=move || currency.sp().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    currency.sp().set(value);
-                                }
+                            on:change=move |e| {
+                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                currency.sp().set(value);
                             }
                         />
                         <button class="btn-convert" title="→ CP" on:click=move |_| {
@@ -150,10 +151,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                             type="number"
                             min="0"
                             prop:value=move || currency.cp().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    currency.cp().set(value);
-                                }
+                            on:change=move |e| {
+                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                currency.cp().set(value);
                             }
                         />
                     </SlotBox>
@@ -187,12 +187,17 @@ pub fn EquipmentPanel() -> impl IntoView {
                                     let category = weapon.category as u8;
                                     let ability = weapon.ability as u8;
                                     let magic_bonus = weapon.magic_bonus.to_string();
-                                    let attack_expr_str = weapon.attack_expr.as_ref().map(|e| e.to_string()).unwrap_or_default();
-                                    let attack_expr_placeholder = Weapon::default_attack_expr_str(
-                                        weapon.category,
-                                        weapon.ability,
-                                        weapon.magic_bonus,
-                                    );
+                                    let attack_expr_display = weapon
+                                        .attack_expr
+                                        .as_ref()
+                                        .map(ToString::to_string)
+                                        .unwrap_or_else(|| {
+                                            Weapon::default_attack_expr_str(
+                                                weapon.category,
+                                                weapon.ability,
+                                                weapon.magic_bonus,
+                                            )
+                                        });
                                     let effects: Vec<_> = weapon.effects.iter().enumerate().map(|(j, effect)| {
                                         let eff_name = effect.name.clone();
                                         let eff_expr = effect.expr.to_string();
@@ -208,7 +213,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     class="entry-name"
                                                     placeholder=move_tr!("name")
                                                     prop:value=name
-                                                    on:input=move |e| {
+                                                    on:change=move |e| {
                                                         weapons.write()[i].name = event_target_value(&e);
                                                     }
                                                 />
@@ -217,10 +222,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     class="short-input"
                                                     min="1"
                                                     prop:value=quantity
-                                                    on:input=move |e| {
-                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                            weapons.write()[i].quantity = value.max(1);
-                                                        }
+                                                    on:change=move |e| {
+                                                        let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                                        weapons.write()[i].quantity = value.max(1);
                                                     }
                                                 />
                                                 <select class="select-fixed"
@@ -265,69 +269,63 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     <Icon name="x" />
                                                 </button>
                                             </div>
-                                            <div class="entry-full-row">
-                                                <select class="select-fixed"
-                                                    prop:value=ability.to_string()
-                                                    on:change=move |e| {
-                                                        let Ok(idx) = event_target_value(&e).parse::<u8>() else { return };
-                                                        let new_ability = Ability::try_from(idx).unwrap_or(Ability::Strength);
-                                                        let mut weapons = weapons.write();
-                                                        let category = weapons[i].category;
-                                                        let old_ability = weapons[i].ability;
-                                                        let magic = weapons[i].magic_bonus;
-                                                        weapons[i].ability = new_ability;
-                                                        let old_default = Weapon::default_attack_expr(category, old_ability, magic);
-                                                        if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
-                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, new_ability, magic);
-                                                        }
-                                                    }
-                                                >
-                                                    {Ability::iter()
-                                                        .map(|ab| {
-                                                            let option_value = (ab as u8).to_string();
-                                                            let selected = ab as u8 == ability;
-                                                            let label = Signal::derive(move || i18n.tr(ab.tr_abbr_key()));
-                                                            view! {
-                                                                <option value=option_value selected=selected>
-                                                                    {label}
-                                                                </option>
+                                            <span class="entry-sublabel">{attack_expr_display}</span>
+                                            <div class="entry-full-row slot-box-list">
+                                                <SlotBox label=move_tr!("weapon-ability")>
+                                                    <select
+                                                        prop:value=ability.to_string()
+                                                        on:change=move |e| {
+                                                            let Ok(idx) = event_target_value(&e).parse::<u8>() else { return };
+                                                            let new_ability = Ability::try_from(idx).unwrap_or(Ability::Strength);
+                                                            let mut weapons = weapons.write();
+                                                            let category = weapons[i].category;
+                                                            let old_ability = weapons[i].ability;
+                                                            let magic = weapons[i].magic_bonus;
+                                                            weapons[i].ability = new_ability;
+                                                            let old_default = Weapon::default_attack_expr(category, old_ability, magic);
+                                                            if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
+                                                                weapons[i].attack_expr = Weapon::default_attack_expr(category, new_ability, magic);
                                                             }
-                                                        })
-                                                        .collect_view()}
-                                                </select>
-                                                <input
-                                                    type="number"
-                                                    placeholder=move_tr!("atk-magic")
-                                                    class="short-input"
-                                                    prop:value=magic_bonus
-                                                    on:input=move |e| {
-                                                        let Ok(new_magic) = event_target_value(&e).parse::<i32>() else { return };
-                                                        let mut weapons = weapons.write();
-                                                        let category = weapons[i].category;
-                                                        let ability = weapons[i].ability;
-                                                        let old_magic = weapons[i].magic_bonus;
-                                                        weapons[i].magic_bonus = new_magic;
-                                                        let old_default = Weapon::default_attack_expr(category, ability, old_magic);
-                                                        if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
-                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, ability, new_magic);
+                                                            for effect in weapons[i].effects.iter_mut() {
+                                                                if effect.name == DAMAGE_EFFECT_NAME && effect.expr.is_empty() {
+                                                                    effect.expr = Weapon::default_damage_expr(new_ability);
+                                                                }
+                                                            }
                                                         }
-                                                    }
-                                                />
+                                                    >
+                                                        {Ability::iter()
+                                                            .map(|ab| {
+                                                                let option_value = (ab as u8).to_string();
+                                                                let selected = ab as u8 == ability;
+                                                                let label = Signal::derive(move || i18n.tr(ab.tr_key()));
+                                                                view! {
+                                                                    <option value=option_value selected=selected>
+                                                                        {label}
+                                                                    </option>
+                                                                }
+                                                            })
+                                                            .collect_view()}
+                                                    </select>
+                                                </SlotBox>
+                                                <SlotBox label=move_tr!("atk-magic")>
+                                                    <input
+                                                        type="number"
+                                                        prop:value=magic_bonus
+                                                        on:change=move |e| {
+                                                            let new_magic = event_target_value(&e).parse::<i32>().unwrap_or_default();
+                                                            let mut weapons = weapons.write();
+                                                            let category = weapons[i].category;
+                                                            let ability = weapons[i].ability;
+                                                            let old_magic = weapons[i].magic_bonus;
+                                                            weapons[i].magic_bonus = new_magic;
+                                                            let old_default = Weapon::default_attack_expr(category, ability, old_magic);
+                                                            if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
+                                                                weapons[i].attack_expr = Weapon::default_attack_expr(category, ability, new_magic);
+                                                            }
+                                                        }
+                                                    />
+                                                </SlotBox>
                                             </div>
-                                            <input
-                                                type="text"
-                                                placeholder=attack_expr_placeholder
-                                                class="entry-desc ac-expr-input"
-                                                prop:value=attack_expr_str
-                                                on:change=move |e| {
-                                                    let value = event_target_value(&e);
-                                                    weapons.write()[i].attack_expr = if value.is_empty() {
-                                                        None
-                                                    } else {
-                                                        value.parse().ok()
-                                                    };
-                                                }
-                                            />
                                             {effects.into_iter().map(|(j, eff_name, eff_expr, eff_dmg_type)| {
                                                 view! {
                                                     <div class="entry-full-row weapon-effect-row">
@@ -336,7 +334,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             placeholder=move_tr!("effect-name")
                                                             class="effect-name-input"
                                                             prop:value=eff_name
-                                                            on:input=move |e| {
+                                                            on:change=move |e| {
                                                                 weapons.write()[i].effects[j].name = event_target_value(&e);
                                                             }
                                                         />
@@ -411,7 +409,13 @@ pub fn EquipmentPanel() -> impl IntoView {
             <button
                 class="btn-primary"
                 on:click=move |_| {
-                    weapons.write().push(Weapon::default());
+                    let mut weapon = Weapon::default();
+                    weapon.effects.push(WeaponEffect {
+                        name: DAMAGE_EFFECT_NAME.to_string(),
+                        damage_type: None,
+                        expr: Weapon::default_damage_expr(weapon.ability),
+                    });
+                    weapons.write().push(weapon);
                 }
             >
                 {move_tr!("btn-add-weapon")}
@@ -479,7 +483,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         class="entry-name"
                                                         placeholder=move_tr!("name")
                                                         prop:value=name
-                                                        on:input=move |e| {
+                                                        on:change=move |e| {
                                                             armors.write()[i].name = event_target_value(&e);
                                                         }
                                                     />
@@ -489,17 +493,16 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         class="short-input"
                                                         min="0"
                                                         prop:value=base_ac
-                                                        on:input=move |e| {
-                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                let mut armors = armors.write();
-                                                                let old_base_ac = armors[i].base_ac;
-                                                                let at = armors[i].armor_type;
-                                                                armors[i].base_ac = value;
-                                                                // Auto-fill formula if it matches the previous default
-                                                                let old_default = Armor::default_ac_expr(at, old_base_ac);
-                                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                                    armors[i].ac_expr = Armor::default_ac_expr(at, value);
-                                                                }
+                                                        on:change=move |e| {
+                                                            let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                                            let mut armors = armors.write();
+                                                            let old_base_ac = armors[i].base_ac;
+                                                            let at = armors[i].armor_type;
+                                                            armors[i].base_ac = value;
+                                                            // Auto-fill formula if it matches the previous default
+                                                            let old_default = Armor::default_ac_expr(at, old_base_ac);
+                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
+                                                                armors[i].ac_expr = Armor::default_ac_expr(at, value);
                                                             }
                                                         }
                                                     />
@@ -614,7 +617,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     class="entry-name"
                                                     placeholder=move_tr!("item-name")
                                                     prop:value=name
-                                                    on:input=move |e| {
+                                                    on:change=move |e| {
                                                         items.write()[i].name = event_target_value(&e);
                                                     }
                                                 />
@@ -624,10 +627,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     placeholder=move_tr!("qty")
                                                     min="0"
                                                     prop:value=qty
-                                                    on:input=move |e| {
-                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                            items.write()[i].quantity = value;
-                                                        }
+                                                    on:change=move |e| {
+                                                        let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                                        items.write()[i].quantity = value;
                                                     }
                                                 />
                                             </div>

@@ -120,6 +120,7 @@ name = Название
 atk-bonus = Бонус атаки
 atk-formula = Формула атаки
 atk-magic = Магия
+weapon-ability = Характеристика
 attack = Атака
 damage = Урон
 heal = Лечение

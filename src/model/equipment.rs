@@ -142,6 +142,18 @@ impl Weapon {
                 .unwrap_or_default()
         })
     }
+
+    /// Default per-weapon damage formula: a single d4 plus the ability
+    /// modifier. User can override the die in the UI.
+    pub fn default_damage_expr_str(ability: Ability) -> String {
+        format!("d4 + {}.MOD", ability.abbr())
+    }
+
+    pub fn default_damage_expr(ability: Ability) -> Expr {
+        Self::default_damage_expr_str(ability)
+            .parse()
+            .unwrap_or_default()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
