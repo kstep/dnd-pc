@@ -221,6 +221,14 @@ fn collect_rebuild_pending_inputs(
                 continue;
             };
             let Some(assign_defs) = feat_def.assign.as_ref() else {
+                // Pure-replaceable feats (e.g. Versatile: replace_with=Origin,
+                // no assign) also emit in the modal so the user can pick a
+                // replacement. Capture cascade_base here if no interactive
+                // feat has done so yet — nothing before advanced
+                // validation_baseline for this branch, so the base matches.
+                if !matches!(feat_def.replace_with, ReplaceWith::None) && cascade_base.is_none() {
+                    cascade_base = Some(validation_baseline.clone_lean());
+                }
                 state_idx_by_pending.push(None);
                 continue;
             };
@@ -360,6 +368,24 @@ fn collect_rebuild_pending_inputs(
                         pending.source.clone(),
                     ));
                 }
+            } else if !matches!(feat_def.replace_with, ReplaceWith::None) {
+                // Pure-replaceable feat (no assigns to run, no interactive
+                // ARGs). Emit so the modal can ask the user for a
+                // replacement pick, pre-filled from `detect_replacement` if
+                // original has a sibling at this slot.
+                let prefilled_replacement = detect_replacement(
+                    pending,
+                    feat_def,
+                    original,
+                    fi,
+                    &pending_keys,
+                    &emit_baseline,
+                );
+                if let Some(mut pi) = pending.pending_inputs(feat_def, original) {
+                    pi.prefilled_replacement = prefilled_replacement;
+                    inputs.push(pi);
+                }
+                emit_started = true;
             }
         }
         (inputs, had_rejections, cascade_base)

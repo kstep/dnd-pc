@@ -131,15 +131,43 @@ pub fn edit_inputs_modal(
     let key = FeatureKey::new(name, source);
     let ctx = expect_context::<ArgsModalCtx>();
     ctx.open(vec![pending_input], base, move |inputs| {
-        let new_inputs = inputs.feature_inputs.get(&key).cloned().unwrap_or_default();
+        // If the user picked a replacement, rename the feature in-place to the
+        // replacement and pull its inputs under the replacement key. Otherwise
+        // just stash new inputs under the original key. Either way we mark
+        // `applied = false` so the Replay banner performs the actual re-apply.
+        let replacement_name = inputs.replacements.get(&key.name).cloned();
+        let effective_key = match &replacement_name {
+            Some(name) => FeatureKey::new(name.clone(), key.source.clone()),
+            None => key.clone(),
+        };
+        let new_inputs = inputs
+            .feature_inputs
+            .get(&effective_key)
+            .cloned()
+            .unwrap_or_default();
         store.update(|character| {
-            for feature in character.features.iter_mut() {
-                if feature.name == key.name && feature.source == key.source {
-                    feature.inputs = new_inputs.clone();
-                    feature.applied = false;
-                    break;
+            registry.with_features_index_untracked(|fi| {
+                for feature in character.features.iter_mut() {
+                    if feature.name == key.name && feature.source == key.source {
+                        if let Some(new_name) = &replacement_name
+                            && let Some(feat_def) = fi.get(new_name.as_str())
+                        {
+                            feature.name = new_name.clone();
+                            feature.label = feat_def.label.clone();
+                            feature.description = feat_def.description.clone();
+                            feature.category = feat_def.category;
+                        }
+                        feature.inputs = new_inputs.clone();
+                        feature.applied = false;
+                        break;
+                    }
                 }
-            }
+                if let Some(new_name) = &replacement_name
+                    && new_name != &key.name
+                {
+                    character.features.data_mut().remove(&key.name);
+                }
+            });
         });
     });
 }

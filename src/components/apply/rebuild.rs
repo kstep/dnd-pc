@@ -53,12 +53,19 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
         return;
     }
 
+    // Replaceable slots without a detected prefill (e.g. a fresh Versatile
+    // that nobody has swapped yet) must ask the user — silent-commit would
+    // lock them in as the original slot feat.
+    let needs_replacement_choice = pending
+        .iter()
+        .any(|pi| pi.is_replaceable() && pi.prefilled_replacement.is_none());
+
     // Try silent commit only when pre-validation didn't reject any stored
-    // inputs. Rejections signal corruption (e.g. Expertise picks on
-    // no-longer-proficient skills) — silently re-applying the same guessed
-    // prefill would just replay that corruption without giving the user a
-    // chance to fix it.
-    if !had_rejections {
+    // inputs and every replaceable slot has a resolved prefill. Rejections
+    // signal corruption (e.g. Expertise picks on no-longer-proficient
+    // skills) — silently re-applying the same guessed prefill would just
+    // replay that corruption without giving the user a chance to fix it.
+    if !had_rejections && !needs_replacement_choice {
         let guessed = synthesize_apply_inputs(&pending);
         if let Ok(simulated) = build_clean(&original, &registry, &guessed)
             && simulated.eq_derived(&original)
@@ -77,6 +84,8 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
         "rebuild: {} — opening modal with partial prefill",
         if had_rejections {
             "rejected corrupted stored inputs"
+        } else if needs_replacement_choice {
+            "replaceable slot needs user pick"
         } else {
             "guess incomplete"
         }
