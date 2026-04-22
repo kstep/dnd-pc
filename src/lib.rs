@@ -23,7 +23,6 @@ mod names;
 mod pages;
 pub mod rules;
 mod serde_util;
-mod share;
 mod storage;
 pub mod vecset;
 
@@ -66,7 +65,7 @@ use pages::{
             stats::StatsTab,
         },
     },
-    import_character::{ImportCharacter, ImportCloudCharacter},
+    import_character::ImportCloudCharacter,
     not_found::NotFound,
     reference::{
         background::BackgroundReference, class::ClassReference, feature::FeatureReference,
@@ -129,7 +128,6 @@ pub fn App() -> impl IntoView {
                         <Route path=path!("/story/:story_id") view=CharacterStory />
                     </ParentRoute>
                     <Route path=path!("/s/:user_id/:char_id") view=ImportCloudCharacter />
-                    <Route path=path!("/s/:data") view=ImportCharacter />
                     <Route path=path!("/r/class") view=ClassReference />
                     <Route path=path!("/r/class/:name") view=ClassReference />
                     <Route path=path!("/r/class/:name/:subname") view=ClassReference />

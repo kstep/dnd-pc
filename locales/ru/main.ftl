@@ -48,7 +48,6 @@ toast-export-copy-failed = Не удалось скопировать JSON пе�
 toast-sync-error = Ошибка синхронизации: { $error }
 toast-login-tma = Вход через Google не работает внутри Telegram. Ссылка скопирована — вставьте в браузер, чтобы войти.
 copy-character = Копировать персонажа
-share-error = Не удалось декодировать персонажа
 import-conflict-title = Персонаж уже существует
 import-conflict-message = У вас уже есть более новая версия «{$name}». Импорт перезапишет её. Различия указаны ниже.
 import-anyway = Импортировать

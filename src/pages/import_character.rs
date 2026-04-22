@@ -17,7 +17,7 @@ use crate::{
     components::cloud_sign_in_hint::CloudSignInHint,
     firebase,
     model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
-    share, storage,
+    storage,
 };
 
 // --- Diff computation ---
@@ -431,79 +431,7 @@ impl Character {
     }
 }
 
-// --- Restore stripped descriptions ---
-
-fn restore_description_by_name<T>(
-    imported: &mut [T],
-    local: &[T],
-    name_fn: fn(&T) -> &str,
-    desc_fn: fn(&mut T) -> &mut String,
-    get_desc: fn(&T) -> &str,
-) {
-    for item in imported.iter_mut() {
-        if get_desc(item).is_empty()
-            && let Some(local_item) = local.iter().find(|l| name_fn(l) == name_fn(item))
-        {
-            *desc_fn(item) = get_desc(local_item).to_string();
-        }
-    }
-}
-
-impl Character {
-    pub fn restore_stripped_fields(&mut self, local: &Character) {
-        // Restore temp combat state zeroed by strip_for_sharing
-        self.combat.death_save_successes = local.combat.death_save_successes;
-        self.combat.death_save_failures = local.combat.death_save_failures;
-        self.combat.hp_temp = local.combat.hp_temp;
-
-        // Restore descriptions stripped for sharing
-        restore_description_by_name(
-            &mut self.features.list,
-            &local.features.list,
-            |f| &f.name,
-            |f| &mut f.description,
-            |f| &f.description,
-        );
-
-        for (feature, entry) in self.features.data_mut() {
-            let local_fields = local
-                .features
-                .get(feature)
-                .map(|e| e.fields.as_slice())
-                .unwrap_or(&[]);
-
-            for (field, local_field) in entry.fields.iter_mut().zip(local_fields.iter()) {
-                field.description = local_field.description.clone();
-
-                restore_description_by_name(
-                    field.value.choices_mut(),
-                    local_field.value.choices(),
-                    |c| &c.name,
-                    |c| &mut c.description,
-                    |c| &c.description,
-                );
-            }
-
-            if let (Some(imp_sc), Some(loc_entry)) =
-                (&mut entry.spells, local.features.get(feature))
-                && let Some(loc_sc) = &loc_entry.spells
-            {
-                restore_description_by_name(
-                    &mut imp_sc.spells,
-                    &loc_sc.spells,
-                    |s| &s.name,
-                    |s| &mut s.description,
-                    |s| &s.description,
-                );
-            }
-        }
-    }
-}
-
 fn do_import(mut character: Character, avatar: Option<Avatar>) -> impl IntoView {
-    if let Some(existing) = storage::load_character(&character.id) {
-        character.restore_stripped_fields(&existing);
-    }
     storage::save_and_sync_character(&mut character);
     if let Some(avatar) = avatar {
         storage::save_avatar(&character.id, &avatar);
@@ -530,7 +458,6 @@ pub fn ImportConflict(
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let save_character = move |character: &mut Character, id: Uuid| {
-        character.restore_stripped_fields(&existing.read_value());
         storage::save_and_sync_character(character);
         if let Some(av) = &*avatar.read_value() {
             storage::save_avatar(&id, av);
@@ -618,54 +545,6 @@ pub fn ImportConflict(
             </div>
         </div>
     }
-}
-
-#[derive(Params, Clone, Debug, PartialEq, Eq)]
-struct ImportParams {
-    data: String,
-}
-
-#[component]
-pub fn ImportCharacter() -> impl IntoView {
-    let data = use_params::<ImportParams>()
-        .get_untracked()
-        .ok()
-        .map(|p| p.data);
-
-    let error_view = move || {
-        view! {
-            <div class="panel">
-                <h2>{move_tr!("share-error")}</h2>
-                <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
-            </div>
-        }
-    };
-
-    let Some(data) = data else {
-        return Either::Left(error_view());
-    };
-
-    let character = LocalResource::new(move || {
-        let data = data.clone();
-        async move { share::decode_character(&data).await }
-    });
-
-    Either::Right(view! {
-        <Suspense fallback=move || view! {
-            <div class="panel">
-                <p>{move_tr!("share-loading")}</p>
-            </div>
-        }>
-            {move || {
-                character.get().map(|result| {
-                    match result {
-                        Some(ch) => Either::Left(import_or_conflict(ch, None)),
-                        None => Either::Right(error_view()),
-                    }
-                })
-            }}
-        </Suspense>
-    })
 }
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]

@@ -73,8 +73,8 @@ impl SpellSlotLevel {
 }
 
 /// Per-character spell slots keyed by pool, each pool carrying up to 9 slot
-/// levels. Transparent over the underlying `BTreeMap` for serde and postcard
-/// compatibility; accessible as a map via `Deref`/`DerefMut`.
+/// levels. Transparent over the underlying `BTreeMap`, accessible as a map via
+/// `Deref`/`DerefMut`.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 #[serde(transparent)]
 pub struct SpellSlots(

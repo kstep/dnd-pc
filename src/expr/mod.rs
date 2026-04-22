@@ -66,7 +66,7 @@ where
                 .map_err(serde::ser::Error::custom)?;
             serializer.serialize_str(&s)
         } else {
-            // postcard (binary): serialize as ops for compact sharing URLs.
+            // Binary format: serialize as a sequence of op-blocks.
             let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
             for block in self.0.iter() {
                 seq.serialize_element(&block)?;

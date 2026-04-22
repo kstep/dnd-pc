@@ -10,7 +10,7 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     components::{
-        apply::{rebuild, replay_with_modal},
+        apply::{apply_with_modal, rebuild, replay_with_modal},
         avatar::Avatar as AvatarView,
         avatar_generate_modal::AvatarGenerateModal,
         background_field::BackgroundField,
@@ -27,8 +27,11 @@ use crate::{
         Alignment, AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields,
         CharacterStoreFields, PersonalityStoreFields, Translatable,
     },
-    rules::{DefinitionStore, RulesRegistry},
-    share, storage,
+    rules::{
+        DefinitionStore, RulesRegistry,
+        apply::{PendingFeature, apply_new_features, collect_class_features},
+    },
+    storage,
 };
 
 pub fn split_resolved(input: String, resolved: Option<String>) -> (String, Option<String>) {
@@ -60,27 +63,91 @@ pub fn CharacterHeader() -> impl IntoView {
     let show_level_up = RwSignal::new(false);
     let i18n = expect_context::<leptos_fluent::I18n>();
 
+    let eligible_classes = Memo::new(move |_| {
+        classes
+            .read()
+            .iter()
+            .enumerate()
+            .filter(|(_, cl)| !cl.class.is_empty())
+            .filter(|(_, cl)| {
+                registry
+                    .classes()
+                    .with(&cl.class, |def| cl.level < def.max_level())
+                    .unwrap_or(false)
+            })
+            .map(|(idx, _)| idx)
+            .collect::<Vec<usize>>()
+    });
+
+    let has_levelable = Memo::new(move |_| !eligible_classes.read().is_empty());
+
     let level_up_class = move |class_idx: usize| {
-        classes.write()[class_idx].level += 1;
-        // No auto-apply: new class level shows a pending-dot on the class row.
-        // User must click Rebuild to apply identity changes.
+        let (class_key, current_level) = {
+            let character = store.read_untracked();
+            let cl = &character.identity.classes[class_idx];
+            (cl.class.clone(), cl.level)
+        };
+
+        let Some(max_level) = registry.classes().with(&class_key, |def| def.max_level()) else {
+            log::warn!("level_up_class: class definition not loaded: {class_key}");
+            return;
+        };
+        if current_level >= max_level {
+            return;
+        }
+
+        let new_level = current_level + 1;
+        classes.write()[class_idx].level = new_level;
+
+        let pending: Vec<PendingFeature> = registry.with_features_index_untracked(|fi| {
+            let character = store.read_untracked();
+            registry
+                .classes()
+                .with(&class_key, |def| {
+                    (1..=new_level)
+                        .filter(|lvl| !character.applied.contains_level(&class_key, *lvl))
+                        .flat_map(|lvl| {
+                            collect_class_features(&character, class_idx, lvl, def, fi)
+                                .collect::<Vec<_>>()
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default()
+        });
+
+        let class_key_cb = class_key;
+        apply_with_modal(
+            store,
+            registry,
+            pending,
+            None,
+            move |character, pending, inputs, fi| {
+                apply_new_features(fi, character, pending, Some(&inputs.feature_inputs));
+                let cur = character.identity.classes[class_idx].level;
+                for lvl in 1..=cur {
+                    character.applied.mark_level(&class_key_cb, lvl);
+                }
+            },
+        );
     };
 
     let on_level_up = move |_| {
-        let count = classes.read().len();
-        if count == 1 {
-            level_up_class(0);
-        } else if count > 1 {
-            show_level_up.set(true);
+        let eligible = eligible_classes.get_untracked();
+        match eligible.len() {
+            0 => {}
+            1 => level_up_class(eligible[0]),
+            _ => show_level_up.set(true),
         }
     };
 
     let level_up_items = Memo::new(move |_| {
         let level_label = i18n.tr("level");
-        classes
+        let classes_vec = classes.read();
+        eligible_classes
             .read()
             .iter()
-            .map(|class| {
+            .map(|&idx| {
+                let class = &classes_vec[idx];
                 let mut label = class.class_label().to_string();
                 if let Some(sub) = class.subclass_label() {
                     label.push_str(&format!(" ({sub})"));
@@ -93,6 +160,13 @@ pub fn CharacterHeader() -> impl IntoView {
             .collect()
     });
 
+    let on_level_up_select = move |menu_idx: usize| {
+        let eligible = eligible_classes.get_untracked();
+        if let Some(&class_idx) = eligible.get(menu_idx) {
+            level_up_class(class_idx);
+        }
+    };
+
     let on_export = move |_| {
         store.with_untracked(export_character);
     };
@@ -103,26 +177,17 @@ pub fn CharacterHeader() -> impl IntoView {
 
     let share_copied = RwSignal::new(false);
 
+    let can_share = Memo::new(move |_| store.shared().get() && firebase::current_uid().is_some());
+
     let on_share = move || {
-        wasm_bindgen_futures::spawn_local(async move {
-            let character = store.get_untracked();
-            let origin = window().location().origin().unwrap_or_default();
-
-            let url = if character.shared
-                && let Some(uid) = firebase::current_uid()
-            {
-                format!("{origin}{BASE_URL}/s/{uid}/{}", character.id)
-            } else {
-                let Some(encoded) = share::encode_character(&character, Some(&registry)).await
-                else {
-                    return;
-                };
-                format!("{origin}{BASE_URL}/s/{encoded}")
-            };
-
-            crate::export::copy_to_clipboard(&url);
-            share_copied.set(true);
-        });
+        let character = store.get_untracked();
+        let Some(uid) = firebase::current_uid() else {
+            return;
+        };
+        let origin = window().location().origin().unwrap_or_default();
+        let url = format!("{origin}{BASE_URL}/s/{uid}/{}", character.id);
+        crate::export::copy_to_clipboard(&url);
+        share_copied.set(true);
         set_timeout(move || share_copied.set(false), Duration::from_secs(2));
     };
 
@@ -164,6 +229,7 @@ pub fn CharacterHeader() -> impl IntoView {
                     </label>
                     <button
                         class="dropdown-item"
+                        prop:disabled=move || !can_share.get()
                         on:click=move |ev| {
                             ev.stop_propagation();
                             on_share();
@@ -313,7 +379,7 @@ pub fn CharacterHeader() -> impl IntoView {
                             <label>{move_tr!("total-level")}</label>
                             <div class="level-value-row">
                                 <span class="stat-highlight">{total_level}</span>
-                                <Show when=move || store.read().can_level_up()>
+                                <Show when=move || store.read().can_level_up() && has_levelable.get()>
                                     <button
                                         class="btn-level-up"
                                         title=move_tr!("level-up")
@@ -337,7 +403,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 show=show_level_up
                 title=Signal::derive(move || i18n.tr("level-up-choose-class"))
                 items=level_up_items
-                on_select=Callback::new(level_up_class)
+                on_select=Callback::new(on_level_up_select)
             />
             <ConfirmModal
                 show=show_replay_confirm

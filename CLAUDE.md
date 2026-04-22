@@ -69,12 +69,11 @@ Submodules:
 - `queue.rs` — offline-first sync queue
 - `migrate.rs` — sequence of migration functions (`migrate_v1`, `migrate_v2`, …) organized into **version-gated blocks**. `load_character` falls back to raw JSON + migrations on direct deserialize failure. `deserialize_character_value(Value)` applies migrations — used for cloud-fetched data. **Schema version ≠ migration count.** `CURRENT_SCHEMA_VERSION` is independent of migration-function ordinals. Inside `migrate_value`, migrations are grouped as `if version < N { … }` blocks: each block contains the steps needed to bring a character up to schema version N, and only the blocks with `version < N` run for a given input. When adding a new migration, put it in a new block gated by the next schema version (or an existing block if it logically belongs) and bump `CURRENT_SCHEMA_VERSION` accordingly. One schema version can cover many migration functions; one migration function lives in exactly one version block. All migration functions must stay idempotent (they can still run multiple times because characters may move in and out of blocks as the version history evolves).
 
-### Character Sharing (`src/share.rs`, `src/pages/import_character.rs`)
+### Character Sharing (`src/pages/import_character.rs`)
 
-1. **Firestore UUID** — when `character.shared == true` and authenticated: `/s/{uid}/{char_id}`. `ImportCloudCharacter` fetches via `firebase::get_character_doc()`, runs migrations, verifies `shared == true`. Firestore rules allow public read when `shared == true`.
-2. **Compressed URL** — fallback. Pipeline: `strip_for_sharing(char, registry)` → postcard → `CompressionStream` (deflate-raw) → base64 url-safe → `/s/{data}`. Async due to stream API. `strip_for_sharing` uses `registry.clear_from_registry()` (selective) or falls back to `clear_all_labels()` (blanket) when registry is None.
+Only cloud sharing is supported. When `character.shared == true` and the owner is authenticated, the share link is `/s/{uid}/{char_id}`. `ImportCloudCharacter` fetches via `firebase::get_doc()`, runs migrations, and verifies `shared == true`. Firestore rules allow public read when `shared == true`.
 
-Both import paths support conflict detection — show diff table if local UUID exists and is newer.
+Import supports conflict detection — shows a diff table if the local UUID exists and is newer.
 
 ### Rules Registry (`src/rules/`)
 
@@ -134,7 +133,7 @@ Generic RPN expression evaluator. `Expr<Var, Val, Grp>` (defaults: `Val = i32`, 
 - Loops: `each(@GROUP, body)`, `fold(op, @GROUP[, expr])`, `with(@GROUP, body)` (binds `@`), masked subgroups `@GROUP(X, Y)`
 - Custom `Interpreter<Var, Val, Grp>` trait for analysis passes (`Evaluator`, `Formatter`, `DicePoolEvaluator`, `ExprAnalysis`)
 
-Display round-trips to infix via `Formatter`. Custom deserialization accepts strings (parsed) or postfix `Vec<Op>` (postcard).
+Display round-trips to infix via `Formatter`. Custom deserialization accepts strings (parsed) or postfix `Vec<Vec<Op>>`/`Vec<Op>` (legacy JSON array format).
 
 Type aliases in model: `model::Expr = Expr<Attribute, i32, AttributeGroup>`, `model::Op = Op<Attribute, i32, AttributeGroup>`.
 
@@ -157,9 +156,6 @@ Edition 2024, `imports_granularity = "Crate"`, `group_imports = "StdExternalCrat
 
 ### Locale data
 - **Russian locale:** never put English placeholder text in `public/ru/` — the overlay system falls back to `en/` automatically. Omit untranslated entries.
-
-### Postcard serialization (share pipeline)
-`#[serde(flatten)]` and `#[serde(tag = "...")]` are incompatible with postcard. `FeatureField.value` uses default (externally-tagged) enum representation. Avoid `#[serde(skip_serializing)]` on postcard-serialized fields — breaks positional alignment. Label fields use `#[serde(default)]` for backward compat with older shared URLs.
 
 ### Git workflow
 - One commit per logical task. Don't micro-commit.
