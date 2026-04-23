@@ -4,7 +4,6 @@ use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
-use strum::IntoEnumIterator;
 use uuid::Uuid;
 
 use crate::{
@@ -24,8 +23,7 @@ use crate::{
     export::export_character,
     firebase,
     model::{
-        Alignment, AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields,
-        CharacterStoreFields, PersonalityStoreFields, Translatable,
+        AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields, CharacterStoreFields,
     },
     rules::{
         DefinitionStore, RulesRegistry,
@@ -334,33 +332,6 @@ pub fn CharacterHeader() -> impl IntoView {
                             <div class="entity-input-row">
                                 <BackgroundField />
                             </div>
-                        </div>
-                        <div class="header-field">
-                            <label>{move_tr!("alignment")}</label>
-                            <select
-                                on:change=move |e| {
-                                    let value = event_target_value(&e);
-                                    if let Some(alignment) = Alignment::from_u8_str(&value) {
-                                        store.personality().alignment().set(alignment);
-                                    }
-                                }
-                            >
-                                {Alignment::iter()
-                                    .map(|alignment| {
-                                        let tr_key = alignment.tr_key();
-                                        let val = (alignment as u8).to_string();
-                                        let selected = move || {
-                                            store.personality().alignment().get() == alignment
-                                        };
-                                        let label = Signal::derive(move || i18n.tr(tr_key));
-                                        view! {
-                                            <option value=val selected=selected>
-                                                {label}
-                                            </option>
-                                        }
-                                    })
-                                    .collect_view()}
-                            </select>
                         </div>
                         <div class="header-field level-field">
                             <label>{move_tr!("xp")}</label>

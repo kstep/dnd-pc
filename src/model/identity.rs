@@ -1,6 +1,8 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
+use crate::model::Alignment;
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CharacterIdentity {
     #[serde(default)]
@@ -92,7 +94,7 @@ impl Default for ClassLevel {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct Personality {
-    pub alignment: crate::model::Alignment,
+    pub alignment: Alignment,
     #[serde(default)]
     pub history: String,
     #[serde(default)]
@@ -108,7 +110,7 @@ pub struct Personality {
 impl Default for Personality {
     fn default() -> Self {
         Self {
-            alignment: crate::model::Alignment::TrueNeutral,
+            alignment: Alignment::TrueNeutral,
             history: String::new(),
             personality_traits: String::new(),
             ideals: String::new(),

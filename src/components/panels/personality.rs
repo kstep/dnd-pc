@@ -1,12 +1,16 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
+use strum::IntoEnumIterator;
 
-use crate::model::{Character, CharacterStoreFields, PersonalityStoreFields};
+use crate::model::{
+    Alignment, Character, CharacterStoreFields, PersonalityStoreFields, Translatable,
+};
 
 #[component]
 pub fn PersonalityPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
+    let i18n = expect_context::<leptos_fluent::I18n>();
 
     let personality = store.personality();
     let expanded = RwSignal::new(false);
@@ -21,6 +25,32 @@ pub fn PersonalityPanel() -> impl IntoView {
                     on:click=toggle
                 />
                 <h3 class="clickable" on:click=toggle>{move_tr!("panel-personality")}</h3>
+            </div>
+            <div class="textarea-field">
+                <label>{move_tr!("alignment")}</label>
+                <select
+                    style="width: var(--size-13)"
+                    on:change=move |e| {
+                        let value = event_target_value(&e);
+                        if let Some(alignment) = Alignment::from_u8_str(&value) {
+                            personality.alignment().set(alignment);
+                        }
+                    }
+                >
+                    {Alignment::iter()
+                        .map(|alignment| {
+                            let tr_key = alignment.tr_key();
+                            let val = (alignment as u8).to_string();
+                            let selected = move || personality.alignment().get() == alignment;
+                            let label = Signal::derive(move || i18n.tr(tr_key));
+                            view! {
+                                <option value=val selected=selected>
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
+                </select>
             </div>
             <div class="textarea-field">
                 <label>{move_tr!("history")}</label>

@@ -75,7 +75,7 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
                 *character = simulated;
                 registry.compute(character);
             });
-            Toast::i18n("toast-rebuild-done").show();
+            Toast::i18n_success("toast-rebuild-done").show();
             return;
         }
     }

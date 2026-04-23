@@ -41,7 +41,12 @@ pub fn DamageModifiersPanel() -> impl IntoView {
                     class:expanded=move || dmg_expanded.get()
                     on:click=move |_| dmg_expanded.update(|expanded| *expanded = !*expanded)
                 />
-                <h3>{move_tr!("panel-damage-modifiers")}</h3>
+                <h3
+                    class="clickable"
+                    on:click=move |_| dmg_expanded.update(|expanded| *expanded = !*expanded)
+                >
+                    {move_tr!("panel-damage-modifiers")}
+                </h3>
             </div>
             <div class="slot-box-list">
             {move || {

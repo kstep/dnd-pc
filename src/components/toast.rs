@@ -15,8 +15,27 @@ use crate::components::icon::Icon;
 /// [`Toast::show`] can resolve reactive contexts (e.g. [`ToastCtx`]) even
 /// when it's called from a `spawn_local` or `set_timeout` callback where no
 /// owner is active by default.
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+pub enum ToastKind {
+    #[default]
+    Info,
+    Success,
+    Error,
+}
+
+impl ToastKind {
+    fn class(self) -> &'static str {
+        match self {
+            Self::Info => "toast--info",
+            Self::Success => "toast--success",
+            Self::Error => "toast--error",
+        }
+    }
+}
+
 pub struct Toast {
     message: String,
+    kind: ToastKind,
     action: Option<ToastAction>,
     auto_close: Option<Duration>,
     on_dismiss: Option<Callback<()>>,
@@ -34,11 +53,17 @@ impl Toast {
     pub fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into(),
+            kind: ToastKind::Info,
             action: None,
             auto_close: Some(Self::DEFAULT_DURATION),
             on_dismiss: None,
             owner: Owner::current(),
         }
+    }
+
+    /// Create an error toast (red accent + warning icon).
+    pub fn error(message: impl Into<String>) -> Self {
+        Self::new(message).kind(ToastKind::Error)
     }
 
     /// Create a toast whose message is looked up from the active i18n bundle
@@ -47,6 +72,21 @@ impl Toast {
     /// macro.
     pub fn i18n(key: &str) -> Self {
         Self::new(expect_context::<I18n>().tr(key))
+    }
+
+    /// i18n + success kind.
+    pub fn i18n_success(key: &str) -> Self {
+        Self::i18n(key).kind(ToastKind::Success)
+    }
+
+    /// i18n + error kind.
+    pub fn i18n_error(key: &str) -> Self {
+        Self::i18n(key).kind(ToastKind::Error)
+    }
+
+    pub fn kind(mut self, kind: ToastKind) -> Self {
+        self.kind = kind;
+        self
     }
 
     pub fn with_action(mut self, label: impl Into<String>, on_click: Callback<()>) -> Self {
@@ -97,6 +137,7 @@ impl Toast {
                 Entry {
                     id,
                     message: self.message,
+                    kind: self.kind,
                     action: self.action,
                     on_dismiss: self.on_dismiss,
                     exiting: RwSignal::new(false),
@@ -117,6 +158,7 @@ impl Toast {
 struct Entry {
     id: u64,
     message: String,
+    kind: ToastKind,
     action: Option<ToastAction>,
     on_dismiss: Option<Callback<()>>,
     exiting: RwSignal<bool>,
@@ -213,13 +255,16 @@ fn ToastView(entry: Entry) -> impl IntoView {
     let Entry {
         id,
         message,
+        kind,
         action,
         exiting,
         ..
     } = entry;
     let dismiss_aria = move_tr!("toast-dismiss");
+    let kind_class = kind.class();
     view! {
-        <div class="toast" class:exiting=move || exiting.get()>
+        <div class=format!("toast {kind_class}") class:exiting=move || exiting.get()>
+            <span class="toast-icon" aria-hidden="true" />
             <span class="toast-message">{message}</span>
             {action.map(|action| {
                 let on_click = action.on_click;

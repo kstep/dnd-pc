@@ -25,6 +25,6 @@ pub fn SyncErrorToastTrigger() -> impl IntoView {
         }
         let error = last_error.get().unwrap_or_default();
         shown_for_current.set_value(true);
-        Toast::new(tr!("toast-sync-error", { "error" => error })).show();
+        Toast::error(tr!("toast-sync-error", { "error" => error })).show();
     });
 }

@@ -745,7 +745,12 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         class:expanded=move || slots_expanded.get()
                         on:click=move |_| slots_expanded.update(|expanded| *expanded = !*expanded)
                     />
-                    <h3>{move_tr!("spell-slots")}</h3>
+                    <h3
+                        class="clickable"
+                        on:click=move |_| slots_expanded.update(|expanded| *expanded = !*expanded)
+                    >
+                        {move_tr!("spell-slots")}
+                    </h3>
                 </div>
                 {move || {
                     let expanded = slots_expanded.get();

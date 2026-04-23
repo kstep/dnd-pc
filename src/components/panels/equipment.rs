@@ -44,7 +44,12 @@ pub fn EquipmentPanel() -> impl IntoView {
                     class:expanded=move || currency_expanded.get()
                     on:click=move |_| currency_expanded.update(|v| *v = !*v)
                 />
-                <h3>{move_tr!("currency")}</h3>
+                <h3
+                    class="clickable"
+                    on:click=move |_| currency_expanded.update(|v| *v = !*v)
+                >
+                    {move_tr!("currency")}
+                </h3>
             </div>
             <div class="currency-row">
                 <Show when=show_pp>
