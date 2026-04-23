@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
 use serde::Deserialize;
 
@@ -52,17 +52,21 @@ impl ClassDefinition {
         0
     }
 
-    /// Iterate all feature names from class levels and subclass levels.
+    /// Iterate unique feature names from class levels and subclass levels, in
+    /// first-occurrence order. Features that appear on multiple levels (e.g.
+    /// Sorcerer's Metamagic at 2/10/17) are yielded once.
     pub fn feature_names<'a>(&'a self, subclass: Option<&str>) -> impl Iterator<Item = &'a str> {
         let sc_features = subclass
             .and_then(|s| self.subclasses.get(s))
             .into_iter()
             .flat_map(|sc| sc.levels.values())
             .flat_map(|lr| lr.features.iter().map(String::as_str));
+        let mut seen = HashSet::new();
         self.levels
             .values()
             .flat_map(|lr| lr.features.iter().map(String::as_str))
             .chain(sc_features)
+            .filter(move |name| seen.insert(*name))
     }
 }
 
