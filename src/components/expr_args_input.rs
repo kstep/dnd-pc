@@ -590,6 +590,29 @@ pub fn ExprArgsInput(
         expr_for_analysis.analyze(&*character, Attribute::arg_index)
     });
 
+    // Reactive sanitization of arg signals: when `analysis.active_args`
+    // changes (init + any upstream cascade update), zero any signal at a
+    // now-inactive position. Maintains invariant:
+    // `arg_signals[i].get() != 0 ⇒ i ∈ analysis.active_args`.
+    //
+    // Without this, a stored arg on a slot that became inactive (e.g. a
+    // pick on a skill another source made proficient) stays as `1` in the
+    // hidden signal — guard's `fold(+, @, @ARG) == N` counts it, visible
+    // checkboxes get auto-disabled, user can't complete the form.
+    //
+    // No cycle: `analysis` depends only on `character` Signal, not on
+    // `arg_signals`. `signal.get_untracked()` avoids self-subscription;
+    // `signal.set(0)` triggers `is_valid`/`is_satisfied` but not `analysis`.
+    let arg_signals_for_cleanup = arg_signals.clone();
+    Effect::new(move |_| {
+        let snapshot = analysis.get();
+        for (i, signal) in arg_signals_for_cleanup.iter().enumerate() {
+            if snapshot.is_dead_slot(i, signal.get_untracked()) {
+                signal.set(0);
+            }
+        }
+    });
+
     // Dice signals fixed at build time from initial analysis (dice rarely
     // depend on upstream cascade state). dice_signals_cell used by is_valid.
     let dice_signals_cell: RwSignal<Option<(DiceGroupSignals, u32)>> = RwSignal::new(None);

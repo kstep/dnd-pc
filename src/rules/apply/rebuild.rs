@@ -127,8 +127,8 @@ pub fn build_clean(
 
         // 6. Legacy migration: characters built before the Generation-feature system
         //    have abilities edited directly. Convert those custom scores into a
-        //    synthesized `Generation: User-Defined` feature so future rebuilds keep them
-        //    intact.
+        //    synthesized `Generation: User-Defined` feature so future rebuilds keep
+        //    them intact.
         migrate_legacy_abilities(&mut clean, original);
 
         Ok(())

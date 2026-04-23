@@ -30,6 +30,30 @@ pub struct ExprAnalysis {
 }
 
 impl ExprAnalysis {
+    /// True if `value != 0` at position `i` but `i ∉ self.active_args` —
+    /// body `if(@ == …)` at this slot would no-op, so a non-zero arg there
+    /// is "dead" (inflates guards like `fold(+, @, @ARG) == N` without
+    /// contributing).
+    pub fn is_dead_slot(&self, i: usize, value: i32) -> bool {
+        value != 0 && !self.active_args.contains(&(i as u8))
+    }
+
+    /// Build a copy of `args` with dead slots zeroed. Invariant on the
+    /// returned slice: `result[i] != 0 ⇒ i ∈ self.active_args`. Idempotent.
+    pub fn sanitize_args(&self, args: &[i32]) -> Vec<i32> {
+        args.iter()
+            .enumerate()
+            .map(|(i, &v)| if self.is_dead_slot(i, v) { 0 } else { v })
+            .collect()
+    }
+
+    /// True if any non-zero arg sits at an inactive position.
+    pub fn has_dead_args(&self, args: &[i32]) -> bool {
+        args.iter()
+            .enumerate()
+            .any(|(i, &v)| self.is_dead_slot(i, v))
+    }
+
     /// Analyze an expression: run read-only, collect dice requirements and
     /// determine which ARG variables are in reachable blocks.
     ///
@@ -444,5 +468,62 @@ mod tests {
             !analysis.has_guard,
             "if without else must not set has_guard"
         );
+    }
+
+    fn analysis_with_active(active: &[u8]) -> crate::expr::ExprAnalysis {
+        crate::expr::ExprAnalysis {
+            active_args: active.iter().copied().collect(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn is_dead_slot_true_when_inactive_non_zero() {
+        let analysis = analysis_with_active(&[0, 3]);
+        assert!(analysis.is_dead_slot(1, 1));
+        assert!(analysis.is_dead_slot(2, 5));
+    }
+
+    #[test]
+    fn is_dead_slot_false_when_active_non_zero() {
+        let analysis = analysis_with_active(&[0, 3]);
+        assert!(!analysis.is_dead_slot(0, 1));
+        assert!(!analysis.is_dead_slot(3, 2));
+    }
+
+    #[test]
+    fn is_dead_slot_false_when_zero_value() {
+        let analysis = analysis_with_active(&[0, 3]);
+        for i in 0..5 {
+            assert!(!analysis.is_dead_slot(i, 0), "zero at {i} is never dead");
+        }
+    }
+
+    #[test]
+    fn sanitize_args_zeroes_dead_positions() {
+        let analysis = analysis_with_active(&[0, 3]);
+        let cleaned = analysis.sanitize_args(&[1, 1, 0, 1, 1]);
+        assert_eq!(cleaned, vec![1, 0, 0, 1, 0]);
+    }
+
+    #[test]
+    fn sanitize_args_idempotent() {
+        let analysis = analysis_with_active(&[0, 2]);
+        let once = analysis.sanitize_args(&[1, 1, 1, 0]);
+        let twice = analysis.sanitize_args(&once);
+        assert_eq!(once, twice);
+    }
+
+    #[test]
+    fn has_dead_args_true_when_any_dead() {
+        let analysis = analysis_with_active(&[0]);
+        assert!(analysis.has_dead_args(&[1, 1]));
+    }
+
+    #[test]
+    fn has_dead_args_false_when_all_active_or_zero() {
+        let analysis = analysis_with_active(&[0, 1]);
+        assert!(!analysis.has_dead_args(&[1, 1, 0, 0]));
+        assert!(!analysis.has_dead_args(&[0, 0, 0, 0]));
     }
 }

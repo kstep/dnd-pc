@@ -200,6 +200,28 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
             })
             .collect::<Vec<_>>()
     });
+    // TODO(dead-args): retain drops features that have stored inputs, so
+    // replay never opens the modal for them — stored args are passed as-is
+    // into `replay()` below. If those stored args contain "dead" positions
+    // (non-zero at a slot whose body `if(@ == …)` would no-op under the
+    // current baseline — e.g. a pick on a skill another source has since
+    // made proficient), apply silently partial-recovers: the live slots
+    // take effect, dead ones are ignored. Storage keeps the original
+    // (dirty) inputs untouched — no data loss, no crash, but no user
+    // notification either.
+    //
+    // Detection would require per-feature pre-apply baseline via pipeline
+    // walk (see prior attempts at `sanitize_stored_inputs`). Using the
+    // post-apply `clone` as baseline gives false positives for features
+    // that upgrade a slot they themselves touched (e.g. Expertise raises
+    // a skill to level 2 — body `if(@ == 1, …)` then looks inactive on
+    // re-analyze against current state, flagging legit stored picks as
+    // dead). A correct detector needs light apply + staged baseline —
+    // deferred until there's a concrete need.
+    //
+    // Rebuild covers the "data got stale" case explicitly via
+    // `simulated.eq_derived(&original)` → modal opens → Effect in
+    // `ExprArgsInput` cleans prefill reactively.
     all_inputs.retain(|input| {
         clone
             .features
