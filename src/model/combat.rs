@@ -103,7 +103,10 @@ impl DamageModifier {
 /// reduction zero), keeping the wire format compact.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct DamageModifiers(BTreeMap<DamageType, DamageModifier>);
+pub struct DamageModifiers(
+    #[serde(deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls")]
+    BTreeMap<DamageType, DamageModifier>,
+);
 
 impl Deref for DamageModifiers {
     type Target = BTreeMap<DamageType, DamageModifier>;
@@ -233,5 +236,28 @@ impl CombatStats {
         self.hp_current = (self.hp_current + amount).min(self.hp_max);
         self.death_save_successes = 0;
         self.death_save_failures = 0;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::*;
+
+    #[wasm_bindgen_test]
+    fn damage_modifiers_deserialize_drops_null_tombstones() {
+        // sparse_diff emits `null` for keys removed since baseline (Firestore
+        // merge-tombstone). merge_3way can pipe the null back into the local
+        // blob — the deserialize must tolerate it instead of failing the
+        // whole character load.
+        let value = json!({
+            "0": { "resistant": true, "vulnerable": false, "immune": false, "reduction": 0 },
+            "3": null,
+        });
+        let modifiers: DamageModifiers = serde_json::from_value(value).expect("must deserialize");
+        assert!(modifiers.is_resistant(DamageType::Acid));
+        assert_eq!(modifiers.len(), 1);
     }
 }
