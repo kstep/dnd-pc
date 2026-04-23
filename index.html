@@ -124,6 +124,7 @@
     onSnapshot,
     query as fsQuery,
     where as fsWhere,
+    deleteField as fsDeleteField,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   // Replace with your Firebase project config
@@ -184,6 +185,7 @@
       onAuthStateChanged(auth, (user) => cb(user ? user.uid : null)),
     setDoc: (data, ...path) => fsSetDoc(fsDoc(db, ...path), data),
     mergeDoc: (data, ...path) => fsSetDoc(fsDoc(db, ...path), data, { merge: true }),
+    deleteField: () => fsDeleteField(),
     getDoc: async (...path) => {
       const snap = await fsGetDoc(fsDoc(db, ...path));
       return snap.exists() ? snap.data() : null;

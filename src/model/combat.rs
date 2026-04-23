@@ -242,16 +242,14 @@ impl CombatStats {
 #[cfg(test)]
 mod tests {
     use serde_json::json;
-    use wasm_bindgen_test::wasm_bindgen_test;
 
     use super::*;
 
-    #[wasm_bindgen_test]
+    #[test]
     fn damage_modifiers_deserialize_drops_null_tombstones() {
-        // sparse_diff emits `null` for keys removed since baseline (Firestore
-        // merge-tombstone). merge_3way can pipe the null back into the local
-        // blob — the deserialize must tolerate it instead of failing the
-        // whole character load.
+        // Firestore merge-tombstone path — see src/storage/diff.rs
+        // `merged_*_with_null_deserializes_as_tombstone_drop` tests for
+        // the full end-to-end rationale.
         let value = json!({
             "0": { "resistant": true, "vulnerable": false, "immune": false, "reduction": 0 },
             "3": null,

@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, cell::RefCell};
 
 use js_sys::{Array, Object, Promise, Reflect};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
@@ -296,9 +296,9 @@ fn from_js_array<T: DeserializeOwned>(
             reason: BridgeReason::NotAnArray,
         })?;
     let mut items = Vec::with_capacity(array.length() as usize);
-    for i in 0..array.length() {
-        match from_js::<T>(array.get(i)) {
-            Ok(val) => items.push(val),
+    for (i, item) in array.iter().enumerate() {
+        match from_js::<T>(item) {
+            Ok(value) => items.push(value),
             Err(error) => log::warn!("Failed to deserialize {label} at index {i}: {error}"),
         }
     }
@@ -364,6 +364,60 @@ pub async fn wait_for_auth() -> Option<(FirebaseUid, bool)> {
     Some((uid, is_anon))
 }
 
+/// Cached `FieldValue.delete()` sentinel. The Firestore sentinel is a
+/// singleton-by-type (SDK checks via `instanceof`, not identity), so one
+/// fetched instance can be reused across every null leaf of every payload
+/// for the lifetime of the tab. Only a successful bridge call is cached —
+/// failures return `JsValue::NULL` and retry on the next call so a late-
+/// ready bridge self-heals.
+fn delete_field_sentinel() -> JsValue {
+    thread_local! {
+        static SENTINEL: RefCell<Option<JsValue>> = const { RefCell::new(None) };
+    }
+    SENTINEL.with(|cell| {
+        if let Some(sentinel) = cell.borrow().as_ref() {
+            return sentinel.clone();
+        }
+        match call("deleteField", &[]) {
+            Ok(sentinel) => {
+                *cell.borrow_mut() = Some(sentinel.clone());
+                sentinel
+            }
+            Err(error) => {
+                log::warn!(
+                    "delete_field_sentinel: bridge call failed, falling back to null tombstones: {error:?}"
+                );
+                JsValue::NULL
+            }
+        }
+    })
+}
+
+/// Walk a `JsValue` tree produced by `to_js` and replace every `null` leaf
+/// on an object with `sentinel`. Does NOT descend into arrays:
+/// `sparse_diff` treats arrays atomically (see `src/storage/diff.rs:36`),
+/// so a `null` inside an array is a legitimate element, not a tombstone.
+///
+/// Used by `merge_doc` to convert sparse-diff tombstones into Firestore
+/// `FieldValue.delete()` sentinels so the server actually removes the
+/// field instead of storing a literal `null`.
+fn strip_nulls_in_place(value: &JsValue, sentinel: &JsValue) {
+    if !value.is_object() || Array::is_array(value) {
+        return;
+    }
+    let obj: &Object = value.unchecked_ref();
+    for key in Object::keys(obj) {
+        let Ok(child) = Reflect::get(obj, &key) else {
+            continue;
+        };
+        if child.is_null() {
+            let _ = Reflect::set(obj, &key, sentinel);
+        } else {
+            strip_nulls_in_place(&child, sentinel);
+        }
+    }
+}
+
 // --- Generic Firestore operations ---
 
 pub async fn set_doc(data: &impl Serialize, path: &[&str]) -> Result<(), FirebaseError> {
@@ -374,7 +428,13 @@ pub async fn set_doc(data: &impl Serialize, path: &[&str]) -> Result<(), Firebas
 }
 
 pub async fn merge_doc(data: &impl Serialize, path: &[&str]) -> Result<(), FirebaseError> {
-    let mut args = vec![to_js(data)?];
+    let payload = to_js(data)?;
+    // Convert sparse_diff tombstones (literal nulls for removed map keys)
+    // into Firestore FieldValue.delete() sentinels so the server removes the
+    // field instead of storing a literal null. See
+    // docs/superpowers/plans/2026-04-23-deletefield-tombstone-cleanup.md.
+    strip_nulls_in_place(&payload, &delete_field_sentinel());
+    let mut args = vec![payload];
     args.extend(path.iter().map(|segment| JsValue::from_str(segment)));
     call_async_with_retry("mergeDoc", &args).await?;
     Ok(())
@@ -514,9 +574,11 @@ fn friendly_js_error(js_err: &JsValue) -> String {
 
 #[cfg(test)]
 mod tests {
+    use js_sys::{Array, Reflect};
+    use wasm_bindgen::{JsCast, JsValue};
     use wasm_bindgen_test::*;
 
-    use super::{from_js, to_js};
+    use super::{from_js, strip_nulls_in_place, to_js};
     use crate::{
         constvec::ConstVec,
         model::{
@@ -526,6 +588,69 @@ mod tests {
     };
 
     wasm_bindgen_test_configure!(run_in_browser);
+
+    /// Build a JS object from a JSON literal via js_sys::JSON::parse —
+    /// cleaner than manually constructing Object/Array trees.
+    fn js(json: &str) -> JsValue {
+        js_sys::JSON::parse(json).expect("valid JSON literal")
+    }
+
+    #[wasm_bindgen_test]
+    fn replaces_null_leaves_with_sentinel() {
+        let value = js(r#"{"keep": 1, "drop": null}"#);
+        let sentinel = JsValue::from_str("__SENTINEL__");
+        strip_nulls_in_place(&value, &sentinel);
+
+        let keep = Reflect::get(&value, &"keep".into()).unwrap();
+        let drop = Reflect::get(&value, &"drop".into()).unwrap();
+        assert_eq!(keep.as_f64(), Some(1.0));
+        assert_eq!(drop.as_string(), Some("__SENTINEL__".into()));
+    }
+
+    #[wasm_bindgen_test]
+    fn recurses_into_nested_objects() {
+        let value = js(r#"{"outer": {"inner": null, "kept": 2}}"#);
+        let sentinel = JsValue::from_str("__S__");
+        strip_nulls_in_place(&value, &sentinel);
+
+        let outer = Reflect::get(&value, &"outer".into()).unwrap();
+        let inner = Reflect::get(&outer, &"inner".into()).unwrap();
+        let kept = Reflect::get(&outer, &"kept".into()).unwrap();
+        assert_eq!(inner.as_string(), Some("__S__".into()));
+        assert_eq!(kept.as_f64(), Some(2.0));
+    }
+
+    #[wasm_bindgen_test]
+    fn arrays_are_atomic_contents_untouched() {
+        // sparse_diff treats arrays atomically (src/storage/diff.rs:36), so
+        // null INSIDE an array is a legitimate array element, not a tombstone.
+        // strip_nulls_in_place must not descend into arrays.
+        let value = js(r#"{"list": [1, null, 3]}"#);
+        let sentinel = JsValue::from_str("__S__");
+        strip_nulls_in_place(&value, &sentinel);
+
+        let list = Reflect::get(&value, &"list".into()).unwrap();
+        let arr: Array = list.dyn_into().expect("is array");
+        assert_eq!(arr.get(0).as_f64(), Some(1.0));
+        assert!(arr.get(1).is_null(), "null array element must survive");
+        assert_eq!(arr.get(2).as_f64(), Some(3.0));
+    }
+
+    #[wasm_bindgen_test]
+    fn null_sentinel_leaves_null_leaves_untouched() {
+        // Documents the graceful-degradation contract: if the bridge call
+        // in `delete_field_sentinel` fails, it returns `JsValue::NULL`, and
+        // the resulting payload must still be well-formed (null in, null
+        // out). The read-side `deserialize_map_dropping_nulls` handles the
+        // fallback.
+        let value = js(r#"{"keep": 1, "drop": null}"#);
+        strip_nulls_in_place(&value, &JsValue::NULL);
+
+        let keep = Reflect::get(&value, &"keep".into()).unwrap();
+        let drop = Reflect::get(&value, &"drop".into()).unwrap();
+        assert_eq!(keep.as_f64(), Some(1.0));
+        assert!(drop.is_null());
+    }
 
     /// Round-trip a Character with maps keyed by u8-serialized enums
     /// (Skill, DamageType, SpellSlotPool). Old `to_js` blew up here; the

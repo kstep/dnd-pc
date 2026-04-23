@@ -39,11 +39,10 @@ impl Applied {
 #[cfg(test)]
 mod tests {
     use serde_json::json;
-    use wasm_bindgen_test::*;
 
     use super::*;
 
-    #[wasm_bindgen_test]
+    #[test]
     fn default_is_empty() {
         let applied = Applied::default();
         assert!(!applied.species);
@@ -51,12 +50,11 @@ mod tests {
         assert!(applied.levels.is_empty());
     }
 
-    #[wasm_bindgen_test]
+    #[test]
     fn deserialize_skips_null_level_tombstones() {
-        // sparse_diff emits `null` as Firestore merge-tombstone for keys
-        // removed during rebuild (e.g. old class dropped). merge_3way can
-        // pipe that null back into localStorage — the deserialize must
-        // tolerate it rather than fail the whole character load.
+        // Firestore merge-tombstone path — see src/storage/diff.rs
+        // `merged_*_with_null_deserializes_as_tombstone_drop` tests for
+        // the full end-to-end rationale.
         let value = json!({
             "species": true,
             "background": true,
@@ -67,7 +65,7 @@ mod tests {
         assert!(!applied.levels.contains_key("Sorcerer"));
     }
 
-    #[wasm_bindgen_test]
+    #[test]
     fn mark_and_query_levels() {
         let mut applied = Applied::default();
         applied.mark_level("Wizard", 1);
