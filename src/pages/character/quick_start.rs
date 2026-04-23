@@ -64,11 +64,24 @@ pub fn QuickStart() -> impl IntoView {
 
     let generation_method = RwSignal::new(
         generation_options
-            .get_untracked()
+            .read_untracked()
             .first()
-            .map(|(name, _)| name.to_string())
+            .map(|(name, _)| name.clone())
             .unwrap_or_default(),
     );
+
+    Effect::new(move || {
+        let first_name = generation_options.with(|options| {
+            let valid = generation_method
+                .with_untracked(|current| options.iter().any(|(name, _)| name == current));
+            (!valid)
+                .then(|| options.first().map(|(name, _)| name.clone()))
+                .flatten()
+        });
+        if let Some(name) = first_name {
+            generation_method.set(name);
+        }
+    });
 
     let on_create = move |_| {
         create_character(store, registry, generation_method);
@@ -129,34 +142,24 @@ pub fn QuickStart() -> impl IntoView {
             <div class="quick-start-section">
                 <label>{move_tr!("quick-start-generation")}</label>
                 <div class="generation-options">
-                    <For
-                        each=move || generation_options.get()
-                        key=|(name, _)| name.clone()
-                        let:option
-                    >
-                        {
-                            let name = option.0.clone();
-                            let label = option.1.clone();
-                            let name_for_check = name.clone();
-                            view! {
-                                <label class="generation-option">
-                                    <input
-                                        type="radio"
-                                        name="generation"
-                                        prop:value=name.clone()
-                                        prop:checked=move || {
-                                            generation_method.get() == name_for_check
-                                        }
-                                        on:change={
-                                            let name = name.clone();
-                                            move |_| generation_method.set(name.clone())
-                                        }
-                                    />
-                                    {label}
-                                </label>
-                            }
+                    {move || generation_options.read().iter().map(|(name, label)| {
+                        let name_for_check = name.clone();
+                        let name_for_set = name.clone();
+                        view! {
+                            <label class="generation-option">
+                                <input
+                                    type="radio"
+                                    name="generation"
+                                    value=name.clone()
+                                    prop:checked=move || {
+                                        generation_method.with(|v| v == &name_for_check)
+                                    }
+                                    on:change=move |_| generation_method.set(name_for_set.clone())
+                                />
+                                {label.clone()}
+                            </label>
                         }
-                    </For>
+                    }).collect_view()}
                 </div>
             </div>
 

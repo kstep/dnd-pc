@@ -1,5 +1,5 @@
 use js_sys::Date;
-use leptos::prelude::*;
+use leptos::{html, prelude::*};
 use leptos_fluent::{move_tr, tr};
 use reactive_stores::Store;
 use wasm_bindgen::JsValue;
@@ -28,25 +28,29 @@ pub fn NotesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let i18n = expect_context::<leptos_fluent::I18n>();
     let notes = store.notes();
+    let pending_focus_ts = RwSignal::new(0u64);
 
     view! {
         <section>
             <div class="section-header">
                 <h3>{move_tr!("panel-notes")}</h3>
+                <button
+                    class="btn-primary"
+                    style="margin-left: auto"
+                    on:click=move |_| {
+                        let level = store.get_untracked().level();
+                        let created_at = now_epoch_secs();
+                        notes.write().insert(0, Note {
+                            created_at,
+                            level,
+                            text: String::new(),
+                        });
+                        pending_focus_ts.set(created_at);
+                    }
+                >
+                    {move_tr!("btn-add-note")}
+                </button>
             </div>
-            <button
-                class="btn-primary"
-                on:click=move |_| {
-                    let level = store.get_untracked().level();
-                    notes.write().insert(0, Note {
-                        created_at: now_epoch_secs(),
-                        level,
-                        text: String::new(),
-                    });
-                }
-            >
-                {move_tr!("btn-add-note")}
-            </button>
             <div class="entry-list">
                 {move || notes.read().iter().enumerate().map(|(i, note)| {
                     let text = note.text.clone();
@@ -64,6 +68,13 @@ pub fn NotesPanel() -> impl IntoView {
                         .next()
                         .unwrap_or("")
                         .to_string();
+                    let textarea_ref: NodeRef<html::Textarea> = NodeRef::new();
+                    if created_at != 0 && created_at == pending_focus_ts.get_untracked() {
+                        textarea_ref.on_load(move |el| {
+                            let _ = el.focus();
+                            pending_focus_ts.set(0);
+                        });
+                    }
                     view! {
                         <div class="entry-item note-entry" class:expanded=initial_expanded>
                             <ToggleButton />
@@ -96,6 +107,7 @@ pub fn NotesPanel() -> impl IntoView {
                             <div class="entry-full-row">
                                 <textarea
                                     class="notes-textarea"
+                                    node_ref=textarea_ref
                                     prop:value=text
                                     on:change=move |e| {
                                         notes.write()[i].text = event_target_value(&e);

@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
 use leptos_router::components::A;
 
-use crate::components::{icon::Icon, modal::Modal};
+use crate::components::{icon::Icon, markdown::Markdown, modal::Modal};
 
 static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -231,7 +231,9 @@ pub fn DatalistInput(
                                     <span class="datalist-option-value">{label}</span>
                                     {badge}
                                 </div>
-                                <span class="datalist-option-label">{description}</span>
+                                <div class="datalist-option-label">
+                                    <Markdown text=description />
+                                </div>
                                 {blocked_reason.map(|reason| view! {
                                     <span class="datalist-option-blocked-reason">{reason}</span>
                                 })}

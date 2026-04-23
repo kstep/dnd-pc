@@ -360,7 +360,7 @@ mod tests {
         original
             .features
             .list
-            .push(feature("Generation: Custom", FeatureSource::User(0)));
+            .push(feature("Generation: User-Defined", FeatureSource::User(0)));
         run_reconcile(&mut original, &default_caches());
 
         assert_eq!(original.features.list[0].source, FeatureSource::User(0));

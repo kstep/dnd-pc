@@ -8,7 +8,7 @@
   "Generation: Fixed Preset": {
     "description": "Assign the standard array (15, 14, 13, 12, 10, 8) to your ability scores. Each value can only be used once."
   },
-  "Generation: Custom": {
+  "Generation: User-Defined": {
     "description": "Assign custom starting ability scores — choose any value for each ability."
   },
   "Alert": {

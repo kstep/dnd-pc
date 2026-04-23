@@ -298,7 +298,7 @@ mod tests {
 
     #[test]
     fn analyze_loop_no_filter_preserves_all_indices() {
-        // Generation: Custom uses `each(@ABILITY, @ = @ARG)` — no filter.
+        // Generation: User-Defined uses `each(@ABILITY, @ = @ARG)` — no filter.
         // All 6 abilities must stay active after our refactor.
         let character = character_with_skills(&[]);
         let expr: crate::model::Expr = "with(@ABILITY, each(@, @ = @ARG))"
@@ -418,7 +418,7 @@ mod tests {
     #[test]
     fn analyze_has_guard_false_for_no_guard_expression() {
         // Plain `each` / `fold` without a guard should not set has_guard.
-        // Generation: Custom is the driving case: all ability inputs must
+        // Generation: User-Defined is the driving case: all ability inputs must
         // stay editable (is_satisfied in ExprArgsInput gates on has_guard).
         let character = character_with_skills(&[]);
         let expr: crate::model::Expr = "each(@ABILITY, @ABILITY = @ARG)"

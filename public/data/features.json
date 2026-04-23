@@ -33,7 +33,7 @@
     "category": "Generation"
   },
   {
-    "name": "Generation: Custom",
+    "name": "Generation: User-Defined",
     "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {

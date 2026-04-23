@@ -27,6 +27,9 @@ use crate::{
     },
 };
 
+const GENERATION_FIXED_PRESET: &str = "Generation: Fixed Preset";
+const GENERATION_USER_DEFINED: &str = "Generation: User-Defined";
+
 #[derive(Debug, Clone)]
 pub enum RebuildError {
     MissingDefinition { kind: &'static str, name: String },
@@ -124,7 +127,7 @@ pub fn build_clean(
 
         // 6. Legacy migration: characters built before the Generation-feature system
         //    have abilities edited directly. Convert those custom scores into a
-        //    synthesized `Generation: Custom` feature so future rebuilds keep them
+        //    synthesized `Generation: User-Defined` feature so future rebuilds keep them
         //    intact.
         migrate_legacy_abilities(&mut clean, original);
 
@@ -498,7 +501,7 @@ fn stored_inputs_usable(feat_def: &FeatureDefinition, stored: &[AssignInputs]) -
 ///
 /// Prefers `Generation: Fixed Preset` when the base scores form a permutation
 /// of the standard 5e 2024 array `[15, 14, 13, 12, 10, 8]`; otherwise falls
-/// back to `Generation: Custom`.
+/// back to `Generation: User-Defined`.
 fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
     if original.features.has_category(FeatureCategory::Generation) {
         return;
@@ -515,9 +518,9 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
     }
 
     let name = if is_fixed_preset(&args) {
-        "Generation: Fixed Preset"
+        GENERATION_FIXED_PRESET
     } else {
-        "Generation: Custom"
+        GENERATION_USER_DEFINED
     };
 
     clean.features.list.insert(

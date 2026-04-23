@@ -1468,6 +1468,10 @@ section {
 .entry-item {
   interpolate-size: allow-keywords;
 
+  &.expanded, &:target:not(.collapsed) {
+    row-gap: var(--size-1);
+  }
+
   &.collapsed,
   &:not(.expanded):not(:target) {
     > .entry-desc,
@@ -1716,7 +1720,6 @@ select.entry-name {
 
 .entry-desc {
   grid-column: 2 / -1;
-  margin-top: var(--size-1);
   font-size: var(--font-size-1);
   overflow-wrap: break-word;
   max-inline-size: none;
@@ -1739,7 +1742,6 @@ textarea.entry-desc {
   align-items: center;
   gap: var(--size-1);
   flex-wrap: wrap;
-  margin-top: var(--size-1);
 }
 
 .note-level {
@@ -3061,7 +3063,6 @@ dialog.modal.closing::backdrop {
   color: var(--text-secondary);
   font-weight: normal;
   width: 100%;
-  white-space: pre-line;
   overflow: hidden;
 }
 
@@ -3799,6 +3800,7 @@ dialog.modal.closing::backdrop {
 
     &:hover {
       opacity: 0.8;
+      box-shadow: none;
     }
   }
 
@@ -3816,6 +3818,7 @@ dialog.modal.closing::backdrop {
 
     &:hover {
       color: var(--text-primary);
+      box-shadow: none;
     }
   }
 }

@@ -473,11 +473,22 @@ fn subscribe_to_changes(uid: &FirebaseUid) {
                     )
                 });
 
+                *max_updated = (*max_updated).max(remote_ts);
+
+                // Echo-guard: Firestore delivers our own committed writes back
+                // through this subscription. When merge yields exactly what
+                // we already have locally, there is nothing to sync — skip
+                // save + dirty so pull-effect doesn't re-read the store and
+                // rebuild the UI.
+                if merged == local_value {
+                    baseline::insert(id, remote_value);
+                    return false;
+                }
+
                 if !local::save_character_value(&id, &merged) {
                     return false;
                 }
                 baseline::insert(id, remote_value);
-                *max_updated = (*max_updated).max(remote_ts);
                 true
             }
             ChangeType::Removed => {
