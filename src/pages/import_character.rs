@@ -4,7 +4,6 @@ use js_sys::Date;
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::{move_tr, tr};
 use leptos_router::{
-    components::A,
     hooks::{use_navigate, use_params},
     params::Params,
 };
@@ -13,8 +12,7 @@ use uuid::Uuid;
 use wasm_bindgen::JsValue;
 
 use crate::{
-    BASE_URL,
-    components::cloud_sign_in_hint::CloudSignInHint,
+    components::{cloud_sign_in_hint::CloudSignInHint, ref_link::Ref},
     firebase,
     model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
     storage,
@@ -541,7 +539,7 @@ pub fn ImportConflict(
             <div class="import-conflict-actions">
                 <button class="btn-primary" on:click=import_anyway>{move_tr!("import-anyway")}</button>
                 <button class="btn-primary" on:click=import_as_copy>{move_tr!("import-as-copy")}</button>
-                <A href=format!("{BASE_URL}/") attr:class="btn-cancel">{move_tr!("import-cancel")}</A>
+                <Ref href="/" attr:class="btn-cancel">{move_tr!("import-cancel")}</Ref>
             </div>
         </div>
     }
@@ -577,7 +575,7 @@ pub fn ImportCloudCharacter() -> impl IntoView {
             <div class="panel">
                 <h2>{move_tr!("share-not-found")}</h2>
                 <CloudSignInHint message=move_tr!("hint-character-not-found") />
-                <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
+                <Ref href="/">{move_tr!("back-to-list")}</Ref>
             </div>
         }
     };

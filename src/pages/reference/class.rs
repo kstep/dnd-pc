@@ -1,11 +1,10 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    BASE_URL,
-    components::{markdown::Markdown, spinner::Spinner},
+    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
     hooks::use_hash_href,
     model::{format_bonus, proficiency_bonus_for_level},
     pages::reference::{
@@ -248,9 +247,9 @@ pub fn ClassReference() -> impl IntoView {
                     <Title text=title.clone() />
                     <div class="reference-detail">
                         <h1>{if let Some(sc_label) = subclass_label {
-                            let class_href = format!("{BASE_URL}/r/class/{name}");
+                            let class_href = format!("/r/class/{name}");
                             Either::Left(view! {
-                                <A href=class_href>{class_label}</A>
+                                <Ref href=class_href>{class_label}</Ref>
                                 {" \u{2014} "}
                                 {sc_label}
                             })
@@ -278,9 +277,9 @@ pub fn ClassReference() -> impl IntoView {
                                 <div class="info-item">
                                     <span class="info-label">{move_tr!("ref-spell-list-link")}</span>
                                     <span class="info-value">
-                                        <A href=format!("{BASE_URL}/r/spell/{sln}")>
+                                        <Ref href=format!("/r/spell/{sln}")>
                                             {move_tr!("ref-spell-list-link")}
-                                        </A>
+                                        </Ref>
                                     </span>
                                 </div>
                             })}
@@ -348,12 +347,12 @@ pub fn ClassReference() -> impl IntoView {
                             None
                         } else {
                             let cards = subclass_list.into_iter().map(|(sc_name, sc_label, sc_desc)| {
-                                let href = format!("{BASE_URL}/r/class/{name_for_link}/{}", encode_name(&sc_name));
+                                let href = format!("/r/class/{name_for_link}/{}", encode_name(&sc_name));
                                 view! {
-                                    <A href=href attr:class="reference-card">
+                                    <Ref href=href attr:class="reference-card">
                                         <h3>{sc_label}</h3>
                                         <p>{sc_desc}</p>
-                                    </A>
+                                    </Ref>
                                 }
                             }).collect_view();
                             Some(view! {
@@ -386,9 +385,9 @@ pub fn ClassReference() -> impl IntoView {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {
-                                <A href=format!("{BASE_URL}/r/class/{name}") attr:class="reference-nav-item">
+                                <Ref href=format!("/r/class/{name}") attr:class="reference-nav-item">
                                     {label}
-                                </A>
+                                </Ref>
                             }
                         }).collect_view()
                     })}

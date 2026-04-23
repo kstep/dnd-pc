@@ -1,16 +1,15 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::components::A;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    BASE_URL,
     components::{
         datalist_input::{DatalistInput, DatalistOption},
         entry_name::EntryName,
         icon::Icon,
         markdown::Markdown,
+        ref_link::Ref,
         slot_box::SlotBox,
         spell_info_bar::SpellInfoBar,
         toggle_button::ToggleButton,
@@ -311,15 +310,15 @@ fn FeatureSpellcastingSection(
             .map(|f| f.dom_id())
             .unwrap_or_else(|| n.clone())
     });
-    let build_href = format!("{BASE_URL}/c/{char_id}/build#{build_anchor}");
+    let build_href = format!("/c/{char_id}/build#{build_anchor}");
 
     view! {
         <section id=anchor_id class="spellcasting-section">
             <div class="section-header">
                 <h3>{panel_title}</h3>
-                <A href=build_href scroll=false attr:class="entry-spell-link">
+                <Ref href=build_href scroll=false attr:class="entry-spell-link">
                     "← "{move_tr!("tab-build")}
-                </A>
+                </Ref>
             </div>
 
             <div class="slot-box-list">

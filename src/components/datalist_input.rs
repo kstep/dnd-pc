@@ -2,9 +2,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
-use leptos_router::components::A;
 
-use crate::components::{icon::Icon, markdown::Markdown, modal::Modal};
+use crate::components::{icon::Icon, markdown::Markdown, modal::Modal, ref_link::Ref};
 
 static DATALIST_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -169,9 +168,9 @@ pub fn DatalistInput(
                 }
             />
             {move || ref_href.get().map(|href| view! {
-                <A href=href attr:class="datalist-ref-link" attr:title="Reference">
+                <Ref href=href attr:class="datalist-ref-link" attr:title="Reference">
                     <Icon name="info" size=12 />
-                </A>
+                </Ref>
             })}
             <button
                 type="button"

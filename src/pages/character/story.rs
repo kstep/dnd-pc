@@ -1,7 +1,6 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::{
-    components::A,
     hooks::{use_navigate, use_params},
     params::Params,
 };
@@ -10,9 +9,8 @@ use uuid::Uuid;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::{
-    BASE_URL,
     ai::{AiSettings, CharacterContext, Story, generate_story},
-    components::{ai_settings_modal::AiSettingsModal, icon::Icon},
+    components::{ai_settings_modal::AiSettingsModal, icon::Icon, ref_link::Ref},
     model::Character,
     pages::reference::ReferenceSidebar,
     storage,
@@ -31,25 +29,25 @@ fn StorySidebar(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
 
     view! {
         <ReferenceSidebar current_label>
-            <A
-                href=format!("{BASE_URL}/c/{char_id}/story")
+            <Ref
+                href=format!("/c/{char_id}/story")
                 exact=true
                 attr:class="reference-nav-item story-nav-new"
             >
                 {move_tr!("story-new")}
-            </A>
+            </Ref>
             <For
                 each=move || stories.get()
                 key=|story| story.id
                 let:story
             >
-                <A
-                    href=format!("{BASE_URL}/c/{char_id}/story/{}", story.id)
+                <Ref
+                    href=format!("/c/{char_id}/story/{}", story.id)
                     attr:class="reference-nav-item"
                 >
                     <span class="story-nav-title">{story.title.clone()}</span>
                     <span class="story-nav-date">{story.short_date().to_string()}</span>
-                </A>
+                </Ref>
             </For>
         </ReferenceSidebar>
     }
@@ -245,7 +243,7 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
                         story_id,
                     });
                 }
-                navigate(&format!("{BASE_URL}/c/{char_id}/story"), Default::default());
+                navigate(&format!("/c/{char_id}/story"), Default::default());
             };
 
             let on_copy = move |_| {

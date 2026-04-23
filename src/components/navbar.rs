@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::{components::A, hooks::use_location};
+use leptos_router::hooks::use_location;
 use uuid::Uuid;
 
 use crate::{
@@ -10,6 +10,7 @@ use crate::{
         icon::Icon,
         language_switcher::LanguageSwitcher,
         logo::Logo,
+        ref_link::Ref,
         sync_indicator::SyncIndicator,
     },
     hooks::use_page_kind,
@@ -21,21 +22,21 @@ pub struct ActiveCharacterId(pub RwSignal<Option<Uuid>>);
 #[component]
 fn RefLinks() -> impl IntoView {
     view! {
-        <A href=format!("{BASE_URL}/r/class") attr:class="navbar-link">
+        <Ref href="/r/class" attr:class="navbar-link">
             {move_tr!("ref-classes")}
-        </A>
-        <A href=format!("{BASE_URL}/r/species") attr:class="navbar-link">
+        </Ref>
+        <Ref href="/r/species" attr:class="navbar-link">
             {move_tr!("ref-species")}
-        </A>
-        <A href=format!("{BASE_URL}/r/background") attr:class="navbar-link">
+        </Ref>
+        <Ref href="/r/background" attr:class="navbar-link">
             {move_tr!("ref-backgrounds")}
-        </A>
-        <A href=format!("{BASE_URL}/r/spell") attr:class="navbar-link">
+        </Ref>
+        <Ref href="/r/spell" attr:class="navbar-link">
             {move_tr!("ref-spells")}
-        </A>
-        <A href=format!("{BASE_URL}/r/feature") attr:class="navbar-link">
+        </Ref>
+        <Ref href="/r/feature" attr:class="navbar-link">
             {move_tr!("ref-features")}
-        </A>
+        </Ref>
     }
 }
 
@@ -67,10 +68,10 @@ pub fn Navbar() -> impl IntoView {
     view! {
         <nav class=move || format!("navbar page-{}", page_kind.get().as_str())>
             <div class="navbar-left">
-                <A href=format!("{BASE_URL}/") attr:class="navbar-brand">
+                <Ref href="/" attr:class="navbar-brand">
                     <Logo />
                     <span class="navbar-title">{move_tr!("page-characters")}</span>
-                </A>
+                </Ref>
                 {move || active_id.get().map(|id| {
                     let editor_base = format!("{BASE_URL}/c/{id}");
                     let editor_current = {
@@ -98,13 +99,13 @@ pub fn Navbar() -> impl IntoView {
                             >
                                 {move_tr!("view-editor")}
                             </a>
-                            <A href=format!("{BASE_URL}/c/{id}/session") exact=true attr:class="navbar-link navbar-link-session">
+                            <Ref href=format!("/c/{id}/session") exact=true attr:class="navbar-link navbar-link-session">
                                 {move_tr!("view-session")}
-                            </A>
-                            <A href=format!("{BASE_URL}/c/{id}/story") attr:class="navbar-link navbar-link-story">
+                            </Ref>
+                            <Ref href=format!("/c/{id}/story") attr:class="navbar-link navbar-link-story">
                                 <Icon name="book-open" size=16 />
                                 <span class="navbar-link-label">{move_tr!("view-story")}</span>
-                            </A>
+                            </Ref>
                         </div>
                     }
                 })}

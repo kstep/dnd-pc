@@ -33,6 +33,7 @@ pub mod menu_modal;
 pub mod modal;
 pub mod navbar;
 pub mod panels;
+pub mod ref_link;
 pub mod resource_slot;
 pub mod save_row;
 pub mod session;

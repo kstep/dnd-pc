@@ -1,9 +1,6 @@
 use leptos::prelude::*;
 
-use crate::{
-    BASE_URL,
-    components::datalist_input::{DatalistInput, DatalistOption},
-};
+use crate::components::datalist_input::{DatalistInput, DatalistOption};
 
 /// Generic entity selector: DatalistInput with display name resolution and
 /// reference link.
@@ -45,7 +42,7 @@ pub fn EntityField(
             options=options
             ref_href=move || {
                 let key = name.get();
-                (!key.is_empty()).then(|| format!("{BASE_URL}/r/{ref_prefix}/{key}"))
+                (!key.is_empty()).then(|| format!("/r/{ref_prefix}/{key}"))
             }
             on_input=move |input, resolved| {
                 on_input(resolved.unwrap_or(input));

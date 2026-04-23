@@ -2,16 +2,15 @@ use std::sync::Arc;
 
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::components::A;
 use reactive_stores::Store;
 
 use crate::{
-    BASE_URL,
     components::{
         apply::{apply_with_modal, edit_inputs_modal},
         datalist_input::{DatalistInput, DatalistOption},
         feature_field_row::FeatureFieldRow,
         icon::Icon,
+        ref_link::Ref,
     },
     model::{Character, CharacterStoreFields, FeatureValue, FeaturesStoreFields},
     rules::{
@@ -108,7 +107,7 @@ pub fn FeatureRow(
     });
     let spell_link = has_spells.then(|| {
         let char_id = store.read_untracked().id;
-        format!("{BASE_URL}/c/{char_id}/magic#{feature_name}")
+        format!("/c/{char_id}/magic#{feature_name}")
     });
     let has_interactive_inputs = registry.with_features_index_untracked(|idx| {
         idx.get(feature_name.as_str())
@@ -231,9 +230,9 @@ pub fn FeatureRow(
                     })
                     .collect_view()}
                 {spell_link.map(|href| view! {
-                    <A href=href scroll=false attr:class="entry-spell-link">
+                    <Ref href=href scroll=false attr:class="entry-spell-link">
                         {move_tr!("tab-magic")}" →"
-                    </A>
+                    </Ref>
                 })}
             </div>
             <div class="entry-actions">

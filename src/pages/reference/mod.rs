@@ -9,12 +9,12 @@ use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::components::A;
 pub use sidebar::ReferenceSidebar;
 
 use crate::{
-    BASE_URL,
-    components::{expr_view::ExprView, markdown::Markdown, spell_info_bar::SpellInfoBar},
+    components::{
+        expr_view::ExprView, markdown::Markdown, ref_link::Ref, spell_info_bar::SpellInfoBar,
+    },
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterStack, VarGroup},
     model::{Attribute, AttributeGroup, Expr, Op, Translatable},
     rules::{
@@ -701,9 +701,9 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
     match spells {
         FeatureSpells::Link(list_name) => EitherOf3::A(view! {
             <p class="feature-spell-link">
-                <A href=format!("{BASE_URL}/r/spell/{list_name}")>
+                <Ref href=format!("/r/spell/{list_name}")>
                     {move_tr!("ref-spell-list-link")}
-                </A>
+                </Ref>
             </p>
         }),
         FeatureSpells::Inline(spells) => EitherOf3::B(view! {

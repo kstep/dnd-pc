@@ -1,11 +1,10 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    BASE_URL,
-    components::{markdown::Markdown, spinner::Spinner},
+    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
     pages::reference::{
         ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name,
     },
@@ -96,11 +95,11 @@ pub fn SpeciesReference() -> impl IntoView {
                         entries.values().map(|entry| {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
-                            let href = format!("{BASE_URL}/r/species/{}", encode_name(&name));
+                            let href = format!("/r/species/{}", encode_name(&name));
                             view! {
-                                <A href=href attr:class="reference-nav-item">
+                                <Ref href=href attr:class="reference-nav-item">
                                     {label}
-                                </A>
+                                </Ref>
                             }
                         }).collect_view()
                     })}

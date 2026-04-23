@@ -1,16 +1,16 @@
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, nested_router::Outlet, params::Params};
+use leptos_router::{hooks::use_params, nested_router::Outlet, params::Params};
 use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL,
     components::{
         args_modal::{ArgsModal, ArgsModalCtx},
         cloud_sign_in_hint::CloudSignInHint,
         navbar::ActiveCharacterId,
+        ref_link::Ref,
     },
     effective::EffectiveCharacter,
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
@@ -37,7 +37,7 @@ pub fn CharacterLayout() -> impl IntoView {
                 <div class="not-found">
                     <h1>{move_tr!("character-not-found")}</h1>
                     <CloudSignInHint message=move_tr!("hint-character-not-found") />
-                    <A href=format!("{BASE_URL}/")>{move_tr!("back-to-list")}</A>
+                    <Ref href="/">{move_tr!("back-to-list")}</Ref>
                 </div>
             })
         }

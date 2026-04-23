@@ -3,7 +3,6 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    BASE_URL,
     components::{
         character_header::split_resolved,
         datalist_input::{DatalistInput, DatalistOption},
@@ -124,7 +123,7 @@ pub fn ClassesSection() -> impl IntoView {
                                         options=class_opts
                                         ref_href=move || {
                                             (!class_key.is_empty())
-                                                .then(|| format!("{BASE_URL}/r/class/{class_key}"))
+                                                .then(|| format!("/r/class/{class_key}"))
                                         }
                                         on_input=move |input, resolved| {
                                             let (name, label) = split_resolved(input, resolved);
@@ -161,7 +160,7 @@ pub fn ClassesSection() -> impl IntoView {
                                                             && !sub_key.is_empty())
                                                             .then(|| {
                                                                 format!(
-                                                                    "{BASE_URL}/r/class/{class_key}/{sub_key}"
+                                                                    "/r/class/{class_key}/{sub_key}"
                                                                 )
                                                             })
                                                     }

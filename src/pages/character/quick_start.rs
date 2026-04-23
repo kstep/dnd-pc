@@ -7,13 +7,13 @@ use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL,
     components::{
         ai_generate_modal::{AiGenerateModal, AiGenerateResult},
         apply::{apply_with_modal, apply_with_prefilled_args},
         background_field::BackgroundField,
         class_field::ClassField,
         icon::Icon,
+        ref_link::Ref,
         species_field::SpeciesField,
     },
     model::{
@@ -95,7 +95,7 @@ pub fn QuickStart() -> impl IntoView {
         apply_ai_result(store, registry, generation_method, result);
     });
 
-    let skip_href = format!("{BASE_URL}/c/{}", store.read_untracked().id);
+    let skip_href = format!("/c/{}", store.read_untracked().id);
 
     view! {
         <AiGenerateModal show=show_ai_modal on_result=on_ai_result />
@@ -182,9 +182,9 @@ pub fn QuickStart() -> impl IntoView {
                 <button type="submit" class="btn-primary">
                     {move_tr!("quick-start-create")}
                 </button>
-                <a class="btn-link" href=skip_href>
+                <Ref href=skip_href attr:class="btn-link">
                     {move_tr!("quick-start-skip")}
-                </a>
+                </Ref>
             </div>
         </form>
     }

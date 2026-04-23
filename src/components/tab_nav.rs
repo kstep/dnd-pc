@@ -1,8 +1,8 @@
 use leptos::{html, prelude::*};
-use leptos_router::{components::A, hooks::use_location};
+use leptos_router::hooks::use_location;
 use wasm_bindgen::JsCast;
 
-use crate::components::icon::Icon;
+use crate::components::{icon::Icon, ref_link::Ref};
 
 #[derive(Clone)]
 pub struct TabItem {
@@ -77,14 +77,14 @@ pub fn TabNav(#[prop(into)] base: Signal<String>, items: Vec<TabItem>) -> impl I
                     };
                     view! {
                         <Show when=move || visible.get()>
-                            <A
-                                href=move || format!("{}/{}", base.get(), path)
+                            <Ref
+                                href=Signal::derive(move || format!("{}/{}", base.get(), path))
                                 scroll=false
                                 attr:class=class
                             >
                                 <Icon name=icon size=16 />
                                 <span class="tab-nav-label">{label}</span>
-                            </A>
+                            </Ref>
                         </Show>
                     }
                 })

@@ -3,13 +3,13 @@ use std::collections::BTreeMap;
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 use wasm_bindgen::JsCast;
 
 use crate::{
-    BASE_URL,
     components::{
-        expr_view::ExprView, markdown::Markdown, spell_info_bar::SpellInfoBar, spinner::Spinner,
+        expr_view::ExprView, markdown::Markdown, ref_link::Ref, spell_info_bar::SpellInfoBar,
+        spinner::Spinner,
     },
     hooks::use_hash_href,
     model::Expr,
@@ -192,9 +192,9 @@ pub fn SpellReference() -> impl IntoView {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {
-                                <A href=format!("{BASE_URL}/r/spell/{name}") attr:class="reference-nav-item">
+                                <Ref href=format!("/r/spell/{name}") attr:class="reference-nav-item">
                                     {label}
-                                </A>
+                                </Ref>
                             }
                         }).collect_view()
                     })}

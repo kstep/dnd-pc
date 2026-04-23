@@ -3,12 +3,12 @@ use std::time::Duration;
 use leptos::{leptos_dom::helpers::debounce, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 use regex::RegexBuilder;
 use strum::IntoEnumIterator as _;
 
 use crate::{
-    BASE_URL,
+    components::ref_link::Ref,
     hooks::use_query_signal,
     model::{FeatureCategory, Translatable},
     pages::reference::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views},
@@ -97,15 +97,15 @@ pub fn FeatureReference() -> impl IntoView {
                             let name = category.to_string();
                             let label = i18n.tr(category.tr_key());
                             view! {
-                                <A href=format!("{BASE_URL}/r/feature/{name}") attr:class="reference-nav-item">
+                                <Ref href=format!("/r/feature/{name}") attr:class="reference-nav-item">
                                     {label}
-                                </A>
+                                </Ref>
                             }
                         }).collect_view();
                         view! {
-                            <A href=format!("{BASE_URL}/r/feature") attr:class="reference-nav-item" exact=true>
+                            <Ref href="/r/feature" attr:class="reference-nav-item" exact=true>
                                 {all_label}
-                            </A>
+                            </Ref>
                             {categories}
                         }
                     }}

@@ -3,8 +3,7 @@ use leptos_fluent::{move_tr, tr};
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL,
-    components::avatar::Avatar as AvatarView,
+    components::{avatar::Avatar as AvatarView, ref_link::Ref},
     model::CharacterSummary,
     storage::{load_avatar, load_avatar_timestamp, sync_index_version},
 };
@@ -30,7 +29,8 @@ pub fn CharacterCard(
         version
     });
     let name = summary.name.clone();
-    let href = format!("{BASE_URL}/c/{id}");
+    let name_back = name.clone();
+    let href = format!("/c/{id}");
     let class_empty = summary.class.is_empty();
     let class_str = summary.class.clone();
     let flipped = RwSignal::new(false);
@@ -42,7 +42,7 @@ pub fn CharacterCard(
         >
             <div class="card-inner">
                 <div class="card-front">
-                    <a href=href class="card-link">
+                    <Ref href=href attr:class="card-link">
                         <div class="card-row">
                             <AvatarView
                                 name=name.clone()
@@ -62,7 +62,7 @@ pub fn CharacterCard(
                                 </p>
                             </div>
                         </div>
-                    </a>
+                    </Ref>
                     <button
                         class="btn-danger"
                         on:click=move |event| {
@@ -76,7 +76,7 @@ pub fn CharacterCard(
                 </div>
                 <div class="card-back">
                     <div>
-                        <h3>{name}</h3>
+                        <h3>{name_back}</h3>
                         <p class="card-subtitle">{move_tr!("confirm-delete")}</p>
                     </div>
                     <div class="card-back-buttons">

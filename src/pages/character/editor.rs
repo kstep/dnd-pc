@@ -9,7 +9,6 @@ use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
-    BASE_URL,
     components::{
         character_header::CharacterHeader,
         tab_nav::{TabItem, TabNav},
@@ -32,7 +31,7 @@ pub fn CharacterEditor() -> impl IntoView {
         params
             .get()
             .ok()
-            .map(|p| format!("{BASE_URL}/c/{}", p.id))
+            .map(|p| format!("/c/{}", p.id))
             .unwrap_or_default()
     });
 

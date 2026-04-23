@@ -1,11 +1,10 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use leptos_meta::Title;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    BASE_URL,
-    components::{markdown::Markdown, spinner::Spinner},
+    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
     pages::reference::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views},
     rules::{DefinitionStore, RulesRegistry},
 };
@@ -95,9 +94,9 @@ pub fn BackgroundReference() -> impl IntoView {
                             let name = entry.name.clone();
                             let label = entry.label().to_string();
                             view! {
-                                <A href=format!("{BASE_URL}/r/background/{name}") attr:class="reference-nav-item">
+                                <Ref href=format!("/r/background/{name}") attr:class="reference-nav-item">
                                     {label}
-                                </A>
+                                </Ref>
                             }
                         }).collect_view()
                     })}
