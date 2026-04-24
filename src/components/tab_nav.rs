@@ -1,6 +1,4 @@
-use leptos::{html, prelude::*};
-use leptos_router::hooks::use_location;
-use wasm_bindgen::JsCast;
+use leptos::prelude::*;
 
 use crate::components::{icon::Icon, ref_link::Ref};
 
@@ -37,33 +35,8 @@ impl TabItem {
 
 #[component]
 pub fn TabNav(#[prop(into)] base: Signal<String>, items: Vec<TabItem>) -> impl IntoView {
-    let nav_ref = NodeRef::<html::Nav>::new();
-    let indicator_style = RwSignal::new(String::from("opacity: 0"));
-    let location = use_location();
-
-    Effect::new(move |_| {
-        let _ = location.pathname.read();
-        let Some(nav) = nav_ref.get() else {
-            return;
-        };
-        request_animation_frame(move || {
-            let Ok(Some(active)) = nav.query_selector("a[aria-current=\"page\"]") else {
-                indicator_style.set("opacity: 0".into());
-                return;
-            };
-            let Ok(active) = active.dyn_into::<web_sys::HtmlElement>() else {
-                return;
-            };
-            indicator_style.set(format!(
-                "left: {}px; width: {}px",
-                active.offset_left(),
-                active.offset_width()
-            ));
-        });
-    });
-
     view! {
-        <nav class="tab-nav" node_ref=nav_ref>
+        <nav class="tab-nav">
             {items
                 .into_iter()
                 .map(|item| {
@@ -89,7 +62,6 @@ pub fn TabNav(#[prop(into)] base: Signal<String>, items: Vec<TabItem>) -> impl I
                     }
                 })
                 .collect_view()}
-            <span class="tab-nav-indicator" style=indicator_style />
         </nav>
     }
 }

@@ -917,18 +917,8 @@ input[type="checkbox"] {
   }
 }
 
-.tab-nav-indicator {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: var(--accent);
-  pointer-events: none;
-  transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
-}
-
 .tab-nav-link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--size-2);
@@ -940,8 +930,20 @@ input[type="checkbox"] {
   transition: color 0.2s ease;
 
   &[aria-current="page"] {
+    anchor-name: --active-tab;
     color: var(--accent);
     font-weight: var(--font-weight-7);
+  }
+
+  &[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    background: var(--accent);
+    pointer-events: none;
   }
 
   &:hover {
@@ -955,6 +957,25 @@ input[type="checkbox"] {
     border-radius: 50%;
     background: var(--accent);
     flex-shrink: 0;
+  }
+}
+
+@supports (anchor-name: --x) {
+  .tab-nav-link[aria-current="page"]::before {
+    display: none;
+  }
+
+  .tab-nav::after {
+    content: "";
+    position: absolute;
+    position-anchor: --active-tab;
+    left: anchor(left);
+    right: anchor(right);
+    bottom: -1px;
+    height: 3px;
+    background: var(--accent);
+    pointer-events: none;
+    transition: left 0.2s ease, right 0.2s ease;
   }
 }
 
