@@ -106,6 +106,25 @@ pub fn ClassesSection() -> impl IntoView {
                                 classes.read().get(i).map_or(8, |cl| cl.hit_die_sides)
                             });
 
+                            Effect::new(move |_| {
+                                let key = classes
+                                    .read()
+                                    .get(i)
+                                    .map(|cl| cl.class.clone())
+                                    .unwrap_or_default();
+                                if key.is_empty() {
+                                    return;
+                                }
+                                if let Some(hd) =
+                                    registry.classes().with_tracked(&key, |def| def.hit_die)
+                                    && let Some(cl) = classes.write().get_mut(i)
+                                    && cl.class == key
+                                    && cl.hit_die_sides != hd
+                                {
+                                    cl.hit_die_sides = hd;
+                                }
+                            });
+
                             let class_opts = Signal::derive(move || {
                                 if classes.read().len() <= 1 {
                                     all_class_options.get()
