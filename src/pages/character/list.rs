@@ -49,7 +49,7 @@ pub fn CharacterList() -> impl IntoView {
     };
 
     view! {
-        <Title text=Signal::derive(move || i18n.tr("page-characters")) />
+        <Title text=move_tr!(i18n, "page-characters") />
         {move || {
             if let Some(character) = import_state.get() {
                 return Either::Left(import_or_conflict(character, None));

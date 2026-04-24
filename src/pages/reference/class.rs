@@ -376,7 +376,7 @@ pub fn ClassReference() -> impl IntoView {
 
     view! {
         <Spinner loading />
-        <Title text=Signal::derive(move || i18n.tr("ref-classes")) />
+        <Title text=move_tr!(i18n, "ref-classes") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>

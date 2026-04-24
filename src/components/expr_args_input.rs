@@ -80,7 +80,7 @@ impl FormBuilder {
             Op::PushConst(n) => self.push_text(n),
             Op::PushVar(var) => {
                 let i18n = *i18n;
-                self.push_view((move || var.display_name(&i18n)).into_any());
+                self.push_view((move || var.display_name(i18n)).into_any());
             }
             Op::BinOp(bin_op) if bin_op.is_func() => self.binary_func(bin_op.symbol())?,
             Op::BinOp(bin_op) => self.binary_op(bin_op.symbol())?,
@@ -121,7 +121,7 @@ impl FormBuilder {
             Op::AssignVar(var) => {
                 let val = self.pop()?;
                 let i18n = *i18n;
-                let var_s = move || var.display_name(&i18n);
+                let var_s = move || var.display_name(i18n);
                 self.0.push(view! { <>{var_s}" = "{val}</> }.into_any());
             }
             Op::In => {
@@ -230,10 +230,10 @@ fn render_statement(
         let i18n = ctx.i18n;
         let iter_idx = ctx.iter_stack.last().copied().unwrap_or_default();
         let var_view: AnyView = match stmt.last() {
-            Some(&Op::AssignVar(var)) => (move || var.display_name(&i18n)).into_any(),
+            Some(&Op::AssignVar(var)) => (move || var.display_name(i18n)).into_any(),
             Some(&Op::AssignGroup(grp)) => {
                 let var = grp.member(iter_idx).expect("valid index");
-                (move || var.display_name(&i18n)).into_any()
+                (move || var.display_name(i18n)).into_any()
             }
             _ => unreachable!(),
         };
@@ -312,7 +312,7 @@ fn form_block_ops(
                         push_arg_input(fb, ctx, n, condition);
                     } else {
                         let i18n = ctx.i18n;
-                        fb.push_view((move || var.display_name(&i18n)).into_any());
+                        fb.push_view((move || var.display_name(i18n)).into_any());
                     }
                 }
             }
@@ -322,7 +322,7 @@ fn form_block_ops(
                 {
                     let val = fb.pop()?;
                     let i18n = ctx.i18n;
-                    let var_s = move || var.display_name(&i18n);
+                    let var_s = move || var.display_name(i18n);
                     fb.push_view(view! { <>{var_s}" = "{val}</> }.into_any());
                 }
             }

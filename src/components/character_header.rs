@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{move_tr, tr};
 use leptos_router::hooks::use_navigate;
 use reactive_stores::Store;
 use uuid::Uuid;
@@ -114,7 +114,7 @@ pub fn CharacterHeader() -> impl IntoView {
     };
 
     let level_up_items = Memo::new(move |_| {
-        let level_label = i18n.tr("level");
+        let level_label = tr!(i18n, "level");
         let classes_vec = classes.read();
         eligible_classes
             .read()
@@ -347,26 +347,26 @@ pub fn CharacterHeader() -> impl IntoView {
             </div>
             <MenuModal
                 show=show_level_up
-                title=Signal::derive(move || i18n.tr("level-up-choose-class"))
+                title=move_tr!("level-up-choose-class")
                 items=level_up_items
                 on_select=Callback::new(on_level_up_select)
             />
             <ConfirmModal
                 show=show_replay_confirm
-                title=Signal::derive(move || i18n.tr("replay"))
-                message=Signal::derive(move || i18n.tr("replay-confirm"))
+                title=move_tr!("replay")
+                message=move_tr!("replay-confirm")
                 on_confirm=move || replay_with_modal(store, registry)
             />
             <ConfirmModal
                 show=show_rebuild_confirm
-                title=Signal::derive(move || i18n.tr("rebuild"))
-                message=Signal::derive(move || i18n.tr("rebuild-confirm"))
+                title=move_tr!("rebuild")
+                message=move_tr!("rebuild-confirm")
                 on_confirm=move || rebuild(store, registry)
             />
             <ConfirmModal
                 show=show_reset_confirm
-                title=Signal::derive(move || i18n.tr("reset-character"))
-                message=Signal::derive(move || i18n.tr("confirm-reset"))
+                title=move_tr!("reset-character")
+                message=move_tr!("confirm-reset")
                 on_confirm=move || store.update(|character| character.clear())
             />
             <AvatarGenerateModal

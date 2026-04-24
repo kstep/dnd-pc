@@ -73,19 +73,19 @@ pub fn DamageModifiersPanel() -> impl IntoView {
                             <SlotBox label=label icon=icon>
                                 <DamageToggle
                                     icon="shield-half"
-                                    title=Signal::derive(move || i18n.tr("damage-resistance"))
+                                    title=move_tr!("damage-resistance")
                                     active=Memo::new(move |_| current.get().resistant)
                                     on_toggle=move || toggle_field(|modifiers| &mut modifiers.resistant)
                                 />
                                 <DamageToggle
                                     icon="shield-off"
-                                    title=Signal::derive(move || i18n.tr("damage-vulnerability"))
+                                    title=move_tr!("damage-vulnerability")
                                     active=Memo::new(move |_| current.get().vulnerable)
                                     on_toggle=move || toggle_field(|modifiers| &mut modifiers.vulnerable)
                                 />
                                 <DamageToggle
                                     icon="shield-check"
-                                    title=Signal::derive(move || i18n.tr("damage-immunity"))
+                                    title=move_tr!("damage-immunity")
                                     active=Memo::new(move |_| current.get().immune)
                                     on_toggle=move || toggle_field(|modifiers| &mut modifiers.immune)
                                 />

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use leptos::prelude::*;
+use leptos_fluent::tr;
 
 use crate::{
     BASE_URL,
@@ -337,12 +338,12 @@ impl RulesRegistry {
     pub fn source_label(&self, source: &FeatureSource, i18n: leptos_fluent::I18n) -> String {
         match source {
             FeatureSource::Class(name, level) => {
-                let prefix = i18n.tr("source-class");
+                let prefix = tr!(i18n, "source-class");
                 let label = self.classes().with(name, |def| def.label().to_string());
                 format!("{prefix}: {} ({level})", label.as_deref().unwrap_or(name))
             }
             FeatureSource::Subclass(class_name, subclass_name, level) => {
-                let prefix = i18n.tr("source-subclass");
+                let prefix = tr!(i18n, "source-subclass");
                 let class_label = self
                     .classes()
                     .with(class_name, |def| def.label().to_string());
@@ -358,17 +359,17 @@ impl RulesRegistry {
                 )
             }
             FeatureSource::Species(name) => {
-                let prefix = i18n.tr("source-species");
+                let prefix = tr!(i18n, "source-species");
                 let label = self.species().with(name, |def| def.label().to_string());
                 format!("{prefix}: {}", label.as_deref().unwrap_or(name))
             }
             FeatureSource::Background(name) => {
-                let prefix = i18n.tr("source-background");
+                let prefix = tr!(i18n, "source-background");
                 let label = self.backgrounds().with(name, |def| def.label().to_string());
                 format!("{prefix}: {}", label.as_deref().unwrap_or(name))
             }
             FeatureSource::User(level) => {
-                let prefix = i18n.tr("source-user");
+                let prefix = tr!(i18n, "source-user");
                 format!("{prefix} ({level})")
             }
         }

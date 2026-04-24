@@ -1,5 +1,6 @@
 use std::{cell::RefCell, collections::HashSet, fmt, str::FromStr};
 
+use leptos_fluent::{I18n, tr};
 use serde::{Deserialize, Serialize};
 
 use crate::model::{
@@ -449,55 +450,71 @@ impl<'de> Deserialize<'de> for Attribute {
 
 impl Attribute {
     /// Human-readable translated name for this attribute.
-    pub fn display_name(&self, i18n: &leptos_fluent::I18n) -> String {
+    pub fn display_name(&self, i18n: I18n) -> String {
         match self {
             Self::Ability(a) => i18n.tr(a.tr_abbr_key()),
             Self::Modifier(a) => format!("{}.MOD", i18n.tr(a.tr_abbr_key())),
             Self::Skill(s) => i18n.tr(s.tr_key()),
             Self::SkillProficiency(s) => i18n.tr(s.tr_key()),
             Self::SavingThrow(a) => {
-                format!("{} ({})", i18n.tr("saving-throw"), i18n.tr(a.tr_abbr_key()))
+                format!(
+                    "{} ({})",
+                    tr!(i18n, "saving-throw"),
+                    i18n.tr(a.tr_abbr_key())
+                )
             }
             Self::SaveProficiency(a) => {
-                format!("{} ({})", i18n.tr("saving-throw"), i18n.tr(a.tr_abbr_key()))
+                format!(
+                    "{} ({})",
+                    tr!(i18n, "saving-throw"),
+                    i18n.tr(a.tr_abbr_key())
+                )
             }
             Self::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
-            Self::MaxHp => i18n.tr("hp-max"),
-            Self::Speed => i18n.tr("speed"),
-            Self::Initiative | Self::InitiativeBonus => i18n.tr("initiative"),
-            Self::Ac => i18n.tr("armor-class"),
-            Self::Inspiration => i18n.tr("inspiration"),
-            Self::ProfBonus => i18n.tr("proficiency-bonus"),
-            Self::Level => i18n.tr("level"),
-            Self::ClassLevel => i18n.tr("class-level"),
-            Self::CasterLevel(None) => i18n.tr("caster-level"),
+            Self::MaxHp => tr!(i18n, "hp-max"),
+            Self::Speed => tr!(i18n, "speed"),
+            Self::Initiative | Self::InitiativeBonus => tr!(i18n, "initiative"),
+            Self::Ac => tr!(i18n, "armor-class"),
+            Self::Inspiration => tr!(i18n, "inspiration"),
+            Self::ProfBonus => tr!(i18n, "proficiency-bonus"),
+            Self::Level => tr!(i18n, "level"),
+            Self::ClassLevel => tr!(i18n, "class-level"),
+            Self::CasterLevel(None) => tr!(i18n, "caster-level"),
             Self::CasterLevel(Some(pool)) => {
-                format!("{} ({})", i18n.tr("caster-level"), i18n.tr(pool.tr_key()))
+                format!("{} ({})", tr!(i18n, "caster-level"), i18n.tr(pool.tr_key()))
             }
-            Self::Points(_) => i18n.tr("points"),
-            Self::PointsMax(_) => i18n.tr("points-max"),
-            Self::Cost => i18n.tr("cost"),
+            Self::Points(_) => tr!(i18n, "points"),
+            Self::PointsMax(_) => tr!(i18n, "points-max"),
+            Self::Cost => tr!(i18n, "cost"),
             Self::Resistance(dt) => {
                 format!(
                     "{} ({})",
-                    i18n.tr("damage-resistance"),
+                    tr!(i18n, "damage-resistance"),
                     i18n.tr(dt.tr_key())
                 )
             }
             Self::Vulnerability(dt) => {
                 format!(
                     "{} ({})",
-                    i18n.tr("damage-vulnerability"),
+                    tr!(i18n, "damage-vulnerability"),
                     i18n.tr(dt.tr_key())
                 )
             }
             Self::Immunity(dt) => {
-                format!("{} ({})", i18n.tr("damage-immunity"), i18n.tr(dt.tr_key()))
+                format!(
+                    "{} ({})",
+                    tr!(i18n, "damage-immunity"),
+                    i18n.tr(dt.tr_key())
+                )
             }
             Self::DamageReduction(dt) => {
-                format!("{} ({})", i18n.tr("damage-reduction"), i18n.tr(dt.tr_key()))
+                format!(
+                    "{} ({})",
+                    tr!(i18n, "damage-reduction"),
+                    i18n.tr(dt.tr_key())
+                )
             }
-            Self::Attacks => i18n.tr("attack-count"),
+            Self::Attacks => tr!(i18n, "attack-count"),
             Self::Arg(_) => "?".to_string(),
             Self::Feature(name) => name.to_string(),
             Self::Language(name) => name.to_string(),

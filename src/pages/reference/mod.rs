@@ -8,7 +8,7 @@ pub mod spell;
 use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 pub use sidebar::ReferenceSidebar;
 
 use crate::{
@@ -169,10 +169,10 @@ impl SumEntry {
     }
 }
 
-struct AssignmentSummarizer<'a> {
+struct AssignmentSummarizer {
     stack: Vec<SumEntry>,
     iter_stack: IterStack,
-    i18n: &'a leptos_fluent::I18n,
+    i18n: I18n,
     registry: RulesRegistry,
     abilities: Vec<String>,
     skills: Vec<String>,
@@ -182,8 +182,8 @@ struct AssignmentSummarizer<'a> {
     other: Vec<String>,
 }
 
-impl<'a> AssignmentSummarizer<'a> {
-    fn new(i18n: &'a leptos_fluent::I18n, registry: RulesRegistry) -> Self {
+impl AssignmentSummarizer {
+    fn new(i18n: I18n, registry: RulesRegistry) -> Self {
         Self {
             stack: Vec::new(),
             iter_stack: IterStack::new(),
@@ -267,7 +267,7 @@ impl<'a> AssignmentSummarizer<'a> {
     }
 }
 
-impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
+impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer {
     type Output = String;
 
     fn exec(&mut self, op: Op) -> Result<Option<BlockIndex>, expr::Error> {
@@ -514,7 +514,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer<'_> {
 /// Extract human-readable assignment summaries from feature expressions.
 pub(super) fn summarize_assignments(
     assignments: &[Assignment],
-    i18n: &leptos_fluent::I18n,
+    i18n: I18n,
     registry: RulesRegistry,
 ) -> String {
     assignments
@@ -549,12 +549,12 @@ pub fn collect_feature_views<'a>(
             let prerequisites = feat
                 .prerequisites
                 .as_ref()
-                .and_then(|p| p.run(AssignmentSummarizer::new(&i18n, registry)).ok())
+                .and_then(|p| p.run(AssignmentSummarizer::new(i18n, registry)).ok())
                 .unwrap_or_default();
             let assignments = feat
                 .assign
                 .as_deref()
-                .map(|a| summarize_assignments(a, &i18n, registry))
+                .map(|a| summarize_assignments(a, i18n, registry))
                 .unwrap_or_default();
             FeatureViewData {
                 name: feat.name.clone(),

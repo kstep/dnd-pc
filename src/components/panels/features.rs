@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_fluent::{I18n, move_tr};
+use leptos_fluent::{I18n, move_tr, tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -35,7 +35,7 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     let feature_options = Memo::new(move |_| {
         let character = store.read();
-        let prereq_prefix = i18n.tr("prerequisites-label");
+        let prereq_prefix = tr!(i18n, "prerequisites-label");
         registry.with_features_index(|features_index| {
             features_index
                 .values()
@@ -68,7 +68,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                     };
                     feat_def.assign(&mut ctx, WhenCondition::OnFeatureAdd, &feature.inputs);
                     for (attr, value) in ctx.captured {
-                        entries.push(format!("{}: {value}", attr.display_name(&i18n)));
+                        entries.push(format!("{}: {value}", attr.display_name(i18n)));
                     }
                 });
                 entries

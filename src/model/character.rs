@@ -1,3 +1,4 @@
+use leptos_fluent::{I18n, tr};
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -34,6 +35,27 @@ pub enum RebuildReason {
         applied: u32,
         current: u32,
     },
+}
+
+impl RebuildReason {
+    pub fn label(&self, i18n: I18n) -> String {
+        match self {
+            Self::SpeciesChanged => tr!(i18n, "rebuild-reason-species"),
+            Self::BackgroundChanged => tr!(i18n, "rebuild-reason-background"),
+            Self::ClassRemoved(class) => {
+                tr!(i18n, "rebuild-reason-class-removed", { "class" => class.clone() })
+            }
+            Self::LevelLowered {
+                class,
+                applied,
+                current,
+            } => tr!(i18n, "rebuild-reason-level-lowered", {
+                "class" => class.clone(),
+                "applied" => *applied,
+                "current" => *current,
+            }),
+        }
+    }
 }
 
 /// Proficiency bonus for a given character level (D&D 5e standard

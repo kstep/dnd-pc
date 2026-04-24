@@ -24,8 +24,8 @@ struct SpellRefParams {
 
 #[component]
 pub fn SpellReference() -> impl IntoView {
-    let i18n = expect_context::<leptos_fluent::I18n>();
     let registry = expect_context::<RulesRegistry>();
+    let i18n = expect_context::<leptos_fluent::I18n>();
     let params = use_params::<SpellRefParams>();
 
     let list_name = move || params.get().ok().and_then(|p| p.list).unwrap_or_default();
@@ -183,7 +183,7 @@ pub fn SpellReference() -> impl IntoView {
 
     view! {
         <Spinner loading />
-        <Title text=Signal::derive(move || i18n.tr("ref-spells")) />
+        <Title text=move_tr!(i18n, "ref-spells") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>

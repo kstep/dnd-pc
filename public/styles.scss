@@ -2916,7 +2916,6 @@ dialog.modal.closing::backdrop {
   font-size: var(--font-size-1);
   margin: 0 0 var(--size-2);
   max-inline-size: none;
-  white-space: pre-line;
 }
 
 .replacement-toggle {
@@ -3633,7 +3632,7 @@ dialog.modal.closing::backdrop {
   align-items: center;
   gap: var(--size-3);
   padding: var(--size-2) var(--size-3);
-  margin: var(--size-2) auto;
+  margin: 0 auto;
   max-width: 600px;
 
   &.hint-banner-wide {

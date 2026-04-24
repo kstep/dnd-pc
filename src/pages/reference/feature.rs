@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use leptos::{leptos_dom::helpers::debounce, prelude::*};
-use leptos_fluent::move_tr;
+use leptos_fluent::{move_tr, tr};
 use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 use regex::RegexBuilder;
@@ -41,7 +41,7 @@ pub fn FeatureReference() -> impl IntoView {
     let current_label = Signal::derive(move || {
         category()
             .map(|category| i18n.tr(category.tr_key()))
-            .unwrap_or_else(|| i18n.tr("feat-cat-all"))
+            .unwrap_or_else(|| tr!(i18n, "feat-cat-all"))
     });
 
     let features_view = move || {
@@ -87,12 +87,12 @@ pub fn FeatureReference() -> impl IntoView {
     };
 
     view! {
-        <Title text=Signal::derive(move || i18n.tr("ref-features")) />
+        <Title text=move_tr!(i18n, "ref-features") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     {move || {
-                        let all_label = i18n.tr("feat-cat-all");
+                        let all_label = tr!(i18n, "feat-cat-all");
                         let categories = FeatureCategory::iter().map(|category| {
                             let name = category.to_string();
                             let label = i18n.tr(category.tr_key());

@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 use leptos::prelude::*;
-use leptos_fluent::{I18n, move_tr};
+use leptos_fluent::{I18n, move_tr, tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -10,34 +8,9 @@ use crate::{
         hint_banner::HintBanner,
     },
     hooks::use_hash_href,
-    model::{Character, Feature, FeatureValue, RebuildReason},
+    model::{Character, Feature, FeatureValue},
     rules::RulesRegistry,
 };
-
-impl RebuildReason {
-    fn label(&self, i18n: &I18n) -> String {
-        match self {
-            Self::SpeciesChanged => i18n.tr("rebuild-reason-species").into_owned(),
-            Self::BackgroundChanged => i18n.tr("rebuild-reason-background").into_owned(),
-            Self::ClassRemoved(class) => {
-                let mut args = HashMap::new();
-                args.insert("class".into(), class.clone().into());
-                i18n.tr_with_args("rebuild-reason-class-removed", &args)
-            }
-            Self::LevelLowered {
-                class,
-                applied,
-                current,
-            } => {
-                let mut args = HashMap::new();
-                args.insert("class".into(), class.clone().into());
-                args.insert("applied".into(), (*applied).into());
-                args.insert("current".into(), (*current).into());
-                i18n.tr_with_args("rebuild-reason-level-lowered", &args)
-            }
-        }
-    }
-}
 
 fn has_empty_choice(feature: &Feature, character: &Character) -> bool {
     character
@@ -87,8 +60,13 @@ where
 pub fn BuildReplayHint() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
-    let visible =
-        Signal::derive(move || store.read().features.iter().any(|feature| !feature.applied));
+    let visible = Signal::derive(move || {
+        store
+            .read()
+            .features
+            .iter()
+            .any(|feature| !feature.applied && !feature.name.is_empty())
+    });
     view! {
         <HintBanner
             icon="wand-sparkles"
@@ -98,7 +76,7 @@ pub fn BuildReplayHint() -> impl IntoView {
             on_action=Callback::new(move |()| replay_with_modal(store, registry))
         >
             <p class="hint-banner-text">{move_tr!("build-replay-hint-title")}</p>
-            {feature_link_list(store, |feature, _| !feature.applied)}
+            {feature_link_list(store, |feature, _| !feature.applied && !feature.name.is_empty())}
         </HintBanner>
     }
 }
@@ -110,6 +88,15 @@ pub fn BuildNeedsRebuildHint() -> impl IntoView {
     let i18n = expect_context::<I18n>();
     let reasons = Signal::derive(move || store.read().rebuild_reasons());
     let visible = Signal::derive(move || !reasons.read().is_empty());
+    let title = move || {
+        let joined = reasons
+            .read()
+            .iter()
+            .map(|reason| reason.label(i18n))
+            .collect::<Vec<_>>()
+            .join(", ");
+        tr!(i18n, "build-needs-rebuild-title", { "reasons" => joined })
+    };
     view! {
         <HintBanner
             icon="wrench"
@@ -118,18 +105,7 @@ pub fn BuildNeedsRebuildHint() -> impl IntoView {
             action_label=move_tr!("rebuild")
             on_action=Callback::new(move |()| rebuild(store, registry))
         >
-            <p class="hint-banner-text">{move_tr!("build-needs-rebuild-title")}</p>
-            <ul class="hint-banner-reasons">
-                {move || {
-                    reasons
-                        .get()
-                        .into_iter()
-                        .map(|reason| view! {
-                            <li>{reason.label(&i18n)}</li>
-                        })
-                        .collect_view()
-                }}
-            </ul>
+            <p class="hint-banner-text">{title}</p>
         </HintBanner>
     }
 }

@@ -87,7 +87,7 @@ pub fn SpeciesReference() -> impl IntoView {
 
     view! {
         <Spinner loading />
-        <Title text=Signal::derive(move || i18n.tr("ref-species")) />
+        <Title text=move_tr!(i18n, "ref-species") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>

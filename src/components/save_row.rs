@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
@@ -14,8 +15,7 @@ pub fn SaveRow(ability: Ability) -> impl IntoView {
     let bonus = Memo::new(move |_| store.read().saving_throw_bonus(ability));
     let bonus_display = move || format_bonus(bonus.get());
 
-    let i18n = expect_context::<leptos_fluent::I18n>();
-    let label = Signal::derive(move || i18n.tr("saving-throw"));
+    let label = move_tr!("saving-throw");
 
     view! {
         <StatBox

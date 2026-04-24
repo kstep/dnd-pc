@@ -9,6 +9,7 @@ use crate::{
         datalist_input::{DatalistInput, DatalistOption},
         expr_args_input::{DiceGroupSignals, ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
         expr_view::ExprDetails,
+        markdown::Markdown,
         modal::Modal,
     },
     expr::DicePool,
@@ -215,7 +216,9 @@ fn ArgsFeatureInput(
                 <span class="args-modal-source">{source_label}</span>
             </h4>
             <Show when=move || has_description>
-                <p class="args-modal-description">{description.clone()}</p>
+                <div class="args-modal-description">
+                    <Markdown text=description.clone() />
+                </div>
             </Show>
             <div style:display=move || if is_replacing.get() { "none" } else { "" }>
                 {expr_views}
@@ -379,7 +382,9 @@ fn ReplacementPicker(
                     required=true
                 />
                 <Show when=move || !replacement_description.with(String::is_empty)>
-                    <p class="args-modal-description">{move || replacement_description.get()}</p>
+                    <div class="args-modal-description">
+                        <Markdown text=replacement_description />
+                    </div>
                 </Show>
                 {move || {
                     let exprs = replacement_exprs.get();

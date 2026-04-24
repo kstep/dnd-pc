@@ -49,7 +49,10 @@ pub fn CharacterEditor() -> impl IntoView {
         let character = store.read();
         character.needs_rebuild()
             || character.has_pending_apply()
-            || character.features.iter().any(|f| !f.applied)
+            || character
+                .features
+                .iter()
+                .any(|f| !f.applied && !f.name.is_empty())
             || character.features.values().any(|fd| {
                 fd.fields.iter().any(|f| {
                 matches!(

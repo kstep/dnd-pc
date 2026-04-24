@@ -5,7 +5,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use leptos_fluent::I18n;
+use leptos_fluent::{I18n, tr};
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter, EnumString};
@@ -140,19 +140,19 @@ impl FeatureSource {
     pub fn display_name(&self, i18n: I18n) -> Option<String> {
         match self {
             Self::Class(name, level) => {
-                let prefix = i18n.tr("source-class");
+                let prefix = tr!(i18n, "source-class");
                 Some(format!("{prefix}: {name} ({level})"))
             }
             Self::Subclass(class, name, level) => {
-                let prefix = i18n.tr("source-subclass");
+                let prefix = tr!(i18n, "source-subclass");
                 Some(format!("{prefix}: {class} — {name} ({level})"))
             }
             Self::Species(name) => {
-                let prefix = i18n.tr("source-species");
+                let prefix = tr!(i18n, "source-species");
                 Some(format!("{prefix}: {name}"))
             }
             Self::Background(name) => {
-                let prefix = i18n.tr("source-background");
+                let prefix = tr!(i18n, "source-background");
                 Some(format!("{prefix}: {name}"))
             }
             Self::User(_) => None,
