@@ -30,6 +30,47 @@ impl RulesRegistry {
         self.assign(character, WhenCondition::OnCompute);
         character.compute_armor_class();
         self.recompute_dynamic_fields(character);
+        self.recompute_spell_lists(character);
+    }
+
+    /// Re-run `spells_def.apply` for every feature whose definition carries
+    /// one, at the feature's current effective level. Apply pipelines that
+    /// only fire `OnFeatureAdd` for new features (e.g. level-up via
+    /// `apply_pending`) leave previously-added Spellcasting features stuck at
+    /// the level they were first added — slots, cantrip / spell / known
+    /// targets stay frozen. `spells_def.apply` is monotone-idempotent (only
+    /// adds missing slots up to the target, overwrites slot totals from the
+    /// table) so re-running it on every recompute is safe.
+    ///
+    /// TODO: this duplicates the `spells_def.apply` call already done inside
+    /// `FeatureDefinition::apply` on initial OnFeatureAdd. Removing the inner
+    /// call requires reordering — `feat_def.apply` builds a `Context` with
+    /// `caster_level` immediately after, which depends on `SpellData`
+    /// existing, which today is created by `spells_def.apply`. Untangle later.
+    fn recompute_spell_lists(&self, character: &mut Character) {
+        self.with_features_index_untracked(|features_index| {
+            // Snapshot before mutating: `spells_def.apply` takes
+            // `&mut Character` and `effective_level_for` / `free_uses_max`
+            // hold immutable borrows during iteration.
+            let updates: Vec<(String, u32, u32)> = character
+                .features
+                .iter()
+                .filter_map(|feature| {
+                    let feat_def = features_index.get(feature.name.as_str())?;
+                    feat_def.spells.as_ref()?;
+                    let level = character.effective_level_for(&feature.source);
+                    let free_uses_max = feat_def.free_uses_max(level, character);
+                    Some((feature.name.clone(), level, free_uses_max))
+                })
+                .collect();
+            for (feat_name, level, free_uses_max) in updates {
+                if let Some(feat_def) = features_index.get(feat_name.as_str())
+                    && let Some(spells_def) = &feat_def.spells
+                {
+                    spells_def.apply(level, character, &feat_name, free_uses_max);
+                }
+            }
+        });
     }
 
     /// Re-evaluate dynamic field values (Points max, Die amount) after
