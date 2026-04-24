@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        character_header::split_resolved, datalist_input::DatalistOption, entity_field::EntityField,
+        character_header::split_resolved, datalist::DatalistOption, entity_field::EntityField,
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},

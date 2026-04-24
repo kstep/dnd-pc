@@ -3,7 +3,7 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{datalist_input::DatalistOption, entity_field::EntityField},
+    components::{datalist::DatalistOption, entity_field::EntityField},
     model::{AppliedStoreFields, Character, CharacterIdentityStoreFields, CharacterStoreFields},
     rules::{DefinitionStore, RulesRegistry},
 };

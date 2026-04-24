@@ -15,7 +15,7 @@ pub mod class_field;
 pub mod classes_section;
 pub mod cloud_sign_in_hint;
 pub mod confirm_modal;
-pub mod datalist_input;
+pub mod datalist;
 pub mod dropdown;
 pub mod effects_calc_modal;
 pub mod entity_field;

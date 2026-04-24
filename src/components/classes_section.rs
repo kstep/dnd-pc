@@ -5,7 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         character_header::split_resolved,
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         icon::Icon,
     },
     model::{
@@ -114,12 +114,20 @@ pub fn ClassesSection() -> impl IntoView {
                                 }
                             });
 
+                            let class_list_id = next_datalist_id();
+                            let subclass_list_id = next_datalist_id();
+                            let subclass_opts_signal = Signal::derive({
+                                let options = subclass_options.clone();
+                                move || options.clone()
+                            });
                             view! {
                                 <div class="class-entry">
+                                    <SharedDatalist id=class_list_id.clone() options=class_opts />
                                     <DatalistInput
                                         value=class_name
                                         placeholder=move_tr!("class")
                                         class="class-name"
+                                        list_id=class_list_id
                                         options=class_opts
                                         ref_href=move || {
                                             (!class_key.is_empty())
@@ -143,11 +151,16 @@ pub fn ClassesSection() -> impl IntoView {
                                     {if has_subclasses {
                                         Some(
                                             view! {
+                                                <SharedDatalist
+                                                    id=subclass_list_id.clone()
+                                                    options=subclass_opts_signal
+                                                />
                                                 <DatalistInput
                                                     value=subclass_name
                                                     placeholder=move_tr!("subclass")
                                                     class="class-subclass"
-                                                    options=subclass_options
+                                                    list_id=subclass_list_id
+                                                    options=subclass_opts_signal
                                                     ref_href=move || {
                                                         let classes = classes.read();
                                                         let cl = classes.get(i)?;

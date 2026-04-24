@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         entry_name::EntryName,
         icon::Icon,
         slot_box::SlotBox,
@@ -233,6 +233,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         .map(|o| DatalistOption::new(&o.name, o.label(), &o.description))
                         .collect(),
                 );
+                let choice_list_id = next_datalist_id();
 
                 let option_views = options
                     .iter()
@@ -250,6 +251,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                         value=opt_name
                                         placeholder=move_tr!("choose-option")
                                         class="entry-name"
+                                        list_id=choice_list_id.clone()
                                         options=suggestions
                                         on_input=move |input, resolved| {
                                             feature_name.with_value(|key| {
@@ -367,6 +369,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 };
 
                 Some(EitherOf5::D(view! {
+                    <SharedDatalist id=choice_list_id options=suggestions />
                     <div class="entry-item">
                         <ToggleButton />
                         <div class="entry-content">

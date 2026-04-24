@@ -6,7 +6,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         expr_args_input::{ExprArgsInput, ExprArgsInputParts},
         icon::Icon,
         modal::Modal,
@@ -75,9 +75,11 @@ pub fn EffectsBlock() -> impl IntoView {
         })
     });
 
+    let effect_list_id = next_datalist_id();
     view! {
         <div class="session-section session-section-effects" id="session-effects">
             <h3 class="session-section-title">{move_tr!("session-effects")}</h3>
+            <SharedDatalist id=effect_list_id.clone() options=effect_options />
 
             // -- Add effect form --
             <div class="entry-item effect-add-form">
@@ -128,6 +130,7 @@ pub fn EffectsBlock() -> impl IntoView {
                         value=effect_label
                         placeholder=move_tr!("effect-name")
                         class="entry-name"
+                        list_id=effect_list_id.clone()
                         options=effect_options
                         on_input=move |input, resolved| {
                             effect_label.set(input);

@@ -8,7 +8,7 @@ use crate::{
         build_hints::{
             BuildChoiceFillHint, BuildNeedsRebuildHint, BuildPendingApplyHint, BuildReplayHint,
         },
-        datalist_input::DatalistOption,
+        datalist::DatalistOption,
         feature_row::FeatureRow,
     },
     model::{Character, CharacterStoreFields, Feature, FeatureSource, FeaturesStoreFields},

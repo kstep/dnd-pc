@@ -7,7 +7,7 @@ use reactive_stores::Store;
 use crate::{
     components::{
         apply::{apply_with_modal, edit_inputs_modal},
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         feature_field_row::FeatureFieldRow,
         icon::Icon,
         ref_link::Ref,
@@ -119,6 +119,7 @@ pub fn FeatureRow(
     // either `expanded` or `collapsed` class, with `:not(.collapsed)` in the
     // CSS rule keeping `:target` from resurrecting a collapsed row.
     let state: RwSignal<Option<bool>> = RwSignal::new(has_empty_choices.then_some(true));
+    let feature_list_id = next_datalist_id();
     let anchor_id = feature.dom_id();
     let toggle_anchor = StoredValue::new(anchor_id.clone());
     let toggle = move || {
@@ -151,10 +152,12 @@ pub fn FeatureRow(
                     })
                 } else {
                     Either::Right(view! {
+                        <SharedDatalist id=feature_list_id.clone() options=options />
                         <DatalistInput
                             value=name
                             placeholder=move_tr!("feature-name")
                             class="entry-name"
+                            list_id=feature_list_id.clone()
                             options=options
                             on_input=move |input, resolved| {
                                 let key_for_apply = {

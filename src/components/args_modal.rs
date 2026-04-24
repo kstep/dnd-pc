@@ -6,7 +6,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::{
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         expr_args_input::{DiceGroupSignals, ExprArgsInput, ExprArgsInputParts, collect_dice_pool},
         expr_view::ExprDetails,
         markdown::Markdown,
@@ -262,6 +262,7 @@ fn ReplacementPicker(
     let replacement_prefill = StoredValue::new(replacement_prefill);
     let source = StoredValue::new(source);
 
+    let replacement_list_id = next_datalist_id();
     let options = Signal::derive(move || {
         let character = store.read();
         registry.with_features_index(|features_index| {
@@ -381,9 +382,11 @@ fn ReplacementPicker(
                 {move_tr!("replace-with-feat")}
             </label>
             <Show when=move || replacing.get()>
+                <SharedDatalist id=replacement_list_id.clone() options=options />
                 <DatalistInput
                     value=input_value
                     placeholder=placeholder
+                    list_id=replacement_list_id.clone()
                     options=options
                     on_input=on_input
                     required=true

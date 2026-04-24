@@ -46,6 +46,7 @@ static_loader! {
 
 use components::{
     build_info::BuildInfo,
+    datalist::{DatalistModal, provide_datalist_modal_ctx},
     logo::IsRouting,
     navbar::{ActiveCharacterId, Navbar},
     signin_toast::SignInToastTrigger,
@@ -104,6 +105,7 @@ pub fn App() -> impl IntoView {
     let is_routing = IsRouting::default();
     provide_context(is_routing);
     provide_toast_context();
+    provide_datalist_modal_ctx();
     storage::init_sync();
 
     view! {
@@ -146,6 +148,7 @@ pub fn App() -> impl IntoView {
         <ToastContainer />
         <SignInToastTrigger />
         <SyncErrorToastTrigger />
+        <DatalistModal />
         <BuildInfo />
     }
 }

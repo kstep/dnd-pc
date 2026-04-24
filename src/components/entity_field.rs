@@ -1,6 +1,8 @@
 use leptos::prelude::*;
 
-use crate::components::datalist_input::{DatalistInput, DatalistOption};
+use crate::components::datalist::{
+    DatalistInput, DatalistOption, SharedDatalist, next_datalist_id,
+};
 
 /// Generic entity selector: DatalistInput with display name resolution and
 /// reference link.
@@ -34,11 +36,14 @@ pub fn EntityField(
             .unwrap_or(current)
     });
 
+    let list_id = next_datalist_id();
     view! {
+        <SharedDatalist id=list_id.clone() options=options />
         <DatalistInput
             value=display
             placeholder=placeholder
             required=required
+            list_id=list_id
             options=options
             ref_href=move || {
                 let key = name.get();

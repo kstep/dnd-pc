@@ -5,7 +5,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{
-        datalist_input::{DatalistInput, DatalistOption},
+        datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         entry_name::EntryName,
         icon::Icon,
         markdown::Markdown,
@@ -274,6 +274,32 @@ fn FeatureSpellcastingSection(
             leveled_suggestions.into()
         }
     };
+
+    // Three shared <datalist> elements per section — one per options-bucket
+    // (cantrip, full class spell list, spellbook subset). N spell entries
+    // referencing the same bucket all read from one native datalist.
+    let cantrip_list_id = next_datalist_id();
+    let leveled_list_id = next_datalist_id();
+    let known_list_id = next_datalist_id();
+    let cantrip_options: Signal<Vec<DatalistOption>> = spell_suggestions[0].into();
+    let leveled_options: Signal<Vec<DatalistOption>> = leveled_suggestions.into();
+    let known_options: Signal<Vec<DatalistOption>> = leveled_known.into();
+    // Callback is Copy — both spellbook and prepared iteration closures
+    // (separate `move ||` inside the same view!) can share it without clones.
+    let pick_list_id: Callback<(u32, bool), String> = Callback::new({
+        let cantrip_id = cantrip_list_id.clone();
+        let leveled_id = leveled_list_id.clone();
+        let known_id = known_list_id.clone();
+        move |(level, prefer_known)| {
+            if level == 0 {
+                cantrip_id.clone()
+            } else if prefer_known {
+                known_id.clone()
+            } else {
+                leveled_id.clone()
+            }
+        }
+    });
     Effect::new(move || {
         let guard = store.features().data().read();
         let known = feat_name.with_value(|key| {
@@ -314,6 +340,9 @@ fn FeatureSpellcastingSection(
 
     view! {
         <section id=anchor_id class="spellcasting-section">
+            <SharedDatalist id=cantrip_list_id.clone() options=cantrip_options />
+            <SharedDatalist id=leveled_list_id.clone() options=leveled_options />
+            <SharedDatalist id=known_list_id.clone() options=known_options />
             <div class="section-header">
                 <h3>{panel_title}</h3>
                 <Ref href=build_href scroll=false attr:class="entry-spell-link">
@@ -397,6 +426,9 @@ fn FeatureSpellcastingSection(
                                 let spell_level = spell.level.to_string();
                                 let spell_sticky = spell.sticky;
                                 let options = pick_options(spell.level, false);
+                                // Spellbook spells autocomplete from the full class
+                                // spell list (prefer_known = false).
+                                let list_id = pick_list_id.run((spell.level, false));
                                 view! {
                                     <div class="entry-item">
                                         <ToggleButton />
@@ -411,6 +443,7 @@ fn FeatureSpellcastingSection(
                                                         value=spell_label
                                                         placeholder=move_tr!("spell-name")
                                                         class="entry-name"
+                                                        list_id=list_id
                                                         options=options
                                                         badge_key="spell-level-badge"
                                                         on_input=move |input, resolved| {
@@ -540,6 +573,9 @@ fn FeatureSpellcastingSection(
                             let has_free_uses = spell.free_uses.is_some();
                             // Two-tier: autocomplete from spellbook; single-tier/cantrips: from registry
                             let options = pick_options(spell.level, two_tier);
+                            // Prepared spells: two-tier casters autocomplete from
+                            // the spellbook subset, single-tier from the full list.
+                            let list_id = pick_list_id.run((spell.level, two_tier));
                             view! {
                                 <div class="entry-item">
                                     <ToggleButton />
@@ -554,6 +590,7 @@ fn FeatureSpellcastingSection(
                                                     value=spell_label
                                                     placeholder=move_tr!("spell-name")
                                                     class="entry-name"
+                                                    list_id=list_id
                                                     options=options
                                                     badge_key="spell-level-badge"
                                                     on_input=move |input, resolved| {
