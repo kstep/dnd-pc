@@ -30,10 +30,42 @@ use crate::{
 const GENERATION_FIXED_PRESET: &str = "Generation: Fixed Preset";
 const GENERATION_USER_DEFINED: &str = "Generation: User-Defined";
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DefinitionKind {
+    Class,
+    Species,
+    Background,
+}
+
 #[derive(Debug, Clone)]
 pub enum RebuildError {
-    MissingDefinition { kind: &'static str, name: String },
+    MissingDefinition { kind: DefinitionKind, name: String },
     MulticlassPrereq { class: String },
+}
+
+/// Successful `build_clean` result: the rebuilt character plus per-feature
+/// drift accounting. `skipped_features` lists User-source features whose
+/// definition has gone missing (kept in `character.features` as orphans so the
+/// user's pick / inputs / homebrew naming aren't lost). `removed_features`
+/// lists identity-source features (Class / Subclass / Species / Background)
+/// whose definition has gone missing — these are dropped from
+/// `character.features` because the next rebuild will re-emit them under
+/// whatever name the current data file uses. Empty-name User placeholders
+/// (the "Add feature" slot before the user picks anything) are preserved
+/// silently and counted in neither vec.
+#[derive(Debug, Clone)]
+pub struct RebuildOutcome {
+    pub character: Character,
+    pub skipped_features: Vec<String>,
+    pub removed_features: Vec<String>,
+}
+
+/// Internal accumulator threaded through the apply pipeline. Converted to
+/// `RebuildOutcome` at the end of `build_clean`.
+#[derive(Default)]
+struct RebuildAccum {
+    skipped: Vec<String>,
+    removed: Vec<String>,
 }
 
 /// Output of `prepare_rebuild`: everything the rebuild caller needs to drive
@@ -89,12 +121,13 @@ pub fn build_clean(
     original: &Character,
     registry: &RulesRegistry,
     extra_inputs: &ApplyInputs,
-) -> Result<Character, RebuildError> {
+) -> Result<RebuildOutcome, RebuildError> {
     let mut clean = Character::from_identity(original.identity.clone());
+    let mut accum = RebuildAccum::default();
 
     registry.with_features_index_untracked(|fi| -> Result<(), RebuildError> {
         // 1. User(0) features (e.g. Generation: * setting base abilities)
-        apply_user_features_at_level(original, &mut clean, fi, 0, extra_inputs)?;
+        apply_user_features_at_level(original, &mut clean, fi, 0, extra_inputs, &mut accum);
 
         // 2. Species
         if !clean.identity.species.is_empty() {
@@ -102,12 +135,12 @@ pub fn build_clean(
             let species_def = species_cache
                 .get(clean.identity.species.as_str())
                 .ok_or_else(|| RebuildError::MissingDefinition {
-                    kind: "species",
+                    kind: DefinitionKind::Species,
                     name: clean.identity.species.clone(),
                 })?;
             let pending: Vec<PendingFeature> =
                 collect_species_features(&clean, species_def, fi).collect();
-            apply_pending(fi, &mut clean, &pending, original, extra_inputs)?;
+            apply_pending(fi, &mut clean, &pending, original, extra_inputs, &mut accum);
             clean.applied.species = true;
         }
 
@@ -117,18 +150,18 @@ pub fn build_clean(
             let bg_def = bg_cache
                 .get(clean.identity.background.as_str())
                 .ok_or_else(|| RebuildError::MissingDefinition {
-                    kind: "background",
+                    kind: DefinitionKind::Background,
                     name: clean.identity.background.clone(),
                 })?;
             let pending: Vec<PendingFeature> =
                 collect_background_features(&clean, bg_def, fi).collect();
-            apply_pending(fi, &mut clean, &pending, original, extra_inputs)?;
+            apply_pending(fi, &mut clean, &pending, original, extra_inputs, &mut accum);
             clean.applied.background = true;
         }
 
         // 4. Classes — interleave class levels with per-step prereq filter for
         //    multiclasses (see `apply_classes_interleaved` for details).
-        apply_classes_interleaved(registry, fi, &mut clean, original, extra_inputs)?;
+        apply_classes_interleaved(registry, fi, &mut clean, original, extra_inputs, &mut accum)?;
 
         // 5. OnLevelUp sweep for all applied features.
         onlevelup_pass(fi, &mut clean);
@@ -143,7 +176,11 @@ pub fn build_clean(
     })?;
 
     merge_preserved(&mut clean, original);
-    Ok(clean)
+    Ok(RebuildOutcome {
+        character: clean,
+        skipped_features: accum.skipped,
+        removed_features: accum.removed,
+    })
 }
 
 /// Collect features scheduled for the rebuild that still need user input
@@ -191,29 +228,13 @@ fn collect_rebuild_pending_inputs(
             .map(|pending| (pending.name.as_str(), &pending.source))
             .collect();
 
-        // Pre-validate stored inputs: walk pending in pipeline order, dry-
-        // run `feat_def.apply(stored)` on a running baseline, and accept
-        // `forced` for the solver only when that apply actually changes the
-        // derived state. This rejects corrupted stored inputs whose args
-        // fall outside the current mask — e.g. old Expertise picks on
-        // skills the character is no longer proficient in, or empty-arg
-        // feat entries from half-migrated characters. Unusable stored →
-        // solver re-enumerates. We advance `validation_baseline` only on
-        // effective stored so downstream dry-runs see a realistic state;
-        // rejected feats will be advanced later via solver-solved args.
-        // Walk pending in pipeline order. Apply stored inputs whose dry-run
-        // actually changes the derived state (`effective`). Feats whose
-        // stored is ineffective or missing are the ones the modal will show
-        // — either as editable (no stored / rejected) or hidden (effective
-        // but falling between editable siblings). Capture `cascade_base`
-        // the first time we hit an emit-worthy feat: everything strictly
-        // before it is already folded into that baseline.
-        // Combined walk: advance `validation_baseline` through effective-
-        // stored / non-interactive feats, build `feat_states` for
-        // interactive ones, capture `cascade_base` right before the first
-        // interactive feat. `state_idx_by_pending[i]` = index of the
-        // feat_state built at `all_pending[i]` (or None) so the emit loop
-        // skips owned-key map lookups.
+        // Pipeline-order walk: dry-run each feat against `validation_baseline`
+        // to check whether stored inputs still produce a derived-state change.
+        // Stored that no-ops (e.g. Expertise on now-non-proficient skills,
+        // half-migrated empty-arg entries) gets rejected → solver re-enumerates;
+        // effective stored advances the baseline so downstream dry-runs see a
+        // realistic state. `cascade_base` is captured just before the first
+        // interactive feat so the modal opens on a correct pre-edit snapshot.
         //
         // TODO(perf): `stored_inputs_effective` clones the whole baseline
         // via `clone_lean` for its dry-run diff; the clone grows every
@@ -573,6 +594,7 @@ fn apply_classes_interleaved(
     clean: &mut Character,
     original: &Character,
     extra_inputs: &ApplyInputs,
+    accum: &mut RebuildAccum,
 ) -> Result<(), RebuildError> {
     let class_cache = registry.classes().cache().read_untracked();
     let n_classes = clean.identity.classes.len();
@@ -594,10 +616,10 @@ fn apply_classes_interleaved(
 
     // CL1: classes[0] at class level 1 — primary, no prereq check.
     if targets[0] > 0 && !clean.identity.classes[0].class.is_empty() {
-        apply_class_level(fi, &class_cache, clean, original, 0, 1, extra_inputs)?;
+        apply_class_level(fi, &class_cache, clean, original, 0, 1, extra_inputs, accum)?;
         applied[0] = 1;
         character_level = 1;
-        apply_user_features_at_level(original, clean, fi, character_level, extra_inputs)?;
+        apply_user_features_at_level(original, clean, fi, character_level, extra_inputs, accum);
     }
 
     // Hold the class-index lock for the whole loop: pick_next_class checks
@@ -613,10 +635,11 @@ fn apply_classes_interleaved(
                 i,
                 next_class_lvl,
                 extra_inputs,
+                accum,
             )?;
             applied[i] = next_class_lvl;
             character_level += 1;
-            apply_user_features_at_level(original, clean, fi, character_level, extra_inputs)?;
+            apply_user_features_at_level(original, clean, fi, character_level, extra_inputs, accum);
         }
         Ok(())
     })?;
@@ -681,6 +704,7 @@ fn pick_next_class(
     (!cl.class.is_empty() && applied[idx] < targets[idx]).then_some(idx)
 }
 
+#[allow(clippy::too_many_arguments)] // private helper, args are unrelated context
 fn apply_class_level(
     fi: &BTreeMap<Box<str>, FeatureDefinition>,
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
@@ -689,20 +713,24 @@ fn apply_class_level(
     class_idx: usize,
     class_level: u32,
     extra_inputs: &ApplyInputs,
+    accum: &mut RebuildAccum,
 ) -> Result<(), RebuildError> {
-    let class_name = clean.identity.classes[class_idx].class.clone();
-    let class_def =
+    let class_def = {
+        let class_name = clean.identity.classes[class_idx].class.as_str();
         class_cache
-            .get(class_name.as_str())
+            .get(class_name)
             .ok_or_else(|| RebuildError::MissingDefinition {
-                kind: "class",
-                name: class_name.clone(),
-            })?;
+                kind: DefinitionKind::Class,
+                name: class_name.to_owned(),
+            })?
+    };
     clean.identity.classes[class_idx].hit_die_sides = class_def.hit_die;
     let pending: Vec<PendingFeature> =
         collect_class_features(clean, class_idx, class_level, class_def, fi).collect();
-    apply_pending(fi, clean, &pending, original, extra_inputs)?;
-    clean.applied.mark_level(&class_name, class_level);
+    apply_pending(fi, clean, &pending, original, extra_inputs, accum);
+    clean
+        .applied
+        .mark_level(&clean.identity.classes[class_idx].class, class_level);
     Ok(())
 }
 
@@ -711,26 +739,41 @@ fn apply_class_level(
 /// drives input lookup. Each resolved pending is applied via
 /// `apply_new_feature` with its own stored-or-modal inputs so stackable
 /// features with the same name don't collide.
+///
+/// Pending features whose definition is missing from `fi` are routed by
+/// source: User-source ones are forwarded via `accum` for the caller (which
+/// preserves them in `clean.features` directly — see
+/// `apply_user_features_at_level`); identity-source ones (Class / Subclass /
+/// Species / Background) are dropped from the rebuild and recorded in
+/// `accum.removed`. Either way the rebuild keeps going — no `Err` path for
+/// missing per-feature definitions.
 fn apply_pending(
     fi: &BTreeMap<Box<str>, FeatureDefinition>,
     clean: &mut Character,
     pending: &[PendingFeature],
     original: &Character,
     extra_inputs: &ApplyInputs,
-) -> Result<(), RebuildError> {
+    accum: &mut RebuildAccum,
+) {
     let resolved = resolve_replacements(pending, &extra_inputs.replacements, fi);
     for pending_feature in &resolved {
-        let Some(feat_def) = fi.get(pending_feature.name.as_str()) else {
-            return Err(RebuildError::MissingDefinition {
-                kind: "feature",
-                name: pending_feature.name.clone(),
-            });
-        };
-        let inputs =
-            inputs_for_pending(pending_feature, original, extra_inputs, feat_def.stackable);
-        apply_new_feature(fi, clean, pending_feature, &inputs);
+        if let Some(feat_def) = fi.get(pending_feature.name.as_str()) {
+            let inputs =
+                inputs_for_pending(pending_feature, original, extra_inputs, feat_def.stackable);
+            apply_new_feature(fi, clean, pending_feature, &inputs);
+        } else if pending_feature.source.is_user() {
+            // User-source missing-def features are normally pre-handled by
+            // `apply_user_features_at_level`. Reaching here means a different
+            // path fed a User pending in — log loudly so we notice.
+            log::warn!(
+                "apply_pending: unexpected User pending without pre-handle: {pending_feature:?}"
+            );
+            accum.skipped.push(pending_feature.name.clone());
+        } else {
+            log::warn!("rebuild: dropping obsolete identity feature {pending_feature:?}");
+            accum.removed.push(pending_feature.name.clone());
+        }
     }
-    Ok(())
 }
 
 /// Resolve inputs for a single pending feature. Modal-supplied
@@ -775,21 +818,39 @@ fn apply_user_features_at_level(
     fi: &BTreeMap<Box<str>, FeatureDefinition>,
     level: u32,
     extra_inputs: &ApplyInputs,
-) -> Result<(), RebuildError> {
-    let pending: Vec<PendingFeature> = original
-        .features
-        .iter()
-        .filter(|feature| matches!(&feature.source, FeatureSource::User(l) if *l == level))
-        .map(|feature| PendingFeature {
-            name: feature.name.clone(),
-            source: feature.source.clone(),
-            level,
-        })
-        .collect();
-    if pending.is_empty() {
-        return Ok(());
+    accum: &mut RebuildAccum,
+) {
+    // Two passes over User(level) features in `original`:
+    //   1. Missing-def → preserve the original `Feature` directly in
+    //      `clean.features.list` so the user's pick / inputs / homebrew name
+    //      survive a rebuild. Empty-name placeholders ("Add feature" slot before
+    //      the user picked anything) preserve silently; named-unknown ones (renamed
+    //      feats, custom homebrew) are logged + counted as skipped. Direct
+    //      iteration handles duplicate empty/identical-name slots correctly, which
+    //      a `find`-based path through `apply_pending` would not.
+    //   2. Has-def → flow through `apply_pending` normally.
+    let mut pending: Vec<PendingFeature> = Vec::new();
+    for feature in original.features.iter() {
+        if !matches!(&feature.source, FeatureSource::User(l) if *l == level) {
+            continue;
+        }
+        if fi.contains_key(feature.name.as_str()) {
+            pending.push(PendingFeature {
+                name: feature.name.clone(),
+                source: feature.source.clone(),
+                level,
+            });
+        } else {
+            if !feature.name.is_empty() {
+                log::warn!("rebuild: preserving user feature with no definition: {feature:?}");
+                accum.skipped.push(feature.name.clone());
+            }
+            clean.features.list.push(feature.clone());
+        }
     }
-    apply_pending(fi, clean, &pending, original, extra_inputs)
+    if !pending.is_empty() {
+        apply_pending(fi, clean, &pending, original, extra_inputs, accum);
+    }
 }
 
 /// Copy non-rebuildable user data from original into clean. Called after
@@ -904,6 +965,7 @@ mod tests {
     use super::*;
     use crate::model::{
         AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
+        ProficiencyLevel, Skill,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -1344,7 +1406,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn stored_inputs_effective_rejects_noop_expertise_on_non_proficient_skill() {
-        use crate::model::{ProficiencyLevel, Skill};
         let expertise_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Expertise",
             "stackable": true,
@@ -1385,6 +1446,175 @@ mod tests {
             &baseline_prof,
             &stored
         ));
+    }
+
+    #[wasm_bindgen_test]
+    fn apply_user_features_preserves_empty_name_silently() {
+        // Empty-name User slots come from the "Add feature" button in the
+        // build tab — the user clicked it but hasn't picked anything yet.
+        // Rebuild must keep them around (otherwise the user's slot disappears)
+        // and must not surface them as "skipped" — the user already knows.
+        let mut original = Character::default();
+        original.features.list.push(Feature {
+            name: String::new(),
+            source: FeatureSource::User(0),
+            applied: false,
+            ..Feature::default()
+        });
+        original.features.list.push(Feature {
+            name: String::new(),
+            source: FeatureSource::User(0),
+            applied: false,
+            ..Feature::default()
+        });
+        let mut clean = Character::from_identity(original.identity.clone());
+        let mut accum = RebuildAccum::default();
+        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let extra = ApplyInputs::default();
+
+        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+
+        let empty_user_count = clean
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                feature.name.is_empty() && matches!(feature.source, FeatureSource::User(0))
+            })
+            .count();
+        assert_eq!(empty_user_count, 2, "both empty placeholders preserved");
+        assert!(
+            accum.skipped.is_empty(),
+            "empty-name doesn't count as skipped"
+        );
+        assert!(accum.removed.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    fn apply_user_features_preserves_named_unknown_and_counts_skipped() {
+        // Named-unknown User feature: either renamed in features.json (e.g.
+        // "Generation: Custom" → "Generation: User-Defined") or homebrew the
+        // user typed in. Either way preserve the entry — the user's inputs /
+        // homebrew name shouldn't disappear silently — and surface a count
+        // via accum.skipped so the post-rebuild toast can warn the user.
+        let inputs = vec![AssignInputs {
+            args: vec![15, 14, 13, 12, 10, 8],
+            ..AssignInputs::default()
+        }];
+        let mut original = Character::default();
+        original.features.list.push(Feature {
+            name: "Generation: Custom".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            inputs: inputs.clone(),
+            ..Feature::default()
+        });
+        let mut clean = Character::from_identity(original.identity.clone());
+        let mut accum = RebuildAccum::default();
+        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let extra = ApplyInputs::default();
+
+        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+
+        let preserved = clean
+            .features
+            .list
+            .iter()
+            .find(|feature| feature.name == "Generation: Custom")
+            .expect("preserved in clean");
+        assert_eq!(preserved.inputs, inputs, "user inputs survive");
+        assert_eq!(accum.skipped, vec!["Generation: Custom".to_string()]);
+        assert!(accum.removed.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    fn apply_pending_drops_unknown_identity_feature_and_counts_removed() {
+        // Identity-source (Class/Species/Background) features whose definition
+        // is gone are obsolete — the next class re-emit will produce the new
+        // name, so the old entry just lives forever as dead weight if we
+        // preserve it. Drop and count.
+        let mut clean = Character::default();
+        let original = Character::default();
+        let mut accum = RebuildAccum::default();
+        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let extra = ApplyInputs::default();
+        let pending = vec![PendingFeature {
+            name: "Old Class Feat".into(),
+            source: FeatureSource::Class("Wizard".into(), 1),
+            level: 1,
+        }];
+
+        apply_pending(&fi, &mut clean, &pending, &original, &extra, &mut accum);
+
+        assert!(
+            !clean
+                .features
+                .list
+                .iter()
+                .any(|feature| feature.name == "Old Class Feat"),
+            "obsolete identity feature dropped from clean"
+        );
+        assert_eq!(accum.removed, vec!["Old Class Feat".to_string()]);
+        assert!(accum.skipped.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    fn apply_user_features_routes_known_via_apply_pending() {
+        // Mixed bag: empty placeholder (silent), homebrew (skipped), and a
+        // known feature that has a definition (applied normally). Each lands
+        // in the right bucket.
+        let known_def = feat_def("Known Feat", FeatureCategory::General, ReplaceWith::None);
+        let fi: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((known_def.name.clone().into_boxed_str(), known_def.clone())).collect();
+
+        let mut original = Character::default();
+        original.features.list.push(Feature {
+            name: String::new(),
+            source: FeatureSource::User(0),
+            applied: false,
+            ..Feature::default()
+        });
+        original.features.list.push(Feature {
+            name: "Homebrew Smite".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            ..Feature::default()
+        });
+        original.features.list.push(Feature {
+            name: "Known Feat".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            ..Feature::default()
+        });
+        let mut clean = Character::from_identity(original.identity.clone());
+        let mut accum = RebuildAccum::default();
+        let extra = ApplyInputs::default();
+
+        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+
+        assert_eq!(accum.skipped, vec!["Homebrew Smite".to_string()]);
+        assert!(accum.removed.is_empty());
+        assert!(
+            clean
+                .features
+                .list
+                .iter()
+                .any(|feature| feature.name.is_empty())
+        );
+        assert!(
+            clean
+                .features
+                .list
+                .iter()
+                .any(|feature| feature.name == "Homebrew Smite")
+        );
+        assert!(
+            clean
+                .features
+                .list
+                .iter()
+                .any(|feature| feature.name == "Known Feat" && feature.applied)
+        );
     }
 
     #[wasm_bindgen_test]

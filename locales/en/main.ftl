@@ -92,6 +92,26 @@ replay-confirm = Replay will reset and re-apply all features. Continue?
 rebuild = Rebuild
 rebuild-confirm = The character will be rebuilt from scratch. HP, used slots, and hit dice are preserved.
 toast-rebuild-done = Character rebuilt
+toast-rebuild-skipped = { $count ->
+    [one] Rebuilt with { $count } unknown feature preserved as-is. Open the build tab to review.
+   *[other] Rebuilt with { $count } unknown features preserved as-is. Open the build tab to review.
+}
+toast-rebuild-removed = { $count ->
+    [one] Rebuilt; { $count } obsolete feature removed (no current rules definition).
+   *[other] Rebuilt; { $count } obsolete features removed (no current rules definition).
+}
+toast-rebuild-skipped-and-removed = Rebuilt; { $skipped ->
+    [one] { $skipped } unknown feature preserved
+   *[other] { $skipped } unknown features preserved
+}, { $removed ->
+    [one] { $removed } obsolete removed
+   *[other] { $removed } obsolete removed
+}. Open the build tab to review.
+toast-rebuild-failed-class = Couldn’t rebuild: class definition “{ $name }” is missing. Re-pick the class in the character header.
+toast-rebuild-failed-species = Couldn’t rebuild: species definition “{ $name }” is missing. Re-pick the species in the character header.
+toast-rebuild-failed-background = Couldn’t rebuild: background definition “{ $name }” is missing. Re-pick the background in the character header.
+toast-rebuild-failed-multiclass = Couldn’t rebuild: multiclass prerequisites for “{ $class }” aren’t met. Raise the required ability via Generation or an ASI feature in the Build tab.
+toast-rebuild-action-open-build = Build
 initiative = Initiative
 speed = Speed
 attack-count = Attacks

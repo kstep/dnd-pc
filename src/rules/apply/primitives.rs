@@ -75,7 +75,7 @@ pub fn apply_new_feature(
     inputs: &[AssignInputs],
 ) {
     let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
-        log::warn!("Feature '{}' not found in index", pending_feature.name);
+        log::warn!("apply_new_feature: skipping feature with no definition: {pending_feature:?}");
         return;
     };
     if character
@@ -126,6 +126,10 @@ pub fn reapply_existing(
         if let Some(feat_def) = features_index.get(feat_name.as_str()) {
             let level = character.effective_level_for(source);
             feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
+        } else {
+            log::warn!(
+                "reapply_existing: skipping feature with no definition: name='{feat_name}', source={source:?}"
+            );
         }
     }
 }
@@ -155,6 +159,7 @@ pub fn replay(
         .collect();
     for (pending_feature, stored) in pending.iter().zip(&stored_inputs) {
         let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+            log::warn!("replay: skipping feature with no definition: {pending_feature:?}");
             continue;
         };
         let feature_inputs = if stored.is_empty() {
@@ -235,6 +240,9 @@ pub fn onlevelup_pass(
         .collect();
     for (feat_name, source) in &applied {
         let Some(feat_def) = features_index.get(feat_name.as_str()) else {
+            log::warn!(
+                "onlevelup_pass: skipping feature with no definition: name='{feat_name}', source={source:?}"
+            );
             continue;
         };
         let added_level = source.added_at_level();

@@ -155,7 +155,7 @@ impl PendingInputs {
 /// A feature pending application. Owned and cheap — survives move closure
 /// boundaries (modal callbacks). Produced by collect functions, consumed by
 /// apply primitives.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct PendingFeature {
     pub name: String,
     pub source: FeatureSource,
