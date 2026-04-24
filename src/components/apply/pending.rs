@@ -31,6 +31,11 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
     });
 
     if pending.is_empty() {
+        // The level-up grants no new features at this step (e.g. Wizard L6
+        // with no subclass picked, where L6 has only subclass-gated
+        // features). Still mark the levels applied — otherwise the Build
+        // banner sticks around with no way to clear it.
+        store.update(mark_all_class_levels_applied);
         return;
     }
 
@@ -41,24 +46,27 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
         None,
         move |character, pending, inputs, fi| {
             apply_new_features(fi, character, pending, Some(&inputs.feature_inputs));
-
-            // species/background are not touched here: the guard above
-            // ensured `!needs_rebuild()`, which implies they were already
-            // applied (or absent from identity). Only class-level marks need
-            // updating. Snapshot to release the immutable borrow before
-            // mutating `applied`.
-            let snapshot: Vec<(String, u32)> = character
-                .identity
-                .classes
-                .iter()
-                .filter(|cl| !cl.class.is_empty())
-                .map(|cl| (cl.class.clone(), cl.level))
-                .collect();
-            for (class, max_level) in snapshot {
-                for lvl in 1..=max_level {
-                    character.applied.mark_level(&class, lvl);
-                }
-            }
+            mark_all_class_levels_applied(character);
         },
     );
+}
+
+/// Mark every class-level on the character as applied. Idempotent: re-marking
+/// already-applied levels is a no-op via VecSet.
+fn mark_all_class_levels_applied(character: &mut Character) {
+    // species/background are not touched here: callers route through
+    // `apply_pending` which guards `!needs_rebuild()` — that implies they
+    // were already applied (or absent from identity).
+    let snapshot: Vec<(String, u32)> = character
+        .identity
+        .classes
+        .iter()
+        .filter(|cl| !cl.class.is_empty())
+        .map(|cl| (cl.class.clone(), cl.level))
+        .collect();
+    for (class, max_level) in snapshot {
+        for lvl in 1..=max_level {
+            character.applied.mark_level(&class, lvl);
+        }
+    }
 }
