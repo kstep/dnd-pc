@@ -256,6 +256,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32>
 {
     type Output = Result<i32, Error>;
 
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "expr.eval", skip_all)
+    )]
     fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::new(ctx))
     }
@@ -267,6 +271,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32>
 
 impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
     /// Like `eval`, but silently ignores `Assign` ops instead of erroring.
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "expr.eval_lenient", skip_all)
+    )]
     pub fn eval_lenient(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
         self.run(ReadOnlyEvaluator::lenient(ctx))
     }
@@ -287,6 +295,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     ///
     /// Guards with non-interactive false conditions prune their ARGs from
     /// `active_args`.
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "expr.analyze", skip_all)
+    )]
     pub fn analyze(
         &self,
         ctx: &impl Context<Var, i32>,

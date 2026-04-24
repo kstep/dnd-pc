@@ -595,6 +595,10 @@ impl Character {
     /// attack evaluation); inventory `items` and `currency` are dropped as
     /// decorative. Used for transient cascade bases in the args modal where
     /// the clone is read-only and discarded on modal close.
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "character.clone_lean", skip_all)
+    )]
     pub fn clone_lean(&self) -> Self {
         let equipment = Equipment {
             weapons: self.equipment.weapons.clone(),

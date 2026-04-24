@@ -1,6 +1,10 @@
 use leptos::prelude::*;
 use pulldown_cmark::{Options, Parser, html};
 
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "markdown.render", skip(md), fields(len = md.len()))
+)]
 fn render_markdown(md: &str) -> String {
     let parser = Parser::new_ext(md, Options::ENABLE_STRIKETHROUGH | Options::ENABLE_TABLES);
     let mut output = String::new();

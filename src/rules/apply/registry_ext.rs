@@ -21,6 +21,10 @@ impl RulesRegistry {
         self.assign(character, WhenCondition::OnShortRest);
     }
 
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "registry.compute", skip_all)
+    )]
     pub fn compute(&self, character: &mut Character) {
         character.compute();
         self.assign(character, WhenCondition::OnCompute);

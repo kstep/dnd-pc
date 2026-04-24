@@ -23,6 +23,10 @@ use crate::{
 /// Aborts with a browser alert on multiclass prereq failure or missing
 /// class/species/background definitions — the store is never written in that
 /// case.
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "rebuild.total", skip_all)
+)]
 pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
     let RebuildPreview {
         original,

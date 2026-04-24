@@ -66,6 +66,12 @@ indexmap = "2.13.0"
 regex = "1.12"
 futures = { version = "0.3.32", default-features = false, features = ["alloc"] }
 pulldown-cmark = { version = "0.13.3", default-features = false, features = ["html"] }
+tracing = { version = "0.1", default-features = false, features = ["std", "attributes"], optional = true }
+tracing-wasm = { version = "0.2", optional = true }
+
+[features]
+default = []
+perf-marks = ["dep:tracing", "dep:tracing-wasm", "leptos/tracing"]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
@@ -76,3 +82,8 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[profile.perf]
+inherits = "release"
+debug = "line-tables-only"
+strip = "none"

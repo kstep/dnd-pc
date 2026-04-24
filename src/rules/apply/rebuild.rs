@@ -58,6 +58,10 @@ pub struct RebuildPreview {
 
 /// Snapshot-level step 1: reconcile User-sourced features against identity
 /// slots, then collect pending inputs that need user interaction.
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "rebuild.prepare", skip_all)
+)]
 pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> RebuildPreview {
     reconcile_user_feature_sources(&mut original, registry);
     let (pending, had_rejections, cascade_base) =
@@ -77,6 +81,10 @@ pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> Reb
 /// spell selections, equipment, personality, notes). Fails if a class /
 /// species / background definition is missing from the registry caches or if
 /// a multiclass prereq never passes during the build.
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "rebuild.build_clean", skip_all)
+)]
 pub fn build_clean(
     original: &Character,
     registry: &RulesRegistry,

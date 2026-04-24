@@ -372,6 +372,10 @@ impl FeatureDefinition {
     /// args-modal cascade where `inputs` may be empty mid-interaction (user
     /// hasn't typed yet) and `@ARG` refs failing is expected — the logged
     /// errors otherwise flood the console per keystroke.
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "feature.assign_silent", skip_all, fields(name = %self.name, ?when))
+    )]
     pub fn assign_silent(
         &self,
         context: &mut impl expr::Context<Attribute, i32>,
@@ -433,6 +437,10 @@ impl FeatureDefinition {
         }
     }
 
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "feature.apply", skip_all, fields(name = %self.name, level, ?when))
+    )]
     pub fn apply(
         &self,
         level: u32,

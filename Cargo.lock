@@ -524,6 +524,8 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "strum",
+ "tracing",
+ "tracing-wasm",
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -1360,6 +1362,7 @@ dependencies = [
  "tachys",
  "thiserror 2.0.18",
  "throw_error",
+ "tracing",
  "typed-builder",
  "typed-builder-macro",
  "wasm-bindgen",
@@ -1426,6 +1429,7 @@ dependencies = [
  "reactive_graph",
  "send_wrapper",
  "tachys",
+ "tracing",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -1469,6 +1473,7 @@ dependencies = [
  "rustc_version",
  "server_fn_macro",
  "syn",
+ "tracing",
  "uuid",
 ]
 
@@ -1541,6 +1546,7 @@ dependencies = [
  "serde_json",
  "server_fn",
  "tachys",
+ "tracing",
 ]
 
 [[package]]
@@ -2146,6 +2152,7 @@ dependencies = [
  "serde",
  "slotmap",
  "thiserror 2.0.18",
+ "tracing",
  "web-sys",
 ]
 
@@ -2774,6 +2781,7 @@ dependencies = [
  "send_wrapper",
  "slotmap",
  "throw_error",
+ "tracing",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -3094,6 +3102,17 @@ dependencies = [
  "tracing-core",
  "tracing-log",
  "tracing-serde",
+]
+
+[[package]]
+name = "tracing-wasm"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4575c663a174420fa2d78f4108ff68f65bf2fbb7dd89f33749b6e826b3626e07"
+dependencies = [
+ "tracing",
+ "tracing-subscriber",
+ "wasm-bindgen",
 ]
 
 [[package]]

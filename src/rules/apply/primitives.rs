@@ -43,6 +43,10 @@ pub fn resolve_replacements(
 /// Batch variant of `apply_new_feature`. Iterates `pending`, looking up each
 /// feature's inputs from the map by `FeatureKey`; features not present in the
 /// map apply with empty inputs.
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "apply.new_features", skip_all, fields(n = pending.len()))
+)]
 pub fn apply_new_features(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     character: &mut Character,

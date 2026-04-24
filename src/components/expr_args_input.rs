@@ -586,6 +586,8 @@ pub fn ExprArgsInput(
     // Reactive analysis — re-runs whenever the character snapshot changes.
     let expr_for_analysis = expr.clone();
     let analysis: Memo<ExprAnalysis> = Memo::new(move |_| {
+        #[cfg(feature = "perf-marks")]
+        let _s = tracing::info_span!("expr_args_input.analysis").entered();
         let character = character.get();
         expr_for_analysis.analyze(&*character, Attribute::arg_index)
     });
@@ -620,6 +622,8 @@ pub fn ExprArgsInput(
     // Validation Memo — reads character + arg signals reactively.
     let eval_expr = expr.clone();
     let is_valid = Memo::new(move |_| {
+        #[cfg(feature = "perf-marks")]
+        let _s = tracing::info_span!("expr_args_input.is_valid").entered();
         let args_ok = {
             let character = character.get();
             let ctx = ArgContext {

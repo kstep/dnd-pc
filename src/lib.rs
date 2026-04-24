@@ -33,6 +33,7 @@ pub const BASE_URL: &str = match option_env!("BASE_URL") {
 
 const BUILD_COMMIT: &str = env!("BUILD_COMMIT");
 const BUILD_DATE: &str = env!("BUILD_DATE");
+const BUILD_PROFILE: &str = env!("BUILD_PROFILE");
 
 pub static LOGO_SVG: &str = include_str!("../public/icons/logo.svg");
 

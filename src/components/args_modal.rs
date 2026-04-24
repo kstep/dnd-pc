@@ -117,6 +117,13 @@ fn ArgsFeatureInput(
     all_valid: RwSignal<Vec<Memo<bool>>>,
     all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
 ) -> impl IntoView {
+    #[cfg(feature = "perf-marks")]
+    let _mount_span = tracing::info_span!(
+        "args_feature_input.mount",
+        name = %pending_inputs.feature_name,
+    )
+    .entered();
+
     let feature_name = pending_inputs.feature_name.clone();
     let description = pending_inputs.feature_description.clone();
     let has_description = !description.is_empty();
@@ -440,6 +447,9 @@ fn ReplacementPicker(
 
 #[component]
 pub fn ArgsModal() -> impl IntoView {
+    #[cfg(feature = "perf-marks")]
+    let _mount_span = tracing::info_span!("modal.open").entered();
+
     let ctx = expect_context::<ArgsModalCtx>();
 
     let title = Signal::derive(move || move_tr!("apply-features-title").get());
@@ -503,6 +513,14 @@ pub fn ArgsModal() -> impl IntoView {
                     let next_sig = snapshots[i + 1];
                     let key = feature_keys[i].clone();
                     Effect::new(move |_| {
+                        #[cfg(feature = "perf-marks")]
+                        let _cascade_span = tracing::info_span!(
+                            "cascade.step",
+                            idx = i,
+                            feat = %key.name,
+                        )
+                        .entered();
+
                         let prev = prev_sig.get();
                         // TODO(perf): N `clone_lean` per keystroke. Small
                         // for level-up / user-add; rebuild chains ~20+

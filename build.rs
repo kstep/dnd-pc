@@ -1,4 +1,4 @@
-use std::process::Command;
+use std::{env, path::PathBuf, process::Command};
 
 fn main() {
     let commit = Command::new("git")
@@ -17,8 +17,25 @@ fn main() {
         .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
         .unwrap_or_default();
 
+    // Custom profile name lives in the OUT_DIR path:
+    //   target/<profile>/build/<hash>/out
+    //   target/wasm32-unknown-unknown/<profile>/build/<hash>/out
+    // Cargo's own `PROFILE` env var collapses every custom profile down to
+    // its inherit root ("release"), so parsing the path is the only way to
+    // preserve names like "perf".
+    let profile = env::var("OUT_DIR")
+        .ok()
+        .and_then(|out| {
+            PathBuf::from(out)
+                .ancestors()
+                .nth(3)
+                .and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
+        })
+        .unwrap_or_else(|| "unknown".to_string());
+
     println!("cargo:rustc-env=BUILD_COMMIT={commit}");
     println!("cargo:rustc-env=BUILD_DATE={date}");
+    println!("cargo:rustc-env=BUILD_PROFILE={profile}");
     println!("cargo:rerun-if-env-changed=PROXY_URL");
     // Rebuild when HEAD moves (new commit, checkout, rebase, amend) so
     // BUILD_COMMIT/BUILD_DATE stay in sync. Resolve through `git rev-parse`
