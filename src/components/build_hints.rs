@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use leptos::prelude::*;
-use leptos_fluent::move_tr;
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
 use crate::{
@@ -8,9 +10,34 @@ use crate::{
         hint_banner::HintBanner,
     },
     hooks::use_hash_href,
-    model::{Character, Feature, FeatureValue},
+    model::{Character, Feature, FeatureValue, RebuildReason},
     rules::RulesRegistry,
 };
+
+impl RebuildReason {
+    fn label(&self, i18n: &I18n) -> String {
+        match self {
+            Self::SpeciesChanged => i18n.tr("rebuild-reason-species").into_owned(),
+            Self::BackgroundChanged => i18n.tr("rebuild-reason-background").into_owned(),
+            Self::ClassRemoved(class) => {
+                let mut args = HashMap::new();
+                args.insert("class".into(), class.clone().into());
+                i18n.tr_with_args("rebuild-reason-class-removed", &args)
+            }
+            Self::LevelLowered {
+                class,
+                applied,
+                current,
+            } => {
+                let mut args = HashMap::new();
+                args.insert("class".into(), class.clone().into());
+                args.insert("applied".into(), (*applied).into());
+                args.insert("current".into(), (*current).into());
+                i18n.tr_with_args("rebuild-reason-level-lowered", &args)
+            }
+        }
+    }
+}
 
 fn has_empty_choice(feature: &Feature, character: &Character) -> bool {
     character
@@ -80,7 +107,9 @@ pub fn BuildReplayHint() -> impl IntoView {
 pub fn BuildNeedsRebuildHint() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
-    let visible = Signal::derive(move || store.read().needs_rebuild());
+    let i18n = expect_context::<I18n>();
+    let reasons = Signal::derive(move || store.read().rebuild_reasons());
+    let visible = Signal::derive(move || !reasons.read().is_empty());
     view! {
         <HintBanner
             icon="wrench"
@@ -90,6 +119,17 @@ pub fn BuildNeedsRebuildHint() -> impl IntoView {
             on_action=Callback::new(move |()| rebuild(store, registry))
         >
             <p class="hint-banner-text">{move_tr!("build-needs-rebuild-title")}</p>
+            <ul class="hint-banner-reasons">
+                {move || {
+                    reasons
+                        .get()
+                        .into_iter()
+                        .map(|reason| view! {
+                            <li>{reason.label(&i18n)}</li>
+                        })
+                        .collect_view()
+                }}
+            </ul>
         </HintBanner>
     }
 }

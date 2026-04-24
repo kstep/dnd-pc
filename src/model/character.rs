@@ -21,6 +21,21 @@ const DEFAULT_SPEED: u32 = 30;
 /// 20 reuse the level-20 row for spell slots and report a 0 XP threshold.
 pub const MAX_CLASS_LEVEL: u32 = 40;
 
+/// Why the character requires a `rebuild()`. Reported by
+/// `Character::rebuild_reasons` so the UI can explain what specifically
+/// drifted between `identity` and `applied`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RebuildReason {
+    SpeciesChanged,
+    BackgroundChanged,
+    ClassRemoved(String),
+    LevelLowered {
+        class: String,
+        applied: u32,
+        current: u32,
+    },
+}
+
 /// Proficiency bonus for a given character level (D&D 5e standard
 /// progression).
 pub fn proficiency_bonus_for_level(level: u32) -> i32 {
@@ -422,39 +437,53 @@ impl Character {
             })
     }
 
-    /// True if `applied` references slots that no longer match `identity`:
-    /// species/background unapplied while features already exist (apply
-    /// pipeline runs species/background **before** other features, so
-    /// inserting them after the fact would violate ordering), a class
-    /// removed/renamed, or a class level lowered below previously-applied
-    /// levels. These cases require `rebuild()` because forward apply cannot
-    /// reorder or retract feature contributions.
-    pub fn needs_rebuild(&self) -> bool {
+    /// Returns the list of drift reasons that require `rebuild()`. Empty
+    /// when applied state matches identity. UI surfaces this list in the
+    /// rebuild banner so the user knows what triggered it.
+    pub fn rebuild_reasons(&self) -> Vec<RebuildReason> {
+        let mut reasons = Vec::new();
         let has_features = !self.features.list.is_empty();
+
         if !self.identity.species.is_empty() && !self.applied.species && has_features {
-            return true;
+            reasons.push(RebuildReason::SpeciesChanged);
         }
         if !self.identity.background.is_empty() && !self.applied.background && has_features {
-            return true;
+            reasons.push(RebuildReason::BackgroundChanged);
         }
         // Applied levels for a class no longer present in identity (deleted or
         // renamed). Empty level sets are tolerated — they may be tombstones.
-        let stale_class = self.applied.levels.iter().any(|(class, lvls)| {
-            !lvls.is_empty() && !self.identity.classes.iter().any(|cl| &cl.class == class)
-        });
-        if stale_class {
-            return true;
+        for (class, lvls) in &self.applied.levels {
+            if lvls.is_empty() {
+                continue;
+            }
+            if !self.identity.classes.iter().any(|cl| &cl.class == class) {
+                reasons.push(RebuildReason::ClassRemoved(class.clone()));
+            }
         }
         // Class level lowered: applied retains levels above the current
         // identity level.
-        self.identity.classes.iter().any(|cl| {
-            !cl.class.is_empty()
-                && self
-                    .applied
-                    .levels
-                    .get(&cl.class)
-                    .is_some_and(|lvls| lvls.iter().any(|&lvl| lvl > cl.level))
-        })
+        for cl in &self.identity.classes {
+            if cl.class.is_empty() {
+                continue;
+            }
+            if let Some(lvls) = self.applied.levels.get(&cl.class)
+                && let Some(&max) = lvls.iter().max()
+                && max > cl.level
+            {
+                reasons.push(RebuildReason::LevelLowered {
+                    class: cl.class.clone(),
+                    applied: max,
+                    current: cl.level,
+                });
+            }
+        }
+        reasons
+    }
+
+    /// True if `applied` references slots that no longer match `identity`.
+    /// See `rebuild_reasons` for the breakdown.
+    pub fn needs_rebuild(&self) -> bool {
+        !self.rebuild_reasons().is_empty()
     }
 
     pub fn level(&self) -> u32 {
