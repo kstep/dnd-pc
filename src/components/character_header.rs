@@ -9,7 +9,7 @@ use uuid::Uuid;
 use crate::{
     BASE_URL,
     components::{
-        apply::{apply_with_modal, rebuild, replay_with_modal},
+        apply::{apply_pending, rebuild, replay_with_modal},
         avatar::Avatar as AvatarView,
         avatar_generate_modal::AvatarGenerateModal,
         background_field::BackgroundField,
@@ -25,10 +25,7 @@ use crate::{
     model::{
         AppliedStoreFields, Avatar, Character, CharacterIdentityStoreFields, CharacterStoreFields,
     },
-    rules::{
-        DefinitionStore, RulesRegistry,
-        apply::{PendingFeature, apply_new_features, collect_class_features},
-    },
+    rules::{DefinitionStore, RulesRegistry},
     storage,
 };
 
@@ -80,53 +77,31 @@ pub fn CharacterHeader() -> impl IntoView {
     let has_levelable = Memo::new(move |_| !eligible_classes.read().is_empty());
 
     let level_up_class = move |class_idx: usize| {
-        let (class_key, current_level) = {
+        let class_key = {
             let character = store.read_untracked();
-            let cl = &character.identity.classes[class_idx];
-            (cl.class.clone(), cl.level)
+            character.identity.classes[class_idx].class.clone()
         };
 
         let Some(max_level) = registry.classes().with(&class_key, |def| def.max_level()) else {
             log::warn!("level_up_class: class definition not loaded: {class_key}");
             return;
         };
-        if current_level >= max_level {
-            return;
+        {
+            let mut classes = classes.write();
+            let Some(cl) = classes.get_mut(class_idx) else {
+                return;
+            };
+            if cl.level >= max_level {
+                return;
+            }
+            cl.level += 1;
         }
 
-        let new_level = current_level + 1;
-        classes.write()[class_idx].level = new_level;
-
-        let pending: Vec<PendingFeature> = registry.with_features_index_untracked(|fi| {
-            let character = store.read_untracked();
-            registry
-                .classes()
-                .with(&class_key, |def| {
-                    (1..=new_level)
-                        .filter(|lvl| !character.applied.contains_level(&class_key, *lvl))
-                        .flat_map(|lvl| {
-                            collect_class_features(&character, class_idx, lvl, def, fi)
-                                .collect::<Vec<_>>()
-                        })
-                        .collect::<Vec<_>>()
-                })
-                .unwrap_or_default()
-        });
-
-        let class_key_cb = class_key;
-        apply_with_modal(
-            store,
-            registry,
-            pending,
-            None,
-            move |character, pending, inputs, fi| {
-                apply_new_features(fi, character, pending, Some(&inputs.feature_inputs));
-                let cur = character.identity.classes[class_idx].level;
-                for lvl in 1..=cur {
-                    character.applied.mark_level(&class_key_cb, lvl);
-                }
-            },
-        );
+        // Applies every pending class level (not only the one we just bumped),
+        // so any drift accumulated before the click — e.g. a class that was
+        // added but never applied — gets resolved together with the new level.
+        // Internally delegates to rebuild() if the character needs one.
+        apply_pending(store, registry);
     };
 
     let on_level_up = move |_| {

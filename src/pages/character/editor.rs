@@ -47,7 +47,9 @@ pub fn CharacterEditor() -> impl IntoView {
     let backstory_has_pending = Signal::derive(move || store.read().personality.history.is_empty());
     let build_has_pending = Signal::derive(move || {
         let character = store.read();
-        character.features.iter().any(|f| !f.applied)
+        character.needs_rebuild()
+            || character.has_pending_apply()
+            || character.features.iter().any(|f| !f.applied)
             || character.features.values().any(|fd| {
                 fd.fields.iter().any(|f| {
                 matches!(

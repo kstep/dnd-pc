@@ -5,7 +5,9 @@ use reactive_stores::Store;
 use crate::{
     components::{
         apply::PreviewContext,
-        build_hints::{BuildChoiceFillHint, BuildReplayHint},
+        build_hints::{
+            BuildChoiceFillHint, BuildNeedsRebuildHint, BuildPendingApplyHint, BuildReplayHint,
+        },
         datalist_input::DatalistOption,
         feature_row::FeatureRow,
     },
@@ -75,6 +77,8 @@ pub fn FeaturesPanel() -> impl IntoView {
     });
 
     view! {
+        <BuildNeedsRebuildHint />
+        <BuildPendingApplyHint />
         <BuildChoiceFillHint />
         <BuildReplayHint />
         <button class="btn-primary" on:click=add_feature>

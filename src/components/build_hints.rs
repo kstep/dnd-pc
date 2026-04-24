@@ -3,7 +3,10 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{apply::replay_with_modal, hint_banner::HintBanner},
+    components::{
+        apply::{apply_pending, rebuild, replay_with_modal},
+        hint_banner::HintBanner,
+    },
     hooks::use_hash_href,
     model::{Character, Feature, FeatureValue},
     rules::RulesRegistry,
@@ -69,6 +72,45 @@ pub fn BuildReplayHint() -> impl IntoView {
         >
             <p class="hint-banner-text">{move_tr!("build-replay-hint-title")}</p>
             {feature_link_list(store, |feature, _| !feature.applied)}
+        </HintBanner>
+    }
+}
+
+#[component]
+pub fn BuildNeedsRebuildHint() -> impl IntoView {
+    let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
+    let visible = Signal::derive(move || store.read().needs_rebuild());
+    view! {
+        <HintBanner
+            icon="wrench"
+            class="hint-banner-wide"
+            visible=visible
+            action_label=move_tr!("rebuild")
+            on_action=Callback::new(move |()| rebuild(store, registry))
+        >
+            <p class="hint-banner-text">{move_tr!("build-needs-rebuild-title")}</p>
+        </HintBanner>
+    }
+}
+
+#[component]
+pub fn BuildPendingApplyHint() -> impl IntoView {
+    let store = expect_context::<Store<Character>>();
+    let registry = expect_context::<RulesRegistry>();
+    let visible = Signal::derive(move || {
+        let character = store.read();
+        !character.needs_rebuild() && character.has_pending_apply()
+    });
+    view! {
+        <HintBanner
+            icon="arrow-up"
+            class="hint-banner-wide"
+            visible=visible
+            action_label=move_tr!("apply")
+            on_action=Callback::new(move |()| apply_pending(store, registry))
+        >
+            <p class="hint-banner-text">{move_tr!("build-pending-apply-title")}</p>
         </HintBanner>
     }
 }

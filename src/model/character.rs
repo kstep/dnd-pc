@@ -377,18 +377,13 @@ impl Character {
         self.caster_info(pool).0
     }
 
-    fn spell_slots_for_caster_level(&self, pool: SpellSlotPool) -> &'static [u32] {
-        self.caster_level(pool)
+    pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
+        let (caster_level, caster_classes) = self.caster_info(pool);
+        let table_slots: &[u32] = caster_level
             .checked_sub(1)
             .and_then(|level| SPELL_SLOT_TABLE.get(level as usize))
             .copied()
-            .unwrap_or(&[])
-    }
-
-    pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
-        let (_, caster_classes) = self.caster_info(pool);
-
-        let table_slots = self.spell_slots_for_caster_level(pool);
+            .unwrap_or(&[]);
         let effective: &[u32] = match caster_classes {
             0 => &[],
             1 => slots
@@ -405,11 +400,68 @@ impl Character {
             && self.identity.classes.iter().all(|cl| !cl.class.is_empty())
     }
 
+    /// True if there are forward-only changes that can be materialized
+    /// without `rebuild()`: pending class levels (new class or new levels of
+    /// an existing class), or species/background not yet applied while
+    /// `features` is still empty (first-time application). Once any feature
+    /// has been applied, species/background cannot be inserted ahead of it
+    /// — that case routes through `needs_rebuild()` instead. Callers should
+    /// check `needs_rebuild()` first; apply only makes sense when `applied`
+    /// is a strict prefix of `identity`.
+    pub fn has_pending_apply(&self) -> bool {
+        let no_features = self.features.list.is_empty();
+        let species_apply =
+            !self.identity.species.is_empty() && !self.applied.species && no_features;
+        let background_apply =
+            !self.identity.background.is_empty() && !self.applied.background && no_features;
+        species_apply
+            || background_apply
+            || self.identity.classes.iter().any(|cl| {
+                !cl.class.is_empty()
+                    && (1..=cl.level).any(|lvl| !self.applied.contains_level(&cl.class, lvl))
+            })
+    }
+
+    /// True if `applied` references slots that no longer match `identity`:
+    /// species/background unapplied while features already exist (apply
+    /// pipeline runs species/background **before** other features, so
+    /// inserting them after the fact would violate ordering), a class
+    /// removed/renamed, or a class level lowered below previously-applied
+    /// levels. These cases require `rebuild()` because forward apply cannot
+    /// reorder or retract feature contributions.
+    pub fn needs_rebuild(&self) -> bool {
+        let has_features = !self.features.list.is_empty();
+        if !self.identity.species.is_empty() && !self.applied.species && has_features {
+            return true;
+        }
+        if !self.identity.background.is_empty() && !self.applied.background && has_features {
+            return true;
+        }
+        // Applied levels for a class no longer present in identity (deleted or
+        // renamed). Empty level sets are tolerated — they may be tombstones.
+        let stale_class = self.applied.levels.iter().any(|(class, lvls)| {
+            !lvls.is_empty() && !self.identity.classes.iter().any(|cl| &cl.class == class)
+        });
+        if stale_class {
+            return true;
+        }
+        // Class level lowered: applied retains levels above the current
+        // identity level.
+        self.identity.classes.iter().any(|cl| {
+            !cl.class.is_empty()
+                && self
+                    .applied
+                    .levels
+                    .get(&cl.class)
+                    .is_some_and(|lvls| lvls.iter().any(|&lvl| lvl > cl.level))
+        })
+    }
+
     pub fn level(&self) -> u32 {
         self.identity
             .classes
             .iter()
-            .map(|c| c.level)
+            .map(|cl| cl.level)
             .sum::<u32>()
             .max(1)
     }
@@ -924,7 +976,7 @@ pub mod tests {
 
     use super::*;
     use crate::{
-        model::{Armor, ClassLevel, Currency, Expr, FeatureSource, Money, SpellData},
+        model::{Armor, ClassLevel, Currency, Expr, Feature, FeatureSource, Money, SpellData},
         vecset::VecSet,
     };
 
@@ -1730,6 +1782,192 @@ pub mod tests {
         ch.abilities.constitution = 6;
         let hp = ch.compute_hp_max();
         assert_eq!(hp, 24);
+    }
+
+    // --- has_pending_apply / needs_rebuild ---
+
+    fn drift_character() -> Character {
+        let mut ch = test_character();
+        ch.identity.classes.clear();
+        ch.identity.species.clear();
+        ch.identity.background.clear();
+        ch.applied = Applied::default();
+        ch
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_fresh_character_is_consistent() {
+        let ch = drift_character();
+        assert!(!ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_first_species_apply_no_features_yet() {
+        // Fresh character picked species — features list still empty, so
+        // species can be applied forward without rebuild.
+        let mut ch = drift_character();
+        ch.identity.species = "Elf".to_string();
+        assert!(ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_first_background_apply_no_features_yet() {
+        let mut ch = drift_character();
+        ch.identity.background = "Sage".to_string();
+        assert!(ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_species_changed_after_apply_needs_rebuild() {
+        // Character already has applied class features; user changes species
+        // → species_field reset applied.species=false. Forward apply would
+        // insert species after class features (wrong order) — rebuild required.
+        let mut ch = drift_character();
+        ch.identity.species = "Elf".to_string();
+        ch.identity.background = "Sage".to_string();
+        ch.applied.background = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 1,
+            ..ClassLevel::default()
+        });
+        ch.applied.mark_level("Wizard", 1);
+        ch.features.list.push(Feature {
+            name: "Magic Missile".to_string(),
+            source: FeatureSource::Class("Wizard".into(), 1),
+            applied: true,
+            ..Default::default()
+        });
+        // applied.species = false (reset by species_field on rename).
+        assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_background_changed_after_apply_needs_rebuild() {
+        let mut ch = drift_character();
+        ch.identity.species = "Elf".to_string();
+        ch.identity.background = "Sage".to_string();
+        ch.applied.species = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 1,
+            ..ClassLevel::default()
+        });
+        ch.applied.mark_level("Wizard", 1);
+        ch.features.list.push(Feature {
+            name: "Magic Missile".to_string(),
+            source: FeatureSource::Class("Wizard".into(), 1),
+            applied: true,
+            ..Default::default()
+        });
+        assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_pending_levels_existing_class() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 5,
+            ..ClassLevel::default()
+        });
+        ch.applied.mark_level("Wizard", 1);
+        ch.applied.mark_level("Wizard", 2);
+        ch.applied.mark_level("Wizard", 3);
+        assert!(ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_new_class_no_applied_entry() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Cleric".to_string(),
+            level: 1,
+            ..ClassLevel::default()
+        });
+        assert!(ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_class_removed_needs_rebuild() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        // Identity has no classes, but applied still tracks Wizard.
+        ch.applied.mark_level("Wizard", 1);
+        ch.applied.mark_level("Wizard", 2);
+        assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_class_level_lowered_needs_rebuild() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        for lvl in 1..=5 {
+            ch.applied.mark_level("Wizard", lvl);
+        }
+        assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_empty_class_name_ignored() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        // Pristine ClassLevel with empty class name (the add_class entry).
+        ch.identity.classes.push(ClassLevel::default());
+        assert!(!ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_multiclass_one_class_pending_other_applied() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        ch.identity.classes.push(ClassLevel {
+            class: "Cleric".to_string(),
+            level: 2,
+            ..ClassLevel::default()
+        });
+        // Wizard fully applied, Cleric brand-new.
+        for lvl in 1..=3 {
+            ch.applied.mark_level("Wizard", lvl);
+        }
+        assert!(ch.has_pending_apply());
+        assert!(!ch.needs_rebuild());
     }
 
     #[wasm_bindgen_test]
