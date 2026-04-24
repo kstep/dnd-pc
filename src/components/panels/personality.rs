@@ -3,8 +3,9 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
-use crate::model::{
-    Alignment, Character, CharacterStoreFields, PersonalityStoreFields, Translatable,
+use crate::{
+    model::{Alignment, Character, CharacterStoreFields, PersonalityStoreFields, Translatable},
+    storage,
 };
 
 #[component]
@@ -13,8 +14,14 @@ pub fn PersonalityPanel() -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     let personality = store.personality();
-    let expanded = RwSignal::new(false);
-    let toggle = move |_| expanded.update(|v| *v = !*v);
+    let initial = storage::load_personality_expanded()
+        .unwrap_or_else(|| store.read_untracked().personality.history.is_empty());
+    let expanded = RwSignal::new(initial);
+    let toggle = move |_| {
+        let next = !expanded.get_untracked();
+        expanded.set(next);
+        storage::save_personality_expanded(next);
+    };
 
     view! {
         <section class:expanded=move || expanded.get()>

@@ -271,6 +271,16 @@ pub fn save_last_editor_tab(tab: &str) {
     let _ = LocalStorage::set(LAST_EDITOR_TAB_KEY, tab);
 }
 
+const PERSONALITY_EXPANDED_KEY: &str = "dnd_pc_personality_expanded";
+
+pub fn load_personality_expanded() -> Option<bool> {
+    LocalStorage::get(PERSONALITY_EXPANDED_KEY).ok()
+}
+
+pub fn save_personality_expanded(expanded: bool) {
+    let _ = LocalStorage::set(PERSONALITY_EXPANDED_KEY, expanded);
+}
+
 const AI_SETTINGS_KEY: &str = "dnd_pc_ai_settings";
 
 pub fn load_ai_settings() -> AiSettings {
