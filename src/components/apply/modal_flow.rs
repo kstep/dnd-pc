@@ -131,10 +131,10 @@ pub fn edit_inputs_modal(
     let key = FeatureKey::new(name, source);
     let ctx = expect_context::<ArgsModalCtx>();
     ctx.open(vec![pending_input], base, move |inputs| {
-        // If the user picked a replacement, rename the feature in-place to the
-        // replacement and pull its inputs under the replacement key. Otherwise
-        // just stash new inputs under the original key. Either way we mark
-        // `applied = false` so the Replay banner performs the actual re-apply.
+        // If the user picked a replacement, rename the feature in-place and
+        // pull inputs under the replacement key. `applied = false` only when
+        // something actually changed — opening + closing the modal without
+        // edits should not trigger a Replay banner.
         let replacement_name = inputs.replacements.get(&key.name).cloned();
         let effective_key = match &replacement_name {
             Some(name) => FeatureKey::new(name.clone(), key.source.clone()),
@@ -149,6 +149,9 @@ pub fn edit_inputs_modal(
             registry.with_features_index_untracked(|fi| {
                 for feature in character.features.iter_mut() {
                     if feature.name == key.name && feature.source == key.source {
+                        let renamed = replacement_name
+                            .as_ref()
+                            .is_some_and(|new_name| new_name != &feature.name);
                         if let Some(new_name) = &replacement_name
                             && let Some(feat_def) = fi.get(new_name.as_str())
                         {
@@ -157,8 +160,11 @@ pub fn edit_inputs_modal(
                             feature.description = feat_def.description.clone();
                             feature.category = feat_def.category;
                         }
+                        let inputs_changed = feature.inputs != new_inputs;
                         feature.inputs = new_inputs.clone();
-                        feature.applied = false;
+                        if renamed || inputs_changed {
+                            feature.applied = false;
+                        }
                         break;
                     }
                 }
