@@ -274,7 +274,7 @@ impl FeatureDefinition {
             || self
                 .assign
                 .as_ref()
-                .is_some_and(|assignments| assignments.iter().any(|a| a.is_interactive()))
+                .is_some_and(|assignments| assignments.iter().any(|assign| assign.is_interactive()))
     }
 
     /// Returns the single `OnCompute` assignment that writes to `AC`, if
@@ -335,8 +335,10 @@ impl FeatureDefinition {
         self.assign
             .iter()
             .flatten()
-            .filter(move |a| a.when == when && a.expr.has_var(|v| matches!(v, Attribute::Arg(_))))
-            .map(|a| &a.expr)
+            .filter(move |assign| {
+                assign.when == when && assign.expr.has_var(|v| matches!(v, Attribute::Arg(_)))
+            })
+            .map(|assign| &assign.expr)
     }
 
     /// Returns assignment expressions for the given condition that could

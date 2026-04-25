@@ -36,6 +36,16 @@ impl SpellData {
     pub fn is_two_tier(&self) -> bool {
         self.known.is_some()
     }
+
+    /// Effective caster level when one class contributes to the pool.
+    pub fn single_caster_level(class_level: u32, coef: u32) -> u32 {
+        let threshold = if coef == 3 { 3 } else { 1 };
+        if class_level < threshold {
+            0
+        } else {
+            class_level.div_ceil(coef)
+        }
+    }
 }
 
 impl Default for SpellData {

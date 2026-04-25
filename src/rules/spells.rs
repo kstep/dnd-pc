@@ -94,14 +94,8 @@ pub struct SpellsDefinition {
 }
 
 impl SpellsDefinition {
-    /// Bootstrap per-feature `SpellData`: ensure the entry exists, import
-    /// sticky spells from an inline list, and refresh `free_uses.max` on
-    /// existing prepared spells. Numeric scaling (slot totals, prepared /
-    /// known counts, cantrips) is now driven by `OnFeatureAdd` /
-    /// `OnCompute` `assign` expressions on the feature itself — see
-    /// `Slot`, `SlotPool`, `CasterAbility`, `CasterCoef`,
-    /// `SpellCantrips`, `SpellReady`, `SpellKnown` resolvers in
-    /// `src/model/character.rs`.
+    /// Structural bootstrap: SpellData skeleton + sticky import + free_uses
+    /// backfill. Numeric scaling lives in feature `assign` expressions.
     pub fn apply(
         &self,
         level: u32,
@@ -109,11 +103,6 @@ impl SpellsDefinition {
         feature_name: &str,
         free_uses_max: u32,
     ) {
-        // Skeleton — ensure SpellData exists so subsequent OnFeatureAdd
-        // assigns (`SLOT.POOL`, `CASTER_ABILITY`, `CASTER_COEF`) have a
-        // target. Persisted SpellData on load is already the source of
-        // truth for pool / ability / coef; OnFeatureAdd writes them only
-        // on the first add.
         let entry = character
             .features
             .entry(feature_name.to_string())
@@ -124,25 +113,20 @@ impl SpellsDefinition {
             return;
         };
 
-        // Sticky spells from inline list — route to known (spellbook) if
-        // two-tier.
         if let SpellList::Inline(list) = &self.list {
-            let two_tier = spell_data.is_two_tier();
-            let target = if two_tier {
-                spell_data.known.get_or_insert_with(Vec::new)
-            } else {
-                &mut spell_data.spells
-            };
             for source in list.values().filter(|s| s.sticky && s.min_level <= level) {
-                if target.iter().any(|existing| existing.name == source.name) {
+                if spell_data
+                    .spells
+                    .iter()
+                    .any(|existing| existing.name == source.name)
+                {
                     continue;
                 }
-                let free_uses =
-                    (!two_tier && source.cost > 0 && free_uses_max > 0).then_some(FreeUses {
-                        used: 0,
-                        max: free_uses_max,
-                    });
-                target.push(Spell {
+                let free_uses = (source.cost > 0 && free_uses_max > 0).then_some(FreeUses {
+                    used: 0,
+                    max: free_uses_max,
+                });
+                spell_data.spells.push(Spell {
                     name: source.name.clone(),
                     label: source.label.clone(),
                     description: source.description.clone(),
@@ -234,9 +218,9 @@ mod tests {
                 .join("public/data/spells")
                 .join(format!("{name}.json")),
         )
-        .unwrap_or_else(|e| panic!("failed to read {path}: {e}"));
+        .unwrap_or_else(|error| panic!("failed to read {path}: {error}"));
         serde_json::from_str::<SpellMap>(&data)
-            .unwrap_or_else(|e| panic!("failed to parse {path}: {e}"))
+            .unwrap_or_else(|error| panic!("failed to parse {path}: {error}"))
     }
 
     #[test]
@@ -305,7 +289,7 @@ mod tests {
                     total_effects += 1;
                     if let Some(ref expr) = effect.expr {
                         // Verify the expression can be displayed (round-trip check)
-                        let display = format!("{}", expr);
+                        let display = format!("{expr}");
                         assert!(
                             !display.is_empty(),
                             "{name}/{spell_name}: effect '{}' has empty expression display",

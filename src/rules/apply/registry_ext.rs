@@ -33,18 +33,7 @@ impl RulesRegistry {
         self.recompute_dynamic_fields(character);
     }
 
-    /// Bootstrap per-feature `SpellData` for all features carrying a
-    /// `SpellsDefinition`: ensure the entry exists, import sticky spells
-    /// from inline lists, and refresh `free_uses.max` on prepared spells.
-    ///
-    /// Numeric scaling — slot totals, prepared / known counts, cantrip
-    /// counts — is driven by `OnFeatureAdd` and `OnCompute` `assign`
-    /// expressions on the feature itself (see `Slot`, `SlotPool`,
-    /// `CasterAbility`, `CasterCoef`, `SpellCantrips`, `SpellReady`,
-    /// `SpellKnown` resolvers in `src/model/character.rs`). This function
-    /// only handles structural bootstrap; calling it before the
-    /// `OnCompute` pass guarantees `Context::pool` resolves through the
-    /// existing SpellData when scaling assigns run.
+    /// Per-feature SpellData bootstrap: skeleton + sticky import + free_uses.
     fn refresh_spell_structure(&self, character: &mut Character) {
         self.with_features_index_untracked(|features_index| {
             // Snapshot before mutating: `spells_def.apply` takes

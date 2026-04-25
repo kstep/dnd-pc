@@ -93,7 +93,7 @@ Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `
 - `Character::eq_derived(&other)` — silent-commit gate; compares `abilities + saving_throws + skills + proficiencies + languages + damage_modifiers` (the derived surface feature-apply writes to). If `simulated.eq_derived(original)` passes → commit silently with toast, else open modal with partial solver prefill.
 - `stored_inputs_usable(feat_def, stored)` — guards Phase 1 against half-migrated `[AssignInputs { args: [] }]` entries that would crash apply with `UnsupportedVar("ARG.0")`; unusable stored falls through to the solver.
 
-**Key types:** `FeatureDefinition` (languages, stackable, selectable, spells, fields, assign, ac_expr, prerequisites), `FieldKind` (`Points`, `Choice`, `Die`, `Bonus`, `FreeUses`), `SpellsDefinition`, `SpellList` (`Ref { from }` or `Inline`), `ChoiceOptions` (`List` or `Ref`), `ActionType` (`Action`/`BonusAction`/`Reaction`), `Assignment { expr, when }`, `WhenCondition` (`OnFeatureAdd`/`OnLevelUp`/`OnLongRest`/`OnShortRest`/`OnCompute`).
+**Key types:** `FeatureDefinition` (languages, stackable, selectable, spells, fields, assign, ac_expr, prerequisites), `FieldKind` (`Points`, `Choice`, `Die`, `Bonus`, `FreeUses`), `SpellsDefinition`, `SpellList` (`Ref { from }` or `Inline`), `ChoiceOptions` (`List` or `Ref`), `ActionType` (`Action`/`BonusAction`/`Reaction`), `Assignment { expr, when }`, `WhenCondition` (`OnFeatureAdd`/`OnLongRest`/`OnShortRest`/`OnCompute`).
 
 ### i18n
 

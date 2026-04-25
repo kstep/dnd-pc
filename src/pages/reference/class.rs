@@ -298,7 +298,7 @@ pub fn ClassReference() -> impl IntoView {
                                             {has_ready.then(|| view! { <th>{move_tr!("ref-spells-ready")}</th> })}
                                             {has_known.then(|| view! { <th>{move_tr!("ref-spells-known")}</th> })}
                                             {(1..=max_slot_level).map(|slot_level| {
-                                                view! { <th>{format!("{slot_level}")}</th> }
+                                                view! { <th>{slot_level}</th> }
                                             }).collect_view()}
                                         })}
                                         {field_columns.iter().map(|fc| {

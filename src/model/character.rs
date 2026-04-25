@@ -353,19 +353,8 @@ impl Character {
         self.combat.attack_count = 1;
     }
 
-    /// Returns (caster_level, caster_class_count) for the given pool.
-    ///
-    /// Single caster class: bespoke per-coef table (PHB single-class slot
-    /// table for half / third casters maps to the full-caster table indexed
-    /// by `ceil(class_level / coef)`). Threshold: 0 if class_level < coef
-    /// (Paladin / Ranger get nothing at L1, EK / AT nothing at L1-L2).
-    ///
-    /// Multi-class: PHB Multiclass Spellcaster Table — sum of
-    /// `floor(class_level / coef)` per caster class. Half / third casters
-    /// contribute fractional class levels.
-    ///
-    /// Branching matches the PHB canonical behaviour preserved by the old
-    /// `update_spell_slots` (which used a JSON override for single-class).
+    /// `(caster_level, caster_class_count)` for `pool`. Single class:
+    /// PHB single-class table. Multi: PHB Multiclass Spellcaster Table.
     fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
         let entries: Vec<(u32, u32)> = self
             .identity
@@ -391,17 +380,7 @@ impl Character {
 
         let caster_level = match entries.as_slice() {
             [] => 0,
-            [(level, coef)] => {
-                // Third casters (coef=3) start at class level 3; full and
-                // half casters in this codebase start at class level 1
-                // (matches 2024 D&D rules used by feature definitions).
-                let threshold = if *coef == 3 { 3 } else { 1 };
-                if *level < threshold {
-                    0
-                } else {
-                    (*level).div_ceil(*coef)
-                }
-            }
+            [(level, coef)] => SpellData::single_caster_level(*level, *coef),
             many => many.iter().map(|(level, coef)| level / coef).sum(),
         };
 
@@ -755,11 +734,16 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
-            Attribute::CasterLevel(None) => Ok(self
-                .caster_level(SpellSlotPool::Arcane)
-                .max(self.caster_level(SpellSlotPool::Pact))
-                as i32),
+            Attribute::CasterLevel(None) => Ok(self.caster_level(SpellSlotPool::default()) as i32),
             Attribute::CasterLevel(Some(pool)) => Ok(self.caster_level(pool) as i32),
+            Attribute::Slot(pool, n) => {
+                let pool = pool.unwrap_or_default();
+                Ok(self.spell_slots.get_slot(pool, n as u32).total as i32)
+            }
+            Attribute::SlotUsed(pool, n) => {
+                let pool = pool.unwrap_or_default();
+                Ok(self.spell_slots.get_slot(pool, n as u32).used as i32)
+            }
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Attacks => Ok(self.combat.attack_count as i32),
@@ -1019,8 +1003,6 @@ impl expr::Context<Attribute, i32> for Context<'_> {
                 Ok(())
             }
             Attribute::SpellCantrips => {
-                let pool = self.feature_pool()?;
-                let _ = Self::highest_slot_level_for(self.character, pool);
                 let data = self
                     .feature_spell_data_mut()
                     .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellCantrips))?;
@@ -1541,6 +1523,18 @@ pub mod tests {
         make_caster(&mut ch, "Fighter", "Spellcasting", 2, SpellSlotPool::Arcane);
         // 5 / 2 = 3 (rounds up for odd levels)
         assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_third_caster_below_threshold() {
+        let mut ch = test_character();
+        ch.identity.classes[0].level = 1;
+        make_caster(&mut ch, "Fighter", "Spellcasting", 3, SpellSlotPool::Arcane);
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 0);
+        ch.identity.classes[0].level = 2;
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 0);
+        ch.identity.classes[0].level = 3;
+        assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 1);
     }
 
     #[wasm_bindgen_test]
