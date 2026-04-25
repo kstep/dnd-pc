@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, VecDeque};
 
 use crate::{
-    model::{AssignInputs, Character, FeatureData, FeatureSource, Spell, SpellData},
+    model::{AssignInputs, Character, FeatureData, Spell, SpellData},
     rules::{
         WhenCondition,
         apply::pending::{ApplyInputs, FeatureKey, PendingFeature},
@@ -109,31 +109,6 @@ pub fn apply_new_feature(
     );
 }
 
-/// Re-apply OnLevelUp for all currently applied features at their appropriate
-/// level. Class features use their class's current level;
-/// species/background/user features use total character level.
-pub fn reapply_existing(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    character: &mut Character,
-) {
-    let applied: Vec<(String, FeatureSource)> = character
-        .features
-        .iter()
-        .filter(|feature| feature.applied)
-        .map(|feature| (feature.name.clone(), feature.source.clone()))
-        .collect();
-    for (feat_name, source) in &applied {
-        if let Some(feat_def) = features_index.get(feat_name.as_str()) {
-            let level = character.effective_level_for(source);
-            feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
-        } else {
-            log::warn!(
-                "reapply_existing: skipping feature with no definition: name='{feat_name}', source={source:?}"
-            );
-        }
-    }
-}
-
 /// Replay: reset derived state and re-apply all features from stored data.
 /// `pending` should be sorted by `added_at_level`. `inputs` supplies
 /// supplemental ARG values for features that lack stored inputs.
@@ -185,9 +160,6 @@ pub fn replay(
             }
         }
     }
-
-    // Phase 2: OnLevelUp through intermediate levels
-    onlevelup_pass(features_index, character);
 }
 
 /// Build a lean cascade-base character representing the state just before
@@ -222,35 +194,6 @@ pub fn build_cascade_base_before(
         &ApplyInputs::default(),
     );
     clone
-}
-
-/// Fire OnLevelUp for every applied feature at every intermediate level from
-/// its `added_at_level + 1` up to its effective level. Extracted so that
-/// rebuild can reuse the OnLevelUp sweep without running the OnFeatureAdd
-/// phase of `replay()`.
-pub fn onlevelup_pass(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    character: &mut Character,
-) {
-    let applied: Vec<(String, FeatureSource)> = character
-        .features
-        .iter()
-        .filter(|feature| feature.applied)
-        .map(|feature| (feature.name.clone(), feature.source.clone()))
-        .collect();
-    for (feat_name, source) in &applied {
-        let Some(feat_def) = features_index.get(feat_name.as_str()) else {
-            log::warn!(
-                "onlevelup_pass: skipping feature with no definition: name='{feat_name}', source={source:?}"
-            );
-            continue;
-        };
-        let added_level = source.added_at_level();
-        let effective = character.effective_level_for(source);
-        for level in (added_level + 1)..=effective {
-            feat_def.apply(level, character, WhenCondition::OnLevelUp, &[]);
-        }
-    }
 }
 
 /// Restore user spell selections from original SpellData into replayed target.

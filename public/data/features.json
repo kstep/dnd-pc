@@ -220,11 +220,18 @@
       {
         "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
       }
     ],
     "category": "General",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Misty Step",
@@ -239,13 +246,7 @@
             }
           ]
         }
-      ],
-      "levels": {
-        "1": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      ]
     },
     "fields": [
       {
@@ -467,11 +468,18 @@
       {
         "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
       }
     ],
     "category": "General",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Invisibility",
@@ -488,13 +496,7 @@
             }
           ]
         }
-      ],
-      "levels": {
-        "1": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      ]
     },
     "fields": [
       {
@@ -601,11 +603,14 @@
       {
         "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
       }
     ],
     "category": "General",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Detect Thoughts",
@@ -622,8 +627,7 @@
             }
           ]
         }
-      ],
-      "caster_coef": 1
+      ]
     },
     "fields": [
       {
@@ -678,17 +682,21 @@
   {
     "name": "Blessed Warrior",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/cleric.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2
-        }
       }
     },
-    "category": "FightingStyle"
+    "category": "FightingStyle",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = 2"
+      }
+    ]
   },
   {
     "name": "Blind Fighting",
@@ -707,17 +715,21 @@
   {
     "name": "Druidic Warrior",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/druid.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2
-        }
       }
     },
-    "category": "FightingStyle"
+    "category": "FightingStyle",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = 2"
+      }
+    ]
   },
   {
     "name": "Dueling",
@@ -921,142 +933,24 @@
   {
     "name": "Spellcasting (Artificer)",
     "spells": {
-      "casting_ability": 3,
       "list": {
         "from": "spells/artificer.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 2"
       },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 2,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "cantrips": 2,
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "3": {
-          "cantrips": 2,
-          "spells": 4,
-          "slots": [
-            3
-          ]
-        },
-        "4": {
-          "cantrips": 2,
-          "spells": 5,
-          "slots": [
-            3
-          ]
-        },
-        "5": {
-          "cantrips": 2,
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "7": {
-          "cantrips": 2,
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "9": {
-          "cantrips": 2,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "10": {
-          "cantrips": 3,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "cantrips": 3,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "13": {
-          "cantrips": 3,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "14": {
-          "cantrips": 4,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "15": {
-          "cantrips": 4,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "17": {
-          "cantrips": 4,
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "19": {
-          "cantrips": 4,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        }
-      },
-      "caster_coef": 2
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:2, 10:3, 14:4); SPELL.READY = tier(CLASS_LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 7:7, 9:9, 11:10, 13:11, 15:12, 17:14, 19:15); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Tinker's Magic",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Mending",
@@ -1071,9 +965,14 @@
             }
           ]
         }
-      ],
-      "caster_coef": 2
-    }
+      ]
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 2"
+      }
+    ]
   },
   {
     "name": "Replicate Magic Item",
@@ -1479,7 +1378,6 @@
   {
     "name": "Alchemist Spells",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Healing Word",
@@ -1647,7 +1545,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Experimental Elixir",
@@ -1708,7 +1612,6 @@
   {
     "name": "Armorer Spells",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Magic Missile",
@@ -1871,7 +1774,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Dreadnaught"
@@ -1900,7 +1809,6 @@
   {
     "name": "Artillerist Spells",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Shield",
@@ -2072,7 +1980,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Eldritch Cannon"
@@ -2098,7 +2012,6 @@
   {
     "name": "Battle Smith Spells",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Heroism",
@@ -2266,7 +2179,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Steel Defender"
@@ -2283,7 +2202,6 @@
   {
     "name": "Cartographer Spells",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Faerie Fire",
@@ -2478,7 +2396,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Mapping Magic"
@@ -3004,203 +2928,20 @@
   {
     "name": "Spellcasting (Bard)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/bard.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
       },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 4,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "cantrips": 2,
-          "spells": 5,
-          "slots": [
-            3
-          ]
-        },
-        "3": {
-          "cantrips": 2,
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 3,
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "5": {
-          "cantrips": 3,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "6": {
-          "cantrips": 3,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "7": {
-          "cantrips": 3,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "8": {
-          "cantrips": 3,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "9": {
-          "cantrips": 3,
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "10": {
-          "cantrips": 4,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "cantrips": 4,
-          "spells": 16,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ]
-        },
-        "13": {
-          "cantrips": 4,
-          "spells": 17,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ]
-        },
-        "15": {
-          "cantrips": 4,
-          "spells": 18,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "17": {
-          "cantrips": 4,
-          "spells": 19,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "18": {
-          "cantrips": 4,
-          "spells": 20,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "19": {
-          "cantrips": 4,
-          "spells": 21,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "20": {
-          "cantrips": 4,
-          "spells": 22,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            1,
-            1
-          ]
-        }
-      },
-      "caster_coef": 1
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:2, 4:3, 10:4); SPELL.READY = tier(CLASS_LEVEL, 1:4, 2:5, 3:6, 4:7, 5:9, 6:10, 7:11, 8:12, 9:14, 10:15, 11:16, 13:17, 15:18, 17:19, 18:20, 19:21, 20:22); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Expertise",
@@ -3260,7 +3001,6 @@
   {
     "name": "Beguiling Magic",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Charm Person",
@@ -3295,7 +3035,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Mantle of Inspiration",
@@ -3519,203 +3265,20 @@
   {
     "name": "Spellcasting (Cleric)",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/cleric.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
       },
-      "levels": {
-        "1": {
-          "cantrips": 3,
-          "spells": 4,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "cantrips": 3,
-          "spells": 5,
-          "slots": [
-            3
-          ]
-        },
-        "3": {
-          "cantrips": 3,
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 4,
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "5": {
-          "cantrips": 4,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "6": {
-          "cantrips": 4,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "7": {
-          "cantrips": 4,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "8": {
-          "cantrips": 4,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "9": {
-          "cantrips": 4,
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "10": {
-          "cantrips": 5,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "cantrips": 5,
-          "spells": 16,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ]
-        },
-        "13": {
-          "cantrips": 5,
-          "spells": 17,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ]
-        },
-        "15": {
-          "cantrips": 5,
-          "spells": 18,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "17": {
-          "cantrips": 5,
-          "spells": 19,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "18": {
-          "cantrips": 5,
-          "spells": 20,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "19": {
-          "cantrips": 5,
-          "spells": 21,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "20": {
-          "cantrips": 5,
-          "spells": 22,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            1,
-            1
-          ]
-        }
-      },
-      "caster_coef": 1
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:3, 4:4, 10:5); SPELL.READY = tier(CLASS_LEVEL, 1:4, 2:5, 3:6, 4:7, 5:9, 6:10, 7:11, 8:12, 9:14, 10:15, 11:16, 13:17, 15:18, 17:19, 18:20, 19:21, 20:22); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Cleric Subclass"
@@ -3811,7 +3374,6 @@
   {
     "name": "Life Domain Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Bless",
@@ -3967,7 +3529,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Preserve Life",
@@ -4003,7 +3571,6 @@
   {
     "name": "Light Domain Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Burning Hands",
@@ -4176,7 +3743,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Radiance of the Dawn",
@@ -4400,7 +3973,6 @@
   {
     "name": "Trickery Domain Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Charm Person",
@@ -4572,7 +4144,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Trickster's Transposition"
@@ -4580,7 +4158,6 @@
   {
     "name": "War Domain Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Guiding Bolt",
@@ -4755,7 +4332,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "War Priest",
@@ -5258,203 +4841,20 @@
   {
     "name": "Spellcasting (Druid)",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/druid.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
       },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "slots": [
-            2
-          ],
-          "spells": 4
-        },
-        "2": {
-          "cantrips": 2,
-          "slots": [
-            3
-          ],
-          "spells": 5
-        },
-        "3": {
-          "cantrips": 2,
-          "slots": [
-            4,
-            2
-          ],
-          "spells": 6
-        },
-        "4": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3
-          ],
-          "spells": 7
-        },
-        "5": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3,
-            2
-          ],
-          "spells": 9
-        },
-        "6": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3,
-            3
-          ],
-          "spells": 10
-        },
-        "7": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ],
-          "spells": 11
-        },
-        "8": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ],
-          "spells": 12
-        },
-        "9": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ],
-          "spells": 14
-        },
-        "10": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ],
-          "spells": 15
-        },
-        "11": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ],
-          "spells": 16
-        },
-        "13": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ],
-          "spells": 17
-        },
-        "15": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ],
-          "spells": 18
-        },
-        "17": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1,
-            1
-          ],
-          "spells": 19
-        },
-        "18": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            1,
-            1,
-            1,
-            1
-          ],
-          "spells": 20
-        },
-        "19": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ],
-          "spells": 21
-        },
-        "20": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            1,
-            1
-          ],
-          "spells": 22
-        }
-      },
-      "caster_coef": 1
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:2, 4:3, 10:4); SPELL.READY = tier(CLASS_LEVEL, 1:4, 2:5, 3:6, 4:7, 5:9, 6:10, 7:11, 8:12, 9:14, 10:15, 11:16, 13:17, 15:18, 17:19, 18:20, 19:21, 20:22); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Wild Companion",
@@ -5526,7 +4926,6 @@
   {
     "name": "Circle of the Land Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Acid Splash",
@@ -5918,7 +5317,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Land's Aid",
@@ -5974,7 +5379,6 @@
   {
     "name": "Circle of the Moon Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Starry Wisp",
@@ -6076,7 +5480,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Improved Circle Forms"
@@ -6381,7 +5791,6 @@
   {
     "name": "Circle of the Sea Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Ray of Frost",
@@ -6554,7 +5963,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Wrath of the Sea",
@@ -6784,108 +6199,20 @@
   {
     "name": "Spellcasting (Eldritch Knight)",
     "spells": {
-      "casting_ability": 3,
-      "caster_coef": 3,
       "list": {
         "from": "spells/wizard.json"
-      },
-      "levels": {
-        "1": {},
-        "3": {
-          "cantrips": 2,
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 2,
-          "spells": 4,
-          "slots": [
-            3
-          ]
-        },
-        "7": {
-          "cantrips": 2,
-          "spells": 5,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "8": {
-          "cantrips": 2,
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "10": {
-          "cantrips": 3,
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "11": {
-          "cantrips": 3,
-          "spells": 8,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "13": {
-          "cantrips": 3,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "14": {
-          "cantrips": 3,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "16": {
-          "cantrips": 3,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "19": {
-          "cantrips": 3,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "20": {
-          "cantrips": 3,
-          "spells": 13,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        }
       }
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 3"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 3:2, 10:3); SPELL.READY = tier(CLASS_LEVEL, 3:3, 4:4, 7:5, 8:6, 10:7, 11:8, 13:9, 14:10, 16:11, 19:12, 20:13); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "War Bond"
@@ -7862,7 +7189,6 @@
   {
     "name": "Shadowy Figments",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Minor Illusion",
@@ -7880,7 +7206,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Shadow Step",
@@ -7923,7 +7255,6 @@
   {
     "name": "Manipulate Elements",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Elementalism",
@@ -7939,7 +7270,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Elemental Burst",
@@ -8090,106 +7427,20 @@
   {
     "name": "Spellcasting (Paladin)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/paladin.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 2"
       },
-      "levels": {
-        "1": {
-          "spells": 2,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "3": {
-          "spells": 4,
-          "slots": [
-            3
-          ]
-        },
-        "4": {
-          "spells": 5,
-          "slots": [
-            3
-          ]
-        },
-        "5": {
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "7": {
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "9": {
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "13": {
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "15": {
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "17": {
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "19": {
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        }
-      },
-      "caster_coef": 2
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = tier(CLASS_LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 7:7, 9:9, 11:10, 13:11, 15:12, 17:14, 19:15); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Weapon Mastery (Paladin)",
@@ -8247,7 +7498,6 @@
   {
     "name": "Oath of Devotion Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Protection from Evil and Good",
@@ -8419,7 +7669,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Sacred Weapon",
@@ -8488,7 +7744,6 @@
   {
     "name": "Oath of the Ancients Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Ensnaring Strike",
@@ -8657,7 +7912,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Aura of Warding",
@@ -8702,7 +7963,6 @@
   {
     "name": "Oath of Vengeance Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Bane",
@@ -8878,7 +8138,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Vow of Enmity",
@@ -9175,7 +8441,6 @@
   {
     "name": "Oath of Glory Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Guiding Bolt",
@@ -9343,7 +8608,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Peerless Athlete",
@@ -9485,7 +8756,6 @@
   {
     "name": "Genie Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Elementalism",
@@ -9669,7 +8939,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Genie's Splendor",
@@ -9721,7 +8997,6 @@
     "name": "Favored Enemy",
     "spells": {
       "cost": "Favored Enemy",
-      "casting_ability": 4,
       "list": [
         {
           "name": "Hunter's Mark",
@@ -9743,8 +9018,7 @@
           "cast_time": "BonusAction",
           "concentration": true
         }
-      ],
-      "caster_coef": 2
+      ]
     },
     "fields": [
       {
@@ -9758,111 +9032,31 @@
           "17": 6
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 2"
+      }
     ]
   },
   {
     "name": "Spellcasting (Ranger)",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/ranger.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 2"
       },
-      "levels": {
-        "1": {
-          "spells": 2,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "3": {
-          "spells": 4,
-          "slots": [
-            3
-          ]
-        },
-        "4": {
-          "spells": 5,
-          "slots": [
-            3
-          ]
-        },
-        "5": {
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "7": {
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "9": {
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "13": {
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "15": {
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "17": {
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "19": {
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        }
-      },
-      "caster_coef": 2
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = tier(CLASS_LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 7:7, 9:9, 11:10, 13:11, 15:12, 17:14, 19:15); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Weapon Mastery (Ranger)",
@@ -10010,7 +9204,6 @@
   {
     "name": "Gloom Stalker Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Disguise Self",
@@ -10092,7 +9285,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Umbral Sight"
@@ -10244,7 +9443,6 @@
   {
     "name": "Fey Wanderer Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Charm Person",
@@ -10328,7 +9526,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Otherworldly Glamour",
@@ -10435,7 +9639,6 @@
   {
     "name": "Winter Walker Spells",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Ice Knife",
@@ -10523,7 +9726,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Fortifying Soul",
@@ -10790,108 +9999,20 @@
   {
     "name": "Spellcasting (Arcane Trickster)",
     "spells": {
-      "casting_ability": 3,
-      "caster_coef": 3,
       "list": {
         "from": "spells/wizard.json"
-      },
-      "levels": {
-        "1": {},
-        "3": {
-          "cantrips": 3,
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 3,
-          "spells": 4,
-          "slots": [
-            3
-          ]
-        },
-        "7": {
-          "cantrips": 3,
-          "spells": 5,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "8": {
-          "cantrips": 3,
-          "spells": 6,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "10": {
-          "cantrips": 4,
-          "spells": 7,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "11": {
-          "cantrips": 4,
-          "spells": 8,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "13": {
-          "cantrips": 4,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "14": {
-          "cantrips": 4,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "16": {
-          "cantrips": 4,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "19": {
-          "cantrips": 4,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "20": {
-          "cantrips": 4,
-          "spells": 13,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        }
       }
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 3"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 3:3, 10:4); SPELL.READY = tier(CLASS_LEVEL, 3:3, 4:4, 7:5, 8:6, 10:7, 11:8, 13:9, 14:10, 16:11, 19:12, 20:13); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Magical Ambush"
@@ -11271,203 +10392,20 @@
   {
     "name": "Spellcasting (Sorcerer)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/sorcerer.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
       },
-      "levels": {
-        "1": {
-          "cantrips": 4,
-          "spells": 2,
-          "slots": [
-            2
-          ]
-        },
-        "2": {
-          "cantrips": 4,
-          "spells": 3,
-          "slots": [
-            3
-          ]
-        },
-        "3": {
-          "cantrips": 4,
-          "spells": 4,
-          "slots": [
-            4,
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 5,
-          "spells": 5,
-          "slots": [
-            4,
-            3
-          ]
-        },
-        "5": {
-          "cantrips": 5,
-          "spells": 6,
-          "slots": [
-            4,
-            3,
-            2
-          ]
-        },
-        "6": {
-          "cantrips": 5,
-          "spells": 7,
-          "slots": [
-            4,
-            3,
-            3
-          ]
-        },
-        "7": {
-          "cantrips": 5,
-          "spells": 8,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ]
-        },
-        "8": {
-          "cantrips": 5,
-          "spells": 9,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ]
-        },
-        "9": {
-          "cantrips": 5,
-          "spells": 10,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ]
-        },
-        "10": {
-          "cantrips": 6,
-          "spells": 11,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ]
-        },
-        "11": {
-          "cantrips": 6,
-          "spells": 12,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ]
-        },
-        "13": {
-          "cantrips": 6,
-          "spells": 13,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ]
-        },
-        "15": {
-          "cantrips": 6,
-          "spells": 14,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "17": {
-          "cantrips": 6,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "18": {
-          "cantrips": 6,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            1,
-            1,
-            1,
-            1
-          ]
-        },
-        "19": {
-          "cantrips": 6,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ]
-        },
-        "20": {
-          "cantrips": 6,
-          "spells": 15,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            1,
-            1
-          ]
-        }
-      },
-      "caster_coef": 1
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:4, 4:5, 10:6); SPELL.READY = tier(CLASS_LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12, 13:13, 15:14, 17:15); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Font of Magic",
@@ -11831,7 +10769,6 @@
     "name": "Psionic Spells",
     "spells": {
       "cost": "Sorcery Points",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Mind Sliver",
@@ -12029,7 +10966,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Telepathic Speech",
@@ -12102,7 +11045,6 @@
   {
     "name": "Clockwork Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Alarm",
@@ -12266,7 +11208,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Restore Balance"
@@ -12345,7 +11293,6 @@
   {
     "name": "Draconic Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Chromatic Orb",
@@ -12512,7 +11459,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Draconic Resilience",
@@ -12590,7 +11543,6 @@
   {
     "name": "Spellfire Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Cure Wounds",
@@ -12771,7 +11723,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Absorb Spells"
@@ -12913,160 +11871,20 @@
   {
     "name": "Pact Magic",
     "spells": {
-      "casting_ability": 5,
-      "caster_coef": 1,
-      "pool": 1,
       "list": {
         "from": "spells/warlock.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 2,
-          "slots": [
-            1
-          ]
-        },
-        "2": {
-          "cantrips": 2,
-          "spells": 3,
-          "slots": [
-            2
-          ]
-        },
-        "3": {
-          "cantrips": 2,
-          "spells": 4,
-          "slots": [
-            0,
-            2
-          ]
-        },
-        "4": {
-          "cantrips": 3,
-          "spells": 5,
-          "slots": [
-            0,
-            2
-          ]
-        },
-        "5": {
-          "cantrips": 3,
-          "spells": 6,
-          "slots": [
-            0,
-            0,
-            2
-          ]
-        },
-        "6": {
-          "cantrips": 3,
-          "spells": 7,
-          "slots": [
-            0,
-            0,
-            2
-          ]
-        },
-        "7": {
-          "cantrips": 3,
-          "spells": 8,
-          "slots": [
-            0,
-            0,
-            0,
-            2
-          ]
-        },
-        "8": {
-          "cantrips": 3,
-          "spells": 9,
-          "slots": [
-            0,
-            0,
-            0,
-            2
-          ]
-        },
-        "9": {
-          "cantrips": 3,
-          "spells": 10,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            2
-          ]
-        },
-        "10": {
-          "cantrips": 4,
-          "spells": 10,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            2
-          ]
-        },
-        "11": {
-          "cantrips": 4,
-          "spells": 11,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            3
-          ]
-        },
-        "13": {
-          "cantrips": 4,
-          "spells": 12,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            3
-          ]
-        },
-        "15": {
-          "cantrips": 4,
-          "spells": 13,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            3
-          ]
-        },
-        "17": {
-          "cantrips": 4,
-          "spells": 14,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            4
-          ]
-        },
-        "19": {
-          "cantrips": 4,
-          "spells": 15,
-          "slots": [
-            0,
-            0,
-            0,
-            0,
-            4
-          ]
-        }
       }
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "SLOT.POOL = 1; CASTER_ABILITY = 5; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:2, 4:3, 10:4); SPELL.READY = tier(CLASS_LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 11:11, 13:12, 15:13, 17:14, 19:15); SLOT.1 = if(in(CASTER_LEVEL.PACT, 1, 2), tier(CASTER_LEVEL.PACT, 1:1, 2:2), 0); SLOT.2 = if(in(CASTER_LEVEL.PACT, 3, 4), 2, 0); SLOT.3 = if(in(CASTER_LEVEL.PACT, 5, 6), 2, 0); SLOT.4 = if(in(CASTER_LEVEL.PACT, 7, 8), 2, 0); SLOT.5 = if(CASTER_LEVEL.PACT >= 9, tier(CASTER_LEVEL.PACT, 9:2, 11:3, 17:4), 0)"
+      }
+    ]
   },
   {
     "name": "Magical Cunning"
@@ -13080,17 +11898,9 @@
   {
     "name": "Mystic Arcanum (6th)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/warlock.json"
-      },
-      "levels": {
-        "1": {},
-        "11": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -13100,22 +11910,24 @@
           "11": 1
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
+      }
     ]
   },
   {
     "name": "Mystic Arcanum (7th)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/warlock.json"
-      },
-      "levels": {
-        "1": {},
-        "13": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -13125,22 +11937,24 @@
           "13": 1
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
+      }
     ]
   },
   {
     "name": "Mystic Arcanum (8th)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/warlock.json"
-      },
-      "levels": {
-        "1": {},
-        "15": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -13150,22 +11964,24 @@
           "15": 1
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
+      }
     ]
   },
   {
     "name": "Mystic Arcanum (9th)",
     "spells": {
-      "casting_ability": 5,
       "list": {
         "from": "spells/warlock.json"
-      },
-      "levels": {
-        "1": {},
-        "17": {
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -13174,6 +11990,16 @@
         "levels": {
           "17": 1
         }
+      }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.READY = 1"
       }
     ]
   },
@@ -13444,7 +12270,6 @@
   {
     "name": "Archfey Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Faerie Fire",
@@ -13634,7 +12459,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Steps of the Fey"
@@ -13663,7 +12494,6 @@
   {
     "name": "Celestial Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Light",
@@ -13853,7 +12683,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Healing Light",
@@ -13918,7 +12754,6 @@
   {
     "name": "Fiend Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Burning Hands",
@@ -14091,7 +12926,13 @@
           "concentration": true
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Dark One's Own Luck"
@@ -14236,7 +13077,6 @@
   {
     "name": "Great Old One Spells",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Dissonant Whispers",
@@ -14437,7 +13277,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Psychic Spells"
@@ -14469,262 +13315,20 @@
   {
     "name": "Spellcasting (Wizard)",
     "spells": {
-      "casting_ability": 3,
       "list": {
         "from": "spells/wizard.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 1"
       },
-      "levels": {
-        "1": {
-          "cantrips": 3,
-          "slots": [
-            2
-          ],
-          "spells": 4,
-          "known": 6
-        },
-        "2": {
-          "cantrips": 3,
-          "slots": [
-            3
-          ],
-          "spells": 5,
-          "known": 8
-        },
-        "3": {
-          "cantrips": 3,
-          "slots": [
-            4,
-            2
-          ],
-          "spells": 6,
-          "known": 10
-        },
-        "4": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3
-          ],
-          "spells": 7,
-          "known": 12
-        },
-        "5": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            2
-          ],
-          "spells": 9,
-          "known": 14
-        },
-        "6": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3
-          ],
-          "spells": 10,
-          "known": 16
-        },
-        "7": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            1
-          ],
-          "spells": 11,
-          "known": 18
-        },
-        "8": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            2
-          ],
-          "spells": 12,
-          "known": 20
-        },
-        "9": {
-          "cantrips": 4,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            1
-          ],
-          "spells": 14,
-          "known": 22
-        },
-        "10": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2
-          ],
-          "spells": 15,
-          "known": 24
-        },
-        "11": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ],
-          "spells": 16,
-          "known": 26
-        },
-        "12": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1
-          ],
-          "spells": 16,
-          "known": 28
-        },
-        "13": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ],
-          "spells": 17,
-          "known": 30
-        },
-        "14": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1
-          ],
-          "spells": 18,
-          "known": 32
-        },
-        "15": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ],
-          "spells": 19,
-          "known": 34
-        },
-        "16": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ],
-          "spells": 21,
-          "known": 36
-        },
-        "17": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1,
-            1
-          ],
-          "spells": 22,
-          "known": 38
-        },
-        "18": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            1,
-            1,
-            1,
-            1
-          ],
-          "spells": 23,
-          "known": 40
-        },
-        "19": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            1,
-            1,
-            1
-          ],
-          "spells": 24,
-          "known": 42
-        },
-        "20": {
-          "cantrips": 5,
-          "slots": [
-            4,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            1,
-            1
-          ],
-          "spells": 25,
-          "known": 44
-        }
-      },
-      "caster_coef": 1
-    }
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS_LEVEL, 1:3, 4:4, 10:5); SPELL.READY = tier(CLASS_LEVEL, 1:4, 2:5, 3:6, 4:7, 5:9, 6:10, 7:11, 8:12, 9:14, 10:15, 11:16, 13:17, 14:18, 15:19, 16:21, 17:22, 18:23, 19:24, 20:25); SPELL.KNOWN = tier(CLASS_LEVEL, 1:6, 2:8, 3:10, 4:12, 5:14, 6:16, 7:18, 8:20, 9:22, 10:24, 11:26, 12:28, 13:30, 14:32, 15:34, 16:36, 17:38, 18:40, 19:42, 20:44); SLOT.1 = tier(CASTER_LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER_LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER_LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER_LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER_LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER_LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER_LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER_LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER_LEVEL.ARCANE, 1:0, 17:1)"
+      }
+    ]
   },
   {
     "name": "Scholar"
@@ -15074,7 +13678,6 @@
   {
     "name": "The Third Eye",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "See Invisibility",
@@ -15092,7 +13695,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Greater Portent"
@@ -15118,7 +13727,6 @@
   {
     "name": "Improved Illusions",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Minor Illusion",
@@ -15136,12 +13744,17 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Phantasmal Creatures",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Summon Beast",
@@ -15180,7 +13793,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Illusory Self"
@@ -15278,7 +13897,6 @@
   {
     "name": "Star Map",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Guidance",
@@ -15314,7 +13932,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4"
+      }
+    ]
   },
   {
     "name": "Bonus Proficiencies",
@@ -15365,7 +13989,6 @@
   {
     "name": "Spell Breaker",
     "spells": {
-      "casting_ability": 3,
       "list": [
         {
           "name": "Counterspell",
@@ -15399,7 +14022,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3"
+      }
+    ]
   },
   {
     "name": "Class Proficiencies (Artificer)",
@@ -15725,17 +14354,9 @@
   {
     "name": "Magic Initiate (Cleric)",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/cleric.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -15746,22 +14367,24 @@
         }
       }
     ],
-    "category": "Origin"
+    "category": "Origin",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = 2; SPELL.READY = 1"
+      }
+    ]
   },
   {
     "name": "Magic Initiate (Druid)",
     "spells": {
-      "casting_ability": 4,
       "list": {
         "from": "spells/druid.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -15772,22 +14395,24 @@
         }
       }
     ],
-    "category": "Origin"
+    "category": "Origin",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = 2; SPELL.READY = 1"
+      }
+    ]
   },
   {
     "name": "Magic Initiate (Wizard)",
     "spells": {
-      "casting_ability": 3,
       "list": {
         "from": "spells/wizard.json"
-      },
-      "levels": {
-        "1": {
-          "cantrips": 2,
-          "spells": 1
-        }
-      },
-      "caster_coef": 1
+      }
     },
     "fields": [
       {
@@ -15798,12 +14423,21 @@
         }
       }
     ],
-    "category": "Origin"
+    "category": "Origin",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 3; CASTER_COEF = 1"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = 2; SPELL.READY = 1"
+      }
+    ]
   },
   {
     "name": "Light Bearer",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Light",
@@ -15820,7 +14454,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Celestial Revelation"
@@ -15835,7 +14475,6 @@
     "name": "Elven Lineage (Drow)",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Dancing Lights",
@@ -15903,6 +14542,12 @@
           "5": 2
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
     ]
   },
   {
@@ -15911,7 +14556,6 @@
   {
     "name": "Gnomish Lineage",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Minor Illusion",
@@ -15930,7 +14574,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Giant Ancestry"
@@ -15942,7 +14592,6 @@
     "name": "Elven Lineage (High Elf)",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Prestidigitation",
@@ -16004,13 +14653,18 @@
           "5": 2
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
     ]
   },
   {
     "name": "Elven Lineage (Wood Elf)",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Druidcraft",
@@ -16072,6 +14726,12 @@
           "5": 2
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
     ]
   },
   {
@@ -16084,7 +14744,6 @@
     "name": "Abyssal Legacy",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Thaumaturgy",
@@ -16164,13 +14823,18 @@
           "5": 2
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
     ]
   },
   {
     "name": "Chthonic Legacy",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Thaumaturgy",
@@ -16246,13 +14910,18 @@
           "5": 2
         }
       }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
     ]
   },
   {
     "name": "Infernal Legacy",
     "spells": {
       "cost": "Free Uses",
-      "casting_ability": 5,
       "list": [
         {
           "name": "Thaumaturgy",
@@ -16332,6 +15001,12 @@
           "3": 1,
           "5": 2
         }
+      }
+    ],
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
       }
     ]
   },
@@ -16823,7 +15498,6 @@
   {
     "name": "Fey Gift",
     "spells": {
-      "casting_ability": 5,
       "list": [
         {
           "name": "Friends",
@@ -16843,7 +15517,13 @@
           ]
         }
       ]
-    }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 5"
+      }
+    ]
   },
   {
     "name": "Lethargy Resilience"
@@ -17350,11 +16030,14 @@
       {
         "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER_ABILITY = 4; CASTER_COEF = 1"
       }
     ],
     "category": "General",
     "spells": {
-      "casting_ability": 4,
       "list": [
         {
           "name": "Fog Cloud",
@@ -17373,8 +16056,7 @@
             }
           ]
         }
-      ],
-      "caster_coef": 1
+      ]
     },
     "fields": [
       {

@@ -27,27 +27,25 @@ impl RulesRegistry {
     )]
     pub fn compute(&self, character: &mut Character) {
         character.compute();
+        self.refresh_spell_structure(character);
         self.assign(character, WhenCondition::OnCompute);
         character.compute_armor_class();
         self.recompute_dynamic_fields(character);
-        self.recompute_spell_lists(character);
     }
 
-    /// Re-run `spells_def.apply` for every feature whose definition carries
-    /// one, at the feature's current effective level. Apply pipelines that
-    /// only fire `OnFeatureAdd` for new features (e.g. level-up via
-    /// `apply_pending`) leave previously-added Spellcasting features stuck at
-    /// the level they were first added — slots, cantrip / spell / known
-    /// targets stay frozen. `spells_def.apply` is monotone-idempotent (only
-    /// adds missing slots up to the target, overwrites slot totals from the
-    /// table) so re-running it on every recompute is safe.
+    /// Bootstrap per-feature `SpellData` for all features carrying a
+    /// `SpellsDefinition`: ensure the entry exists, import sticky spells
+    /// from inline lists, and refresh `free_uses.max` on prepared spells.
     ///
-    /// TODO: this duplicates the `spells_def.apply` call already done inside
-    /// `FeatureDefinition::apply` on initial OnFeatureAdd. Removing the inner
-    /// call requires reordering — `feat_def.apply` builds a `Context` with
-    /// `caster_level` immediately after, which depends on `SpellData`
-    /// existing, which today is created by `spells_def.apply`. Untangle later.
-    fn recompute_spell_lists(&self, character: &mut Character) {
+    /// Numeric scaling — slot totals, prepared / known counts, cantrip
+    /// counts — is driven by `OnFeatureAdd` and `OnCompute` `assign`
+    /// expressions on the feature itself (see `Slot`, `SlotPool`,
+    /// `CasterAbility`, `CasterCoef`, `SpellCantrips`, `SpellReady`,
+    /// `SpellKnown` resolvers in `src/model/character.rs`). This function
+    /// only handles structural bootstrap; calling it before the
+    /// `OnCompute` pass guarantees `Context::pool` resolves through the
+    /// existing SpellData when scaling assigns run.
+    fn refresh_spell_structure(&self, character: &mut Character) {
         self.with_features_index_untracked(|features_index| {
             // Snapshot before mutating: `spells_def.apply` takes
             // `&mut Character` and `effective_level_for` / `free_uses_max`
@@ -168,16 +166,6 @@ impl RulesRegistry {
                         }
                     }
 
-                    let (caster_level, caster_modifier) = feat_def
-                        .spells
-                        .as_ref()
-                        .map(|spells_def| {
-                            (
-                                character.caster_level(spells_def.pool) as i32,
-                                character.ability_modifier(spells_def.casting_ability),
-                            )
-                        })
-                        .unwrap_or((0, 0));
                     Some((
                         feat.name.clone(),
                         scope_groups
@@ -185,15 +173,11 @@ impl RulesRegistry {
                             .map(|(scope, exprs)| (scope.map(String::from), exprs))
                             .collect::<Vec<_>>(),
                         class_level as i32,
-                        caster_level,
-                        caster_modifier,
                     ))
                 })
                 .collect();
 
-            for (feat_name, scope_groups, class_level, caster_level, caster_modifier) in
-                feature_entries
-            {
+            for (feat_name, scope_groups, class_level) in feature_entries {
                 for (scope, exprs) in scope_groups {
                     let target = scope.as_deref().unwrap_or(&feat_name);
                     let points = character
@@ -205,8 +189,7 @@ impl RulesRegistry {
                     let mut ctx = Context {
                         character,
                         class_level,
-                        caster_level,
-                        caster_modifier,
+                        feature: Some(target.to_string()),
                         points,
                     };
                     for expr in &exprs {
@@ -229,36 +212,16 @@ impl RulesRegistry {
     /// replacement features), uses source-aware dedup for stackable features.
     pub fn feature_needs_args(
         &self,
-        character: &Character,
         name: &str,
         source: Option<&FeatureSource>,
     ) -> Option<PendingInputs> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(name)?;
-            let when = match source {
-                Some(source) if feat.stackable => {
-                    if character
-                        .features
-                        .contains(&feat.name, feat.stackable, source)
-                    {
-                        WhenCondition::OnLevelUp
-                    } else {
-                        WhenCondition::OnFeatureAdd
-                    }
-                }
-                _ => {
-                    if character.features.is_pending(name) {
-                        WhenCondition::OnFeatureAdd
-                    } else {
-                        WhenCondition::OnLevelUp
-                    }
-                }
-            };
             PendingInputs::from_feature(
                 name.to_string(),
                 feat,
                 source.cloned().unwrap_or_default(),
-                when,
+                WhenCondition::OnFeatureAdd,
                 Vec::new(),
                 ReplaceWith::None,
             )

@@ -1,6 +1,7 @@
 pub mod background;
 pub mod class;
 pub mod feature;
+pub mod progression;
 pub mod sidebar;
 pub mod species;
 pub mod spell;

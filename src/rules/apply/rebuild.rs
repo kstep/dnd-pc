@@ -16,10 +16,7 @@ use crate::{
                 collect_species_features,
             },
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
-            primitives::{
-                apply_new_feature, onlevelup_pass, resolve_replacements,
-                restore_all_spell_selections,
-            },
+            primitives::{apply_new_feature, resolve_replacements, restore_all_spell_selections},
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
@@ -108,11 +105,11 @@ pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> Reb
 
 /// Snapshot-level step 2: build a fresh `Character` from `default()`,
 /// applying identity + User features in canonical order (User(0) → Species →
-/// Background → classes round-robin with multiclass prereq gates), running
-/// `onlevelup_pass`, then merging preserved user state (HP, used counters,
-/// spell selections, equipment, personality, notes). Fails if a class /
-/// species / background definition is missing from the registry caches or if
-/// a multiclass prereq never passes during the build.
+/// Background → classes round-robin with multiclass prereq gates), then
+/// merging preserved user state (HP, used counters, spell selections,
+/// equipment, personality, notes). Fails if a class / species / background
+/// definition is missing from the registry caches or if a multiclass prereq
+/// never passes during the build.
 #[cfg_attr(
     feature = "perf-marks",
     tracing::instrument(name = "rebuild.build_clean", skip_all)
@@ -163,10 +160,7 @@ pub fn build_clean(
         //    multiclasses (see `apply_classes_interleaved` for details).
         apply_classes_interleaved(registry, fi, &mut clean, original, extra_inputs, &mut accum)?;
 
-        // 5. OnLevelUp sweep for all applied features.
-        onlevelup_pass(fi, &mut clean);
-
-        // 6. Legacy migration: characters built before the Generation-feature system
+        // 5. Legacy migration: characters built before the Generation-feature system
         //    have abilities edited directly. Convert those custom scores into a
         //    synthesized `Generation: User-Defined` feature so future rebuilds keep
         //    them intact.

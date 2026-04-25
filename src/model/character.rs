@@ -8,7 +8,7 @@ use crate::{
     model::{
         AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
         Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Note, Personality,
-        Skills, SpellSlots, Weapon, enums::*,
+        Skills, Spell, SpellData, SpellSlots, Weapon, enums::*,
     },
     vecset::VecSet,
 };
@@ -17,9 +17,9 @@ use crate::{
 const DEFAULT_SPEED: u32 = 30;
 
 /// Maximum class level a user can enter. D&D 5e standard progression caps at
-/// 20; we allow up to 40 for epic-tier campaigns and homebrew content. Tables
-/// like `XP_THRESHOLDS` and `SPELL_SLOT_TABLE` only cover 1–20 — levels above
-/// 20 reuse the level-20 row for spell slots and report a 0 XP threshold.
+/// 20; we allow up to 40 for epic-tier campaigns and homebrew content.
+/// `XP_THRESHOLDS` only covers 1–20 — levels above 20 report a 0 XP
+/// threshold; spell slots come from per-feature `assign` expressions.
 pub const MAX_CLASS_LEVEL: u32 = 40;
 
 /// Why the character requires a `rebuild()`. Reported by
@@ -68,31 +68,6 @@ pub fn proficiency_bonus_for_level(level: u32) -> i32 {
 const XP_THRESHOLDS: [u32; 20] = [
     0, 300, 900, 2_700, 6_500, 14_000, 23_000, 34_000, 48_000, 64_000, 85_000, 100_000, 120_000,
     140_000, 165_000, 195_000, 225_000, 265_000, 305_000, 355_000,
-];
-
-/// Spell slot table (full-caster Wizard progression), indexed by caster level
-/// 1–20. Each row lists slot counts for spell levels 1–9.
-const SPELL_SLOT_TABLE: &[&[u32]] = &[
-    &[2],                         // caster level 1
-    &[3],                         // 2
-    &[4, 2],                      // 3
-    &[4, 3],                      // 4
-    &[4, 3, 2],                   // 5
-    &[4, 3, 3],                   // 6
-    &[4, 3, 3, 1],                // 7
-    &[4, 3, 3, 2],                // 8
-    &[4, 3, 3, 3, 1],             // 9
-    &[4, 3, 3, 3, 2],             // 10
-    &[4, 3, 3, 3, 2, 1],          // 11
-    &[4, 3, 3, 3, 2, 1],          // 12
-    &[4, 3, 3, 3, 2, 1, 1],       // 13
-    &[4, 3, 3, 3, 2, 1, 1],       // 14
-    &[4, 3, 3, 3, 2, 1, 1, 1],    // 15
-    &[4, 3, 3, 3, 2, 1, 1, 1],    // 16
-    &[4, 3, 3, 3, 2, 1, 1, 1, 1], // 17
-    &[4, 3, 3, 3, 3, 1, 1, 1, 1], // 18
-    &[4, 3, 3, 3, 3, 2, 1, 1, 1], // 19
-    &[4, 3, 3, 3, 3, 2, 2, 1, 1], // 20
 ];
 
 // --- Character Index (for list page) ---
@@ -378,58 +353,63 @@ impl Character {
         self.combat.attack_count = 1;
     }
 
-    /// Returns (caster_level, caster_class_count) for the given pool in a
-    /// single pass.
+    /// Returns (caster_level, caster_class_count) for the given pool.
+    ///
+    /// Single caster class: bespoke per-coef table (PHB single-class slot
+    /// table for half / third casters maps to the full-caster table indexed
+    /// by `ceil(class_level / coef)`). Threshold: 0 if class_level < coef
+    /// (Paladin / Ranger get nothing at L1, EK / AT nothing at L1-L2).
+    ///
+    /// Multi-class: PHB Multiclass Spellcaster Table — sum of
+    /// `floor(class_level / coef)` per caster class. Half / third casters
+    /// contribute fractional class levels.
+    ///
+    /// Branching matches the PHB canonical behaviour preserved by the old
+    /// `update_spell_slots` (which used a JSON override for single-class).
     fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
-        let mut caster_level_sixths = 0u32;
-        let mut caster_classes = 0u32;
-        for cl in &self.identity.classes {
-            let max_coef = self
-                .features
-                .iter()
-                .filter_map(|feature| {
-                    if feature.source.as_class() != Some(cl.class.as_str()) {
-                        return None;
-                    }
-                    let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
-                    (spell_data.pool == pool && spell_data.caster_coef != 0)
-                        .then_some(spell_data.caster_coef)
-                })
-                .max();
-            if let Some(max_coef) = max_coef {
-                caster_classes += 1;
-                // 6 is LCM(1,2,3) — the valid caster_coef values.
-                // coef is the reciprocal multiplier: full=6, half=3, third=2.
-                // The bitwise `& coef & 1` term rounds up for half casters
-                // (divide by 2, round up) and rounds down for third casters
-                // (divide by 3, round down).
-                let coef = 6 / max_coef;
-                caster_level_sixths += coef * (cl.level + (cl.level & coef & 1));
+        let entries: Vec<(u32, u32)> = self
+            .identity
+            .classes
+            .iter()
+            .filter_map(|cl| {
+                let max_coef = self
+                    .features
+                    .iter()
+                    .filter_map(|feature| {
+                        if feature.source.as_class() != Some(cl.class.as_str()) {
+                            return None;
+                        }
+                        let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
+                        (spell_data.pool == pool && spell_data.caster_coef != 0)
+                            .then_some(spell_data.caster_coef)
+                    })
+                    .max()?;
+                Some((cl.level, max_coef))
+            })
+            .collect();
+        let caster_classes = entries.len() as u32;
+
+        let caster_level = match entries.as_slice() {
+            [] => 0,
+            [(level, coef)] => {
+                // Third casters (coef=3) start at class level 3; full and
+                // half casters in this codebase start at class level 1
+                // (matches 2024 D&D rules used by feature definitions).
+                let threshold = if *coef == 3 { 3 } else { 1 };
+                if *level < threshold {
+                    0
+                } else {
+                    (*level).div_ceil(*coef)
+                }
             }
-        }
-        (caster_level_sixths / 6, caster_classes)
+            many => many.iter().map(|(level, coef)| level / coef).sum(),
+        };
+
+        (caster_level, caster_classes)
     }
 
     pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
         self.caster_info(pool).0
-    }
-
-    pub fn update_spell_slots(&mut self, pool: SpellSlotPool, slots: Option<&[u32]>) {
-        let (caster_level, caster_classes) = self.caster_info(pool);
-        let table_slots: &[u32] = caster_level
-            .checked_sub(1)
-            .and_then(|level| SPELL_SLOT_TABLE.get(level as usize))
-            .copied()
-            .unwrap_or(&[]);
-        let effective: &[u32] = match caster_classes {
-            0 => &[],
-            1 => slots
-                .filter(|override_slots| !override_slots.is_empty())
-                .unwrap_or(table_slots),
-            _ => table_slots,
-        };
-
-        self.spell_slots.set_totals(pool, effective);
     }
 
     pub fn can_level_up(&self) -> bool {
@@ -802,8 +782,10 @@ impl expr::Context<Attribute, i32> for Character {
 pub struct Context<'a> {
     pub character: &'a mut Character,
     pub class_level: i32,
-    pub caster_level: i32,
-    pub caster_modifier: i32,
+    /// Scope target — the feature whose `SpellData` is consulted by
+    /// resolvers for `SLOT.N` (when pool is None), `CASTER_LEVEL` /
+    /// `CASTER_MODIFIER`, and the per-feature spell-count attributes.
+    pub feature: Option<String>,
     /// Extracted Points/Die field values: (field_index, available, max).
     /// Populated from FeatureData before expression evaluation, written back
     /// after.
@@ -815,8 +797,7 @@ impl<'a> From<&'a mut Character> for Context<'a> {
         Self {
             character,
             class_level: 0,
-            caster_level: 0,
-            caster_modifier: 0,
+            feature: None,
             points: Vec::new(),
         }
     }
@@ -894,6 +875,93 @@ impl Context<'_> {
         entry.2 = value.max(0);
         Ok(())
     }
+
+    fn feature_spell_data(&self) -> Option<&SpellData> {
+        let name = self.feature.as_deref()?;
+        self.character.features.spell_data(name)
+    }
+
+    fn feature_spell_data_mut(&mut self) -> Option<&mut SpellData> {
+        let name = self.feature.clone()?;
+        self.character.features.spell_data_mut(&name)
+    }
+
+    fn feature_pool(&self) -> Result<SpellSlotPool, expr::Error> {
+        self.feature_spell_data()
+            .map(|data| data.pool)
+            .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))
+    }
+
+    fn feature_ability(&self) -> Result<Ability, expr::Error> {
+        self.feature_spell_data()
+            .map(|data| data.casting_ability)
+            .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))
+    }
+
+    /// `highest_slot_level` — наибольший N where `spell_slots[pool][N-1].total
+    /// > 0`. Default 1 if all zero. Used as the level for new placeholder
+    /// spells when growing `SPELL.READY` / `SPELL.KNOWN`.
+    fn highest_slot_level_for(character: &Character, pool: SpellSlotPool) -> u32 {
+        character
+            .spell_slots
+            .get(&pool)
+            .and_then(|levels| {
+                levels
+                    .iter()
+                    .enumerate()
+                    .rev()
+                    .find(|(_, slot)| slot.total > 0)
+                    .map(|(index, _)| (index + 1) as u32)
+            })
+            .unwrap_or(1)
+    }
+
+    /// Trim non-sticky entries from `target` so that those passing
+    /// `keep` end up at exactly `desired_count`. Removes empty
+    /// (default-name) entries first, then filled non-sticky entries
+    /// in iteration order. Sticky entries are never removed.
+    fn fit_spells_to_count(
+        list: &mut Vec<Spell>,
+        keep: impl Fn(&Spell) -> bool,
+        desired_count: u32,
+        new_entry: impl Fn() -> Spell,
+    ) {
+        let current = list
+            .iter()
+            .filter(|spell| !spell.sticky && keep(spell))
+            .count() as u32;
+        if desired_count > current {
+            for _ in 0..(desired_count - current) {
+                list.push(new_entry());
+            }
+            return;
+        }
+        if desired_count == current {
+            return;
+        }
+        let mut to_remove = (current - desired_count) as usize;
+        // Pass 1: remove empty placeholders.
+        list.retain(|spell| {
+            if to_remove > 0 && !spell.sticky && keep(spell) && spell.name.is_empty() {
+                to_remove -= 1;
+                false
+            } else {
+                true
+            }
+        });
+        if to_remove == 0 {
+            return;
+        }
+        // Pass 2: remove filled non-sticky entries in order.
+        list.retain(|spell| {
+            if to_remove > 0 && !spell.sticky && keep(spell) {
+                to_remove -= 1;
+                false
+            } else {
+                true
+            }
+        });
+    }
 }
 
 impl expr::Context<Attribute, i32> for Context<'_> {
@@ -901,6 +969,107 @@ impl expr::Context<Attribute, i32> for Context<'_> {
         match var {
             Attribute::Points(n) => self.assign_points(n, value),
             Attribute::PointsMax(n) => self.assign_points_max(n, value),
+            Attribute::Slot(pool, n) => {
+                let pool = match pool {
+                    Some(p) => p,
+                    None => self.feature_pool()?,
+                };
+                let total = value.max(0) as u32;
+                let levels = self.character.spell_slots.entry(pool).or_default();
+                let slot = &mut levels[(n - 1) as usize];
+                slot.total = total;
+                if slot.used > total {
+                    slot.used = total;
+                }
+                Ok(())
+            }
+            Attribute::SlotUsed(pool, n) => {
+                let pool = match pool {
+                    Some(p) => p,
+                    None => self.feature_pool()?,
+                };
+                let levels = self.character.spell_slots.entry(pool).or_default();
+                let slot = &mut levels[(n - 1) as usize];
+                slot.used = value.clamp(0, slot.total as i32) as u32;
+                Ok(())
+            }
+            Attribute::SlotPool => {
+                let new_pool = SpellSlotPool::try_from(value.max(0) as u8)
+                    .map_err(|_| expr::Error::unsupported_var(Attribute::SlotPool))?;
+                let sd = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))?;
+                sd.pool = new_pool;
+                Ok(())
+            }
+            Attribute::CasterAbility => {
+                let new_ability = Ability::try_from(value.max(0) as u8)
+                    .map_err(|_| expr::Error::unsupported_var(Attribute::CasterAbility))?;
+                let sd = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))?;
+                sd.casting_ability = new_ability;
+                Ok(())
+            }
+            Attribute::CasterCoef => {
+                let sd = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterCoef))?;
+                sd.caster_coef = value.max(0) as u32;
+                Ok(())
+            }
+            Attribute::SpellCantrips => {
+                let pool = self.feature_pool()?;
+                let _ = Self::highest_slot_level_for(self.character, pool);
+                let data = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellCantrips))?;
+                Self::fit_spells_to_count(
+                    &mut data.spells,
+                    |spell| spell.level == 0,
+                    value.max(0) as u32,
+                    || Spell {
+                        level: 0,
+                        ..Default::default()
+                    },
+                );
+                Ok(())
+            }
+            Attribute::SpellReady => {
+                let pool = self.feature_pool()?;
+                let highest = Self::highest_slot_level_for(self.character, pool);
+                let data = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellReady))?;
+                Self::fit_spells_to_count(
+                    &mut data.spells,
+                    |spell| spell.level > 0,
+                    value.max(0) as u32,
+                    || Spell {
+                        level: highest,
+                        ..Default::default()
+                    },
+                );
+                Ok(())
+            }
+            Attribute::SpellKnown => {
+                let pool = self.feature_pool()?;
+                let highest = Self::highest_slot_level_for(self.character, pool);
+                let data = self
+                    .feature_spell_data_mut()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellKnown))?;
+                let known = data.known.get_or_insert_with(Vec::new);
+                Self::fit_spells_to_count(
+                    known,
+                    |_| true,
+                    value.max(0) as u32,
+                    || Spell {
+                        level: highest,
+                        ..Default::default()
+                    },
+                );
+                Ok(())
+            }
             _ => self.character.assign(var, value),
         }
     }
@@ -908,11 +1077,73 @@ impl expr::Context<Attribute, i32> for Context<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
             Attribute::ClassLevel => Ok(self.class_level),
-            Attribute::CasterLevel(None) => Ok(self.caster_level),
+            Attribute::CasterLevel(None) => {
+                let pool = self.feature_pool()?;
+                Ok(self.character.caster_level(pool) as i32)
+            }
             Attribute::CasterLevel(Some(pool)) => Ok(self.character.caster_level(pool) as i32),
-            Attribute::CasterModifier => Ok(self.caster_modifier),
+            Attribute::CasterModifier => {
+                let ability = self.feature_ability()?;
+                Ok(self.character.ability_modifier(ability))
+            }
             Attribute::Points(n) => self.resolve_points(n),
             Attribute::PointsMax(n) => self.resolve_points_max(n),
+            Attribute::Slot(pool, n) => {
+                let pool = match pool {
+                    Some(p) => p,
+                    None => self.feature_pool()?,
+                };
+                Ok(self.character.spell_slots.get_slot(pool, n as u32).total as i32)
+            }
+            Attribute::SlotUsed(pool, n) => {
+                let pool = match pool {
+                    Some(p) => p,
+                    None => self.feature_pool()?,
+                };
+                Ok(self.character.spell_slots.get_slot(pool, n as u32).used as i32)
+            }
+            Attribute::SlotPool => Ok(self
+                .feature_spell_data()
+                .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))?
+                .pool as i32),
+            Attribute::CasterAbility => Ok(self
+                .feature_spell_data()
+                .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))?
+                .casting_ability as i32),
+            Attribute::CasterCoef => Ok(self
+                .feature_spell_data()
+                .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterCoef))?
+                .caster_coef as i32),
+            Attribute::SpellCantrips => {
+                let data = self
+                    .feature_spell_data()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellCantrips))?;
+                Ok(data
+                    .spells
+                    .iter()
+                    .filter(|spell| !spell.sticky && spell.level == 0)
+                    .count() as i32)
+            }
+            Attribute::SpellReady => {
+                let data = self
+                    .feature_spell_data()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellReady))?;
+                Ok(data
+                    .spells
+                    .iter()
+                    .filter(|spell| !spell.sticky && spell.level > 0)
+                    .count() as i32)
+            }
+            Attribute::SpellKnown => {
+                let data = self
+                    .feature_spell_data()
+                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellKnown))?;
+                Ok(data
+                    .known
+                    .as_deref()
+                    .map(|known: &[Spell]| known.iter().filter(|spell| !spell.sticky).count())
+                    .unwrap_or(0) as i32)
+            }
             _ => self.character.resolve(var),
         }
     }
@@ -1020,7 +1251,6 @@ impl Character {
             shared: false,
             schema_version: 0,
         };
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
         ch
     }
 }
@@ -1031,7 +1261,10 @@ pub mod tests {
 
     use super::*;
     use crate::{
-        model::{Armor, ClassLevel, Currency, Expr, Feature, FeatureSource, Money, SpellData},
+        model::{
+            Armor, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureSource, Money,
+            SpellData,
+        },
         vecset::VecSet,
     };
 
@@ -1356,75 +1589,6 @@ pub mod tests {
         assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 5);
         // Pact pool only sees Warlock
         assert_eq!(ch.caster_level(SpellSlotPool::Pact), 3);
-    }
-
-    // --- update_spell_slots() ---
-
-    #[wasm_bindgen_test]
-    fn update_spell_slots_single_full_caster() {
-        let mut ch = test_character();
-        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
-        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
-        // Caster level 5: [4, 3, 2]; trailing zeros trimmed
-        assert_eq!(slots.len(), 3);
-        assert_eq!(slots[0].total, 4);
-        assert_eq!(slots[1].total, 3);
-        assert_eq!(slots[2].total, 2);
-    }
-
-    #[wasm_bindgen_test]
-    fn update_spell_slots_with_class_override() {
-        let mut ch = test_character();
-        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
-        ch.update_spell_slots(SpellSlotPool::Arcane, Some(&[2, 1]));
-        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
-        assert_eq!(slots.len(), 2);
-        assert_eq!(slots[0].total, 2);
-        assert_eq!(slots[1].total, 1);
-    }
-
-    #[wasm_bindgen_test]
-    fn update_spell_slots_no_caster() {
-        let mut ch = test_character();
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
-        assert!(ch.spell_slots.is_empty() || ch.spell_slots[&SpellSlotPool::Arcane].is_empty());
-    }
-
-    #[wasm_bindgen_test]
-    fn update_spell_slots_recalculates_totals() {
-        let mut ch = test_character();
-        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
-        ch.spell_slots.get_mut(&SpellSlotPool::Arcane).unwrap()[0].total = 10;
-        ch.update_spell_slots(SpellSlotPool::Arcane, None);
-        let slots = &ch.spell_slots[&SpellSlotPool::Arcane];
-        assert_eq!(slots.len(), 3);
-        assert_eq!(slots[0].total, 4); // recalculated from table
-        assert_eq!(slots[1].total, 3); // from table
-        assert_eq!(slots[2].total, 2); // from table
-    }
-
-    #[wasm_bindgen_test]
-    fn update_spell_slots_pact_slots_replaced_on_level_up() {
-        let mut ch = test_character();
-        ch.identity.classes[0] = ClassLevel {
-            class: "Warlock".to_string(),
-            level: 9,
-            ..ClassLevel::default()
-        };
-        make_caster(&mut ch, "Warlock", "Pact Magic", 3, SpellSlotPool::Pact);
-
-        // Level 7: 2 slots at 4th level
-        ch.update_spell_slots(SpellSlotPool::Pact, Some(&[0, 0, 0, 2]));
-        let slots = &ch.spell_slots[&SpellSlotPool::Pact];
-        assert_eq!(slots[3].total, 2);
-
-        // Level 9: 2 slots at 5th level, none at 4th
-        ch.update_spell_slots(SpellSlotPool::Pact, Some(&[0, 0, 0, 0, 2]));
-        let slots = &ch.spell_slots[&SpellSlotPool::Pact];
-        assert_eq!(slots[3].total, 0); // old 4th-level slots cleared
-        assert_eq!(slots[4].total, 2); // new 5th-level slots
     }
 
     // --- class_summary() ---
@@ -2032,5 +2196,218 @@ pub mod tests {
         let speed = ch.compute_speed();
         assert_eq!(speed, 30);
         assert_eq!(ch.combat.speed, 30);
+    }
+
+    // --- new spell-attribute resolvers (Context-level) ---
+
+    fn caster_character() -> Character {
+        let mut ch = test_character();
+        ch.identity.classes[0] = ClassLevel {
+            class: "Wizard".to_string(),
+            level: 5,
+            ..ClassLevel::default()
+        };
+        ch.features.add(
+            "Spellcasting (Wizard)",
+            None,
+            String::new(),
+            FeatureCategory::Class,
+            FeatureSource::Class("Wizard".into(), 1),
+            Vec::new(),
+        );
+        ch.features
+            .entry("Spellcasting (Wizard)".to_string())
+            .or_default()
+            .spells
+            .get_or_insert(SpellData {
+                casting_ability: Ability::Intelligence,
+                caster_coef: 1,
+                pool: SpellSlotPool::Arcane,
+                spells: Vec::new(),
+                known: None,
+            });
+        ch
+    }
+
+    fn caster_ctx(ch: &mut Character) -> Context<'_> {
+        Context {
+            character: ch,
+            class_level: 5,
+            feature: Some("Spellcasting (Wizard)".to_string()),
+            points: Vec::new(),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn slot_assign_overwrites_total() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::Slot(None, 1), 4).unwrap();
+        ctx.assign(Attribute::Slot(None, 2), 3).unwrap();
+        let slots = &ctx.character.spell_slots[&SpellSlotPool::Arcane];
+        assert_eq!(slots[0].total, 4);
+        assert_eq!(slots[1].total, 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn slot_assign_clamps_used_on_shrink() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let levels = ch.spell_slots.entry(SpellSlotPool::Arcane).or_default();
+        levels[0].total = 4;
+        levels[0].used = 3;
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::Slot(None, 1), 1).unwrap();
+        let slot = &ctx.character.spell_slots[&SpellSlotPool::Arcane][0];
+        assert_eq!(slot.total, 1);
+        assert_eq!(slot.used, 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn slot_explicit_pool() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::Slot(Some(SpellSlotPool::Pact), 5), 2)
+            .unwrap();
+        assert_eq!(ctx.character.spell_slots[&SpellSlotPool::Pact][4].total, 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn slot_used_clamped_to_total() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::Slot(None, 1), 3).unwrap();
+        ctx.assign(Attribute::SlotUsed(None, 1), 99).unwrap();
+        let slot = &ctx.character.spell_slots[&SpellSlotPool::Arcane][0];
+        assert_eq!(slot.total, 3);
+        assert_eq!(slot.used, 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_meta_assigns() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::SlotPool, 1).unwrap();
+        ctx.assign(Attribute::CasterAbility, 5).unwrap(); // CHA
+        ctx.assign(Attribute::CasterCoef, 2).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Spellcasting (Wizard)")
+            .unwrap();
+        assert_eq!(data.pool, SpellSlotPool::Pact);
+        assert_eq!(data.casting_ability, Ability::Charisma);
+        assert_eq!(data.caster_coef, 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn spell_cantrips_extend_and_trim() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::SpellCantrips, 3).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Spellcasting (Wizard)")
+            .unwrap();
+        assert_eq!(data.spells.iter().filter(|s| s.level == 0).count(), 3);
+
+        // Shrink to 1; empty placeholders removed first.
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::SpellCantrips, 1).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Spellcasting (Wizard)")
+            .unwrap();
+        assert_eq!(data.spells.iter().filter(|s| s.level == 0).count(), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn spell_ready_pad_with_highest_slot_level() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        // Outfit with slot level 3.
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::Slot(None, 1), 4).unwrap();
+        ctx.assign(Attribute::Slot(None, 2), 3).unwrap();
+        ctx.assign(Attribute::Slot(None, 3), 2).unwrap();
+        ctx.assign(Attribute::SpellReady, 4).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Spellcasting (Wizard)")
+            .unwrap();
+        assert_eq!(data.spells.iter().filter(|s| s.level > 0).count(), 4);
+        for spell in data.spells.iter().filter(|s| s.level > 0) {
+            assert_eq!(spell.level, 3);
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn spell_ready_preserves_sticky_on_shrink() {
+        use expr::Context as _;
+
+        use crate::model::Spell;
+
+        let mut ch = caster_character();
+        ch.features
+            .spell_data_mut("Spellcasting (Wizard)")
+            .unwrap()
+            .spells
+            .push(Spell {
+                name: "Fireball".to_string(),
+                level: 3,
+                sticky: true,
+                ..Default::default()
+            });
+        let mut ctx = caster_ctx(&mut ch);
+        ctx.assign(Attribute::SpellReady, 0).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Spellcasting (Wizard)")
+            .unwrap();
+        assert_eq!(data.spells.len(), 1);
+        assert!(data.spells[0].sticky);
+        assert_eq!(data.spells[0].name, "Fireball");
+    }
+
+    #[wasm_bindgen_test]
+    fn slot_no_feature_errors() {
+        use expr::Context as _;
+
+        let mut ch = test_character();
+        let mut ctx = Context {
+            character: &mut ch,
+            class_level: 5,
+            feature: None,
+            points: Vec::new(),
+        };
+        // Implicit pool should error when ctx.feature is None.
+        assert!(ctx.assign(Attribute::Slot(None, 1), 4).is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn caster_level_dynamic_through_feature() {
+        use expr::Context as _;
+
+        let mut ch = caster_character();
+        let ctx = caster_ctx(&mut ch);
+        // Wizard L5, full caster (coef=1) → CASTER_LEVEL.ARCANE = 5
+        let level = ctx.resolve(Attribute::CasterLevel(None)).unwrap();
+        assert_eq!(level, 5);
     }
 }

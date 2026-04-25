@@ -7,7 +7,7 @@ use crate::{
     components::args_modal::ArgsModalCtx,
     model::{AssignInputs, Character, FeatureSource},
     rules::{
-        ApplyInputs, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
+        ApplyInputs, PendingInputs, RulesRegistry, WhenCondition,
         apply::{
             FeatureKey, PendingFeature, replay, resolve_replacements, restore_all_spell_selections,
         },
@@ -15,8 +15,7 @@ use crate::{
     },
 };
 
-/// Collect all pending inputs (OnFeatureAdd for new features + OnLevelUp for
-/// existing) from the given pending features list.
+/// Collect OnFeatureAdd pending inputs from the given pending features list.
 pub(super) fn collect_all_inputs(
     store: &Store<Character>,
     registry: &RulesRegistry,
@@ -24,33 +23,13 @@ pub(super) fn collect_all_inputs(
 ) -> Vec<PendingInputs> {
     registry.with_features_index_untracked(|fi| {
         let character = store.read_untracked();
-
-        let new_inputs = pending.iter().filter_map(|pending_feature| {
-            let feat_def = fi.get(pending_feature.name.as_str())?;
-            pending_feature.pending_inputs(feat_def, &character)
-        });
-
-        // Wired for a future OnLevelUp interactive pattern — currently no
-        // feature has `@ARG` in OnLevelUp assignments, and onlevelup_pass /
-        // reapply_existing pass empty inputs regardless, so these entries
-        // reach the modal without a downstream consumer.
-        let levelup_inputs = character
-            .features
+        pending
             .iter()
-            .filter(|feature| feature.applied)
-            .filter_map(|feature| {
-                let feat_def = fi.get(feature.name.as_str())?;
-                PendingInputs::from_feature(
-                    feature.name.clone(),
-                    feat_def,
-                    feature.source.clone(),
-                    WhenCondition::OnLevelUp,
-                    Vec::new(),
-                    ReplaceWith::None,
-                )
-            });
-
-        new_inputs.chain(levelup_inputs).collect()
+            .filter_map(|pending_feature| {
+                let feat_def = fi.get(pending_feature.name.as_str())?;
+                pending_feature.pending_inputs(feat_def, &character)
+            })
+            .collect()
     })
 }
 

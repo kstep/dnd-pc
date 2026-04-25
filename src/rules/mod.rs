@@ -23,7 +23,5 @@ pub use feature::{
 pub use index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry};
 pub use registry::RulesRegistry;
 pub use species::SpeciesDefinition;
-pub use spells::{
-    CastTime, SpellDefinition, SpellLevelRules, SpellList, SpellMap, SpellMeta, SpellsDefinition,
-};
+pub use spells::{CastTime, SpellDefinition, SpellList, SpellMap, SpellMeta, SpellsDefinition};
 pub use utils::LevelRules;

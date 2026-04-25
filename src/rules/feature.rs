@@ -226,7 +226,6 @@ impl Assignment {
 #[derive(Debug, Copy, Clone, Deserialize, PartialEq, Eq)]
 pub enum WhenCondition {
     OnFeatureAdd,
-    OnLevelUp,
     OnLongRest,
     OnCompute,
     OnShortRest,
@@ -448,22 +447,15 @@ impl FeatureDefinition {
         when: WhenCondition,
         inputs: &[AssignInputs],
     ) {
-        let (caster_level, caster_modifier) = if let Some(spells_def) = &self.spells {
+        if let Some(spells_def) = &self.spells {
             let free_uses_max = self.free_uses_max(level, character);
             spells_def.apply(level, character, &self.name, free_uses_max);
-            (
-                character.caster_level(spells_def.pool) as i32,
-                character.ability_modifier(spells_def.casting_ability),
-            )
-        } else {
-            (0, 0)
-        };
+        }
 
         let mut context = Context {
             character,
             class_level: level as i32,
-            caster_level,
-            caster_modifier,
+            feature: Some(self.name.clone()),
             points: Vec::new(),
         };
         self.assign(&mut context, when, inputs);

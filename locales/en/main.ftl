@@ -355,6 +355,7 @@ ref-features = Features
 ref-hit-die = Hit Die
 ref-cantrips = Cantrips
 ref-spells-known = Spells Known
+ref-spells-ready = Spells Ready
 ref-subclasses = Subclasses
 ref-progression = Progression
 ref-select-class = Select a class to view details

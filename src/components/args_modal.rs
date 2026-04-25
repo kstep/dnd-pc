@@ -300,20 +300,18 @@ fn ReplacementPicker(
     // the initial-seed path (pre-filled from AI generation) and by `on_input`
     // when the user selects from the datalist.
     let load_replacement_data = move |name: &str| -> (String, Vec<Expr>) {
-        character.with_untracked(|character| {
-            let exprs = source.with_value(|source| {
-                registry
-                    .feature_needs_args(character, name, Some(source))
-                    .map(|pending| pending.exprs)
-                    .unwrap_or_default()
-            });
-            let description = registry.with_features_index(|idx| {
-                idx.get(name)
-                    .map(|feat| feat.description.clone())
-                    .unwrap_or_default()
-            });
-            (description, exprs)
-        })
+        let exprs = source.with_value(|source| {
+            registry
+                .feature_needs_args(name, Some(source))
+                .map(|pending| pending.exprs)
+                .unwrap_or_default()
+        });
+        let description = registry.with_features_index(|idx| {
+            idx.get(name)
+                .map(|feat| feat.description.clone())
+                .unwrap_or_default()
+        });
+        (description, exprs)
     };
 
     let on_input = move |text: String, resolved: Option<String>| {

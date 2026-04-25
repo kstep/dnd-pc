@@ -46,6 +46,14 @@ pub enum Attribute {
     Immunity(DamageType),
     DamageReduction(DamageType),
     Attacks,
+    Slot(Option<SpellSlotPool>, u8),
+    SlotUsed(Option<SpellSlotPool>, u8),
+    SlotPool,
+    CasterAbility,
+    CasterCoef,
+    SpellCantrips,
+    SpellKnown,
+    SpellReady,
     Arg(u8),
     Feature(&'static str),
     FeatCategory(FeatureCategory),
@@ -98,7 +106,15 @@ impl Attribute {
     pub fn is_scoped(&self) -> bool {
         matches!(
             self,
-            Self::SpellDc | Self::SpellAttack | Self::SpellAttackAdvantage
+            Self::SpellDc
+                | Self::SpellAttack
+                | Self::SpellAttackAdvantage
+                | Self::SlotPool
+                | Self::CasterAbility
+                | Self::CasterCoef
+                | Self::SpellCantrips
+                | Self::SpellKnown
+                | Self::SpellReady
         )
     }
 }
@@ -228,6 +244,39 @@ impl Skill {
     }
 }
 
+/// Parse the suffix of `SLOT.…` attributes:
+/// - `POOL` → `SlotPool`
+/// - `N` / `ARCANE.N` / `PACT.N` → `Slot(pool, N)`
+/// - `N.USED` / `ARCANE.N.USED` / `PACT.N.USED` → `SlotUsed(pool, N)`
+///
+/// `N` must be in `1..=9`.
+fn parse_slot_suffix(rest: &str) -> Result<Attribute, &'static str> {
+    if rest == "POOL" {
+        return Ok(Attribute::SlotPool);
+    }
+    let (pool, rest) = if let Some(r) = rest.strip_prefix("ARCANE.") {
+        (Some(SpellSlotPool::Arcane), r)
+    } else if let Some(r) = rest.strip_prefix("PACT.") {
+        (Some(SpellSlotPool::Pact), r)
+    } else {
+        (None, rest)
+    };
+    let (n_str, used) = if let Some(n) = rest.strip_suffix(".USED") {
+        (n, true)
+    } else {
+        (rest, false)
+    };
+    let n: u8 = n_str.parse().map_err(|_| "invalid SLOT index")?;
+    if !(1..=9).contains(&n) {
+        return Err("SLOT index must be 1..=9");
+    }
+    Ok(if used {
+        Attribute::SlotUsed(pool, n)
+    } else {
+        Attribute::Slot(pool, n)
+    })
+}
+
 impl FromStr for Attribute {
     type Err = &'static str;
 
@@ -254,6 +303,8 @@ impl FromStr for Attribute {
                 "POINTS" => Ok(Self::Points(0)),
                 "POINTS_MAX" => Ok(Self::PointsMax(0)),
                 "COST" => Ok(Self::Cost),
+                "CASTER_ABILITY" => Ok(Self::CasterAbility),
+                "CASTER_COEF" => Ok(Self::CasterCoef),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -318,13 +369,17 @@ impl FromStr for Attribute {
                 "DC" => Ok(Self::SpellDc),
                 "ATK" => Ok(Self::SpellAttack),
                 "ATK.ADV" => Ok(Self::SpellAttackAdvantage),
-                _ => Err("unknown SPELL suffix (expected DC, ATK, or ATK.ADV)"),
+                "CANTRIPS" => Ok(Self::SpellCantrips),
+                "KNOWN" => Ok(Self::SpellKnown),
+                "READY" => Ok(Self::SpellReady),
+                _ => Err("unknown SPELL suffix"),
             },
             "CASTER_LEVEL" => match rest {
                 "ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
                 "PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
                 _ => Err("unknown CASTER_LEVEL suffix (expected ARCANE or PACT)"),
             },
+            "SLOT" => parse_slot_suffix(rest),
             "FEAT" => {
                 let name = rest.trim_matches('`');
                 Ok(Self::Feature(intern(name)))
@@ -408,6 +463,18 @@ impl fmt::Display for Attribute {
             Self::Immunity(dt) => write!(f, "IMMUNE.{}", dt.abbr()),
             Self::DamageReduction(dt) => write!(f, "DR.{}", dt.abbr()),
             Self::Attacks => f.write_str("ATTACKS"),
+            Self::Slot(None, n) => write!(f, "SLOT.{n}"),
+            Self::Slot(Some(SpellSlotPool::Arcane), n) => write!(f, "SLOT.ARCANE.{n}"),
+            Self::Slot(Some(SpellSlotPool::Pact), n) => write!(f, "SLOT.PACT.{n}"),
+            Self::SlotUsed(None, n) => write!(f, "SLOT.{n}.USED"),
+            Self::SlotUsed(Some(SpellSlotPool::Arcane), n) => write!(f, "SLOT.ARCANE.{n}.USED"),
+            Self::SlotUsed(Some(SpellSlotPool::Pact), n) => write!(f, "SLOT.PACT.{n}.USED"),
+            Self::SlotPool => f.write_str("SLOT.POOL"),
+            Self::CasterAbility => f.write_str("CASTER_ABILITY"),
+            Self::CasterCoef => f.write_str("CASTER_COEF"),
+            Self::SpellCantrips => f.write_str("SPELL.CANTRIPS"),
+            Self::SpellKnown => f.write_str("SPELL.KNOWN"),
+            Self::SpellReady => f.write_str("SPELL.READY"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
             Self::Feature(name) => {
                 if name
@@ -796,6 +863,99 @@ mod tests {
             Attribute::FeatCategory(FeatureCategory::Dragonmark),
             Attribute::FeatCategory(FeatureCategory::General),
             Attribute::FeatCategory(FeatureCategory::EpicBoon),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_slot_attributes() {
+        assert_eq!(
+            "SLOT.1".parse::<Attribute>().unwrap(),
+            Attribute::Slot(None, 1)
+        );
+        assert_eq!(
+            "SLOT.9".parse::<Attribute>().unwrap(),
+            Attribute::Slot(None, 9)
+        );
+        assert_eq!(
+            "SLOT.ARCANE.3".parse::<Attribute>().unwrap(),
+            Attribute::Slot(Some(SpellSlotPool::Arcane), 3)
+        );
+        assert_eq!(
+            "SLOT.PACT.5".parse::<Attribute>().unwrap(),
+            Attribute::Slot(Some(SpellSlotPool::Pact), 5)
+        );
+        assert_eq!(
+            "SLOT.1.USED".parse::<Attribute>().unwrap(),
+            Attribute::SlotUsed(None, 1)
+        );
+        assert_eq!(
+            "SLOT.PACT.5.USED".parse::<Attribute>().unwrap(),
+            Attribute::SlotUsed(Some(SpellSlotPool::Pact), 5)
+        );
+        assert_eq!(
+            "SLOT.POOL".parse::<Attribute>().unwrap(),
+            Attribute::SlotPool
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_slot_attributes_negative() {
+        assert!("SLOT.0".parse::<Attribute>().is_err());
+        assert!("SLOT.10".parse::<Attribute>().is_err());
+        assert!("SLOT.BAD.1".parse::<Attribute>().is_err());
+        assert!("SLOT.ARCANE.0".parse::<Attribute>().is_err());
+        assert!("SLOT.ARCANE.10".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_spell_count_attributes() {
+        assert_eq!(
+            "SPELL.CANTRIPS".parse::<Attribute>().unwrap(),
+            Attribute::SpellCantrips
+        );
+        assert_eq!(
+            "SPELL.KNOWN".parse::<Attribute>().unwrap(),
+            Attribute::SpellKnown
+        );
+        assert_eq!(
+            "SPELL.READY".parse::<Attribute>().unwrap(),
+            Attribute::SpellReady
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_caster_meta_attributes() {
+        assert_eq!(
+            "CASTER_ABILITY".parse::<Attribute>().unwrap(),
+            Attribute::CasterAbility
+        );
+        assert_eq!(
+            "CASTER_COEF".parse::<Attribute>().unwrap(),
+            Attribute::CasterCoef
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_new_spell_attributes_round_trip() {
+        let cases = [
+            Attribute::Slot(None, 1),
+            Attribute::Slot(None, 9),
+            Attribute::Slot(Some(SpellSlotPool::Arcane), 3),
+            Attribute::Slot(Some(SpellSlotPool::Pact), 5),
+            Attribute::SlotUsed(None, 2),
+            Attribute::SlotUsed(Some(SpellSlotPool::Arcane), 7),
+            Attribute::SlotUsed(Some(SpellSlotPool::Pact), 5),
+            Attribute::SlotPool,
+            Attribute::SpellCantrips,
+            Attribute::SpellKnown,
+            Attribute::SpellReady,
+            Attribute::CasterAbility,
+            Attribute::CasterCoef,
         ];
         for attr in cases {
             let s = attr.to_string();

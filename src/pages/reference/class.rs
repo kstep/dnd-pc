@@ -9,6 +9,7 @@ use crate::{
     model::{format_bonus, proficiency_bonus_for_level},
     pages::reference::{
         ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name,
+        progression::preview_progression,
     },
     rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
 };
@@ -76,28 +77,31 @@ pub fn ClassReference() -> impl IntoView {
                 let description = def.description.clone();
                 let hit_die = format!("d{}", def.hit_die);
 
-                // Resolve features from the global features index
-                let spells_def = registry.with_features_index(|features_index| {
-                    def.feature_names(subname.as_deref())
-                        .find_map(|feat_name| {
-                            let feat = features_index.get(feat_name)?;
-                            feat.spells.as_ref().filter(|s| !s.levels.is_empty()).cloned()
-                        })
-                });
-                let has_spells = spells_def.is_some();
-                let spell_list_name =
-                    spells_def.as_ref().and_then(|sd| sd.list.ref_name().map(|s: &str| s.to_string()));
-                let max_spell_level = spells_def
-                    .as_ref()
-                    .map(|sd| {
-                        sd.levels
-                            .values()
-                            .filter_map(|l| l.slots.as_ref())
-                            .map(|s: &Vec<u32>| s.len())
-                            .max()
-                            .unwrap_or(0)
-                    })
-                    .unwrap_or(0);
+                // Resolve the class's primary caster feature from the
+                // global features index (if any) and build the progression
+                // preview from its `assign` expressions.
+                let (spell_list_name, spell_progression) =
+                    registry.with_features_index(|features_index| {
+                        let preview = def
+                            .feature_names(subname.as_deref())
+                            .find_map(|feat_name| {
+                                let feat = features_index.get(feat_name)?;
+                                let _ = feat.spells.as_ref()?;
+                                Some(preview_progression(feat))
+                            });
+                        let list_name = def
+                            .feature_names(subname.as_deref())
+                            .find_map(|feat_name| {
+                                features_index
+                                    .get(feat_name)?
+                                    .spells
+                                    .as_ref()?
+                                    .list
+                                    .ref_name()
+                                    .map(|short: &str| short.to_string())
+                            });
+                        (list_name, preview)
+                    });
 
                 // Field columns — collect owned data since features_index borrow is temporary
                 struct FieldColumn {
@@ -130,7 +134,7 @@ pub fn ClassReference() -> impl IntoView {
                                 for feat_name in &rules.features {
                                     let label = features_index
                                         .get(feat_name.as_str())
-                                        .map(|f| f.label().to_string())
+                                        .map(|feat| feat.label().to_string())
                                         .unwrap_or_else(|| feat_name.clone());
                                     features.push((feat_name.clone(), label));
                                 }
@@ -141,20 +145,12 @@ pub fn ClassReference() -> impl IntoView {
                                 for feat_name in &sc_rules.features {
                                     let label = features_index
                                         .get(feat_name.as_str())
-                                        .map(|f| f.label().to_string())
+                                        .map(|feat| feat.label().to_string())
                                         .unwrap_or_else(|| feat_name.clone());
                                     features.push((feat_name.clone(), label));
                                 }
                             }
                         });
-
-                        let spell_level_rules =
-                            spells_def.as_ref().and_then(|sd| sd.levels.at_level(level));
-                        let cantrips = spell_level_rules.and_then(|r| r.cantrips);
-                        let spells_known = spell_level_rules.and_then(|r| r.spells);
-                        let slots = spell_level_rules
-                            .and_then(|r| r.slots.as_deref())
-                            .unwrap_or_default();
 
                         let field_values: Vec<String> = field_columns
                             .iter()
@@ -193,17 +189,21 @@ pub fn ClassReference() -> impl IntoView {
                             })
                             .collect();
 
-                        (
-                            level,
-                            prof_bonus,
-                            features,
-                            cantrips,
-                            spells_known,
-                            slots,
-                            field_values,
-                        )
+                        let progression_row = spell_progression
+                            .as_ref()
+                            .map(|preview| preview.rows[(level - 1) as usize].clone());
+
+                        (level, prof_bonus, features, field_values, progression_row)
                     })
                     .collect();
+                let progression_meta = spell_progression.as_ref().map(|preview| {
+                    (
+                        preview.max_slot_level,
+                        preview.has_cantrips,
+                        preview.has_ready,
+                        preview.has_known,
+                    )
+                });
 
                 let class_features = registry.with_features_index(|features_index| {
                     let class_feat_iter = def.feature_names(None)
@@ -293,11 +293,12 @@ pub fn ClassReference() -> impl IntoView {
                                         <th>{move_tr!("ref-level")}</th>
                                         <th>{move_tr!("prof-bonus")}</th>
                                         <th>{move_tr!("ref-features")}</th>
-                                        {has_spells.then(|| view! {
-                                            <th>{move_tr!("ref-cantrips")}</th>
-                                            <th>{move_tr!("ref-spells-known")}</th>
-                                            {(1..=max_spell_level).map(|sl| {
-                                                view! { <th>{format!("{sl}")}</th> }
+                                        {progression_meta.map(|(max_slot_level, has_cantrips, has_ready, has_known)| view! {
+                                            {has_cantrips.then(|| view! { <th>{move_tr!("ref-cantrips")}</th> })}
+                                            {has_ready.then(|| view! { <th>{move_tr!("ref-spells-ready")}</th> })}
+                                            {has_known.then(|| view! { <th>{move_tr!("ref-spells-known")}</th> })}
+                                            {(1..=max_slot_level).map(|slot_level| {
+                                                view! { <th>{format!("{slot_level}")}</th> }
                                             }).collect_view()}
                                         })}
                                         {field_columns.iter().map(|fc| {
@@ -307,29 +308,36 @@ pub fn ClassReference() -> impl IntoView {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {table_rows.into_iter().map(|(level, prof_bonus, features, cantrips, spells_known, slots, field_values)| {
+                                    {table_rows.into_iter().map(|(level, prof_bonus, features, field_values, progression_row)| {
                                         view! {
                                             <tr>
                                                 <td>{level}</td>
                                                 <td>{format_bonus(prof_bonus)}</td>
                                                 <td class="features-cell">{
-                                                    features.into_iter().enumerate().map(|(i, (feat_name, label))| {
+                                                    features.into_iter().enumerate().map(|(index, (feat_name, label))| {
                                                         view! {
-                                                            {(i > 0).then_some(", ")}
+                                                            {(index > 0).then_some(", ")}
                                                             <a href=hash_href(&format!("feat-{feat_name}")) rel="external">{label}</a>
                                                         }
                                                     }).collect_view()
                                                 }</td>
-                                                {has_spells.then(|| view! {
-                                                    <td>{cantrips.map(|v| v.to_string()).unwrap_or_else(|| "\u{2014}".into())}</td>
-                                                    <td>{spells_known.map(|v| v.to_string()).unwrap_or_else(|| "\u{2014}".into())}</td>
-                                                    {(1..=max_spell_level).map(|sl| {
-                                                        let val = slots.get(sl - 1).copied().unwrap_or(0);
-                                                        view! { <td>{if val > 0 { val.to_string() } else { "\u{2014}".into() }}</td> }
+                                                {progression_row.zip(progression_meta).map(|(row, (max_slot_level, has_cantrips, has_ready, has_known))| view! {
+                                                    {has_cantrips.then(|| view! {
+                                                        <td>{if row.cantrips > 0 { Either::Left(row.cantrips) } else { Either::Right("\u{2014}") }}</td>
+                                                    })}
+                                                    {has_ready.then(|| view! {
+                                                        <td>{if row.ready > 0 { Either::Left(row.ready) } else { Either::Right("\u{2014}") }}</td>
+                                                    })}
+                                                    {has_known.then(|| view! {
+                                                        <td>{if row.known > 0 { Either::Left(row.known) } else { Either::Right("\u{2014}") }}</td>
+                                                    })}
+                                                    {(1..=max_slot_level).map(|slot_level| {
+                                                        let total = row.slots[(slot_level - 1) as usize];
+                                                        view! { <td>{if total > 0 { Either::Left(total) } else { Either::Right("\u{2014}") }}</td> }
                                                     }).collect_view()}
                                                 })}
-                                                {field_values.into_iter().map(|v| {
-                                                    view! { <td>{v}</td> }
+                                                {field_values.into_iter().map(|value| {
+                                                    view! { <td>{value}</td> }
                                                 }).collect_view()}
                                             </tr>
                                         }
