@@ -1,4 +1,6 @@
-use leptos::{prelude::*, task::spawn_local};
+use std::{cell::Cell, time::Duration};
+
+use leptos::{leptos_dom::helpers::set_timeout, prelude::*, task::spawn_local};
 use leptos_fluent::move_tr;
 use wasm_bindgen::{JsCast, JsValue, closure::Closure};
 use web_sys::{
@@ -10,6 +12,22 @@ use crate::{BASE_URL, components::toast::Toast};
 
 /// Waiting-worker signal; `None` until a SW update is detected.
 pub type UpdateSignal = RwSignal<Option<ServiceWorker>>;
+
+thread_local! {
+    /// Set when the user clicks "Reload" in the update toast. Gates the
+    /// controllerchange handler and the fallback timeout.
+    static PENDING_RELOAD: Cell<bool> = const { Cell::new(false) };
+}
+
+/// Time to wait for `controllerchange` after `SKIP_WAITING` before forcing a
+/// reload anyway — guards against browsers that don't fire the event.
+const RELOAD_FALLBACK: Duration = Duration::from_secs(3);
+
+fn force_reload() {
+    if let Some(window) = web_sys::window() {
+        let _ = window.location().reload();
+    }
+}
 
 /// Register sw.js, hook lifecycle events, and provide [`UpdateSignal`] in
 /// context.
@@ -27,15 +45,11 @@ pub fn init_update_listener() {
 
     let sw_container = window.navigator().service_worker();
 
-    // controllerchange fires both on first install (clientsClaim) and on
-    // takeover after skipWaiting. Only reload in the second case.
-    let had_controller = sw_container.controller().is_some();
+    // controllerchange fires on first install (clientsClaim) and on takeover
+    // after skipWaiting. Only reload when the user explicitly asked for it.
     let on_controller_change = Closure::<dyn FnMut(Event)>::new(move |_| {
-        if !had_controller {
-            return;
-        }
-        if let Some(window) = web_sys::window() {
-            let _ = window.location().reload();
+        if PENDING_RELOAD.with(Cell::get) {
+            force_reload();
         }
     });
     let _ = sw_container.add_event_listener_with_callback(
@@ -129,6 +143,7 @@ pub fn UpdateToastTrigger() -> impl IntoView {
             .with_action(
                 move_tr!("update-button-reload"),
                 Callback::new(move |_| {
+                    PENDING_RELOAD.with(|c| c.set(true));
                     let msg = js_sys::Object::new();
                     let _ = js_sys::Reflect::set(
                         &msg,
@@ -136,6 +151,15 @@ pub fn UpdateToastTrigger() -> impl IntoView {
                         &JsValue::from_str("SKIP_WAITING"),
                     );
                     let _ = worker.post_message(&msg.into());
+                    // Plan B: SW didn't fire controllerchange — force reload.
+                    set_timeout(
+                        || {
+                            if PENDING_RELOAD.with(Cell::get) {
+                                force_reload();
+                            }
+                        },
+                        RELOAD_FALLBACK,
+                    );
                 }),
             )
             .show();
