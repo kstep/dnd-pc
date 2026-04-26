@@ -52,6 +52,7 @@ use components::{
     signin_toast::SignInToastTrigger,
     sync_error_toast::SyncErrorToastTrigger,
     toast::{ToastContainer, provide_toast_context},
+    update_toast::{UpdateToastTrigger, init_update_listener},
 };
 use hooks::use_theme;
 use pages::{
@@ -107,6 +108,7 @@ pub fn App() -> impl IntoView {
     provide_toast_context();
     provide_datalist_modal_ctx();
     storage::init_sync();
+    init_update_listener();
 
     view! {
         <Html attr:lang="en" attr:dir="ltr" attr:data-theme=move || theme.get() />
@@ -148,6 +150,7 @@ pub fn App() -> impl IntoView {
         <ToastContainer />
         <SignInToastTrigger />
         <SyncErrorToastTrigger />
+        <UpdateToastTrigger />
         <DatalistModal />
         <BuildInfo />
     }

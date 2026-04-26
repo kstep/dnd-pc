@@ -1,0 +1,143 @@
+use leptos::{prelude::*, task::spawn_local};
+use leptos_fluent::move_tr;
+use wasm_bindgen::{JsCast, JsValue, closure::Closure};
+use web_sys::{
+    Event, RegistrationOptions, ServiceWorker, ServiceWorkerRegistration, ServiceWorkerState,
+    ServiceWorkerUpdateViaCache,
+};
+
+use crate::{BASE_URL, components::toast::Toast};
+
+/// Waiting-worker signal; `None` until a SW update is detected.
+pub type UpdateSignal = RwSignal<Option<ServiceWorker>>;
+
+/// Register sw.js, hook lifecycle events, and provide [`UpdateSignal`] in
+/// context.
+pub fn init_update_listener() {
+    let Some(window) = web_sys::window() else {
+        return;
+    };
+    if !window.is_secure_context() {
+        log::warn!("Service worker not registered: insecure context");
+        return;
+    }
+
+    let signal: UpdateSignal = RwSignal::new(None);
+    provide_context(signal);
+
+    let sw_container = window.navigator().service_worker();
+
+    // controllerchange fires both on first install (clientsClaim) and on
+    // takeover after skipWaiting. Only reload in the second case.
+    let had_controller = sw_container.controller().is_some();
+    let on_controller_change = Closure::<dyn FnMut(Event)>::new(move |_| {
+        if !had_controller {
+            return;
+        }
+        if let Some(window) = web_sys::window() {
+            let _ = window.location().reload();
+        }
+    });
+    let _ = sw_container.add_event_listener_with_callback(
+        "controllerchange",
+        on_controller_change.as_ref().unchecked_ref(),
+    );
+    on_controller_change.forget();
+
+    // updateViaCache: 'none' bypasses HTTP cache when refetching sw.js.
+    let opts = RegistrationOptions::new();
+    opts.set_update_via_cache(ServiceWorkerUpdateViaCache::None);
+
+    let sw_path = format!("{BASE_URL}/sw.js");
+    let promise = sw_container.register_with_options(&sw_path, &opts);
+
+    spawn_local(async move {
+        match wasm_bindgen_futures::JsFuture::from(promise).await {
+            Ok(reg_value) => {
+                let registration: ServiceWorkerRegistration = reg_value.unchecked_into();
+                watch_for_updates(&registration, signal);
+                attach_visibility_poll(&registration);
+                log::info!("Service worker registration initiated");
+            }
+            Err(err) => {
+                log::warn!("Service worker registration failed: {err:?}");
+            }
+        }
+    });
+}
+
+fn watch_for_updates(registration: &ServiceWorkerRegistration, signal: UpdateSignal) {
+    let reg_for_closure = registration.clone();
+    let on_update_found = Closure::<dyn FnMut(Event)>::new(move |_| {
+        let Some(installing) = reg_for_closure.installing() else {
+            return;
+        };
+        let on_state_change = Closure::<dyn FnMut(Event)>::new({
+            let installing = installing.clone();
+            move |_| {
+                if installing.state() != ServiceWorkerState::Installed {
+                    return;
+                }
+                // First install on this client — nothing to update from.
+                let has_controller = web_sys::window()
+                    .map(|w| w.navigator().service_worker().controller().is_some())
+                    .unwrap_or(false);
+                if has_controller {
+                    signal.set(Some(installing.clone()));
+                }
+            }
+        });
+        installing.set_onstatechange(Some(on_state_change.as_ref().unchecked_ref()));
+        on_state_change.forget();
+    });
+    let _ = registration
+        .add_event_listener_with_callback("updatefound", on_update_found.as_ref().unchecked_ref());
+    on_update_found.forget();
+}
+
+fn attach_visibility_poll(registration: &ServiceWorkerRegistration) {
+    let registration = registration.clone();
+    let on_visibility = Closure::<dyn FnMut(Event)>::new(move |_| {
+        let Some(document) = web_sys::window().and_then(|w| w.document()) else {
+            return;
+        };
+        if !document.hidden() {
+            let _ = registration.update();
+        }
+    });
+    if let Some(document) = web_sys::window().and_then(|w| w.document()) {
+        let _ = document.add_event_listener_with_callback(
+            "visibilitychange",
+            on_visibility.as_ref().unchecked_ref(),
+        );
+    }
+    on_visibility.forget();
+}
+
+#[component]
+pub fn UpdateToastTrigger() -> impl IntoView {
+    let Some(signal) = use_context::<UpdateSignal>() else {
+        return;
+    };
+
+    Effect::new(move |_| {
+        let Some(worker) = signal.get() else {
+            return;
+        };
+        Toast::i18n("update-available")
+            .persist()
+            .with_action(
+                move_tr!("update-button-reload"),
+                Callback::new(move |_| {
+                    let msg = js_sys::Object::new();
+                    let _ = js_sys::Reflect::set(
+                        &msg,
+                        &JsValue::from_str("type"),
+                        &JsValue::from_str("SKIP_WAITING"),
+                    );
+                    let _ = worker.post_message(&msg.into());
+                }),
+            )
+            .show();
+    });
+}

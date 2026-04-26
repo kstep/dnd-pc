@@ -52,3 +52,4 @@ pub mod sync_indicator;
 pub mod tab_nav;
 pub mod toast;
 pub mod toggle_button;
+pub mod update_toast;

@@ -1,4 +1,7 @@
-const CACHE_NAME = 'dnd-pc-v2';
+// __BUILD_HASH__ is replaced with the git SHA by .github/workflows/deploy.yml
+// before `trunk build`, so each release ships a byte-different sw.js — that's
+// what triggers the browser to install a new worker.
+const CACHE_NAME = 'dnd-pc-__BUILD_HASH__';
 
 const BASE = new URL('./', self.location.href).href;
 const LOCALES = ['en', 'ru'];
@@ -68,6 +71,12 @@ self.addEventListener('install', (event) => {
     )
   );
   self.skipWaiting();
+});
+
+// The waiting worker stays parked until the page asks it to take over.
+self.addEventListener('message', (event) => {
+  if (!event.source) return;
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use gloo_storage::{LocalStorage, Storage};
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 
 use crate::{components::toast::Toast, storage};
 
@@ -32,7 +32,7 @@ pub fn SignInToastTrigger() -> impl IntoView {
         let toast = Toast::i18n("toast-signin-prompt")
             .persist()
             .with_action(
-                tr!("toast-signin-action"),
+                move_tr!("toast-signin-action"),
                 Callback::new(|_| storage::sign_in_with_google()),
             )
             .on_dismiss(Callback::new(|_| {

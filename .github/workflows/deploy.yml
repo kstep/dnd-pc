@@ -64,6 +64,9 @@ jobs:
       - name: Install Trunk
         uses: jetli/trunk-action@v0.5.0
 
+      - name: Stamp service worker version
+        run: sed -i "s/__BUILD_HASH__/${GITHUB_SHA}/g" public/sw.js
+
       - name: Build
         run: trunk build --release --public-url /dnd-pc/
         env:

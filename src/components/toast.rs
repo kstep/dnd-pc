@@ -89,7 +89,7 @@ impl Toast {
         self
     }
 
-    pub fn with_action(mut self, label: impl Into<String>, on_click: Callback<()>) -> Self {
+    pub fn with_action(mut self, label: impl Into<Signal<String>>, on_click: Callback<()>) -> Self {
         self.action = Some(ToastAction {
             label: label.into(),
             on_click,
@@ -170,7 +170,7 @@ const EXIT_ANIMATION: Duration = Duration::from_millis(250);
 
 #[derive(Clone)]
 struct ToastAction {
-    label: String,
+    label: Signal<String>,
     on_click: Callback<()>,
 }
 
@@ -268,6 +268,7 @@ fn ToastView(entry: Entry) -> impl IntoView {
             <span class="toast-message">{message}</span>
             {action.map(|action| {
                 let on_click = action.on_click;
+                let label = action.label;
                 view! {
                     <button
                         class="toast-action"
@@ -276,7 +277,7 @@ fn ToastView(entry: Entry) -> impl IntoView {
                             dismiss_toast(id);
                         }
                     >
-                        {action.label}
+                        {move || label.get()}
                     </button>
                 }
             })}
