@@ -51,7 +51,7 @@ async fn run_ai_generation(
 ) -> Result<AiGenerateResult, ai::AiError> {
     // Phase 1: generate identity
     phase.set("ai-generate-phase-identity");
-    let concept = ai::generate_character(
+    let mut concept = ai::generate_character(
         &input.settings,
         &input.description,
         &input.classes_list,
@@ -59,6 +59,22 @@ async fn run_ai_generation(
         &input.backgrounds_list,
     )
     .await?;
+
+    // Canonicalize species/class/background to the registry's English keys.
+    // Models occasionally return localized labels even when instructed not to;
+    // map them back here. Subclass is canonicalized after the class definition
+    // loads (subclass list lives inside ClassDefinition, not the index).
+    concept.species = registry
+        .canonical_species_name(&concept.species)
+        .ok_or_else(|| ai::AiError::Json(format!("unknown species: {:?}", concept.species)))?;
+    concept.class = registry
+        .canonical_class_name(&concept.class)
+        .ok_or_else(|| ai::AiError::Json(format!("unknown class: {:?}", concept.class)))?;
+    concept.background = registry
+        .canonical_background_name(&concept.background)
+        .ok_or_else(|| {
+            ai::AiError::Json(format!("unknown background: {:?}", concept.background))
+        })?;
 
     // Fill store identity so ensure_definitions_fetched can trigger fetches
     store.update(|character| {
@@ -87,6 +103,22 @@ async fn run_ai_generation(
             break;
         }
         hooks::sleep(DEFINITION_POLL_INTERVAL).await;
+    }
+
+    // Canonicalize subclass against the now-loaded class definition. If the
+    // model returned a localized or unknown subclass, drop it rather than
+    // poison identity — leaving subclass empty is recoverable; an invalid
+    // value is not.
+    if let Some(raw_subclass) = concept.subclass.as_deref()
+        && !raw_subclass.trim().is_empty()
+    {
+        let canonical = registry.canonical_subclass_name(&concept.class, raw_subclass);
+        concept.subclass = canonical.clone();
+        store.update(|character| {
+            if let Some(class_level) = character.identity.classes.first_mut() {
+                class_level.subclass = canonical.clone();
+            }
+        });
     }
 
     // Collect pending features

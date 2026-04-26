@@ -811,19 +811,25 @@ pub async fn generate_character(
     let system_prompt = "You are a D&D 5e character creator. Given a character description, \
         choose the best fitting options and create a complete character concept. \
         Write personality and backstory in the same language as the description. \
-        Respond with valid JSON only, no markdown.";
+        Respond with valid JSON only, no markdown.\n\n\
+        CRITICAL: the values for `species`, `class`, `subclass`, and `background` \
+        MUST be copied VERBATIM from the lists below — same spelling, same case, \
+        in English. Do NOT translate or transliterate them, even if the description \
+        is in another language. Only `name`, `personality_traits`, `ideals`, \
+        `bonds`, `flaws`, and `backstory` follow the description's language.";
 
     let user_message = format!(
         "Character description: {description}\n\n\
-         Available species: {species}\n\
-         Available classes: {classes}\n\
-         Available backgrounds: {backgrounds}\n\n\
+         Available species (use one of these EXACT strings): {species}\n\
+         Available classes (use one of these EXACT strings; subclass must come \
+         from the listed subclasses of the chosen class): {classes}\n\
+         Available backgrounds (use one of these EXACT strings): {backgrounds}\n\n\
          Respond with a JSON object with these fields:\n\
          - name: string\n\
-         - species: string (exactly one of the available species)\n\
-         - class: string (exactly one of the available classes)\n\
-         - subclass: string or null (exactly one of the listed subclasses)\n\
-         - background: string (exactly one of the available backgrounds)\n\
+         - species: string (exact English name from the list)\n\
+         - class: string (exact English name from the list)\n\
+         - subclass: string or null (exact English name of a subclass of the chosen class)\n\
+         - background: string (exact English name from the list)\n\
          - personality_traits: string\n\
          - ideals: string\n\
          - bonds: string\n\

@@ -5,6 +5,7 @@ use leptos_fluent::tr;
 
 use crate::{
     BASE_URL,
+    demap::Named,
     model::{
         ActiveEffect, Character, CharacterIdentity, ClassLevel, EffectsIndex, FeatureField,
         FeatureSource, FreeUses,
@@ -161,6 +162,42 @@ impl RulesRegistry {
         with_species_entries,    species_label_by_name,     species,      SpeciesIndexEntry;
         with_background_entries, background_label_by_name,  backgrounds,  BackgroundIndexEntry;
         with_spell_entries,      spell_label_by_name,       spells,       SpellIndexEntry;
+    }
+
+    pub fn canonical_class_name(&self, query: &str) -> Option<String> {
+        self.with_class_entries(|entries| canonical_name(entries, query))
+    }
+
+    pub fn canonical_species_name(&self, query: &str) -> Option<String> {
+        self.with_species_entries(|entries| canonical_name(entries, query))
+    }
+
+    pub fn canonical_background_name(&self, query: &str) -> Option<String> {
+        self.with_background_entries(|entries| canonical_name(entries, query))
+    }
+
+    /// Resolve a subclass name within a class. Requires the class definition
+    /// to be loaded.
+    pub fn canonical_subclass_name(&self, class_name: &str, query: &str) -> Option<String> {
+        let trimmed = query.trim();
+        if trimmed.is_empty() {
+            return None;
+        }
+        let lower = trimmed.to_lowercase();
+        self.classes()
+            .with(class_name, |def| {
+                if let Some(entry) = def.subclasses.get(trimmed) {
+                    return Some(entry.name.clone());
+                }
+                def.subclasses
+                    .values()
+                    .find(|sub| {
+                        sub.name.eq_ignore_ascii_case(trimmed)
+                            || sub.label().to_lowercase() == lower
+                    })
+                    .map(|sub| sub.name.clone())
+            })
+            .flatten()
     }
 
     /// Checks whether `character` can multiclass into `class_name`.
@@ -765,6 +802,29 @@ fn label_by_name<T: HasLabel>(entries: &BTreeMap<Box<str>, T>, name: &str) -> St
         .get(name)
         .map(|e| e.label().to_string())
         .unwrap_or_default()
+}
+
+/// Resolve a free-form query (canonical English name or localized label, any
+/// case) to the canonical English `name` of an index entry. Used to harden AI
+/// responses that occasionally translate names back to the prompt language.
+fn canonical_name<T: HasLabel + Named>(
+    entries: &BTreeMap<Box<str>, T>,
+    query: &str,
+) -> Option<String> {
+    let trimmed = query.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+    if let Some(entry) = entries.get(trimmed) {
+        return Some(entry.name().to_string());
+    }
+    let lower = trimmed.to_lowercase();
+    entries
+        .values()
+        .find(|entry| {
+            entry.name().eq_ignore_ascii_case(trimmed) || entry.label().to_lowercase() == lower
+        })
+        .map(|entry| entry.name().to_string())
 }
 
 // Empty maps for when index isn't loaded yet

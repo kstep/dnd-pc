@@ -75,7 +75,6 @@ self.addEventListener('install', (event) => {
 
 // The waiting worker stays parked until the page asks it to take over.
 self.addEventListener('message', (event) => {
-  if (!event.source) return;
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
