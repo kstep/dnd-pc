@@ -1214,6 +1214,9 @@
   "Mantle of Inspiration.field.Actions.option.Mantle of Inspiration": {
     "description": "Expend Bardic Inspiration: up to CHA mod creatures within 60 ft each gain temp HP = 2× die roll and can Reaction-move full Speed without provoking Opportunity Attacks"
   },
+  "Cutting Words.field.Actions.option.Cutting Words": {
+    "description": "Reaction vs creature within 60 ft: expend Bardic Inspiration; subtract die roll from target's damage, ability check, or attack roll"
+  },
   "Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
     "description": "Cast Command (no spell slot) and assume unearthly appearance for 1 min (Concentration); during this time cast Command as Bonus Action for free each turn"
   },

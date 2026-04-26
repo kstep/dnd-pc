@@ -2985,7 +2985,21 @@
     "name": "Words of Creation"
   },
   {
-    "name": "Cutting Words"
+    "name": "Cutting Words",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Cutting Words",
+            "action": "Reaction",
+            "cost": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Magical Discoveries"
