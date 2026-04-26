@@ -1657,6 +1657,54 @@
     "label": "Острое словцо",
     "description": "Реакция против существа в 60 фт: расход Вдохновения; вычесть бросок кости из урона, проверки характеристики или броска атаки цели"
   },
+  "Defensive Flourish.field.Actions.option.Defensive Flourish": {
+    "label": "Защитный росчерк",
+    "description": "Расход Вдохновения при попадании оружием: цель получает доп. урон = бросок кости; тот же бросок прибавляется к КЗ до начала следующего хода"
+  },
+  "Mobile Flourish.field.Actions.option.Mobile Flourish": {
+    "label": "Подвижный росчерк",
+    "description": "Расход Вдохновения при попадании оружием: цель получает доп. урон = бросок кости; цель отталкивается на 5 фт + число футов = бросок кости"
+  },
+  "Slashing Flourish.field.Actions.option.Slashing Flourish": {
+    "label": "Рубящий росчерк",
+    "description": "Расход Вдохновения при попадании оружием: цель и одно существо на ваш выбор в 5 фт получают доп. урон = бросок кости"
+  },
+  "Peerless Skill.field.Actions.option.Peerless Skill": {
+    "label": "Бесподобное мастерство",
+    "description": "Расход Вдохновения после провала проверки характеристики или броска атаки: прибавить бросок кости к к20; при провале кость не расходуется"
+  },
+  "Tandem Footwork.field.Actions.option.Tandem Footwork": {
+    "label": "Слаженный шаг",
+    "description": "Расход Вдохновения на бросок Инициативы: вы и каждый союзник в 30 фт получают бонус к Инициативе = бросок кости"
+  },
+  "Inspiring Movement.field.Actions.option.Inspiring Movement": {
+    "label": "Вдохновляющее движение",
+    "description": "Реакция, когда враг заканчивает ход в 5 фт: расход Вдохновения, переместиться на ½ Скорости; союзник в 30 фт тоже может переместиться на ½ Скорости (Реакцией). Без Атак по возможности"
+  },
+  "Countercharm.field.Actions.option.Countercharm": {
+    "label": "Контрчары",
+    "description": "Реакция, когда вы или существо в 30 фт проваливает спасбросок против Очарования или Испуга: бросок повторяется с преимуществом"
+  },
+  "Mantle of Whispers.field.Actions.option.Capture Shadow": {
+    "label": "Захватить тень",
+    "description": "Реакция, когда гуманоид умирает в 30 фт: магически захватить его тень. Хранится до использования или Продолжительного отдыха"
+  },
+  "Mantle of Whispers.field.Actions.option.Don Disguise": {
+    "label": "Надеть личину",
+    "description": "Действие: израсходовать захваченную тень и принять облик и голос её владельца"
+  },
+  "Performance of Creation.field.Actions.option.Performance of Creation": {
+    "label": "Песнь созидания",
+    "description": "Действие: создать один немагический предмет (Средний или меньше) в 10 фт. Стоимость ≤ 20 × уровень барда зм"
+  },
+  "Animating Performance.field.Actions.option.Animating Performance": {
+    "label": "Оживляющее представление",
+    "description": "Действие: оживить немагический предмет (Большой или меньше) в 30 фт. Использует статблок Танцующего предмета и подчиняется вашим командам"
+  },
+  "Universal Speech.field.Actions.option.Universal Speech": {
+    "label": "Всеобщая речь",
+    "description": "Действие: до мод. ХАР существ в 60 фт магически понимают вашу речь в течение 1 часа"
+  },
   "Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
     "label": "Мантия величия",
     "description": "Наложить Приказ (без ячейки) и принять неземной облик на 1 мин (Концентрация); в это время накладывать Приказ бонусным действием бесплатно каждый ход"
@@ -7696,6 +7744,39 @@
     "label": "Действия"
   },
   "Cutting Words.field.Actions": {
+    "label": "Действия"
+  },
+  "Defensive Flourish.field.Actions": {
+    "label": "Действия"
+  },
+  "Mobile Flourish.field.Actions": {
+    "label": "Действия"
+  },
+  "Slashing Flourish.field.Actions": {
+    "label": "Действия"
+  },
+  "Peerless Skill.field.Actions": {
+    "label": "Действия"
+  },
+  "Tandem Footwork.field.Actions": {
+    "label": "Действия"
+  },
+  "Inspiring Movement.field.Actions": {
+    "label": "Действия"
+  },
+  "Countercharm.field.Actions": {
+    "label": "Действия"
+  },
+  "Mantle of Whispers.field.Actions": {
+    "label": "Действия"
+  },
+  "Performance of Creation.field.Actions": {
+    "label": "Действия"
+  },
+  "Animating Performance.field.Actions": {
+    "label": "Действия"
+  },
+  "Universal Speech.field.Actions": {
     "label": "Действия"
   },
   "Mantle of Majesty.field.Actions": {

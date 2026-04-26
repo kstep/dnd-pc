@@ -2927,7 +2927,7 @@
             "effects": [
               {
                 "name": "Inspiration Die",
-                "expr": "if(CLASS_LEVEL >= 15, 1d12, if(CLASS_LEVEL >= 10, 1d10, if(CLASS_LEVEL >= 5, 1d8, 1d6)))"
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
               }
             ]
           }
@@ -2973,7 +2973,19 @@
     "name": "Font of Inspiration"
   },
   {
-    "name": "Countercharm"
+    "name": "Countercharm",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Countercharm",
+            "action": "Reaction"
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Magical Secrets"
@@ -2995,7 +3007,13 @@
           {
             "name": "Cutting Words",
             "action": "Reaction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Subtraction",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
           }
         ]
       }
@@ -3005,7 +3023,26 @@
     "name": "Magical Discoveries"
   },
   {
-    "name": "Peerless Skill"
+    "name": "Peerless Skill",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Peerless Skill",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "d20 Bonus",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Combat Inspiration"
@@ -3078,7 +3115,13 @@
           {
             "name": "Mantle of Inspiration",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Temp HP",
+                "expr": "2 * 1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
           }
         ]
       }
@@ -3124,13 +3167,70 @@
     ]
   },
   {
-    "name": "Defensive Flourish"
+    "name": "Defensive Flourish",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Defensive Flourish",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Damage / AC Bonus",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "name": "Mobile Flourish"
+    "name": "Mobile Flourish",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Mobile Flourish",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Damage / Push (ft + 5)",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "name": "Slashing Flourish"
+    "name": "Slashing Flourish",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Slashing Flourish",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Extra Damage",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Blade Flourish"
@@ -3148,7 +3248,23 @@
     "name": "Words of Terror"
   },
   {
-    "name": "Mantle of Whispers"
+    "name": "Mantle of Whispers",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Capture Shadow",
+            "action": "Reaction"
+          },
+          {
+            "name": "Don Disguise",
+            "action": "Action"
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Shadow Lore"
@@ -3157,10 +3273,34 @@
     "name": "Mote of Potential"
   },
   {
-    "name": "Performance of Creation"
+    "name": "Performance of Creation",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Performance of Creation",
+            "action": "Action"
+          }
+        ]
+      }
+    ]
   },
   {
-    "name": "Animating Performance"
+    "name": "Animating Performance",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Animating Performance",
+            "action": "Action"
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Creative Crescendo"
@@ -3179,7 +3319,13 @@
           {
             "name": "Unsettling Words",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Save Penalty",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
           }
         ]
       }
@@ -3189,7 +3335,19 @@
     "name": "Unfailing Inspiration"
   },
   {
-    "name": "Universal Speech"
+    "name": "Universal Speech",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "options": [
+          {
+            "name": "Universal Speech",
+            "action": "Action"
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Infectious Inspiration",
@@ -3232,7 +3390,13 @@
           {
             "name": "Tales from Beyond",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Tale Roll",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
           }
         ]
       }
@@ -3263,10 +3427,43 @@
     ]
   },
   {
-    "name": "Inspiring Movement"
+    "name": "Inspiring Movement",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Inspiring Movement",
+            "action": "Reaction",
+            "cost": 1
+          }
+        ]
+      }
+    ]
   },
   {
-    "name": "Tandem Footwork"
+    "name": "Tandem Footwork",
+    "fields": [
+      {
+        "name": "Actions",
+        "kind": "Choice",
+        "cost": "Bardic Inspiration",
+        "options": [
+          {
+            "name": "Tandem Footwork",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Initiative Bonus",
+                "expr": "1d(tier(CLASS_LEVEL, 1:6, 5:8, 10:10, 15:12))"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Leading Evasion"

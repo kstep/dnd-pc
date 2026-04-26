@@ -1217,6 +1217,44 @@
   "Cutting Words.field.Actions.option.Cutting Words": {
     "description": "Reaction vs creature within 60 ft: expend Bardic Inspiration; subtract die roll from target's damage, ability check, or attack roll"
   },
+  "Defensive Flourish.field.Actions.option.Defensive Flourish": {
+    "description": "Expend Bardic Inspiration on hit: target takes extra damage equal to die roll; add same roll to your AC until start of next turn"
+  },
+  "Mobile Flourish.field.Actions.option.Mobile Flourish": {
+    "description": "Expend Bardic Inspiration on hit: target takes extra damage equal to die roll; push target 5 ft + die-roll feet away"
+  },
+  "Slashing Flourish.field.Actions.option.Slashing Flourish": {
+    "description": "Expend Bardic Inspiration on hit: target and one other creature within 5 ft each take extra damage equal to die roll"
+  },
+  "Peerless Skill.field.Actions.option.Peerless Skill": {
+    "description": "Expend Bardic Inspiration after a failed ability check or attack roll: add die roll to the d20; on failure, the die isn't expended"
+  },
+  "Tandem Footwork.field.Actions.option.Tandem Footwork": {
+    "description": "On initiative roll, expend Bardic Inspiration: you and each ally within 30 ft gain initiative bonus equal to die roll"
+  },
+  "Inspiring Movement.field.Actions.option.Inspiring Movement": {
+    "description": "Reaction when enemy ends turn within 5 ft: expend Bardic Inspiration to move up to half Speed; one ally within 30 ft can also move half Speed as Reaction. No Opportunity Attacks"
+  },
+  "Countercharm.field.Actions.option.Countercharm": {
+    "description": "Reaction when you or a creature within 30 ft fails a save vs Charmed or Frightened: reroll the save with Advantage"
+  },
+  "Mantle of Whispers.field.Actions.option.Capture Shadow": {
+    "label": "Capture Shadow",
+    "description": "Reaction when a humanoid dies within 30 ft: magically capture its shadow. Held until used or you finish a long rest"
+  },
+  "Mantle of Whispers.field.Actions.option.Don Disguise": {
+    "label": "Don Disguise",
+    "description": "Action: expend the captured shadow to assume the appearance and voice of its source"
+  },
+  "Performance of Creation.field.Actions.option.Performance of Creation": {
+    "description": "Action: create one nonmagical item (Medium or smaller) within 10 ft. Item value ≤ 20 × bard level gp"
+  },
+  "Animating Performance.field.Actions.option.Animating Performance": {
+    "description": "Action: animate one nonmagical item (Large or smaller) within 30 ft. Uses Dancing Item stat block and obeys your commands"
+  },
+  "Universal Speech.field.Actions.option.Universal Speech": {
+    "description": "Action: up to CHA mod creatures within 60 ft magically understand your speech for 1 hour"
+  },
   "Mantle of Majesty.field.Actions.option.Mantle of Majesty": {
     "description": "Cast Command (no spell slot) and assume unearthly appearance for 1 min (Concentration); during this time cast Command as Bonus Action for free each turn"
   },
