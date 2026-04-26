@@ -750,26 +750,29 @@
     "label": "Экспериментальный эликсир",
     "description": "Когда вы заканчиваете продолжительный отдых, вы можете магически создать экспериментальный эликсир в пустой фляге, которую вы касаетесь."
   },
+  "Experimental Elixir.field.Elixir Recipes": {
+    "label": "Рецепты эликсиров"
+  },
   "Experimental Elixir.field.Elixirs": {
     "label": "Эликсиры"
   },
-  "Experimental Elixir.field.Elixirs.option.Healing": {
+  "Experimental Elixir.field.Elixir Recipes.option.Healing": {
     "label": "Исцеление",
     "description": "Выпивший восстанавливает хиты в количестве 2к4 + ваш модификатор Интеллекта."
   },
-  "Experimental Elixir.field.Elixirs.option.Swiftness": {
+  "Experimental Elixir.field.Elixir Recipes.option.Swiftness": {
     "label": "Быстрота",
     "description": "Скорость выпившего увеличивается на 10 футов на 1 час."
   },
-  "Experimental Elixir.field.Elixirs.option.Resilience": {
+  "Experimental Elixir.field.Elixir Recipes.option.Resilience": {
     "label": "Стойкость",
     "description": "Выпивший получает бонус +1 к КЗ на 10 минут."
   },
-  "Experimental Elixir.field.Elixirs.option.Boldness": {
+  "Experimental Elixir.field.Elixir Recipes.option.Boldness": {
     "label": "Отвага",
     "description": "Выпивший может бросить к4 и добавить результат к каждому броску атаки и спасброску в течение 1 минуты."
   },
-  "Experimental Elixir.field.Elixirs.option.Flight": {
+  "Experimental Elixir.field.Elixir Recipes.option.Flight": {
     "label": "Полёт",
     "description": "Выпивший получает скорость полёта 10 футов на 10 минут."
   },

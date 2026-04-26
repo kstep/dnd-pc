@@ -35,7 +35,7 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
         // with no subclass picked, where L6 has only subclass-gated
         // features). Still mark the levels applied — otherwise the Build
         // banner sticks around with no way to clear it.
-        store.update(mark_all_class_levels_applied);
+        store.update(mark_all_applied);
         return;
     }
 
@@ -46,17 +46,24 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
         None,
         move |character, pending, inputs, fi| {
             apply_new_features(fi, character, pending, Some(&inputs.feature_inputs));
-            mark_all_class_levels_applied(character);
+            mark_all_applied(character);
         },
     );
 }
 
-/// Mark every class-level on the character as applied. Idempotent: re-marking
-/// already-applied levels is a no-op via VecSet.
-fn mark_all_class_levels_applied(character: &mut Character) {
-    // species/background are not touched here: callers route through
-    // `apply_pending` which guards `!needs_rebuild()` — that implies they
-    // were already applied (or absent from identity).
+/// Mark every class-level, plus species/background, as applied. Idempotent:
+/// re-marking already-applied levels is a no-op via VecSet. Empty-character
+/// case (no features yet → `needs_rebuild` skips this whole branch off) only
+/// reaches here, and species/background features come in through
+/// `apply_pending` like any other — they need flagging here too, otherwise
+/// `BuildPendingApplyHint` keeps insisting they're outstanding.
+fn mark_all_applied(character: &mut Character) {
+    if !character.identity.species.is_empty() {
+        character.applied.species = true;
+    }
+    if !character.identity.background.is_empty() {
+        character.applied.background = true;
+    }
     let snapshot: Vec<(String, u32)> = character
         .identity
         .classes

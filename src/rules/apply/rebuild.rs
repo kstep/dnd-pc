@@ -6,7 +6,7 @@ use strum::VariantArray;
 use crate::{
     model::{
         Ability, Applied, AssignInputs, Attribute, Character, Feature, FeatureCategory,
-        FeatureSource, FeatureValue,
+        FeatureSource,
     },
     rules::{
         ClassDefinition, ClassIndexEntry, DefinitionStore, RulesRegistry, WhenCondition,
@@ -16,7 +16,7 @@ use crate::{
                 collect_species_features,
             },
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
-            primitives::{apply_new_feature, resolve_replacements, restore_all_spell_selections},
+            primitives::{apply_new_feature, resolve_replacements, restore_user_state},
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
@@ -169,6 +169,9 @@ pub fn build_clean(
         Ok(())
     })?;
 
+    // compute creates the empty SPELL.READY/KNOWN slots that
+    // restore_all_spell_selections fills from the original.
+    registry.with_features_index_untracked(|fi| crate::rules::apply::compute(&mut clean, fi));
     merge_preserved(&mut clean, original);
     Ok(RebuildOutcome {
         character: clean,
@@ -378,15 +381,9 @@ fn collect_rebuild_pending_inputs(
                 }
                 emit_started = true;
             } else if feat_def.assign.is_some() {
-                // Non-interactive: apply unconditionally (downstream
-                // `detect_replacement` needs its effect); emit as hidden
-                // only after the visible section has opened.
-                feat_def.apply(
-                    pending.level,
-                    &mut emit_baseline,
-                    WhenCondition::OnFeatureAdd,
-                    &[],
-                );
+                // apply_new_feature (not bare feat_def.apply) so the row
+                // lands in features.list — caster_info reads it.
+                apply_new_feature(fi, &mut emit_baseline, pending, &[]);
                 if emit_started {
                     inputs.push(PendingInputs::hidden_for_cascade(
                         pending.name.clone(),
@@ -893,63 +890,7 @@ fn merge_preserved(clean: &mut Character, original: &Character) {
         }
     }
 
-    // feature_data: preserve used counters on Points/Die fields and user's
-    // Choice picks (Metamagic, etc.). Clean has the fresh field structure
-    // from the current definition; we overlay per-field values from
-    // original where applicable.
-    for (name, clean_data) in clean.features.data_mut() {
-        let Some(orig_data) = original.features.get(name) else {
-            continue;
-        };
-        for clean_field in clean_data.fields.iter_mut() {
-            let Some(orig_field) = orig_data
-                .fields
-                .iter()
-                .find(|orig_field| orig_field.name == clean_field.name)
-            else {
-                continue;
-            };
-            match (&mut clean_field.value, &orig_field.value) {
-                (
-                    FeatureValue::Points { used, max },
-                    FeatureValue::Points {
-                        used: orig_used, ..
-                    },
-                ) => {
-                    *used = (*orig_used).min(*max);
-                }
-                (
-                    FeatureValue::Die { used, die },
-                    FeatureValue::Die {
-                        used: orig_used, ..
-                    },
-                ) => {
-                    *used = (*orig_used).min(die.amount);
-                }
-                (
-                    FeatureValue::Choice { options },
-                    FeatureValue::Choice {
-                        options: orig_options,
-                    },
-                ) => {
-                    // Fill empty (default) clean slots from original's picks.
-                    // `zip` caps at the shorter length: if the definition now
-                    // grants more slots than before, extra slots stay empty
-                    // for the user to pick; if it grants fewer, trailing
-                    // original picks are dropped.
-                    for (clean_opt, orig_opt) in options.iter_mut().zip(orig_options) {
-                        if clean_opt.name.is_empty() && !orig_opt.name.is_empty() {
-                            *clean_opt = orig_opt.clone();
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-
-    // Restore user-selected spells from the original into clean.
-    restore_all_spell_selections(original.features.data(), clean.features.data_mut());
+    restore_user_state(original.features.data(), clean.features.data_mut());
 }
 
 #[cfg(test)]

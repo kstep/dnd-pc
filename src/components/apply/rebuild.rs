@@ -49,7 +49,7 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
             let empty = ApplyInputs::default();
             let extra = modal_inputs.unwrap_or(&empty);
             match build_clean(&original, &registry, extra) {
-                Ok(outcome) => commit_rebuild(store, registry, outcome, false, &open_build_tab),
+                Ok(outcome) => commit_rebuild(store, outcome, false, &open_build_tab),
                 Err(error) => show_rebuild_error(&error, &open_build_tab),
             }
         }
@@ -78,7 +78,7 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
             && simulated.character.eq_derived(&original)
         {
             log::info!("rebuild: silent-applied; derived state matches original");
-            commit_rebuild(store, registry, simulated, true, &open_build_tab);
+            commit_rebuild(store, simulated, true, &open_build_tab);
             return;
         }
     }
@@ -147,7 +147,6 @@ fn build_tab_action(character_id: Uuid) -> Callback<()> {
 
 fn commit_rebuild(
     store: Store<Character>,
-    registry: RulesRegistry,
     outcome: RebuildOutcome,
     silent: bool,
     open_build_tab: &Callback<()>,
@@ -165,7 +164,6 @@ fn commit_rebuild(
     }
     store.update(|character_store| {
         *character_store = character;
-        registry.compute(character_store);
     });
     let issue_toast = match (skipped_features.len(), removed_features.len()) {
         (0, 0) => None,

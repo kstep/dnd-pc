@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr, tr};
-use reactive_stores::Store;
+use reactive_stores::{Field, Store, StoreFieldIterator};
 
 use crate::{
     components::{
@@ -33,6 +33,54 @@ pub fn FeaturesPanel() -> impl IntoView {
         });
     };
 
+    let remove_feature = move |idx: usize| {
+        let evict = {
+            let list_signal = features.list();
+            let mut list = list_signal.write();
+            if idx >= list.len() {
+                return;
+            }
+            let name = list.remove(idx).name;
+            let still_applied = list
+                .iter()
+                .any(|feature| feature.name == name && feature.applied);
+            (!still_applied).then_some(name)
+        };
+        if let Some(name) = evict {
+            features.data().write().remove(&name);
+        }
+    };
+
+    // Pipeline-order preview: shared `blank` accumulates across features so an
+    // assign reading another feature's effect (e.g. STR.MOD after an ASI) sees
+    // the up-to-date state, mirroring real apply order. Indexed by list
+    // position so each row pulls its own preview row from the panel-level Memo.
+    let assign_previews = Memo::new(move |_| {
+        let mut blank = Character::default();
+        let features_read = store.features().read();
+        features_read
+            .iter()
+            .map(|feature| {
+                let mut entries: Vec<String> = Vec::new();
+                registry.with_feature(&feature.name, |feat_def| {
+                    let mut ctx = PreviewContext {
+                        character: &mut blank,
+                        captured: Vec::new(),
+                    };
+                    feat_def.assign(&mut ctx, WhenCondition::OnFeatureAdd, &feature.inputs);
+                    for (attr, value) in ctx.captured {
+                        entries.push(format!(
+                            "{}: {}",
+                            attr.display_name(i18n),
+                            attr.format_value(value, i18n)
+                        ));
+                    }
+                });
+                entries
+            })
+            .collect::<Vec<_>>()
+    });
+
     let feature_options = Memo::new(move |_| {
         let character = store.read();
         let prereq_prefix = tr!(i18n, "prerequisites-label");
@@ -54,28 +102,6 @@ pub fn FeaturesPanel() -> impl IntoView {
         })
     });
 
-    let assign_previews = Memo::new(move |_| {
-        let mut blank = Character::default();
-        let features_read = store.features().read();
-        features_read
-            .iter()
-            .map(|feature| {
-                let mut entries: Vec<String> = Vec::new();
-                registry.with_feature(&feature.name, |feat_def| {
-                    let mut ctx = PreviewContext {
-                        character: &mut blank,
-                        captured: Vec::new(),
-                    };
-                    feat_def.assign(&mut ctx, WhenCondition::OnFeatureAdd, &feature.inputs);
-                    for (attr, value) in ctx.captured {
-                        entries.push(format!("{}: {value}", attr.display_name(i18n)));
-                    }
-                });
-                entries
-            })
-            .collect::<Vec<_>>()
-    });
-
     view! {
         <BuildNeedsRebuildHint />
         <BuildPendingApplyHint />
@@ -85,31 +111,42 @@ pub fn FeaturesPanel() -> impl IntoView {
             {move_tr!("btn-add-feature")}
         </button>
         <div class="entry-list">
-            {move || {
-                let features_read = features.read();
-                let mut last_source: Option<&FeatureSource> = None;
-                let mut rows = Vec::with_capacity(features_read.len());
-                for (i, feature) in features_read.iter().enumerate().rev() {
-                    let is_new_group = last_source.is_none_or(|s| s != &feature.source);
-                    last_source = Some(&feature.source);
-                    let header = is_new_group
-                        .then(|| {
-                            let label = registry.source_label(&feature.source, i18n);
-                            view! { <h3 class="features-group-header">{label}</h3> }
-                        });
-                    rows.push(
-                        view! {
-                            {header}
-                            <FeatureRow
-                                feature_idx=i
-                                options=feature_options
-                                assign_previews=assign_previews
-                            />
-                        },
-                    );
+            <For
+                each=move || (0..features.list().read().len()).rev()
+                key=|idx| *idx
+                let:idx
+            >
+                {
+                    // `header_label` reads features.list() reactively: after a
+                    // remove the indices stay valid but the group-head boundary
+                    // shifts, so the row at the new top has to re-evaluate.
+                    let header_label = Signal::derive(move || {
+                        let list = features.list().read();
+                        let feature = list.get(idx)?;
+                        let next_below = list.get(idx + 1);
+                        let is_group_head = next_below
+                            .is_none_or(|next| next.source != feature.source);
+                        is_group_head.then(|| registry.source_label(&feature.source, i18n))
+                    });
+                    let feature: Field<Feature> = features.list().at_unkeyed(idx).into();
+                    let row_previews = Signal::derive(move || {
+                        assign_previews
+                            .with(|all| all.get(idx).cloned())
+                            .unwrap_or_default()
+                    });
+                    view! {
+                        {move || header_label.get().map(|label| view! {
+                            <h3 class="features-group-header">{label}</h3>
+                        })}
+                        <FeatureRow
+                            feature=feature
+                            options=feature_options
+                            row_previews=row_previews
+                            on_remove=Callback::new(move |()| remove_feature(idx))
+                        />
+                    }
                 }
-                rows.collect_view()
-            }}
+            </For>
         </div>
     }
 }

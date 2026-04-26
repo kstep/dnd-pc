@@ -8,9 +8,7 @@ use crate::{
     model::{AssignInputs, Character, FeatureSource},
     rules::{
         ApplyInputs, PendingInputs, RulesRegistry, WhenCondition,
-        apply::{
-            FeatureKey, PendingFeature, replay, resolve_replacements, restore_all_spell_selections,
-        },
+        apply::{FeatureKey, PendingFeature, replay, resolve_replacements, restore_user_state},
         feature::FeatureDefinition,
     },
 };
@@ -65,7 +63,6 @@ pub fn apply_with_modal(
                 let resolved = resolve_replacements(&pending, &inputs.replacements, fi);
                 callback(character, &resolved, inputs, fi);
             });
-            registry.compute(character);
         });
     };
 
@@ -223,8 +220,7 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
             registry.with_features_index_untracked(|fi| {
                 replay(fi, character, &pending, inputs);
             });
-            restore_all_spell_selections(&original_feature_data, character.features.data_mut());
-            registry.compute(character);
+            restore_user_state(&original_feature_data, character.features.data_mut());
         });
     };
 

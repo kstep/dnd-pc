@@ -339,15 +339,17 @@ impl RulesRegistry {
         match source {
             FeatureSource::Class(name, level) => {
                 let prefix = tr!(i18n, "source-class");
-                let label = self.classes().with(name, |def| def.label().to_string());
+                let label = self
+                    .classes()
+                    .with_tracked(name, |def| def.label().to_string());
                 format!("{prefix}: {} ({level})", label.as_deref().unwrap_or(name))
             }
             FeatureSource::Subclass(class_name, subclass_name, level) => {
                 let prefix = tr!(i18n, "source-subclass");
                 let class_label = self
                     .classes()
-                    .with(class_name, |def| def.label().to_string());
-                let subclass_label = self.classes().with(class_name, |def| {
+                    .with_tracked(class_name, |def| def.label().to_string());
+                let subclass_label = self.classes().with_tracked(class_name, |def| {
                     def.subclasses
                         .get(&**subclass_name)
                         .map(|sc| sc.label().to_string())
@@ -360,12 +362,16 @@ impl RulesRegistry {
             }
             FeatureSource::Species(name) => {
                 let prefix = tr!(i18n, "source-species");
-                let label = self.species().with(name, |def| def.label().to_string());
+                let label = self
+                    .species()
+                    .with_tracked(name, |def| def.label().to_string());
                 format!("{prefix}: {}", label.as_deref().unwrap_or(name))
             }
             FeatureSource::Background(name) => {
                 let prefix = tr!(i18n, "source-background");
-                let label = self.backgrounds().with(name, |def| def.label().to_string());
+                let label = self
+                    .backgrounds()
+                    .with_tracked(name, |def| def.label().to_string());
                 format!("{prefix}: {}", label.as_deref().unwrap_or(name))
             }
             FeatureSource::User(level) => {

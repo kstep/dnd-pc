@@ -1557,13 +1557,10 @@
     "name": "Experimental Elixir",
     "fields": [
       {
-        "name": "Elixirs",
+        "name": "Elixir Recipes",
         "kind": "Choice",
         "levels": {
-          "3": 2,
-          "5": 3,
-          "9": 4,
-          "15": 5
+          "3": 5
         },
         "options": [
           {
@@ -1582,6 +1579,19 @@
             "name": "Flight"
           }
         ]
+      },
+      {
+        "name": "Elixirs",
+        "kind": "Choice",
+        "levels": {
+          "3": 2,
+          "5": 3,
+          "9": 4,
+          "15": 5
+        },
+        "options": {
+          "from": "Elixir Recipes"
+        }
       }
     ]
   },

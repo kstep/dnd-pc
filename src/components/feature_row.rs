@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
-use reactive_stores::Store;
+use reactive_stores::{Field, Store};
 
 use crate::{
     components::{
@@ -10,9 +10,13 @@ use crate::{
         datalist::{DatalistInput, DatalistOption, SharedDatalist, next_datalist_id},
         feature_field_row::FeatureFieldRow,
         icon::Icon,
+        markdown::Markdown,
         ref_link::Ref,
     },
-    model::{Character, CharacterStoreFields, FeatureValue, FeaturesStoreFields},
+    model::{
+        Character, CharacterStoreFields, Feature, FeatureStoreFields, FeatureValue,
+        FeaturesStoreFields,
+    },
     rules::{
         RulesRegistry,
         apply::{FeatureKey, PendingFeature, apply_new_features, build_cascade_base_before},
@@ -32,24 +36,27 @@ fn location_hash_matches(anchor: &str) -> bool {
 
 #[component]
 pub fn FeatureRow(
-    feature_idx: usize,
+    feature: Field<Feature>,
     options: Memo<Vec<DatalistOption>>,
-    assign_previews: Memo<Vec<Vec<String>>>,
+    row_previews: Signal<Vec<String>>,
+    on_remove: Callback<()>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
-    let features = store.features().list();
 
-    let feature = features.read_untracked().get(feature_idx).cloned()?;
-
-    let name = feature.label().to_string();
-    let desc = feature.description.clone();
-    let feature_name = feature.name.clone();
-    let source = feature.source.clone();
-    let is_readonly = !source.is_user()
-        || registry.with_features_index_untracked(|idx| idx.contains_key(feature_name.as_str()));
+    let (feature_name, initial_label, initial_desc) = feature.with_untracked(|feature| {
+        (
+            feature.name.clone(),
+            feature.label().to_string(),
+            feature.description.clone(),
+        )
+    });
+    let anchor_id = Signal::derive(move || feature.read().dom_id());
     let stored_name = StoredValue::new(feature_name.clone());
-    let (field_count, has_spells, has_empty_choices) = store
+    // A non-empty `name` means the row is bound to a registry entry; empty
+    // `name` is a user-typed custom feat with only `label`. See on_input below.
+    let is_readonly = !feature_name.is_empty();
+    let (has_spells, has_empty_choices) = store
         .features()
         .data()
         .read_untracked()
@@ -61,23 +68,16 @@ pub fn FeatureRow(
                     FeatureValue::Choice { options } if options.iter().any(|opt| opt.label().is_empty())
                 )
             });
-            (
-                feature_data.fields.len(),
-                feature_data.spells.is_some(),
-                has_empty,
-            )
+            (feature_data.spells.is_some(), has_empty)
         })
-        .unwrap_or((0, false, false));
-    // One reactive read of list + data produces both the pending flag and the
-    // badge counts. Keeps the FeatureData lock scoped to a single iteration.
+        .unwrap_or((false, false));
+    let has_interactive_inputs = registry.with_features_index_untracked(|idx| {
+        idx.get(feature_name.as_str())
+            .is_some_and(|feat_def| feat_def.has_interactive_inputs())
+    });
+
     let row_info = Memo::new(move |_| {
-        let not_applied = store
-            .features()
-            .list()
-            .read()
-            .get(feature_idx)
-            .map(|feature| !feature.applied)
-            .unwrap_or(false);
+        let not_applied = !feature.applied().get();
         let (has_empty, choices, points, dies) = stored_name
             .with_value(|key| {
                 store.features().data().read().get(key).map(|feature_data| {
@@ -105,13 +105,20 @@ pub fn FeatureRow(
         ];
         (has_pending, badges)
     });
+    let field_count = Memo::new(move |_| {
+        stored_name.with_value(|name| {
+            store
+                .features()
+                .data()
+                .read()
+                .get(name)
+                .map(|feature_data| feature_data.fields.len())
+                .unwrap_or(0)
+        })
+    });
     let spell_link = has_spells.then(|| {
         let char_id = store.read_untracked().id;
         format!("/c/{char_id}/magic#{feature_name}")
-    });
-    let has_interactive_inputs = registry.with_features_index_untracked(|idx| {
-        idx.get(feature_name.as_str())
-            .is_some_and(|feat_def| feat_def.has_interactive_inputs())
     });
 
     // `None` means "no explicit user choice yet" — visibility falls back to
@@ -120,17 +127,15 @@ pub fn FeatureRow(
     // CSS rule keeping `:target` from resurrecting a collapsed row.
     let state: RwSignal<Option<bool>> = RwSignal::new(has_empty_choices.then_some(true));
     let feature_list_id = next_datalist_id();
-    let anchor_id = feature.dom_id();
-    let toggle_anchor = StoredValue::new(anchor_id.clone());
     let toggle = move || {
         let currently_shown = state
             .get_untracked()
-            .unwrap_or_else(|| toggle_anchor.with_value(|anchor| location_hash_matches(anchor)));
+            .unwrap_or_else(|| location_hash_matches(&anchor_id.get_untracked()));
         state.set(Some(!currently_shown));
     };
     Some(view! {
         <div
-            id=anchor_id
+            id=move || anchor_id.get()
             class="entry-item"
             class:expanded=move || state.get() == Some(true)
             class:collapsed=move || state.get() == Some(false)
@@ -147,26 +152,29 @@ pub fn FeatureRow(
                             class="entry-name entry-name-readonly"
                             on:click=move |_| toggle()
                         >
-                            {name.clone()}
+                            {move || feature.read().label().to_string()}
                         </span>
                     })
                 } else {
                     Either::Right(view! {
                         <SharedDatalist id=feature_list_id.clone() options=options />
                         <DatalistInput
-                            value=name
+                            value=initial_label
                             placeholder=move_tr!("feature-name")
                             class="entry-name"
                             list_id=feature_list_id.clone()
                             options=options
                             on_input=move |input, resolved| {
                                 let key_for_apply = {
-                                    let mut w = features.write();
+                                    let mut w = feature.write();
                                     if let Some(key) = resolved {
-                                        w[feature_idx].name = key.clone();
+                                        // Resolved to a real feat: bind name to
+                                        // the registry key and pull canonical
+                                        // label/description from the index.
+                                        w.name = key.clone();
                                         let (label, description) =
-                                            registry.with_features_index(|idx| {
-                                                idx.get(key.as_str())
+                                            registry.with_features_index(|index| {
+                                                index.get(key.as_str())
                                                     .map(|feat| {
                                                         (
                                                             feat.label.clone(),
@@ -175,27 +183,26 @@ pub fn FeatureRow(
                                                     })
                                                     .unwrap_or_default()
                                             });
-                                        w[feature_idx].label = label;
-                                        w[feature_idx].description = description;
+                                        w.label = label;
+                                        w.description = description;
                                         Some(key)
                                     } else {
-                                        w[feature_idx].set_label(input);
-                                        w[feature_idx].description.clear();
+                                        // Free text: keep label only, drop any
+                                        // prior registry binding so this row
+                                        // stops being treated as an indexed feat.
+                                        w.name.clear();
+                                        w.set_label(input);
+                                        w.description.clear();
                                         None
                                     }
                                 };
-                                // Auto-apply when user picks a non-interactive feat from
-                                // the list. Interactive feats stay pending and surface
-                                // through the Edit button; they are intentionally NOT
-                                // auto-opening the args modal (that felt too aggressive
-                                // in review).
                                 if let Some(key) = key_for_apply {
-                                    let is_non_interactive = registry.with_features_index_untracked(|idx| {
-                                        idx.get(key.as_str())
+                                    let is_non_interactive = registry.with_features_index_untracked(|index| {
+                                        index.get(key.as_str())
                                             .is_some_and(|feat_def| !feat_def.has_interactive_inputs())
                                     });
                                     if is_non_interactive {
-                                        let source = features.read_untracked()[feature_idx].source.clone();
+                                        let source = feature.with_untracked(|f| f.source.clone());
                                         let level = source.added_at_level();
                                         let pending = vec![PendingFeature {
                                             name: key,
@@ -244,10 +251,9 @@ pub fn FeatureRow(
                         class="btn-apply-level"
                         title=move_tr!("btn-edit-feature")
                         on:click=move |_| {
-                            let (name, source, is_applied) = {
-                                let feature = &features.read()[feature_idx];
-                                (feature.name.clone(), feature.source.clone(), feature.applied)
-                            };
+                            let (name, source, is_applied) = feature.with_untracked(
+                                |feature| (feature.name.clone(), feature.source.clone(), feature.applied),
+                            );
                             if is_applied {
                                 // Edit-mode: open modal with pre-edit cascade snapshot, on
                                 // submit just stash new inputs + mark dirty. Replay banner
@@ -264,7 +270,6 @@ pub fn FeatureRow(
                                     Some(Arc::new(clean)),
                                 );
                             } else {
-                                // First-time apply: full apply for interactive feature.
                                 let level = source.added_at_level();
                                 let pending = vec![PendingFeature { name, source, level }];
                                 apply_with_modal(
@@ -289,55 +294,49 @@ pub fn FeatureRow(
                 </Show>
                 <button
                     class="btn-remove"
-                    on:click=move |_| {
-                        if feature_idx < features.read().len() {
-                            let removed = features.write().remove(feature_idx);
-                            if !features.read().iter().any(|feature| feature.name == removed.name) {
-                                store.features().write().remove(&removed.name);
-                            }
-                        }
-                    }
+                    on:click=move |_| on_remove.run(())
                 >
                     <Icon name="x" />
                 </button>
             </div>
             {if is_readonly {
                 Either::Left(view! {
-                    <p class="entry-desc">{desc.clone()}</p>
+                    <div class="entry-desc">
+                        <Markdown text=Signal::derive(move || feature.read().description.clone()) />
+                    </div>
                 })
             } else {
                 Either::Right(view! {
                     <textarea
                         class="entry-desc"
                         placeholder=move_tr!("description")
-                        prop:value=desc.clone()
+                        prop:value=initial_desc.clone()
                         on:change=move |event| {
-                            features.write()[feature_idx].description =
-                                event_target_value(&event);
+                            let value = event_target_value(&event);
+                            feature.write().description = value;
                         }
                     />
                 })
             }}
-            {(field_count > 0).then(move || view! {
-                <div class="feature-fields" style="grid-column: 1 / -1">
-                    {(0..field_count)
-                        .map(|field_idx| view! {
-                            <FeatureFieldRow feature_name=stored_name field_idx=field_idx />
-                        })
-                        .collect_view()}
-                </div>
-            })}
             {move || {
-                let entries = assign_previews
-                    .with(|previews| previews.get(feature_idx).cloned().unwrap_or_default());
-                (!entries.is_empty()).then(|| view! {
-                    <div class="entry-full-row feature-assignments">
-                        {entries.into_iter().map(|entry| view! {
-                            <span class="feature-assignment-entry">{entry}</span>
-                        }).collect_view()}
+                let count = field_count.get();
+                (count > 0).then(|| view! {
+                    <div class="feature-fields" style="grid-column: 1 / -1">
+                        {(0..count)
+                            .map(|field_idx| view! {
+                                <FeatureFieldRow feature_name=stored_name field_idx=field_idx />
+                            })
+                            .collect_view()}
                     </div>
                 })
             }}
+            {move || row_previews.with(|entries| (!entries.is_empty()).then(|| view! {
+                <div class="entry-full-row feature-assignments">
+                    {entries.iter().map(|entry| view! {
+                        <span class="feature-assignment-entry">{entry.clone()}</span>
+                    }).collect_view()}
+                </div>
+            }))}
         </div>
     })
 }

@@ -586,7 +586,46 @@ impl Attribute {
             Self::Feature(name) => name.to_string(),
             Self::Language(name) => name.to_string(),
             Self::FeatCategory(cat) => i18n.tr(cat.tr_key()),
+            Self::Slot(None, n) => format!("{} L{n}", tr!(i18n, "spell-slot")),
+            Self::Slot(Some(pool), n) => format!(
+                "{} L{n} ({})",
+                tr!(i18n, "spell-slot"),
+                i18n.tr(pool.tr_key())
+            ),
+            Self::SlotUsed(None, n) => format!("{} L{n}", tr!(i18n, "spell-slot-used")),
+            Self::SlotUsed(Some(pool), n) => format!(
+                "{} L{n} ({})",
+                tr!(i18n, "spell-slot-used"),
+                i18n.tr(pool.tr_key())
+            ),
+            Self::SlotPool => tr!(i18n, "spell-slot-pool"),
+            Self::CasterAbility => tr!(i18n, "caster-ability"),
+            Self::CasterCoef => tr!(i18n, "caster-coef"),
+            Self::SpellCantrips => tr!(i18n, "spell-cantrips"),
+            Self::SpellKnown => tr!(i18n, "spell-known"),
+            Self::SpellReady => tr!(i18n, "spell-ready"),
             _ => self.to_string(),
+        }
+    }
+
+    /// Format an `i32` value for this attribute. Most attrs render the
+    /// number directly; CasterAbility/SlotPool/CasterCoef carry an enum
+    /// index and should display its name.
+    pub fn format_value(&self, value: i32, i18n: I18n) -> String {
+        match self {
+            Self::CasterAbility => Ability::try_from(value.max(0) as u8)
+                .map(|ability| i18n.tr(ability.tr_key()))
+                .unwrap_or_else(|_| value.to_string()),
+            Self::SlotPool => SpellSlotPool::try_from(value.max(0) as u8)
+                .map(|pool| i18n.tr(pool.tr_key()))
+                .unwrap_or_else(|_| value.to_string()),
+            Self::CasterCoef => match value {
+                1 => tr!(i18n, "caster-coef-full"),
+                2 => tr!(i18n, "caster-coef-half"),
+                3 => tr!(i18n, "caster-coef-third"),
+                _ => value.to_string(),
+            },
+            _ => value.to_string(),
         }
     }
 }

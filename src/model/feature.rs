@@ -189,132 +189,6 @@ impl FeatureSource {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
-#[serde(transparent)]
-pub struct FeatureList(Vec<Feature>);
-
-impl Deref for FeatureList {
-    type Target = Vec<Feature>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for FeatureList {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl<'a> IntoIterator for &'a FeatureList {
-    type IntoIter = std::slice::Iter<'a, Feature>;
-    type Item = &'a Feature;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.iter()
-    }
-}
-
-impl<'a> IntoIterator for &'a mut FeatureList {
-    type IntoIter = std::slice::IterMut<'a, Feature>;
-    type Item = &'a mut Feature;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.iter_mut()
-    }
-}
-
-impl From<Vec<Feature>> for FeatureList {
-    fn from(features: Vec<Feature>) -> Self {
-        Self(features)
-    }
-}
-
-impl FeatureList {
-    /// Does this feature definition + source already have an applied instance?
-    /// Non-stackable: any applied by name → true.
-    /// Stackable: applied with same name AND source → true.
-    pub fn contains(&self, name: &str, stackable: bool, source: &FeatureSource) -> bool {
-        if stackable {
-            self.0
-                .iter()
-                .any(|f| f.name == name && f.applied && f.source == *source)
-        } else {
-            self.0.iter().any(|f| f.name == name && f.applied)
-        }
-    }
-
-    pub fn has(&self, name: &str) -> bool {
-        self.0.iter().any(|f| f.name == name && f.applied)
-    }
-
-    pub fn has_category(&self, category: FeatureCategory) -> bool {
-        self.0.iter().any(|f| f.applied && f.category == category)
-    }
-
-    /// Is this a first-time add (OnFeatureAdd)?
-    /// True if no entries at all, or has an unapplied entry waiting.
-    pub fn is_pending(&self, name: &str) -> bool {
-        let mut has_applied = false;
-        let mut has_unapplied = false;
-        for feature in &self.0 {
-            if feature.name == name {
-                if feature.applied {
-                    has_applied = true;
-                } else {
-                    has_unapplied = true;
-                }
-            }
-        }
-        !has_applied || has_unapplied
-    }
-
-    /// Add a feature with its inputs. Finds an unapplied entry and fills
-    /// it in, or pushes a new applied entry (for stackable features from a
-    /// different source, or brand new features).
-    pub fn add(
-        &mut self,
-        name: &str,
-        label: Option<String>,
-        description: String,
-        category: FeatureCategory,
-        source: FeatureSource,
-        inputs: Vec<AssignInputs>,
-    ) {
-        if let Some(feature) = self.0.iter_mut().rfind(|f| f.name == name && !f.applied) {
-            feature.applied = true;
-            feature.label = label;
-            feature.description = description;
-            feature.category = category;
-            feature.source = source;
-            feature.inputs = inputs;
-        } else {
-            self.0.push(Feature {
-                name: name.to_string(),
-                label,
-                description,
-                applied: true,
-                category,
-                source,
-                inputs,
-            });
-        }
-    }
-
-    /// Look up stored inputs for a feature by (name, source). Required for
-    /// stackable features (e.g. Expertise at Rogue L1 and L6) where a
-    /// name-only lookup would collapse distinct slots into the first match
-    /// and reuse its inputs for every subsequent instance.
-    pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
-        self.0
-            .iter()
-            .find(|f| f.name == name && &f.source == source)
-            .map(|f| f.inputs.as_slice())
-            .unwrap_or_default()
-    }
-}
-
 /// Container joining the applied feature list with per-feature data
 /// (fields + spells). Co-located because the two are tightly coupled —
 /// `data` entries are keyed by feature name and should exist for every
@@ -330,7 +204,7 @@ impl FeatureList {
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 pub struct Features {
     #[serde(default)]
-    pub list: FeatureList,
+    pub list: Vec<Feature>,
     #[serde(
         default,
         deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
@@ -375,7 +249,7 @@ impl Features {
     /// struct literals would otherwise need access to the private `data`
     /// field.
     #[cfg(test)]
-    pub fn from_parts(list: FeatureList, data: BTreeMap<String, FeatureData>) -> Self {
+    pub fn from_parts(list: Vec<Feature>, data: BTreeMap<String, FeatureData>) -> Self {
         Self { list, data }
     }
 
@@ -389,28 +263,61 @@ impl Features {
         self.list.iter_mut()
     }
 
-    // List-method delegates — same signatures as FeatureList.
-
+    /// Does this feature definition + source already have an applied instance?
+    /// Non-stackable: any applied by name → true.
+    /// Stackable: applied with same name AND source → true.
     pub fn contains(&self, name: &str, stackable: bool, source: &FeatureSource) -> bool {
-        self.list.contains(name, stackable, source)
+        if stackable {
+            self.list
+                .iter()
+                .any(|feature| feature.name == name && feature.applied && feature.source == *source)
+        } else {
+            self.list
+                .iter()
+                .any(|feature| feature.name == name && feature.applied)
+        }
     }
 
     pub fn has(&self, name: &str) -> bool {
-        self.list.has(name)
+        self.list
+            .iter()
+            .any(|feature| feature.name == name && feature.applied)
     }
 
     pub fn has_category(&self, category: FeatureCategory) -> bool {
-        self.list.has_category(category)
+        self.list
+            .iter()
+            .any(|feature| feature.applied && feature.category == category)
     }
 
+    /// True if no applied entries at all, or has an unapplied entry waiting.
     pub fn is_pending(&self, name: &str) -> bool {
-        self.list.is_pending(name)
+        let mut has_applied = false;
+        let mut has_unapplied = false;
+        for feature in &self.list {
+            if feature.name == name {
+                if feature.applied {
+                    has_applied = true;
+                } else {
+                    has_unapplied = true;
+                }
+            }
+        }
+        !has_applied || has_unapplied
     }
 
+    /// Look up stored inputs for a feature by (name, source). Required for
+    /// stackable features (e.g. Expertise at Rogue L1 and L6).
     pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
-        self.list.get_inputs(name, source)
+        self.list
+            .iter()
+            .find(|feature| feature.name == name && &feature.source == source)
+            .map(|feature| feature.inputs.as_slice())
+            .unwrap_or_default()
     }
 
+    /// Add a feature with its inputs. Finds an unapplied entry and fills it
+    /// in, or pushes a new applied entry.
     pub fn add(
         &mut self,
         name: &str,
@@ -420,8 +327,50 @@ impl Features {
         source: FeatureSource,
         inputs: Vec<AssignInputs>,
     ) {
-        self.list
-            .add(name, label, description, category, source, inputs);
+        if let Some(feature) = self
+            .list
+            .iter_mut()
+            .rfind(|feature| feature.name == name && !feature.applied)
+        {
+            feature.applied = true;
+            feature.label = label;
+            feature.description = description;
+            feature.category = category;
+            feature.source = source;
+            feature.inputs = inputs;
+        } else {
+            self.list.push(Feature {
+                name: name.to_string(),
+                label,
+                description,
+                applied: true,
+                category,
+                source,
+                inputs,
+            });
+        }
+    }
+
+    /// Remove the feature instance matching `name` + `source` from the
+    /// list. If no other entries share the name, also drop its `data`
+    /// entry (fields + spells). Returns `true` if a match was found.
+    pub fn remove(&mut self, name: &str, source: &FeatureSource) -> bool {
+        let Some(idx) = self
+            .list
+            .iter()
+            .position(|feature| feature.name == name && &feature.source == source)
+        else {
+            return false;
+        };
+        self.list.remove(idx);
+        if !self
+            .list
+            .iter()
+            .any(|feature| feature.name == name && feature.applied)
+        {
+            self.data.remove(name);
+        }
+        true
     }
 
     /// Truncate the feature list at the position of the entry matching
@@ -432,7 +381,7 @@ impl Features {
         let Some(idx) = self
             .list
             .iter()
-            .position(|f| f.name == name && &f.source == source)
+            .position(|feature| feature.name == name && &feature.source == source)
         else {
             return false;
         };

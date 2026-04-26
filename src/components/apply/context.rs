@@ -47,6 +47,14 @@ impl expr::Context<Attribute, i32> for PreviewContext<'_> {
         {
             self.captured.push((var, value));
         }
-        self.character.assign(var, value)
+        // Scoped attrs (CasterAbility, SlotPool, ...) live per-feature and
+        // are ReadOnly on a global Character — capture for display, skip
+        // the proxy. Other attrs propagate normally so the assign chain and
+        // cumulative pipeline still surface real write errors.
+        if var.is_scoped() {
+            Ok(())
+        } else {
+            self.character.assign(var, value)
+        }
     }
 }

@@ -560,19 +560,25 @@
   "Experimental Elixir": {
     "description": "Whenever you finish a Long Rest while holding Alchemist's Supplies, you can use that tool to magically produce two elixirs. For each elixir, roll on the Experimental Elixir table for the elixir's effect, which is triggered when someone drinks the elixir. The elixir appears in a vial, and the vial vanishes when the elixir is drunk or poured out."
   },
-  "Experimental Elixir.field.Elixirs.option.Healing": {
+  "Experimental Elixir.field.Elixir Recipes": {
+    "label": "Elixir Recipes"
+  },
+  "Experimental Elixir.field.Elixirs": {
+    "label": "Elixirs"
+  },
+  "Experimental Elixir.field.Elixir Recipes.option.Healing": {
     "description": "The drinker regains a number of Hit Points equal to 2d4 + your Intelligence modifier."
   },
-  "Experimental Elixir.field.Elixirs.option.Swiftness": {
+  "Experimental Elixir.field.Elixir Recipes.option.Swiftness": {
     "description": "The drinker's Speed increases by 10 feet for 1 hour."
   },
-  "Experimental Elixir.field.Elixirs.option.Resilience": {
+  "Experimental Elixir.field.Elixir Recipes.option.Resilience": {
     "description": "The drinker gains a +1 bonus to AC for 10 minutes."
   },
-  "Experimental Elixir.field.Elixirs.option.Boldness": {
+  "Experimental Elixir.field.Elixir Recipes.option.Boldness": {
     "description": "The drinker can roll a d4 and add the number rolled to every attack roll and saving throw they make for 1 minute."
   },
-  "Experimental Elixir.field.Elixirs.option.Flight": {
+  "Experimental Elixir.field.Elixir Recipes.option.Flight": {
     "description": "The drinker gains a Fly Speed of 10 feet for 10 minutes."
   },
   "Tools of the Trade": {

@@ -1,3 +1,5 @@
+use std::mem;
+
 use leptos_fluent::{I18n, tr};
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
@@ -147,7 +149,7 @@ impl Character {
 
     pub fn clear(&mut self) {
         let id = self.id;
-        let identity = std::mem::take(&mut self.identity);
+        let identity = mem::take(&mut self.identity);
         *self = Self {
             id,
             identity,
@@ -1194,8 +1196,7 @@ impl Character {
                     category: FeatureCategory::Class,
                     source: FeatureSource::Class("Bard".into(), 1),
                     inputs: Vec::new(),
-                }]
-                .into(),
+                }],
                 BTreeMap::from([(
                     "Spellcasting (Bard)".to_string(),
                     FeatureData {

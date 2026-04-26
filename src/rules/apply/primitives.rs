@@ -1,10 +1,13 @@
 use std::collections::{BTreeMap, VecDeque};
 
 use crate::{
-    model::{AssignInputs, Character, FeatureData, Spell, SpellData},
+    model::{AssignInputs, Character, FeatureData, FeatureValue, Spell, SpellData},
     rules::{
         WhenCondition,
-        apply::pending::{ApplyInputs, FeatureKey, PendingFeature},
+        apply::{
+            compute,
+            pending::{ApplyInputs, FeatureKey, PendingFeature},
+        },
         feature::FeatureDefinition,
     },
 };
@@ -61,6 +64,7 @@ pub fn apply_new_features(
             .unwrap_or_default();
         apply_new_feature(features_index, character, pending_feature, inputs);
     }
+    compute(character, features_index);
 }
 
 /// Add a single feature to `character.features` and call
@@ -112,6 +116,9 @@ pub fn apply_new_feature(
 /// Replay: reset derived state and re-apply all features from stored data.
 /// `pending` should be sorted by `added_at_level`. `inputs` supplies
 /// supplemental ARG values for features that lack stored inputs.
+/// Callers that need to keep user-driven state across the wipe (Choice
+/// picks, Points/Die used, prepared spells) snapshot `features.data()`
+/// beforehand and call [`restore_user_state`] after replay returns.
 pub fn replay(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
     character: &mut Character,
@@ -160,6 +167,21 @@ pub fn replay(
             }
         }
     }
+
+    compute(character, features_index);
+}
+
+/// Re-apply user-driven state (Choice picks, Points/Die used, prepared
+/// spells) from a pre-replay snapshot onto a freshly-applied character.
+/// Pure data operation — no compute, no rules eval. Callers like
+/// `do_replay` and `merge_preserved` use this after they've finished
+/// building the structural shape.
+pub fn restore_user_state(
+    original_feature_data: &BTreeMap<String, FeatureData>,
+    target_feature_data: &mut BTreeMap<String, FeatureData>,
+) {
+    restore_field_picks(original_feature_data, target_feature_data);
+    restore_all_spell_selections(original_feature_data, target_feature_data);
 }
 
 /// Build a lean cascade-base character representing the state just before
@@ -207,22 +229,83 @@ fn restore_spell_selections(original: &SpellData, target: &mut SpellData) {
 }
 
 fn restore_spell_list(original: &[Spell], target: &mut [Spell]) {
-    let mut by_level: BTreeMap<u32, VecDeque<&Spell>> = original
+    // Two donor queues: cantrips and leveled spells. A leveled donor fits
+    // any leveled slot regardless of slot level — the player picks where
+    // to put it. Cantrips only feed cantrip slots.
+    let (mut cantrip_donors, mut spell_donors): (VecDeque<&Spell>, VecDeque<&Spell>) = original
         .iter()
         .filter(|spell| !spell.sticky && !spell.name.is_empty())
-        .fold(BTreeMap::new(), |mut map, spell| {
-            map.entry(spell.level).or_default().push_back(spell);
-            map
-        });
+        .partition(|spell| spell.level == 0);
 
     for slot in target
         .iter_mut()
         .filter(|slot| !slot.sticky && slot.name.is_empty())
     {
-        if let Some(donor) = by_level.get_mut(&slot.level).and_then(VecDeque::pop_front) {
-            slot.name = donor.name.clone();
-            slot.label = donor.label.clone();
-            slot.description = donor.description.clone();
+        let donor = if slot.level == 0 {
+            cantrip_donors.pop_front()
+        } else {
+            spell_donors.pop_front()
+        };
+        if let Some(donor) = donor {
+            slot.clone_from(donor);
+        }
+    }
+}
+
+/// Restore user-driven field values from `original` into `target` after a
+/// fresh apply: Choice picks, Points/Die `used` counters. Definition-driven
+/// values (max, die size, choice slot count) come from the fresh apply.
+/// Empty Choice slots in `target` are filled from `original` only when the
+/// definition still has at least that many slots.
+pub fn restore_field_picks(
+    original: &BTreeMap<String, FeatureData>,
+    target: &mut BTreeMap<String, FeatureData>,
+) {
+    for (name, target_data) in target.iter_mut() {
+        let Some(orig_data) = original.get(name) else {
+            continue;
+        };
+        for target_field in target_data.fields.iter_mut() {
+            let Some(orig_field) = orig_data
+                .fields
+                .iter()
+                .find(|orig_field| orig_field.name == target_field.name)
+            else {
+                continue;
+            };
+            match (&mut target_field.value, &orig_field.value) {
+                (
+                    FeatureValue::Points { used, max },
+                    FeatureValue::Points {
+                        used: orig_used, ..
+                    },
+                ) => {
+                    *used = (*orig_used).min(*max);
+                }
+                (
+                    FeatureValue::Die { used, die },
+                    FeatureValue::Die {
+                        used: orig_used, ..
+                    },
+                ) => {
+                    *used = (*orig_used).min(die.amount);
+                }
+                (
+                    FeatureValue::Choice { options },
+                    FeatureValue::Choice {
+                        options: orig_options,
+                    },
+                ) => {
+                    // `zip` caps at the shorter length: extra fresh slots stay
+                    // empty for the user, trailing original picks are dropped.
+                    for (target_opt, orig_opt) in options.iter_mut().zip(orig_options) {
+                        if target_opt.name.is_empty() && !orig_opt.name.is_empty() {
+                            *target_opt = orig_opt.clone();
+                        }
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }
